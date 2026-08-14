@@ -530,12 +530,18 @@ extension AppSetup.GlobalsContinuation {
             tsAccountManager: tsAccountManager,
         )
 
+        let clockSkewManager = ClockSkewManager(
+            dateProvider: dateProvider,
+            notificationCenter: .default,
+        )
+
         let inactivePrimaryDeviceStore = InactivePrimaryDeviceStore()
         let chatConnectionManager = ChatConnectionManagerImpl(
             accountManager: tsAccountManager,
             appContext: appContext,
             appExpiry: appExpiry,
             appReadiness: appReadiness,
+            clockSkewManager: clockSkewManager,
             db: db,
             inactivePrimaryDeviceStore: inactivePrimaryDeviceStore,
             libsignalNet: libsignalNet,
@@ -1812,6 +1818,7 @@ extension AppSetup.GlobalsContinuation {
             changePhoneNumberPniManager: changePhoneNumberPniManager,
             chatColorSettingStore: chatColorSettingStore,
             chatConnectionManager: chatConnectionManager,
+            clockSkewManager: clockSkewManager,
             contactShareManager: contactShareManager,
             cron: cron,
             currentCallProvider: currentCallProvider,

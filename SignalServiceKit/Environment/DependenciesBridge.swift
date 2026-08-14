@@ -94,6 +94,7 @@ public class DependenciesBridge {
     public let changePhoneNumberPniManager: ChangePhoneNumberPniManager
     public let chatColorSettingStore: ChatColorSettingStore
     public let chatConnectionManager: ChatConnectionManager
+    public let clockSkewManager: ClockSkewManager
     public let contactShareManager: ContactShareManager
     public let cron: Cron
     public let currentCallProvider: any CurrentCallProvider
@@ -245,6 +246,7 @@ public class DependenciesBridge {
         changePhoneNumberPniManager: ChangePhoneNumberPniManager,
         chatColorSettingStore: ChatColorSettingStore,
         chatConnectionManager: ChatConnectionManager,
+        clockSkewManager: ClockSkewManager,
         contactShareManager: ContactShareManager,
         cron: Cron,
         currentCallProvider: any CurrentCallProvider,
@@ -394,6 +396,7 @@ public class DependenciesBridge {
         self.changePhoneNumberPniManager = changePhoneNumberPniManager
         self.chatColorSettingStore = chatColorSettingStore
         self.chatConnectionManager = chatConnectionManager
+        self.clockSkewManager = clockSkewManager
         self.contactShareManager = contactShareManager
         self.cron = cron
         self.currentCallProvider = currentCallProvider

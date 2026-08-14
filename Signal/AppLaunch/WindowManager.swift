@@ -19,6 +19,10 @@ extension UIWindow.Level {
     // In front of the root window, behind the screen blocking window.
     fileprivate static let _callView: UIWindow.Level = .init(rawValue: UIWindow.Level.normal.rawValue + 2)
 
+    // In front of the root window, behind CallView. We deliberately sit behind
+    // an ongoing call, which doesn't depend on the chat connection.
+    fileprivate static let _clockSkewBlocking: UIWindow.Level = .init(rawValue: UIWindow.Level.normal.rawValue + 1)
+
     // In front of the status bar and CallView
     fileprivate static let _screenBlocking: UIWindow.Level = .init(rawValue: UIWindow.Level.statusBar.rawValue + 2)
 }
@@ -41,7 +45,14 @@ class WindowManager {
     }
 
     func isAppWindow(_ window: UIWindow) -> Bool {
-        return window == rootWindow || window == returnToCallWindow || window == callViewWindow || window == screenBlockingWindow
+        return switch window {
+        case rootWindow: true
+        case returnToCallWindow: true
+        case callViewWindow: true
+        case clockSkewBlockingWindow: true
+        case screenBlockingWindow: true
+        default: false
+        }
     }
 
     var captchaWindow: UIWindow {
@@ -55,9 +66,17 @@ class WindowManager {
         }
     }
 
+    /// Whether the app should be blocked because the device's clock is skewed.
+    var isClockSkewBlockActive: Bool = false {
+        didSet {
+            AssertIsOnMainThread()
+            ensureWindowState()
+        }
+    }
+
     func updateWindowFrames() {
         let desiredFrame = CurrentAppContext().frame
-        for window in [rootWindow!, callViewWindow, screenBlockingWindow!] {
+        for window in [rootWindow!, callViewWindow, clockSkewBlockingWindow, screenBlockingWindow!] {
             guard window.frame != desiredFrame else { continue }
             window.frame = desiredFrame
         }
@@ -118,6 +137,30 @@ class WindowManager {
         return navigationController
     }
 
+    // UIWindow.Level._clockSkewBlocking
+    private lazy var clockSkewBlockingWindow: UIWindow = {
+        AssertIsOnMainThread()
+        guard let rootWindow else {
+            owsFail("rootWindow is nil")
+        }
+
+        let window = OWSWindow(frame: rootWindow.bounds)
+        window.windowLevel = ._clockSkewBlocking
+        window.isHidden = true
+        window.isOpaque = true
+        window.backgroundColor = Theme.launchScreenBackgroundColor
+        window.rootViewController = ClockSkewAppBlockingViewController(
+            onSubmitDebugLogs: { viewController in
+                DebugLogs(dumper: .fromGlobals()).promptToSubmitLogs(
+                    from: viewController,
+                    supportTag: "ClockSkew",
+                )
+            },
+        )
+
+        return window
+    }()
+
     // UIWindow.Level._background if inactive,
     // UIWindow.Level._screenBlocking() if active.
     private var screenBlockingWindow: UIWindow!
@@ -137,6 +180,7 @@ class WindowManager {
             ensureRootWindowHidden()
             ensureReturnToCallWindowHidden()
             ensureCallViewWindowHidden()
+            ensureClockSkewBlockWindowHidden()
         }
         // Show Call View
         else if shouldShowCallView, callViewController != nil {
@@ -144,11 +188,21 @@ class WindowManager {
             ensureRootWindowHidden()
             ensureReturnToCallWindowHidden()
             ensureScreenBlockWindowHidden()
+            ensureClockSkewBlockWindowHidden()
+        }
+        // Show Clock Skew Block
+        else if isClockSkewBlockActive {
+            ensureClockSkewBlockWindowShown()
+            ensureRootWindowHidden()
+            ensureReturnToCallWindowHidden()
+            ensureCallViewWindowHidden()
+            ensureScreenBlockWindowHidden()
         }
         // Show Root Window
         else {
             ensureRootWindowShown()
             ensureScreenBlockWindowHidden()
+            ensureClockSkewBlockWindowHidden()
 
             // Add "Return to Call" banner
             if callViewController != nil {
@@ -228,6 +282,25 @@ class WindowManager {
 
         Logger.info("hiding call window.")
         callViewWindow.isHidden = true
+    }
+
+    private func ensureClockSkewBlockWindowShown() {
+        AssertIsOnMainThread()
+
+        if clockSkewBlockingWindow.isHidden {
+            Logger.info("showing clock skew window.")
+        }
+
+        clockSkewBlockingWindow.makeKeyAndVisible()
+    }
+
+    private func ensureClockSkewBlockWindowHidden() {
+        AssertIsOnMainThread()
+
+        guard !clockSkewBlockingWindow.isHidden else { return }
+
+        Logger.info("hiding clock skew window.")
+        clockSkewBlockingWindow.isHidden = true
     }
 
     private func ensureScreenBlockWindowShown() {

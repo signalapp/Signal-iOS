@@ -202,8 +202,6 @@ public class OWSBackgroundTaskManager {
             self.clearObservers()
 
             self.didBecomeActiveObserver = NotificationCenter.default.addObserver(forName: .OWSApplicationDidBecomeActive, object: nil, queue: nil) { [weak self] _ in
-                AssertIsOnMainThread()
-
                 guard let self else {
                     return
                 }
@@ -214,8 +212,6 @@ public class OWSBackgroundTaskManager {
                 }
             }
             self.willResignActiveObserver = NotificationCenter.default.addObserver(forName: .OWSApplicationWillResignActive, object: nil, queue: nil) { [weak self] _ in
-                AssertIsOnMainThread()
-
                 guard let self else {
                     return
                 }

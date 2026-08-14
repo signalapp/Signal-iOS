@@ -41,9 +41,15 @@ public class AttachmentSharing {
     public static func showShareUI(
         for url: URL,
         sender: Any? = nil,
+        from viewController: UIViewController? = nil,
         completion: (() -> Void)? = nil,
     ) {
-        showShareUIForActivityItems([url], sender: sender, completion: completion)
+        showShareUIForActivityItems(
+            [url],
+            sender: sender,
+            from: viewController,
+            completion: completion,
+        )
     }
 
     public static func showShareUI(
@@ -59,9 +65,15 @@ public class AttachmentSharing {
     public static func showShareUI(
         for text: String,
         sender: Any? = nil,
+        from viewController: UIViewController? = nil,
         completion: (() -> Void)? = nil,
     ) {
-        showShareUIForActivityItems([text], sender: sender, completion: completion)
+        showShareUIForActivityItems(
+            [text],
+            sender: sender,
+            from: viewController,
+            completion: completion,
+        )
     }
 
     // MARK: -
@@ -80,9 +92,12 @@ public class AttachmentSharing {
 
     // MARK: -
 
+    /// - Parameter viewController: The view controller to present from. If nil,
+    /// presents from the frontmost view controller in the main window.
     static func showShareUIForActivityItems(
         _ activityItems: [Any],
         sender: Any?,
+        from viewController: UIViewController? = nil,
         completion: (() -> Void)? = nil,
     ) {
         DispatchMainThreadSafe {
@@ -99,7 +114,7 @@ public class AttachmentSharing {
                 }
             }
 
-            var fromViewController = CurrentAppContext().frontmostViewController()
+            var fromViewController = viewController ?? CurrentAppContext().frontmostViewController()
             while fromViewController?.presentedViewController != nil {
                 fromViewController = fromViewController?.presentedViewController
             }

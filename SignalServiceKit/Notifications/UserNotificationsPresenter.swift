@@ -229,7 +229,8 @@ public class UserNotificationPresenter {
              .backupsMediaTierQuotaConsumed,
              .attachmentBackfill,
              .nse_lowDiskSpace,
-             .nse_dbNotAvailable:
+             .nse_dbNotAvailable,
+             .nse_clockSkew:
             // Always show these notifications
             return true
 

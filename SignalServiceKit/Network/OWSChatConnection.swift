@@ -56,6 +56,7 @@ public class OWSChatConnection {
     fileprivate let type: OWSChatConnectionType
     fileprivate let appExpiry: AppExpiry
     fileprivate let appReadiness: AppReadiness
+    fileprivate let clockSkewManager: ClockSkewManager
     fileprivate let db: any DB
 
     public var hasEmptiedInitialQueue: Bool {
@@ -74,6 +75,7 @@ public class OWSChatConnection {
         type: OWSChatConnectionType,
         appExpiry: AppExpiry,
         appReadiness: AppReadiness,
+        clockSkewManager: ClockSkewManager,
         db: any DB,
     ) {
         AssertIsOnMainThread()
@@ -82,6 +84,7 @@ public class OWSChatConnection {
         self.type = type
         self.appExpiry = appExpiry
         self.appReadiness = appReadiness
+        self.clockSkewManager = clockSkewManager
         self.db = db
 
         appReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
@@ -106,6 +109,12 @@ public class OWSChatConnection {
             self,
             selector: #selector(appExpiryDidChange),
             name: AppExpiry.AppExpiryDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(clockSkewShouldBlockConnectionsDidChange),
+            name: .clockSkewShouldBlockConnectionsDidChange,
             object: nil,
         )
     }
@@ -237,6 +246,9 @@ public class OWSChatConnection {
     fileprivate func _canOpenWebSocketError() -> (any Error)? {
         guard !appExpiry.isExpired(now: Date()) else {
             return AppExpiredError()
+        }
+        guard !clockSkewManager.shouldBlockConnections else {
+            return ClockSkewError()
         }
         return nil
     }
@@ -377,6 +389,13 @@ public class OWSChatConnection {
 
     @objc
     private func appExpiryDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        updateCanOpenWebSocket()
+    }
+
+    @objc
+    private func clockSkewShouldBlockConnectionsDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
         updateCanOpenWebSocket()
@@ -527,10 +546,17 @@ class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OW
         type: OWSChatConnectionType,
         appExpiry: AppExpiry,
         appReadiness: AppReadiness,
+        clockSkewManager: ClockSkewManager,
         db: any DB,
     ) {
         self.libsignalNet = libsignalNet
-        super.init(type: type, appExpiry: appExpiry, appReadiness: appReadiness, db: db)
+        super.init(
+            type: type,
+            appExpiry: appExpiry,
+            appReadiness: appReadiness,
+            clockSkewManager: clockSkewManager,
+            db: db,
+        )
     }
 
     override fileprivate func appDidBecomeReady() {
@@ -818,8 +844,21 @@ class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OW
 }
 
 class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<UnauthenticatedChatConnection> {
-    init(libsignalNet: Net, appExpiry: AppExpiry, appReadiness: AppReadiness, db: any DB) {
-        super.init(libsignalNet: libsignalNet, type: .unidentified, appExpiry: appExpiry, appReadiness: appReadiness, db: db)
+    init(
+        libsignalNet: Net,
+        appExpiry: AppExpiry,
+        appReadiness: AppReadiness,
+        clockSkewManager: ClockSkewManager,
+        db: any DB,
+    ) {
+        super.init(
+            libsignalNet: libsignalNet,
+            type: .unidentified,
+            appExpiry: appExpiry,
+            appReadiness: appReadiness,
+            clockSkewManager: clockSkewManager,
+            db: db,
+        )
     }
 
     override fileprivate var connection: ConnectionState {
@@ -871,6 +910,7 @@ class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<Authentic
         appContext: any AppContext,
         appExpiry: AppExpiry,
         appReadiness: AppReadiness,
+        clockSkewManager: ClockSkewManager,
         db: any DB,
         inactivePrimaryDeviceStore: InactivePrimaryDeviceStore,
     ) {
@@ -886,7 +926,14 @@ class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<Authentic
         let priorityCount = 3
         self.connectionLock = ConnectionLock(filePath: appContext.appSharedDataDirectoryPath().appendingPathComponent("chat-connection.lock"), priority: priority, of: priorityCount)
 
-        super.init(libsignalNet: libsignalNet, type: .identified, appExpiry: appExpiry, appReadiness: appReadiness, db: db)
+        super.init(
+            libsignalNet: libsignalNet,
+            type: .identified,
+            appExpiry: appExpiry,
+            appReadiness: appReadiness,
+            clockSkewManager: clockSkewManager,
+            db: db,
+        )
     }
 
     deinit {
@@ -908,6 +955,12 @@ class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<Authentic
             name: .storiesEnabledStateDidChange,
             object: nil,
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(clockSkewShouldBeRemeasured),
+            name: .clockSkewShouldBeRemeasured,
+            object: nil,
+        )
     }
 
     @objc
@@ -921,6 +974,16 @@ class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<Authentic
     private func storiesEnabledStateDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
+        cycleSocket()
+    }
+
+    @objc
+    private func clockSkewShouldBeRemeasured(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        // We measure clock skew by opening an auth connection, so to re-measure
+        // we need to reconnect. We don't need to check whether we can open a
+        // socket; if that changed, it'll be announced separately.
         cycleSocket()
     }
 
@@ -1151,6 +1214,10 @@ class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<Authentic
                 Logger.warn("ignoring \(alertSet.count) alerts from the server")
             }
         }
+    }
+
+    func chatConnection(_ chat: AuthenticatedChatConnection, reportedServerTimestamp timestamp: UInt64) {
+        clockSkewManager.serverDidReportTimestamp(timestamp)
     }
 
     func chatConnection(_ chat: AuthenticatedChatConnection, didReceiveIncomingMessage envelope: Data, serverDeliveryTimestamp: UInt64, sendAck: @escaping () throws -> Void) {

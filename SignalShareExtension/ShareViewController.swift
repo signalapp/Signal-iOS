@@ -10,7 +10,7 @@ import SignalServiceKit
 public import SignalUI
 import UniformTypeIdentifiers
 
-public class ShareViewController: OWSNavigationController, ShareViewDelegate, SAEFailedViewDelegate {
+public class ShareViewController: OWSNavigationController, ShareViewDelegate {
 
     enum ShareViewControllerError: Error {
         case obsoleteShare
@@ -278,45 +278,53 @@ public class ShareViewController: OWSNavigationController, ShareViewDelegate, SA
         Logger.info("")
     }
 
-    // MARK: Error Views
+    // MARK: Blocking Views
 
     private func showNotRegisteredView() {
         AssertIsOnMainThread()
 
-        let failureTitle = OWSLocalizedString(
-            "SHARE_EXTENSION_NOT_REGISTERED_TITLE",
-            comment: "Title indicating that the share extension cannot be used until the user has registered in the main app.",
-        )
-        let failureMessage = OWSLocalizedString(
-            "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE",
-            comment: "Message indicating that the share extension cannot be used until the user has registered in the main app.",
-        )
-        showErrorView(title: failureTitle, message: failureMessage)
+        showBlockingView(AppBlockingViewController(
+            headerImage: UIImage(named: "signal-logo-128-launch-screen")!,
+            title: OWSLocalizedString(
+                "SHARE_EXTENSION_NOT_REGISTERED_TITLE",
+                comment: "Title indicating that the share extension cannot be used until the user has registered in the main app.",
+            ),
+            subtitle: OWSLocalizedString(
+                "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE",
+                comment: "Message indicating that the share extension cannot be used until the user has registered in the main app.",
+            ),
+        ))
     }
 
     private func showLowDiskSpaceView() {
         AssertIsOnMainThread()
 
-        let failureTitle = OWSLocalizedString(
-            "SHARE_EXTENSION_LOW_STORAGE_SPACE_TITLE",
-            comment: "Title for an error shown when the user tries to share to Signal but the device is too low on storage space.",
-        )
-        let failureMessage = OWSLocalizedString(
-            "SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE",
-            comment: "Message for an error shown when the user tries to share to Signal but the device is too low on storage space.",
-        )
-        showErrorView(title: failureTitle, message: failureMessage)
+        showBlockingView(AppBlockingViewController(
+            headerImage: UIImage(named: "signal-logo-128-launch-screen")!,
+            title: OWSLocalizedString(
+                "SHARE_EXTENSION_LOW_STORAGE_SPACE_TITLE",
+                comment: "Title for an error shown when the user tries to share to Signal but the device is too low on storage space.",
+            ),
+            subtitle: OWSLocalizedString(
+                "SHARE_EXTENSION_LOW_STORAGE_SPACE_MESSAGE",
+                comment: "Message for an error shown when the user tries to share to Signal but the device is too low on storage space.",
+            ),
+        ))
     }
 
-    private func showErrorView(title: String, message: String) {
+    private func showBlockingView(_ viewController: AppBlockingViewController) {
         AssertIsOnMainThread()
 
-        let viewController = SAEFailedViewController(delegate: self, title: title, message: message)
+        viewController.navigationItem.title = "Signal"
+        viewController.navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+            self?.shareViewWasCancelled()
+        }
 
-        self.setViewControllers([viewController], animated: false)
+        setViewControllers([viewController], animated: false)
+        isNavigationBarHidden = false
     }
 
-    // MARK: ShareViewDelegate, SAEFailedViewDelegate
+    // MARK: ShareViewDelegate
 
     public func shareViewWillSend() {
         let chatConnectionManager = DependenciesBridge.shared.chatConnectionManager

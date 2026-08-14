@@ -111,6 +111,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         appContext: any AppContext,
         appExpiry: AppExpiry,
         appReadiness: AppReadiness,
+        clockSkewManager: ClockSkewManager,
         db: any DB,
         inactivePrimaryDeviceStore: InactivePrimaryDeviceStore,
         libsignalNet: Net,
@@ -121,6 +122,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
             appContext: appContext,
             appExpiry: appExpiry,
             appReadiness: appReadiness,
+            clockSkewManager: clockSkewManager,
             db: db,
             inactivePrimaryDeviceStore: inactivePrimaryDeviceStore,
         )
@@ -128,6 +130,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
             libsignalNet: libsignalNet,
             appExpiry: appExpiry,
             appReadiness: appReadiness,
+            clockSkewManager: clockSkewManager,
             db: db,
         )
 

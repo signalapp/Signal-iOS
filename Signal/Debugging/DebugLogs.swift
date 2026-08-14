@@ -114,7 +114,7 @@ final class DebugLogs {
         showPreview(from: viewController, onSubmit: {
             Task {
                 await viewController.awaitableDismiss(animated: true)
-                await self.submitLogs(supportTag: supportTag)
+                await self.submitLogs(supportTag: supportTag, from: viewController)
                 if let completion {
                     try? await Task.sleep(nanoseconds: 2 * NSEC_PER_SEC)
                     completion()
@@ -141,7 +141,7 @@ final class DebugLogs {
         }
         if didSubmit {
             await viewController.awaitableDismiss(animated: true)
-            await submitLogs(supportTag: supportTag)
+            await submitLogs(supportTag: supportTag, from: viewController)
         }
     }
 
@@ -173,28 +173,20 @@ final class DebugLogs {
     }
 
     @MainActor
-    private func submitLogs(supportTag: String?) async {
+    private func submitLogs(supportTag: String?, from viewController: UIViewController) async {
         var supportFilter = "Signal - iOS Debug Log"
         if let supportTag {
             supportFilter += " - \(supportTag)"
         }
 
-        guard let frontmostViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts else {
-            return
-        }
-
         let url: URL?
         do {
-            url = try await uploadLogsWithUI(from: frontmostViewController)
+            url = try await uploadLogsWithUI(from: viewController)
         } catch {
-            self.handleError(error: error, viewController: frontmostViewController)
+            self.handleError(error: error, viewController: viewController)
             return
         }
         guard let url else { return }
-
-        guard let presentingViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts else {
-            return
-        }
 
         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
             let alert = ActionSheetController(
@@ -230,7 +222,7 @@ final class DebugLogs {
                 style: .default,
                 handler: { _ in
                     UIPasteboard.general.string = url.absoluteString
-                    presentingViewController.presentToast(text: CommonStrings.copiedToClipboardToast, image: .copy)
+                    viewController.presentToast(text: CommonStrings.copiedToClipboardToast, image: .copy)
                     continuation.resume()
                 },
             ))
@@ -244,6 +236,7 @@ final class DebugLogs {
                     AttachmentSharing.showShareUI(
                         for: url.absoluteString,
                         sender: nil,
+                        from: viewController,
                         completion: { continuation.resume() },
                     )
                 },
@@ -253,7 +246,7 @@ final class DebugLogs {
                 style: .cancel,
                 handler: { _ in continuation.resume() },
             ))
-            presentingViewController.presentActionSheet(alert)
+            viewController.presentActionSheet(alert)
         }
     }
 
@@ -315,7 +308,11 @@ final class DebugLogs {
                 viewController: viewController,
             )
         }
-        AttachmentSharing.showShareUI(for: URL(fileURLWithPath: logsDirPath), sender: nil) {
+        AttachmentSharing.showShareUI(
+            for: URL(fileURLWithPath: logsDirPath),
+            sender: nil,
+            from: viewController,
+        ) {
             OWSFileSystem.deleteFile(logsDirPath)
         }
     }
@@ -399,6 +396,7 @@ final class DebugLogs {
                 AttachmentSharing.showShareUI(
                     for: URL(fileURLWithPath: logsPath),
                     sender: nil,
+                    from: viewController,
                     completion: completion,
                 )
             })

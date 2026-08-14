@@ -243,6 +243,24 @@ class NotificationService: UNNotificationServiceExtension {
 
         logger.info("Message fetching & processing completed.")
 
+        // If the device's clock is too skewed, we won't have been able to fetch
+        // messages. Warn the user so they can correct it.
+        let clockSkewManager = DependenciesBridge.shared.clockSkewManager
+        if clockSkewManager.isClockSkewed {
+            if hasShownClockSkewWarning {
+                logger.warn("Skipping clock-skew notification, already shown notification.")
+                logger.flush()
+            } else {
+                logger.warn("Showing clock-skew notification.")
+                logger.flush()
+
+                await postClockSkewNotification(logger: logger)
+                hasShownClockSkewWarning = true
+            }
+        } else {
+            hasShownClockSkewWarning = false
+        }
+
         // If we're completing normally, try to update the badge on the app icon.
         let badgeCount: BadgeCount = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return DependenciesBridge.shared.badgeCountFetcher
@@ -292,6 +310,25 @@ private func postDBNotAvailableNotification() async {
             UIDevice.current.localizedModel,
         ),
         identifier: "Signal.DBNotAvailableNotification",
+    )
+}
+
+// MARK: -
+
+@MainActor private var hasShownClockSkewWarning = false
+
+/// Posts a notification explaining that we can't fetch messages because the
+/// device's clock is too inaccurate.
+@MainActor
+private func postClockSkewNotification(logger: NSELogger) async {
+    // Fixed identifier avoids re-posting duplicate notifications.
+    await postNotification(
+        category: .nse_clockSkew,
+        body: OWSLocalizedString(
+            "NOTIFICATION_BODY_CLOCK_SKEW",
+            comment: "Body for a notification shown when Signal can't fetch messages because the device's date and time are incorrect.",
+        ),
+        identifier: "Signal.ClockSkewNotification",
     )
 }
 

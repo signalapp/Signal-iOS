@@ -453,7 +453,18 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
         let failureTitle = OWSLocalizedString("SHARE_EXTENSION_SENDING_FAILURE_TITLE", comment: "Alert title")
 
-        if let untrustedIdentityError = failure.error as? UntrustedIdentityError {
+        let actionSheet: ActionSheetController
+        if failure.error is ClockSkewError {
+            actionSheet = ActionSheetController(
+                message: OWSLocalizedString(
+                    "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_CLOCK_SKEW_MESSAGE",
+                    comment: "Message for an action sheet shown when sharing fails because the device's date and time are incorrect.",
+                ),
+            )
+            actionSheet.addAction(ActionSheetAction(
+                title: CommonStrings.dismissButton,
+            ))
+        } else if let untrustedIdentityError = failure.error as? UntrustedIdentityError {
             let untrustedServiceId = untrustedIdentityError.serviceId
             let failureFormat = OWSLocalizedString(
                 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
@@ -464,7 +475,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
             }
             let failureMessage = String.nonPluralLocalizedStringWithFormat(failureFormat, displayName)
 
-            let actionSheet = ActionSheetController(title: failureTitle, message: failureMessage)
+            actionSheet = ActionSheetController(title: failureTitle, message: failureMessage)
             actionSheet.addAction(cancelAction)
 
             // Capture the identity key before showing the prompt about it.
@@ -510,18 +521,17 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
             }
             actionSheet.addAction(confirmAction)
 
-            presentActionSheetOnNavigationController(actionSheet)
         } else {
-            let actionSheet = ActionSheetController(title: failureTitle)
+            actionSheet = ActionSheetController(title: failureTitle)
             actionSheet.addAction(cancelAction)
 
             let retryAction = ActionSheetAction(title: CommonStrings.retryButton, style: .default) { [weak self] _ in
                 self?.resendMessages(failure.outgoingMessages)
             }
             actionSheet.addAction(retryAction)
-
-            presentActionSheetOnNavigationController(actionSheet)
         }
+
+        presentActionSheetOnNavigationController(actionSheet)
     }
 
     func resendMessages(_ outgoingMessages: [PreparedOutgoingMessage]) {

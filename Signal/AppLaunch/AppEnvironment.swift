@@ -38,6 +38,7 @@ public class AppEnvironment: NSObject {
     private(set) var badgeManager: BadgeManager!
     private(set) var callLinkProfileKeySharingManager: CallLinkProfileKeySharingManager!
     private(set) var callService: CallService!
+    private var clockSkewMonitoringManager: ClockSkewMonitoringManager!
     private(set) var experienceUpgradeManager: ExperienceUpgradeManager!
     private(set) var groupSendEndorsementExpirationJob: GroupSendEndorsementExpirationJob!
     private(set) var lowDiskSpaceManager: LowDiskSpaceManager!
@@ -134,6 +135,11 @@ public class AppEnvironment: NSObject {
         self.callLinkProfileKeySharingManager = CallLinkProfileKeySharingManager(
             db: DependenciesBridge.shared.db,
             accountManager: DependenciesBridge.shared.tsAccountManager,
+        )
+
+        self.clockSkewMonitoringManager = ClockSkewMonitoringManager(
+            clockSkewManager: DependenciesBridge.shared.clockSkewManager,
+            windowManager: windowManagerRef,
         )
 
         self.experienceUpgradeManager = ExperienceUpgradeManager(
@@ -332,6 +338,7 @@ public class AppEnvironment: NSObject {
         appReadiness.runNowOrWhenAppWillBecomeReady {
             self.badgeManager.startObservingChanges(in: DependenciesBridge.shared.databaseChangeObserver)
             self.appIconBadgeUpdater.startObserving()
+            self.clockSkewMonitoringManager.start()
             self.lowDiskSpaceMonitoringManager.start()
         }
 
