@@ -97,6 +97,9 @@ public class CallUIAdapter: NSObject {
         }
         Logger.info("remoteAddress: \(caller)")
 
+        // make sure we dont have any audio playing as that will bug audio when it interacts with the call service
+        AppEnvironment.shared.cvAudioPlayerRef.pauseAll()
+        
         // make sure we don't terminate audio session during call
         _ = SUIEnvironment.shared.audioSessionRef.startAudioActivity(call.commonState.audioActivity)
 
