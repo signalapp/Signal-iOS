@@ -1409,7 +1409,7 @@ limitations under the License.
 			<key>License</key>
 			<string>Apache License 2.0</string>
 			<key>Title</key>
-			<string>boring 5.0.2</string>
+			<string>boring 5.2.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -1657,7 +1657,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			<key>License</key>
 			<string>Apache License 2.0</string>
 			<key>Title</key>
-			<string>boring-sys 5.0.2</string>
+			<string>boring-sys 5.2.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -1693,7 +1693,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>boring-sys 5.0.2</string>
+			<string>boring-sys 5.2.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -14180,7 +14180,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>tokio-boring 5.0.2</string>
+			<string>tokio-boring 5.2.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
