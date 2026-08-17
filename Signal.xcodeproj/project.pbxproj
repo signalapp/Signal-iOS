@@ -4034,7 +4034,7 @@
 		F9C5CE2A289453B400548EEE /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB58289453B200548EEE /* Platform.swift */; };
 		F9C5CE2B289453B400548EEE /* BuildFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB59289453B200548EEE /* BuildFlags.swift */; };
 		F9C5CE33289453B400548EEE /* LocalDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB61289453B200548EEE /* LocalDevice.swift */; };
-		F9C5CE34289453B400548EEE /* AudioWaveformManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB62289453B200548EEE /* AudioWaveformManagerImpl.swift */; };
+		F9C5CE34289453B400548EEE /* AudioWaveformManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB62289453B200548EEE /* AudioWaveformManager.swift */; };
 		F9C5CE35289453B400548EEE /* DarwinNotificationName.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB63289453B200548EEE /* DarwinNotificationName.swift */; };
 		F9C5CE36289453B400548EEE /* Batching.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB64289453B200548EEE /* Batching.swift */; };
 		F9C5CE37289453B400548EEE /* ProfileBadgeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB66289453B200548EEE /* ProfileBadgeManager.swift */; };
@@ -8420,7 +8420,7 @@
 		F9C5CB58289453B200548EEE /* Platform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		F9C5CB59289453B200548EEE /* BuildFlags.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BuildFlags.swift; sourceTree = "<group>"; };
 		F9C5CB61289453B200548EEE /* LocalDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalDevice.swift; sourceTree = "<group>"; };
-		F9C5CB62289453B200548EEE /* AudioWaveformManagerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioWaveformManagerImpl.swift; sourceTree = "<group>"; };
+		F9C5CB62289453B200548EEE /* AudioWaveformManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioWaveformManager.swift; sourceTree = "<group>"; };
 		F9C5CB63289453B200548EEE /* DarwinNotificationName.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DarwinNotificationName.swift; sourceTree = "<group>"; };
 		F9C5CB64289453B200548EEE /* Batching.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Batching.swift; sourceTree = "<group>"; };
 		F9C5CB66289453B200548EEE /* ProfileBadgeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileBadgeManager.swift; sourceTree = "<group>"; };
@@ -10735,7 +10735,7 @@
 			isa = PBXGroup;
 			children = (
 				669A2FCD2BD9D48800166DB6 /* AudioWaveform.swift */,
-				F9C5CB62289453B200548EEE /* AudioWaveformManagerImpl.swift */,
+				F9C5CB62289453B200548EEE /* AudioWaveformManager.swift */,
 				669A2FCF2BDB068200166DB6 /* AudioWaveformManagerMock.swift */,
 				50BDC3672C88B7FA002294D0 /* AudioWaveformSampler.swift */,
 				50BDC3692C88C2C8002294D0 /* AudioWaveformSamplerTest.swift */,
@@ -19287,7 +19287,7 @@
 				66B78E082BE5AAFC0022580E /* AttachmentViewOnceManagerImpl.swift in Sources */,
 				66B78E112BE5AB360022580E /* AttachmentViewOnceManagerMock.swift in Sources */,
 				669A2FCE2BD9D48800166DB6 /* AudioWaveform.swift in Sources */,
-				F9C5CE34289453B400548EEE /* AudioWaveformManagerImpl.swift in Sources */,
+				F9C5CE34289453B400548EEE /* AudioWaveformManager.swift in Sources */,
 				669A2FD02BDB068200166DB6 /* AudioWaveformManagerMock.swift in Sources */,
 				50BDC3682C88B7FA002294D0 /* AudioWaveformSampler.swift in Sources */,
 				50552C2A2BAB8E7D00815474 /* AuthCredentialManager.swift in Sources */,
