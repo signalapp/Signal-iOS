@@ -2905,7 +2905,6 @@
 		D95C39EC296E1BC600A9DA23 /* PrefixedLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39EB296E1BC600A9DA23 /* PrefixedLogger.swift */; };
 		D95D9D302E56866200855DE4 /* BackupKeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95D9D2F2E56866200855DE4 /* BackupKeyService.swift */; };
 		D95DA7ED28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */; };
-		D9C15C020000000000000003 /* ClockSkewManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C15C020000000000000002 /* ClockSkewManagerTest.swift */; };
 		D95E149D2E3D22FD00B5B70B /* ObjectRetainerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95E149C2E3D22FA00B5B70B /* ObjectRetainerTest.swift */; };
 		D95F6DEF2FEAE6EF00268900 /* DonationPermitFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95F6DEE2FEAE6EB00268900 /* DonationPermitFetcher.swift */; };
 		D96149C72E947CF400EF2147 /* BackupSubscriptionIssueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96149C62E947CEA00EF2147 /* BackupSubscriptionIssueStore.swift */; };
@@ -3259,6 +3258,7 @@
 		D9C0DE022E3F0A0100C0DE01 /* DonationReceiptCredentialResultCodableTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0DE012E3F0A0100C0DE01 /* DonationReceiptCredentialResultCodableTest.swift */; };
 		D9C0DE122E3F0A0100C0DE11 /* PendingMonthlyIDEALDonationCodableTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0DE112E3F0A0100C0DE11 /* PendingMonthlyIDEALDonationCodableTest.swift */; };
 		D9C15C010000000000000003 /* ClockSkewMonitoringManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C15C010000000000000002 /* ClockSkewMonitoringManager.swift */; };
+		D9C15C020000000000000003 /* ClockSkewManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C15C020000000000000002 /* ClockSkewManagerTest.swift */; };
 		D9C2D77E299D750200D79715 /* UsernameEducationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */; };
 		D9C2D780299EC11400D79715 /* CreateUsernameMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */; };
 		D9C2D782299EEDDA00D79715 /* UsernameSelectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */; };
@@ -7260,7 +7260,6 @@
 		D95C39EB296E1BC600A9DA23 /* PrefixedLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefixedLogger.swift; sourceTree = "<group>"; };
 		D95D9D2F2E56866200855DE4 /* BackupKeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupKeyService.swift; sourceTree = "<group>"; };
 		D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+SystemMessageItems.swift"; sourceTree = "<group>"; };
-		D9C15C020000000000000002 /* ClockSkewManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockSkewManagerTest.swift; sourceTree = "<group>"; };
 		D95E149C2E3D22FA00B5B70B /* ObjectRetainerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectRetainerTest.swift; sourceTree = "<group>"; };
 		D95F6DEE2FEAE6EB00268900 /* DonationPermitFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPermitFetcher.swift; sourceTree = "<group>"; };
 		D96149C62E947CEA00EF2147 /* BackupSubscriptionIssueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSubscriptionIssueStore.swift; sourceTree = "<group>"; };
@@ -7620,6 +7619,7 @@
 		D9C0DE012E3F0A0100C0DE01 /* DonationReceiptCredentialResultCodableTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptCredentialResultCodableTest.swift; sourceTree = "<group>"; };
 		D9C0DE112E3F0A0100C0DE11 /* PendingMonthlyIDEALDonationCodableTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingMonthlyIDEALDonationCodableTest.swift; sourceTree = "<group>"; };
 		D9C15C010000000000000002 /* ClockSkewMonitoringManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockSkewMonitoringManager.swift; sourceTree = "<group>"; };
+		D9C15C020000000000000002 /* ClockSkewManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockSkewManagerTest.swift; sourceTree = "<group>"; };
 		D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+BetterIdentifierChecker.swift"; sourceTree = "<group>"; };
 		D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameEducationManager.swift; sourceTree = "<group>"; };
 		D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUsernameMegaphone.swift; sourceTree = "<group>"; };
@@ -14170,6 +14170,14 @@
 			path = ClockSkew;
 			sourceTree = "<group>";
 		};
+		D9C15C020000000000000001 /* ClockSkew */ = {
+			isa = PBXGroup;
+			children = (
+				D9C15C020000000000000002 /* ClockSkewManagerTest.swift */,
+			);
+			path = ClockSkew;
+			sourceTree = "<group>";
+		};
 		D9C2D78529A80BE700D79715 /* ChangePhoneNumber */ = {
 			isa = PBXGroup;
 			children = (
@@ -14935,14 +14943,6 @@
 				F9C5C899289451B900548EEE /* SignalServiceKit.h */,
 			);
 			path = SignalServiceKit;
-			sourceTree = "<group>";
-		};
-		D9C15C020000000000000001 /* ClockSkew */ = {
-			isa = PBXGroup;
-			children = (
-				D9C15C020000000000000002 /* ClockSkewManagerTest.swift */,
-			);
-			path = ClockSkew;
 			sourceTree = "<group>";
 		};
 		F9C5C8A4289451B900548EEE /* tests */ = {
