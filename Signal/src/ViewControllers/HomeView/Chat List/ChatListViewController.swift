@@ -619,7 +619,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 switch viewState.inboxFilter {
                 case .unread:
                     contextMenuActions.append(.disableChatListFilter(target: self))
-                case .none?, nil:
+                case .unfiltered, nil:
                     contextMenuActions.append(.enableChatListFilter(target: self))
                 }
 
@@ -1321,7 +1321,7 @@ extension ChatListViewController {
     }
 
     func disableChatListFilter(_ sender: AnyObject?) {
-        updateChatListFilter(.none)
+        updateChatListFilter(.unfiltered)
         updateBarButtonItems()
 
         tableView.performBatchUpdates {
@@ -1332,9 +1332,10 @@ extension ChatListViewController {
 
     private func updateFilterControl(animated: Bool) {
         guard let filterControl else { return }
-        if viewState.inboxFilter == .unread {
+        switch viewState.inboxFilter {
+        case .unread:
             filterControl.startFiltering(animated: animated)
-        } else {
+        case .unfiltered, nil:
             filterControl.stopFiltering(animated: animated)
         }
     }
@@ -1710,7 +1711,7 @@ extension ChatListViewController: ChatListFilterControlDelegate {
         case .on:
             updateChatListFilter(.unread)
         case .off:
-            updateChatListFilter(.none)
+            updateChatListFilter(.unfiltered)
         }
 
         // Because this happens in response to an interactive gesture, it feels

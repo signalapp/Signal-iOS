@@ -291,7 +291,7 @@ public class CLVLoadCoordinator {
             lastViewInfo: CLVViewInfo,
             transaction: DBReadTransaction,
         ) -> CLVLoadInfo {
-            let inboxFilter = inboxFilter ?? loadCoordinator.filterStore.inboxFilter(transaction: transaction) ?? .none
+            let inboxFilter = inboxFilter ?? loadCoordinator.filterStore.inboxFilter(transaction: transaction) ?? .unfiltered
 
             let viewInfo = CLVViewInfo.build(
                 chatListMode: chatListMode,

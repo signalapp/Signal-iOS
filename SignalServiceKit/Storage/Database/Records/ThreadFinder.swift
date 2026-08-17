@@ -410,7 +410,8 @@ public class ThreadFinder {
         requiredVisibleThreadIds: Set<String> = [],
         transaction: DBReadTransaction,
     ) throws -> [String] {
-        if inboxFilter == .unread {
+        switch inboxFilter {
+        case .unread:
             let sql = """
             SELECT
                 \(threadColumnFullyQualified: .uniqueId) AS thread_uniqueId,
@@ -439,7 +440,8 @@ public class ThreadFinder {
             """
 
             return try String.fetchAll(transaction.database, sql: sql, adapter: RangeRowAdapter(0..<1))
-        } else {
+
+        case .unfiltered, nil:
             let sql = """
             SELECT \(threadColumn: .uniqueId)
             FROM \(TSThread.databaseTableName)

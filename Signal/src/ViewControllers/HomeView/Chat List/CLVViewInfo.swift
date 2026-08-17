@@ -19,7 +19,10 @@ struct CLVViewInfo: Equatable {
     let requiredVisibleThreadIds: Set<String>
 
     var hasArchivedThreadsRow: Bool {
-        chatListMode == .inbox && !isMultiselectActive && inboxFilter == .none && archiveCount > 0
+        chatListMode == .inbox
+            && !isMultiselectActive
+            && inboxFilter == .unfiltered
+            && archiveCount > 0
     }
 
     static var empty: CLVViewInfo {
@@ -27,7 +30,7 @@ struct CLVViewInfo: Equatable {
             chatListMode: .inbox,
             archiveCount: 0,
             inboxCount: 0,
-            inboxFilter: .none,
+            inboxFilter: .unfiltered,
             isMultiselectActive: false,
             hasVisibleReminders: false,
             shouldBackupDownloadProgressViewBeVisible: false,
@@ -48,9 +51,10 @@ struct CLVViewInfo: Equatable {
         transaction: DBReadTransaction,
     ) -> CLVViewInfo {
         do {
-            let requiredThreadIds: Set<String> = if inboxFilter != .none, let lastSelectedThreadId {
+            let requiredThreadIds: Set<String> = switch (inboxFilter, lastSelectedThreadId) {
+            case (.unread, .some(let lastSelectedThreadId)):
                 [lastSelectedThreadId]
-            } else {
+            case (.unread, nil), (.unfiltered, _):
                 []
             }
             let threadFinder = ThreadFinder()
