@@ -300,7 +300,8 @@ class EmojiSkinTonePicker: UIView {
     }
 
     func button(for emoji: EmojiWithSkinTones, handler: @escaping (EmojiWithSkinTones) -> Void) -> UIButton {
-        let button = OWSButton { handler(emoji) }
+        let button = UIButton(type: .custom)
+        button.addAction(UIAction { _ in handler(emoji) }, for: .primaryActionTriggered)
         button.titleLabel?.font = .boldSystemFont(ofSize: 32)
         button.setTitle(emoji.rawValue, for: .normal)
         button.setBackgroundImage(UIImage.image(color: Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray25), for: .selected)
