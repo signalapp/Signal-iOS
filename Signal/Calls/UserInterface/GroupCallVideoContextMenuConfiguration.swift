@@ -91,25 +91,21 @@ enum GroupCallVideoContextMenuConfiguration {
     ) -> [UIAction] {
         var contextMenuActions: [UIAction] = []
 
-        if RemoteConfig.current.isRemoteMuteSendEnabled {
-            let attributes: UIMenuElement.Attributes = isAudioMuted ? .disabled : []
+        contextMenuActions.append(UIAction(
+            title: OWSLocalizedString(
+                "GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO",
+                comment: "Context menu action to mute a call participant's audio.",
+            ),
+            image: .micSlash,
+            attributes: isAudioMuted ? .disabled : [],
+            handler: { [weak ringRtcGroupCall] _ in
+                guard let ringRtcGroupCall else { return }
 
-            contextMenuActions.append(UIAction(
-                title: OWSLocalizedString(
-                    "GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO",
-                    comment: "Context menu action to mute a call participant's audio.",
-                ),
-                image: .micSlash,
-                attributes: attributes,
-                handler: { [weak ringRtcGroupCall] _ in
-                    guard let ringRtcGroupCall else { return }
-
-                    MainActor.assumeIsolated {
-                        ringRtcGroupCall.sendRemoteMuteRequest(demuxId)
-                    }
-                },
-            ))
-        }
+                MainActor.assumeIsolated {
+                    ringRtcGroupCall.sendRemoteMuteRequest(demuxId)
+                }
+            },
+        ))
 
         contextMenuActions.append(UIAction(
             title: OWSLocalizedString(
