@@ -114,21 +114,74 @@ class BackupOnboardingCoordinator {
                     },
                 )
             case .local:
+                let optimizeStorageEnabled = isOptimizeLocalStorageEnabled()
                 introViewController = LocalFileBackupOnboardingIntroViewController(onContinue: { fromViewController in
-                    fromViewController.present(
-                        LocalFileBackupSelectFolderHeroSheetViewController(
-                            onContinue: { [self] in
-                                localFileBackupManager.promptUserToChooseFileLocationForArchiving(fromViewController: fromViewController, completion: { [self] in
-                                    showRecoveryKeyIntro()
-                                })
+                    let presentChooseFile: () -> Void = { [self] in
+                        fromViewController.present(
+                            LocalFileBackupSelectFolderHeroSheetViewController(
+                                onContinue: { [self] in
+                                    localFileBackupManager.promptUserToChooseFileLocationForArchiving(fromViewController: fromViewController, completion: { [self] in
+                                        showRecoveryKeyIntro()
+                                    })
+                                },
+                            ),
+                            animated: true,
+                        )
+                    }
+
+                    if optimizeStorageEnabled {
+                        let actionSheet = ActionSheetController(
+                            message: OWSLocalizedString(
+                                "LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET",
+                                comment: "Warning shown when a user tries to enable local file backups with optimize media enabled",
+                            ),
+                        )
+                        actionSheet.addAction(.init(
+                            title: OWSLocalizedString(
+                                "LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_VIEW_SETTING",
+                                comment: "Action in an action sheet offering to go to the optimize local storage setting.",
+                            ),
+                            handler: { [weak self] _ in
+                                guard let self else { return }
+                                onboardingNavController?.dismiss(animated: true) {
+                                    SignalApp.shared.showAppSettings(mode: .backups(page: .remote()))
+                                }
                             },
-                        ),
-                        animated: true,
-                    )
+                        ))
+                        actionSheet.addAction(.init(
+                            title: OWSLocalizedString(
+                                "LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_CONTINUE",
+                                comment: "Action in an action sheet offering to continue anyway.",
+                            ),
+                            handler: { _ in
+                                presentChooseFile()
+                            },
+                        ))
+                        actionSheet.addAction(.cancel)
+                        fromViewController.present(actionSheet, animated: true)
+                    } else {
+                        presentChooseFile()
+                    }
                 })
             }
             return introViewController
         }
+    }
+
+    private func isOptimizeLocalStorageEnabled() -> Bool {
+        let currentBackupPlan = db.read(block: { tx in backupSettingsStore.backupPlan(tx: tx) })
+        var optimizeLocalStorageEnabled = false
+        switch currentBackupPlan {
+        case .disabled, .disabling, .free:
+            break
+        case .paid(optimizeLocalStorage: let optimizeLocalStorage):
+            optimizeLocalStorageEnabled = optimizeLocalStorage
+        case .paidExpiringSoon(optimizeLocalStorage: let optimizeLocalStorage):
+            optimizeLocalStorageEnabled = optimizeLocalStorage
+        case .paidAsTester(optimizeLocalStorage: let optimizeLocalStorage):
+            optimizeLocalStorageEnabled = optimizeLocalStorage
+        }
+        return optimizeLocalStorageEnabled
     }
 
     // MARK: -

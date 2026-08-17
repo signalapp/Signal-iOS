@@ -5485,6 +5485,24 @@
 /* Title text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
 "LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "Choose a Folder";
 
+/* Warning shown when a user tries to enable local file backups with optimize media enabled */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET" = "You have Optimize Signal Storage on. If you want to include all media in your on-device backup, turn the setting off.";
+
+/* Message for a sheet warning the user about enabling Optimize Storage with local backups enabled. */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_BODY" = "Turning on “Optimize Signal storage“ will offload old media from your device. You can download it again at any time. It will also remove old media from your on-device backup.";
+
+/* Title for a sheet warning the user about enabling Optimize Storage with local backups enabled. */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_TITLE" = "Media Will Be Removed From Your On-Device Backup";
+
+/* Action in a sheet warning the user about enabling Optimize Storage with local backups enabled, that turns on Optimize Storage. */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_TURN_ON" = "Turn on";
+
+/* Action in an action sheet offering to continue anyway. */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_CONTINUE" = "Continue Without Turning Off";
+
+/* Action in an action sheet offering to go to the optimize local storage setting. */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_VIEW_SETTING" = "View Setting";
+
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
 

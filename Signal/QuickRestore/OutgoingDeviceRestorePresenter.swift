@@ -226,13 +226,15 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
                 Task { @MainActor in
                     SignalApp.shared.showAppSettings(
                         mode: .backups(
-                            onAppearAction: .automaticallyStartBackup(
-                                completion: { [weak self] backupSettingsVC in
-                                    guard let self else { return }
-                                    showRestoreReturnSheetAfterBackup(
-                                        presentingViewController: backupSettingsVC,
-                                    )
-                                },
+                            page: .remote(
+                                onAppearAction: .automaticallyStartBackup(
+                                    completion: { [weak self] backupSettingsVC in
+                                        guard let self else { return }
+                                        showRestoreReturnSheetAfterBackup(
+                                            presentingViewController: backupSettingsVC,
+                                        )
+                                    },
+                                ),
                             ),
                         ),
                     )

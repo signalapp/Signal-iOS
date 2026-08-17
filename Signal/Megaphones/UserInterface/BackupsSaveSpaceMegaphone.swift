@@ -34,7 +34,7 @@ class BackupsSaveSpaceMegaphone: Megaphone {
                     comment: "Title for a button on a megaphone encouraging users to subscribe to a paid Backup plan to save on-device storage space, when the user does not yet have Signal Secure Backups enabled.",
                 ),
             action: {
-                SignalApp.shared.showAppSettings(mode: .backups(onAppearAction: .presentBackupPlanUpsell(
+                SignalApp.shared.showAppSettings(mode: .backups(page: .remote(onAppearAction: .presentBackupPlanUpsell(
                     titleTextBuilder: { _ in
                         OWSLocalizedString(
                             "BACKUPS_SAVE_SPACE_UPSELL_TITLE",
@@ -73,7 +73,7 @@ class BackupsSaveSpaceMegaphone: Megaphone {
                             attachmentsConsumingBytesFormatted,
                         )
                     },
-                )))
+                ))))
             },
         )
 

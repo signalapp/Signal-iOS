@@ -41,6 +41,7 @@ class BackupSettingsViewController:
     private let deviceSleepManager: DeviceSleepManager
     private let subscriptionConfigManager: SubscriptionConfigManager
     private let tsAccountManager: TSAccountManager
+    private let localFileBackupStore: LocalFileBackupStore
 
     private var onAppearAction: OnAppearAction?
     private var onBackupComplete: ((UIViewController) -> Void)?
@@ -75,6 +76,7 @@ class BackupSettingsViewController:
             deviceSleepManager: deviceSleepManager,
             subscriptionConfigManager: DependenciesBridge.shared.subscriptionConfigManager,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+            localFileBackupStore: LocalFileBackupStore(),
         )
     }
 
@@ -98,6 +100,7 @@ class BackupSettingsViewController:
         deviceSleepManager: DeviceSleepManager,
         subscriptionConfigManager: SubscriptionConfigManager,
         tsAccountManager: TSAccountManager,
+        localFileBackupStore: LocalFileBackupStore,
     ) {
         owsPrecondition(
             db.read { tsAccountManager.registrationState(tx: $0).isPrimaryDevice == true },
@@ -122,6 +125,7 @@ class BackupSettingsViewController:
         self.deviceSleepManager = deviceSleepManager
         self.subscriptionConfigManager = subscriptionConfigManager
         self.tsAccountManager = tsAccountManager
+        self.localFileBackupStore = localFileBackupStore
 
         self.onAppearAction = onAppearAction
         switch onAppearAction {
@@ -1141,6 +1145,7 @@ class BackupSettingsViewController:
             case showDownloadOffloadedMediaSheet
             case showUpsell
             case warnAboutExpiringMedia(newBackupPlan: BackupPlan)
+            case warnAboutLocalBackups(newBackupPlan: BackupPlan)
         }
 
         let action: Action? = db.write { tx -> Action? in
@@ -1174,6 +1179,10 @@ class BackupSettingsViewController:
                 }
             case .paidAsTester:
                 newBackupPlan = .paidAsTester(optimizeLocalStorage: newValue)
+            }
+
+            if newValue, localFileBackupStore.localBackupsEnabled(tx: tx) {
+                return .warnAboutLocalBackups(newBackupPlan: newBackupPlan)
             }
 
             backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
@@ -1213,6 +1222,8 @@ class BackupSettingsViewController:
             warnAboutExpiringMedia(
                 whileSettingBackupPlanToDisableOptimizeStorage: newBackupPlan,
             )
+        case .warnAboutLocalBackups(let newBackupPlan):
+            warnAboutLocalBackups(newBackupPlan: newBackupPlan)
         }
     }
 
@@ -1290,6 +1301,33 @@ class BackupSettingsViewController:
                     ),
                 ))
                 present(bonusSheet, animated: true)
+            },
+        ))
+        warningSheet.addAction(.cancel)
+        present(warningSheet, animated: true)
+    }
+
+    private func warnAboutLocalBackups(newBackupPlan: BackupPlan) {
+        let warningSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_TITLE",
+                comment: "Title for a sheet warning the user about enabling Optimize Storage with local backups enabled.",
+            ),
+            message: OWSLocalizedString(
+                "LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_BODY",
+                comment: "Message for a sheet warning the user about enabling Optimize Storage with local backups enabled.",
+            ),
+        )
+        warningSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_TURN_ON",
+                comment: "Action in a sheet warning the user about enabling Optimize Storage with local backups enabled, that turns on Optimize Storage.",
+            ),
+            handler: { [weak self] _ in
+                guard let self else { return }
+                db.write { tx in
+                    self.backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
+                }
             },
         ))
         warningSheet.addAction(.cancel)

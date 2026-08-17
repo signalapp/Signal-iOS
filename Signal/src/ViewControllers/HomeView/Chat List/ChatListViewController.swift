@@ -1368,12 +1368,20 @@ extension ChatListViewController: ChatListProxyButtonDelegate {
 
 extension ChatListViewController {
     enum ShowAppSettingsMode {
+        enum BackupSettingsPage {
+            case landingPage
+            case remote(onAppearAction: BackupSettingsViewController.OnAppearAction? = nil)
+            case local
+        }
+
         case payments
         case payment(paymentsHistoryItem: PaymentsHistoryItem)
         case paymentsTransferIn
         case appearance
         case avatarBuilder
-        case backups(onAppearAction: BackupSettingsViewController.OnAppearAction? = nil)
+        case backups(
+            page: BackupSettingsPage = BuildFlags.LocalFileBackups.settingsUI ? .landingPage : .remote(),
+        )
         case corruptedUsernameResolution
         case corruptedUsernameLinkResolution
         case donate(donateMode: DonateViewController.DonateMode)
@@ -1427,11 +1435,12 @@ extension ChatListViewController {
             viewControllers += [profile]
             internalCompletion = { profile.presentAvatarSettingsView() }
 
-        case .backups(let onAppearAction):
+        case .backups(let page):
             let backupSettingsVC: UIViewController
-            if BuildFlags.LocalFileBackups.settingsUI {
+            switch page {
+            case .landingPage:
                 backupSettingsVC = BackupSettingsLandingPageViewController()
-            } else {
+            case .remote(let onAppearAction):
                 let shouldSkipOnboarding = DependenciesBridge.shared.db.read { tx in
                     if BackupSettingsStore().shouldOverrideShowBackupsOnboarding(tx: tx) {
                         return false
@@ -1444,6 +1453,20 @@ extension ChatListViewController {
                 ).prepareForPresentation(
                     inNavController: navigationController,
                     onAppearAction: onAppearAction,
+                    shouldSkipOnboarding: shouldSkipOnboarding,
+                )
+            case .local:
+                let shouldSkipOnboarding = DependenciesBridge.shared.db.read { tx in
+                    if LocalFileBackupStore().shouldOverrideShowLocalBackupsOnboarding(tx: tx) {
+                        return false
+                    }
+                    return LocalFileBackupStore().haveLocalBackupsEverBeenEnabled(tx: tx)
+                }
+
+                backupSettingsVC = BackupOnboardingCoordinator(
+                    backupType: .local,
+                ).prepareForPresentation(
+                    inNavController: navigationController,
                     shouldSkipOnboarding: shouldSkipOnboarding,
                 )
             }

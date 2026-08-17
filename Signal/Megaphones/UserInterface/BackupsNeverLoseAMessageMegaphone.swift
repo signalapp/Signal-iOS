@@ -28,7 +28,7 @@ class BackupsNeverLoseAMessageMegaphone: Megaphone {
                 comment: "Title for a button on a megaphone encouraging users to enable Signal Secure Backups.",
             ),
             action: {
-                SignalApp.shared.showAppSettings(mode: .backups(onAppearAction: nil))
+                SignalApp.shared.showAppSettings(mode: .backups())
             },
         )
 

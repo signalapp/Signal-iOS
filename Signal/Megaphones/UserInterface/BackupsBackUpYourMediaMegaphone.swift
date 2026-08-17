@@ -39,7 +39,7 @@ class BackupsBackUpYourMediaMegaphone: Megaphone {
                 comment: "Title for a button on a megaphone encouraging users to subscribe to a paid Backup plan to back up all their media.",
             ),
             action: {
-                SignalApp.shared.showAppSettings(mode: .backups(onAppearAction: .presentBackupPlanUpsell(
+                SignalApp.shared.showAppSettings(mode: .backups(page: .remote(onAppearAction: .presentBackupPlanUpsell(
                     titleTextBuilder: { _ in
                         OWSLocalizedString(
                             "BACKUPS_BACK_UP_YOUR_MEDIA_UPSELL_TITLE",
@@ -55,7 +55,7 @@ class BackupsBackUpYourMediaMegaphone: Megaphone {
                             storageAllowanceBytesFormatted,
                         )
                     },
-                )))
+                ))))
             },
         )
 
