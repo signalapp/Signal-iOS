@@ -187,10 +187,9 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
         stackView.axis = .horizontal
         stackView.spacing = 16
         stackView.alignment = .center
-        stackView.layer.cornerRadius = 10
-        stackView.backgroundColor = UIColor.Signal.secondaryGroupedBackground
         stackView.layoutMargins = .init(hMargin: 16, vMargin: 21)
         stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.isUserInteractionEnabled = false
 
         let imageView = UIImageView()
         imageView.setTemplateImageName(
@@ -198,8 +197,6 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
             tintColor: .Signal.accent,
         )
         imageView.autoSetDimensions(to: .square(40))
-        imageView.setContentHuggingHigh()
-        imageView.setCompressionResistanceHigh()
         stackView.addArrangedSubview(imageView)
 
         let label = UILabel()
@@ -226,10 +223,16 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
         chevron.setCompressionResistanceHigh()
         stackView.addArrangedSubview(chevron)
 
-        let button = OWSButton(block: action)
-
-        button.dimsWhenHighlighted = true
-        stackView.isUserInteractionEnabled = false
+        let button = UIButton(
+            configuration: .bordered(),
+            primaryAction: UIAction { _ in action() },
+        )
+        button.configuration?.cornerStyle = .large
+        button.configurationUpdateHandler = { button in
+            button.configuration?.baseBackgroundColor = button.isHighlighted
+                ? Theme.tableCell2SelectedBackgroundColor
+                : UIColor.Signal.secondaryGroupedBackground
+        }
         button.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
 
