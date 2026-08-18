@@ -3,18 +3,23 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import SignalServiceKit
+public import Foundation
+public import SignalServiceKit
 import SignalUI
 import SwiftUI
 
 protocol RegistrationRestoreFromBackupConfirmationPresenter: AnyObject {
-    func restoreFromBackupConfirmed()
+    func restoreFromBackupConfirmed(_ backup: RegistrationRestoreFromBackupConfirmationState.AvailableBackup)
     func skipRestoreFromBackup()
     func cancelRestoreFromBackup()
 }
 
 public class RegistrationRestoreFromBackupConfirmationState: ObservableObject, Equatable {
+    public enum AvailableBackup: Equatable {
+        case remote(Date?, UInt64?, RegistrationProvisioningMessage.BackupTier)
+        case local(Date)
+    }
+
     enum Mode {
         case manual
         case quickRestore
@@ -24,21 +29,55 @@ public class RegistrationRestoreFromBackupConfirmationState: ObservableObject, E
         lhs: RegistrationRestoreFromBackupConfirmationState,
         rhs: RegistrationRestoreFromBackupConfirmationState,
     ) -> Bool {
-        lhs.tier == rhs.tier &&
-            lhs.lastBackupDate == rhs.lastBackupDate &&
-            lhs.lastBackupSizeBytes == rhs.lastBackupSizeBytes
+        lhs.availableBackups == rhs.availableBackups
     }
 
     let mode: Mode
-    let tier: RegistrationProvisioningMessage.BackupTier
-    let lastBackupDate: Date?
-    let lastBackupSizeBytes: UInt64?
+    let availableBackups: [AvailableBackup]
 
-    init(mode: Mode, tier: RegistrationProvisioningMessage.BackupTier, lastBackupDate: Date?, lastBackupSizeBytes: UInt64?) {
+    @Published var selectedBackup: AvailableBackup?
+
+    init(
+        mode: Mode,
+        availableBackups: [AvailableBackup],
+    ) {
         self.mode = mode
-        self.tier = tier
-        self.lastBackupDate = lastBackupDate
-        self.lastBackupSizeBytes = lastBackupSizeBytes
+        self.availableBackups = availableBackups.sorted(by: >)
+        self.selectedBackup = self.availableBackups.first
+    }
+}
+
+extension RegistrationRestoreFromBackupConfirmationState.AvailableBackup: Comparable {
+    var date: Date? {
+        switch self {
+        case .remote(let date, _, _): return date
+        case .local(let date): return date
+        }
+    }
+
+    var size: UInt64? {
+        switch self {
+        case .remote(_, let size, _): return size
+        case .local: return nil
+        }
+    }
+
+    var tier: RegistrationProvisioningMessage.BackupTier? {
+        switch self {
+        case .remote(_, _, let tier): return tier
+        case .local: return nil
+        }
+    }
+
+    var pickerIcon: UIImage? {
+        switch self {
+        case .remote: return nil // Not supported
+        case .local: return UIImage(resource: .folder)
+        }
+    }
+
+    public static func <(lhs: Self, rhs: Self) -> Bool {
+        (lhs.date ?? .distantPast) < (rhs.date ?? .distantPast)
     }
 }
 
@@ -65,6 +104,9 @@ class RegistrationRestoreFromBackupConfirmationViewController: OWSViewController
             wrappedView: RegistrationRestoreFromBackupConfirmationView(
                 state: state,
                 presenter: presenter!,
+                onChooseOlderBackup: { [weak self] in
+                    self?.presentBackupPicker()
+                },
             ),
         )
         addChild(hostingController)
@@ -79,6 +121,57 @@ class RegistrationRestoreFromBackupConfirmationViewController: OWSViewController
         hostingController.didMove(toParent: self)
     }
 
+    private func presentBackupPicker() {
+        let backups = state.availableBackups
+        guard !backups.isEmpty else { return }
+
+        let rows: [HeroSheetViewController.Body.SelectableRow] = backups.map { backup in
+            HeroSheetViewController.Body.SelectableRow(
+                icon: backup.pickerIcon,
+                title: backup.date.map { DateUtil.formatPastTimestampRelativeToNow($0.ows_millisecondsSince1970) } ?? "",
+            )
+        }
+
+        let initialSelectedIndex: Int? = backups.firstIndex(where: { $0 == state.selectedBackup })
+        var selectedIndex: Int? = initialSelectedIndex
+
+        let sheet = HeroSheetViewController(
+            hero: .image(UIImage(resource: .backup)),
+            title: OWSLocalizedString(
+                "ONBOARDING_CHOOSE_BACKUP_SHEET_TITLE",
+                comment: "Title for the sheet that lets users pick from available local backups to restore.",
+            ),
+            body: HeroSheetViewController.Body([
+                .text(.plain(OWSLocalizedString(
+                    "ONBOARDING_CHOOSE_BACKUP_SHEET_SUBTITLE",
+                    comment: "Subtitle for the sheet that lets users pick from available local backups to restore.",
+                ))),
+                .selectableList(
+                    rows: rows,
+                    initialSelectedIndex: initialSelectedIndex,
+                    onSelectionChanged: { index in
+                        selectedIndex = index
+                    },
+                ),
+            ]),
+            primary: .button(HeroSheetViewController.Button(
+                title: CommonStrings.continueButton,
+                style: .primary,
+                action: .custom { [weak self] sheet in
+                    if let index = selectedIndex, backups.indices.contains(index) {
+                        self?.state.selectedBackup = backups[index]
+                    }
+                    sheet.dismiss(animated: true)
+                },
+            )),
+            secondary: .button(.dismissing(
+                title: CommonStrings.cancelButton,
+                style: .secondary,
+            )),
+        )
+        present(sheet, animated: true)
+    }
+
     @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -88,13 +181,32 @@ class RegistrationRestoreFromBackupConfirmationViewController: OWSViewController
 struct RegistrationRestoreFromBackupConfirmationView: View {
     @ObservedObject private var state: RegistrationRestoreFromBackupConfirmationState
     weak var presenter: (any RegistrationRestoreFromBackupConfirmationPresenter)?
+    private let onChooseOlderBackup: () -> Void
 
     fileprivate init(
         state: RegistrationRestoreFromBackupConfirmationState,
         presenter: RegistrationRestoreFromBackupConfirmationPresenter,
+        onChooseOlderBackup: @escaping () -> Void,
     ) {
         self.state = state
         self.presenter = presenter
+        self.onChooseOlderBackup = onChooseOlderBackup
+    }
+
+    private var displayedDate: Date? {
+        state.selectedBackup?.date
+    }
+
+    private var displayedSize: UInt64? {
+        state.selectedBackup?.size
+    }
+
+    private var tier: RegistrationProvisioningMessage.BackupTier? {
+        state.selectedBackup?.tier
+    }
+
+    private var canChooseOlderBackup: Bool {
+        state.availableBackups.count > 1
     }
 
     var body: some View {
@@ -127,6 +239,11 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
                 .multilineTextAlignment(.center)
                 .foregroundStyle(Color.Signal.secondaryLabel)
 
+                if canChooseOlderBackup {
+                    chooseOlderBackupButton
+                        .padding(.top, 8)
+                }
+
                 Spacer()
             } else {
                 ScrollView(.vertical, showsIndicators: false) {
@@ -145,7 +262,7 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
                             ),
                         )
 
-                        let backupPeriodString = if state.tier == .free {
+                        let backupPeriodString = if tier == .free {
                             OWSLocalizedString(
                                 "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_FREE",
                                 comment: "Backup content list item describing paid media.",
@@ -164,6 +281,10 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
                     .cornerRadius(10)
                     .padding(.vertical, 12) // add padding after applying the background
                     .padding(.horizontal, 20) // add padding after applying the background
+
+                    if canChooseOlderBackup {
+                        chooseOlderBackupButton
+                    }
                 }
                 .background(Color.Signal.background)
                 .scrollBounceBehaviorIfAvailable(.basedOnSize)
@@ -173,7 +294,11 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
                 "ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION",
                 comment: "Text for action button confirming the restore.",
             )) {
-                presenter?.restoreFromBackupConfirmed()
+                guard let selectedBackup = state.selectedBackup else {
+                    owsFailDebug("No backup selected")
+                    return
+                }
+                presenter?.restoreFromBackupConfirmed(selectedBackup)
             }
             .buttonStyle(Registration.UI.LargePrimaryButtonStyle())
             .dynamicTypeSize(...DynamicTypeSize.accessibility2)
@@ -202,7 +327,7 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
                 comment: "Description for form confirming restore from backup without size detail.",
             )
             if
-                let date = state.lastBackupDate,
+                let date = displayedDate,
                 let formattedDate = DateUtil.dateFormatter.string(for: date),
                 let formattedTime = DateUtil.timeFormatter.string(for: date)
             {
@@ -217,17 +342,48 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
                 comment: "Description for form confirming restore from backup.",
             )
             if
-                let date = state.lastBackupDate,
-                let size = state.lastBackupSizeBytes,
+                let date = displayedDate,
+                let size = displayedSize,
                 let formattedDate = DateUtil.dateFormatter.string(for: date),
                 let formattedTime = DateUtil.timeFormatter.string(for: date)
             {
                 formattedString = String.nonPluralLocalizedStringWithFormat(formattedString, formattedDate, formattedTime, OWSByteCountFormatStyle().format(size))
                 return Text(formattedString)
+            } else if
+                let date = displayedDate,
+                let formattedDate = DateUtil.dateFormatter.string(for: date),
+                let formattedTime = DateUtil.timeFormatter.string(for: date)
+            {
+                var noSizeFormattedString = OWSLocalizedString(
+                    "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE",
+                    comment: "Description for form confirming restore from backup without size detail.",
+                )
+                noSizeFormattedString = String.nonPluralLocalizedStringWithFormat(noSizeFormattedString, formattedDate, formattedTime)
+                return Text(noSizeFormattedString)
             } else {
                 return Text("")
             }
         }
+    }
+
+    private var chooseOlderBackupButton: some View {
+        Button {
+            onChooseOlderBackup()
+        } label: {
+            Text(OWSLocalizedString(
+                "ONBOARDING_CONFIRM_BACKUP_RESTORE_CHOOSE_OLDER_ACTION",
+                comment: "Text for action button that opens a picker to choose an older local backup.",
+            ))
+            .font(.footnote)
+            .foregroundColor(Color.Signal.label)
+            .padding(.vertical, 8)
+            .padding(.horizontal, 16)
+            .background(
+                Capsule().fill(Color.Signal.secondaryFill),
+            )
+        }
+        .buttonStyle(.plain)
+        .dynamicTypeSize(...DynamicTypeSize.accessibility2)
     }
 
     private func secondaryOptionLabel() -> String {
@@ -260,8 +416,8 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
 
 #if DEBUG
 private class PreviewRegistrationRestoreFromBackupConfirmationPresenter: RegistrationRestoreFromBackupConfirmationPresenter {
-    func restoreFromBackupConfirmed() {
-        print("Confirmed")
+    func restoreFromBackupConfirmed(_ backup: RegistrationRestoreFromBackupConfirmationState.AvailableBackup) {
+        print("Confirmed (\(backup))")
     }
 
     func skipRestoreFromBackup() {
@@ -278,9 +434,7 @@ private let presenter = PreviewRegistrationRestoreFromBackupConfirmationPresente
 #Preview("Free") {
     let state = RegistrationRestoreFromBackupConfirmationState(
         mode: .manual,
-        tier: .free,
-        lastBackupDate: Date(),
-        lastBackupSizeBytes: 1234,
+        availableBackups: [.remote(Date(), 1234, .free)],
     )
     RegistrationRestoreFromBackupConfirmationViewController(
         state: state,
@@ -292,9 +446,7 @@ private let presenter = PreviewRegistrationRestoreFromBackupConfirmationPresente
 #Preview("Paid") {
     let state = RegistrationRestoreFromBackupConfirmationState(
         mode: .quickRestore,
-        tier: .paid,
-        lastBackupDate: Date(),
-        lastBackupSizeBytes: 1234,
+        availableBackups: [.remote(Date(), 1234, .paid)],
     )
     RegistrationRestoreFromBackupConfirmationViewController(
         state: state,

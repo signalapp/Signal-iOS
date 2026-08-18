@@ -570,8 +570,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     public func confirmRestoreFromBackup(
         progress: OWSSequentialProgressRootSink<BackupRestoreProgressPhase>,
+        selectedBackup: RegistrationRestoreFromBackupConfirmationState.AvailableBackup,
     ) -> Guarantee<RegistrationStep> {
         inMemoryState.restoreFromBackupProgressSink = progress
+        switch selectedBackup {
+        case .local(let date):
+            inMemoryState.selectedLocalBackupDate = date
+        case .remote:
+            break
+        }
         return Guarantee.wrapAsync { await self.nextStep() }
     }
 
@@ -630,14 +637,24 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 )
 
                 let backupDirectories = contents
-                    .filter { $0.lastPathComponent.hasPrefix("signal-backups-") }
+                    .filter { $0.lastPathComponent.hasPrefix(LocalFileBackupManager.FileStructure.backupDirectoryPrefix) }
                     .sorted { $0.lastPathComponent > $1.lastPathComponent }
 
                 guard !backupDirectories.isEmpty else {
                     throw LocalFileBackupError.unableToAccessLocalFile(.missing)
                 }
 
-                let chosenBackup = backupDirectories[0]
+                let chosenBackup: URL
+                if
+                    let selectedDate = inMemoryState.selectedLocalBackupDate,
+                    let match = backupDirectories.first(where: {
+                        LocalFileBackupManager.FileStructure.date(fromBackupDirectoryName: $0.lastPathComponent) == selectedDate
+                    })
+                {
+                    chosenBackup = match
+                } else {
+                    chosenBackup = backupDirectories[0]
+                }
 
                 fileUrl = chosenBackup.appendingPathComponent(LocalFileBackupManager.FileStructure.backupFile.rawValue)
 
@@ -992,6 +1009,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var usernameReclamationState: UsernameReclamationState = .localUsernameStateNotLoaded
 
         var hasOpenedConnection = false
+
+        /// The specific local backup the user chose to restore, when
+        /// multiple backups exist at the picked location. If `nil`, the most
+        /// recent backup is used.
+        var selectedLocalBackupDate: Date?
     }
 
     private var inMemoryState = InMemoryState()
@@ -1526,6 +1548,43 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         await finish(accountIdentity: accountIdentity)
     }
 
+    private func lastLocalBackupDates(
+        bookmarkData: SecurityScopedBookmark,
+    ) -> [Date] {
+        var isStale = false
+        let backupRootURL: URL
+        do {
+            backupRootURL = try deps.securityScopedBookmarkAccess.urlForBookmarkData(
+                bookmarkData,
+                isStale: &isStale,
+            )
+        } catch {
+            return []
+        }
+
+        if isStale { return [] }
+
+        let hasAccess = deps.securityScopedBookmarkAccess.startAccessToSecurityScopedBookmark(url: backupRootURL)
+        guard hasAccess else { return [] }
+        defer { deps.securityScopedBookmarkAccess.stopAccessToSecurityScopedBookmark(url: backupRootURL) }
+
+        let contents: [URL]
+        do {
+            contents = try FileManager.default.contentsOfDirectory(
+                at: backupRootURL,
+                includingPropertiesForKeys: nil,
+            )
+        } catch {
+            return []
+        }
+
+        return contents
+            .map(\.lastPathComponent)
+            .compactMap(LocalFileBackupManager.FileStructure.date(fromBackupDirectoryName:))
+            .sorted()
+    }
+
+    private typealias AvailableBackup = RegistrationRestoreFromBackupConfirmationState.AvailableBackup
     private func fetchBackupCdnInfo(
         accountEntropyPool: SignalServiceKit.AccountEntropyPool,
         accountIdentity: AccountIdentity,
@@ -1533,13 +1592,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         logger.info("")
 
         do {
-            let lastBackupDate: Date
-            let lastBackupSize: UInt64
-
-            if self.persistedState.localFileBackupURLBookmarkData != nil {
-                // TODO: [KC] actual size & date for local backup.
-                lastBackupDate = Date()
-                lastBackupSize = 0
+            var availableBackups: [AvailableBackup]
+            if let bookmarkData = self.persistedState.localFileBackupURLBookmarkData {
+                let dates = lastLocalBackupDates(bookmarkData: bookmarkData)
+                availableBackups = dates.suffix(2).map { .local($0) }
             } else {
                 // For manual restore, fetch the backup info
                 let backupKey = try MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: accountIdentity.aci)
@@ -1553,15 +1609,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     logger: logger,
                 )
                 self.inMemoryState.backupMetadataHeader = cdnInfo.metadataHeader
-                lastBackupDate = cdnInfo.fileInfo.lastModified
-                lastBackupSize = cdnInfo.fileInfo.contentLength
+                availableBackups = [.remote(cdnInfo.fileInfo.lastModified, cdnInfo.fileInfo.contentLength, .free)]
             }
             return .confirmRestoreFromBackup(
                 RegistrationRestoreFromBackupConfirmationState(
                     mode: .manual,
-                    tier: .free,
-                    lastBackupDate: lastBackupDate,
-                    lastBackupSizeBytes: lastBackupSize,
+                    availableBackups: availableBackups,
                 ),
             )
         } catch {
@@ -1872,12 +1925,24 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         case .remoteBackup, .localBackup:
             // if backup, show the confirmation screen
+            var availableBackups: [AvailableBackup]
+            if
+                persistedState.restoreMethod == .localBackup,
+                let bookmarkData = persistedState.localFileBackupURLBookmarkData
+            {
+                let dates = lastLocalBackupDates(bookmarkData: bookmarkData)
+                availableBackups = dates.suffix(2).map { .local($0) }
+            } else {
+                availableBackups = [.remote(
+                    registrationMessage.backupTimestamp.map(Date.init(millisecondsSince1970:)),
+                    registrationMessage.backupSizeBytes,
+                    registrationMessage.tier ?? .free,
+                )]
+            }
             return .confirmRestoreFromBackup(
                 RegistrationRestoreFromBackupConfirmationState(
                     mode: .quickRestore,
-                    tier: registrationMessage.tier ?? .free,
-                    lastBackupDate: registrationMessage.backupTimestamp.map(Date.init(millisecondsSince1970:)),
-                    lastBackupSizeBytes: registrationMessage.backupSizeBytes,
+                    availableBackups: availableBackups,
                 ),
             )
         case .declined:

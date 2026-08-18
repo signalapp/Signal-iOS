@@ -25,6 +25,8 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
         case backupFile = "main"
         case metadataFile = "metadata"
 
+        public static let backupDirectoryPrefix = "signal-backups-"
+
         static let dateFormatter: DateFormatter = {
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
@@ -32,11 +34,17 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
         }()
 
         static func backupDirectory(date: Date) -> String {
-            return "signal-backups-\(dateFormatter.string(from: date))"
+            return "\(backupDirectoryPrefix)\(dateFormatter.string(from: date))"
         }
 
         static func rootDirectoryInFileLocation(_ fileURL: URL) -> URL {
             return fileURL.appendingPathComponent(rootDirectory.rawValue)
+        }
+
+        public static func date(fromBackupDirectoryName name: String) -> Date? {
+            guard name.hasPrefix(backupDirectoryPrefix) else { return nil }
+            let dateString = String(name.dropFirst(backupDirectoryPrefix.count))
+            return dateFormatter.date(from: dateString)
         }
     }
 
@@ -510,7 +518,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
             )
 
             var sortedBackupDirectories = contents
-                .filter { $0.lastPathComponent.hasPrefix("signal-backups-") }
+                .filter { $0.lastPathComponent.hasPrefix(FileStructure.backupDirectoryPrefix) }
                 .sorted { $0.lastPathComponent > $1.lastPathComponent }
 
             var directoriesToPrune: [URL] = []

@@ -50,6 +50,16 @@ open class HeroSheetViewController: StackSheetViewController {
             }
         }
 
+        public struct SelectableRow {
+            public let icon: UIImage?
+            public let title: String
+
+            public init(icon: UIImage? = nil, title: String) {
+                self.icon = icon
+                self.title = title
+            }
+        }
+
         public struct Toggle {
             public let title: String
             public let footer: String?
@@ -82,6 +92,11 @@ open class HeroSheetViewController: StackSheetViewController {
                 _ points: [BulletPoint],
             )
             case toggle(Toggle)
+            case selectableList(
+                rows: [SelectableRow],
+                initialSelectedIndex: Int?,
+                onSelectionChanged: (Int) -> Void,
+            )
             case customSpacing(CGFloat)
         }
 
@@ -153,6 +168,9 @@ open class HeroSheetViewController: StackSheetViewController {
     private let body: Body
     private let primary: Element?
     private let secondary: Element?
+
+    // Reference so `.selectableList` can adjust the enabled value after selection changes
+    var primaryButton: UIButton?
 
     public init(
         hero: Hero,
@@ -238,6 +256,20 @@ open class HeroSheetViewController: StackSheetViewController {
                 self.stackView.addArrangedSubview(toggleView)
                 self.stackView.setCustomSpacing(32, after: toggleView)
                 previousBodyView = toggleView
+            case let .selectableList(rows, initialSelectedIndex, onSelectionChanged):
+                let listView = viewForSelectableList(
+                    rows: rows,
+                    initialSelectedIndex: initialSelectedIndex,
+                    onSelectionChanged: { [weak self] index in
+                        guard let self else { return }
+                        reloadPrimaryButtonEnabled(updatedSelectedIndex: index)
+                        onSelectionChanged(index)
+                    },
+                    font: body.font,
+                )
+                self.stackView.addArrangedSubview(listView)
+                self.stackView.setCustomSpacing(32, after: listView)
+                previousBodyView = listView
             case let .customSpacing(spacing):
                 if let previousBodyView {
                     self.stackView.setCustomSpacing(spacing, after: previousBodyView)
@@ -249,11 +281,30 @@ open class HeroSheetViewController: StackSheetViewController {
             let primaryButtonView = viewForElement(primary)
             self.stackView.addArrangedSubview(primaryButtonView)
             self.stackView.setCustomSpacing(20, after: primaryButtonView)
+
+            if let primaryButton = primaryButtonView as? UIButton {
+                self.primaryButton = primaryButton
+                reloadPrimaryButtonEnabled()
+            }
         }
 
         if let secondary {
             let secondaryButtonView = viewForElement(secondary)
             self.stackView.addArrangedSubview(secondaryButtonView)
+        }
+    }
+
+    private func reloadPrimaryButtonEnabled(updatedSelectedIndex: Int? = nil) {
+        guard let primaryButton else { return }
+
+        // Disable the primary button while any selectable list is still on
+        // its initial selection. With no selectable list, the button is
+        // always enabled.
+        primaryButton.isEnabled = !body.elements.contains { element in
+            guard case let .selectableList(_, initialSelectedIndex, _) = element else {
+                return false
+            }
+            return (updatedSelectedIndex ?? initialSelectedIndex) == initialSelectedIndex
         }
     }
 
@@ -433,6 +484,117 @@ open class HeroSheetViewController: StackSheetViewController {
             return pillAndFooterContainer
         } else {
             return pillView
+        }
+    }
+
+    private func viewForSelectableList(
+        rows: [Body.SelectableRow],
+        initialSelectedIndex: Int?,
+        onSelectionChanged: @escaping (Int) -> Void,
+        font: UIFont,
+    ) -> UIView {
+        let container = UIView()
+        container.backgroundColor = .Signal.tertiaryBackground
+        container.layer.cornerRadius = OWSTableViewController2.cellRounding
+        container.layer.masksToBounds = true
+
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.alignment = .fill
+        container.addSubview(stack)
+        stack.autoPinEdgesToSuperviewEdges()
+
+        var rowViews: [SelectableListRowView] = []
+        var selectedIndex = initialSelectedIndex
+
+        for (index, row) in rows.enumerated() {
+            let rowView = SelectableListRowView(
+                row: row,
+                isSelected: index == initialSelectedIndex,
+                font: font,
+            )
+            rowView.onTap = { [weak rowView] in
+                guard let rowView else { return }
+                let previousIndex = selectedIndex
+                selectedIndex = index
+                onSelectionChanged(index)
+                if let previousIndex, previousIndex != index, rowViews.indices.contains(previousIndex) {
+                    rowViews[previousIndex].isSelected = false
+                }
+                rowView.isSelected = true
+            }
+            rowViews.append(rowView)
+            stack.addArrangedSubview(rowView)
+
+            if index != rows.count - 1 {
+                stack.addHairline(with: .Signal.tertiaryFill)
+            }
+        }
+
+        return container
+    }
+
+    private final class SelectableListRowView: UIControl {
+        private let iconImageView = UIImageView()
+        private let titleLabel = UILabel()
+        private let checkmarkImageView = UIImageView(
+            image: UIImage(systemName: "checkmark"),
+        )
+
+        var onTap: (() -> Void)?
+
+        override var isSelected: Bool {
+            didSet { checkmarkImageView.isHidden = !isSelected }
+        }
+
+        override var isHighlighted: Bool {
+            didSet {
+                UIView.animate(withDuration: 0.1) {
+                    self.backgroundColor = self.isHighlighted
+                        ? .Signal.tertiaryFill
+                        : .clear
+                }
+            }
+        }
+
+        init(row: Body.SelectableRow, isSelected: Bool, font: UIFont) {
+            super.init(frame: .zero)
+            self.isSelected = isSelected
+
+            iconImageView.image = row.icon
+            iconImageView.tintColor = .Signal.label
+            iconImageView.contentMode = .scaleAspectFit
+            iconImageView.setContentHuggingHigh()
+            iconImageView.setCompressionResistanceHigh()
+
+            titleLabel.text = row.title
+            titleLabel.font = font
+            titleLabel.textColor = .Signal.label
+            titleLabel.numberOfLines = 0
+
+            checkmarkImageView.tintColor = .Signal.label
+            checkmarkImageView.setContentHuggingHigh()
+            checkmarkImageView.setCompressionResistanceHigh()
+            checkmarkImageView.isHidden = !isSelected
+
+            let stack = UIStackView(arrangedSubviews: [iconImageView, titleLabel, checkmarkImageView])
+            stack.axis = .horizontal
+            stack.alignment = .center
+            stack.spacing = 12
+            stack.isUserInteractionEnabled = false
+            addSubview(stack)
+            stack.autoPinEdgesToSuperviewEdges(with: .init(top: 14, leading: 16, bottom: 14, trailing: 16))
+            iconImageView.autoSetDimensions(to: .square(20))
+
+            addTarget(self, action: #selector(handleTap), for: .touchUpInside)
+        }
+
+        @available(*, unavailable)
+        required init?(coder: NSCoder) { fatalError() }
+
+        @objc
+        private func handleTap() {
+            onTap?()
         }
     }
 

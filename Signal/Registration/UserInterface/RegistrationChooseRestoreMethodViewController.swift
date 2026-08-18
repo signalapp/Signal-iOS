@@ -170,6 +170,9 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController, UIDocume
                     .vStretchingSpacer(),
                 ])
             }
+            if BuildFlags.LocalFileBackups.restore {
+                stackView.addArrangedSubview(localFileBackupRestoreButton())
+            }
         case .manualRestore:
             addDefaultTitle(to: stackView)
             let bottomButton = UIButton(
@@ -397,7 +400,7 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController, UIDocume
             return
         }
         let backupDirectories = contents
-            .filter { $0.lastPathComponent.hasPrefix("signal-backups-") }
+            .filter { $0.lastPathComponent.hasPrefix(LocalFileBackupManager.FileStructure.backupDirectoryPrefix) }
 
         let files = contents
             .filter { $0.lastPathComponent == "files" }
