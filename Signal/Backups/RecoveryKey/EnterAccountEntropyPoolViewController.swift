@@ -111,6 +111,11 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
         onTextViewUpdated()
     }
 
+    override func viewIsAppearing(_ animated: Bool) {
+        super.viewIsAppearing(animated)
+        aepTextView.becomeFirstResponder()
+    }
+
     // MARK: -
 
     private lazy var aepTextView = {

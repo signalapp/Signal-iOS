@@ -116,6 +116,13 @@ class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
 
     // MARK: -
 
+    @discardableResult
+    override func becomeFirstResponder() -> Bool {
+        return textView.becomeFirstResponder()
+    }
+
+    // MARK: -
+
     /// The number of rows the text view displays when the entire contents is
     /// visible.
     var rowCount: Int {
