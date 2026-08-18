@@ -90,15 +90,14 @@ class OutgoingDeviceTransferTask {
                     switch message {
                     case .message(let message):
                         try processMessage(message: message, session: session)
-                    case .startResource(let file, let size, let progress):
+                    case .startResource(_, let size, let progress):
                         guard let progress, let size else { return }
-                        Logger.info("Sending file: \(file) [\(size)]")
                         self.throughputMonitor?.progress.addChild(
                             progress,
                             withPendingUnitCount: Int64(clamping: size),
                         )
-                    case .finishResource(let file, _):
-                        Logger.info("Finished sending file: \(file)")
+                    case .finishResource:
+                        break
                     }
                 }
             } catch {

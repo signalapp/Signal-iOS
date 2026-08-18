@@ -322,7 +322,6 @@ class IncomingDeviceTransferTask {
             return owsFailDebug("Received unexpected file on new device: \(fileIdentifier)")
         }
 
-        Logger.info("Receiving file: \(file.identifier), estimatedSize: \(file.estimatedSize)")
         if let progress {
             throughputMonitor?.progress.addChild(progress, withPendingUnitCount: Int64(file.estimatedSize))
         }
@@ -401,7 +400,6 @@ class IncomingDeviceTransferTask {
             return failTransfer(DeviceTransfer.Error.assertion, "Failed to move file into place \(file.identifier)")
         }
 
-        Logger.info("Received file: \(file.identifier)")
         receivedFileIds.update { $0.append(file.identifier) }
     }
 
