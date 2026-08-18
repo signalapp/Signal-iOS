@@ -938,6 +938,7 @@ extension AppSetup.GlobalsContinuation {
         )
 
         let threadDeletionManager = ThreadDeletionManagerImpl(
+            db: db,
             deleteForMeOutgoingSyncMessageManager: deleteForMeOutgoingSyncMessageManager,
             intentsManager: ThreadDeletionManagerImpl.Wrappers.IntentsManager(),
             interactionDeleteManager: interactionDeleteManager,

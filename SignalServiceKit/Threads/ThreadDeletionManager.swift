@@ -48,6 +48,7 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
 
     private typealias SyncMessageContext = DeleteForMeSyncMessage.Outgoing.ThreadDeletionContext
 
+    private let db: any DB
     private let deleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMessageManager
     private let intentsManager: Shims.IntentsManager
     private let interactionDeleteManager: InteractionDeleteManager
@@ -59,6 +60,7 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
     private let logger = PrefixedLogger(prefix: "[ThreadDeleteMgr]")
 
     init(
+        db: any DB,
         deleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMessageManager,
         intentsManager: Shims.IntentsManager,
         interactionDeleteManager: InteractionDeleteManager,
@@ -67,6 +69,7 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
         storyManager: Shims.StoryManager,
         threadReplyInfoStore: ThreadReplyInfoStore,
     ) {
+        self.db = db
         self.deleteForMeOutgoingSyncMessageManager = deleteForMeOutgoingSyncMessageManager
         self.intentsManager = intentsManager
         self.interactionDeleteManager = interactionDeleteManager
@@ -170,9 +173,14 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
 
         pinnedThreadManager.unpinThread(thread, updateStorageService: updateStorageService, tx: tx)
 
-        thread.anyUpdate(transaction: tx) { thread in
-            thread.messageDraft = nil
-            thread.shouldThreadBeVisible = false
+        if shouldHardDeleteThread(thread, localIdentifiers: localIdentifiers) {
+            db.touch(thread: thread, shouldReindex: false, shouldUpdateChatListUi: true, tx: tx)
+            thread.anyRemove(transaction: tx)
+        } else {
+            thread.anyUpdate(transaction: tx) { thread in
+                thread.messageDraft = nil
+                thread.shouldThreadBeVisible = false
+            }
         }
         threadReplyInfoStore.remove(for: thread.uniqueId, tx: tx)
 
@@ -188,6 +196,24 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
         }
 
         intentsManager.deleteAllIntents(withGroupIdentifier: thread.uniqueId)
+    }
+
+    private func shouldHardDeleteThread(_ thread: TSThread, localIdentifiers: LocalIdentifiers) -> Bool {
+        switch thread {
+        case let thread as TSGroupThread:
+            if !thread.isTerminatedGroup {
+                let groupMembership = thread.groupModel.groupMembership
+                if groupMembership.isMemberOfAnyKind(localIdentifiers.aci) {
+                    return false
+                }
+                if let pni = localIdentifiers.pni, groupMembership.isMemberOfAnyKind(pni) {
+                    return false
+                }
+            }
+            return BuildFlags.hardDeleteGroupThreads
+        default:
+            return false
+        }
     }
 
     private func removeAllInteractions(
