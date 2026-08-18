@@ -695,55 +695,8 @@ public class InteractionFinder: NSObject {
         }
     }
 
-    /// Do we have any messages to mark read in this thread before a given sort ID?
-    ///
-    /// See also: ``fetchUnreadMessages`` and ``fetchMessagesWithUnreadReactions``.
-    public func hasMessagesToMarkRead(
-        beforeSortId: UInt64,
-        transaction: DBReadTransaction,
-    ) -> Bool {
-        let hasUnreadMessages = (try? Bool.fetchOne(
-            transaction.database,
-            sql: """
-            SELECT 1
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .id) <= ?
-            AND \(Self.sqlClauseForAllUnreadInteractions())
-            LIMIT 1
-            """,
-            arguments: [threadUniqueId, beforeSortId],
-        )) ?? false
-
-        if hasUnreadMessages {
-            return true
-        }
-
-        let hasOutgoingMessagesWithUnreadReactions = (try? Bool.fetchOne(
-            transaction.database,
-            sql: """
-            SELECT 1
-            FROM \(InteractionRecord.databaseTableName) AS interaction
-            \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
-            INNER JOIN \(OWSReaction.databaseTableName) AS reaction
-                ON interaction.\(interactionColumn: .uniqueId) = reaction.\(OWSReaction.columnName(.uniqueMessageId))
-                AND reaction.\(OWSReaction.columnName(.read)) IS 0
-            WHERE interaction.\(interactionColumn: .recordType) IS \(SDSRecordType.outgoingMessage.rawValue)
-            AND interaction.\(interactionColumn: .threadUniqueId) = ?
-            AND interaction.\(interactionColumn: .id) <= ?
-            LIMIT 1
-            """,
-            arguments: [threadUniqueId, beforeSortId],
-        )) ?? false
-
-        return hasOutgoingMessagesWithUnreadReactions
-    }
-
     /// Enumerates all the unread interactions in this thread before a given sort id,
     /// sorted by sort id.
-    ///
-    /// See also: ``hasMessagesToMarkRead``.
     public func fetchUnreadMessages(
         beforeSortId: UInt64,
         tx: DBReadTransaction,
@@ -769,8 +722,6 @@ public class InteractionFinder: NSObject {
 
     /// Returns all the messages with unread reactions in this thread before a given sort id,
     /// sorted by sort id.
-    ///
-    /// See also: ``hasMessagesToMarkRead``.
     public func fetchMessagesWithUnreadReactions(
         beforeSortId: UInt64,
         tx: DBReadTransaction,
