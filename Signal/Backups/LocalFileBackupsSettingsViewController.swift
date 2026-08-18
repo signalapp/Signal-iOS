@@ -196,15 +196,27 @@ class LocalFileBackupsSettingsViewController: OWSTableViewController2 {
                 actionBlock: { [weak self] in
                     guard let self else { return }
 
-                    localFileBackupManager.promptUserToChooseFileLocationForArchiving(fromViewController: self, completion: {
-                        self.presentToast(
-                            text: OWSLocalizedString(
-                                "SETTINGS_LOCAL_FILE_BACKUP_FOLDER_UPDATED",
-                                comment: "Text for a toast confirming the user changed their local file backup location.",
-                            ),
-                            image: .checkCircle,
-                        )
-                    })
+                    present(
+                        LocalFileBackupSelectFolderHeroSheetViewController(
+                            onContinue: { [weak self] in
+                                guard let self else { return }
+                                localFileBackupManager.promptUserToChooseFileLocationForArchiving(
+                                    fromViewController: self,
+                                    completion: { [weak self] in
+                                        self?.presentToast(
+                                            text: OWSLocalizedString(
+                                                "SETTINGS_LOCAL_FILE_BACKUP_FOLDER_UPDATED",
+                                                comment: "Text for a toast confirming the user changed their local file backup location.",
+                                            ),
+                                            image: .checkCircle,
+                                        )
+                                        self?.lastLocalBackupDetailsDidChange()
+                                    },
+                                )
+                            },
+                        ),
+                        animated: true,
+                    )
                 },
             ))
         }
