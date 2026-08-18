@@ -23,21 +23,11 @@ class MockDeletedCallRecordStore: DeletedCallRecordStore {
         deletedCallRecords.append(deletedCallRecord)
     }
 
-    var deleteMock: ((DeletedCallRecord) -> Void)?
     func delete(expiredDeletedCallRecord: DeletedCallRecord, tx: DBWriteTransaction) {
-        if let deleteMock {
-            deleteMock(expiredDeletedCallRecord)
-        }
-
         _ = deletedCallRecords.removeFirst { expiredDeletedCallRecord.matches($0) }
     }
 
-    var nextDeletedRecordMock: (() -> DeletedCallRecord?)?
     func nextDeletedRecord(tx: DBReadTransaction) -> DeletedCallRecord? {
-        if let nextDeletedRecordMock {
-            return nextDeletedRecordMock()
-        }
-
         return deletedCallRecords.min(by: { $0.deletedAtTimestamp < $1.deletedAtTimestamp })
     }
 
