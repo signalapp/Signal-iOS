@@ -578,7 +578,7 @@
 "BACKUP_CONFIRM_KEY_PW_MGR_SHEET_CONFIRM_BUTTON_TITLE" = "Potwierdź kod odzyskiwania";
 
 /* Message for a sheet shown to confirm the user's Recovery Key after it was saved to their password manager. */
-"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_MESSAGE" = "Sprawdź poprawność zapisanego kodu odzyskiwania. W następnym kroku poprosimy Cię o podanie zapisanego kodu.";
+"BACKUP_CONFIRM_KEY_PW_MGR_SHEET_MESSAGE" = "Sprawdź, czy kod odzyskiwania został zapisany. W następnym kroku poprosimy Cię o podanie zapisanego kodu.";
 
 /* Title for a button that returns the user to view their Recovery Key, in a sheet shown after it was saved to their password manager. */
 "BACKUP_CONFIRM_KEY_PW_MGR_SHEET_SEE_KEY_AGAIN_BUTTON_TITLE" = "Wyświetl kod ponownie";
@@ -1055,7 +1055,7 @@
 "BACKUP_SETTINGS_LANDING_PAGE_SUBTITLE" = "Twórz kopie zapasowe wiadomości, aby ich nie stracić, nawet gdy zmienisz telefon lub ponownie zainstalujesz aplikację Signal.";
 
 /* Button to begin setting up Signal Secure Backups on the Backups settings landing page. */
-"BACKUP_SETTINGS_LANDING_SET_UP_BUTTON" = "Ustaw";
+"BACKUP_SETTINGS_LANDING_SET_UP_BUTTON" = "Skonfiguruj";
 
 /* Description of Signal Secure Backups on the Backups settings landing page. */
 "BACKUP_SETTINGS_LANDING_SIGNAL_BACKUPS_BODY" = "Automatyczne tworzenie kopii zapasowych w bezpiecznej usłudze przechowywania Signal z szyfrowaniem end-to-end.";
@@ -7709,7 +7709,7 @@
 "RAISED_HANDS_LOWER_HAND_BUTTON" = "Opuść";
 
 /* A message appearing on the call view's raised hands toast suggesting the local user lower their hand because they have been speaking with it raised. */
-"RAISED_HANDS_TOAST_LOWER_YOUR_HAND_SUGGESTION" = "Lower your hand?";
+"RAISED_HANDS_TOAST_LOWER_YOUR_HAND_SUGGESTION" = "Opuścić rękę?";
 
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
 "RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ podnosi rękę";
@@ -10328,7 +10328,7 @@
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Nie masz tej osoby w kontaktach. Czy chcesz ją zablokować?";
 
 /* Title shown for a group when it's name isn't known. Visible for blocked groups whose name isn't known. */
-"UNKNOWN_GROUP" = "Unknown Group";
+"UNKNOWN_GROUP" = "Nieznana grupa";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Z jednego z Twoich urządzeń wysłano wiadomość, która nie może zostać przetworzona lub wyświetlona, ponieważ wykorzystuje nową funkcję Signal.";

@@ -7709,7 +7709,7 @@
 "RAISED_HANDS_LOWER_HAND_BUTTON" = "خفض اليد";
 
 /* A message appearing on the call view's raised hands toast suggesting the local user lower their hand because they have been speaking with it raised. */
-"RAISED_HANDS_TOAST_LOWER_YOUR_HAND_SUGGESTION" = "Lower your hand?";
+"RAISED_HANDS_TOAST_LOWER_YOUR_HAND_SUGGESTION" = "هل تريد خفض يدك؟";
 
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
 "RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ رفعَ يده";
@@ -10328,7 +10328,7 @@
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "إن المُستخدم ليس ضمن جهات اتصالك. هل تود حظر هذا المُستخدم؟";
 
 /* Title shown for a group when it's name isn't known. Visible for blocked groups whose name isn't known. */
-"UNKNOWN_GROUP" = "Unknown Group";
+"UNKNOWN_GROUP" = "مجموعة غير معروفة";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "أرسَلَ أحد أجهزتك رسالة لا يُمكن مُعالجتها أو عرضها هُنا لأنها تستخدم ميزة جديدة في سيجنال.";

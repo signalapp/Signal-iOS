@@ -1,1 +1,1 @@
-• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.
+• Ми додали зручне сполучення клавіш, щоб ви могли швидко опустити руку під час групового виклику в Signal, коли вже почали говорити. Надіємося, ця функція зіграє вам на руку.

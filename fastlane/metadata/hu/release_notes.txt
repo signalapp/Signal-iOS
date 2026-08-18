@@ -1,1 +1,1 @@
-• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.
+• Hozzáadtunk egy kényelmes gyorsbillentyűt, amellyel gyorsan leengedheted a kezedet, miután elkezdtél beszélni egy csoportos Signal hívás során.

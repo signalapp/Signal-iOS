@@ -149,7 +149,7 @@
 "ALERT_SAVE" = "저장";
 
 /* Message for UI warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "이 사용자와 함께 소속된 그룹이 없습니다. 원치 않는 메시지를 받지 않도록, 수락하기 전에 요청 내용을 꼼꼼히 확인하세요.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "해당 사용자와 공유하는 그룹이 없습니다. 원치 않는 메시지를 받지 않도록 수락 전 요청 내용을 신중하게 확인해 주세요.";
 
 /* Message for UI warning about an unknown group thread. */
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "이 그룹에는 공통으로 알고 있는 멤버가 없습니다. 원치 않는 메시지를 받지 않도록, 수락하기 전에 요청 내용을 꼼꼼히 확인하세요.";
@@ -6971,13 +6971,13 @@
 "PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "알 수 없는 결제";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "결제를 보내려면 이 사용자가 내 메시지 요청을 수락해야 합니다.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "해당 사용자에게 송금하려면 먼저 메시지 요청이 수락되어야 합니다.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "결제를 보내려면 이 사용자가 내 메시지 요청을 수락해야 합니다. 메시지를 전송하여 메시지 요청을 생성하세요.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "해당 사용자에게 송금하려면 먼저 메시지 요청이 수락되어야 합니다. 메시지를 전송하여 메시지 요청을 생성하세요.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "결제를 전송할 수 없음";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "송금할 수 없음";
 
 /* The label for the 'send request' button in alerts and action sheets. */
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "요청 보내기";
@@ -7709,7 +7709,7 @@
 "RAISED_HANDS_LOWER_HAND_BUTTON" = "손 내리기";
 
 /* A message appearing on the call view's raised hands toast suggesting the local user lower their hand because they have been speaking with it raised. */
-"RAISED_HANDS_TOAST_LOWER_YOUR_HAND_SUGGESTION" = "Lower your hand?";
+"RAISED_HANDS_TOAST_LOWER_YOUR_HAND_SUGGESTION" = "손을 내릴까요?";
 
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
 "RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@님이 손을 들었습니다.";
@@ -9596,7 +9596,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "등록 잠금";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Signal에 전화번호를 다시 등록하려면 Signal PIN이 필요합니다.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Signal에 전화번호를 다시 등록할 때 Signal PIN을 입력하도록 설정합니다.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "메시지 입력 중 표시";
@@ -10328,7 +10328,7 @@
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "연락처에 없는 사용자입니다. 이 사용자를 차단할까요?";
 
 /* Title shown for a group when it's name isn't known. Visible for blocked groups whose name isn't known. */
-"UNKNOWN_GROUP" = "Unknown Group";
+"UNKNOWN_GROUP" = "알 수 없는 그룹";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "내 기기 중 하나에서 새 Signal 기능을 사용한 메시지를 보냈기에 여기에서는 처리되거나 표시할 수 없습니다.";

@@ -1187,9 +1187,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d foto</string>
+			<string>%1$d afbeelding</string>
 			<key>other</key>
-			<string>%1$d foto&apos;s</string>
+			<string>%1$d afbeeldingen</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>

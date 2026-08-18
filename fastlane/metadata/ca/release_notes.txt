@@ -1,1 +1,1 @@
-• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.
+• Hem afegit una funció d'allò més pràctica perquè, durant una trucada de grup de Signal, puguis baixar ràpidament la mà un cop comencis a parlar.

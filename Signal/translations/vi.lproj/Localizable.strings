@@ -7709,7 +7709,7 @@
 "RAISED_HANDS_LOWER_HAND_BUTTON" = "Hạ Tay";
 
 /* A message appearing on the call view's raised hands toast suggesting the local user lower their hand because they have been speaking with it raised. */
-"RAISED_HANDS_TOAST_LOWER_YOUR_HAND_SUGGESTION" = "Lower your hand?";
+"RAISED_HANDS_TOAST_LOWER_YOUR_HAND_SUGGESTION" = "Bạn muốn hạ tay?";
 
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
 "RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ giơ tay";
@@ -10328,7 +10328,7 @@
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Người dùng không có trong danh bạ của bạn. Bạn có muốn chặn người này không?";
 
 /* Title shown for a group when it's name isn't known. Visible for blocked groups whose name isn't known. */
-"UNKNOWN_GROUP" = "Unknown Group";
+"UNKNOWN_GROUP" = "Nhóm chưa biết";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Một trong các thiết bị của bạn đã gửi một tin nhắn nhưng không thể xử lý và hiển thị ở đây vì tin nhắn này dùng một tính năng mới của Signal.";
