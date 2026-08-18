@@ -749,6 +749,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 let deviceCount = localRecipient?.deviceIds.count ?? 0
                 let linkedDeviceMessage = deviceCount > 1 ? "\(deviceCount) devices including the primary" : "no linked devices"
                 Logger.info("localAci: \(localIdentifiers.aci), deviceId: \(deviceId) (\(linkedDeviceMessage))")
+            } else {
+                Logger.info("localAcI: not yet registered!")
             }
         }
 
