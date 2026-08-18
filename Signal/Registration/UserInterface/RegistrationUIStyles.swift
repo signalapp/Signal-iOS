@@ -47,10 +47,6 @@ extension Registration {
             }
         }
 
-        private static func primaryButtonForegroundColor() -> Color {
-            return .white
-        }
-
         private static func secondaryButtonForegroundColor() -> Color {
             if #available(iOS 26, *) {
                 return .Signal.label
@@ -60,6 +56,8 @@ extension Registration {
         }
 
         struct LargePrimaryButtonStyle: PrimitiveButtonStyle {
+            @Environment(\.isEnabled) private var isEnabled
+
             @ViewBuilder
             func makeBody(configuration: Configuration) -> some View {
                 Button(action: configuration.trigger) {
@@ -67,7 +65,7 @@ extension Registration {
                         Spacer()
                         configuration.label
                             .font(.headline)
-                            .foregroundColor(UI.primaryButtonForegroundColor())
+                            .foregroundColor(isEnabled ? .white : .black)
                         Spacer()
                     }
                     .padding(UI.largeButtonContentPadding)
