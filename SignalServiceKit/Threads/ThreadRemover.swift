@@ -5,17 +5,13 @@
 
 import Foundation
 
-/// Responsible for hard-deleting a thread. This is an exceptional action:
-/// threads are typically "soft-deleted" by removing their contents and metadata
-/// without deleting the ``TSThread`` database record itself. Hard-deletion is
-/// only appropriate for scenarios in which we know a thread will be truly
-/// *gone forever*; for example, when two threads are merged.
+/// Responsible for hard-deleting a thread.
 ///
-/// If you're looking to colloquially "delete a thread", e.g. in response to a
-/// user action, you probably want ``ThreadDeletionManager``.
+/// This type is an implementation detail; if you're looking to colloquially
+/// "delete a thread", e.g. in response to a user action, you probably want
+/// ``ThreadDeletionManager``.
 public protocol ThreadRemover {
-    func remove(_ thread: TSContactThread, tx: DBWriteTransaction)
-    func remove(_ thread: TSPrivateStoryThread, tx: DBWriteTransaction)
+    func remove(_ thread: TSThread, tx: DBWriteTransaction)
 }
 
 class ThreadRemoverImpl: ThreadRemover {
@@ -26,7 +22,6 @@ class ThreadRemoverImpl: ThreadRemover {
     private let threadAssociatedDataStore: ThreadAssociatedDataStore
     private let threadReadCache: Shims.ThreadReadCache
     private let threadReplyInfoStore: ThreadReplyInfoStore
-    private let threadDeletionManager: ThreadDeletionManager
     private let threadStore: ThreadStore
     private let wallpaperStore: WallpaperStore
 
@@ -38,7 +33,6 @@ class ThreadRemoverImpl: ThreadRemover {
         threadAssociatedDataStore: ThreadAssociatedDataStore,
         threadReadCache: Shims.ThreadReadCache,
         threadReplyInfoStore: ThreadReplyInfoStore,
-        threadDeletionManager: ThreadDeletionManager,
         threadStore: ThreadStore,
         wallpaperStore: WallpaperStore,
     ) {
@@ -49,20 +43,13 @@ class ThreadRemoverImpl: ThreadRemover {
         self.threadAssociatedDataStore = threadAssociatedDataStore
         self.threadReadCache = threadReadCache
         self.threadReplyInfoStore = threadReplyInfoStore
-        self.threadDeletionManager = threadDeletionManager
         self.threadStore = threadStore
         self.wallpaperStore = wallpaperStore
     }
 
-    func remove(_ thread: TSContactThread, tx: DBWriteTransaction) { removeAny(thread, tx: tx) }
-
-    func remove(_ thread: TSPrivateStoryThread, tx: DBWriteTransaction) { removeAny(thread, tx: tx) }
-
-    private func removeAny(_ thread: TSThread, tx: DBWriteTransaction) {
+    func remove(_ thread: TSThread, tx: DBWriteTransaction) {
         chatColorSettingStore.setRawSetting(nil, for: thread.uniqueId, tx: tx)
         databaseStorage.updateIdMapping(thread: thread, tx: tx)
-        // No sync message, since hard-delete is a local-only concept.
-        threadDeletionManager.removeAllInteractions(thread: thread, deleteForMeSyncMessagePolicy: nil, tx: tx)
         disappearingMessagesConfigurationStore.remove(for: thread, tx: tx)
         threadAssociatedDataStore.remove(for: thread.uniqueId, tx: tx)
         threadReplyInfoStore.remove(for: thread.uniqueId, tx: tx)

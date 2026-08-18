@@ -2171,12 +2171,13 @@ class StorageServiceOperation {
     private func buildStoryDistributionListUpdater() -> MultipleElementStateUpdater<StorageServiceStoryDistributionListRecordUpdater> {
         return MultipleElementStateUpdater(
             recordUpdater: StorageServiceStoryDistributionListRecordUpdater(
+                localIdentifiers: localIdentifiers,
                 privateStoryThreadDeletionManager: DependenciesBridge.shared.privateStoryThreadDeletionManager,
                 recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
                 recipientFetcher: DependenciesBridge.shared.recipientFetcher,
                 storyRecipientManager: DependenciesBridge.shared.storyRecipientManager,
                 storyRecipientStore: DependenciesBridge.shared.storyRecipientStore,
-                threadRemover: DependenciesBridge.shared.threadRemover,
+                threadDeletionManager: DependenciesBridge.shared.threadDeletionManager,
             ),
             changeState: \.storyDistributionListChangeMap,
             storageIdentifier: \.storyDistributionListIdentifierToStorageIdentifierMap,

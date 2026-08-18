@@ -61,7 +61,6 @@ final class ThreadMergerTest: XCTestCase {
             threadAssociatedDataStore: threadAssociatedDataStore,
             threadReadCache: ThreadRemover_MockThreadReadCache(),
             threadReplyInfoStore: threadReplyInfoStore,
-            threadDeletionManager: MockThreadDeletionManager(),
             threadStore: threadStore,
             wallpaperStore: wallpaperStore,
         )

@@ -185,7 +185,6 @@ public class DependenciesBridge {
     public let subscriptionConfigManager: SubscriptionConfigManager
     public let svrLocalStorage: SVRLocalStorage
     public let threadAssociatedDataStore: ThreadAssociatedDataStore
-    public let threadRemover: ThreadRemover
     public let threadReplyInfoStore: ThreadReplyInfoStore
     public let threadDeletionManager: ThreadDeletionManager
     public let threadStore: ThreadStore
@@ -336,7 +335,6 @@ public class DependenciesBridge {
         svrAuthCredentialManager: SVRAuthCredentialManager,
         svrLocalStorage: SVRLocalStorage,
         threadAssociatedDataStore: ThreadAssociatedDataStore,
-        threadRemover: ThreadRemover,
         threadReplyInfoStore: ThreadReplyInfoStore,
         threadDeletionManager: ThreadDeletionManager,
         threadStore: ThreadStore,
@@ -487,7 +485,6 @@ public class DependenciesBridge {
         self.svrAuthCredentialManager = svrAuthCredentialManager
         self.svrLocalStorage = svrLocalStorage
         self.threadAssociatedDataStore = threadAssociatedDataStore
-        self.threadRemover = threadRemover
         self.threadReplyInfoStore = threadReplyInfoStore
         self.threadDeletionManager = threadDeletionManager
         self.threadStore = threadStore

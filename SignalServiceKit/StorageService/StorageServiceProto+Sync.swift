@@ -2075,27 +2075,31 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
     typealias IdType = Data
     typealias RecordType = StorageServiceProtoStoryDistributionListRecord
 
+    private let localIdentifiers: LocalIdentifiers
+
     private let privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientFetcher: RecipientFetcher
     private let storyRecipientManager: StoryRecipientManager
     private let storyRecipientStore: StoryRecipientStore
-    private let threadRemover: any ThreadRemover
+    private let threadDeletionManager: any ThreadDeletionManager
 
     init(
+        localIdentifiers: LocalIdentifiers,
         privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         storyRecipientManager: StoryRecipientManager,
         storyRecipientStore: StoryRecipientStore,
-        threadRemover: any ThreadRemover,
+        threadDeletionManager: any ThreadDeletionManager,
     ) {
+        self.localIdentifiers = localIdentifiers
         self.privateStoryThreadDeletionManager = privateStoryThreadDeletionManager
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
         self.storyRecipientManager = storyRecipientManager
         self.storyRecipientStore = storyRecipientStore
-        self.threadRemover = threadRemover
+        self.threadDeletionManager = threadDeletionManager
     }
 
     func unknownFields(for record: StorageServiceProtoStoryDistributionListRecord) -> UnknownStorage? { record.unknownFields }
@@ -2173,7 +2177,13 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
             }
 
             if let existingStory {
-                threadRemover.remove(existingStory, tx: transaction)
+                threadDeletionManager.deleteThreads(
+                    [existingStory],
+                    sendDeleteForMeSyncMessage: false,
+                    updateStorageService: false,
+                    localIdentifiers: localIdentifiers,
+                    tx: transaction,
+                )
             }
             privateStoryThreadDeletionManager.recordDeletedAtTimestamp(
                 record.deletedAtTimestamp,

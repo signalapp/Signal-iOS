@@ -55,6 +55,7 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
     private let pinnedThreadManager: any PinnedThreadManager
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let storyManager: Shims.StoryManager
+    private let threadRemover: any ThreadRemover
     private let threadReplyInfoStore: ThreadReplyInfoStore
 
     private let logger = PrefixedLogger(prefix: "[ThreadDeleteMgr]")
@@ -67,6 +68,7 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
         pinnedThreadManager: any PinnedThreadManager,
         recipientDatabaseTable: RecipientDatabaseTable,
         storyManager: Shims.StoryManager,
+        threadRemover: any ThreadRemover,
         threadReplyInfoStore: ThreadReplyInfoStore,
     ) {
         self.db = db
@@ -76,6 +78,7 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
         self.pinnedThreadManager = pinnedThreadManager
         self.recipientDatabaseTable = recipientDatabaseTable
         self.storyManager = storyManager
+        self.threadRemover = threadRemover
         self.threadReplyInfoStore = threadReplyInfoStore
     }
 
@@ -174,15 +177,14 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
         pinnedThreadManager.unpinThread(thread, updateStorageService: updateStorageService, tx: tx)
 
         if shouldHardDeleteThread(thread, localIdentifiers: localIdentifiers) {
-            db.touch(thread: thread, shouldReindex: false, shouldUpdateChatListUi: true, tx: tx)
-            thread.anyRemove(transaction: tx)
+            threadRemover.remove(thread, tx: tx)
         } else {
             thread.anyUpdate(transaction: tx) { thread in
                 thread.messageDraft = nil
                 thread.shouldThreadBeVisible = false
             }
+            threadReplyInfoStore.remove(for: thread.uniqueId, tx: tx)
         }
-        threadReplyInfoStore.remove(for: thread.uniqueId, tx: tx)
 
         if
             let contactThread = thread as? TSContactThread,
@@ -211,6 +213,8 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
                 }
             }
             return BuildFlags.hardDeleteGroupThreads
+        case is TSPrivateStoryThread:
+            return true
         default:
             return false
         }

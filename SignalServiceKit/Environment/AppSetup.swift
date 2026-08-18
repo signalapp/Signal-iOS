@@ -937,6 +937,18 @@ extension AppSetup.GlobalsContinuation {
             threadStore: threadStore,
         )
 
+        let threadRemover = ThreadRemoverImpl(
+            chatColorSettingStore: chatColorSettingStore,
+            databaseStorage: ThreadRemoverImpl.Wrappers.DatabaseStorage(databaseStorage),
+            disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
+            lastVisibleInteractionStore: lastVisibleInteractionStore,
+            threadAssociatedDataStore: threadAssociatedDataStore,
+            threadReadCache: ThreadRemoverImpl.Wrappers.ThreadReadCache(modelReadCaches.threadReadCache),
+            threadReplyInfoStore: threadReplyInfoStore,
+            threadStore: threadStore,
+            wallpaperStore: wallpaperStore,
+        )
+
         let threadDeletionManager = ThreadDeletionManagerImpl(
             db: db,
             deleteForMeOutgoingSyncMessageManager: deleteForMeOutgoingSyncMessageManager,
@@ -945,6 +957,7 @@ extension AppSetup.GlobalsContinuation {
             pinnedThreadManager: pinnedThreadManager,
             recipientDatabaseTable: recipientDatabaseTable,
             storyManager: ThreadDeletionManagerImpl.Wrappers.StoryManager(),
+            threadRemover: threadRemover,
             threadReplyInfoStore: threadReplyInfoStore,
         )
 
@@ -966,19 +979,6 @@ extension AppSetup.GlobalsContinuation {
             recipientDatabaseTable: recipientDatabaseTable,
             threadDeletionManager: threadDeletionManager,
             threadStore: threadStore,
-        )
-
-        let threadRemover = ThreadRemoverImpl(
-            chatColorSettingStore: chatColorSettingStore,
-            databaseStorage: ThreadRemoverImpl.Wrappers.DatabaseStorage(databaseStorage),
-            disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
-            lastVisibleInteractionStore: lastVisibleInteractionStore,
-            threadAssociatedDataStore: threadAssociatedDataStore,
-            threadReadCache: ThreadRemoverImpl.Wrappers.ThreadReadCache(modelReadCaches.threadReadCache),
-            threadReplyInfoStore: threadReplyInfoStore,
-            threadDeletionManager: threadDeletionManager,
-            threadStore: threadStore,
-            wallpaperStore: wallpaperStore,
         )
 
         let pinnedMessageExpirationJob = PinnedMessageExpirationJob(
@@ -1392,8 +1392,9 @@ extension AppSetup.GlobalsContinuation {
             dateProvider: dateProvider,
             remoteConfigProvider: remoteConfigManager,
             storageServiceManager: storageServiceManager,
-            threadRemover: threadRemover,
+            threadDeletionManager: threadDeletionManager,
             threadStore: threadStore,
+            tsAccountManager: tsAccountManager,
         )
 
         let profileBadgeManager = ProfileBadgeManager()
@@ -1909,7 +1910,6 @@ extension AppSetup.GlobalsContinuation {
             svrAuthCredentialManager: svrAuthCredentialManager,
             svrLocalStorage: svrLocalStorage,
             threadAssociatedDataStore: threadAssociatedDataStore,
-            threadRemover: threadRemover,
             threadReplyInfoStore: threadReplyInfoStore,
             threadDeletionManager: threadDeletionManager,
             threadStore: threadStore,

@@ -48,22 +48,25 @@ final class PrivateStoryThreadDeletionManagerImpl: PrivateStoryThreadDeletionMan
     private let deletedAtTimestampStore: KeyValueStore
     private let remoteConfigProvider: any RemoteConfigProvider
     private let storageServiceManager: any StorageServiceManager
-    private let threadRemover: any ThreadRemover
+    private let threadDeletionManager: any ThreadDeletionManager
     private let threadStore: any ThreadStore
+    private let tsAccountManager: any TSAccountManager
 
     init(
         dateProvider: @escaping DateProvider,
         remoteConfigProvider: any RemoteConfigProvider,
         storageServiceManager: any StorageServiceManager,
-        threadRemover: any ThreadRemover,
+        threadDeletionManager: any ThreadDeletionManager,
         threadStore: any ThreadStore,
+        tsAccountManager: any TSAccountManager,
     ) {
         self.dateProvider = dateProvider
         self.deletedAtTimestampStore = KeyValueStore(collection: "TSPrivateStoryThread+DeletedAtTimestamp")
         self.remoteConfigProvider = remoteConfigProvider
         self.storageServiceManager = storageServiceManager
-        self.threadRemover = threadRemover
+        self.threadDeletionManager = threadDeletionManager
         self.threadStore = threadStore
+        self.tsAccountManager = tsAccountManager
     }
 
     func deletedAtTimestamp(
@@ -101,6 +104,10 @@ final class PrivateStoryThreadDeletionManagerImpl: PrivateStoryThreadDeletionMan
     }
 
     func cleanUpDeletedTimestamps(tx: DBWriteTransaction) {
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
+            Logger.warn("skipping private story cleanup because we've never been registered")
+            return
+        }
         var deletedIdentifiers = [Data]()
         for identifier in deletedAtTimestampStore.allKeys(transaction: tx) {
             guard
@@ -116,7 +123,13 @@ final class PrivateStoryThreadDeletionManagerImpl: PrivateStoryThreadDeletionMan
             /// If we still have a private story thread for this deleted
             /// timestamp, it's now safe to purge it from the database.
             if let thread = threadStore.fetchThread(uniqueId: identifier, tx: tx) as? TSPrivateStoryThread {
-                threadRemover.remove(thread, tx: tx)
+                threadDeletionManager.deleteThreads(
+                    [thread],
+                    sendDeleteForMeSyncMessage: false,
+                    updateStorageService: false,
+                    localIdentifiers: localIdentifiers,
+                    tx: tx,
+                )
             }
 
             UUID(uuidString: identifier).map { deletedIdentifiers.append($0.data) }
