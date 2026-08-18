@@ -20,6 +20,7 @@ public struct LocalFileBackupExportJobStore {
 
     public func wipe(tx: DBWriteTransaction) {
         kvStore.removeValue(forKey: Keys.resumptionPoint, tx: tx)
+        kvStore.removeValue(forKey: Keys.currentBackupDirectoryName, tx: tx)
     }
 
     // MARK: -

@@ -52,7 +52,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
     private let attachmentValidator: AttachmentContentValidator
     private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
     private nonisolated let localFileBackupStore: LocalFileBackupStore
-    private let securityScopedBookmarkAccess: SecurityScopedBookmarkAccess
+    private nonisolated let securityScopedBookmarkAccess: SecurityScopedBookmarkAccess
 
     private static let maxAllowedNumberOfBackups: Int = 2
 
@@ -575,6 +575,27 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
                     owsFailDebug("Unexpectedly missing name from resource keys!")
                 }
             }
+        })
+    }
+
+    @concurrent
+    public func deleteLocalFileBackup() async throws {
+        guard let bookmarkUrl = try await getSavedSecurityScopedBookmark(type: .archive) else {
+            throw OWSAssertionError("Failed to find backup root directory")
+        }
+
+        let hasAccess = securityScopedBookmarkAccess.startAccessToSecurityScopedBookmark(url: bookmarkUrl)
+        guard hasAccess else {
+            throw OWSAssertionError("Failed to access backup root directory")
+        }
+
+        defer { securityScopedBookmarkAccess.stopAccessToSecurityScopedBookmark(url: bookmarkUrl) }
+
+        let backupsRootDirectory = LocalFileBackupManager.FileStructure.rootDirectoryInFileLocation(bookmarkUrl)
+
+        let fileCoordinator = NSFileCoordinator()
+        try fileCoordinator.coordinateThrows(writingItemAt: backupsRootDirectory, options: [.forDeleting], by: { writeURL in
+            try FileManager.default.removeItem(at: writeURL)
         })
     }
 

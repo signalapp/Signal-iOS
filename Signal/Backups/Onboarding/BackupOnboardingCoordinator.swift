@@ -83,6 +83,7 @@ class BackupOnboardingCoordinator {
                     db: db,
                     accountKeyStore: accountKeyStore,
                     localFileBackupManager: localFileBackupManager,
+                    localFileBackupExportJobStore: LocalFileBackupExportJobStore(),
                 )
             }
         } else {
@@ -248,6 +249,7 @@ class BackupOnboardingCoordinator {
                                     db: db,
                                     accountKeyStore: accountKeyStore,
                                     localFileBackupManager: localFileBackupManager,
+                                    localFileBackupExportJobStore: LocalFileBackupExportJobStore(),
                                 ),
                             ],
                             animated: true,

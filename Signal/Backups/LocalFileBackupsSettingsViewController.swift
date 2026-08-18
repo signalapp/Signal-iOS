@@ -13,6 +13,7 @@ class LocalFileBackupsSettingsViewController: OWSTableViewController2 {
     private let db: DB
     private let accountKeyStore: AccountKeyStore
     private let localFileBackupManager: LocalFileBackupManager
+    private let localFileBackupExportJobStore: LocalFileBackupExportJobStore
 
     init(
         localFileBackupExportJobRunner: LocalFileBackupExportJobRunner,
@@ -20,12 +21,14 @@ class LocalFileBackupsSettingsViewController: OWSTableViewController2 {
         db: DB,
         accountKeyStore: AccountKeyStore,
         localFileBackupManager: LocalFileBackupManager,
+        localFileBackupExportJobStore: LocalFileBackupExportJobStore,
     ) {
         self.localFileBackupExportJobRunner = localFileBackupExportJobRunner
         self.localFileBackupStore = localFileBackupStore
         self.db = db
         self.accountKeyStore = accountKeyStore
         self.localFileBackupManager = localFileBackupManager
+        self.localFileBackupExportJobStore = localFileBackupExportJobStore
     }
 
     override func viewDidLoad() {
@@ -279,8 +282,84 @@ class LocalFileBackupsSettingsViewController: OWSTableViewController2 {
                 comment: "Label for the button that turns off on-device backups.",
             ),
             textColor: UIColor.Signal.red,
-            actionBlock: {
-                // TODO: [KC] turned-off UI
+            actionBlock: { [weak self] in
+                guard let self else { return }
+                ModalActivityIndicatorViewController.present(
+                    fromViewController: self,
+                    asyncBlock: { [weak self] modal in
+                        guard let self else {
+                            modal.dismiss()
+                            return
+                        }
+
+                        // Stop any running backups before we delete the folder.
+                        if let cancelTask = localFileBackupExportJobRunner.cancelIfRunning() {
+                            _ = try? await cancelTask.value
+                        }
+
+                        let cleanUpState: () -> Void = { [weak self] in
+                            guard let self else { return }
+                            db.write { [localFileBackupStore, localFileBackupExportJobStore] tx in
+                                localFileBackupStore.setLocalBackupsEnabled(value: false, tx: tx)
+
+                                // Clear any reminders or details associated with the local backup.
+                                // Don't clear the restore bookmark data in case we're still restoring a previous local file backup.
+                                localFileBackupStore.clearLastBackupDetails(tx: tx)
+                                localFileBackupStore.clearChooseNewLocalBackupLocation(tx: tx)
+                                localFileBackupStore.clearShouldPromptUserToEnableLocalBackups(tx: tx)
+                                localFileBackupStore.clearArchiveBookmarkData(tx: tx)
+                                localFileBackupStore.clearLastEnumeratedAttachmentRowId(tx: tx)
+                                localFileBackupExportJobStore.wipe(tx: tx)
+                            }
+                        }
+
+                        do {
+                            try await localFileBackupManager.deleteLocalFileBackup()
+                            cleanUpState()
+                            modal.dismiss { [weak self] in
+                                self?.navigationController?.popViewController(animated: true)
+                            }
+                        } catch {
+                            if DebugFlags.internalLogging {
+                                Logger.error("Error deleting local file backup: \(error)")
+                            } else {
+                                Logger.error("Error deleting local file backup \(error.shortDescription)")
+                            }
+                            modal.dismiss { [weak self] in
+                                guard let self else { return }
+
+                                let localFileBackupLocation = try? localFileBackupManager.getSavedSecurityScopedBookmark(type: .archive)?.lastPathComponent
+                                let fileLocation: String
+                                // If we know the parent folder, use it in the error message, otherwise, just use general root folder name.
+                                if let localFileBackupLocation {
+                                    fileLocation = localFileBackupLocation + " > " + LocalFileBackupManager.FileStructure.rootDirectory.rawValue
+                                } else {
+                                    fileLocation = LocalFileBackupManager.FileStructure.rootDirectory.rawValue
+                                }
+
+                                let message = OWSLocalizedString(
+                                    "SETTINGS_LOCAL_FILE_BACKUPS_TURNING_OFF_ERROR_MESSAGE_FORMAT",
+                                    comment: "Message shown on an action sheet when a user's backup fails to delete. Embeds {{ local file backup location }}",
+                                )
+
+                                let actionSheet = ActionSheetController(
+                                    title: OWSLocalizedString("SETTINGS_LOCAL_FILE_BACKUPS_TURNING_OFF_ERROR_TITLE", comment: "Title shown on an action sheet when a user's backup fails to delete"),
+                                    message: String.nonPluralLocalizedStringWithFormat(message, fileLocation),
+                                )
+
+                                actionSheet.addAction(ActionSheetAction(
+                                    title: CommonStrings.okButton,
+                                    handler: { [weak self] sheet in
+                                        cleanUpState()
+                                        self?.navigationController?.popViewController(animated: true)
+                                    },
+                                ))
+                                actionSheet.addAction(.cancel)
+                                presentActionSheet(actionSheet)
+                            }
+                        }
+                    },
+                )
             },
         ))
 

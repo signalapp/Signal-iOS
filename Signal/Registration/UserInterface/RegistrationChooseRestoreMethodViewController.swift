@@ -362,6 +362,8 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController, UIDocume
             return
         }
 
+        defer { securityScopedBookmarkAccess.stopAccessToSecurityScopedBookmark(url: url) }
+
         var contents: [URL] = []
         var signalBackupsURL = url
         do {
@@ -404,8 +406,6 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController, UIDocume
             presentNoLocalBackupFoundActionSheet()
             return
         }
-
-        defer { securityScopedBookmarkAccess.stopAccessToSecurityScopedBookmark(url: signalBackupsURL) }
 
         do {
             try localFileBackupManager.saveSecurityScopedBookmark(url: signalBackupsURL, type: .restore)

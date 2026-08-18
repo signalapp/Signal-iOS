@@ -103,7 +103,7 @@ public struct LocalFileBackupStore {
         kvStore.fetchValue(Int64.self, forKey: StoreKeys.lastEnumeratedAttachmentIdKey, tx: tx)
     }
 
-    func clearLastEnumeratedAttachmentRowId(tx: DBWriteTransaction) {
+    public func clearLastEnumeratedAttachmentRowId(tx: DBWriteTransaction) {
         kvStore.removeValue(forKey: StoreKeys.lastEnumeratedAttachmentIdKey, tx: tx)
     }
 
@@ -120,6 +120,10 @@ public struct LocalFileBackupStore {
 
     func storeArchiveBookmarkData(bookmarkData: SecurityScopedBookmark, tx: DBWriteTransaction) {
         kvStore.writeValue(bookmarkData.rawValue, forKey: StoreKeys.archiveBookmarkDataKey, tx: tx)
+    }
+
+    public func clearArchiveBookmarkData(tx: DBWriteTransaction) {
+        kvStore.removeValue(forKey: StoreKeys.archiveBookmarkDataKey, tx: tx)
     }
 
     func fetchRestoreBookmarkData(tx: DBReadTransaction) -> SecurityScopedBookmark? {
@@ -242,5 +246,12 @@ public struct LocalFileBackupStore {
         tx.addSyncCompletion {
             NotificationCenter.default.postOnMainThread(name: .lastLocalBackupDetailsDidChange, object: nil)
         }
+    }
+
+    public func clearLastBackupDetails(
+        tx: DBWriteTransaction,
+    ) {
+        kvStore.removeValue(forKey: StoreKeys.lastBackupDate, tx: tx)
+        kvStore.removeValue(forKey: StoreKeys.lastBackupSizeBytes, tx: tx)
     }
 }

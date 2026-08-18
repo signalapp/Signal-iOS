@@ -39,6 +39,11 @@ class BackupSettingsLandingPageViewController: OWSTableViewController2 {
         updateContents()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateContents()
+    }
+
     private func updateContents() {
         let contents = OWSTableContents()
 
@@ -202,12 +207,15 @@ class BackupSettingsLandingPageViewController: OWSTableViewController2 {
     }
 
     private func buildOnDeviceBackupsItem() -> OWSTableItem {
-        let shouldSkipLocalBackupsOnboarding = db.read { tx in
-            if localFileBackupsStore.shouldOverrideShowLocalBackupsOnboarding(tx: tx) {
-                return false
-            }
-
-            return localFileBackupsStore.haveLocalBackupsEverBeenEnabled(tx: tx)
+        let (shouldSkipLocalBackupsOnboarding, localBackupsEnabled) = db.read { tx in
+            let localBackupsEnabled = localFileBackupsStore.localBackupsEnabled(tx: tx)
+            let skipOnboarding: Bool = {
+                if localFileBackupsStore.shouldOverrideShowLocalBackupsOnboarding(tx: tx) {
+                    return false
+                }
+                return localBackupsEnabled
+            }()
+            return (skipOnboarding, localBackupsEnabled)
         }
 
         return OWSTableItem(
@@ -218,6 +226,7 @@ class BackupSettingsLandingPageViewController: OWSTableViewController2 {
                         "BACKUP_SETTINGS_LANDING_ON_DEVICE_BACKUPS",
                         comment: "Label for the On-Device Backups option on the Backups settings landing page.",
                     ),
+                    accessoryText: localBackupsEnabled ? CommonStrings.switchOn : nil,
                     accessoryType: .disclosureIndicator,
                 )
             },
