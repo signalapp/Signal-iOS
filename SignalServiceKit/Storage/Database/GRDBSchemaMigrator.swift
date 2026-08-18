@@ -8201,10 +8201,14 @@ public class GRDBSchemaMigrator {
                 Logger.warn("ignoring pinned thread that doesn't exist and won't be restored")
                 continue
             }
-            try tx.database.execute(
-                sql: "INSERT INTO PinnedThread (id, constantId, groupId, recipientId) VALUES (?, ?, ?, ?)",
-                arguments: [idx + 1, constantId, groupId, recipientId],
-            )
+            do {
+                try tx.database.execute(
+                    sql: "INSERT INTO PinnedThread (id, constantId, groupId, recipientId) VALUES (?, ?, ?, ?)",
+                    arguments: [idx + 1, constantId, groupId, recipientId],
+                )
+            } catch DatabaseError.SQLITE_CONSTRAINT {
+                Logger.warn("skipping duplicate pinned thread; constantId? \(constantId != nil), groupId? \(groupId != nil), recipientId? \(recipientId != nil)")
+            }
         }
     }
 
