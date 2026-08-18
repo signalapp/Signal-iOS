@@ -126,6 +126,16 @@ extension Registration {
             .buttonStyle(Registration.UI.LargeSecondaryButtonStyle())
         Button("Medium Secondary") {}
             .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
+
+        Button("Large Primary Disabled") {}
+            .buttonStyle(Registration.UI.LargePrimaryButtonStyle())
+            .disabled(true)
+        Button("Large Secondary Disabled") {}
+            .buttonStyle(Registration.UI.LargeSecondaryButtonStyle())
+            .disabled(true)
+        Button("Medium Secondary Disabled") {}
+            .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
+            .disabled(true)
     }
     .padding()
 }
