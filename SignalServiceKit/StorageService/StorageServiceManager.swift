@@ -1660,6 +1660,21 @@ class StorageServiceOperation {
 
                 var orphanedStoryDistributionListCount = 0
                 for (dlistIdentifier, storageIdentifier) in state.storyDistributionListIdentifierToStorageIdentifierMap where !allManifestItems.contains(storageIdentifier) {
+                    let privateStoryThreadDeletionManager = DependenciesBridge.shared.privateStoryThreadDeletionManager
+                    // If another client removes a distribution list, allow it.
+                    guard
+                        let uniqueId = UUID(data: dlistIdentifier),
+                        privateStoryThreadDeletionManager.deletedAtTimestamp(
+                            forDistributionListIdentifier: dlistIdentifier,
+                            tx: transaction,
+                        ) == nil,
+                        TSPrivateStoryThread.fetchViaCache(
+                            uniqueId: uniqueId.uuidString,
+                            transaction: transaction,
+                        ) != nil
+                    else {
+                        continue
+                    }
                     state.storyDistributionListChangeMap[dlistIdentifier] = .updated
                     orphanedStoryDistributionListCount += 1
                 }
