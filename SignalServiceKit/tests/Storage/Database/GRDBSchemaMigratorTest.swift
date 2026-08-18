@@ -1879,7 +1879,8 @@ struct GRDBSchemaMigratorTest {
         let group6MasterKey = Randomness.generateRandomBytes(31)
         let group7MasterKey = Randomness.generateRandomBytes(31)
 
-        let releaseNotesThreadUniqueId = UUID().uuidString
+        let releaseNotesThreadUniqueId1 = UUID().uuidString
+        let releaseNotesThreadUniqueId2 = UUID().uuidString
 
         let databaseQueue = DatabaseQueue()
         try databaseQueue.write { db in
@@ -1935,7 +1936,14 @@ struct GRDBSchemaMigratorTest {
                 sql: """
                 INSERT INTO "model_TSThread" ("recordType", "uniqueId") VALUES (?, ?)
                 """,
-                arguments: [80, releaseNotesThreadUniqueId],
+                arguments: [80, releaseNotesThreadUniqueId1],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "model_TSThread" ("recordType", "uniqueId") VALUES (?, ?)
+                """,
+                arguments: [80, releaseNotesThreadUniqueId2],
             )
 
             try db.execute(
@@ -1999,8 +2007,11 @@ struct GRDBSchemaMigratorTest {
                 """,
                 arguments: ["PinnedConversationManager", "pinnedThreadIds", Self.keyedArchiverData(rootObject: [
                     group1ThreadUniqueId,
+                    group1ThreadUniqueId,
                     group3ThreadUniqueId,
-                    releaseNotesThreadUniqueId,
+                    releaseNotesThreadUniqueId1,
+                    releaseNotesThreadUniqueId1,
+                    releaseNotesThreadUniqueId2,
                     group2ThreadUniqueId,
                     group4ThreadUniqueId,
                     group5ThreadUniqueId,
@@ -2038,7 +2049,7 @@ struct GRDBSchemaMigratorTest {
 
             do {
                 let pinnedThread = pinnedThreads.removeFirst()
-                #expect(pinnedThread["id"] as Int64 == 2)
+                #expect(pinnedThread["id"] as Int64 == 3)
                 #expect(pinnedThread["constantId"] as Int64? == nil)
                 #expect(pinnedThread["groupId"] as Data? == group3Id.serialize())
                 #expect(pinnedThread["recipientId"] as Int64? == nil)
@@ -2046,7 +2057,7 @@ struct GRDBSchemaMigratorTest {
 
             do {
                 let pinnedThread = pinnedThreads.removeFirst()
-                #expect(pinnedThread["id"] as Int64 == 3)
+                #expect(pinnedThread["id"] as Int64 == 4)
                 #expect(pinnedThread["constantId"] as Int64? == 0)
                 #expect(pinnedThread["groupId"] as Data? == nil)
                 #expect(pinnedThread["recipientId"] as Int64? == nil)
@@ -2054,7 +2065,7 @@ struct GRDBSchemaMigratorTest {
 
             do {
                 let pinnedThread = pinnedThreads.removeFirst()
-                #expect(pinnedThread["id"] as Int64 == 4)
+                #expect(pinnedThread["id"] as Int64 == 7)
                 #expect(pinnedThread["constantId"] as Int64? == nil)
                 #expect(pinnedThread["groupId"] as Data? == group2Id.serialize())
                 #expect(pinnedThread["recipientId"] as Int64? == nil)
@@ -2062,7 +2073,7 @@ struct GRDBSchemaMigratorTest {
 
             do {
                 let pinnedThread = pinnedThreads.removeFirst()
-                #expect(pinnedThread["id"] as Int64 == 5)
+                #expect(pinnedThread["id"] as Int64 == 8)
                 #expect(pinnedThread["constantId"] as Int64? == nil)
                 #expect(pinnedThread["groupId"] as Data? == group4Id.serialize())
                 #expect(pinnedThread["recipientId"] as Int64? == nil)
@@ -2070,7 +2081,7 @@ struct GRDBSchemaMigratorTest {
 
             do {
                 let pinnedThread = pinnedThreads.removeFirst()
-                #expect(pinnedThread["id"] as Int64 == 7)
+                #expect(pinnedThread["id"] as Int64 == 10)
                 #expect(pinnedThread["constantId"] as Int64? == nil)
                 #expect(pinnedThread["groupId"] as Data? == nil)
                 #expect(pinnedThread["recipientId"] as Int64? == expectedRecipientId)

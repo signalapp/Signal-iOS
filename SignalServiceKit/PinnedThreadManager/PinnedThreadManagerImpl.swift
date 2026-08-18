@@ -157,7 +157,7 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
     ) {
         var didUpdate = false
         var oldPinnedThreads = pinnedThreadStore.fetchPinnedThreadRecords(tx: tx)[...]
-        threadIds.forEach { threadId in
+        threadIds.removingDuplicates(uniquingElementsBy: { $0 }).forEach { threadId in
             // Iterate through existing pinned threads, removing any that don't match.
             // (Some of these may appear later in `threadIds`, and if that's the case,
             // we'll remove them and then re-insert them in the right order.)

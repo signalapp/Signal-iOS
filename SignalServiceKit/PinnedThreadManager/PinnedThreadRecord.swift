@@ -6,7 +6,7 @@
 import Foundation
 import GRDB
 
-public enum PinnedThreadId: Equatable, CustomStringConvertible {
+public enum PinnedThreadId: Equatable, Hashable, CustomStringConvertible {
     case groupId(Data)
     case recipientId(SignalRecipient.RowId)
     case releaseNotes
