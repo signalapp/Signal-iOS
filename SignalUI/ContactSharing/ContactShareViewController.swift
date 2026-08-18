@@ -21,12 +21,14 @@ public protocol ContactShareViewControllerDelegate: AnyObject {
     func approvalModeForContactShareViewController(_ viewController: ContactShareViewController) -> ApprovalMode
 }
 
-public class ContactShareViewController: OWSTableViewController2 {
+public class ContactShareViewController: OWSTableViewController2, ApprovalFooterDelegate,
+    EditContactShareNameViewControllerDelegate
+{
 
     public weak var shareDelegate: ContactShareViewControllerDelegate?
 
     private var approvalMode: ApprovalMode {
-        return shareDelegate?.approvalModeForContactShareViewController(self) ?? .send
+        shareDelegate?.approvalModeForContactShareViewController(self) ?? .send
     }
 
     // MARK: Contact data
@@ -97,17 +99,30 @@ public class ContactShareViewController: OWSTableViewController2 {
         if let recipientsDescription = shareDelegate?.recipientsDescriptionForContactShareViewController(self) {
             footerView.setNamesText(recipientsDescription, animated: false)
         }
+        footerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(footerView)
+        NSLayoutConstraint.activate([
+            footerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            footerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            footerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+        if #available(iOS 26, *) {
+            let interaction = UIScrollEdgeElementContainerInteraction()
+            interaction.edge = .bottom
+            interaction.scrollView = tableView
+            footerView.addInteraction(interaction)
+        }
 
         updateContent()
         updateProceedButtonState()
     }
 
-    override public var canBecomeFirstResponder: Bool {
-        return true
-    }
+    override public func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
 
-    override public var inputAccessoryView: UIView? {
-        return footerView
+        let footerHeight = footerView.frame.height - footerView.safeAreaInsets.bottom
+        tableView.contentInset.bottom = footerHeight
+        tableView.verticalScrollIndicatorInsets.bottom = footerHeight
     }
 
     // MARK: UI
@@ -157,7 +172,7 @@ public class ContactShareViewController: OWSTableViewController2 {
 
         // Other fields
         tableItems += contactShareFields.map { field in
-            return OWSTableItem(
+            OWSTableItem(
                 customCellBlock: {
                     return ContactShareFieldCell(field: field)
                 },
@@ -189,10 +204,7 @@ public class ContactShareViewController: OWSTableViewController2 {
 
     // MARK: -
 
-    @objc
     private func didPressSendButton() {
-        AssertIsOnMainThread()
-
         guard isAtLeastOneFieldSelected() else { return }
 
         guard contactShareDraft.ows_isValid else {
@@ -303,9 +315,8 @@ public class ContactShareViewController: OWSTableViewController2 {
             checkmark.isSelected = field.isIncluded
         }
     }
-}
 
-extension ContactShareViewController: EditContactShareNameViewControllerDelegate {
+    // MARK: - EditContactShareNameViewControllerDelegate
 
     public func editContactShareNameView(
         _ editContactShareNameView: EditContactShareNameViewController,
@@ -314,19 +325,14 @@ extension ContactShareViewController: EditContactShareNameViewControllerDelegate
         contactShareDraft.name = contactName
         tableView.reloadData()
     }
-}
 
-// MARK: -
-
-extension ContactShareViewController: ApprovalFooterDelegate {
+    // MARK: - ApprovalFooterDelegate
 
     public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
         didPressSendButton()
     }
 
-    public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {
-        return approvalMode
-    }
+    public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode { approvalMode }
 
     public func approvalFooterDidBeginEditingText() {}
 }
