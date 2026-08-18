@@ -69,8 +69,6 @@ private struct LazyIndexMigrator {
                 return Set(try String.fetchAll(db, sql: "SELECT name FROM sqlite_master WHERE type = 'index'"))
             }
             let lazilyRemovedIndexes = [
-                "index_interactions_on_timestamp_sourceDeviceId_and_authorUUID",
-                "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber",
                 "index_model_TSInteraction_on_uniqueThreadId_and_hasEnded_and_recordType",
                 "index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType",
                 "index_model_TSInteraction_on_StoryContext",
@@ -82,7 +80,6 @@ private struct LazyIndexMigrator {
             }
 
             let lazilyInsertedIndexes = [
-                "Interaction_timestamp",
                 "Interaction_unendedGroupCall_partial",
                 "Interaction_groupCallEraId_partial",
                 "Interaction_storyReply_partial",

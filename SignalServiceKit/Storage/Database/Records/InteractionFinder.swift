@@ -55,7 +55,7 @@ public class InteractionFinder: NSObject {
         let sql = """
         SELECT 1
         FROM \(InteractionRecord.databaseTableName)
-        \(DEBUG_INDEXED_BY("Interaction_timestamp", or: "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"))
+        \(DEBUG_INDEXED_BY("Interaction_timestamp"))
         WHERE \(interactionColumn: .timestamp) = ?
         AND (
             \(interactionColumn: .authorUUID) = ?
@@ -88,7 +88,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("Interaction_timestamp", or: "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"))
+            \(DEBUG_INDEXED_BY("Interaction_timestamp"))
             WHERE \(interactionColumn: .timestamp) = ?
         """
 

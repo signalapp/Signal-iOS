@@ -351,6 +351,7 @@ public class GRDBSchemaMigrator {
         case addPinnedThread
         case addGroup
         case removeInteractionAttachmentIdsIndex
+        case rebuildInteractionTimestampIndex
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5486,6 +5487,11 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.removeInteractionAttachmentIdsIndex) { tx in
             try removeInteractionAttachmentIdsIndex(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.rebuildInteractionTimestampIndex) { tx in
+            try rebuildInteractionTimestampIndex(tx: tx)
             return .success(())
         }
 
