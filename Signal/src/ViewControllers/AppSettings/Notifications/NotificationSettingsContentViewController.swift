@@ -10,7 +10,10 @@ class NotificationSettingsContentViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = OWSLocalizedString("SETTINGS_NOTIFICATION_CONTENT_TITLE", comment: "")
+        title = OWSLocalizedString(
+            "SETTINGS_NOTIFICATION_CONTENT_TITLE",
+            comment: "table section header",
+        )
 
         updateTableContents()
     }

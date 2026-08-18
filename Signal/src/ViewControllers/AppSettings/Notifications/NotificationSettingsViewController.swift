@@ -24,6 +24,16 @@ class NotificationSettingsViewController: OWSTableViewController2 {
     func updateTableContents() {
         let contents = OWSTableContents()
 
+        contents.add(buildSoundsSection())
+        contents.add(buildNotificationsSection())
+        contents.add(buildContactJoinedSignalSection())
+        contents.add(buildAppBadgeSection())
+        contents.add(buildReregisterPushSection())
+
+        self.contents = contents
+    }
+
+    private func buildSoundsSection() -> OWSTableSection {
         let soundsSection = OWSTableSection()
         soundsSection.headerTitle = OWSLocalizedString(
             "SETTINGS_SECTION_SOUNDS",
@@ -56,25 +66,27 @@ class NotificationSettingsViewController: OWSTableViewController2 {
                 "SETTINGS_MESSAGE_SENT_SOUND",
                 comment: "Setting for enabling & disabling the sound effect played when a message is sent.",
             ),
-            textColor: messageSentSoundEnabled ? nil : Theme.secondaryTextAndIconColor,
+            textColor: messageSentSoundEnabled ? nil : UIColor.Signal.secondaryLabel,
             isOn: { messageSentSoundEnabled && SSKEnvironment.shared.preferencesRef.isMessageSentSoundEnabled },
             isEnabled: { messageSentSoundEnabled },
             actionBlock: { [weak self] uiSwitch in
                 self?.didToggleMessageSentSound(uiSwitch)
             },
         ))
-        contents.add(soundsSection)
+        return soundsSection
+    }
 
-        let notificationContentSection = OWSTableSection()
-        notificationContentSection.headerTitle = OWSLocalizedString(
-            "SETTINGS_NOTIFICATION_CONTENT_TITLE",
-            comment: "table section header",
+    private func buildNotificationsSection() -> OWSTableSection {
+        let notificationsSection = OWSTableSection()
+        notificationsSection.headerTitle = OWSLocalizedString(
+            "SETTINGS_NOTIFICATIONS",
+            comment: "The title for the notification settings.",
         )
-        notificationContentSection.footerTitle = OWSLocalizedString(
+        notificationsSection.footerTitle = OWSLocalizedString(
             "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION",
             comment: "table section footer",
         )
-        notificationContentSection.add(.disclosureItem(
+        notificationsSection.add(.disclosureItem(
             withText: OWSLocalizedString("NOTIFICATIONS_SHOW", comment: ""),
             accessoryText: SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return SSKEnvironment.shared.preferencesRef.notificationPreviewType(tx: tx).displayName
@@ -84,14 +96,16 @@ class NotificationSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             },
         ))
-        contents.add(notificationContentSection)
+        return notificationsSection
+    }
 
-        let badgeCountSection = OWSTableSection()
-        badgeCountSection.headerTitle = OWSLocalizedString(
-            "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE",
-            comment: "table section header",
+    private func buildAppBadgeSection() -> OWSTableSection {
+        let appBadgeSection = OWSTableSection()
+        appBadgeSection.headerTitle = OWSLocalizedString(
+            "SETTINGS_NOTIFICATIONS_APP_BADGE_SECTION",
+            comment: "Header for the section of notification settings controlling the app icon's badge.",
         )
-        badgeCountSection.add(.switch(
+        appBadgeSection.add(.switch(
             withText: OWSLocalizedString(
                 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS",
                 comment: "A setting controlling whether muted conversations are shown in the badge count",
@@ -103,14 +117,16 @@ class NotificationSettingsViewController: OWSTableViewController2 {
                 self?.didToggleIncludesMutedConversationsInBadgeCount(uiSwitch)
             },
         ))
-        contents.add(badgeCountSection)
+        return appBadgeSection
+    }
 
-        let notifyWhenSection = OWSTableSection()
-        notifyWhenSection.headerTitle = OWSLocalizedString(
-            "SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE",
-            comment: "table section header",
+    private func buildContactJoinedSignalSection() -> OWSTableSection {
+        let contactJoinedSignalSection = OWSTableSection()
+        contactJoinedSignalSection.footerTitle = OWSLocalizedString(
+            "SETTINGS_NOTIFICATIONS_CONTACT_JOINED_SIGNAL_FOOTER",
+            comment: "Explanation for the switch controlling whether a notification is shown when a phone contact joins Signal.",
         )
-        notifyWhenSection.add(.switch(
+        contactJoinedSignalSection.add(.switch(
             withText: OWSLocalizedString(
                 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL",
                 comment: "When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature.",
@@ -122,8 +138,10 @@ class NotificationSettingsViewController: OWSTableViewController2 {
                 self?.didToggleshouldNotifyOfNewAccounts(uiSwitch)
             },
         ))
-        contents.add(notifyWhenSection)
+        return contactJoinedSignalSection
+    }
 
+    private func buildReregisterPushSection() -> OWSTableSection {
         let reregisterPushSection = OWSTableSection()
         reregisterPushSection.add(.item(
             name: OWSLocalizedString("REREGISTER_FOR_PUSH", comment: ""),
@@ -131,9 +149,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
                 self?.syncPushTokens()
             },
         ))
-        contents.add(reregisterPushSection)
-
-        self.contents = contents
+        return reregisterPushSection
     }
 
     private func didToggleSoundNotifications(_ sender: UISwitch) {
