@@ -41,8 +41,8 @@ class MockDeletedCallRecordStore: DeletedCallRecordStore {
         return deletedCallRecords.min(by: { $0.deletedAtTimestamp < $1.deletedAtTimestamp })
     }
 
-    var askedToMergeThread: (from: Int64, into: Int64)?
-    func updateWithMergedThread(fromThreadRowId fromRowId: Int64, intoThreadRowId intoRowId: Int64, tx: DBWriteTransaction) {
+    var askedToMergeThread: (from: TSThread.RowId, into: TSThread.RowId)?
+    func updateWithMergedThread(fromThreadRowId fromRowId: TSThread.RowId, intoThreadRowId intoRowId: TSThread.RowId, tx: DBWriteTransaction) {
         askedToMergeThread = (from: fromRowId, into: intoRowId)
     }
 }

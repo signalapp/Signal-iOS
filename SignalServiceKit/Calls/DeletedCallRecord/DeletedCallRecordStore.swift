@@ -34,8 +34,8 @@ protocol DeletedCallRecordStore {
     /// - Parameter intoThreadRowId
     /// The SQLite row ID of the thread being merged into.
     func updateWithMergedThread(
-        fromThreadRowId fromRowId: Int64,
-        intoThreadRowId intoRowId: Int64,
+        fromThreadRowId fromRowId: TSThread.RowId,
+        intoThreadRowId intoRowId: TSThread.RowId,
         tx: DBWriteTransaction,
     )
 }
@@ -133,8 +133,8 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
     // MARK: -
 
     func updateWithMergedThread(
-        fromThreadRowId fromRowId: Int64,
-        intoThreadRowId intoRowId: Int64,
+        fromThreadRowId fromRowId: TSThread.RowId,
+        intoThreadRowId intoRowId: TSThread.RowId,
         tx: DBWriteTransaction,
     ) {
         failIfThrows {

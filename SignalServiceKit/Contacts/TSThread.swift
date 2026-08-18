@@ -38,8 +38,8 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         }
     }
 
-    public var id: Int64?
-    public var sqliteRowId: Int64? { self.id }
+    public var id: RowId?
+    public var sqliteRowId: RowId? { self.id }
 
     @objc
     public let uniqueId: UniqueId

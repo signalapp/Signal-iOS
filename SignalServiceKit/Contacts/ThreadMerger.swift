@@ -188,23 +188,19 @@ final class ThreadMerger {
     }
 
     private func mergeCallRecords(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
-        guard
-            let fromThreadRowId = threadPair.fromValue.sqliteRowId,
-            let intoThreadRowId = threadPair.intoValue.sqliteRowId
-        else {
-            owsFailDebug("Failed to get SQLite row IDs for threads!")
-            return
+        let threadIdPair = threadPair.map {
+            return $0.id.owsFailUnwrap("must have rowid during thread merge")
         }
 
         callRecordStore.updateWithMergedThread(
-            fromThreadRowId: fromThreadRowId,
-            intoThreadRowId: intoThreadRowId,
+            fromThreadRowId: threadIdPair.fromValue,
+            intoThreadRowId: threadIdPair.intoValue,
             tx: tx,
         )
 
         deletedCallRecordStore.updateWithMergedThread(
-            fromThreadRowId: fromThreadRowId,
-            intoThreadRowId: intoThreadRowId,
+            fromThreadRowId: threadIdPair.fromValue,
+            intoThreadRowId: threadIdPair.intoValue,
             tx: tx,
         )
     }
