@@ -98,7 +98,7 @@ public enum BuildFlags {
         public static let settingsUI = build <= .dev
     }
 
-    static let hardDeleteGroupThreads = false
+    static let hardDeleteGroupThreads = true
 }
 
 // MARK: -
