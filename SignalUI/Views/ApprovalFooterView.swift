@@ -16,9 +16,24 @@ public enum ApprovalMode: UInt {
     case select
     // This step is not yet ready to proceed.
     case loading
-}
 
-// MARK: -
+    fileprivate var proceedButtonAccessibilityLabel: String? {
+        switch self {
+        case .next: CommonStrings.nextButton
+        case .send: MessageStrings.sendButton
+        case .select: CommonStrings.doneButton
+        case .loading: nil
+        }
+    }
+
+    fileprivate var proceedButtonImage: UIImage {
+        switch self {
+        case .next, .loading: Theme.iconImage(.arrowRight)
+        case .send: Theme.iconImage(.arrowUp)
+        case .select: Theme.iconImage(.checkmark)
+        }
+    }
+}
 
 public protocol ApprovalFooterDelegate: AnyObject {
     func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView)
@@ -28,19 +43,12 @@ public protocol ApprovalFooterDelegate: AnyObject {
     func approvalFooterDidBeginEditingText()
 }
 
-// MARK: -
-
-public class ApprovalFooterView: UIView {
+public class ApprovalFooterView: UIView, UITextFieldDelegate {
     public weak var delegate: ApprovalFooterDelegate? {
         didSet {
             updateContents()
         }
     }
-
-    private let backgroundView = UIView()
-    private let topStrokeView = UIView()
-    private let hStackView = UIStackView()
-    private let vStackView = UIStackView()
 
     private var textFieldBackgroundView: UIView?
 
@@ -49,10 +57,7 @@ public class ApprovalFooterView: UIView {
     }
 
     private var approvalMode: ApprovalMode {
-        guard let delegate else {
-            return .send
-        }
-        return delegate.approvalMode(self)
+        delegate?.approvalMode(self) ?? .send
     }
 
     public enum ApprovalTextMode: Equatable {
@@ -68,52 +73,61 @@ public class ApprovalFooterView: UIView {
         }
     }
 
+    public var isAllowedToProceed = true {
+        didSet { proceedButton.isEnabled = isAllowedToProceed }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         autoresizingMask = .flexibleHeight
-        translatesAutoresizingMaskIntoConstraints = false
+        preservesSuperviewLayoutMargins = true
+        directionalLayoutMargins.top = 10
+        directionalLayoutMargins.bottom = 10
 
-        layoutMargins = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
+        if #unavailable(iOS 26) {
+            let backgroundView = UIView()
+            backgroundView.backgroundColor = .Signal.secondaryBackground
+            backgroundView.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(backgroundView)
+            NSLayoutConstraint.activate([
+                backgroundView.topAnchor.constraint(equalTo: topAnchor),
+                backgroundView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                backgroundView.trailingAnchor.constraint(equalTo: trailingAnchor),
+                // We extend our background view below the keyboard to avoid any gaps.
+                backgroundView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 30),
+            ])
 
-        // We extend our background view below the keyboard to avoid any gaps.
-        addSubview(backgroundView)
-        backgroundView.autoPinWidthToSuperview()
-        backgroundView.autoPinEdge(toSuperviewEdge: .top)
-        backgroundView.autoPinEdge(toSuperviewEdge: .bottom, withInset: -30)
+            // Hairline stroke at the top.
+            let topStrokeView = UIView()
+            topStrokeView.backgroundColor = .Signal.opaqueSeparator
+            topStrokeView.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(topStrokeView)
+            NSLayoutConstraint.activate([
+                topStrokeView.topAnchor.constraint(equalTo: topAnchor),
+                topStrokeView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                topStrokeView.trailingAnchor.constraint(equalTo: trailingAnchor),
+                topStrokeView.heightAnchor.constraint(equalToConstant: .hairlineWidth),
+            ])
+        }
 
-        addSubview(topStrokeView)
-        topStrokeView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-        topStrokeView.autoSetDimension(.height, toSize: .hairlineWidth)
+        let bottomRow = UIStackView(arrangedSubviews: [labelScrollView, proceedButton])
+        bottomRow.spacing = 12
+        bottomRow.alignment = .center
 
-        hStackView.addArrangedSubviews([labelScrollView, proceedButton])
-        hStackView.axis = .horizontal
-        hStackView.spacing = 12
-        hStackView.alignment = .center
-
-        vStackView.addArrangedSubviews([textFieldContainer, hStackView])
-        vStackView.axis = .vertical
-        vStackView.spacing = 16
-        vStackView.alignment = .fill
-        addSubview(vStackView)
-        vStackView.autoPinEdgesToSuperviewMargins()
+        let vStack = UIStackView(arrangedSubviews: [textFieldContainer, bottomRow])
+        vStack.axis = .vertical
+        vStack.spacing = 16
+        vStack.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(vStack)
+        NSLayoutConstraint.activate([
+            vStack.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
+            vStack.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+            vStack.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+            vStack.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
+        ])
 
         updateContents()
-
-        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .themeDidChange, object: nil)
-        applyTheme()
-    }
-
-    @objc
-    private func applyTheme() {
-        backgroundView.backgroundColor = Theme.keyboardBackgroundColor
-        topStrokeView.backgroundColor = UIColor.Signal.opaqueSeparator
-        namesLabel.textColor = Theme.secondaryTextAndIconColor
-        textFieldBackgroundView?.backgroundColor = textfieldBackgroundColor
-    }
-
-    private var textfieldBackgroundColor: UIColor {
-        OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: true)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -124,9 +138,12 @@ public class ApprovalFooterView: UIView {
         return CGSize.zero
     }
 
-    // MARK: public
+    // MARK: Public
 
-    private var namesText: String? { namesLabel.text }
+    public var namesText: String? {
+        get { namesLabel.text }
+        set { setNamesText(newValue, animated: false) }
+    }
 
     public func setNamesText(_ newValue: String?, animated: Bool) {
         let changes = {
@@ -147,100 +164,100 @@ public class ApprovalFooterView: UIView {
         }
     }
 
-    // MARK: private subviews
+    // MARK: Private subviews
 
-    lazy var labelScrollView: UIScrollView = {
+    private lazy var labelScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsHorizontalScrollIndicator = false
-
+        namesLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(namesLabel)
-        namesLabel.autoPinEdgesToSuperviewEdges()
-        namesLabel.autoMatch(.height, to: .height, of: scrollView)
+
+        NSLayoutConstraint.activate([
+            namesLabel.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            namesLabel.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 8),
+            namesLabel.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -8),
+            namesLabel.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            namesLabel.heightAnchor.constraint(equalTo: scrollView.frameLayoutGuide.heightAnchor),
+        ])
 
         return scrollView
     }()
 
-    lazy var namesLabel: UILabel = {
+    private lazy var namesLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.dynamicTypeBody
-
-        label.setContentHuggingLow()
-
+        label.textColor = .Signal.secondaryLabel
         return label
     }()
 
-    lazy var textField: UITextField = {
+    private lazy var textField: UITextField = {
         let textField = UITextField()
         textField.delegate = self
         textField.font = UIFont.dynamicTypeBody
-        textField.setCompressionResistanceHigh()
         return textField
     }()
 
-    lazy var textFieldContainer: UIView = {
-        var containerView: UIView = UIView()
-        var contentView: UIView = UIView()
-
-            // When we stop using Xcode 16, change var to let and move this
-            // block to the `else` of the iOS 26 availability if statement.
-            ; {
-                let view = UIView()
-                view.backgroundColor = textfieldBackgroundColor
-                view.layer.cornerRadius = 10
-                view.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 7)
-
-                self.textFieldBackgroundView = view
-
-                containerView = view
-                contentView = view
-            }()
-
+    private lazy var textFieldContainer: UIView = {
+        let containerView: UIView
+        let contentView: UIView
         if #available(iOS 26, *) {
             let glassEffect = UIGlassEffect(style: .regular)
             glassEffect.isInteractive = true
             let glassEffectView = UIVisualEffectView(effect: glassEffect)
             glassEffectView.cornerConfiguration = .capsule()
-            glassEffectView.contentView.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 11)
+            glassEffectView.directionalLayoutMargins = .init(hMargin: 16, vMargin: 11)
 
             containerView = glassEffectView
             contentView = glassEffectView.contentView
+        } else {
+            let view = UIView()
+            view.backgroundColor = .Signal.tertiaryBackground
+            view.layer.cornerRadius = 10
+            view.directionalLayoutMargins = .init(hMargin: 8, vMargin: 7)
+
+            self.textFieldBackgroundView = view
+
+            containerView = view
+            contentView = view
         }
 
-        // I am at a loss as to why the text field always shrinks to 0
-        // height, but this makes sure there's vertical space for it.
-        let heightLabel = UILabel()
-        heightLabel.isUserInteractionEnabled = false
-        heightLabel.font = textField.font
-        heightLabel.text = " "
-        contentView.addSubview(heightLabel)
-        heightLabel.autoPinEdgesToSuperviewMargins()
-        heightLabel.setCompressionResistanceVerticalHigh()
-
+        textField.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(textField)
-        textField.autoPinEdgesToSuperviewMargins()
+        NSLayoutConstraint.activate([
+            textField.topAnchor.constraint(equalTo: containerView.layoutMarginsGuide.topAnchor),
+            textField.leadingAnchor.constraint(equalTo: containerView.layoutMarginsGuide.leadingAnchor),
+            textField.trailingAnchor.constraint(equalTo: containerView.layoutMarginsGuide.trailingAnchor),
+            textField.bottomAnchor.constraint(equalTo: containerView.layoutMarginsGuide.bottomAnchor),
+        ])
 
         return containerView
     }()
 
-    var proceedLoadingIndicator = UIActivityIndicatorView(style: .medium)
-    lazy var proceedButton: OWSButton = {
-        let button = OWSButton.sendButton(
-            imageName: self.approvalMode.proceedButtonImageName ?? Theme.iconName(.arrowRight),
-        ) { [weak self] in
-            guard let self else { return }
-            self.delegate?.approvalFooterDelegateDidRequestProceed(self)
-        }
+    private var proceedLoadingIndicator: UIActivityIndicatorView?
 
-        button.addSubview(proceedLoadingIndicator)
-        proceedLoadingIndicator.autoCenterInSuperview()
-        proceedLoadingIndicator.isHidden = true
-        proceedLoadingIndicator.color = .white
+    private lazy var proceedButton: UIButton = {
+        var buttonConfig = UIButton.Configuration.bordered()
+        buttonConfig.baseForegroundColor = .white // `updateContents()` temporarily changes this.
+        buttonConfig.baseBackgroundColor = .Signal.accent
+        buttonConfig.cornerStyle = .capsule
+        buttonConfig.contentInsets = .init(margin: 8) // 40 dp button given 24 dp icons
+        buttonConfig.image = approvalMode.proceedButtonImage // also updated in `updateContents()`.
 
+        let button = UIButton(
+            configuration: buttonConfig,
+            primaryAction: UIAction { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.approvalFooterDelegateDidRequestProceed(self)
+            },
+        )
+        button.isEnabled = isAllowedToProceed
+        button.setContentHuggingHigh()
+        button.setCompressionResistanceHigh()
         return button
     }()
 
-    func updateContents() {
-        proceedButton.setImage(imageName: approvalMode.proceedButtonImageName)
+    public func updateContents() {
+        proceedButton.configuration?.image = approvalMode.proceedButtonImage
         proceedButton.accessibilityLabel = approvalMode.proceedButtonAccessibilityLabel
 
         switch approvalTextMode {
@@ -253,40 +270,35 @@ public class ApprovalFooterView: UIView {
         }
 
         if approvalMode == .loading {
-            proceedLoadingIndicator.isHidden = false
-            proceedLoadingIndicator.startAnimating()
+            // Show spinning activity indicator centered in the blue "Proceed" button.
+            // To hide button icon when activity indicator is visible set it's color to `clear`.
+            // Do not set `image` to nil because that would invalidate button size.
+
+            if proceedLoadingIndicator == nil {
+                let activityIndicator = UIActivityIndicatorView(style: .medium)
+                activityIndicator.isHidden = true
+                activityIndicator.color = .white
+                activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+                proceedButton.addSubview(activityIndicator)
+                NSLayoutConstraint.activate([
+                    activityIndicator.centerXAnchor.constraint(equalTo: proceedButton.centerXAnchor),
+                    activityIndicator.centerYAnchor.constraint(equalTo: proceedButton.centerYAnchor),
+                ])
+
+                proceedLoadingIndicator = activityIndicator
+            }
+            proceedButton.configuration?.baseForegroundColor = .clear
+            proceedLoadingIndicator?.isHidden = false
+            proceedLoadingIndicator?.startAnimating()
         } else {
-            proceedLoadingIndicator.stopAnimating()
-            proceedLoadingIndicator.isHidden = true
-        }
-    }
-}
-
-// MARK: -
-
-private extension ApprovalMode {
-    var proceedButtonAccessibilityLabel: String? {
-        switch self {
-        case .next: return CommonStrings.nextButton
-        case .send: return MessageStrings.sendButton
-        case .select: return CommonStrings.doneButton
-        case .loading: return nil
+            proceedButton.configuration?.baseForegroundColor = .white
+            proceedLoadingIndicator?.stopAnimating()
+            proceedLoadingIndicator?.isHidden = true
         }
     }
 
-    var proceedButtonImageName: String? {
-        switch self {
-        case .next: return Theme.iconName(.arrowRight)
-        case .send: return Theme.iconName(.arrowUp)
-        case .select: return Theme.iconName(.checkmark)
-        case .loading: return nil
-        }
-    }
-}
+    // MARK: - UITextFieldDelegate
 
-// MARK: - UITextFieldDelegate
-
-extension ApprovalFooterView: UITextFieldDelegate {
     public func textFieldDidBeginEditing(_ textField: UITextField) {
         delegate?.approvalFooterDidBeginEditingText()
     }
