@@ -149,7 +149,7 @@
 "ALERT_SAVE" = "저장";
 
 /* Message for UI warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "이 사용자와 함께 소속된 그룹이 없습니다. 원치 않는 메시지를 받지 않도록, 수락하기 전에 요청 내용을 꼼꼼히 확인하세요.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "해당 사용자와 공유하는 그룹이 없습니다. 원치 않는 메시지를 받지 않도록 수락 전 요청 내용을 신중하게 확인해 주세요.";
 
 /* Message for UI warning about an unknown group thread. */
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "이 그룹에는 공통으로 알고 있는 멤버가 없습니다. 원치 않는 메시지를 받지 않도록, 수락하기 전에 요청 내용을 꼼꼼히 확인하세요.";
@@ -2202,6 +2202,15 @@
 
 /* Title for a view allowing users to choose a Backup plan. */
 "CHOOSE_BACKUP_PLAN_TITLE" = "백업 플랜 선택";
+
+/* Text on a screen shown when the app can't be used until the user corrects their device's date and time. Embeds {{ the device's current date and time, in UTC }}. */
+"CLOCK_SKEW_APP_BLOCKING_DEVICE_TIME_FORMAT" = "Your device’s time is %1$@ UTC.";
+
+/* Subtitle for a screen shown when the app can't be used until the user corrects their device's date and time. */
+"CLOCK_SKEW_APP_BLOCKING_SUBTITLE" = "Signal can’t be used while your device’s date and time are incorrect. Open Settings to correct them.";
+
+/* Title for a screen shown when the app can't be used until the user corrects their device's date and time. */
+"CLOCK_SKEW_APP_BLOCKING_TITLE" = "Date is Inaccurate";
 
 /* VoiceOver hint for an expanded collapse set button. */
 "COLLAPSE_SET_ACCESSIBILITY_HINT_COLLAPSE" = "업데이트 숨기기";
@@ -5462,7 +5471,7 @@
 "LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "언제든지 백업 중단 가능";
 
 /* Subtitle for a view introducing local file backups during the onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "메시지를 내 기기의 폴더에 백업합니다. 백업은 종단간 암호화로 보호되며, 백업 폴더에서 새 기기로 이동하여 복원할 수 있습니다.";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages to a folder on your device. Your backup is end-to-end encrypted and can be restored by installing a new copy of Signal and choosing “Restore or Transfer“.";
 
 /* Title for a view introducing local file backups during the onboarding flow. */
 "LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "기기 내 백업";
@@ -5475,6 +5484,24 @@
 
 /* Title text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
 "LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "폴더 선택";
+
+/* Warning shown when a user tries to enable local file backups with optimize media enabled */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET" = "You have Optimize Signal Storage on. If you want to include all media in your on-device backup, turn the setting off.";
+
+/* Message for a sheet warning the user about enabling Optimize Storage with local backups enabled. */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_BODY" = "Turning on “Optimize Signal storage“ will offload old media from your device. You can download it again at any time. It will also remove old media from your on-device backup.";
+
+/* Title for a sheet warning the user about enabling Optimize Storage with local backups enabled. */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_TITLE" = "Media Will Be Removed From Your On-Device Backup";
+
+/* Action in a sheet warning the user about enabling Optimize Storage with local backups enabled, that turns on Optimize Storage. */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_TURN_ON" = "Turn on";
+
+/* Action in an action sheet offering to continue anyway. */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_CONTINUE" = "Continue Without Turning Off";
+
+/* Action in an action sheet offering to go to the optimize local storage setting. */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_VIEW_SETTING" = "View Setting";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "이름 또는 주소로 검색";
@@ -6283,6 +6310,9 @@
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "개인 메모";
 
+/* Body for a notification shown when Signal can't fetch messages because the device's date and time are incorrect. */
+"NOTIFICATION_BODY_CLOCK_SKEW" = "Signal can’t receive messages while your device’s date and time are incorrect. Open Settings to correct them.";
+
 /* Body for a notification representing a message request. */
 "NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "메시지 요청";
 
@@ -6379,6 +6409,12 @@
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "PIN 입력을 건너뛸까요?";
 
+/* Subtitle for the sheet that lets users pick from available local backups to restore. */
+"ONBOARDING_CHOOSE_BACKUP_SHEET_SUBTITLE" = "Choosing an older backup may result in lost messages or media.";
+
+/* Title for the sheet that lets users pick from available local backups to restore. */
+"ONBOARDING_CHOOSE_BACKUP_SHEET_TITLE" = "Choose a Backup to Restore";
+
 /* The body for the device transfer 'choice' view 'restore backup' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Signal 백업에서 계정과 메시지 복원하기";
 
@@ -6429,6 +6465,9 @@
 
 /* Backup content list item describing free media. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_PAID" = "모든 미디어";
+
+/* Text for action button that opens a picker to choose an older local backup. */
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_CHOOSE_OLDER_ACTION" = "Choose an Older Backup";
 
 /* Text for action button confirming the restore. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "백업 복원";
@@ -6971,13 +7010,13 @@
 "PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "알 수 없는 결제";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "결제를 보내려면 이 사용자가 내 메시지 요청을 수락해야 합니다.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "해당 사용자에게 송금하려면 먼저 메시지 요청이 수락되어야 합니다.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "결제를 보내려면 이 사용자가 내 메시지 요청을 수락해야 합니다. 메시지를 전송하여 메시지 요청을 생성하세요.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "해당 사용자에게 송금하려면 먼저 메시지 요청이 수락되어야 합니다. 메시지를 전송하여 메시지 요청을 생성하세요.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "결제를 전송할 수 없음";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "송금할 수 없음";
 
 /* The label for the 'send request' button in alerts and action sheets. */
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "요청 보내기";
@@ -7709,7 +7748,7 @@
 "RAISED_HANDS_LOWER_HAND_BUTTON" = "손 내리기";
 
 /* A message appearing on the call view's raised hands toast suggesting the local user lower their hand because they have been speaking with it raised. */
-"RAISED_HANDS_TOAST_LOWER_YOUR_HAND_SUGGESTION" = "Lower your hand?";
+"RAISED_HANDS_TOAST_LOWER_YOUR_HAND_SUGGESTION" = "손을 내릴까요?";
 
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
 "RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@님이 손을 들었습니다.";
@@ -8893,11 +8932,23 @@
 /* Label for the row showing when the last on-device backup occurred. */
 "SETTINGS_LOCAL_FILE_BACKUPS_LAST_BACKUP_DATE" = "마지막 백업";
 
+/* Message for an action sheet when a user cannot perform a remote backup because a local backup is in progress */
+"SETTINGS_LOCAL_FILE_BACKUPS_LOCAL_BACKUP_IN_PROGRESS_MESSAGE" = "Unable to perform a Signal Secure Backup because an on-device backup is in progress. Try again later.";
+
+/* Message for an action sheet when a user cannot perform a local backup because a remote backup is in progress */
+"SETTINGS_LOCAL_FILE_BACKUPS_REMOTE_BACKUP_IN_PROGRESS_MESSAGE" = "Unable to perform an on-device backup because a Signal Secure Backup is in progress. Try again later.";
+
 /* Footer text on the on-device backups settings page explaining how to restore a backup. */
 "SETTINGS_LOCAL_FILE_BACKUPS_RESTORE_FOOTER" = "백업을 복원하려면 Signal을 다시 설치해 주세요. 설치한 후에는 앱을 열고 '복원 또는 이전'을 탭한 다음, '기기 내 백업'을 선택해 주세요.";
 
 /* Label for the button that turns off on-device backups. */
-"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "백업 끄기";
+"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "Turn Off & Delete Backup";
+
+/* Message shown on an action sheet when a user's backup fails to delete. Embeds {{ local file backup location }} */
+"SETTINGS_LOCAL_FILE_BACKUPS_TURNING_OFF_ERROR_MESSAGE_FORMAT" = "Your backup could not be deleted due to an error. You must manually delete the folder. In the Files app, go to “%1$@” and manually delete the folder and its contents. No new backups will be created.";
+
+/* Title shown on an action sheet when a user's backup fails to delete */
+"SETTINGS_LOCAL_FILE_BACKUPS_TURNING_OFF_ERROR_TITLE" = "Couldn’t Delete Backup";
 
 /* Label for the row that shows the on-device backup recovery key. */
 "SETTINGS_LOCAL_FILE_BACKUPS_VIEW_RECOVERY_KEY" = "복구 키 보기";
@@ -8935,9 +8986,6 @@
 /* A setting controlling whether muted conversations are shown in the badge count */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "알림을 끈 대화 포함";
 
-/* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "앱 아이콘 배지";
-
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "휴대전화가 잠겨 있는 동안 통화 및 메시지 알림이 나타날 수 있습니다.";
 
@@ -8947,11 +8995,14 @@
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "연락처에 있는 사용자가 Signal에 가입한 경우";
 
-/* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "다음 경우에 알림";
-
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "알림";
+
+/* Header for the section of notification settings controlling the app icon's badge. */
+"SETTINGS_NOTIFICATIONS_APP_BADGE_SECTION" = "App Badge";
+
+/* Explanation for the switch controlling whether a notification is shown when a phone contact joins Signal. */
+"SETTINGS_NOTIFICATIONS_CONTACT_JOINED_SIGNAL_FOOTER" = "Show a notification when a phone contact joins Signal.";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "활성화";
@@ -9596,7 +9647,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "등록 잠금";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Signal에 전화번호를 다시 등록하려면 Signal PIN이 필요합니다.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Signal에 전화번호를 다시 등록할 때 Signal PIN을 입력하도록 설정합니다.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "메시지 입력 중 표시";
@@ -9621,6 +9672,9 @@
 
 /* action sheet item to open native messages app */
 "SHARE_ACTION_MESSAGE" = "메시지";
+
+/* Message for an action sheet shown when sharing fails because the device's date and time are incorrect. */
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_CLOCK_SKEW_MESSAGE" = "Your device’s date and time are incorrect, and Signal may not have sent your message. Open Settings to correct your device’s date and time.";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "%1$@ 님과의 안전 번호가 최근 변경되었습니다. 다시 보내기 전 메인 앱에서 검증해보세요.";
@@ -10328,7 +10382,7 @@
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "연락처에 없는 사용자입니다. 이 사용자를 차단할까요?";
 
 /* Title shown for a group when it's name isn't known. Visible for blocked groups whose name isn't known. */
-"UNKNOWN_GROUP" = "Unknown Group";
+"UNKNOWN_GROUP" = "알 수 없는 그룹";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "내 기기 중 하나에서 새 Signal 기능을 사용한 메시지를 보냈기에 여기에서는 처리되거나 표시할 수 없습니다.";

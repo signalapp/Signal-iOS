@@ -2203,6 +2203,15 @@
 /* Title for a view allowing users to choose a Backup plan. */
 "CHOOSE_BACKUP_PLAN_TITLE" = "揀備份計劃";
 
+/* Text on a screen shown when the app can't be used until the user corrects their device's date and time. Embeds {{ the device's current date and time, in UTC }}. */
+"CLOCK_SKEW_APP_BLOCKING_DEVICE_TIME_FORMAT" = "Your device’s time is %1$@ UTC.";
+
+/* Subtitle for a screen shown when the app can't be used until the user corrects their device's date and time. */
+"CLOCK_SKEW_APP_BLOCKING_SUBTITLE" = "Signal can’t be used while your device’s date and time are incorrect. Open Settings to correct them.";
+
+/* Title for a screen shown when the app can't be used until the user corrects their device's date and time. */
+"CLOCK_SKEW_APP_BLOCKING_TITLE" = "Date is Inaccurate";
+
 /* VoiceOver hint for an expanded collapse set button. */
 "COLLAPSE_SET_ACCESSIBILITY_HINT_COLLAPSE" = "隱藏更新";
 
@@ -5462,7 +5471,7 @@
 "LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "隨時閂咗備份";
 
 /* Subtitle for a view introducing local file backups during the onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "將你嘅訊息備份去你部機嘅資料夾。你嘅備份會用端對端加密，同埋可以將備份資料夾移去新裝置度嚟還原。";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages to a folder on your device. Your backup is end-to-end encrypted and can be restored by installing a new copy of Signal and choosing “Restore or Transfer“.";
 
 /* Title for a view introducing local file backups during the onboarding flow. */
 "LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "裝置上備份";
@@ -5475,6 +5484,24 @@
 
 /* Title text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
 "LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "揀一個資料夾";
+
+/* Warning shown when a user tries to enable local file backups with optimize media enabled */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET" = "You have Optimize Signal Storage on. If you want to include all media in your on-device backup, turn the setting off.";
+
+/* Message for a sheet warning the user about enabling Optimize Storage with local backups enabled. */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_BODY" = "Turning on “Optimize Signal storage“ will offload old media from your device. You can download it again at any time. It will also remove old media from your on-device backup.";
+
+/* Title for a sheet warning the user about enabling Optimize Storage with local backups enabled. */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_TITLE" = "Media Will Be Removed From Your On-Device Backup";
+
+/* Action in a sheet warning the user about enabling Optimize Storage with local backups enabled, that turns on Optimize Storage. */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_TURN_ON" = "Turn on";
+
+/* Action in an action sheet offering to continue anyway. */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_CONTINUE" = "Continue Without Turning Off";
+
+/* Action in an action sheet offering to go to the optimize local storage setting. */
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_VIEW_SETTING" = "View Setting";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "查名或者地址";
@@ -6283,6 +6310,9 @@
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "俾自己嘅筆記";
 
+/* Body for a notification shown when Signal can't fetch messages because the device's date and time are incorrect. */
+"NOTIFICATION_BODY_CLOCK_SKEW" = "Signal can’t receive messages while your device’s date and time are incorrect. Open Settings to correct them.";
+
 /* Body for a notification representing a message request. */
 "NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "訊息請求";
 
@@ -6379,6 +6409,12 @@
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "係咪要飛過唔打 PIN 碼？";
 
+/* Subtitle for the sheet that lets users pick from available local backups to restore. */
+"ONBOARDING_CHOOSE_BACKUP_SHEET_SUBTITLE" = "Choosing an older backup may result in lost messages or media.";
+
+/* Title for the sheet that lets users pick from available local backups to restore. */
+"ONBOARDING_CHOOSE_BACKUP_SHEET_TITLE" = "Choose a Backup to Restore";
+
 /* The body for the device transfer 'choice' view 'restore backup' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "由你嘅「Signal 備份」度還原帳戶同埋訊息";
 
@@ -6429,6 +6465,9 @@
 
 /* Backup content list item describing free media. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_PAID" = "你嘅所有媒體";
+
+/* Text for action button that opens a picker to choose an older local backup. */
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_CHOOSE_OLDER_ACTION" = "Choose an Older Backup";
 
 /* Text for action button confirming the restore. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "還原備份";
@@ -7709,7 +7748,7 @@
 "RAISED_HANDS_LOWER_HAND_BUTTON" = "放低";
 
 /* A message appearing on the call view's raised hands toast suggesting the local user lower their hand because they have been speaking with it raised. */
-"RAISED_HANDS_TOAST_LOWER_YOUR_HAND_SUGGESTION" = "Lower your hand?";
+"RAISED_HANDS_TOAST_LOWER_YOUR_HAND_SUGGESTION" = "係咪想放低手？";
 
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
 "RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ 舉咗手";
@@ -8893,11 +8932,23 @@
 /* Label for the row showing when the last on-device backup occurred. */
 "SETTINGS_LOCAL_FILE_BACKUPS_LAST_BACKUP_DATE" = "上一次備份";
 
+/* Message for an action sheet when a user cannot perform a remote backup because a local backup is in progress */
+"SETTINGS_LOCAL_FILE_BACKUPS_LOCAL_BACKUP_IN_PROGRESS_MESSAGE" = "Unable to perform a Signal Secure Backup because an on-device backup is in progress. Try again later.";
+
+/* Message for an action sheet when a user cannot perform a local backup because a remote backup is in progress */
+"SETTINGS_LOCAL_FILE_BACKUPS_REMOTE_BACKUP_IN_PROGRESS_MESSAGE" = "Unable to perform an on-device backup because a Signal Secure Backup is in progress. Try again later.";
+
 /* Footer text on the on-device backups settings page explaining how to restore a backup. */
 "SETTINGS_LOCAL_FILE_BACKUPS_RESTORE_FOOTER" = "要還原一個備份嘅話，請首先重新安裝 Signal。開返個 APP 出嚟，㩒一下「還原或者轉移」然後揀「裝置上備份」。";
 
 /* Label for the button that turns off on-device backups. */
-"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "閂咗個備份";
+"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "Turn Off & Delete Backup";
+
+/* Message shown on an action sheet when a user's backup fails to delete. Embeds {{ local file backup location }} */
+"SETTINGS_LOCAL_FILE_BACKUPS_TURNING_OFF_ERROR_MESSAGE_FORMAT" = "Your backup could not be deleted due to an error. You must manually delete the folder. In the Files app, go to “%1$@” and manually delete the folder and its contents. No new backups will be created.";
+
+/* Title shown on an action sheet when a user's backup fails to delete */
+"SETTINGS_LOCAL_FILE_BACKUPS_TURNING_OFF_ERROR_TITLE" = "Couldn’t Delete Backup";
 
 /* Label for the row that shows the on-device backup recovery key. */
 "SETTINGS_LOCAL_FILE_BACKUPS_VIEW_RECOVERY_KEY" = "睇下個恢復金鑰";
@@ -8935,9 +8986,6 @@
 /* A setting controlling whether muted conversations are shown in the badge count */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "包埋靜音聊天";
 
-/* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "未讀數字";
-
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "就算您部電話未解鎖，畫面都可能會顯示通話同訊息通知。";
 
@@ -8947,11 +8995,14 @@
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "聯絡人開咗 Signal";
 
-/* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "通知我…";
-
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "通知";
+
+/* Header for the section of notification settings controlling the app icon's badge. */
+"SETTINGS_NOTIFICATIONS_APP_BADGE_SECTION" = "App Badge";
+
+/* Explanation for the switch controlling whether a notification is shown when a phone contact joins Signal. */
+"SETTINGS_NOTIFICATIONS_CONTACT_JOINED_SIGNAL_FOOTER" = "Show a notification when a phone contact joins Signal.";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "啟用";
@@ -9621,6 +9672,9 @@
 
 /* action sheet item to open native messages app */
 "SHARE_ACTION_MESSAGE" = "訊息";
+
+/* Message for an action sheet shown when sharing fails because the device's date and time are incorrect. */
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_CLOCK_SKEW_MESSAGE" = "Your device’s date and time are incorrect, and Signal may not have sent your message. Open Settings to correct your device’s date and time.";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "你同 %1$@ 嘅安全碼最近已變更。 你可以喺主應用程式驗證咗安全碼先再傳送訊息。";
@@ -10328,7 +10382,7 @@
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "呢個用戶唔喺你嘅通訊錄入面。你係咪要封鎖佢呀？";
 
 /* Title shown for a group when it's name isn't known. Visible for blocked groups whose name isn't known. */
-"UNKNOWN_GROUP" = "Unknown Group";
+"UNKNOWN_GROUP" = "不明嘅群組";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "你其中一部裝置用咗 Signal 嘅全新功能傳送訊息，我哋冇辦法處理或者顯示嗰個訊息。";
