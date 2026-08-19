@@ -504,7 +504,7 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
             Logger.info("AVAudioSession changed from [category: \(oldCategory.rawValue), mode: \(oldMode.rawValue), options: \(oldOptions)] to [category: \(category.rawValue), mode: \(mode.rawValue), options: \(options)]")
         } catch {
             let message = "AVAudioSession failed to change from [category: \(oldCategory.rawValue), mode: \(oldMode.rawValue), options: \(oldOptions)] to [category: \(category.rawValue), mode: \(mode.rawValue), options: \(options)] with error: \(error)"
-            owsFailDebug(message)
+            Logger.error(message)
         }
 
         self.delegate?.callAudioServiceDidChangeAudioSession(self)
