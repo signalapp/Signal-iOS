@@ -62,7 +62,7 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
             "\n",
             CommonStrings.learnMore.styled(with: .link(Self.learnMoreURL)),
         ])
-        .styled(with: defaultFooterTextStyle)
+        .styled(with: Self.defaultFooterTextStyle)
         section.footerTextViewDelegate = self
         section.shouldDisableCellSelection = true
 

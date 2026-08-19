@@ -126,7 +126,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             " ",
             CommonStrings.learnMore.styled(with: .link(URL.Support.proxies)),
         ])
-        .styled(with: defaultFooterTextStyle)
+        .styled(with: Self.defaultFooterTextStyle)
 
         proxySection.add(.disclosureItem(
             withText: OWSLocalizedString(
@@ -192,7 +192,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 ),
                 " ",
                 CommonStrings.learnMore.styled(with: .link(URL.Support.keyTransparency)),
-            ]).styled(with: defaultFooterTextStyle)
+            ]).styled(with: Self.defaultFooterTextStyle)
 
             contents.add(keyTransparencySection)
         }
@@ -275,7 +275,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                     with: .link(URL(string: "https://signal.org/blog/sealed-sender/")!),
                 ),
             ])
-            .styled(with: defaultFooterTextStyle)
+            .styled(with: Self.defaultFooterTextStyle)
 
         }
 

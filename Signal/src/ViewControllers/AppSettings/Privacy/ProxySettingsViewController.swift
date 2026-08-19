@@ -87,7 +87,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
             " ",
             CommonStrings.learnMore.styled(with: .link(URL.Support.proxies)),
         ])
-        .styled(with: defaultFooterTextStyle)
+        .styled(with: Self.defaultFooterTextStyle)
 
         useProxySection.add(.switch(
             withText: OWSLocalizedString("USE_PROXY_BUTTON", comment: "Button to activate the signal proxy"),
@@ -103,7 +103,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
         let proxyAddressSection = OWSTableSection()
         proxyAddressSection.headerAttributedTitle = OWSLocalizedString("PROXY_ADDRESS", comment: "The title for the address of the signal proxy")
             .styled(
-                with: .color(defaultHeaderTextColor.withAlphaComponent(useProxy ? 1 : 0.25)),
+                with: .color(Self.defaultHeaderTextColor.withAlphaComponent(useProxy ? 1 : 0.25)),
                 .font(Self.defaultHeaderFont),
             )
         proxyAddressSection.add(.init(

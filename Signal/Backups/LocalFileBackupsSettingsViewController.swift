@@ -383,7 +383,7 @@ class LocalFileBackupsSettingsViewController: OWSTableViewController2 {
         ])
         .styled(
             with: .font(font),
-            .color(defaultFooterTextColor),
+            .color(Self.defaultFooterTextColor),
         )
 
         return section

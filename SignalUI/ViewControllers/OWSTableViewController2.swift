@@ -14,8 +14,9 @@ public protocol OWSTableViewControllerDelegate: AnyObject {
 // when performance is not critical, e.g. when the table
 // only holds a screenful or two of cells and it's safe to
 // retain a view model for each cell in memory at all times.
-open class OWSTableViewController2: OWSViewController, OWSNavigationChildController {
-
+open class OWSTableViewController2: OWSViewController, OWSNavigationChildController, OWSTableViewDelegate,
+    UITableViewDataSource, UITableViewDelegate
+{
     public weak var delegate: OWSTableViewControllerDelegate?
 
     public var contents: OWSTableContents {
@@ -35,7 +36,11 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
         applyContents(shouldReload: shouldReload)
     }
 
-    public let tableView = OWSTableView(frame: .zero, style: .insetGrouped)
+    public lazy var tableView: UITableView = {
+        let tableView = OWSTableView(frame: .zero, style: .insetGrouped)
+        tableView.tableViewDelegate = self
+        return tableView
+    }()
 
     // This is an alternative to/replacement for UITableView.tableHeaderView.
     //
@@ -98,8 +103,6 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
         // We also do this in applyTheme(), but we also need to do it here
         // for the case where we push multiple table views at the same time.
         Self.removeBackButtonText(viewController: self)
-
-        tableView.tableViewDelegate = self
     }
 
     override open func viewDidLoad() {
@@ -358,7 +361,7 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
 
         updateTableMargins()
 
-        if let title = contents.title, !title.isEmpty {
+        if let title = contents.title?.nilIfEmpty {
             self.title = title
         }
 
@@ -401,11 +404,8 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
         wrapperStack.layoutMargins = layoutMargins
         return wrapperStack
     }
-}
 
-// MARK: - UITableViewDataSource, UITableViewDelegate
-
-extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
+    // MARK: - UITableViewDataSource, UITableViewDelegate
 
     public func tableView(_ tableView: UITableView, numberOfRowsInSection sectionIndex: Int) -> Int {
         guard let section = self.section(for: sectionIndex) else {
@@ -620,26 +620,26 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
     public static var defaultHeaderFont: UIFont { .dynamicTypeHeadlineClamped }
 
-    public var defaultHeaderTextColor: UIColor {
+    public static var defaultHeaderTextColor: UIColor {
         UIColor.Signal.label
     }
 
-    public var defaultHeaderTextStyle: BonMot.StringStyle {
-        return BonMot.StringStyle([
-            .font(Self.defaultHeaderFont),
+    public static var defaultHeaderTextStyle: BonMot.StringStyle {
+        BonMot.StringStyle([
+            .font(defaultHeaderFont),
             .color(defaultHeaderTextColor),
         ])
     }
 
     public static var defaultFooterFont: UIFont { .dynamicTypeFootnoteClamped }
 
-    public var defaultFooterTextColor: UIColor {
+    public static var defaultFooterTextColor: UIColor {
         UIColor.Signal.secondaryLabel
     }
 
-    public var defaultFooterTextStyle: BonMot.StringStyle {
-        return BonMot.StringStyle([
-            .font(Self.defaultFooterFont),
+    public static var defaultFooterTextStyle: BonMot.StringStyle {
+        BonMot.StringStyle([
+            .font(defaultFooterFont),
             .color(defaultFooterTextColor),
         ])
     }
@@ -709,7 +709,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     public func buildHeaderTextView(withDeepInsets: Bool) -> UITextView {
         let textView = buildHeaderOrFooterTextView()
 
-        textView.textColor = defaultHeaderTextColor
+        textView.textColor = Self.defaultHeaderTextColor
         textView.font = Self.defaultHeaderFont
         textView.textContainerInset = headerTextContainerInsets(useDeepInsets: withDeepInsets)
 
@@ -725,11 +725,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     public func buildFooterTextView(withDeepInsets: Bool) -> UITextView {
         let textView = buildHeaderOrFooterTextView()
 
-        textView.textColor = defaultFooterTextColor
+        textView.textColor = Self.defaultFooterTextColor
         textView.font = Self.defaultFooterFont
-        textView.linkTextAttributes = [
-            .foregroundColor: forceDarkMode ? Theme.darkThemePrimaryColor : Theme.primaryTextColor,
-        ]
+        textView.linkTextAttributes = [.foregroundColor: UIColor.Signal.label]
         textView.textContainerInset = footerTextContainerInsets(useDeepInsets: withDeepInsets)
 
         return textView
@@ -1140,23 +1138,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         }
         return nil
     }
-}
 
-// MARK: -
+    // MARK: - OWSTableViewDelegate
 
-public extension UITableViewCell {
-    func addBackgroundView(backgroundColor: UIColor) {
-        let backgroundView = UIView()
-        backgroundView.backgroundColor = backgroundColor
-        contentView.addSubview(backgroundView)
-        contentView.sendSubviewToBack(backgroundView)
-        backgroundView.autoPinEdgesToSuperviewEdges()
-    }
-}
-
-// MARK: -
-
-extension OWSTableViewController2: OWSTableViewDelegate {
     func tableViewDidChangeWidth() {
         applyContents()
     }
@@ -1170,10 +1154,10 @@ private protocol OWSTableViewDelegate: AnyObject {
 
 // MARK: -
 
-public class OWSTableView: UITableView {
+private class OWSTableView: UITableView {
     fileprivate weak var tableViewDelegate: OWSTableViewDelegate?
 
-    override public var frame: CGRect {
+    override var frame: CGRect {
         didSet {
             let didChangeWidth = frame.width != oldValue.width
             if didChangeWidth {
@@ -1182,7 +1166,7 @@ public class OWSTableView: UITableView {
         }
     }
 
-    override public var bounds: CGRect {
+    override var bounds: CGRect {
         didSet {
             let didChangeWidth = bounds.width != oldValue.width
             if didChangeWidth {
