@@ -63,8 +63,8 @@ public extension HydratedMessageBody.DisplayConfiguration {
         return .init(
             baseFont: .defaultBaseFont,
             baseTextColor: .fixed(.Signal.label),
-            mentionBackgroundColor: .fixed(.Signal.secondaryLabel),
-            revealedSpoilerBgColor: .fixed(.Signal.secondaryLabel),
+            mentionBackgroundColor: .incomingMessageBubbleMentionBg,
+            revealedSpoilerBgColor: .incomingMessageBubbleMentionBg,
             revealAllSpoilers: true,
         )
     }
