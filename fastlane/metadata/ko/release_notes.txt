@@ -1,1 +1,1 @@
-• We added a convenient shortcut to quickly lower your hand after you start speaking during a Signal group call. It's hands down our favorite feature in this release.
+• Signal 그룹 통화 중에 발언을 시작한 후 손을 바로 내릴 수 있는 편리한 단축키를 추가했습니다.
