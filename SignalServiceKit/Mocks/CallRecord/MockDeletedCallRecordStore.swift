@@ -27,6 +27,10 @@ class MockDeletedCallRecordStore: DeletedCallRecordStore {
         _ = deletedCallRecords.removeFirst { expiredDeletedCallRecord.matches($0) }
     }
 
+    func deleteRecords(forThreadId threadId: TSThread.RowId, tx: DBWriteTransaction) {
+        deletedCallRecords.removeAll(where: { $0.conversationId == .thread(threadRowId: threadId) })
+    }
+
     func nextDeletedRecord(tx: DBReadTransaction) -> DeletedCallRecord? {
         return deletedCallRecords.min(by: { $0.deletedAtTimestamp < $1.deletedAtTimestamp })
     }

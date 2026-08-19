@@ -458,6 +458,7 @@ extension ThreadMerger {
         let threadRemover = ThreadRemoverImpl(
             chatColorSettingStore: chatColorSettingStore,
             databaseStorage: ThreadRemover_MockDatabaseStorage(),
+            deletedCallRecordStore: DeletedCallRecordStoreImpl(),
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             lastVisibleInteractionStore: LastVisibleInteractionStore(),
             threadAssociatedDataStore: threadAssociatedDataStore,

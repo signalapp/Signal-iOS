@@ -17,6 +17,7 @@ public protocol ThreadRemover {
 class ThreadRemoverImpl: ThreadRemover {
     private let chatColorSettingStore: ChatColorSettingStore
     private let databaseStorage: Shims.DatabaseStorage
+    private let deletedCallRecordStore: any DeletedCallRecordStore
     private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
     private let lastVisibleInteractionStore: LastVisibleInteractionStore
     private let threadAssociatedDataStore: ThreadAssociatedDataStore
@@ -28,6 +29,7 @@ class ThreadRemoverImpl: ThreadRemover {
     init(
         chatColorSettingStore: ChatColorSettingStore,
         databaseStorage: Shims.DatabaseStorage,
+        deletedCallRecordStore: any DeletedCallRecordStore,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         lastVisibleInteractionStore: LastVisibleInteractionStore,
         threadAssociatedDataStore: ThreadAssociatedDataStore,
@@ -38,6 +40,7 @@ class ThreadRemoverImpl: ThreadRemover {
     ) {
         self.chatColorSettingStore = chatColorSettingStore
         self.databaseStorage = databaseStorage
+        self.deletedCallRecordStore = deletedCallRecordStore
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.lastVisibleInteractionStore = lastVisibleInteractionStore
         self.threadAssociatedDataStore = threadAssociatedDataStore
@@ -48,8 +51,10 @@ class ThreadRemoverImpl: ThreadRemover {
     }
 
     func remove(_ thread: TSThread, tx: DBWriteTransaction) {
+        let threadId = thread.id.owsFailUnwrap("must have rowid")
         chatColorSettingStore.setRawSetting(nil, for: thread.uniqueId, tx: tx)
         databaseStorage.updateIdMapping(thread: thread, tx: tx)
+        deletedCallRecordStore.deleteRecords(forThreadId: threadId, tx: tx)
         disappearingMessagesConfigurationStore.remove(for: thread, tx: tx)
         threadAssociatedDataStore.remove(for: thread.uniqueId, tx: tx)
         threadReplyInfoStore.remove(for: thread.uniqueId, tx: tx)

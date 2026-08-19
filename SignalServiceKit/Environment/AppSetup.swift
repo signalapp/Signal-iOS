@@ -940,6 +940,7 @@ extension AppSetup.GlobalsContinuation {
         let threadRemover = ThreadRemoverImpl(
             chatColorSettingStore: chatColorSettingStore,
             databaseStorage: ThreadRemoverImpl.Wrappers.DatabaseStorage(databaseStorage),
+            deletedCallRecordStore: deletedCallRecordStore,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             lastVisibleInteractionStore: lastVisibleInteractionStore,
             threadAssociatedDataStore: threadAssociatedDataStore,

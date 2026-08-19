@@ -38,6 +38,12 @@ protocol DeletedCallRecordStore {
         intoThreadRowId intoRowId: TSThread.RowId,
         tx: DBWriteTransaction,
     )
+
+    /// Deletes records related to the specified thread.
+    func deleteRecords(
+        forThreadId threadId: TSThread.RowId,
+        tx: DBWriteTransaction,
+    )
 }
 
 extension DeletedCallRecordStore {
@@ -118,6 +124,14 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
             try expiredDeletedCallRecord.delete(tx.database)
         } catch let error {
             owsFailBeta("Failed to delete expired deleted call record: \(error)")
+        }
+    }
+
+    func deleteRecords(forThreadId threadId: TSThread.RowId, tx: DBWriteTransaction) {
+        failIfThrows {
+            try DeletedCallRecord
+                .filter(Column(DeletedCallRecord.CodingKeys.threadRowId.rawValue) == threadId)
+                .deleteAll(tx.database)
         }
     }
 
