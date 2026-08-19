@@ -100,12 +100,6 @@ private struct LazyIndexMigrator {
 
         try Task.checkCancellation()
         await databaseStorage.awaitableWrite { tx in
-            logger.info("Rebuilding timestamp index.")
-            try! GRDBSchemaMigrator.rebuildInteractionTimestampIndex(tx: tx)
-        }
-
-        try Task.checkCancellation()
-        await databaseStorage.awaitableWrite { tx in
             logger.info("Rebuilding unended groupCall index.")
             try! GRDBSchemaMigrator.rebuildInteractionUnendedGroupCallIndex(tx: tx)
         }
