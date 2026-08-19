@@ -310,7 +310,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         do {
             _ = try await networkManager.asyncRequest(request)
         } catch SignalError.connectionInvalidated {
-            Logger.warn("Connection was invalidated -- we this device (or account) was probably deleted.")
+            Logger.warn("Connection was invalidated -- this device (or account) was probably deleted.")
             // The server closed the connection before we got a response. This almost
             // certainly happened because this device is no longer registered, but
             // `connectionInvalidated` may happen for other reasons. This is (sort of)
