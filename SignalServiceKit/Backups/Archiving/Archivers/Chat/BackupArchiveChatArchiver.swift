@@ -202,8 +202,11 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveMultiFrameResult {
+        guard let groupIdentifier = try? GroupIdentifier(contents: thread.groupId) else {
+            return .partialSuccess([.archiveFrameError(.groupThreadMissingId)])
+        }
         let recipientAddress = BackupArchive.RecipientArchivingContext.Address.group(
-            BackupArchive.GroupId(groupModel: thread.groupModel),
+            BackupArchive.GroupId(groupId: groupIdentifier.serialize()),
         )
         guard let recipientId = context.recipientContext[recipientAddress] else {
             return .partialSuccess([.archiveFrameError(.referencedRecipientIdMissing(recipientAddress))])

@@ -47,8 +47,8 @@ extension BackupArchive {
     public struct GroupId: Hashable {
         let value: Data
 
-        init(groupModel: TSGroupModel) {
-            self.value = groupModel.groupId
+        init(groupId: Data) {
+            self.value = groupId
         }
     }
 

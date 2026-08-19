@@ -22,13 +22,6 @@ public final class BackupArchiveThreadStore {
         try threadStore.enumerateNonStoryThreads(tx: tx, block: block)
     }
 
-    func enumerateGroupThreads(
-        tx: DBReadTransaction,
-        block: (TSGroupThread) throws(CancellationError) -> Bool,
-    ) throws(CancellationError) {
-        try threadStore.enumerateGroupThreads(tx: tx, block: block)
-    }
-
     func enumerateStoryThreads(
         tx: DBReadTransaction,
         block: (TSPrivateStoryThread) throws(CancellationError) -> Bool,
@@ -48,6 +41,10 @@ public final class BackupArchiveThreadStore {
         tx: DBReadTransaction,
     ) -> TSContactThread? {
         return threadStore.fetchContactThread(recipient: recipient, tx: tx)
+    }
+
+    func fetchThread(forGroupId groupId: GroupIdentifier, tx: DBReadTransaction) -> TSGroupThread? {
+        return threadStore.fetchThread(forGroupId: groupId, tx: tx)
     }
 
     // MARK: - Restoring
@@ -70,7 +67,7 @@ public final class BackupArchiveThreadStore {
     }
 
     func insertGroupThread(
-        masterKey: GroupMasterKey,
+        groupRecord: inout GroupRecord,
         groupModel: TSGroupModelV2,
         isStorySendEnabled: Bool?,
         context: BackupArchive.RestoringContext,
@@ -85,12 +82,7 @@ public final class BackupArchiveThreadStore {
             groupThread.storyViewMode = .default
         }
         try groupThread.insert(context.tx.database)
-        _ = GroupRecord.insertRecord(
-            groupId: groupModel.groupId,
-            threadId: groupThread.sqliteRowId.owsFailUnwrap("must exist"),
-            masterKey: masterKey,
-            tx: context.tx,
-        )
+        groupRecord.setThreadId(groupThread.sqliteRowId.owsFailUnwrap("must exist"), tx: context.tx)
         return groupThread
     }
 

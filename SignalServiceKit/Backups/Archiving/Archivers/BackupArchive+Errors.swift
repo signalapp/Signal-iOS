@@ -60,6 +60,11 @@ extension BackupArchive {
             /// A contact thread has an invalid or missing address information, causing the
             /// thread to be skipped.
             case contactThreadMissingAddress
+
+            /// A group thread has an invalid or missing ID, causing the thread to be
+            /// skipped.
+            case groupThreadMissingId
+
             /// There was a message in a contact thread with a recipient that was not self
             /// or the contact in the thread. We can recover from this and know
             /// historical bugs made it possible, but we log it nonetheless.
@@ -300,6 +305,7 @@ extension BackupArchive {
                 .referencedThreadIdMissing,
                 .referencedCustomChatColorMissing,
                 .contactThreadMissingAddress,
+                .groupThreadMissingId,
                 .incomingMessageFromSelf,
                 .nonSelfAuthorInNoteToSelf,
                 .messageFromOtherRecipientInContactThread:
@@ -458,6 +464,8 @@ extension BackupArchive {
                 // These cause us to drop the TSThread from the backup, but
                 // we can mark these as warnings. If these threads have
                 // any messages in them, those will fail at log level error.
+                return .warning
+            case .groupThreadMissingId:
                 return .warning
             case .profileChangeUpdateMissingNames:
                 // We've seen real world databases with profileChange TSInfoMessages

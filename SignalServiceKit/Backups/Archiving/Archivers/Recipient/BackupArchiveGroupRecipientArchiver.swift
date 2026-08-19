@@ -64,11 +64,11 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
             try context.bencher.wrapEnumeration(
                 tx: context.tx,
                 enumerationBlock: { tx, block throws(CancellationError) in
-                    try threadStore.enumerateGroupThreads(tx: tx, block: block)
+                    try enumerateGroups(tx: tx, block: block)
                 },
-                perEnumerantBlock: { [self] groupThread, frameBencher -> Bool in
+                perEnumerantBlock: { [self] groupRecord, frameBencher -> Bool in
                     archiveGroupThread(
-                        groupThread,
+                        groupRecord,
                         blockedGroupIds: blockedGroupIds,
                         stream: stream,
                         frameBencher: frameBencher,
@@ -88,59 +88,107 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
         }
     }
 
+    /// Enumerates GroupRecords; adds a boolean "stop" result.
+    private func enumerateGroups(
+        tx: DBReadTransaction,
+        block: (GroupRecord) throws(CancellationError) -> Bool,
+    ) throws(CancellationError) {
+        enum StopError: Error {
+            case stopError
+            case cancellationError(CancellationError)
+        }
+        do throws(StopError) {
+            try GroupStore().enumerateGroups(tx: tx) { (groupRecord) throws(StopError) in
+                let result: Bool
+                do throws(CancellationError) {
+                    result = try block(groupRecord)
+                } catch {
+                    throw .cancellationError(error)
+                }
+                guard result else {
+                    throw .stopError
+                }
+            }
+        } catch {
+            switch error {
+            case .cancellationError(let error):
+                throw error
+            case .stopError:
+                break
+            }
+        }
+    }
+
+    /// If true, we should back up this group. If false, it's a group pending
+    /// deletion that should be skipped.
+    private func isValid(groupProto group: BackupProto_Group) -> Bool {
+        return group.blocked || (group.hasSnapshot && !isMissing(groupSnapshot: group.snapshot))
+    }
+
+    private func isMissing(groupSnapshot snapshot: BackupProto_Group.GroupSnapshot) -> Bool {
+        return snapshot.version == 0 && snapshot.members.isEmpty
+    }
+
     private func archiveGroupThread(
-        _ groupThread: TSGroupThread,
+        _ groupRecord: GroupRecord,
         blockedGroupIds: Set<Data>,
         stream: BackupArchiveProtoOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.RecipientArchivingContext,
         errors: inout [ArchiveFrameError],
     ) {
-        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+        guard let groupId = try? GroupIdentifier(contents: groupRecord.groupId) else {
+            // Not a GV2 group.
             return
         }
 
-        let groupId = GroupId(groupModel: groupModel)
-        let groupMembership = groupModel.groupMembership
+        let groupPair: (thread: TSGroupThread, model: TSGroupModelV2)?
+        if let groupThread = threadStore.fetchThread(forGroupId: groupId, tx: context.tx) {
+            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                // Also not a GV2 group.
+                return
+            }
+            groupPair = (groupThread, groupModel)
+        } else {
+            groupPair = nil
+        }
 
-        let groupAppId: RecipientAppId = .group(groupId)
-
-        let groupMasterKey: Data
-        do {
-            let groupSecretParams = try GroupSecretParams(contents: groupModel.secretParamsData)
-            groupMasterKey = try groupSecretParams.getMasterKey().serialize()
-        } catch {
-            errors.append(.archiveFrameError(.groupMasterKeyError(error)))
+        guard let masterKey = groupRecord.masterKey else {
+            errors.append(.archiveFrameError(.groupMasterKeyError(OWSGenericError("missing master key"))))
             return
         }
 
         var group = BackupProto_Group()
-        group.masterKey = groupMasterKey
-        group.whitelisted = profileManager.isGroupId(
-            inProfileWhitelist: groupId.value,
-            tx: context.tx,
-        )
-        group.blocked = blockedGroupIds.contains(groupId.value)
-        do {
-            group.hideStory = try storyStore.getOrCreateStoryContextAssociatedData(
-                for: groupThread,
-                context: context,
-            ).isHidden
-        } catch let error {
-            errors.append(.archiveFrameError(.unableToReadStoryContextAssociatedData(error)))
-        }
-        group.storySendMode = { () -> BackupProto_Group.StorySendMode in
-            switch groupThread.storyViewMode {
-            case .disabled: return .disabled
-            case .explicit, .blockList: return .enabled
-            case .default: return .default
+        group.masterKey = masterKey.serialize()
+        group.blocked = blockedGroupIds.contains(groupId.serialize())
+        if let groupPair {
+            group.whitelisted = profileManager.isGroupId(
+                inProfileWhitelist: groupId.serialize(),
+                tx: context.tx,
+            )
+            do {
+                group.hideStory = try storyStore.getOrCreateStoryContextAssociatedData(
+                    for: groupPair.thread,
+                    context: context,
+                ).isHidden
+            } catch let error {
+                errors.append(.archiveFrameError(.unableToReadStoryContextAssociatedData(error)))
             }
-        }()
-        group.avatarColor = avatarDefaultColorManager.defaultColor(
-            useCase: .group(groupId: groupId.value),
-            tx: context.tx,
-        ).asBackupProtoAvatarColor
-        group.snapshot = { () -> BackupProto_Group.GroupSnapshot in
+            group.storySendMode = { () -> BackupProto_Group.StorySendMode in
+                switch groupPair.thread.storyViewMode {
+                case .disabled: return .disabled
+                case .explicit, .blockList: return .enabled
+                case .default: return .default
+                }
+            }()
+            group.avatarColor = avatarDefaultColorManager.defaultColor(
+                useCase: .group(groupId: groupId.serialize()),
+                tx: context.tx,
+            ).asBackupProtoAvatarColor
+
+            let groupModel = groupPair.model
+            let groupMembership = groupModel.groupMembership
+
             var groupSnapshot = BackupProto_Group.GroupSnapshot()
             groupSnapshot.avatarURL = groupModel.avatarUrlPath ?? ""
             groupSnapshot.version = groupModel.revision
@@ -153,7 +201,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
                 groupSnapshot.description_p = .buildDescriptionText(groupDescription)
             }
             if
-                let dmConfiguration = disappearingMessageConfigStore.fetch(for: .thread(groupThread), tx: context.tx),
+                let dmConfiguration = disappearingMessageConfigStore.fetch(for: .thread(groupPair.thread), tx: context.tx),
                 dmConfiguration.isEnabled
             {
                 let durationSeconds = dmConfiguration.durationSeconds
@@ -217,15 +265,21 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
 
             groupSnapshot.terminated = groupModel.isTerminated
 
-            return groupSnapshot
-        }()
+            group.snapshot = groupSnapshot
+        } else {
+            group.snapshot = BackupProto_Group.GroupSnapshot()
+        }
+
+        guard isValid(groupProto: group) else {
+            return
+        }
 
         let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
             stream,
             frameBencher: frameBencher,
             frameBuilder: {
                 var recipient = BackupProto_Recipient()
-                let recipientId = context.assignRecipientId(to: groupAppId)
+                let recipientId = context.assignRecipientId(to: .group(GroupId(groupId: groupId.serialize())))
                 recipient.id = recipientId.value
                 recipient.destination = .group(group)
 
@@ -253,200 +307,212 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
 
         // MARK: Assemble the group model
 
-        let groupContextInfo: GroupV2ContextInfo
-        let groupMasterKey: GroupMasterKey
+        let masterKey: GroupMasterKey
         do {
-            groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupProto.masterKey)
-            groupMasterKey = try groupContextInfo.groupSecretParams.getMasterKey()
+            masterKey = try GroupMasterKey(contents: groupProto.masterKey)
         } catch {
             return restoreFrameError(.invalidProtoData(.invalidGV2MasterKey))
         }
+        let secretParams = failIfThrows {
+            return try GroupSecretParams.deriveFromMasterKey(groupMasterKey: masterKey)
+        }
+        let groupId = failIfThrows {
+            return try secretParams.getPublicParams().getGroupIdentifier()
+        }
+        let groupId2 = GroupId(groupId: groupId.serialize())
 
         guard groupProto.hasSnapshot else {
             return restoreFrameError(.invalidProtoData(.missingGV2GroupSnapshot))
         }
+
+        var groupRecord = GroupStore().fetchGroupOrInsert(secretParams: secretParams, tx: context.tx)
+
         let groupSnapshot = groupProto.snapshot
-
-        var groupMembershipBuilder = GroupMembership.Builder()
-        var fullGroupMemberAcis = Set<Aci>()
-        for fullMember in groupSnapshot.members {
-            guard let aci = try? Aci.parseFrom(serviceIdBinary: fullMember.userID) else {
-                return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.Member.self)))
-            }
-            let role = TSGroupMemberRole(backupProtoRole: fullMember.role)
-
-            groupMembershipBuilder.addFullMember(aci, role: role)
-            fullGroupMemberAcis.insert(aci)
-        }
-        for invitedMember in groupSnapshot.membersPendingProfileKey {
-            guard invitedMember.hasMember else {
-                return restoreFrameError(.invalidProtoData(.invitedGV2MemberMissingMemberDetails))
-            }
-            let memberDetails = invitedMember.member
-            guard let serviceId = try? ServiceId.parseFrom(serviceIdBinary: memberDetails.userID) else {
-                return restoreFrameError(.invalidProtoData(.invalidServiceId(protoClass: BackupProto_Group.MemberPendingProfileKey.self)))
-            }
-            let role = TSGroupMemberRole(backupProtoRole: memberDetails.role)
-            guard let addedByAci = try? Aci.parseFrom(serviceIdBinary: invitedMember.addedByUserID) else {
-                return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.MemberPendingProfileKey.self)))
-            }
-
-            groupMembershipBuilder.addInvitedMember(
-                serviceId,
-                role: role,
-                addedByAci: addedByAci,
-            )
-        }
-        for requestingMember in groupSnapshot.membersPendingAdminApproval {
-            guard let aci = try? Aci.parseFrom(serviceIdBinary: requestingMember.userID) else {
-                return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.MemberPendingAdminApproval.self)))
-            }
-
-            groupMembershipBuilder.addRequestingMember(aci)
-        }
-        for bannedMember in groupSnapshot.membersBanned {
-            guard let aci = try? Aci.parseFrom(serviceIdBinary: bannedMember.userID) else {
-                return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.MemberBanned.self)))
-            }
-            let bannedAtTimestampMillis = bannedMember.timestamp
-
-            groupMembershipBuilder.addBannedMember(
-                aci,
-                bannedAtTimestamp: bannedAtTimestampMillis,
-            )
-        }
+        // TODO: Use `== nil` for this check.
+        let isGroupSnapshotMissing = isMissing(groupSnapshot: groupSnapshot)
 
         var partialErrors = [BackupArchive.RestoreFrameError]()
 
-        for member in groupSnapshot.members {
-            guard let aci = try? Aci.parseFrom(serviceIdBinary: member.userID) else {
-                return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.Member.self)))
-            }
-            if !member.labelString.isEmpty {
-                guard
-                    member.labelString.lengthOfBytes(using: .utf8) <= 96,
-                    member.labelString.count <= 24,
-                    member.labelEmoji.lengthOfBytes(using: .utf8) <= 48
-                else {
-                    partialErrors.append(.restoreFrameError(.invalidProtoData(.invalidMemberLabel)))
-                    continue
+        if !isGroupSnapshotMissing {
+            var groupMembershipBuilder = GroupMembership.Builder()
+            var fullGroupMemberAcis = Set<Aci>()
+            for fullMember in groupSnapshot.members {
+                guard let aci = try? Aci.parseFrom(serviceIdBinary: fullMember.userID) else {
+                    return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.Member.self)))
                 }
-                let emoji: String? = member.labelEmoji.isEmpty ? nil : member.labelEmoji
-                groupMembershipBuilder.setMemberLabel(label: MemberLabel(label: member.labelString, labelEmoji: emoji), aci: aci)
+                let role = TSGroupMemberRole(backupProtoRole: fullMember.role)
+
+                groupMembershipBuilder.addFullMember(aci, role: role)
+                fullGroupMemberAcis.insert(aci)
             }
-        }
+            for invitedMember in groupSnapshot.membersPendingProfileKey {
+                guard invitedMember.hasMember else {
+                    return restoreFrameError(.invalidProtoData(.invitedGV2MemberMissingMemberDetails))
+                }
+                let memberDetails = invitedMember.member
+                guard let serviceId = try? ServiceId.parseFrom(serviceIdBinary: memberDetails.userID) else {
+                    return restoreFrameError(.invalidProtoData(.invalidServiceId(protoClass: BackupProto_Group.MemberPendingProfileKey.self)))
+                }
+                let role = TSGroupMemberRole(backupProtoRole: memberDetails.role)
+                guard let addedByAci = try? Aci.parseFrom(serviceIdBinary: invitedMember.addedByUserID) else {
+                    return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.MemberPendingProfileKey.self)))
+                }
 
-        var groupModelBuilder = TSGroupModelBuilder(secretParams: groupContextInfo.groupSecretParams)
-        groupModelBuilder.groupV2Revision = groupSnapshot.version
-        groupModelBuilder.name = groupSnapshot.extractTitle
-        groupModelBuilder.descriptionText = groupSnapshot.extractDescriptionText
-        // We'll try and download the avatar later. For now, leave it explicitly missing.
-        groupModelBuilder.avatarDataState = .missing
-        groupModelBuilder.avatarUrlPath = groupSnapshot.avatarURL.nilIfEmpty
-        groupModelBuilder.groupMembership = groupMembershipBuilder.build()
-        groupModelBuilder.groupAccess = GroupAccess(backupProtoAccessControl: groupSnapshot.accessControl)
-        groupModelBuilder.inviteLinkPassword = groupSnapshot.inviteLinkPassword.nilIfEmpty
-        groupModelBuilder.isAnnouncementsOnly = groupSnapshot.announcementsOnly
-
-        if RemoteConfig.current.groupTerminateReceiveEnabled {
-            groupModelBuilder.isTerminated = groupSnapshot.terminated
-        }
-
-        guard let groupModel: TSGroupModelV2 = try? groupModelBuilder.buildAsV2() else {
-            return restoreFrameError(.invalidProtoData(.failedToBuildGV2GroupModel))
-        }
-
-        // MARK: Use the group model to create a group thread
-
-        let isStorySendEnabled: Bool? = {
-            switch groupProto.storySendMode {
-            case .default, .UNRECOGNIZED:
-                // No explicit setting.
-                return nil
-            case .disabled:
-                return false
-            case .enabled:
-                return true
-            }
-        }()
-
-        let groupThread: TSGroupThread
-        do {
-            groupThread = try threadStore.insertGroupThread(
-                masterKey: groupMasterKey,
-                groupModel: groupModel,
-                isStorySendEnabled: isStorySendEnabled,
-                context: context,
-            )
-        } catch let error {
-            return restoreFrameError(.databaseInsertionFailed(error))
-        }
-
-        // MARK: Store group properties that live outside the group model
-
-        do {
-            try threadStore.insertFullGroupMemberRecords(
-                acis: fullGroupMemberAcis,
-                groupThread: groupThread,
-                context: context,
-            )
-        } catch let error {
-            return restoreFrameError(.databaseInsertionFailed(error))
-        }
-
-        if let disappearingMessageTimer = groupSnapshot.extractDisappearingMessageTimer {
-            disappearingMessageConfigStore.set(
-                token: .token(
-                    forProtoExpireTimerSeconds: disappearingMessageTimer,
-                ),
-                for: groupThread,
-                tx: context.tx,
-            )
-        }
-
-        if groupProto.whitelisted {
-            profileManager.addToWhitelist(groupThread, tx: context.tx)
-        }
-
-        if groupProto.blocked {
-            blockingManager.addBlockedGroupId(groupContextInfo.groupId.serialize(), tx: context.tx)
-        }
-
-        if
-            groupProto.hasAvatarColor,
-            let defaultAvatarColor: AvatarTheme = .from(backupProtoAvatarColor: groupProto.avatarColor)
-        {
-            do {
-                try avatarDefaultColorManager.persistDefaultColor(
-                    defaultAvatarColor,
-                    groupId: groupContextInfo.groupId.serialize(),
-                    tx: context.tx,
+                groupMembershipBuilder.addInvitedMember(
+                    serviceId,
+                    role: role,
+                    addedByAci: addedByAci,
                 )
-            } catch {
-                // Don't fail entirely; colors aren't that important.
-                partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error)))
             }
-        }
+            for requestingMember in groupSnapshot.membersPendingAdminApproval {
+                guard let aci = try? Aci.parseFrom(serviceIdBinary: requestingMember.userID) else {
+                    return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.MemberPendingAdminApproval.self)))
+                }
 
-        if groupProto.hideStory {
-            // We only need to actively hide, since unhidden is the default.
+                groupMembershipBuilder.addRequestingMember(aci)
+            }
+            for bannedMember in groupSnapshot.membersBanned {
+                guard let aci = try? Aci.parseFrom(serviceIdBinary: bannedMember.userID) else {
+                    return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.MemberBanned.self)))
+                }
+                let bannedAtTimestampMillis = bannedMember.timestamp
+
+                groupMembershipBuilder.addBannedMember(
+                    aci,
+                    bannedAtTimestamp: bannedAtTimestampMillis,
+                )
+            }
+
+            for member in groupSnapshot.members {
+                guard let aci = try? Aci.parseFrom(serviceIdBinary: member.userID) else {
+                    return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.Member.self)))
+                }
+                if !member.labelString.isEmpty {
+                    guard
+                        member.labelString.lengthOfBytes(using: .utf8) <= 96,
+                        member.labelString.count <= 24,
+                        member.labelEmoji.lengthOfBytes(using: .utf8) <= 48
+                    else {
+                        partialErrors.append(.restoreFrameError(.invalidProtoData(.invalidMemberLabel)))
+                        continue
+                    }
+                    let emoji: String? = member.labelEmoji.isEmpty ? nil : member.labelEmoji
+                    groupMembershipBuilder.setMemberLabel(label: MemberLabel(label: member.labelString, labelEmoji: emoji), aci: aci)
+                }
+            }
+
+            var groupModelBuilder = TSGroupModelBuilder(secretParams: secretParams)
+            groupModelBuilder.groupV2Revision = groupSnapshot.version
+            groupModelBuilder.name = groupSnapshot.extractTitle
+            groupModelBuilder.descriptionText = groupSnapshot.extractDescriptionText
+            // We'll try and download the avatar later. For now, leave it explicitly missing.
+            groupModelBuilder.avatarDataState = .missing
+            groupModelBuilder.avatarUrlPath = groupSnapshot.avatarURL.nilIfEmpty
+            groupModelBuilder.groupMembership = groupMembershipBuilder.build()
+            groupModelBuilder.groupAccess = GroupAccess(backupProtoAccessControl: groupSnapshot.accessControl)
+            groupModelBuilder.inviteLinkPassword = groupSnapshot.inviteLinkPassword.nilIfEmpty
+            groupModelBuilder.isAnnouncementsOnly = groupSnapshot.announcementsOnly
+
+            if RemoteConfig.current.groupTerminateReceiveEnabled {
+                groupModelBuilder.isTerminated = groupSnapshot.terminated
+            }
+
+            guard let groupModel: TSGroupModelV2 = try? groupModelBuilder.buildAsV2() else {
+                return restoreFrameError(.invalidProtoData(.failedToBuildGV2GroupModel))
+            }
+
+            // MARK: Use the group model to create a group thread
+
+            let isStorySendEnabled: Bool? = {
+                switch groupProto.storySendMode {
+                case .default, .UNRECOGNIZED:
+                    // No explicit setting.
+                    return nil
+                case .disabled:
+                    return false
+                case .enabled:
+                    return true
+                }
+            }()
+
+            let groupThread: TSGroupThread
             do {
-                try storyStore.createStoryContextAssociatedData(
-                    for: groupThread,
-                    isHidden: true,
+                groupThread = try threadStore.insertGroupThread(
+                    groupRecord: &groupRecord,
+                    groupModel: groupModel,
+                    isStorySendEnabled: isStorySendEnabled,
                     context: context,
                 )
             } catch let error {
-                // Don't fail entirely; the story will just be unhidden.
-                partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error)))
+                return restoreFrameError(.databaseInsertionFailed(error))
             }
+
+            // MARK: Store group properties that live outside the group model
+
+            do {
+                try threadStore.insertFullGroupMemberRecords(
+                    acis: fullGroupMemberAcis,
+                    groupThread: groupThread,
+                    context: context,
+                )
+            } catch let error {
+                return restoreFrameError(.databaseInsertionFailed(error))
+            }
+
+            if let disappearingMessageTimer = groupSnapshot.extractDisappearingMessageTimer {
+                disappearingMessageConfigStore.set(
+                    token: .token(
+                        forProtoExpireTimerSeconds: disappearingMessageTimer,
+                    ),
+                    for: groupThread,
+                    tx: context.tx,
+                )
+            }
+
+            if groupProto.whitelisted {
+                profileManager.addToWhitelist(groupThread, tx: context.tx)
+            }
+
+            if
+                groupProto.hasAvatarColor,
+                let defaultAvatarColor: AvatarTheme = .from(backupProtoAvatarColor: groupProto.avatarColor)
+            {
+                do {
+                    try avatarDefaultColorManager.persistDefaultColor(
+                        defaultAvatarColor,
+                        groupId: groupId.serialize(),
+                        tx: context.tx,
+                    )
+                } catch {
+                    // Don't fail entirely; colors aren't that important.
+                    partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error)))
+                }
+            }
+
+            if groupProto.hideStory {
+                // We only need to actively hide, since unhidden is the default.
+                do {
+                    try storyStore.createStoryContextAssociatedData(
+                        for: groupThread,
+                        isHidden: true,
+                        context: context,
+                    )
+                } catch let error {
+                    // Don't fail entirely; the story will just be unhidden.
+                    partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error)))
+                }
+            }
+
+            context[groupId2] = groupThread
+        }
+
+        if groupProto.blocked {
+            blockingManager.addBlockedGroupId(groupId.serialize(), tx: context.tx)
         }
 
         // MARK: Return successfully!
 
-        let groupId = GroupId(groupModel: groupModel)
-        context[recipient.recipientId] = .group(groupId)
-        context[groupId] = groupThread
+        context[recipient.recipientId] = .group(groupId2)
 
         if partialErrors.isEmpty {
             return .success

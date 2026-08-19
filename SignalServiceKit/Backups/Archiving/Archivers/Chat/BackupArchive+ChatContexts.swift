@@ -213,7 +213,7 @@ extension BackupArchive {
             case .contact(let contactThread):
                 contactThreadMap[chatId] = (thread.threadRowId, contactThread)
             case .groupV2(let groupThread):
-                groupIdMap[chatId] = (thread.threadRowId, BackupArchive.GroupId(groupModel: groupThread.groupModel))
+                groupIdMap[chatId] = (thread.threadRowId, BackupArchive.GroupId(groupId: groupThread.groupId))
             }
             recipientToChatMap[recipientId] = chatId
         }
