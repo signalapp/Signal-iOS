@@ -637,4 +637,15 @@ private func buildPreview(
     )
 }
 
+@available(iOS 17.0, *)
+#Preview("Super Long Title") {
+    buildPreview(
+        title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam pretium, arcu id dignissim iaculis, nulla ipsum pulvinar est, sed convallis tellus neque sit amet diam. Nunc sit amet ipsum vitae purus finibus varius. In ligula turpis, semper vitae faucibus eu, dapibus et nunc. Nam nec laoreet nunc. Nam et pulvinar mauris, vitae pulvinar ligula. In sapien dui, auctor commodo quam eu, luctus feugiat mauris. In gravida porttitor eros, nec elementum diam facilisis nec. Ut finibus erat at fermentum consectetur. Maecenas vitae consectetur sem. Proin dignissim enim molestie dignissim tincidunt. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse tempor aliquam tortor eu dictum. Sed laoreet felis elit, ut bibendum ex feugiat eu. Morbi pulvinar maximus dolor, et aliquet ex fringilla sed. Nunc id tempor massa, at luctus nisi. Aenean pellentesque mattis finibus. Pellentesque tempor, quam ut ornare dignissim, purus ante cursus lorem, et convallis erat nunc vitae ligula. Nullam in laoreet nulla, id sagittis ipsum. Nam non purus lorem. Maecenas a aliquet tortor, ut pulvinar lorem. Praesent ex nisi, blandit sed metus quis, malesuada porta quam. Morbi in ligula scelerisque, volutpat lorem sit amet, mollis ex. Pellentesque facilisis venenatis metus. Ut ac porttitor neque. Fusce convallis dolor tortor, sit amet interdum urna suscipit et. Vivamus quis viverra velit, sed aliquam ex. Nam ligula ligula, ultrices at vehicula aliquet, aliquam sed orci. Morbi tortor elit, suscipit vel cursus at, accumsan nec leo. Quisque aliquet risus vitae massa suscipit, sit amet elementum lacus convallis. Nulla facilisi. Integer tempus tellus tellus, eu faucibus augue maximus facilisis. Quisque feugiat convallis magna, quis ornare orci efficitur quis. Suspendisse ac hendrerit tortor, sed rutrum massa. Quisque vehicula odio sed ultrices pharetra. Fusce ornare consectetur eros, non fermentum turpis consequat egestas. Integer tempus ac nulla at mattis. Praesent et iaculis eros. Duis vel ex non odio rhoncus dictum. Vestibulum dapibus lacus ac ipsum tempor bibendum. Integer at interdum libero. Curabitur non lacus tincidunt, semper leo vel, hendrerit ex. Curabitur vitae finibus mauris. Vestibulum auctor urna in consectetur lacinia. Nunc vehicula leo vitae magna auctor posuere. Mauris suscipit mauris nec tincidunt elementum. Nullam tincidunt sit amet ipsum quis porta. Aliquam laoreet felis ac porttitor lacinia. Sed et diam quis eros iaculis bibendum ut nec velit. Cras quis semper augue. Nullam in auctor sem, at efficitur turpis. Maecenas ornare felis ut cursus interdum. Curabitur sed congue velit, vitae condimentum mi. ",
+        message: nil,
+        cancelButton: "Cancel",
+        destructiveButton: "Delete",
+        customButtons: ["Action1", "Action2"],
+    )
+}
+
 #endif
