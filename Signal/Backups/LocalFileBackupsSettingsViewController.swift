@@ -137,8 +137,14 @@ class LocalFileBackupsSettingsViewController: OWSTableViewController2 {
                     do {
                         try await task.value
                     } catch BackupExportLockError.remoteBackupInProgress {
-                        // TODO: [KC] figure out what we want to do here.
-                        self?.presentToast(text: "Unable to perform local backup because a remote backup is in progress. Try again later.")
+                        let actionSheet = ActionSheetController(
+                            message: OWSLocalizedString(
+                                "SETTINGS_LOCAL_FILE_BACKUPS_REMOTE_BACKUP_IN_PROGRESS_MESSAGE",
+                                comment: "Message for an action sheet when a user cannot perform a local backup because a remote backup is in progress",
+                            ),
+                        )
+                        actionSheet.addAction(.ok)
+                        self?.presentActionSheet(actionSheet)
                     }
                 }
             },

@@ -5471,7 +5471,7 @@
 "LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "Turn off backups anytime";
 
 /* Subtitle for a view introducing local file backups during the onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages to a folder on your device. Your backup is end-to-end encrypted and can be restored by moving your backup folder to a new device.";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages to a folder on your device. Your backup is end-to-end encrypted and can be restored by installing a new copy of Signal and choosing “Restore or Transfer“.";
 
 /* Title for a view introducing local file backups during the onboarding flow. */
 "LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "On-Device Backups";
@@ -8931,6 +8931,12 @@
 
 /* Label for the row showing when the last on-device backup occurred. */
 "SETTINGS_LOCAL_FILE_BACKUPS_LAST_BACKUP_DATE" = "Last Backup";
+
+/* Message for an action sheet when a user cannot perform a remote backup because a local backup is in progress */
+"SETTINGS_LOCAL_FILE_BACKUPS_LOCAL_BACKUP_IN_PROGRESS_MESSAGE" = "Unable to perform a Signal Secure Backup because an on-device backup is in progress. Try again later.";
+
+/* Message for an action sheet when a user cannot perform a local backup because a remote backup is in progress */
+"SETTINGS_LOCAL_FILE_BACKUPS_REMOTE_BACKUP_IN_PROGRESS_MESSAGE" = "Unable to perform an on-device backup because a Signal Secure Backup is in progress. Try again later.";
 
 /* Footer text on the on-device backups settings page explaining how to restore a backup. */
 "SETTINGS_LOCAL_FILE_BACKUPS_RESTORE_FOOTER" = "To restore a backup, install a new copy of Signal. Open the app, tap “Restore or Transfer” and select “On-Device Backup”.";
