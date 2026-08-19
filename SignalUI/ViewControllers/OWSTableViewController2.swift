@@ -70,7 +70,7 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
     public var shouldAvoidKeyboard = false {
         didSet {
             guard isViewLoaded else { return }
-            updateBottomConstraint()
+            updateBottomEdgeConstraints()
         }
     }
 
@@ -138,20 +138,40 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
 
         // Pin bottom edge of tableView.
         if let bottomFooterView {
+            bottomFooterView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(bottomFooterView)
-            bottomFooterView.autoPinEdge(.top, to: .bottom, of: tableView)
-            bottomFooterView.autoPinEdge(toSuperviewSafeArea: .leading)
-            bottomFooterView.autoPinEdge(toSuperviewSafeArea: .trailing)
-            bottomFooterView.setContentHuggingVerticalHigh()
-            bottomFooterView.setCompressionResistanceVerticalHigh()
+            NSLayoutConstraint.activate([
+                bottomFooterView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                bottomFooterView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            ])
+
+            if #available(iOS 26, *) {
+                let interaction = UIScrollEdgeElementContainerInteraction()
+                interaction.edge = .bottom
+                interaction.scrollView = tableView
+                bottomFooterView.addInteraction(interaction)
+            }
         }
 
-        updateBottomConstraint()
+        updateBottomEdgeConstraints()
 
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: Self.cellIdentifier)
 
         applyContents()
         applyTheme()
+    }
+
+    override open func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        let bottomInset: CGFloat
+        if let bottomFooterView, bottomFooterView.isHidden == false {
+            bottomInset = bottomFooterView.frame.height - bottomFooterView.safeAreaInsets.bottom
+        } else {
+            bottomInset = 0
+        }
+        tableView.contentInset.bottom = bottomInset
+        tableView.verticalScrollIndicatorInsets.bottom = bottomInset
     }
 
     /// Applies theme and reloads table contents.
@@ -208,63 +228,59 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
 
     public var shouldHideBottomFooter = false {
         didSet {
-            let didChange = oldValue != shouldHideBottomFooter
-            guard didChange, isViewLoaded else { return }
-            updateBottomConstraint()
+            guard let bottomFooterView, oldValue != shouldHideBottomFooter, isViewLoaded else { return }
+
+            // When making footer visible we want it to have the final layout.
+            if bottomFooterView.isHidden {
+                UIView.performWithoutAnimation {
+                    bottomFooterView.setNeedsLayout()
+                    bottomFooterView.layoutIfNeeded()
+                }
+            }
+            bottomFooterView.isHidden = shouldHideBottomFooter
+
+            // Trigger layout pass to update table view's bottom content inset.
+            view.setNeedsLayout()
         }
     }
 
-    private var bottomFooterConstraint: NSLayoutConstraint?
+    private var bottomEdgeConstraints: [NSLayoutConstraint]?
 
-    private func updateBottomConstraint() {
-        if let bottomFooterConstraint {
-            NSLayoutConstraint.deactivate([bottomFooterConstraint])
-            self.bottomFooterConstraint = nil
+    private func updateBottomEdgeConstraints() {
+        if let bottomEdgeConstraints {
+            NSLayoutConstraint.deactivate(bottomEdgeConstraints)
+            self.bottomEdgeConstraints = nil
         }
 
         // Pin bottom edge of tableView.
-        let bottomFooterConstraint: NSLayoutConstraint
-        if !shouldHideBottomFooter, let bottomFooterView {
+        var bottomEdgeConstraints = [NSLayoutConstraint]()
+        if let bottomFooterView {
             if shouldAvoidKeyboard {
-                bottomFooterConstraint = bottomFooterView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor)
+                bottomEdgeConstraints.append(
+                    bottomFooterView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
+                )
             } else {
-                bottomFooterConstraint = bottomFooterView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+                bottomEdgeConstraints.append(
+                    bottomFooterView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                )
             }
-        } else if shouldAvoidKeyboard {
-            bottomFooterConstraint = tableView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor)
-        } else {
-            bottomFooterConstraint = tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         }
-        NSLayoutConstraint.activate([bottomFooterConstraint])
+        if shouldAvoidKeyboard {
+            bottomEdgeConstraints.append(
+                tableView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
+            )
+        } else {
+            bottomEdgeConstraints.append(
+                tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            )
+        }
+        NSLayoutConstraint.activate(bottomEdgeConstraints)
 
         bottomFooterView?.isHidden = shouldHideBottomFooter
-        self.bottomFooterConstraint = bottomFooterConstraint
+        self.bottomEdgeConstraints = bottomEdgeConstraints
 
         guard hasViewAppeared else {
             return
-        }
-
-        struct ViewFrame {
-            let view: UIView
-            let frame: CGRect
-
-            func apply() {
-                view.frame = self.frame
-            }
-        }
-        func viewFrames(for views: [UIView]) -> [ViewFrame] {
-            views.map { ViewFrame(view: $0, frame: $0.frame) }
-        }
-        var animatedViews: [UIView] = [tableView]
-        if let bottomFooterView {
-            animatedViews.append(bottomFooterView)
-        }
-        let viewFramesBefore = viewFrames(for: animatedViews)
-        self.view.layoutIfNeeded()
-        let viewFramesAfter = viewFrames(for: animatedViews)
-        for viewFrame in viewFramesBefore { viewFrame.apply() }
-        UIView.animate(withDuration: 0.15) {
-            for viewFrame in viewFramesAfter { viewFrame.apply() }
         }
     }
 
