@@ -499,7 +499,7 @@ class MediaCaptionToolbar: UIView, UITextViewDelegate, BodyRangesTextViewDelegat
     }
 
     func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {
-        return .composingAttachment
+        if Theme.forceDarkThemeForMedia { .composingAttachment } else { .default }
     }
 
     func textViewMentionCacheInvalidationKey(_ textView: BodyRangesTextView) -> String {

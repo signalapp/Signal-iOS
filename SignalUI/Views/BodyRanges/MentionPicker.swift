@@ -9,7 +9,7 @@ import SignalServiceKit
 
 public enum MentionPickerStyle {
     case `default`
-    case composingAttachment
+    @available(iOS, deprecated: 26) case composingAttachment
     case groupReply
 }
 
