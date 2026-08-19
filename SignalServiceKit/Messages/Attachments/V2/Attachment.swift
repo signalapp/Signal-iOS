@@ -14,12 +14,10 @@ public class Attachment {
     /// SQLite row id.
     public let id: IDType
 
-    /// Nil for:
-    /// * non-visual-media attachments
-    /// * undownloaded attachments where the sender didn't include the value.
-    /// Otherwise this contains the value from the sender for undownloaded attachments,
-    /// and our locally computed blurhash value for downloading attachments.
-    public var blurHash: String?
+    /// For incoming attachments, the blurHash value sent alongside the pointer.
+    /// For outgoing attachments, generated locally.
+    /// Nil for non-visual media.
+    public let blurHash: String?
 
     /// MIME type we get from the attachment's sender, known even before downloading the attachment.
     /// **If undownloaded, unverified (spoofable by the sender) and may not match the type of the actual bytes.**

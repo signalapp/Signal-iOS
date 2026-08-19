@@ -64,7 +64,6 @@ public struct RevalidatedAttachment {
     /// Orphan record for any created ancillary files, such as the audio waveform.
     let orphanRecordId: OrphanedAttachmentRecord.RowId
 
-    let blurHash: String?
     let mediaPixelSize: CGSize?
     let videoDuration: TimeInterval?
     let videoStillFrameRelativeFilePath: String?

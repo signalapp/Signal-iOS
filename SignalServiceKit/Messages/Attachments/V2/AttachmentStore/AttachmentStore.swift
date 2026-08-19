@@ -912,7 +912,6 @@ public struct AttachmentStore {
     /// Update an attachment after revalidating.
     public func updateRevalidatedAttachment(
         _ attachment: Attachment,
-        blurHash: String?,
         mediaPixelSize: CGSize?,
         videoDuration: TimeInterval?,
         videoStillFrameRelativeFilePath: String?,
@@ -920,7 +919,6 @@ public struct AttachmentStore {
         audioWaveformRelativeFilePath: String?,
         tx: DBWriteTransaction,
     ) {
-        attachment.blurHash = blurHash
         if var streamInfo = attachment.streamInfo {
             streamInfo.cachedMediaSizePixels = mediaPixelSize
             streamInfo.cachedVideoDuration = videoDuration

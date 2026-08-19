@@ -198,7 +198,7 @@ public class AttachmentManagerImpl: AttachmentManager {
 
         let contentType = Attachment.ContentType(mimeType: mimeType)
         var attachmentRecord = Attachment.Record.forInsertingPointer(
-            blurHash: proto.blurHash,
+            blurHash: proto.blurHash?.nilIfEmpty,
             mimeType: mimeType,
             contentType: contentType,
             encryptionKey: transitTierInfo.encryptionKey,
@@ -1011,7 +1011,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 // If the original is undownloaded, prefer to use the thumbnail
                 // pointer from the sender.
                 thumbnailMimeType = mimeType
-                thumbnailBlurHash = thumbnailProtoFromSender.blurHash
+                thumbnailBlurHash = thumbnailProtoFromSender.blurHash?.nilIfEmpty
                 thumbnailTransitTierInfo = transitTierInfo
                 thumbnailEncryptionKey = transitTierInfo.encryptionKey
             } else {

@@ -255,7 +255,6 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
         // Update the attachment
         attachmentStore.updateRevalidatedAttachment(
             attachment,
-            blurHash: revalidatedAttachment.blurHash,
             mediaPixelSize: revalidatedAttachment.mediaPixelSize,
             videoDuration: revalidatedAttachment.videoDuration,
             videoStillFrameRelativeFilePath: revalidatedAttachment.videoStillFrameRelativeFilePath,

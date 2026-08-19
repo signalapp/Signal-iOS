@@ -46,6 +46,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             mimeType: mimeType,
             renderingFlag: renderingFlag,
             sourceFilename: sourceFilename,
+            shouldComputeBlurHash: true,
         ))
         try dataSource.consumeAndDeleteIfNecessary()
         return pendingAttachment
@@ -67,6 +68,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             mimeType: mimeType,
             renderingFlag: renderingFlag,
             sourceFilename: sourceFilename,
+            shouldComputeBlurHash: true,
         ))
         return pendingAttachment
     }
@@ -105,6 +107,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             mimeType: mimeType,
             renderingFlag: renderingFlag,
             sourceFilename: sourceFilename,
+            // We use the sender-provided blurHash.
+            shouldComputeBlurHash: false,
         ))
     }
 
@@ -132,6 +136,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 renderingFlag: .default,
                 // Unused and irrelevant
                 sourceFilename: nil,
+                // Revalidation doesn't touch the existing blurHash.
+                shouldComputeBlurHash: false,
             ),
         )
         return try await prepareAttachmentContentTypeFiles(
@@ -187,6 +193,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             mimeType: mimeType,
             renderingFlag: renderingFlag,
             sourceFilename: sourceFilename,
+            // We use the blurHash from the Backup proto.
+            shouldComputeBlurHash: false,
         ))
     }
 
@@ -237,6 +245,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 mimeType: MimeType.textXSignalPlain.rawValue,
                 renderingFlag: .default,
                 sourceFilename: nil,
+                // Oversize text never has a blurHash.
+                shouldComputeBlurHash: false,
             )
         }
 
@@ -305,6 +315,9 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let mimeType: String
         let renderingFlag: AttachmentReference.RenderingFlag
         let sourceFilename: String?
+        /// An attachment's blurHash is the sender's responsibility, so we only
+        /// compute one for outgoing media.
+        let shouldComputeBlurHash: Bool
 
         init(
             type: InputType,
@@ -313,6 +326,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             mimeType: String,
             renderingFlag: AttachmentReference.RenderingFlag,
             sourceFilename: String?,
+            shouldComputeBlurHash: Bool,
         ) {
             self.type = type
             self.primaryFilePlaintextHash = primaryFilePlaintextHash
@@ -320,6 +334,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             self.mimeType = mimeType
             self.renderingFlag = renderingFlag
             self.sourceFilename = sourceFilename
+            self.shouldComputeBlurHash = shouldComputeBlurHash
         }
 
         var byteSize: Int {
@@ -515,6 +530,10 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let pixelSize = imageMetadata.pixelSize
 
         let blurHash: String? = {
+            guard input.shouldComputeBlurHash else {
+                return nil
+            }
+
             switch input.type {
             case .inMemory(let data):
                 guard let image = UIImage(data: data) else {
@@ -606,7 +625,11 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 return PendingFile(tmpFileUrl: thumbnailTmpFile, isTmpFileEncrypted: true)
             }
 
-        let blurHash = try? BlurHash.computeBlurHashSync(for: thumbnailImage)
+        let blurHash: String? = if input.shouldComputeBlurHash {
+            try? BlurHash.computeBlurHashSync(for: thumbnailImage)
+        } else {
+            nil
+        }
 
         let duration = asset.duration.seconds
 
@@ -829,7 +852,6 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             }
             results[key] = RevalidatedAttachment(
                 orphanRecordId: orphanRecordId,
-                blurHash: contentResult.blurHash,
                 mediaPixelSize: contentResult.mediaPixelSize,
                 videoDuration: contentResult.videoDuration,
                 videoStillFrameRelativeFilePath: contentResult.videoStillFramePendingFile?.reservedRelativeFilePath,
