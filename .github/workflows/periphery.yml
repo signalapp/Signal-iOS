@@ -1,0 +1,19 @@
+name: Unused code
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+
+jobs:
+  periphery:
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    with:
+      runner: macos-26
+      xcode_version: "26.6"
+      checkout_submodules: true
+      setup: make fetch-ringrtc
+    uses: periphery-pro/actions/.github/workflows/scan.yml@v1
