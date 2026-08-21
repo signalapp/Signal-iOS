@@ -376,8 +376,6 @@ extension GRDBDatabaseStorageAdapter {
         var txCompletionBlocks: [DBWriteTransaction.CompletionBlock]!
 
         let counter = checkpointState.update {
-            $0.workItem?.cancel()
-            $0.workItem = nil
             $0.counter += 1
             return $0.counter
         }
@@ -401,11 +399,9 @@ extension GRDBDatabaseStorageAdapter {
         }
 
         checkpointState.update {
-            guard $0.counter == counter else {
-                return
+            if $0.workItem == nil {
+                $0.workItem = scheduleCheckpoint(counter: $0.counter)
             }
-            $0.workItem?.cancel()
-            $0.workItem = scheduleCheckpoint(counter: counter)
             if $0.backgroundTask == nil {
                 $0.backgroundTask = OWSBackgroundTask(label: "database checkpoint")
             }
@@ -540,21 +536,14 @@ extension GRDBDatabaseStorageAdapter {
             owsAssertDebug(GRDBStorage.checkpointTimeout == nil)
         }
 
+        let backgroundTaskToEnd = checkpointState.update { state -> OWSBackgroundTask? in
+            state.workItem = nil
+            return state.backgroundTask.take()
+        }
+
         pool.writeWithoutTransaction { database in
-            let (shouldCheckpoint, backgroundTask) = checkpointState.update {
-                let shouldCheckpoint = $0.counter == counter
-                var backgroundTask: OWSBackgroundTask?
-                if shouldCheckpoint {
-                    backgroundTask = $0.backgroundTask.take()
-                }
-                return (shouldCheckpoint, backgroundTask)
-            }
             defer {
-                backgroundTask?.end()
-            }
-            guard shouldCheckpoint else {
-                Logger.warn("skipping checkpoint that's been canceled")
-                return
+                backgroundTaskToEnd?.end()
             }
             guard database.sqliteConnection != nil else {
                 Logger.warn("skipping checkpoint for database that's already closed.")
@@ -617,7 +606,7 @@ private struct GRDBStorage {
     private let dbURL: URL
     private let poolConfiguration: Configuration
 
-    fileprivate static let maxBusyTimeoutMs = 50
+    fileprivate static let maxBusyTimeoutMs = 250
 
     init(dbURL: URL, keyFetcher: GRDBKeyFetcher) throws {
         self.dbURL = dbURL
