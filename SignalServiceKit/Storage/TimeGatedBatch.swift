@@ -36,7 +36,7 @@ public enum TimeGatedBatch {
     public static func enumerateObjects<T, E>(
         _ objects: some Sequence<T>,
         db: any DB,
-        yieldTxAfter: TimeInterval = 1.0,
+        yieldTxAfter: TimeInterval = 0.05,
         file: String = #file,
         function: String = #function,
         line: Int = #line,
@@ -61,6 +61,9 @@ public enum TimeGatedBatch {
                     }
                     // Process another object with this transaction...
                 }
+            }
+            if !isDone {
+                await Task.yield()
             }
         }
     }
@@ -100,8 +103,8 @@ public enum TimeGatedBatch {
     /// processed in that transaction.
     public static func processAll<E: Error, TxContext, DoneResult>(
         db: DB,
-        yieldTxAfter maximumDuration: TimeInterval = 0.5,
-        delayTwixtTx: TimeInterval = 0,
+        yieldTxAfter maximumDuration: TimeInterval = 0.05,
+        delayTwixtTx: TimeInterval = 0.01,
         errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,
         file: String = #file,
         function: String = #function,
@@ -129,8 +132,8 @@ public enum TimeGatedBatch {
     /// Like `processAll` but without "transaction contexts".
     public static func processAll<E: Error, DoneResult>(
         db: DB,
-        yieldTxAfter maximumDuration: TimeInterval = 0.5,
-        delayTwixtTx: TimeInterval = 0,
+        yieldTxAfter maximumDuration: TimeInterval = 0.05,
+        delayTwixtTx: TimeInterval = 0.01,
         errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,
         file: String = #file,
         function: String = #function,
