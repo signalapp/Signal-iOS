@@ -64,6 +64,8 @@ public class StickerManager: NSObject {
 
     public static let store = KeyValueStore(collection: "recentStickers")
     public static let emojiMapStore = KeyValueStore(collection: "emojiMap")
+    private static let installedPackOrderStore = KeyValueStore(collection: "installedStickerPackOrder")
+    private static let installedPackOrderKey = "installedStickerPackOrder"
 
     public enum InstallMode: Int {
         case doNotInstall
@@ -192,6 +194,64 @@ public class StickerManager: NSObject {
         }
     }
 
+    public class func orderedInstalledStickerPacks(transaction: DBReadTransaction) -> [StickerPackRecord] {
+        let packs = installedStickerPacks(transaction: transaction)
+        guard !packs.isEmpty else { return [] }
+
+        let orderedIds = installedPackOrderStore.orderedUniqueArray(
+            forKey: installedPackOrderKey,
+            tx: transaction,
+        )
+        guard !orderedIds.isEmpty else {
+            return packs.sorted { $0.dateCreated > $1.dateCreated }
+        }
+
+        var packById = [String: StickerPackRecord]()
+        packById.reserveCapacity(packs.count)
+        for pack in packs {
+            packById[pack.info.packId.hexadecimalString] = pack
+        }
+
+        var ordered = [StickerPackRecord]()
+        ordered.reserveCapacity(packs.count)
+        var used = Set<String>()
+
+        for packId in orderedIds {
+            if let pack = packById[packId] {
+                ordered.append(pack)
+                used.insert(packId)
+            }
+        }
+
+        let remaining = packs.filter { !used.contains($0.info.packId.hexadecimalString) }
+            .sorted { $0.dateCreated > $1.dateCreated }
+        ordered.append(contentsOf: remaining)
+
+        return ordered
+    }
+
+    public class func setInstalledStickerPackOrder(
+        orderedPackInfos: [StickerPackInfo],
+        transaction: DBWriteTransaction,
+    ) {
+        let orderedIds = orderedPackInfos.map { $0.packId.hexadecimalString }
+        installedPackOrderStore.setStringArray(
+            orderedIds,
+            key: installedPackOrderKey,
+            transaction: transaction,
+        )
+    }
+
+    public class func updateInstalledStickerPackOrder(orderedPackInfos: [StickerPackInfo]) {
+        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+            setInstalledStickerPackOrder(
+                orderedPackInfos: orderedPackInfos,
+                transaction: transaction,
+            )
+        }
+        packsDidChangeEvent.requestNotify()
+    }
+
     public class func isStickerPackSaved(stickerPackInfo: StickerPackInfo) -> Bool {
         return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return isStickerPackSaved(stickerPackInfo: stickerPackInfo, transaction: transaction)
@@ -238,6 +298,12 @@ public class StickerManager: NSObject {
                 transaction: transaction,
             )
         }
+
+        installedPackOrderStore.removeFromOrderedUniqueArray(
+            key: installedPackOrderKey,
+            value: stickerPackInfo.packId.hexadecimalString,
+            tx: transaction,
+        )
 
         transaction.addSyncCompletion {
             packsDidChangeEvent.requestNotify()
@@ -387,6 +453,7 @@ public class StickerManager: NSObject {
         }
 
         stickerPack.updateWith(isInstalled: true, tx: transaction)
+        ensurePackInInstalledOrder(stickerPack.info, transaction: transaction)
 
         let promise = installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
 
@@ -398,6 +465,17 @@ public class StickerManager: NSObject {
             )
         }
         return promise
+    }
+
+    private class func ensurePackInInstalledOrder(
+        _ packInfo: StickerPackInfo,
+        transaction: DBWriteTransaction,
+    ) {
+        installedPackOrderStore.prependToOrderedUniqueArray(
+            key: installedPackOrderKey,
+            value: packInfo.packId.hexadecimalString,
+            tx: transaction,
+        )
     }
 
     private class func installStickerPackContents(
