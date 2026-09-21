@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
+
 public struct ValidatedContactShareProto {
     public let contact: OWSContact
     public let avatarProto: SSKProtoAttachmentPointer?
@@ -98,6 +100,10 @@ class ContactShareManagerImpl: ContactShareManager {
         contact.emails = contactProto.email.compactMap { OWSContactEmail(proto: $0) }
         contact.addresses = contactProto.address.compactMap { OWSContactAddress(proto: $0) }
 
+        if BuildFlags.accountIdentifierSharing, let aciBinary = contactProto.aciBinary {
+            contact.aci = try? Aci.parseFrom(serviceIdBinary: aciBinary)
+        }
+
         return ValidatedContactShareProto(
             contact: contact,
             avatarProto: contactProto.avatar?.avatar,
@@ -141,6 +147,7 @@ class ContactShareManagerImpl: ContactShareManager {
             addresses: draft.addresses,
             emails: draft.emails,
             phoneNumbers: draft.phoneNumbers,
+            aci: draft.aci,
             avatar: avatarDataSource,
         )
     }
@@ -154,6 +161,7 @@ class ContactShareManagerImpl: ContactShareManager {
                 phoneNumbers: draft.phoneNumbers,
                 emails: draft.emails,
                 addresses: draft.addresses,
+                aci: draft.aci,
             ),
             avatarDataSource: draft.avatar,
         )
@@ -189,6 +197,10 @@ class ContactShareManagerImpl: ContactShareManager {
         }
 
         contactBuilder.setName(nameBuilder.buildInfallibly())
+
+        if BuildFlags.accountIdentifierSharing, let aci = contactShare.aci {
+            contactBuilder.setAciBinary(aci.serviceIdBinary)
+        }
 
         contactBuilder.setNumber(contactShare.phoneNumbers.compactMap({ $0.proto() }))
         contactBuilder.setEmail(contactShare.emails.compactMap({ $0.proto() }))

@@ -151,6 +151,7 @@ public class ContactShareViewModel: Equatable {
             addresses: addresses,
             emails: emails,
             phoneNumbers: phoneNumbers,
+            aci: dbRecord.aci,
             existingAvatarAttachment: existingAvatarAttachment,
             avatarImageData: avatarImageData,
         )

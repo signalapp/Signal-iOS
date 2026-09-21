@@ -4,6 +4,7 @@
 //
 
 public import Contacts
+public import LibSignalClient
 
 public protocol OWSContactField: AnyObject {
     var isValid: Bool { get }
@@ -17,6 +18,7 @@ public final class OWSContact: NSObject, NSSecureCoding, NSCopying {
     public static var supportsSecureCoding: Bool { true }
 
     public init?(coder: NSCoder) {
+        self.aci = Aci.parseFrom(aciString: coder.decodeObject(of: NSString.self, forKey: "aci") as String?)
         self.addresses = coder.decodeArrayOfObjects(ofClass: OWSContactAddress.self, forKey: "addresses") ?? []
         self.emails = coder.decodeArrayOfObjects(ofClass: OWSContactEmail.self, forKey: "emails") ?? []
         self.name = coder.decodeObject(of: OWSContactName.self, forKey: "name") ?? OWSContactName()
@@ -24,6 +26,7 @@ public final class OWSContact: NSObject, NSSecureCoding, NSCopying {
     }
 
     public func encode(with coder: NSCoder) {
+        coder.encode(self.aci?.serviceIdUppercaseString, forKey: "aci")
         coder.encode(self.addresses, forKey: "addresses")
         coder.encode(self.emails, forKey: "emails")
         coder.encode(self.name, forKey: "name")
@@ -32,6 +35,7 @@ public final class OWSContact: NSObject, NSSecureCoding, NSCopying {
 
     override public var hash: Int {
         var hasher = Hasher()
+        hasher.combine(aci)
         hasher.combine(addresses)
         hasher.combine(emails)
         hasher.combine(name)
@@ -42,6 +46,7 @@ public final class OWSContact: NSObject, NSSecureCoding, NSCopying {
     override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard type(of: self) == type(of: object) else { return false }
+        guard self.aci == object.aci else { return false }
         guard self.addresses == object.addresses else { return false }
         guard self.emails == object.emails else { return false }
         guard self.name == object.name else { return false }
@@ -55,6 +60,7 @@ public final class OWSContact: NSObject, NSSecureCoding, NSCopying {
             phoneNumbers: phoneNumbers,
             emails: emails,
             addresses: addresses,
+            aci: aci,
         )
     }
 
@@ -62,6 +68,7 @@ public final class OWSContact: NSObject, NSSecureCoding, NSCopying {
     public var phoneNumbers: [OWSContactPhoneNumber]
     public var emails: [OWSContactEmail]
     public var addresses: [OWSContactAddress]
+    public var aci: Aci?
 
     public var isValid: Bool {
         return Self.isValid(
@@ -109,6 +116,7 @@ public final class OWSContact: NSObject, NSSecureCoding, NSCopying {
         self.addresses = []
         self.emails = []
         self.phoneNumbers = []
+        self.aci = nil
         super.init()
         name.updateDisplayName()
     }
@@ -118,11 +126,13 @@ public final class OWSContact: NSObject, NSSecureCoding, NSCopying {
         phoneNumbers: [OWSContactPhoneNumber],
         emails: [OWSContactEmail],
         addresses: [OWSContactAddress],
+        aci: Aci?,
     ) {
         self.name = name
         self.phoneNumbers = phoneNumbers
         self.emails = emails
         self.addresses = addresses
+        self.aci = aci
         super.init()
     }
 
@@ -133,6 +143,7 @@ public final class OWSContact: NSObject, NSSecureCoding, NSCopying {
             phoneNumbers: self.phoneNumbers,
             emails: self.emails,
             addresses: self.addresses,
+            aci: self.aci,
         )
     }
 
@@ -223,6 +234,7 @@ extension OWSContact {
             phoneNumbers: cnContact.phoneNumbers.map { OWSContactPhoneNumber(cnLabeledValue: $0) },
             emails: cnContact.emailAddresses.map { OWSContactEmail(cnLabeledValue: $0) },
             addresses: cnContact.postalAddresses.map { OWSContactAddress(cnLabeledValue: $0) },
+            aci: nil,
         )
     }
 

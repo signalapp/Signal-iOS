@@ -325,20 +325,22 @@ final class ContactSharingPickerViewModel {
 
     func contactShareDraft(for row: Row) -> ContactShareDraft {
         db.read { tx in
+            let draft: ContactShareDraft
             switch row {
             case .signalContact(let signalContact, let systemContact):
                 if let systemContact {
-                    let draft = contactShareDraft(for: systemContact, tx: tx)
+                    draft = contactShareDraft(for: systemContact, tx: tx)
                     if row.namingSystemContact == nil {
                         draft.name = contactName(for: signalContact, tx: tx)
                     }
-                    return draft
                 } else {
-                    return contactShareDraft(for: signalContact, tx: tx)
+                    draft = contactShareDraft(for: signalContact, tx: tx)
                 }
             case .systemContact(let systemContact):
-                return contactShareDraft(for: systemContact, tx: tx)
+                draft = contactShareDraft(for: systemContact, tx: tx)
             }
+            draft.aci = row.shareableAci(recipientDatabaseTable: recipientDatabaseTable, transaction: tx)
+            return draft
         }
     }
 
@@ -377,6 +379,7 @@ final class ContactSharingPickerViewModel {
             addresses: [],
             emails: [],
             phoneNumbers: phoneNumbers,
+            aci: nil,
             existingAvatarAttachment: nil,
             avatarImageData: userProfile?.loadAvatarData(),
         )
@@ -466,15 +469,11 @@ final class ContactSharingPickerViewModel {
             signalContact?.recipient
         }
 
-        private var aci: Aci? {
-            guard let recipient = signalContact?.recipient, recipient.isRegistered else {
-                return nil
-            }
-            return recipient.aci
-        }
-
         var shouldShowContactIcon: Bool {
-            aci != nil
+            guard let recipient = signalContact?.recipient, recipient.isRegistered else {
+                return false
+            }
+            return recipient.aci != nil
         }
 
         var identity: Identity {
@@ -547,6 +546,22 @@ final class ContactSharingPickerViewModel {
             case .other:
                 return ""
             }
+        }
+
+        func shareableAci(
+            recipientDatabaseTable: RecipientDatabaseTable,
+            transaction: DBReadTransaction,
+        ) -> Aci? {
+            guard let rowId = signalContact?.recipient.id else {
+                return nil
+            }
+            guard
+                let recipient = recipientDatabaseTable.fetchRecipient(rowId: rowId, tx: transaction),
+                recipient.isRegistered
+            else {
+                return nil
+            }
+            return recipient.aci
         }
 
         // MARK: Searching
@@ -768,6 +783,7 @@ final class ContactSharingPickerViewModel {
                             .parsePhoneNumber(userSpecifiedText: $0.value)?.e164 ?? $0.value,
                     )
                 },
+                aci: nil,
                 existingAvatarAttachment: nil,
                 avatarImageData: nil,
             )

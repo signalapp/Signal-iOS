@@ -4,6 +4,7 @@
 //
 
 public import Contacts
+public import LibSignalClient
 public import UIKit
 
 public class ContactShareDraft {
@@ -11,6 +12,7 @@ public class ContactShareDraft {
     public var addresses: [OWSContactAddress]
     public var emails: [OWSContactEmail]
     public var phoneNumbers: [OWSContactPhoneNumber]
+    public var aci: Aci?
     public var existingAvatarAttachment: ReferencedAttachment?
 
     private var cachedAvatarImage: UIImage?
@@ -59,6 +61,7 @@ public class ContactShareDraft {
             addresses: cnContact.postalAddresses.map(OWSContactAddress.init(cnLabeledValue:)),
             emails: cnContact.emailAddresses.map(OWSContactEmail.init(cnLabeledValue:)),
             phoneNumbers: cnContact.phoneNumbers.map(OWSContactPhoneNumber.init(cnLabeledValue:)),
+            aci: nil,
             existingAvatarAttachment: nil,
             avatarImageData: avatarData,
         )
@@ -104,6 +107,7 @@ public class ContactShareDraft {
         addresses: [OWSContactAddress],
         emails: [OWSContactEmail],
         phoneNumbers: [OWSContactPhoneNumber],
+        aci: Aci?,
         existingAvatarAttachment: ReferencedAttachment?,
         avatarImageData: Data?,
     ) {
@@ -111,17 +115,19 @@ public class ContactShareDraft {
         self.addresses = addresses
         self.emails = emails
         self.phoneNumbers = phoneNumbers
+        self.aci = aci
         self.existingAvatarAttachment = existingAvatarAttachment
         self.avatarImageData = avatarImageData
     }
 
     public func newContact(withName name: OWSContactName) -> ContactShareDraft {
-        // If we want to keep things other than the name, the caller will need to re-apply it.
+        // If we want to keep things other than the name and the ACI, the caller will need to re-apply them.
         return ContactShareDraft(
             name: name,
             addresses: [],
             emails: [],
             phoneNumbers: [],
+            aci: aci,
             existingAvatarAttachment: nil,
             avatarImageData: nil,
         )
@@ -147,6 +153,7 @@ public class ContactShareDraft {
         public let addresses: [OWSContactAddress]
         public let emails: [OWSContactEmail]
         public let phoneNumbers: [OWSContactPhoneNumber]
+        public let aci: Aci?
         public let avatar: AttachmentDataSource?
     }
 }

@@ -18,6 +18,7 @@ struct ContactSharingPickerViewModelTests {
     private let db = InMemoryDB()
     private let phoneNumberVisibilityFetcher = MockPhoneNumberVisibilityFetcher()
     private let providers = StubbedProviders()
+    private let recipientDatabaseTable = RecipientDatabaseTable()
     private let recipientHidingManager = MockRecipientHidingManager()
     private let localAci = LocalIdentifiers.forUnitTests.aci
 
@@ -663,6 +664,48 @@ struct ContactSharingPickerViewModelTests {
         )
     }
 
+    // MARK: - Sharing the ACI
+
+    @Test
+    func testASignalRowSharesTheRecipientAci() async throws {
+        let aci = Aci.randomForTesting()
+        addContact(named: "Alice", aci: aci)
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        let row = try #require(try await displayedRows(of: viewModel).rows.first)
+        #expect(shareableAci(of: row) == aci)
+    }
+
+    @Test
+    func testAMergedRowSharesTheRecipientAci() async throws {
+        let aci = Aci.randomForTesting()
+        addContact(named: "Alice", aci: aci, phoneNumber: "+16505550101")
+        providers.systemContacts = [
+            makeSystemContact(givenName: "Alicia", phoneNumber: "+16505550101"),
+        ]
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        let rows = try await displayedRows(of: viewModel).rows
+        let row = try #require(rows.first)
+        #expect(rows.count == 1, "The card and the recipient are one row.")
+        #expect(shareableAci(of: row) == aci)
+    }
+
+    @Test
+    func testAnAddressBookOnlyRowSharesNoAci() async throws {
+        providers.systemContacts = [makeSystemContact(givenName: "Dave", phoneNumber: "+16505550199")]
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        let row = try #require(try await displayedRows(of: viewModel).rows.first)
+        #expect(shareableAci(of: row) == nil)
+    }
+
     // MARK: - Helpers
 
     private func makeViewModel() -> ContactSharingPickerViewModel {
@@ -679,7 +722,7 @@ struct ContactSharingPickerViewModelTests {
             phoneNumberUtil: PhoneNumberUtil(),
             phoneNumberVisibilityFetcher: phoneNumberVisibilityFetcher,
             profileManager: OWSFakeProfileManager(),
-            recipientDatabaseTable: RecipientDatabaseTable(),
+            recipientDatabaseTable: recipientDatabaseTable,
             recipientHidingManager: recipientHidingManager,
             recipientManager: SignalRecipientManagerImpl(
                 phoneNumberVisibilityFetcher: MockPhoneNumberVisibilityFetcher(),
@@ -737,6 +780,12 @@ struct ContactSharingPickerViewModelTests {
         providers.displayNames[recipient.id] = .profileName(nameComponents)
 
         return recipient
+    }
+
+    private func shareableAci(of row: ContactSharingPickerViewModel.Row) -> Aci? {
+        db.read { tx in
+            row.shareableAci(recipientDatabaseTable: recipientDatabaseTable, transaction: tx)
+        }
     }
 
     private func makeNameComponents(givenName: String, familyName: String? = nil) -> PersonNameComponents {
