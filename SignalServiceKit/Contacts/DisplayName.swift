@@ -10,6 +10,7 @@ public enum DisplayName {
     case nickname(ProfileName)
     case systemContactName(SystemContactName)
     case profileName(PersonNameComponents)
+    case sharedName(ProfileName)
     case phoneNumber(E164)
     case username(String)
     case deletedAccount
@@ -38,14 +39,14 @@ public enum DisplayName {
         switch self {
         case .nickname, .systemContactName, .profileName:
             return true
-        case .phoneNumber, .username, .deletedAccount, .unknown:
+        case .sharedName, .phoneNumber, .username, .deletedAccount, .unknown:
             return false
         }
     }
 
     public var hasKnownValue: Bool {
         switch self {
-        case .nickname, .systemContactName, .profileName, .phoneNumber, .username:
+        case .nickname, .systemContactName, .profileName, .sharedName, .phoneNumber, .username:
             return true
         case .deletedAccount, .unknown:
             return false
@@ -66,6 +67,13 @@ public enum DisplayName {
         case .profileName(let nameComponents):
             return Self.formatNameComponents(
                 nameComponents,
+                multipleAccountLabel: nil,
+                config: config,
+                formatBlock: useShortNameIfAvailable ? OWSFormat.formatNameComponentsShort(_:) : OWSFormat.formatNameComponents(_:),
+            ).filterForDisplay
+        case .sharedName(let sharedName):
+            return Self.formatNameComponents(
+                sharedName.nameComponents,
                 multipleAccountLabel: nil,
                 config: config,
                 formatBlock: useShortNameIfAvailable ? OWSFormat.formatNameComponentsShort(_:) : OWSFormat.formatNameComponents(_:),
@@ -139,6 +147,13 @@ public enum DisplayName {
         case .profileName(let nameComponents):
             return .nameValue(Self.formatNameComponents(
                 nameComponents,
+                multipleAccountLabel: nil,
+                config: config.displayNameConfig,
+                formatBlock: formatForSorting(_:),
+            ))
+        case .sharedName(let sharedName):
+            return .nameValue(Self.formatNameComponents(
+                sharedName.nameComponents,
                 multipleAccountLabel: nil,
                 config: config.displayNameConfig,
                 formatBlock: formatForSorting(_:),

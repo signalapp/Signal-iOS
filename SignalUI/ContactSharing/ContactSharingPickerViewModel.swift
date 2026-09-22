@@ -439,6 +439,8 @@ final class ContactSharingPickerViewModel {
                 return OWSContactName(components: systemContactName.nameComponents)
             case .profileName(let nameComponents):
                 return OWSContactName(components: nameComponents)
+            case .sharedName(let sharedName):
+                return OWSContactName(components: sharedName.nameComponents)
             case .phoneNumber, .username, .deletedAccount, .unknown:
                 return OWSContactName(givenName: resolvedDisplayName)
             }

@@ -60,6 +60,13 @@ public class SearchableNameFinder {
             case let usernameLookupRecord as UsernameLookupRecord:
                 contactMatches.addResult(for: usernameLookupRecord)
 
+            case let aciContactShareName as AciContactShareName:
+                contactMatches.addResult(
+                    for: aciContactShareName,
+                    recipientDatabaseTable: self.recipientDatabaseTable,
+                    tx: tx,
+                )
+
             case let nicknameRecord as NicknameRecord:
                 contactMatches.addResult(
                     for: nicknameRecord,
@@ -91,6 +98,7 @@ private struct ContactMatches {
         var userProfile: OWSUserProfile?
         var signalRecipient: SignalRecipient?
         var usernameLookupRecord: UsernameLookupRecord?
+        var aciContactShareName: AciContactShareName?
     }
 
     private var rawValue = [SignalServiceAddress: ContactMatch]()
@@ -106,6 +114,18 @@ private struct ContactMatches {
         let address = recipient.address
         withUnsafeMutablePointer(to: &rawValue[address, default: ContactMatch()]) {
             $0.pointee.nickname = nickname
+        }
+    }
+
+    mutating func addResult(
+        for aciContactShareName: AciContactShareName,
+        recipientDatabaseTable: RecipientDatabaseTable,
+        tx: DBReadTransaction,
+    ) {
+        guard let recipient = recipientDatabaseTable.fetchRecipient(rowId: aciContactShareName.recipientRowID, tx: tx) else { return }
+        let address = recipient.address
+        withUnsafeMutablePointer(to: &rawValue[address, default: ContactMatch()]) {
+            $0.pointee.aciContactShareName = aciContactShareName
         }
     }
 
@@ -163,6 +183,8 @@ private struct ContactMatches {
                 isValidName = contactMatch.signalAccount != nil
             case .profileName:
                 isValidName = contactMatch.userProfile != nil
+            case .sharedName:
+                isValidName = contactMatch.aciContactShareName != nil
             case .username:
                 isValidName = contactMatch.usernameLookupRecord != nil
             case .phoneNumber, .deletedAccount, .unknown:

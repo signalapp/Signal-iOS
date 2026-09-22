@@ -242,6 +242,7 @@ extension AppSetup.GlobalsContinuation {
             signalRecipientStore: recipientDatabaseTable,
             usernameLookupRecordStore: usernameLookupRecordStore,
             nicknameRecordStore: nicknameRecordStore,
+            aciContactShareNameStore: aciContactShareNameStore,
         )
         let recipientFetcher = RecipientFetcher(
             recipientDatabaseTable: recipientDatabaseTable,
@@ -352,9 +353,13 @@ extension AppSetup.GlobalsContinuation {
         )
         let notificationPreferencesManager = NotificationPreferencesManager()
 
-        let aciContactShareNameManager = AciContactShareNameManagerImpl(aciContactShareNameStore: aciContactShareNameStore)
+        let aciContactShareNameManager = AciContactShareNameManagerImpl(
+            aciContactShareNameStore: aciContactShareNameStore,
+            searchableNameIndexer: searchableNameIndexer,
+        )
 
         let contactManager = testDependencies.contactManager ?? OWSContactsManager(
+            aciContactShareNameManager: aciContactShareNameManager,
             appReadiness: appReadiness,
             nicknameManager: nicknameManager,
             notificationPreferencesManager: notificationPreferencesManager,

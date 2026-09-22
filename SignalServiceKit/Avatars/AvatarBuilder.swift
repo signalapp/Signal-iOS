@@ -570,6 +570,8 @@ public class AvatarBuilder {
             nameComponents = systemContactName.nameComponents
         case .profileName(let profileNameComponents):
             nameComponents = profileNameComponents
+        case .sharedName(let sharedName):
+            nameComponents = sharedName.nameComponents
         case .phoneNumber, .username, .deletedAccount, .unknown:
             return nil
         }

@@ -1080,7 +1080,7 @@ extension CVComponentThreadDetails {
         tx: DBReadTransaction,
     ) -> CVComponentState.ThreadDetails.SafetySection? {
         switch displayName {
-        case .nickname, .systemContactName, .profileName:
+        case .nickname, .systemContactName, .profileName, .sharedName:
             break
         case .phoneNumber, .username, .deletedAccount, .unknown:
             // If the display name is a phone number or username, you started a

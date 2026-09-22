@@ -367,6 +367,7 @@ public class GRDBSchemaMigrator {
         case removeInteractionConversationLoadDistanceIndex
         case addAttachmentAudioWaveformSamples
         case addAciContactShareNameTable
+        case addAciContactShareNamesToSearchableName
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5665,6 +5666,15 @@ public class GRDBSchemaMigrator {
                     .references("model_SignalRecipient", column: "id", onDelete: .cascade)
                 table.column("givenName", .text)
                 table.column("familyName", .text)
+            }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addAciContactShareNamesToSearchableName) { tx in
+            try tx.database.alter(table: "SearchableName") { table in
+                table.add(column: "aciContactShareNameRecipientId", .integer)
+                    .references(AciContactShareName.databaseTableName, column: "recipientRowID", onDelete: .cascade)
             }
 
             return .success(())

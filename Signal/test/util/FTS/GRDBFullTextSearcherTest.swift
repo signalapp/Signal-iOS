@@ -32,6 +32,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         let localIdentifiers: LocalIdentifiers = .forUnitTests
 
         SSKEnvironment.shared.setContactManagerForUnitTests(OWSContactsManager(
+            aciContactShareNameManager: DependenciesBridge.shared.aciContactShareNameManager,
             appReadiness: AppReadinessMock(),
             nicknameManager: DependenciesBridge.shared.nicknameManager,
             notificationPreferencesManager: DependenciesBridge.shared.notificationPreferencesManager,

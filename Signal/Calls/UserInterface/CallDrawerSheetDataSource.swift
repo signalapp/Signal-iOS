@@ -98,7 +98,7 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
                 resolvedName = displayName.resolvedValue(config: config.displayNameConfig)
                 comparableName = displayName.comparableValue(config: config)
                 isUnknown = switch displayName {
-                case .nickname, .systemContactName, .profileName, .phoneNumber, .username:
+                case .nickname, .systemContactName, .profileName, .sharedName, .phoneNumber, .username:
                     false
                 case .unknown, .deletedAccount:
                     true

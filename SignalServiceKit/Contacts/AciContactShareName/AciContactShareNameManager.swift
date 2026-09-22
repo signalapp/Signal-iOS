@@ -26,9 +26,14 @@ public protocol AciContactShareNameManager {
 
 class AciContactShareNameManagerImpl: AciContactShareNameManager {
     private let aciContactShareNameStore: AciContactShareNameStore
+    private let searchableNameIndexer: any SearchableNameIndexer
 
-    init(aciContactShareNameStore: AciContactShareNameStore) {
+    init(
+        aciContactShareNameStore: AciContactShareNameStore,
+        searchableNameIndexer: any SearchableNameIndexer,
+    ) {
         self.aciContactShareNameStore = aciContactShareNameStore
+        self.searchableNameIndexer = searchableNameIndexer
     }
 
     // MARK: AciContactShareNameManager
@@ -47,10 +52,16 @@ class AciContactShareNameManagerImpl: AciContactShareNameManager {
 
         if let aciContactShareName = AciContactShareName(recipient: recipient, givenName: givenName, familyName: familyName) {
             aciContactShareNameStore.insertOne(aciContactShareName, tx: tx)
+            searchableNameIndexer.insert(aciContactShareName, tx: tx)
         }
     }
 
     func deleteName(for recipient: SignalRecipient, tx: DBWriteTransaction) {
+        guard let aciContactShareName = aciContactShareNameStore.fetchOne(forRecipientRowID: recipient.id, tx: tx) else {
+            return
+        }
+
+        searchableNameIndexer.delete(aciContactShareName, tx: tx)
         aciContactShareNameStore.deleteOne(forRecipientRowID: recipient.id, tx: tx)
     }
 }

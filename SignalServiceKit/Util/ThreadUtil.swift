@@ -640,6 +640,8 @@ extension TSThread {
             nameComponents = systemContactName.nameComponents
         case .profileName(let profileNameComponents):
             nameComponents = profileNameComponents
+        case .sharedName(let sharedName):
+            nameComponents = sharedName.nameComponents
         case .phoneNumber, .username, .deletedAccount, .unknown:
             nameComponents = nil
         }

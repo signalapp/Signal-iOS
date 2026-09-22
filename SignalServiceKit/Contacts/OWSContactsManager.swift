@@ -74,6 +74,7 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol, ThreadRemove
     public let avatarAddressesToShowDownloadingSpinner = AtomicSet<SignalServiceAddress>(lock: .init())
     public let avatarGroupIdsToShowDownloadingSpinner = AtomicSet<Data>(lock: .init())
 
+    private let aciContactShareNameManager: any AciContactShareNameManager
     private let nicknameManager: any NicknameManager
     private let notificationPreferencesManager: NotificationPreferencesManager
     private let recipientDatabaseTable: RecipientDatabaseTable
@@ -147,12 +148,14 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol, ThreadRemove
     public private(set) var hasLoadedSystemContacts: Bool = false
 
     public init(
+        aciContactShareNameManager: any AciContactShareNameManager,
         appReadiness: AppReadiness,
         nicknameManager: any NicknameManager,
         notificationPreferencesManager: NotificationPreferencesManager,
         recipientDatabaseTable: RecipientDatabaseTable,
         usernameLookupManager: any UsernameLookupManager,
     ) {
+        self.aciContactShareNameManager = aciContactShareNameManager
         self.nicknameManager = nicknameManager
         self.notificationPreferencesManager = notificationPreferencesManager
         self.recipientDatabaseTable = recipientDatabaseTable
@@ -1244,6 +1247,19 @@ extension OWSContactsManager: ContactManager {
         }.refine { addresses -> [DisplayName?] in
             return SSKEnvironment.shared.profileManagerRef.fetchUserProfiles(for: Array(addresses), tx: transaction)
                 .map { $0?.nameComponents.map { .profileName($0) } }
+        }.refine { addresses -> [DisplayName?] in
+            return addresses.map { address -> DisplayName? in
+                let sharedName = recipientDatabaseTable.fetchRecipient(address: address, tx: tx)
+                    .flatMap { aciContactShareNameManager.fetchName(for: $0, tx: tx) }
+                    .flatMap(ProfileName.init(aciContactShareName:))
+                    .map(DisplayName.sharedName(_:))
+                if sharedName != nil {
+                    // A shared name is only a placeholder, so keep trying to
+                    // learn the account's real name.
+                    self.fetchProfile(forUnknownAddress: address)
+                }
+                return sharedName
+            }
         }.refine { addresses -> [DisplayName?] in
             return addresses.map { $0.e164.map { .phoneNumber($0) } }
         }.refine { addresses -> [DisplayName?] in

@@ -58,6 +58,7 @@ class SearchableNameIndexerImpl: SearchableNameIndexer {
     private let signalRecipientStore: RecipientDatabaseTable
     private let usernameLookupRecordStore: UsernameLookupRecordStore
     private let nicknameRecordStore: any NicknameRecordStore
+    private let aciContactShareNameStore: AciContactShareNameStore
 
     enum Constants {
         static let databaseTableName = "SearchableName"
@@ -71,6 +72,7 @@ class SearchableNameIndexerImpl: SearchableNameIndexer {
         signalRecipientStore: RecipientDatabaseTable,
         usernameLookupRecordStore: UsernameLookupRecordStore,
         nicknameRecordStore: any NicknameRecordStore,
+        aciContactShareNameStore: AciContactShareNameStore,
     ) {
         self.threadStore = threadStore
         self.signalAccountStore = signalAccountStore
@@ -78,6 +80,7 @@ class SearchableNameIndexerImpl: SearchableNameIndexer {
         self.signalRecipientStore = signalRecipientStore
         self.usernameLookupRecordStore = usernameLookupRecordStore
         self.nicknameRecordStore = nicknameRecordStore
+        self.aciContactShareNameStore = aciContactShareNameStore
     }
 
     // MARK: - Search
@@ -103,7 +106,8 @@ class SearchableNameIndexerImpl: SearchableNameIndexer {
                     "\(Constants.databaseTableName)"."\(IdentifierColumnName.userProfileId.rawValue)",
                     "\(Constants.databaseTableName)"."\(IdentifierColumnName.signalRecipientId.rawValue)",
                     "\(Constants.databaseTableName)"."\(IdentifierColumnName.usernameLookupRecordId.rawValue)",
-                    "\(Constants.databaseTableName)"."\(IdentifierColumnName.nicknameRecordRecipientId.rawValue)"
+                    "\(Constants.databaseTableName)"."\(IdentifierColumnName.nicknameRecordRecipientId.rawValue)",
+                    "\(Constants.databaseTableName)"."\(IdentifierColumnName.aciContactShareNameRecipientId.rawValue)"
                 FROM "\(Constants.databaseTableNameFTS)"
                 LEFT JOIN "\(Constants.databaseTableName)"
                     ON "\(Constants.databaseTableName)".rowId = "\(Constants.databaseTableNameFTS)".rowId
@@ -135,6 +139,8 @@ class SearchableNameIndexerImpl: SearchableNameIndexer {
                     identifier = .usernameLookupRecord(usernameLookupRecordId)
                 } else if let nicknameRecordRecipientId = (row[5] as Int64?) {
                     identifier = .nicknameRecord(recipientRowId: nicknameRecordRecipientId)
+                } else if let aciContactShareNameRecipientId = (row[6] as Int64?) {
+                    identifier = .aciContactShareName(recipientRowId: aciContactShareNameRecipientId)
                 } else {
                     owsFailDebug("Couldn't find identifier for SearchableName")
                     continue
@@ -165,6 +171,8 @@ class SearchableNameIndexerImpl: SearchableNameIndexer {
             return usernameLookupRecordStore.fetchOne(forAci: value, tx: tx)
         case .nicknameRecord(recipientRowId: let value):
             return nicknameRecordStore.fetch(recipientRowID: value, tx: tx)
+        case .aciContactShareName(recipientRowId: let value):
+            return aciContactShareNameStore.fetchOne(forRecipientRowID: value, tx: tx)
         }
     }
 
@@ -224,6 +232,9 @@ class SearchableNameIndexerImpl: SearchableNameIndexer {
         nicknameRecordStore.enumerateAll(tx: tx) { nicknameRecord in
             insert(nicknameRecord, tx: tx)
         }
+        aciContactShareNameStore.enumerateAll(tx: tx) { aciContactShareName in
+            insert(aciContactShareName, tx: tx)
+        }
     }
 
     func indexThreads(tx: DBWriteTransaction) {
@@ -242,6 +253,7 @@ private enum IdentifierColumnName: String {
     case signalRecipientId
     case usernameLookupRecordId
     case nicknameRecordRecipientId
+    case aciContactShareNameRecipientId
 }
 
 // MARK: - IndexableNames
@@ -253,6 +265,7 @@ public enum IndexableNameIdentifier {
     case signalRecipient(Int64)
     case usernameLookupRecord(Aci)
     case nicknameRecord(recipientRowId: Int64)
+    case aciContactShareName(recipientRowId: Int64)
 
     fileprivate func columnNameAndValue() -> (IdentifierColumnName, DatabaseValue) {
         switch self {
@@ -268,6 +281,8 @@ public enum IndexableNameIdentifier {
             return (.usernameLookupRecordId, value.serviceIdBinary.databaseValue)
         case .nicknameRecord(recipientRowId: let value):
             return (.nicknameRecordRecipientId, value.databaseValue)
+        case .aciContactShareName(recipientRowId: let value):
+            return (.aciContactShareNameRecipientId, value.databaseValue)
         }
     }
 }
@@ -392,5 +407,18 @@ extension NicknameRecord: IndexableName {
         // No system contact here, so this value doesn't matter.
         let config = DisplayName.Config(shouldUseSystemContactNicknames: false)
         return DisplayName.nickname(profileName).resolvedValue(config: config)
+    }
+}
+
+extension AciContactShareName: IndexableName {
+    public func indexableNameIdentifier() -> IndexableNameIdentifier {
+        return .aciContactShareName(recipientRowId: self.recipientRowID)
+    }
+
+    public func indexableNameContent() -> String? {
+        guard let profileName = ProfileName(aciContactShareName: self) else { return nil }
+        // No system contact here, so this value doesn't matter.
+        let config = DisplayName.Config(shouldUseSystemContactNicknames: false)
+        return DisplayName.sharedName(profileName).resolvedValue(config: config)
     }
 }
