@@ -1510,6 +1510,8 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
 
     public let nickname: StorageServiceProtoContactRecordName?
 
+    public let sharedName: StorageServiceProtoContactRecordName?
+
     public var aci: String? {
         guard hasAci else {
             return nil
@@ -1704,9 +1706,11 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
     }
 
     private init(proto: StorageServiceProtos_ContactRecord,
-                 nickname: StorageServiceProtoContactRecordName?) {
+                 nickname: StorageServiceProtoContactRecordName?,
+                 sharedName: StorageServiceProtoContactRecordName?) {
         self.proto = proto
         self.nickname = nickname
+        self.sharedName = sharedName
     }
 
     public func serializedData() throws -> Data {
@@ -1724,8 +1728,14 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
             nickname = StorageServiceProtoContactRecordName(proto.nickname)
         }
 
+        var sharedName: StorageServiceProtoContactRecordName?
+        if proto.hasSharedName {
+            sharedName = StorageServiceProtoContactRecordName(proto.sharedName)
+        }
+
         self.init(proto: proto,
-                  nickname: nickname)
+                  nickname: nickname,
+                  sharedName: sharedName)
     }
 
     public init(from decoder: Swift.Decoder) throws {
@@ -1807,6 +1817,9 @@ extension StorageServiceProtoContactRecord {
         }
         if let _value = pniBinary {
             builder.setPniBinary(_value)
+        }
+        if let _value = sharedName {
+            builder.setSharedName(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -2009,6 +2022,16 @@ public struct StorageServiceProtoContactRecordBuilder {
 
     public mutating func setPniBinary(_ valueParam: Data) {
         proto.pniBinary = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setSharedName(_ valueParam: StorageServiceProtoContactRecordName?) {
+        guard let valueParam = valueParam else { return }
+        proto.sharedName = valueParam.proto
+    }
+
+    public mutating func setSharedName(_ valueParam: StorageServiceProtoContactRecordName) {
+        proto.sharedName = valueParam.proto
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

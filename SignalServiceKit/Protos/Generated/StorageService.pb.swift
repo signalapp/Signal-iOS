@@ -533,6 +533,16 @@ nonisolated struct StorageServiceProtos_ContactRecord: @unchecked Sendable {
     set {_uniqueStorage()._pniBinary = newValue}
   }
 
+  /// Name shared from a third party
+  var sharedName: StorageServiceProtos_ContactRecord.Name {
+    get {_storage._sharedName ?? StorageServiceProtos_ContactRecord.Name()}
+    set {_uniqueStorage()._sharedName = newValue}
+  }
+  /// Returns true if `sharedName` has been explicitly set.
+  var hasSharedName: Bool {_storage._sharedName != nil}
+  /// Clears the value of `sharedName`. Subsequent reads from it will return its default value.
+  mutating func clearSharedName() {_uniqueStorage()._sharedName = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   nonisolated enum IdentityState: SwiftProtobuf.Enum, Swift.CaseIterable {
@@ -1652,7 +1662,7 @@ nonisolated extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message,
 
 nonisolated extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ContactRecord"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}aci\0\u{1}e164\0\u{1}profileKey\0\u{1}identityKey\0\u{1}identityState\0\u{1}givenName\0\u{1}familyName\0\u{1}username\0\u{1}blocked\0\u{1}whitelisted\0\u{1}archived\0\u{1}markedUnread\0\u{1}mutedUntilTimestamp\0\u{1}hideStory\0\u{1}pni\0\u{1}unregisteredAtTimestamp\0\u{1}systemGivenName\0\u{1}systemFamilyName\0\u{1}systemNickname\0\u{1}hidden\0\u{2}\u{2}nickname\0\u{1}note\0\u{1}avatarColor\0\u{1}aciBinary\0\u{1}pniBinary\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}aci\0\u{1}e164\0\u{1}profileKey\0\u{1}identityKey\0\u{1}identityState\0\u{1}givenName\0\u{1}familyName\0\u{1}username\0\u{1}blocked\0\u{1}whitelisted\0\u{1}archived\0\u{1}markedUnread\0\u{1}mutedUntilTimestamp\0\u{1}hideStory\0\u{1}pni\0\u{1}unregisteredAtTimestamp\0\u{1}systemGivenName\0\u{1}systemFamilyName\0\u{1}systemNickname\0\u{1}hidden\0\u{2}\u{2}nickname\0\u{1}note\0\u{1}avatarColor\0\u{1}aciBinary\0\u{1}pniBinary\0\u{2}\u{4}sharedName\0")
 
   fileprivate class _StorageClass {
     var _aci: String = String()
@@ -1680,6 +1690,7 @@ nonisolated extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message,
     var _avatarColor: StorageServiceProtos_AvatarColor? = nil
     var _aciBinary: Data = Data()
     var _pniBinary: Data = Data()
+    var _sharedName: StorageServiceProtos_ContactRecord.Name? = nil
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -1715,6 +1726,7 @@ nonisolated extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message,
       _avatarColor = source._avatarColor
       _aciBinary = source._aciBinary
       _pniBinary = source._pniBinary
+      _sharedName = source._sharedName
     }
   }
 
@@ -1758,6 +1770,7 @@ nonisolated extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message,
         case 24: try { try decoder.decodeSingularEnumField(value: &_storage._avatarColor) }()
         case 25: try { try decoder.decodeSingularBytesField(value: &_storage._aciBinary) }()
         case 26: try { try decoder.decodeSingularBytesField(value: &_storage._pniBinary) }()
+        case 30: try { try decoder.decodeSingularMessageField(value: &_storage._sharedName) }()
         default: break
         }
       }
@@ -1845,6 +1858,9 @@ nonisolated extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message,
       if !_storage._pniBinary.isEmpty {
         try visitor.visitSingularBytesField(value: _storage._pniBinary, fieldNumber: 26)
       }
+      try { if let v = _storage._sharedName {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 30)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1879,6 +1895,7 @@ nonisolated extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message,
         if _storage._avatarColor != rhs_storage._avatarColor {return false}
         if _storage._aciBinary != rhs_storage._aciBinary {return false}
         if _storage._pniBinary != rhs_storage._pniBinary {return false}
+        if _storage._sharedName != rhs_storage._sharedName {return false}
         return true
       }
       if !storagesAreEqual {return false}

@@ -141,6 +141,7 @@ message ContactRecord {
   optional AvatarColor avatarColor = 24;
   bytes aciBinary = 25; // 16-byte UUID
   bytes pniBinary = 26; // 16-byte UUID
+  Name sharedName = 30; // Name shared from a third party
 }
 
 message GroupV1Record {
