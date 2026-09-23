@@ -10,7 +10,6 @@ import LibSignalClient
 /// for contacts we restore from a backup.
 public class BackupArchiveAvatarFetcher {
 
-    private let appReadiness: AppReadiness
     private let db: any DB
     private let reachabilityManager: SSKReachabilityManager
     private let store: TaskStore
@@ -28,7 +27,6 @@ public class BackupArchiveAvatarFetcher {
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager,
     ) {
-        self.appReadiness = appReadiness
         self.db = db
         self.reachabilityManager = reachabilityManager
         self.tsAccountManager = tsAccountManager
@@ -103,9 +101,6 @@ public class BackupArchiveAvatarFetcher {
     }
 
     public func runIfNeeded() async throws {
-        guard appReadiness.isAppReady else {
-            return
-        }
         guard tsAccountManager.localIdentifiersWithMaybeSneakyTransaction != nil else {
             return
         }

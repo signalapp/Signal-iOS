@@ -15,13 +15,11 @@ public protocol OrphanedBackupAttachmentQueueRunner {
 
 public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQueueRunner {
 
-    private let appReadiness: AppReadiness
     private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
 
     public init(
         accountKeyStore: AccountKeyStore,
-        appReadiness: AppReadiness,
         attachmentStore: AttachmentStore,
         backupRequestManager: BackupRequestManager,
         backupSettingsStore: BackupSettingsStore,
@@ -31,7 +29,6 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
         orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
         tsAccountManager: TSAccountManager,
     ) {
-        self.appReadiness = appReadiness
         self.tsAccountManager = tsAccountManager
         let taskRunner = TaskRunner(
             accountKeyStore: accountKeyStore,
@@ -52,7 +49,6 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
     }
 
     public func runIfNeeded() async throws {
-        try await appReadiness.waitForAppReady()
         try Task.checkCancellation()
         guard tsAccountManager.localIdentifiersWithMaybeSneakyTransaction != nil else {
             return

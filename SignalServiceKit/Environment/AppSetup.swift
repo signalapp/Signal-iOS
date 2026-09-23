@@ -1174,7 +1174,6 @@ extension AppSetup.GlobalsContinuation {
             ),
             orphanRunner: OrphanedBackupAttachmentQueueRunnerImpl(
                 accountKeyStore: accountKeyStore,
-                appReadiness: appReadiness,
                 attachmentStore: attachmentStore,
                 backupRequestManager: backupRequestManager,
                 backupSettingsStore: backupSettingsStore,
