@@ -442,11 +442,11 @@ public class BackupArchiveAvatarFetcher {
             case 0:
                 // We can afford to use a high delay;
                 // the job run itself has in-memory retries.
-                return 60 * 2
+                return 2 * .minute
             case 1:
-                return 60 * 60
+                return .hour
             case 2:
-                return 60 * 60 * 24
+                return .day
             default:
                 return nil
             }
