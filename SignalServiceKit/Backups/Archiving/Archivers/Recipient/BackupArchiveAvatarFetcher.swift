@@ -178,19 +178,17 @@ public class BackupArchiveAvatarFetcher {
             }
 
             if let serviceId = record.serviceId {
-                do {
-                    let profile = try db.read { tx in
+                let profile = db.read { tx in
+                    return failIfThrows {
                         return try OWSUserProfile
                             .filter(Column(OWSUserProfile.CodingKeys.serviceIdString) == serviceId.serviceIdUppercaseString)
                             .fetchOne(tx.database)
                     }
-                    if profile?.avatarFileName != nil {
-                        // We already have an avatar for this profile;
-                        // no need to fetch anything.
-                        return .obsolete
-                    }
-                } catch {
-                    return .unretryableError(error)
+                }
+                if profile?.avatarFileName != nil {
+                    // We already have an avatar for this profile;
+                    // no need to fetch anything.
+                    return .obsolete
                 }
 
                 do {
