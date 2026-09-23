@@ -20,6 +20,119 @@ class UserProfileTest: SignalBaseTest {
         }
     }
 
+    func testLearningProfileNameDeletesAciContactShareName() {
+        let aci = Aci.randomForTesting()
+        let address = SignalServiceAddress(aci)
+        let aciContactShareNameManager = DependenciesBridge.shared.aciContactShareNameManager
+
+        let recipient = write { tx in
+            DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
+        }
+
+        write { tx in
+            aciContactShareNameManager.saveName(givenName: "Shared", familyName: "Name", recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
+            OWSUserProfile(address: .otherUser(address)).anyInsert(transaction: tx)
+        }
+
+        XCTAssertNotNil(read { tx in aciContactShareNameManager.fetchName(recipient: recipient, tx: tx) })
+
+        write { tx in
+            OWSUserProfile.getUserProfile(for: .otherUser(address), tx: tx)?.update(
+                givenName: .setTo("Alice"),
+                userProfileWriter: .profileFetch,
+                transaction: tx,
+            )
+        }
+
+        XCTAssertNil(read { tx in aciContactShareNameManager.fetchName(recipient: recipient, tx: tx) })
+    }
+
+    func testAciContactShareNameSurvivesNonNameProfileUpdate() {
+        let aci = Aci.randomForTesting()
+        let address = SignalServiceAddress(aci)
+        let aciContactShareNameManager = DependenciesBridge.shared.aciContactShareNameManager
+
+        let recipient = write { tx in
+            DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
+        }
+
+        write { tx in
+            aciContactShareNameManager.saveName(givenName: "Shared", familyName: "Name", recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
+            OWSUserProfile(address: .otherUser(address)).anyInsert(transaction: tx)
+        }
+
+        write { tx in
+            OWSUserProfile.getUserProfile(for: .otherUser(address), tx: tx)?.update(
+                bio: .setTo("A bio"),
+                userProfileWriter: .profileFetch,
+                transaction: tx,
+            )
+        }
+
+        XCTAssertEqual(
+            read { tx in aciContactShareNameManager.fetchName(recipient: recipient, tx: tx) }?.givenName,
+            "Shared",
+        )
+    }
+
+    func testProfileUpdateDeletesAciContactShareNameOutrankedByNickname() {
+        let aci = Aci.randomForTesting()
+        let address = SignalServiceAddress(aci)
+        let aciContactShareNameManager = DependenciesBridge.shared.aciContactShareNameManager
+
+        let recipient = write { tx in
+            DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
+        }
+
+        write { tx in
+            aciContactShareNameManager.saveName(givenName: "Shared", familyName: "Name", recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
+            DependenciesBridge.shared.nicknameManager.createOrUpdate(
+                nicknameRecord: NicknameRecord(recipient: recipient, givenName: "Nick", familyName: nil, note: nil),
+                updateStorageServiceFor: nil,
+                tx: tx,
+            )
+            OWSUserProfile(address: .otherUser(address)).anyInsert(transaction: tx)
+        }
+
+        write { tx in
+            OWSUserProfile.getUserProfile(for: .otherUser(address), tx: tx)?.update(
+                bio: .setTo("A bio"),
+                userProfileWriter: .profileFetch,
+                transaction: tx,
+            )
+        }
+
+        XCTAssertNil(read { tx in aciContactShareNameManager.fetchName(recipient: recipient, tx: tx) })
+    }
+
+    func testStorageServiceProfileUpdateKeepsAciContactShareName() {
+        let aci = Aci.randomForTesting()
+        let address = SignalServiceAddress(aci)
+        let aciContactShareNameManager = DependenciesBridge.shared.aciContactShareNameManager
+
+        let recipient = write { tx in
+            DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
+        }
+
+        write { tx in
+            aciContactShareNameManager.saveName(givenName: "Shared", familyName: "Name", recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
+            OWSUserProfile(address: .otherUser(address)).anyInsert(transaction: tx)
+        }
+
+        write { tx in
+            OWSUserProfile.getUserProfile(for: .otherUser(address), tx: tx)?.update(
+                givenName: .setTo("Alice"),
+                userProfileWriter: .storageService,
+                transaction: tx,
+            )
+        }
+
+        XCTAssertEqual(
+            read { tx in aciContactShareNameManager.fetchName(recipient: recipient, tx: tx) }?.givenName,
+            "Shared",
+        )
+    }
+
     func testGetUserProfile() {
         let addresses: [SignalServiceAddress] = [
             SignalServiceAddress(Aci.randomForTesting()),

@@ -356,6 +356,7 @@ extension AppSetup.GlobalsContinuation {
         let aciContactShareNameManager = AciContactShareNameManagerImpl(
             aciContactShareNameStore: aciContactShareNameStore,
             searchableNameIndexer: searchableNameIndexer,
+            storageServiceManager: storageServiceManager,
         )
 
         let contactManager = testDependencies.contactManager ?? OWSContactsManager(

@@ -11,6 +11,7 @@ import Testing
 struct AciContactShareNameManagerTests {
     private let db = InMemoryDB()
     private let searchableNameIndexer: SearchableNameIndexerImpl
+    private let storageServiceManager = RecordingStorageServiceManager()
     private let manager: AciContactShareNameManagerImpl
 
     init() {
@@ -27,6 +28,7 @@ struct AciContactShareNameManagerTests {
         self.manager = AciContactShareNameManagerImpl(
             aciContactShareNameStore: aciContactShareNameStore,
             searchableNameIndexer: searchableNameIndexer,
+            storageServiceManager: storageServiceManager,
         )
     }
 
@@ -53,10 +55,10 @@ struct AciContactShareNameManagerTests {
         let recipient = insertRecipient()
 
         db.write { tx in
-            manager.saveName(givenName: "Shared", familyName: "Name", for: recipient, tx: tx)
+            manager.saveName(givenName: "Shared", familyName: "Name", recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
         }
 
-        let name = db.read { tx in manager.fetchName(for: recipient, tx: tx) }
+        let name = db.read { tx in manager.fetchName(recipient: recipient, tx: tx) }
         #expect(name?.givenName == "Shared")
         #expect(name?.familyName == "Name")
     }
@@ -66,11 +68,96 @@ struct AciContactShareNameManagerTests {
         let recipient = insertRecipient()
 
         db.write { tx in
-            manager.saveName(givenName: "First", familyName: nil, for: recipient, tx: tx)
-            manager.saveName(givenName: "Second", familyName: nil, for: recipient, tx: tx)
+            manager.saveName(givenName: "First", familyName: nil, recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
+            manager.saveName(givenName: "Second", familyName: nil, recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
         }
 
-        #expect(db.read { tx in manager.fetchName(for: recipient, tx: tx) }?.givenName == "Second")
+        #expect(db.read { tx in manager.fetchName(recipient: recipient, tx: tx) }?.givenName == "Second")
+    }
+
+    @Test
+    func testSaveWithoutOverwriteKeepsPreviousName() {
+        let recipient = insertRecipient()
+
+        db.write { tx in
+            manager.saveName(givenName: "First", familyName: nil, recipient: recipient, allowOverwrite: false, updateStorageService: false, tx: tx)
+            manager.saveName(givenName: "Second", familyName: nil, recipient: recipient, allowOverwrite: false, updateStorageService: false, tx: tx)
+        }
+
+        #expect(db.read { tx in manager.fetchName(recipient: recipient, tx: tx) }?.givenName == "First")
+    }
+
+    @Test
+    func testSaveUpdatesStorageService() {
+        let recipient = insertRecipient()
+
+        db.write { tx in
+            manager.saveName(givenName: "Shared", familyName: nil, recipient: recipient, allowOverwrite: false, updateStorageService: true, tx: tx)
+        }
+
+        #expect(storageServiceManager.updatedRecipientUniqueIds == [recipient.uniqueId])
+    }
+
+    @Test
+    func testSaveWithoutStorageServiceUpdateDoesNotUpdateStorageService() {
+        let recipient = insertRecipient()
+
+        db.write { tx in
+            manager.saveName(givenName: "Shared", familyName: nil, recipient: recipient, allowOverwrite: false, updateStorageService: false, tx: tx)
+        }
+
+        #expect(storageServiceManager.updatedRecipientUniqueIds.isEmpty)
+    }
+
+    @Test
+    func testSaveThatKeepsPreviousNameDoesNotUpdateStorageService() {
+        let recipient = insertRecipient()
+
+        db.write { tx in
+            manager.saveName(givenName: "First", familyName: nil, recipient: recipient, allowOverwrite: false, updateStorageService: false, tx: tx)
+            manager.saveName(givenName: "Second", familyName: nil, recipient: recipient, allowOverwrite: false, updateStorageService: true, tx: tx)
+        }
+
+        #expect(storageServiceManager.updatedRecipientUniqueIds.isEmpty)
+    }
+
+    @Test
+    func testSaveEmptyNameWithNoPreviousNameDoesNotUpdateStorageService() {
+        let recipient = insertRecipient()
+
+        db.write { tx in
+            manager.saveName(givenName: " ", familyName: nil, recipient: recipient, allowOverwrite: true, updateStorageService: true, tx: tx)
+        }
+
+        #expect(storageServiceManager.updatedRecipientUniqueIds.isEmpty)
+    }
+
+    @Test
+    func testSaveEmptyNameOverPreviousNameUpdatesStorageService() {
+        let recipient = insertRecipient()
+
+        db.write { tx in
+            manager.saveName(givenName: "Shared", familyName: nil, recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
+            manager.saveName(givenName: nil, familyName: nil, recipient: recipient, allowOverwrite: true, updateStorageService: true, tx: tx)
+        }
+
+        #expect(storageServiceManager.updatedRecipientUniqueIds == [recipient.uniqueId])
+    }
+
+    @Test
+    func testDeleteUpdatesStorageServiceOnlyWhenANameExisted() {
+        let recipient = insertRecipient()
+
+        db.write { tx in
+            manager.deleteName(recipient: recipient, updateStorageService: true, tx: tx)
+        }
+        #expect(storageServiceManager.updatedRecipientUniqueIds.isEmpty)
+
+        db.write { tx in
+            manager.saveName(givenName: "Shared", familyName: nil, recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
+            manager.deleteName(recipient: recipient, updateStorageService: true, tx: tx)
+        }
+        #expect(storageServiceManager.updatedRecipientUniqueIds == [recipient.uniqueId])
     }
 
     @Test
@@ -78,11 +165,11 @@ struct AciContactShareNameManagerTests {
         let recipient = insertRecipient()
 
         db.write { tx in
-            manager.saveName(givenName: "Shared", familyName: "Name", for: recipient, tx: tx)
-            manager.deleteName(for: recipient, tx: tx)
+            manager.saveName(givenName: "Shared", familyName: "Name", recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
+            manager.deleteName(recipient: recipient, updateStorageService: false, tx: tx)
         }
 
-        #expect(db.read { tx in manager.fetchName(for: recipient, tx: tx) } == nil)
+        #expect(db.read { tx in manager.fetchName(recipient: recipient, tx: tx) } == nil)
     }
 
     @Test
@@ -91,11 +178,11 @@ struct AciContactShareNameManagerTests {
         let otherRecipient = insertRecipient()
 
         db.write { tx in
-            manager.saveName(givenName: "Shared", familyName: nil, for: knownRecipient, tx: tx)
-            manager.deleteName(for: otherRecipient, tx: tx)
+            manager.saveName(givenName: "Shared", familyName: nil, recipient: knownRecipient, allowOverwrite: true, updateStorageService: false, tx: tx)
+            manager.deleteName(recipient: otherRecipient, updateStorageService: false, tx: tx)
         }
 
-        #expect(db.read { tx in manager.fetchName(for: knownRecipient, tx: tx) }?.givenName == "Shared")
+        #expect(db.read { tx in manager.fetchName(recipient: knownRecipient, tx: tx) }?.givenName == "Shared")
     }
 
     @Test
@@ -103,11 +190,11 @@ struct AciContactShareNameManagerTests {
         let recipient = insertRecipient()
 
         db.write { tx in
-            manager.saveName(givenName: "Shared", familyName: nil, for: recipient, tx: tx)
-            manager.saveName(givenName: nil, familyName: nil, for: recipient, tx: tx)
+            manager.saveName(givenName: "Shared", familyName: nil, recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
+            manager.saveName(givenName: nil, familyName: nil, recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
         }
 
-        #expect(db.read { tx in manager.fetchName(for: recipient, tx: tx) } == nil)
+        #expect(db.read { tx in manager.fetchName(recipient: recipient, tx: tx) } == nil)
     }
 
     @Test
@@ -115,11 +202,11 @@ struct AciContactShareNameManagerTests {
         let recipient = insertRecipient()
 
         db.write { tx in
-            manager.saveName(givenName: "Shared", familyName: nil, for: recipient, tx: tx)
-            manager.saveName(givenName: "  ", familyName: "\n", for: recipient, tx: tx)
+            manager.saveName(givenName: "Shared", familyName: nil, recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
+            manager.saveName(givenName: "  ", familyName: "\n", recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
         }
 
-        #expect(db.read { tx in manager.fetchName(for: recipient, tx: tx) } == nil)
+        #expect(db.read { tx in manager.fetchName(recipient: recipient, tx: tx) } == nil)
     }
 
     @Test
@@ -127,10 +214,10 @@ struct AciContactShareNameManagerTests {
         let recipient = insertRecipient()
 
         db.write { tx in
-            manager.saveName(givenName: "  Shared ", familyName: " ", for: recipient, tx: tx)
+            manager.saveName(givenName: "  Shared ", familyName: " ", recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
         }
 
-        let name = db.read { tx in manager.fetchName(for: recipient, tx: tx) }
+        let name = db.read { tx in manager.fetchName(recipient: recipient, tx: tx) }
         #expect(name?.givenName == "Shared")
         #expect(name?.familyName == nil)
     }
@@ -141,11 +228,11 @@ struct AciContactShareNameManagerTests {
         let tooLongForThisClient = String(repeating: "a", count: 30)
 
         db.write { tx in
-            manager.saveName(givenName: tooLongForThisClient, familyName: nil, for: recipient, tx: tx)
+            manager.saveName(givenName: tooLongForThisClient, familyName: nil, recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
         }
 
         #expect(ProfileName(givenName: tooLongForThisClient, familyName: nil) == nil)
-        #expect(db.read { tx in manager.fetchName(for: recipient, tx: tx) }?.givenName == tooLongForThisClient)
+        #expect(db.read { tx in manager.fetchName(recipient: recipient, tx: tx) }?.givenName == tooLongForThisClient)
     }
 
     @Test
@@ -153,7 +240,7 @@ struct AciContactShareNameManagerTests {
         let recipient = insertRecipient()
 
         db.write { tx in
-            manager.saveName(givenName: "Bob", familyName: nil, for: recipient, tx: tx)
+            manager.saveName(givenName: "Bob", familyName: nil, recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
         }
 
         #expect(searchForNames("Bob") == [recipient.id])
@@ -164,8 +251,8 @@ struct AciContactShareNameManagerTests {
         let recipient = insertRecipient()
 
         db.write { tx in
-            manager.saveName(givenName: "Bob", familyName: nil, for: recipient, tx: tx)
-            manager.saveName(givenName: "Robert", familyName: nil, for: recipient, tx: tx)
+            manager.saveName(givenName: "Bob", familyName: nil, recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
+            manager.saveName(givenName: "Robert", familyName: nil, recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
         }
 
         #expect(searchForNames("Robert") == [recipient.id])
@@ -177,10 +264,20 @@ struct AciContactShareNameManagerTests {
         let recipient = insertRecipient()
 
         db.write { tx in
-            manager.saveName(givenName: "Bob", familyName: nil, for: recipient, tx: tx)
-            manager.deleteName(for: recipient, tx: tx)
+            manager.saveName(givenName: "Bob", familyName: nil, recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
+            manager.deleteName(recipient: recipient, updateStorageService: false, tx: tx)
         }
 
         #expect(searchForNames("Bob").isEmpty)
+    }
+}
+
+// MARK: -
+
+private class RecordingStorageServiceManager: FakeStorageServiceManager {
+    var updatedRecipientUniqueIds: [RecipientUniqueId] = []
+
+    override func recordPendingUpdates(updatedRecipientUniqueIds: [RecipientUniqueId]) {
+        self.updatedRecipientUniqueIds.append(contentsOf: updatedRecipientUniqueIds)
     }
 }

@@ -541,6 +541,8 @@ extension PinnedMessagesDetailsViewController: CVComponentDelegate {
 
     func didTapSendMessage(to phoneNumbers: [String]) {}
 
+    func didTapSendMessage(toAci aci: Aci, sharedName: OWSContactName) {}
+
     func didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {}
 
     func didTapAddToContacts(contactShare: ContactShareViewModel) {}

@@ -404,7 +404,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         // Name shared by a third party
 
-        if let aciContactShareName = aciContactShareNameManager.fetchName(for: recipient, tx: tx) {
+        if let aciContactShareName = aciContactShareNameManager.fetchName(recipient: recipient, tx: tx) {
             var sharedNameBuilder = StorageServiceProtoContactRecordName.builder()
             aciContactShareName.givenName.map { sharedNameBuilder.setGiven($0) }
             aciContactShareName.familyName.map { sharedNameBuilder.setFamily($0) }
@@ -686,7 +686,10 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         aciContactShareNameManager.saveName(
             givenName: record.sharedName?.given,
             familyName: record.sharedName?.family,
-            for: recipient,
+            recipient: recipient,
+            allowOverwrite: true,
+            // Don't create a recursive Storage Service sync
+            updateStorageService: false,
             tx: tx,
         )
 

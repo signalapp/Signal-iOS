@@ -4,6 +4,7 @@
 //
 
 import ContactsUI
+import LibSignalClient
 import MessageUI
 import SignalServiceKit
 import SignalUI
@@ -30,6 +31,41 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         Logger.info("")
 
         presentThread(performAction: .compose, to: phoneNumbers, from: viewController)
+    }
+
+    func sendMessage(toAci aci: Aci, sharedName: OWSContactName) {
+        recordContactShareNameIfNecessary(sharedName, forAci: aci)
+
+        SignalApp.shared.presentConversationForAddress(
+            SignalServiceAddress(aci),
+            action: .compose,
+            animated: true,
+        )
+    }
+
+    /// Stores the shared name so the new conversation has something to show
+    /// for an account we may know nothing else about.
+    func recordContactShareNameIfNecessary(_ name: OWSContactName, forAci aci: Aci) {
+        guard name.givenName?.strippedOrNil?.isEmpty == false || name.familyName?.strippedOrNil?.isEmpty == false else {
+            return
+        }
+
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
+            let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(aci), tx: tx)
+            guard !displayName.hasProfileNameOrBetter else {
+                return
+            }
+
+            let recipient = DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
+            DependenciesBridge.shared.aciContactShareNameManager.saveName(
+                givenName: name.givenName,
+                familyName: name.familyName,
+                recipient: recipient,
+                allowOverwrite: false,
+                updateStorageService: true,
+                tx: tx,
+            )
+        }
     }
 
     func audioCall(to phoneNumbers: [String], from viewController: UIViewController) {

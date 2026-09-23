@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		48BD1EA140B397C56029EE17 /* ContactShareViewHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B928D1052C237E4BD2B13718 /* ContactShareViewHelperTests.swift */; };
 		13A31CC02277A1C103CAE95B /* AciContactShareNameManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7358C9DE9823FD80FD3F9815 /* AciContactShareNameManagerTests.swift */; };
 		3F3A3AE8BCD234B622D7217E /* AciContactShareNameStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D88A50F7A21109F53A878CF8 /* AciContactShareNameStoreTests.swift */; };
 		A8B4B2CDBC78CBC03A4BC247 /* MockAciContactShareNameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA74775FE55A58CC252DB9AA /* MockAciContactShareNameManager.swift */; };
@@ -4278,6 +4279,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B928D1052C237E4BD2B13718 /* ContactShareViewHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareViewHelperTests.swift; sourceTree = "<group>"; };
 		7358C9DE9823FD80FD3F9815 /* AciContactShareNameManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AciContactShareNameManagerTests.swift; sourceTree = "<group>"; };
 		D88A50F7A21109F53A878CF8 /* AciContactShareNameStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AciContactShareNameStoreTests.swift; sourceTree = "<group>"; };
 		AA74775FE55A58CC252DB9AA /* MockAciContactShareNameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAciContactShareNameManager.swift; sourceTree = "<group>"; };
@@ -11978,6 +11980,7 @@
 				34B3F8951E8DF1B90035BE1A /* ViewControllers */,
 				34BEDB0F21C41E71007B0EAE /* views */,
 				F9B93CDF28E246D900B3F8A0 /* AppDelegateTest.swift */,
+				B928D1052C237E4BD2B13718 /* ContactShareViewHelperTests.swift */,
 				4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest.swift */,
 			);
 			path = test;
@@ -19358,6 +19361,7 @@
 				D9317FD82A4BC4FC00075A92 /* BitmapsRectTest.swift in Sources */,
 				D93108152B34B6BE006A034E /* CallRecordLoaderTest.swift in Sources */,
 				D9F02BE72B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift in Sources */,
+				48BD1EA140B397C56029EE17 /* ContactShareViewHelperTests.swift in Sources */,
 				954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */,
 				4C9D347B23679C25006A4307 /* ContactStreamTest.swift in Sources */,
 				4C6E6C6924241C00009DE948 /* ConversationViewControllerTest.swift in Sources */,

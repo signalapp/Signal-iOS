@@ -1250,7 +1250,7 @@ extension OWSContactsManager: ContactManager {
         }.refine { addresses -> [DisplayName?] in
             return addresses.map { address -> DisplayName? in
                 let sharedName = recipientDatabaseTable.fetchRecipient(address: address, tx: tx)
-                    .flatMap { aciContactShareNameManager.fetchName(for: $0, tx: tx) }
+                    .flatMap { aciContactShareNameManager.fetchName(recipient: $0, tx: tx) }
                     .flatMap(ProfileName.init(aciContactShareName:))
                     .map(DisplayName.sharedName(_:))
                 if sharedName != nil {

@@ -1209,6 +1209,12 @@ extension OWSUserProfile {
             tx: tx,
         )
 
+        deleteAciContactShareNameIfNeeded(
+            newUserProfile: newInstance,
+            userProfileWriter: userProfileWriter,
+            tx: tx,
+        )
+
         if changeResult == .nothing {
             return
         }
@@ -1321,6 +1327,53 @@ extension OWSUserProfile {
         }
 
         return nil
+    }
+
+    /// Deletes any name a third party shared for this account once we know a
+    /// name that outranks it, and syncs the deletion to Storage Service.
+    private func deleteAciContactShareNameIfNeeded(
+        newUserProfile: OWSUserProfile,
+        userProfileWriter: UserProfileWriter,
+        tx: DBWriteTransaction,
+    ) {
+        guard
+            // A Storage Service merge applies the record's shared name after
+            // its profile name, so let the record decide rather than deleting
+            // a name the merge is about to restore.
+            userProfileWriter != .storageService,
+            case .otherUser(let address) = internalAddress,
+            let recipient = DependenciesBridge.shared.recipientDatabaseTable.fetchRecipient(address: address, tx: tx)
+        else {
+            return
+        }
+
+        let aciContactShareNameManager = DependenciesBridge.shared.aciContactShareNameManager
+        guard aciContactShareNameManager.fetchName(recipient: recipient, tx: tx) != nil else {
+            return
+        }
+
+        let hasNameOutrankingSharedName: Bool = {
+            let nicknameRecord = DependenciesBridge.shared.nicknameManager.fetchNickname(for: recipient, tx: tx)
+            if ProfileName(nicknameRecord: nicknameRecord) != nil {
+                return true
+            }
+            if
+                let phoneNumber = address.phoneNumber,
+                SSKEnvironment.shared.contactManagerRef.systemContactName(for: phoneNumber, tx: tx) != nil
+            {
+                return true
+            }
+            return newUserProfile.nameComponents != nil
+        }()
+        guard hasNameOutrankingSharedName else {
+            return
+        }
+
+        aciContactShareNameManager.deleteName(
+            recipient: recipient,
+            updateStorageService: true,
+            tx: tx,
+        )
     }
 
     private func updatePhoneNumberVisibilityIfNeeded(

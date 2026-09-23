@@ -240,13 +240,17 @@ class OWSContactsManagerTest: SignalBaseTest {
             mockAciContactShareNameManager.saveName(
                 givenName: "Alice",
                 familyName: "Aliceson",
-                for: aliceRecipient,
+                recipient: aliceRecipient,
+                allowOverwrite: true,
+                updateStorageService: false,
                 tx: tx,
             )
             mockAciContactShareNameManager.saveName(
                 givenName: "Bob",
                 familyName: nil,
-                for: bobRecipient,
+                recipient: bobRecipient,
+                allowOverwrite: true,
+                updateStorageService: false,
                 tx: tx,
             )
         }
@@ -270,7 +274,9 @@ class OWSContactsManagerTest: SignalBaseTest {
             mockAciContactShareNameManager.saveName(
                 givenName: "Shared",
                 familyName: "Name",
-                for: recipient,
+                recipient: recipient,
+                allowOverwrite: true,
+                updateStorageService: false,
                 tx: tx,
             )
         }
@@ -295,7 +301,9 @@ class OWSContactsManagerTest: SignalBaseTest {
             mockAciContactShareNameManager.saveName(
                 givenName: "Shared",
                 familyName: "Name",
-                for: recipient,
+                recipient: recipient,
+                allowOverwrite: true,
+                updateStorageService: false,
                 tx: tx,
             )
         }
@@ -319,7 +327,9 @@ class OWSContactsManagerTest: SignalBaseTest {
             mockAciContactShareNameManager.saveName(
                 givenName: "Shared",
                 familyName: "Name",
-                for: recipient,
+                recipient: recipient,
+                allowOverwrite: true,
+                updateStorageService: false,
                 tx: tx,
             )
             mockUsernameLookupMananger.saveUsername("shared.01", forAci: aci, transaction: tx)

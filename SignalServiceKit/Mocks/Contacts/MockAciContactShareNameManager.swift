@@ -12,20 +12,26 @@ public class MockAciContactShareNameManager: AciContactShareNameManager {
 
     // MARK: AciContactShareNameManager
 
-    public func fetchName(for recipient: SignalRecipient, tx: DBReadTransaction) -> AciContactShareName? {
+    public func fetchName(recipient: SignalRecipient, tx: DBReadTransaction) -> AciContactShareName? {
         return mockNames[recipient.id]
     }
 
     public func saveName(
         givenName: String?,
         familyName: String?,
-        for recipient: SignalRecipient,
+        recipient: SignalRecipient,
+        allowOverwrite: Bool,
+        updateStorageService: Bool,
         tx: DBWriteTransaction,
     ) {
+        if mockNames[recipient.id] != nil, !allowOverwrite {
+            return
+        }
+
         mockNames[recipient.id] = AciContactShareName(recipient: recipient, givenName: givenName, familyName: familyName)
     }
 
-    public func deleteName(for recipient: SignalRecipient, tx: DBWriteTransaction) {
+    public func deleteName(recipient: SignalRecipient, updateStorageService: Bool, tx: DBWriteTransaction) {
         mockNames[recipient.id] = nil
     }
 }

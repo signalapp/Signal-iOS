@@ -679,6 +679,12 @@ extension ConversationViewController: CVComponentDelegate {
         contactShareViewHelper.sendMessage(to: phoneNumbers, from: self)
     }
 
+    public func didTapSendMessage(toAci aci: Aci, sharedName: OWSContactName) {
+        AssertIsOnMainThread()
+
+        contactShareViewHelper.sendMessage(toAci: aci, sharedName: sharedName)
+    }
+
     public func didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {
         AssertIsOnMainThread()
 

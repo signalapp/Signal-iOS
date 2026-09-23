@@ -1206,6 +1206,10 @@ extension MessageDetailViewController: CVComponentDelegate {
         contactShareViewHelper.sendMessage(to: phoneNumbers, from: self)
     }
 
+    func didTapSendMessage(toAci aci: Aci, sharedName: OWSContactName) {
+        contactShareViewHelper.sendMessage(toAci: aci, sharedName: sharedName)
+    }
+
     func didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {
         contactShareViewHelper.showInviteContact(contactShare: contactShare, from: self)
     }
