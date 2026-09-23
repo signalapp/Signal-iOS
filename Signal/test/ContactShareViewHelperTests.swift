@@ -26,10 +26,13 @@ class ContactShareViewHelperTests: SignalBaseTest {
         let aci = Aci.randomForTesting()
         let recipient = makeRecipient(aci)
 
-        contactShareViewHelper.recordContactShareNameIfNecessary(
-            OWSContactName(givenName: "Bob", familyName: "Bobson"),
-            forAci: aci,
-        )
+        write { tx in
+            contactShareViewHelper.recordContactShareNameIfNecessary(
+                OWSContactName(givenName: "Bob", familyName: "Bobson"),
+                forAci: aci,
+                tx: tx,
+            )
+        }
 
         let name = read { tx in aciContactShareNameManager.fetchName(recipient: recipient, tx: tx) }
         XCTAssertEqual(name?.givenName, "Bob")

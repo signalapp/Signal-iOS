@@ -4,13 +4,15 @@
 //
 
 import ContactsUI
+import LibSignalClient
 import MessageUI
 import SignalServiceKit
 import SignalUI
 
 class ContactViewController: OWSTableViewController2 {
 
-    private enum ContactViewMode {
+    private enum ContactViewMode: Equatable {
+        case aciShare(aci: Aci, isInSystemContacts: Bool)
         case systemContactWithSignal
         case systemContactWithoutSignal
         case nonSystemContact
@@ -41,7 +43,7 @@ class ContactViewController: OWSTableViewController2 {
     init(contactShare: ContactShareViewModel) {
         self.contactShare = contactShare
         let phoneNumberPartition = Self.phoneNumberPartition(for: contactShare)
-        self.viewMode = Self.viewMode(for: phoneNumberPartition)
+        self.viewMode = Self.viewMode(for: contactShare, phoneNumberPartition: phoneNumberPartition)
         self.sendablePhoneNumbers = phoneNumberPartition.sendablePhoneNumbers
 
         super.init()
@@ -80,7 +82,14 @@ class ContactViewController: OWSTableViewController2 {
         return SSKEnvironment.shared.databaseStorageRef.read(block: contactShare.dbRecord.phoneNumberPartition(tx:))
     }
 
-    private static func viewMode(for phoneNumberPartition: OWSContact.PhoneNumberPartition) -> ContactViewMode {
+    private static func viewMode(
+        for contactShare: ContactShareViewModel,
+        phoneNumberPartition: OWSContact.PhoneNumberPartition,
+    ) -> ContactViewMode {
+        if BuildFlags.accountIdentifierSharing, let aci = contactShare.dbRecord.aci {
+            let isInSystemContacts = !phoneNumberPartition.sendablePhoneNumbers.isEmpty || !phoneNumberPartition.invitablePhoneNumbers.isEmpty
+            return .aciShare(aci: aci, isInSystemContacts: isInSystemContacts)
+        }
         return phoneNumberPartition.map(
             ifSendablePhoneNumbers: { _ in .systemContactWithSignal },
             elseIfInvitablePhoneNumbers: { _ in .systemContactWithoutSignal },
@@ -94,8 +103,8 @@ class ContactViewController: OWSTableViewController2 {
         AssertIsOnMainThread()
 
         let phoneNumberPartition = Self.phoneNumberPartition(for: contactShare)
-        viewMode = Self.viewMode(for: phoneNumberPartition)
         sendablePhoneNumbers = phoneNumberPartition.sendablePhoneNumbers
+        viewMode = Self.viewMode(for: contactShare, phoneNumberPartition: phoneNumberPartition)
     }
 
     private func showInviteToSignal() -> Bool {
@@ -109,10 +118,31 @@ class ContactViewController: OWSTableViewController2 {
 
     private func showAddToContacts() -> Bool {
         switch viewMode {
+        case .aciShare(_, let isInSystemContacts):
+            return !isInSystemContacts && !contactShare.dbRecord.e164PhoneNumbers().isEmpty
         case .nonSystemContact:
             return true
-        default:
+        case .systemContactWithSignal, .systemContactWithoutSignal, .noPhoneNumber:
             return false
+        }
+    }
+
+    private var isLocalUser: Bool {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
+            return false
+        }
+        if let sharedAci {
+            return sharedAci == localIdentifiers.aci
+        }
+        return sendablePhoneNumbers.contains(where: localIdentifiers.contains(phoneNumber:))
+    }
+
+    private var sharedAci: Aci? {
+        switch viewMode {
+        case .aciShare(let aci, _):
+            return aci
+        case .systemContactWithSignal, .systemContactWithoutSignal, .nonSystemContact, .noPhoneNumber:
+            return nil
         }
     }
 
@@ -129,7 +159,7 @@ class ContactViewController: OWSTableViewController2 {
         let actionsSection = OWSTableSection()
 
         // Message, Video, Audio buttons for Signal contacts as a horizontal stack of buttons
-        if viewMode == .systemContactWithSignal {
+        if sharedAci != nil || viewMode == .systemContactWithSignal {
             let buttonMessage = SettingsHeaderButton(
                 title: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_MESSAGE_BUTTON",
@@ -157,7 +187,7 @@ class ContactViewController: OWSTableViewController2 {
             ) { [weak self] in
                 self?.didPressAudioCall()
             }
-            let buttonStack = UIStackView(arrangedSubviews: [buttonMessage, buttonVideoCall, buttonAudioCall])
+            let buttonStack = UIStackView(arrangedSubviews: isLocalUser ? [buttonMessage] : [buttonMessage, buttonVideoCall, buttonAudioCall])
             buttonStack.axis = .horizontal
             buttonStack.spacing = 8
             buttonStack.distribution = .fillEqually
@@ -328,26 +358,30 @@ class ContactViewController: OWSTableViewController2 {
 extension ContactViewController {
 
     private func didPressSendMessage() {
-        Logger.info("")
-
-        contactShareViewHelper.sendMessage(to: sendablePhoneNumbers, from: self)
+        if let sharedAci {
+            contactShareViewHelper.sendMessage(toAci: sharedAci, sharedName: contactShare.dbRecord.name)
+        } else {
+            contactShareViewHelper.sendMessage(to: sendablePhoneNumbers, from: self)
+        }
     }
 
     private func didPressAudioCall() {
-        Logger.info("")
-
-        contactShareViewHelper.audioCall(to: sendablePhoneNumbers, from: self)
+        if let sharedAci {
+            contactShareViewHelper.audioCall(toAci: sharedAci, sharedName: contactShare.dbRecord.name)
+        } else {
+            contactShareViewHelper.audioCall(to: sendablePhoneNumbers, from: self)
+        }
     }
 
     private func didPressVideoCall() {
-        Logger.info("")
-
-        contactShareViewHelper.videoCall(to: sendablePhoneNumbers, from: self)
+        if let sharedAci {
+            contactShareViewHelper.videoCall(toAci: sharedAci, sharedName: contactShare.dbRecord.name)
+        } else {
+            contactShareViewHelper.videoCall(to: sendablePhoneNumbers, from: self)
+        }
     }
 
     private func didPressInvite() {
-        Logger.info("")
-
         contactShareViewHelper.showInviteContact(contactShare: contactShare, from: self)
     }
 

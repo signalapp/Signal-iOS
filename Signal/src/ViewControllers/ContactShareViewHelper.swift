@@ -34,38 +34,30 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     }
 
     func sendMessage(toAci aci: Aci, sharedName: OWSContactName) {
-        recordContactShareNameIfNecessary(sharedName, forAci: aci)
-
-        SignalApp.shared.presentConversationForAddress(
-            SignalServiceAddress(aci),
-            action: .compose,
-            animated: true,
-        )
+        presentThread(performAction: .compose, toAci: aci, sharedName: sharedName)
     }
 
     /// Stores the shared name so the new conversation has something to show
     /// for an account we may know nothing else about.
-    func recordContactShareNameIfNecessary(_ name: OWSContactName, forAci aci: Aci) {
+    func recordContactShareNameIfNecessary(_ name: OWSContactName, forAci aci: Aci, tx: DBWriteTransaction) {
         guard name.givenName?.strippedOrNil?.isEmpty == false || name.familyName?.strippedOrNil?.isEmpty == false else {
             return
         }
 
-        SSKEnvironment.shared.databaseStorageRef.write { tx in
-            let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(aci), tx: tx)
-            guard !displayName.hasProfileNameOrBetter else {
-                return
-            }
-
-            let recipient = DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
-            DependenciesBridge.shared.aciContactShareNameManager.saveName(
-                givenName: name.givenName,
-                familyName: name.familyName,
-                recipient: recipient,
-                allowOverwrite: false,
-                updateStorageService: true,
-                tx: tx,
-            )
+        let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(aci), tx: tx)
+        guard !displayName.hasProfileNameOrBetter else {
+            return
         }
+
+        let recipient = DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
+        DependenciesBridge.shared.aciContactShareNameManager.saveName(
+            givenName: name.givenName,
+            familyName: name.familyName,
+            recipient: recipient,
+            allowOverwrite: false,
+            updateStorageService: true,
+            tx: tx,
+        )
     }
 
     func audioCall(to phoneNumbers: [String], from viewController: UIViewController) {
@@ -78,6 +70,31 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         Logger.info("")
 
         presentThread(performAction: .videoCall, to: phoneNumbers, from: viewController)
+    }
+
+    func audioCall(toAci aci: Aci, sharedName: OWSContactName) {
+        presentThread(performAction: .voiceCall, toAci: aci, sharedName: sharedName)
+    }
+
+    func videoCall(toAci aci: Aci, sharedName: OWSContactName) {
+        presentThread(performAction: .videoCall, toAci: aci, sharedName: sharedName)
+    }
+
+    private func presentThread(
+        performAction action: ConversationViewAction,
+        toAci aci: Aci,
+        sharedName: OWSContactName,
+    ) {
+        let thread = SSKEnvironment.shared.databaseStorageRef.write { tx in
+            recordContactShareNameIfNecessary(sharedName, forAci: aci, tx: tx)
+            return TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(aci), transaction: tx)
+        }
+
+        SignalApp.shared.presentConversationForThread(
+            threadUniqueId: thread.uniqueId,
+            action: action,
+            animated: true,
+        )
     }
 
     private func presentThread(
