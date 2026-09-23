@@ -7948,6 +7948,9 @@
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_ERROR" = "You have tried too often. Please wait a minute before trying again.";
 
+/* A button in registration that allows the user to register by purchasing a Signal Login rather than providing their phone number. */
+"REGISTER_WITHOUT_NUMBER" = "Register Without Number";
+
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
 "REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "You may have entered your recovery key incorrectly. \n\nMake sure you’re registering with the same phone number and recovery key you saved when enabling Signal Secure Backups.";
 

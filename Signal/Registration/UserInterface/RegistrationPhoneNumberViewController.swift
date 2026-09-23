@@ -157,22 +157,29 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         return result
     }()
 
-    private lazy var cancelButton = UIButton(
-        configuration: .mediumSecondary(title: CommonStrings.cancelButton),
-        primaryAction: UIAction { [weak self] _ in
-            self?.phoneNumberInput.resignFirstResponder()
-            self?.presenter?.cancelChosenRestoreMethod()
+    private lazy var cancelButton = UIBarButtonItem.cancelButton { [weak self] in
+        self?.phoneNumberInput.resignFirstResponder()
+        self?.presenter?.cancelChosenRestoreMethod()
+    }
+
+    private lazy var registerWithoutNumberButton = UIButton(
+        configuration: .mediumSecondary(title: OWSLocalizedString(
+            "REGISTER_WITHOUT_NUMBER",
+            comment: "A button in registration that allows the user to register by purchasing a Signal Login rather than providing their phone number.",
+        )),
+        primaryAction: UIAction { _ in
+            // TODO: [#less] .
         },
     )
+
+    private lazy var nextButton = UIBarButtonItem.nextButton { [weak self] in
+        self?.didTapNext()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = .Signal.background
-
-        navigationItem.rightBarButtonItem = .nextButton { [weak self] in
-            self?.didTapNext()
-        }
 
         let stackView = addStaticContentStackView(
             arrangedSubviews: [
@@ -181,8 +188,9 @@ class RegistrationPhoneNumberViewController: OWSViewController {
                 phoneNumberInput,
                 validationWarningLabel,
                 .vStretchingSpacer(),
-                cancelButton.enclosedInVerticalStackView(isFullWidthButton: false),
-            ],
+            ] + (
+                BuildFlags.phoneNumberlessRegistration ? [registerWithoutNumberButton.enclosedInVerticalStackView(isFullWidthButton: false)] : []
+            ),
             shouldAvoidKeyboard: true,
         )
         stackView.setCustomSpacing(24, after: explanationLabel)
@@ -216,19 +224,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
     }
 
     private func configureUI() {
-        var actions: [UIAction] = [
-            UIAction(
-                title: OWSLocalizedString(
-                    "USE_PROXY_BUTTON",
-                    comment: "Button to activate the signal proxy",
-                ),
-                handler: { [weak self] _ in
-                    guard let self else { return }
-                    let vc = ProxySettingsViewController()
-                    self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
-                },
-            ),
-        ]
+        var actions = [UIAction]()
         let canCancelChosenRegistrationMethod: Bool
         let canSwitchToLinking: Bool
         let canExitRegistration: Bool
@@ -246,7 +242,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         }
 
         if canSwitchToLinking {
-            actions.insert(UIAction(
+            actions.append(UIAction(
                 title: OWSLocalizedString(
                     "LINK_DEVICE_MENU_ACTION",
                     comment: "Menu action on the phone number entry screen to link this device as a secondary device.",
@@ -254,11 +250,28 @@ class RegistrationPhoneNumberViewController: OWSViewController {
                 handler: { [weak presenter] _ in
                     presenter?.switchToDeviceLinking()
                 },
-            ), at: 0)
+            ))
         }
 
-        cancelButton.isHidden = !canCancelChosenRegistrationMethod
-        cancelButton.isEnabled = canCancelChosenRegistrationMethod
+        if canCancelChosenRegistrationMethod {
+            navigationItem.leftBarButtonItem = cancelButton
+        } else {
+            navigationItem.leftBarButtonItem = nil
+        }
+
+        actions.append(
+            UIAction(
+                title: OWSLocalizedString(
+                    "USE_PROXY_BUTTON",
+                    comment: "Button to activate the signal proxy",
+                ),
+                handler: { [weak self] _ in
+                    guard let self else { return }
+                    let vc = ProxySettingsViewController()
+                    self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+                },
+            ),
+        )
 
         if canExitRegistration {
             actions.append(UIAction(
@@ -272,7 +285,10 @@ class RegistrationPhoneNumberViewController: OWSViewController {
             ))
         }
 
-        navigationItem.leftBarButtonItem = .contextMenuButton(actions: actions)
+        navigationItem.rightBarButtonItems = [
+            nextButton,
+            .contextMenuButton(actions: actions),
+        ]
 
         let now = Date()
 
@@ -300,7 +316,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
             nowTimer = nil
         }
 
-        navigationItem.rightBarButtonItem?.isEnabled = canSubmit(isBlockedByValidationError: isBlockedByValidationError)
+        nextButton.isEnabled = canSubmit(isBlockedByValidationError: isBlockedByValidationError)
 
         phoneNumberInput.isEnabled = canChangePhoneNumber
 
