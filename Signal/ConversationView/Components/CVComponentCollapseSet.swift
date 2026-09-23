@@ -268,7 +268,7 @@ class CVComponentCollapseSet: CVComponentBase, CVRootComponent {
 
     private var leadingIcon: SignalSymbol {
         switch collapseSet.collapseSetType {
-        case .chatUpdates: return itemModel.thread.isGroupThread ? .group : .thread
+        case .chatUpdates: return itemModel.thread.isGroupThread ? .groupWide : .thread
         case .callEvents: return .phone
         case .timerChanges: return .timer
         }

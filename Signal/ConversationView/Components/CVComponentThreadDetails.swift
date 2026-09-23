@@ -424,7 +424,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
     }
 
     private func nameNotVerifiedConfig() -> CVLabelConfig {
-        let symbol = SignalSymbol.personQuestion.attributedString(dynamicTypeBaseSize: UIFont.dynamicTypeCalloutClamped.pointSize)
+        let symbol = SignalSymbol.personQuestionWide.attributedString(dynamicTypeBaseSize: UIFont.dynamicTypeCalloutClamped.pointSize)
         let notVerifiedString = NSAttributedString.composed(
             of: [
                 symbol,

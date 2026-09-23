@@ -173,7 +173,7 @@ public extension ConversationViewController {
     ) -> NSAttributedString? {
         // Payments
         if message is OWSPaymentMessage || message is OWSArchivedPaymentMessage {
-            let paymentIcon = SignalSymbol.creditcard.attributedString(
+            let paymentIcon = SignalSymbol.creditCard.attributedString(
                 dynamicTypeBaseSize: 15.0,
             ) + " "
             return paymentIcon + NSAttributedString(string: message.body ?? "")

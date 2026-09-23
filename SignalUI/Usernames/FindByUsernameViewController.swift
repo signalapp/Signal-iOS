@@ -94,7 +94,7 @@ public class FindByUsernameViewController: OWSTableViewController2 {
                 // Font taken from UIButton.Configuration.smallSecondary
                 let buttonTitleFont = UIFont.dynamicTypeSubheadlineClamped.medium()
                 var attributedButtonTitle = AttributedString(
-                    SignalSymbol.qrcode.attributedString(
+                    SignalSymbol.qrCode.attributedString(
                         dynamicTypeBaseSize: buttonTitleFont.pointSize,
                     ),
                 )

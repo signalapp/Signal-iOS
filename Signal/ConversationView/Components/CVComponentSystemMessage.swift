@@ -888,7 +888,7 @@ extension CVComponentSystemMessage {
             case .sessionRefresh:
                 return .refresh
             case .decryptionFailure:
-                return .error
+                return .errorCircle
             case .invalidKeyException,
                  .missingKeyId,
                  .noSession,
@@ -912,13 +912,13 @@ extension CVComponentSystemMessage {
                 return nil
             case .typeGroupUpdate,
                  .typeGroupQuit:
-                return .group
+                return .groupWide
             case .unknownProtocolVersion:
                 guard let message = interaction as? OWSUnknownProtocolVersionMessage else {
                     owsFailDebug("Invalid interaction.")
                     return nil
                 }
-                return message.isProtocolVersionUnknown ? .error : .checkmark
+                return message.isProtocolVersionUnknown ? .errorCircle : .checkmark
             case .typeDisappearingMessagesUpdate:
                 guard let message = interaction as? OWSDisappearingConfigurationUpdateInfoMessage else {
                     owsFailDebug("Invalid interaction.")
@@ -938,19 +938,19 @@ extension CVComponentSystemMessage {
             case .userJoinedSignal:
                 return .heart
             case .syncedThread:
-                return .info
+                return .infoCircle
             case .profileUpdate:
                 return .person
             case .phoneNumberChange:
                 return .phone
             case .recipientHidden:
-                return .info
+                return .infoCircle
             case .paymentsActivationRequest, .paymentsActivated:
-                return .creditcard
+                return .creditCard
             case .threadMerge:
                 return .merge
             case .sessionSwitchover:
-                return .info
+                return .infoCircle
             case .reportedSpam:
                 return .spam
             case .learnedProfileName:
@@ -996,7 +996,7 @@ extension CVComponentSystemMessage {
             .otherUserRemovedByLocalUser,
             .otherUserRemoved,
             .otherUserRemovedByUnknownUser:
-            return .personMinus
+            return .personMinusWide
         case
             .unnamedUsersWereInvitedByLocalUser,
             .unnamedUsersWereInvitedByOtherUser,
@@ -1025,7 +1025,7 @@ extension CVComponentSystemMessage {
             .otherUserRequestApprovedByLocalUser,
             .otherUserRequestApproved,
             .otherUserRequestApprovedByUnknownUser:
-            return .personPlus
+            return .personPlusWide
         case
             .createdByLocalUser,
             .createdByOtherUser,
@@ -1061,7 +1061,7 @@ extension CVComponentSystemMessage {
             .inviteLinkApprovalDisabledByOtherUser,
             .inviteLinkApprovalDisabledByUnknownUser,
             .inviteFriendsToNewlyCreatedGroup:
-            return .group
+            return .groupWide
         case
             .unnamedUserInvitesWereRevokedByLocalUser,
             .unnamedUserInvitesWereRevokedByOtherUser,
@@ -1074,7 +1074,7 @@ extension CVComponentSystemMessage {
             .otherUserDeclinedInviteFromInviter,
             .otherUserDeclinedInviteFromUnknownUser,
             .otherUserInviteRevokedByLocalUser:
-            return .personX
+            return .personXWide
         case
             .wasMigrated,
             .localUserInvitedAfterMigration,
@@ -1129,7 +1129,7 @@ extension CVComponentSystemMessage {
             .avatarRemovedByLocalUser,
             .avatarRemovedByOtherUser,
             .avatarRemovedByUnknownUser:
-            return .photo
+            return .photoWide
         case
             .disappearingMessagesEnabledByLocalUser,
             .disappearingMessagesEnabledByOtherUser,
