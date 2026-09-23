@@ -272,7 +272,7 @@ final class ContactSharingPickerViewModel {
             rows.append(.signalContact(signalContact, systemContact: systemContact))
         }
 
-        for wrapper in systemContactWrappers {
+        for wrapper in systemContactWrappers where wrapper.hasName {
             if !matchedContactIds.contains(wrapper.systemContact.cnContactId) {
                 rows.append(.systemContact(wrapper))
             }
@@ -650,7 +650,7 @@ final class ContactSharingPickerViewModel {
             case person
             /// Has no person's name but has a Company; listed under "#" by that.
             case business
-            /// Has no name; listed under "#" by email or phone number.
+            /// Has no name, so it's only listed when attached to a Signal contact.
             case contactInfo
         }
 

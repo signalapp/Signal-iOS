@@ -345,7 +345,7 @@ struct ContactSharingPickerViewModelTests {
     }
 
     @Test
-    func testNamelessCardsSortLast() async throws {
+    func testANamelessCardIsNotListed() async throws {
         providers.systemContacts = [
             makeSystemContact(phoneNumber: "+16505550199"),
             makeSystemContact(givenName: "Zoe"),
@@ -355,7 +355,7 @@ struct ContactSharingPickerViewModelTests {
         let viewModel = makeViewModel()
         viewModel.loadData()
 
-        #expect(try await names(of: viewModel) == ["Zoe", "Acme Plumbing", "+16505550199"])
+        #expect(try await names(of: viewModel) == ["Zoe", "Acme Plumbing"])
     }
 
     @Test
@@ -418,18 +418,6 @@ struct ContactSharingPickerViewModelTests {
             row.collationSection(in: collation) == collation.sectionTitles.firstIndex(of: "#"),
             "Collating by name alone would file this under \"A\".",
         )
-    }
-
-    @Test
-    func testANamelessCardIsGroupedAtEnd() async throws {
-        providers.systemContacts = [makeSystemContact(phoneNumber: "+16505550199")]
-
-        let viewModel = makeViewModel()
-        viewModel.loadData()
-
-        let row = try #require(try await displayedRows(of: viewModel).rows.first)
-        let collation = UILocalizedIndexedCollation.current()
-        #expect(row.collationSection(in: collation) == collation.sectionTitles.firstIndex(of: "#"))
     }
 
     @Test

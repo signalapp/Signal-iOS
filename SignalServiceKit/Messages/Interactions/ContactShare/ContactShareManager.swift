@@ -221,8 +221,8 @@ class ContactShareManagerImpl: ContactShareManager {
 
         let contactProto = contactBuilder.buildInfallibly()
 
-        guard !contactProto.number.isEmpty || !contactProto.email.isEmpty || !contactProto.address.isEmpty else {
-            throw OWSAssertionError("contact has neither phone, email or address.")
+        guard contactProto.aciBinary != nil || !contactProto.number.isEmpty || !contactProto.email.isEmpty || !contactProto.address.isEmpty else {
+            throw OWSAssertionError("contact has neither ACI, phone, email or address.")
         }
 
         return contactProto

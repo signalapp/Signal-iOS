@@ -3703,6 +3703,7 @@
 		F9426288289B1B5600460798 /* TestProtocolRunnerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942621E289B1B5500460798 /* TestProtocolRunnerTest.swift */; };
 		F9426289289B1B5600460798 /* TSOutgoingMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426220289B1B5500460798 /* TSOutgoingMessageTest.swift */; };
 		F942628A289B1B5600460798 /* TSMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426221289B1B5500460798 /* TSMessageTest.swift */; };
+		3A6C1F0E8B2D4A7C9E5B1D40 /* OWSContactTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7D2A1F9C3E5B8DAF6C2E51 /* OWSContactTests.swift */; };
 		F942628B289B1B5600460798 /* sample-sticker.encrypted in Resources */ = {isa = PBXBuildFile; fileRef = F9426223289B1B5500460798 /* sample-sticker.encrypted */; };
 		F942628C289B1B5600460798 /* sample-sticker.webp in Resources */ = {isa = PBXBuildFile; fileRef = F9426224289B1B5500460798 /* sample-sticker.webp */; };
 		F942628D289B1B5600460798 /* StickerManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426225289B1B5500460798 /* StickerManagerTest.swift */; };
@@ -8132,6 +8133,7 @@
 		F942621E289B1B5500460798 /* TestProtocolRunnerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestProtocolRunnerTest.swift; sourceTree = "<group>"; };
 		F9426220289B1B5500460798 /* TSOutgoingMessageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessageTest.swift; sourceTree = "<group>"; };
 		F9426221289B1B5500460798 /* TSMessageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSMessageTest.swift; sourceTree = "<group>"; };
+		4B7D2A1F9C3E5B8DAF6C2E51 /* OWSContactTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactTests.swift; sourceTree = "<group>"; };
 		F9426223289B1B5500460798 /* sample-sticker.encrypted */ = {isa = PBXFileReference; lastKnownFileType = file; path = "sample-sticker.encrypted"; sourceTree = "<group>"; };
 		F9426224289B1B5500460798 /* sample-sticker.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = "sample-sticker.webp"; sourceTree = "<group>"; };
 		F9426225289B1B5500460798 /* StickerManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerManagerTest.swift; sourceTree = "<group>"; };
@@ -14907,9 +14909,18 @@
 			path = SignalServiceKit/tests/Messages;
 			sourceTree = SOURCE_ROOT;
 		};
+		5C8E3B2A0D4F6C9EB07D3F62 /* ContactShare */ = {
+			isa = PBXGroup;
+			children = (
+				4B7D2A1F9C3E5B8DAF6C2E51 /* OWSContactTests.swift */,
+			);
+			path = ContactShare;
+			sourceTree = "<group>";
+		};
 		F942621F289B1B5500460798 /* Interactions */ = {
 			isa = PBXGroup;
 			children = (
+				5C8E3B2A0D4F6C9EB07D3F62 /* ContactShare */,
 				D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */,
 				667AF9DF2B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift */,
 				D9CD40612A155C4800545803 /* TSInfoMessage+PersistableGroupUpdateItemTest.swift */,
@@ -20819,6 +20830,7 @@
 				F96BB60729A528BD001C18DF /* OWS2FAManagerTest.swift in Sources */,
 				667BBAD92BAA5F84006AB9DE /* OWSAttachmentInfoSerializationTest.swift in Sources */,
 				500A76152E031CA600322493 /* OWSChatConnectionTest.swift in Sources */,
+				3A6C1F0E8B2D4A7C9E5B1D40 /* OWSContactTests.swift in Sources */,
 				D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */,
 				F9426263289B1B5500460798 /* OWSDeviceNamesTest.swift in Sources */,
 				F9426253289B1B5500460798 /* OWSErrorTest.swift in Sources */,

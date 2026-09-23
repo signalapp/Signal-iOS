@@ -133,6 +133,10 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
         return footerView
     }()
 
+    private func canShare() -> Bool {
+        return contactShareDraft.aci != nil || isAtLeastOneFieldSelected()
+    }
+
     private func isAtLeastOneFieldSelected() -> Bool {
         for field in contactShareFields {
             if field.isIncluded {
@@ -185,7 +189,7 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
     }
 
     private func updateProceedButtonState() {
-        footerView.isAllowedToProceed = isAtLeastOneFieldSelected()
+        footerView.isAllowedToProceed = canShare()
     }
 
     private func toggleSelection(for contactShareField: ContactShareField) {
@@ -205,7 +209,7 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
     // MARK: -
 
     private func didPressSendButton() {
-        guard isAtLeastOneFieldSelected() else { return }
+        guard canShare() else { return }
 
         guard contactShareDraft.ows_isValid else {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString(

@@ -76,6 +76,7 @@ public final class OWSContact: NSObject, NSSecureCoding, NSCopying {
             phoneNumbers: phoneNumbers,
             emails: emails,
             addresses: addresses,
+            aci: BuildFlags.accountIdentifierSharing ? aci : nil,
         )
     }
 
@@ -84,12 +85,13 @@ public final class OWSContact: NSObject, NSSecureCoding, NSCopying {
         phoneNumbers: [OWSContactPhoneNumber],
         emails: [OWSContactEmail],
         addresses: [OWSContactAddress],
+        aci: Aci?,
     ) -> Bool {
         guard !name.displayName.stripped.isEmpty else {
             Logger.warn("invalid contact; no display name.")
             return false
         }
-        var hasValue = false
+        var hasValue = aci != nil
         for phoneNumber in phoneNumbers {
             guard phoneNumber.isValid else {
                 return false
