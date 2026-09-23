@@ -234,6 +234,7 @@ extension AppSetup.GlobalsContinuation {
         let userProfileStore = UserProfileStoreImpl()
         let usernameLookupRecordStore = UsernameLookupRecordStore()
         let nicknameRecordStore = NicknameRecordStoreImpl()
+        let aciContactShareNameStore = AciContactShareNameStore()
         let searchableNameIndexer = SearchableNameIndexerImpl(
             threadStore: threadStore,
             signalAccountStore: signalAccountStore,
@@ -350,6 +351,8 @@ extension AppSetup.GlobalsContinuation {
             storageServiceManager: storageServiceManager,
         )
         let notificationPreferencesManager = NotificationPreferencesManager()
+
+        let aciContactShareNameManager = AciContactShareNameManagerImpl(aciContactShareNameStore: aciContactShareNameStore)
 
         let contactManager = testDependencies.contactManager ?? OWSContactsManager(
             appReadiness: appReadiness,
@@ -1803,6 +1806,7 @@ extension AppSetup.GlobalsContinuation {
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
             accountEntropyPoolManager: accountEntropyPoolManager,
+            aciContactShareNameManager: aciContactShareNameManager,
             adHocCallRecordManager: adHocCallRecordManager,
             adminDeleteManager: adminDeleteManager,
             appExpiry: appExpiry,

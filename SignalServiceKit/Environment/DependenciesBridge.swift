@@ -49,6 +49,7 @@ public class DependenciesBridge {
 
     public let accountAttributesUpdater: AccountAttributesUpdater
     public let accountEntropyPoolManager: AccountEntropyPoolManager
+    public let aciContactShareNameManager: any AciContactShareNameManager
     public let adHocCallRecordManager: any AdHocCallRecordManager
     public let adminDeleteManager: AdminDeleteManager
     public let appExpiry: AppExpiry
@@ -202,6 +203,7 @@ public class DependenciesBridge {
     init(
         accountAttributesUpdater: AccountAttributesUpdater,
         accountEntropyPoolManager: AccountEntropyPoolManager,
+        aciContactShareNameManager: any AciContactShareNameManager,
         adHocCallRecordManager: any AdHocCallRecordManager,
         adminDeleteManager: AdminDeleteManager,
         appExpiry: AppExpiry,
@@ -353,6 +355,7 @@ public class DependenciesBridge {
     ) {
         self.accountAttributesUpdater = accountAttributesUpdater
         self.accountEntropyPoolManager = accountEntropyPoolManager
+        self.aciContactShareNameManager = aciContactShareNameManager
         self.adHocCallRecordManager = adHocCallRecordManager
         self.adminDeleteManager = adminDeleteManager
         self.appExpiry = appExpiry

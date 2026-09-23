@@ -319,6 +319,7 @@ public enum DatabaseRecovery {
             CallRecord.databaseTableName,
             DeletedCallRecord.databaseTableName,
             NicknameRecord.databaseTableName,
+            AciContactShareName.databaseTableName,
             Attachment.Record.databaseTableName,
             AttachmentReference.MessageAttachmentReferenceRecord.databaseTableName,
             AttachmentReference.StoryMessageAttachmentReferenceRecord.databaseTableName,

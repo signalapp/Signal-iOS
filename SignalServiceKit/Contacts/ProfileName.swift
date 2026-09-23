@@ -27,6 +27,14 @@ public struct ProfileName {
         )
     }
 
+    public init?(aciContactShareName: AciContactShareName?) {
+        guard let aciContactShareName else { return nil }
+        self.init(
+            givenName: aciContactShareName.givenName,
+            familyName: aciContactShareName.familyName,
+        )
+    }
+
     public init?(givenName: String?, familyName: String?) {
         switch Self.createNameFrom(givenName: givenName, familyName: familyName) {
         case .failure:

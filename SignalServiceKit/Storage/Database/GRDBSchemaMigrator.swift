@@ -366,6 +366,7 @@ public class GRDBSchemaMigrator {
         case removeObsoleteThreadReferences
         case removeInteractionConversationLoadDistanceIndex
         case addAttachmentAudioWaveformSamples
+        case addAciContactShareNameTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5655,6 +5656,17 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.addAttachmentAudioWaveformSamples) { tx in
             try addAttachmentAudioWaveformSamples(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addAciContactShareNameTable) { tx in
+            try tx.database.create(table: AciContactShareName.databaseTableName) { table in
+                table.column("recipientRowID", .integer).primaryKey().notNull()
+                    .references("model_SignalRecipient", column: "id", onDelete: .cascade)
+                table.column("givenName", .text)
+                table.column("familyName", .text)
+            }
+
             return .success(())
         }
 

@@ -181,6 +181,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     private let isPrimaryDevice: Bool
     private let authedAccount: AuthedAccount
 
+    private let aciContactShareNameManager: any AciContactShareNameManager
     private let avatarDefaultColorManager: AvatarDefaultColorManager
     private let blockingManager: BlockingManager
     private let contactsManager: OWSContactsManager
@@ -201,6 +202,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         localIdentifiers: LocalIdentifiers,
         isPrimaryDevice: Bool,
         authedAccount: AuthedAccount,
+        aciContactShareNameManager: any AciContactShareNameManager,
         avatarDefaultColorManager: AvatarDefaultColorManager,
         blockingManager: BlockingManager,
         contactsManager: OWSContactsManager,
@@ -221,6 +223,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         self.isPrimaryDevice = isPrimaryDevice
         self.authedAccount = authedAccount
 
+        self.aciContactShareNameManager = aciContactShareNameManager
         self.avatarDefaultColorManager = avatarDefaultColorManager
         self.blockingManager = blockingManager
         self.contactsManager = contactsManager
@@ -397,6 +400,15 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             nicknameRecord.familyName.map { nicknameBuilder.setFamily($0) }
             builder.setNickname(nicknameBuilder.buildInfallibly())
             nicknameRecord.note.map { builder.setNote($0) }
+        }
+
+        // Name shared by a third party
+
+        if let aciContactShareName = aciContactShareNameManager.fetchName(for: recipient, tx: tx) {
+            var sharedNameBuilder = StorageServiceProtoContactRecordName.builder()
+            aciContactShareName.givenName.map { sharedNameBuilder.setGiven($0) }
+            aciContactShareName.familyName.map { sharedNameBuilder.setFamily($0) }
+            builder.setSharedName(sharedNameBuilder.buildInfallibly())
         }
 
         // Avatar color
@@ -670,6 +682,13 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 transaction: tx,
             )
         }
+
+        aciContactShareNameManager.saveName(
+            givenName: record.sharedName?.given,
+            familyName: record.sharedName?.family,
+            for: recipient,
+            tx: tx,
+        )
 
         if record.nickname?.hasGiven == true || record.nickname?.hasFamily == true || record.hasNote {
             let nicknameRecord = NicknameRecord(

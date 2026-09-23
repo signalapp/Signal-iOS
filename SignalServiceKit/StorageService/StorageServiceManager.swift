@@ -2142,6 +2142,7 @@ class StorageServiceOperation {
                 localIdentifiers: localIdentifiers,
                 isPrimaryDevice: isPrimaryDevice,
                 authedAccount: authedAccount,
+                aciContactShareNameManager: DependenciesBridge.shared.aciContactShareNameManager,
                 avatarDefaultColorManager: DependenciesBridge.shared.avatarDefaultColorManager,
                 blockingManager: SSKEnvironment.shared.blockingManagerRef,
                 contactsManager: SSKEnvironment.shared.contactManagerImplRef,
