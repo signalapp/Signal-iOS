@@ -2291,9 +2291,8 @@ extension AppSetup.FinalContinuation {
         let registrationState = tsAccountManager.registrationStateWithMaybeSneakyTransaction
         let canInitiateReregistration = registrationState.isDeregistered && canInitiateRegistration
 
-        if registrationState.isRegistered {
-            // TODO: Enforce already-true invariant "registered means LocalIdentifiers" via the compiler.
-            let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
+        if let registeredState = try? registrationState.registeredState() {
+            let localIdentifiers = registeredState.localIdentifiers
             storageServiceManager.setLocalIdentifiers(localIdentifiers)
         } else if !willResumeInProgressRegistration, !canInitiateReregistration {
             // We aren't registered, and we're not in the middle of registration, so
