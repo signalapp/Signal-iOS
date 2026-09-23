@@ -4517,6 +4517,186 @@ extension SSKProtoDataMessageContactNameBuilder {
 
 #endif
 
+// MARK: - SSKProtoDataMessageContactSignalNickname
+
+@objc
+public class SSKProtoDataMessageContactSignalNickname: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.Contact.SignalNickname
+
+    @objc
+    public var given: String? {
+        guard hasGiven else {
+            return nil
+        }
+        return proto.given
+    }
+    @objc
+    public var hasGiven: Bool {
+        return proto.hasGiven
+    }
+
+    @objc
+    public var family: String? {
+        guard hasFamily else {
+            return nil
+        }
+        return proto.family
+    }
+    @objc
+    public var hasFamily: Bool {
+        return proto.hasFamily
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Contact.SignalNickname) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public required convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.Contact.SignalNickname(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Contact.SignalNickname) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoDataMessageContactSignalNickname {
+    @objc
+    public static func builder() -> SSKProtoDataMessageContactSignalNicknameBuilder {
+        return SSKProtoDataMessageContactSignalNicknameBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessageContactSignalNicknameBuilder {
+        let builder = SSKProtoDataMessageContactSignalNicknameBuilder()
+        if let _value = given {
+            builder.setGiven(_value)
+        }
+        if let _value = family {
+            builder.setFamily(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoDataMessageContactSignalNicknameBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_DataMessage.Contact.SignalNickname()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGiven(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.given = valueParam
+    }
+
+    public func setGiven(_ valueParam: String) {
+        proto.given = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setFamily(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.family = valueParam
+    }
+
+    public func setFamily(_ valueParam: String) {
+        proto.family = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessageContactSignalNickname {
+        return SSKProtoDataMessageContactSignalNickname(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoDataMessageContactSignalNickname(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoDataMessageContactSignalNickname {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessageContactSignalNicknameBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessageContactSignalNickname? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessageContactPhoneType
 
 @objc
@@ -5571,6 +5751,9 @@ public class SSKProtoDataMessageContact: NSObject, Codable, NSSecureCoding {
     public let avatar: SSKProtoDataMessageContactAvatar?
 
     @objc
+    public let nickname: SSKProtoDataMessageContactSignalNickname?
+
+    @objc
     public var organization: String? {
         guard hasOrganization else {
             return nil
@@ -5594,6 +5777,18 @@ public class SSKProtoDataMessageContact: NSObject, Codable, NSSecureCoding {
         return proto.hasAciBinary
     }
 
+    @objc
+    public var note: String? {
+        guard hasNote else {
+            return nil
+        }
+        return proto.note
+    }
+    @objc
+    public var hasNote: Bool {
+        return proto.hasNote
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -5607,13 +5802,15 @@ public class SSKProtoDataMessageContact: NSObject, Codable, NSSecureCoding {
                  number: [SSKProtoDataMessageContactPhone],
                  email: [SSKProtoDataMessageContactEmail],
                  address: [SSKProtoDataMessageContactPostalAddress],
-                 avatar: SSKProtoDataMessageContactAvatar?) {
+                 avatar: SSKProtoDataMessageContactAvatar?,
+                 nickname: SSKProtoDataMessageContactSignalNickname?) {
         self.proto = proto
         self.name = name
         self.number = number
         self.email = email
         self.address = address
         self.avatar = avatar
+        self.nickname = nickname
     }
 
     @objc
@@ -5647,12 +5844,18 @@ public class SSKProtoDataMessageContact: NSObject, Codable, NSSecureCoding {
             avatar = SSKProtoDataMessageContactAvatar(proto.avatar)
         }
 
+        var nickname: SSKProtoDataMessageContactSignalNickname?
+        if proto.hasNickname {
+            nickname = SSKProtoDataMessageContactSignalNickname(proto.nickname)
+        }
+
         self.init(proto: proto,
                   name: name,
                   number: number,
                   email: email,
                   address: address,
-                  avatar: avatar)
+                  avatar: avatar,
+                  nickname: nickname)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -5715,6 +5918,12 @@ extension SSKProtoDataMessageContact {
         }
         if let _value = aciBinary {
             builder.setAciBinary(_value)
+        }
+        if let _value = nickname {
+            builder.setNickname(_value)
+        }
+        if let _value = note {
+            builder.setNote(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -5803,6 +6012,28 @@ public class SSKProtoDataMessageContactBuilder: NSObject {
 
     public func setAciBinary(_ valueParam: Data) {
         proto.aciBinary = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setNickname(_ valueParam: SSKProtoDataMessageContactSignalNickname?) {
+        guard let valueParam = valueParam else { return }
+        proto.nickname = valueParam.proto
+    }
+
+    public func setNickname(_ valueParam: SSKProtoDataMessageContactSignalNickname) {
+        proto.nickname = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setNote(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.note = valueParam
+    }
+
+    public func setNote(_ valueParam: String) {
+        proto.note = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

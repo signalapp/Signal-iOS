@@ -1414,6 +1414,24 @@ nonisolated struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     /// Clears the value of `aciBinary`. Subsequent reads from it will return its default value.
     mutating func clearAciBinary() {self._aciBinary = nil}
 
+    var nickname: SignalServiceProtos_DataMessage.Contact.SignalNickname {
+      get {_nickname ?? SignalServiceProtos_DataMessage.Contact.SignalNickname()}
+      set {_nickname = newValue}
+    }
+    /// Returns true if `nickname` has been explicitly set.
+    var hasNickname: Bool {self._nickname != nil}
+    /// Clears the value of `nickname`. Subsequent reads from it will return its default value.
+    mutating func clearNickname() {self._nickname = nil}
+
+    var note: String {
+      get {_note ?? String()}
+      set {_note = newValue}
+    }
+    /// Returns true if `note` has been explicitly set.
+    var hasNote: Bool {self._note != nil}
+    /// Clears the value of `note`. Subsequent reads from it will return its default value.
+    mutating func clearNote() {self._note = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     nonisolated struct Name: Sendable {
@@ -1485,6 +1503,38 @@ nonisolated struct SignalServiceProtos_DataMessage: @unchecked Sendable {
       fileprivate var _suffix: String? = nil
       fileprivate var _middleName: String? = nil
       fileprivate var _nickname: String? = nil
+    }
+
+    /// The sharer's Signal nickname for this contact
+    nonisolated struct SignalNickname: Sendable {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      var given: String {
+        get {_given ?? String()}
+        set {_given = newValue}
+      }
+      /// Returns true if `given` has been explicitly set.
+      var hasGiven: Bool {self._given != nil}
+      /// Clears the value of `given`. Subsequent reads from it will return its default value.
+      mutating func clearGiven() {self._given = nil}
+
+      var family: String {
+        get {_family ?? String()}
+        set {_family = newValue}
+      }
+      /// Returns true if `family` has been explicitly set.
+      var hasFamily: Bool {self._family != nil}
+      /// Clears the value of `family`. Subsequent reads from it will return its default value.
+      mutating func clearFamily() {self._family = nil}
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+
+      fileprivate var _given: String? = nil
+      fileprivate var _family: String? = nil
     }
 
     nonisolated struct Phone: Sendable {
@@ -1742,6 +1792,8 @@ nonisolated struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _avatar: SignalServiceProtos_DataMessage.Contact.Avatar? = nil
     fileprivate var _organization: String? = nil
     fileprivate var _aciBinary: Data? = nil
+    fileprivate var _nickname: SignalServiceProtos_DataMessage.Contact.SignalNickname? = nil
+    fileprivate var _note: String? = nil
   }
 
   nonisolated struct Sticker: Sendable {
@@ -6195,7 +6247,7 @@ nonisolated extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment: Sw
 
 nonisolated extension SignalServiceProtos_DataMessage.Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Contact"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{2}\u{2}number\0\u{1}email\0\u{1}address\0\u{1}avatar\0\u{1}organization\0\u{1}aciBinary\0\u{c}\u{2}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{2}\u{2}number\0\u{1}email\0\u{1}address\0\u{1}avatar\0\u{1}organization\0\u{1}aciBinary\0\u{1}nickname\0\u{1}note\0\u{c}\u{2}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6210,6 +6262,8 @@ nonisolated extension SignalServiceProtos_DataMessage.Contact: SwiftProtobuf.Mes
       case 6: try { try decoder.decodeSingularMessageField(value: &self._avatar) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self._organization) }()
       case 8: try { try decoder.decodeSingularBytesField(value: &self._aciBinary) }()
+      case 9: try { try decoder.decodeSingularMessageField(value: &self._nickname) }()
+      case 10: try { try decoder.decodeSingularStringField(value: &self._note) }()
       default: break
       }
     }
@@ -6241,6 +6295,12 @@ nonisolated extension SignalServiceProtos_DataMessage.Contact: SwiftProtobuf.Mes
     try { if let v = self._aciBinary {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 8)
     } }()
+    try { if let v = self._nickname {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
+    } }()
+    try { if let v = self._note {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 10)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -6252,6 +6312,8 @@ nonisolated extension SignalServiceProtos_DataMessage.Contact: SwiftProtobuf.Mes
     if lhs._avatar != rhs._avatar {return false}
     if lhs._organization != rhs._organization {return false}
     if lhs._aciBinary != rhs._aciBinary {return false}
+    if lhs._nickname != rhs._nickname {return false}
+    if lhs._note != rhs._note {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -6311,6 +6373,45 @@ nonisolated extension SignalServiceProtos_DataMessage.Contact.Name: SwiftProtobu
     if lhs._suffix != rhs._suffix {return false}
     if lhs._middleName != rhs._middleName {return false}
     if lhs._nickname != rhs._nickname {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension SignalServiceProtos_DataMessage.Contact.SignalNickname: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_DataMessage.Contact.protoMessageName + ".SignalNickname"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}given\0\u{1}family\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self._given) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._family) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._given {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._family {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_DataMessage.Contact.SignalNickname, rhs: SignalServiceProtos_DataMessage.Contact.SignalNickname) -> Bool {
+    if lhs._given != rhs._given {return false}
+    if lhs._family != rhs._family {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
