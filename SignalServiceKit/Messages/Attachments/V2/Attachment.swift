@@ -204,8 +204,43 @@ public class Attachment {
             self.waveformRelativeFilePath = waveformRelativeFilePath
         }
 
+        init?(pendingAttachment: PendingAttachment) {
+            guard let duration = pendingAttachment.audioDuration else {
+                return nil
+            }
+
+            self.init(
+                duration: duration,
+                waveformSamples: pendingAttachment.audioWaveformSamples,
+                waveformRelativeFilePath: nil,
+            )
+        }
+
         init?(
             pointerProto proto: SSKProtoAttachmentPointer,
+            contentType: Attachment.ContentType,
+        ) {
+            self.init(
+                waveformSamples: proto.hasAudioWaveform ? proto.audioWaveform : nil,
+                durationSeconds: proto.hasAudioDurationSeconds ? proto.audioDurationSeconds : nil,
+                contentType: contentType,
+            )
+        }
+
+        init?(
+            backupProto proto: BackupProto_FilePointer,
+            contentType: Attachment.ContentType,
+        ) {
+            self.init(
+                waveformSamples: proto.hasAudioWaveform ? proto.audioWaveform : nil,
+                durationSeconds: proto.hasAudioDurationSeconds ? proto.audioDurationSeconds : nil,
+                contentType: contentType,
+            )
+        }
+
+        private init?(
+            waveformSamples: Data?,
+            durationSeconds: Float?,
             contentType: Attachment.ContentType,
         ) {
             switch contentType {
@@ -216,16 +251,16 @@ public class Attachment {
             }
 
             guard
-                proto.hasAudioDurationSeconds,
-                proto.audioDurationSeconds.isFinite,
-                proto.audioDurationSeconds > 0
+                let durationSeconds,
+                durationSeconds.isFinite,
+                durationSeconds > 0
             else {
                 // Duration is required for AudioDetails.
                 return nil
             }
 
             let waveformSamples: Data? = if
-                let waveformSamples = proto.audioWaveform,
+                let waveformSamples,
                 (1...AudioWaveform.sampleCount).contains(waveformSamples.count)
             {
                 waveformSamples
@@ -234,20 +269,8 @@ public class Attachment {
             }
 
             self.init(
-                duration: TimeInterval(proto.audioDurationSeconds),
+                duration: TimeInterval(durationSeconds),
                 waveformSamples: waveformSamples,
-                waveformRelativeFilePath: nil,
-            )
-        }
-
-        init?(pendingAttachment: PendingAttachment) {
-            guard let duration = pendingAttachment.audioDuration else {
-                return nil
-            }
-
-            self.init(
-                duration: duration,
-                waveformSamples: pendingAttachment.audioWaveformSamples,
                 waveformRelativeFilePath: nil,
             )
         }

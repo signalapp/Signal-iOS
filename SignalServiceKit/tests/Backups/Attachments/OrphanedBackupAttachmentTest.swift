@@ -19,6 +19,7 @@ struct OrphanedBackupAttachmentTest {
             mimeType: "image/png",
             contentType: .image,
             encryptionKey: encryptionKey.combinedKey,
+            audioDetails: nil,
             latestTransitTierInfo: nil,
             plaintextHash: plaintextHash,
             mediaTierInfo: Attachment.MediaTierInfo(

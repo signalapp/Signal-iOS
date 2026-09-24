@@ -340,8 +340,12 @@ public class AttachmentManagerImpl: AttachmentManager {
         }
 
         let contentType = Attachment.ContentType(mimeType: mimeType)
-        var attachmentRecord: Attachment.Record
+        let audioDetails = Attachment.AudioDetails(
+            backupProto: proto,
+            contentType: contentType,
+        )
 
+        var attachmentRecord: Attachment.Record
         if
             proto.hasLocatorInfo,
             let encryptionKey = proto.locatorInfo.key.nilIfEmpty
@@ -364,6 +368,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                     mimeType: mimeType,
                     contentType: contentType,
                     encryptionKey: encryptionKey,
+                    audioDetails: audioDetails,
                     latestTransitTierInfo: transitTierInfo,
                     plaintextHash: plaintextHash,
                     mediaTierInfo: hasLocalKey ? nil : .init(
@@ -390,6 +395,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                         mimeType: mimeType,
                         contentType: contentType,
                         encryptionKey: encryptionKey,
+                        audioDetails: audioDetails,
                         latestTransitTierInfo: transitTierInfo,
                         plaintextHash: nil,
                         mediaTierInfo: nil,

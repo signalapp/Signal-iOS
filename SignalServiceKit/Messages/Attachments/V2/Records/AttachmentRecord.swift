@@ -304,6 +304,7 @@ extension Attachment {
             mimeType: String,
             contentType: ContentType,
             encryptionKey: Data,
+            audioDetails: Attachment.AudioDetails?,
             latestTransitTierInfo: Attachment.TransitTierInfo?,
             plaintextHash: Data?,
             mediaTierInfo: Attachment.MediaTierInfo?,
@@ -318,7 +319,7 @@ extension Attachment {
                 plaintextHash: plaintextHash,
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: nil,
-                audioDetails: nil,
+                audioDetails: audioDetails,
                 latestTransitTierInfo: latestTransitTierInfo,
                 originalTransitTierInfo: latestTransitTierInfo?.encryptionKey == encryptionKey
                     ? latestTransitTierInfo : nil,

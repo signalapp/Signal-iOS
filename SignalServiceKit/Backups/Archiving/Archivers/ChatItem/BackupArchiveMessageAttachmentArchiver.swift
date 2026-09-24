@@ -414,6 +414,12 @@ extension ReferencedAttachment {
         if let blurHash = attachment.blurHash {
             proto.blurHash = blurHash
         }
+        if let audioDetails = attachment.audioDetails {
+            proto.audioDurationSeconds = Float(audioDetails.duration)
+            if let waveformSamples = audioDetails.waveformSamples {
+                proto.audioWaveform = waveformSamples
+            }
+        }
 
         // Prefer the pixel size we inferred from the downloaded attachment, if
         // available. Otherwise, use the pixel size from wherever we got this
