@@ -15,11 +15,12 @@ class ContactShareFieldBase<ContactFieldType: OWSContactField>: ContactShareFiel
 
     let value: ContactFieldType
 
-    init(_ value: ContactFieldType) {
+    init(_ value: ContactFieldType, includedByDefault: Bool = true) {
         self.value = value
+        self.isIncludedFlag = includedByDefault
     }
 
-    private var isIncludedFlag = true
+    private var isIncludedFlag: Bool
 
     var isIncluded: Bool {
         get { isIncludedFlag }

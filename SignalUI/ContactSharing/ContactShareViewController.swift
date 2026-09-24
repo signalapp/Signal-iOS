@@ -53,7 +53,7 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
 
         fields += contactShareDraft.phoneNumbers.map { ContactSharePhoneNumber($0) }
         fields += contactShareDraft.emails.map { ContactShareEmail($0) }
-        fields += contactShareDraft.addresses.map { ContactShareAddress($0) }
+        fields += contactShareDraft.addresses.map { ContactShareAddress($0, includedByDefault: false) }
 
         return fields
     }()
