@@ -187,12 +187,19 @@ public struct SignalSection<Content: View, Header: View, Footer: View>: View {
         }
 
         var body: some View {
-            content
-                .listRowInsets(.init(top: 12, leading: 8, bottom: 10, trailing: 8))
-                .textCase(.none)
-                .font(.headline)
-                .foregroundStyle(.primary)
-                .provideScrollAnchor(correction: 4)
+            if #available(iOS 26, *) {
+                content
+                    .font(.headline)
+                    .foregroundStyle(Color.Signal.secondaryLabel)
+                    .provideScrollAnchor(correction: 4)
+            } else {
+                content
+                    .listRowInsets(.init(top: 12, leading: 8, bottom: 10, trailing: 8))
+                    .textCase(.none)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                    .provideScrollAnchor(correction: 4)
+            }
         }
     }
 }

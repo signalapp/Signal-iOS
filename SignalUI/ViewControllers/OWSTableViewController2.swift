@@ -615,10 +615,14 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
         UITableView.automaticDimension
     }
 
-    public static var defaultHeaderFont: UIFont { .dynamicTypeHeadlineClamped }
+    public static var useNativeSectionTitleAppearance: Bool { if #available(iOS 26, *) { true } else { false } }
+
+    public static var defaultHeaderFont: UIFont {
+        .dynamicTypeHeadlineClamped
+    }
 
     public static var defaultHeaderTextColor: UIColor {
-        UIColor.Signal.label
+        useNativeSectionTitleAppearance ? .Signal.secondaryLabel : .Signal.label
     }
 
     public static var defaultHeaderTextStyle: BonMot.StringStyle {
@@ -654,8 +658,9 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
         )
 
         if useDeepInsets {
-            textContainerInset.leading += Self.cellHInnerMargin * 0.5
-            textContainerInset.trailing += Self.cellHInnerMargin * 0.5
+            let multiplier: CGFloat = Self.useNativeSectionTitleAppearance ? 1 : 0.5
+            textContainerInset.leading += Self.cellHInnerMargin * multiplier
+            textContainerInset.trailing += Self.cellHInnerMargin * multiplier
         }
 
         return textContainerInset
