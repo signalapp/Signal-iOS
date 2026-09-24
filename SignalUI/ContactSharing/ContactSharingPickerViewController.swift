@@ -141,6 +141,22 @@ public class ContactSharingPickerViewController: OWSTableViewController2, UISear
                 )
                 return cell
             },
+            actionBlock: { [weak self] in
+                self?.didSelect(row: row)
+            },
+        )
+    }
+
+    private func didSelect(row: Row) {
+        guard navigationController?.topViewController === self else {
+            // Only push the next view controller if we are still the main
+            // view controller on screen.
+            return
+        }
+
+        contactSharingDelegate?.contactSharingPicker(
+            self,
+            didSelect: viewModel.contactShareDraft(for: row),
         )
     }
 

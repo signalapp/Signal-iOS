@@ -24,11 +24,15 @@ final class ContactSharingPickerViewModel {
     private let db: any DB
     private let displayNamesForRecipientsProvider: ([SignalRecipient], DBReadTransaction) -> [DisplayName]
     private let phoneNumberUtil: PhoneNumberUtil
+    private let phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher
+    private let profileManager: any ProfileManager
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientHidingManager: any RecipientHidingManager
+    private let recipientManager: any SignalRecipientManager
     private let searchDebounceInterval: DispatchQueue.SchedulerTimeType.Stride
     private let systemContactsProvider: (ContactAuthorizationForSharing) -> [SystemContact]
     private let tsAccountManager: any TSAccountManager
+    private let userProfileProvider: (SignalRecipient, DBReadTransaction) -> OWSUserProfile?
 
     // MARK: - State
 
@@ -88,11 +92,15 @@ final class ContactSharingPickerViewModel {
         db: any DB = SSKEnvironment.shared.databaseStorageRef,
         displayNamesForRecipientsProvider: (([SignalRecipient], DBReadTransaction) -> [DisplayName])? = nil,
         phoneNumberUtil: PhoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef,
+        phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher = DependenciesBridge.shared.phoneNumberVisibilityFetcher,
+        profileManager: any ProfileManager = SSKEnvironment.shared.profileManagerRef,
         recipientDatabaseTable: RecipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable,
         recipientHidingManager: any RecipientHidingManager = DependenciesBridge.shared.recipientHidingManager,
+        recipientManager: any SignalRecipientManager = DependenciesBridge.shared.recipientManager,
         searchDebounceInterval: DispatchQueue.SchedulerTimeType.Stride = .milliseconds(300),
         systemContactsProvider: ((ContactAuthorizationForSharing) -> [SystemContact])? = nil,
         tsAccountManager: any TSAccountManager = DependenciesBridge.shared.tsAccountManager,
+        userProfileProvider: ((SignalRecipient, DBReadTransaction) -> OWSUserProfile?)? = nil,
     ) {
         self.avatarBuilder = avatarBuilder
         self.blockedRecipientIdentifiersProvider = blockedRecipientIdentifiersProvider ?? { tx in
@@ -108,11 +116,17 @@ final class ContactSharingPickerViewModel {
             contactManager.displayNames(for: recipients.map(\.address), tx: tx)
         }
         self.phoneNumberUtil = phoneNumberUtil
+        self.phoneNumberVisibilityFetcher = phoneNumberVisibilityFetcher
+        self.profileManager = profileManager
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientHidingManager = recipientHidingManager
+        self.recipientManager = recipientManager
         self.searchDebounceInterval = searchDebounceInterval
         self.systemContactsProvider = systemContactsProvider ?? Self.fetchSystemContacts
         self.tsAccountManager = tsAccountManager
+        self.userProfileProvider = userProfileProvider ?? { recipient, tx in
+            profileManager.userProfile(for: recipient.address, tx: tx)
+        }
     }
 
     // MARK: - Searching
@@ -307,6 +321,73 @@ final class ContactSharingPickerViewModel {
         }
     }
 
+    // MARK: - Sharing
+
+    func contactShareDraft(for row: Row) -> ContactShareDraft {
+        db.read { tx in
+            switch row {
+            case .signalContact(let signalContact, let systemContact):
+                if let systemContact {
+                    let draft = contactShareDraft(for: systemContact, tx: tx)
+                    if row.namingSystemContact == nil {
+                        draft.name = contactName(for: signalContact, tx: tx)
+                    }
+                    return draft
+                } else {
+                    return contactShareDraft(for: signalContact, tx: tx)
+                }
+            case .systemContact(let systemContact):
+                return contactShareDraft(for: systemContact, tx: tx)
+            }
+        }
+    }
+
+    private func contactShareDraft(for systemContact: SystemContactWrapper, tx: DBReadTransaction) -> ContactShareDraft {
+        guard let cnContact = contactManager.cnContact(withId: systemContact.systemContact.cnContactId) else {
+            Logger.warn("The address book card went away; sharing what was loaded from it.")
+            return systemContact.contactShareDraft(phoneNumberUtil: phoneNumberUtil)
+        }
+
+        return ContactShareDraft.load(
+            cnContact: cnContact,
+            signalContact: systemContact.systemContact,
+            contactManager: contactManager,
+            phoneNumberUtil: phoneNumberUtil,
+            profileManager: profileManager,
+            recipientManager: recipientManager,
+            tsAccountManager: tsAccountManager,
+            tx: tx,
+        )
+    }
+
+    private func contactShareDraft(for signalContact: SignalContact, tx: DBReadTransaction) -> ContactShareDraft {
+        let recipient = signalContact.recipient
+        let userProfile = userProfileProvider(recipient, tx)
+
+        var phoneNumbers = [OWSContactPhoneNumber]()
+        if
+            let phoneNumber = recipient.phoneNumber?.stringValue,
+            phoneNumberVisibilityFetcher.isPhoneNumberVisible(for: recipient, tx: tx)
+        {
+            phoneNumbers.append(OWSContactPhoneNumber(type: .mobile, phoneNumber: phoneNumber))
+        }
+
+        return ContactShareDraft(
+            name: signalContact.contactName(profileNameComponents: { userProfile?.nameComponents }),
+            addresses: [],
+            emails: [],
+            phoneNumbers: phoneNumbers,
+            existingAvatarAttachment: nil,
+            avatarImageData: userProfile?.loadAvatarData(),
+        )
+    }
+
+    private func contactName(for signalContact: SignalContact, tx: DBReadTransaction) -> OWSContactName {
+        signalContact.contactName(profileNameComponents: {
+            userProfileProvider(signalContact.recipient, tx)?.nameComponents
+        })
+    }
+
     // MARK: - Supporting Types
 
     struct DisplayedRows {
@@ -320,10 +401,16 @@ final class ContactSharingPickerViewModel {
         var recipients: [SignalContact]
     }
 
+    /// A Signal recipient ready to display. Every field it needs is pre-fetched from the database.
     struct SignalContact {
-        let comparableValue: DisplayName.ComparableValue
-        let displayName: String
         let recipient: SignalRecipient
+
+        let comparableValue: DisplayName.ComparableValue
+
+        /// The name to show on the Contact Sharing Picker row.
+        let resolvedDisplayName: String
+
+        private let displayName: DisplayName
 
         init(
             recipient: SignalRecipient,
@@ -331,8 +418,27 @@ final class ContactSharingPickerViewModel {
             comparableValueConfig: DisplayName.ComparableValue.Config,
         ) {
             self.comparableValue = displayName.comparableValue(config: comparableValueConfig)
-            self.displayName = displayName.resolvedValue(config: comparableValueConfig.displayNameConfig)
+            self.resolvedDisplayName = displayName.resolvedValue(config: comparableValueConfig.displayNameConfig)
+            self.displayName = displayName
             self.recipient = recipient
+        }
+
+        /// The name to put on a contact share. This is deliberately not derived
+        /// from `resolvedDisplayName`, which may be the Signal nickname.
+        func contactName(profileNameComponents: () -> PersonNameComponents?) -> OWSContactName {
+            switch displayName {
+            case .nickname:
+                guard let profileNameComponents = profileNameComponents() else {
+                    return OWSContactName(givenName: CommonStrings.unknownUser)
+                }
+                return OWSContactName(components: profileNameComponents)
+            case .systemContactName(let systemContactName):
+                return OWSContactName(components: systemContactName.nameComponents)
+            case .profileName(let nameComponents):
+                return OWSContactName(components: nameComponents)
+            case .phoneNumber, .username, .deletedAccount, .unknown:
+                return OWSContactName(givenName: resolvedDisplayName)
+            }
         }
     }
 
@@ -401,7 +507,7 @@ final class ContactSharingPickerViewModel {
             }
             switch self {
             case .signalContact(let signalContact, _):
-                return signalContact.displayName
+                return signalContact.resolvedDisplayName
             case .systemContact(let systemContact):
                 return systemContact.displayName
             }
@@ -632,6 +738,41 @@ final class ContactSharingPickerViewModel {
             )
         }
 
+        var contactName: OWSContactName {
+            guard hasName else {
+                return OWSContactName(givenName: displayName)
+            }
+            return OWSContactName(
+                givenName: systemContact.firstName.strippedOrNil,
+                familyName: systemContact.lastName.strippedOrNil,
+                nickname: systemContact.nickname.strippedOrNil,
+                organizationName: systemContact.organizationName?.strippedOrNil,
+            )
+        }
+
+        /// A share built without the address book card, for when it has gone away
+        /// since the list was loaded. It carries everything `SystemContact` retains,
+        /// which is everything but postal addresses and the avatar.
+        func contactShareDraft(phoneNumberUtil: PhoneNumberUtil) -> ContactShareDraft {
+            ContactShareDraft(
+                name: contactName,
+                addresses: [],
+                emails: systemContact.emailAddresses.map {
+                    OWSContactEmail(type: .custom, email: $0)
+                },
+                phoneNumbers: systemContact.phoneNumbers.map {
+                    OWSContactPhoneNumber(
+                        type: .custom,
+                        label: $0.label,
+                        phoneNumber: phoneNumberUtil
+                            .parsePhoneNumber(userSpecifiedText: $0.value)?.e164 ?? $0.value,
+                    )
+                },
+                existingAvatarAttachment: nil,
+                avatarImageData: nil,
+            )
+        }
+
         // MARK: Helpers
 
         private static func personNameComponents(
@@ -656,6 +797,17 @@ final class ContactSharingPickerViewModel {
 }
 
 // MARK: - Private Helpers
+
+private extension OWSContactName {
+    convenience init(components: PersonNameComponents) {
+        self.init(
+            givenName: components.givenName,
+            familyName: components.familyName,
+            middleName: components.middleName,
+            nickname: components.nickname,
+        )
+    }
+}
 
 private extension Publisher where Failure == Never {
     func debounce<S: Combine.Scheduler>(

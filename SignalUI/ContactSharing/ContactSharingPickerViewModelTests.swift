@@ -16,6 +16,7 @@ import UIKit
 struct ContactSharingPickerViewModelTests {
 
     private let db = InMemoryDB()
+    private let phoneNumberVisibilityFetcher = MockPhoneNumberVisibilityFetcher()
     private let providers = StubbedProviders()
     private let recipientHidingManager = MockRecipientHidingManager()
     private let localAci = LocalIdentifiers.forUnitTests.aci
@@ -523,6 +524,145 @@ struct ContactSharingPickerViewModelTests {
         #expect(try await names(of: viewModel) == ["Alice", "Dave"])
     }
 
+    // MARK: - Sharing
+
+    @Test
+    func testASignalOnlyRowIsNamedByTheProfile() async throws {
+        let recipient = addContact(named: "Alice")
+        providers.displayNames[recipient.id] = .profileName(makeNameComponents(givenName: "Alice", familyName: "Adams"))
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        let contactName = try await contactShareDraft(forFirstRowOf: viewModel).name
+        #expect(contactName.givenName == "Alice")
+        #expect(contactName.familyName == "Adams")
+    }
+
+    @Test
+    func testANamedCardNamesTheShare() async throws {
+        addContact(named: "Alice", phoneNumber: "+16505550101")
+        providers.systemContacts = [
+            makeSystemContact(givenName: "Alicia", phoneNumber: "+16505550101"),
+        ]
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        #expect(try await contactShareDraft(forFirstRowOf: viewModel).name.givenName == "Alicia")
+    }
+
+    @Test
+    func testANamelessCardLeavesTheProfileNamingTheShare() async throws {
+        addContact(named: "Alice", phoneNumber: "+16505550101")
+        providers.systemContacts = [
+            makeSystemContact(phoneNumber: "+16505550101"),
+        ]
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        #expect(try await contactShareDraft(forFirstRowOf: viewModel).name.givenName == "Alice")
+    }
+
+    @Test
+    func testAnAddressBookOnlyRowIsNamedByItsCard() async throws {
+        providers.systemContacts = [makeSystemContact(givenName: "Dave", phoneNumber: "+16505550199")]
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        #expect(try await contactShareDraft(forFirstRowOf: viewModel).name.givenName == "Dave")
+    }
+
+    @Test
+    func testARowWithoutNameComponentsFallsBackToItsDisplayName() async throws {
+        let recipient = addContact(named: "Alice", phoneNumber: "+16505550101")
+        providers.displayNames[recipient.id] = .username("alice.42")
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        #expect(try await contactShareDraft(forFirstRowOf: viewModel).name.givenName == "alice.42")
+    }
+
+    @Test
+    func testAPrivateNicknameNamesTheRowButNotTheShare() async throws {
+        let recipient = addContact(named: "Bob")
+        providers.displayNames[recipient.id] = .nickname(
+            try #require(ProfileName(givenName: "Bob", familyName: "(landlord)")),
+        )
+        providers.userProfiles[recipient.id] = makeUserProfile(givenName: "Robert", familyName: "Tables")
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        let row = try #require(try await displayedRows(of: viewModel).rows.first)
+        #expect(row.displayName == "Bob (landlord)", "The row shows what the user calls them.")
+
+        let contactName = viewModel.contactShareDraft(for: row).name
+        #expect(
+            contactName.givenName == "Robert" && contactName.familyName == "Tables",
+            "A share carries the name they publish, never the user's private nickname.",
+        )
+    }
+
+    @Test
+    func testANicknameWithoutAProfileNameIsNotShared() async throws {
+        let recipient = addContact(named: "Bob")
+        providers.displayNames[recipient.id] = .nickname(
+            try #require(ProfileName(givenName: "Bob", familyName: "(landlord)")),
+        )
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        let contactName = try await contactShareDraft(forFirstRowOf: viewModel).name
+        #expect(contactName.givenName == CommonStrings.unknownUser)
+        #expect(contactName.familyName == nil, "No part of the private nickname reaches the share.")
+    }
+
+    @Test
+    func testProfileNamesAreOnlyFetchedWhenSharing() async throws {
+        let recipient = addContact(named: "Bob")
+        providers.displayNames[recipient.id] = .nickname(
+            try #require(ProfileName(givenName: "Bob", familyName: "(landlord)")),
+        )
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+        #expect(providers.userProfileFetchCount == 0, "Loading the list shouldn't read profiles.")
+
+        _ = try await contactShareDraft(forFirstRowOf: viewModel)
+        #expect(providers.userProfileFetchCount == 1)
+    }
+
+    @Test
+    func testAVisiblePhoneNumberIsShared() async throws {
+        addContact(named: "Alice", phoneNumber: "+16505550101")
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        let phoneNumbers = try await contactShareDraft(forFirstRowOf: viewModel).phoneNumbers
+        #expect(phoneNumbers.map(\.phoneNumber) == ["+16505550101"])
+    }
+
+    @Test
+    func testAHiddenPhoneNumberIsNotShared() async throws {
+        let aci = Aci.randomForTesting()
+        addContact(named: "Alice", aci: aci, phoneNumber: "+16505550101")
+        phoneNumberVisibilityFetcher.acisWithHiddenPhoneNumbers = [aci]
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        #expect(
+            try await contactShareDraft(forFirstRowOf: viewModel).phoneNumbers.isEmpty,
+            "A number its owner hides must not reach a contact share.",
+        )
+    }
+
     // MARK: - Helpers
 
     private func makeViewModel() -> ContactSharingPickerViewModel {
@@ -537,11 +677,19 @@ struct ContactSharingPickerViewModelTests {
             db: db,
             displayNamesForRecipientsProvider: { recipients, _ in providers.displayNames(for: recipients) },
             phoneNumberUtil: PhoneNumberUtil(),
+            phoneNumberVisibilityFetcher: phoneNumberVisibilityFetcher,
+            profileManager: OWSFakeProfileManager(),
             recipientDatabaseTable: RecipientDatabaseTable(),
             recipientHidingManager: recipientHidingManager,
+            recipientManager: SignalRecipientManagerImpl(
+                phoneNumberVisibilityFetcher: MockPhoneNumberVisibilityFetcher(),
+                recipientDatabaseTable: RecipientDatabaseTable(),
+                storageServiceManager: FakeStorageServiceManager(),
+            ),
             searchDebounceInterval: .zero,
             systemContactsProvider: { _ in providers.fetchSystemContacts() },
             tsAccountManager: MockTSAccountManager(),
+            userProfileProvider: { recipient, _ in providers.userProfile(for: recipient) },
         )
     }
 
@@ -549,6 +697,13 @@ struct ContactSharingPickerViewModelTests {
         of viewModel: ContactSharingPickerViewModel,
     ) async throws -> ContactSharingPickerViewModel.DisplayedRows {
         try #require(await viewModel.displayedRowsPublisher.values.first(where: { _ in true }))
+    }
+
+    private func contactShareDraft(
+        forFirstRowOf viewModel: ContactSharingPickerViewModel,
+    ) async throws -> ContactShareDraft {
+        let row = try #require(try await displayedRows(of: viewModel).rows.first)
+        return viewModel.contactShareDraft(for: row)
     }
 
     private func names(of viewModel: ContactSharingPickerViewModel) async throws -> [String] {
@@ -582,6 +737,34 @@ struct ContactSharingPickerViewModelTests {
         providers.displayNames[recipient.id] = .profileName(nameComponents)
 
         return recipient
+    }
+
+    private func makeNameComponents(givenName: String, familyName: String? = nil) -> PersonNameComponents {
+        var nameComponents = PersonNameComponents()
+        nameComponents.givenName = givenName
+        nameComponents.familyName = familyName
+        return nameComponents
+    }
+
+    private func makeUserProfile(givenName: String, familyName: String) -> OWSUserProfile {
+        OWSUserProfile(
+            id: nil,
+            uniqueId: UUID().uuidString,
+            serviceIdString: nil,
+            phoneNumber: nil,
+            avatarFileName: nil,
+            avatarUrlPath: nil,
+            profileKey: nil,
+            givenName: givenName,
+            familyName: familyName,
+            bio: nil,
+            bioEmoji: nil,
+            badges: [],
+            lastFetchDate: nil,
+            lastMessagingDate: nil,
+            isPhoneNumberShared: nil,
+            hasPaymentAddress: nil,
+        )
     }
 
     private func makeSystemContact(
@@ -618,12 +801,20 @@ private final class StubbedProviders {
     /// Recipients without an entry here resolve to `.unknown`.
     var displayNames: [SignalRecipient.RowId: DisplayName] = [:]
 
+    var userProfiles: [SignalRecipient.RowId: OWSUserProfile] = [:]
+
     private(set) var displayNamesFetchCount = 0
     private(set) var fetchSystemContactsCount = 0
+    private(set) var userProfileFetchCount = 0
 
     func displayNames(for recipients: [SignalRecipient]) -> [DisplayName] {
         displayNamesFetchCount += 1
         return recipients.map { displayNames[$0.id] ?? .unknown }
+    }
+
+    func userProfile(for recipient: SignalRecipient) -> OWSUserProfile? {
+        userProfileFetchCount += 1
+        return userProfiles[recipient.id]
     }
 
     func fetchSystemContacts() -> [SystemContact] {

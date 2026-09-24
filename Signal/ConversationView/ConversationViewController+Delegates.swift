@@ -111,6 +111,22 @@ extension ConversationViewController: ContactPickerDelegate, ContactSharingPicke
         self.openAttachmentKeyboard()
     }
 
+    public func contactSharingPicker(
+        _ picker: ContactSharingPickerViewController,
+        didSelect contactShareDraft: ContactShareDraft,
+    ) {
+        AssertIsOnMainThread()
+
+        guard let navigationController = picker.navigationController else {
+            owsFailDebug("Missing picker.navigationController.")
+            return
+        }
+
+        let approveContactShare = ContactShareViewController(contactShareDraft: contactShareDraft)
+        approveContactShare.shareDelegate = self
+        navigationController.pushViewController(approveContactShare, animated: true)
+    }
+
     public func contactPicker(_ contactPicker: ContactPickerViewController, didSelect systemContact: SystemContact) {
         AssertIsOnMainThread()
 
