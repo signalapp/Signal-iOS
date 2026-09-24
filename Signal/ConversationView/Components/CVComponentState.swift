@@ -2054,6 +2054,19 @@ private extension CVComponentState.Builder {
                 linkPreview: linkPreview,
                 state: state,
             )
+
+            if
+                StickerPackInfo.isStickerPackShare(url),
+                let stickerPackInfo = StickerPackInfo.parseStickerPackShare(url)
+            {
+                let viewStickerPack = CVMessageAction(
+                    title: OWSLocalizedString("CONVERSATION_VIEW_VIEW_STICKER_PACK", comment: "Label for a button in a message bubble that opens a sticker pack"),
+                    accessibilityIdentifier: "view_sticker_pack",
+                    action: .didTapViewStickerPack(stickerPackInfo: stickerPackInfo),
+                )
+
+                bottomButtonsActions.append(viewStickerPack)
+            }
         }
     }
 

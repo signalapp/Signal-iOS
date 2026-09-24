@@ -2842,6 +2842,9 @@
 /* Button on truncated text messages that they can be tapped to download the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "Get Full Message";
 
+/* Label for a button in a message bubble that opens a sticker pack */
+"CONVERSATION_VIEW_VIEW_STICKER_PACK" = "View Pack";
+
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
 

@@ -325,6 +325,7 @@ struct CVMessageAction: Equatable {
         case didTapViewPoll(pollInteractionUniqueId: String)
         case didTapViewPinnedMessage(pinnedMessageUniqueId: String)
         case didTapReleaseNotesAnnouncementAction(action: RemoteAnnouncementModel.Manifest.Action)
+        case didTapViewStickerPack(stickerPackInfo: StickerPackInfo)
 
         struct BlockGroupRequest: Equatable {
             var secretParams: GroupSecretParams
@@ -406,6 +407,8 @@ struct CVMessageAction: Equatable {
                 delegate.didTapViewPinnedMessage(pinnedMessageUniqueId: pinnedMessageUniqueId)
             case .didTapReleaseNotesAnnouncementAction(let action):
                 delegate.didTapReleaseNotesAnnouncementAction(action: action)
+            case .didTapViewStickerPack(let stickerPackInfo):
+                delegate.didTapStickerPack(stickerPackInfo)
             }
         }
     }
