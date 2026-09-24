@@ -18058,6 +18058,27 @@ public class SSKProtoAttachmentPointer: NSObject, Codable, NSSecureCoding {
         return proto.hasCdnNumber
     }
 
+    @objc
+    public var audioWaveform: Data? {
+        guard hasAudioWaveform else {
+            return nil
+        }
+        return proto.audioWaveform
+    }
+    @objc
+    public var hasAudioWaveform: Bool {
+        return proto.hasAudioWaveform
+    }
+
+    @objc
+    public var audioDurationSeconds: Float {
+        return proto.audioDurationSeconds
+    }
+    @objc
+    public var hasAudioDurationSeconds: Bool {
+        return proto.hasAudioDurationSeconds
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -18178,6 +18199,12 @@ extension SSKProtoAttachmentPointer {
         }
         if hasCdnNumber {
             builder.setCdnNumber(cdnNumber)
+        }
+        if let _value = audioWaveform {
+            builder.setAudioWaveform(_value)
+        }
+        if hasAudioDurationSeconds {
+            builder.setAudioDurationSeconds(audioDurationSeconds)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -18326,6 +18353,22 @@ public class SSKProtoAttachmentPointerBuilder: NSObject {
     @objc
     public func setCdnNumber(_ valueParam: UInt32) {
         proto.cdnNumber = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setAudioWaveform(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.audioWaveform = valueParam
+    }
+
+    public func setAudioWaveform(_ valueParam: Data) {
+        proto.audioWaveform = valueParam
+    }
+
+    @objc
+    public func setAudioDurationSeconds(_ valueParam: Float) {
+        proto.audioDurationSeconds = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

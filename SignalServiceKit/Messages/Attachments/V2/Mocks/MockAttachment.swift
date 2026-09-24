@@ -96,6 +96,7 @@ extension Attachment.Record {
         blurHash: String? = UUID().uuidString,
         mimeType: String = MimeType.imageJpeg.rawValue,
         encryptionKey: Data = Randomness.generateRandomBytes(64),
+        audioDetails: Attachment.AudioDetails? = nil,
         transitTierInfo: Attachment.TransitTierInfo = .mock(),
     ) -> Attachment.Record {
         return .forInsertingPointer(
@@ -103,6 +104,7 @@ extension Attachment.Record {
             mimeType: mimeType,
             contentType: Attachment.ContentType(mimeType: mimeType),
             encryptionKey: encryptionKey,
+            audioDetails: audioDetails,
             latestTransitTierInfo: transitTierInfo,
         )
     }

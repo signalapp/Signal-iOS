@@ -199,6 +199,10 @@ public class AttachmentManagerImpl: AttachmentManager {
             mimeType: mimeType,
             contentType: contentType,
             encryptionKey: transitTierInfo.encryptionKey,
+            audioDetails: Attachment.AudioDetails(
+                pointerProto: proto,
+                contentType: contentType,
+            ),
             latestTransitTierInfo: transitTierInfo,
         )
         let sourceMediaSizePixels: CGSize?
@@ -700,7 +704,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 sourceType: .mediaTierFullsize,
                 priority: .backupRestore,
                 streamInfo: Attachment.StreamInfo(pendingAttachment: pendingAttachment),
-                audioDetails: Attachment.AudioDetails(pendingAttachment: pendingAttachment),
+                audioDetails: nil,
                 // This is used for "last viewed" state which isn't used
                 // for oversize text so it doesn't really matter but give
                 // a real date anyway.

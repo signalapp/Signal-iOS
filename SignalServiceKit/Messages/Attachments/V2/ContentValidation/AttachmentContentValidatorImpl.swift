@@ -85,6 +85,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?,
+        shouldDeriveAudioDetails: Bool,
     ) async throws -> PendingAttachment {
         // Very very first thing: validate the integrity check.
         // Throw if this fails.
@@ -113,7 +114,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             sourceFilename: sourceFilename,
             // We use the sender-provided blurHash.
             shouldComputeBlurHash: false,
-            shouldDeriveAudioDetails: BuildFlags.deriveAudioDetailsOnDownload,
+            shouldDeriveAudioDetails: shouldDeriveAudioDetails,
         ))
     }
 
@@ -160,6 +161,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?,
+        shouldDeriveAudioDetails: Bool,
     ) async throws -> PendingAttachment {
 
         // This temp file becomes the new attachment source, and will
@@ -202,9 +204,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             sourceFilename: sourceFilename,
             // We use the blurHash from the Backup proto.
             shouldComputeBlurHash: false,
-            // We derive audio details ourselves until we know senders are
-            // providing them instead.
-            shouldDeriveAudioDetails: BuildFlags.deriveAudioDetailsOnDownload,
+            shouldDeriveAudioDetails: shouldDeriveAudioDetails,
         ))
     }
 
@@ -330,9 +330,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         /// An attachment's blurHash is the sender's responsibility, so we only
         /// compute one for outgoing media.
         let shouldComputeBlurHash: Bool
-        /// Senders provide audio details, so we only derive them ourselves for
-        /// outgoing audio, or while ``BuildFlags/deriveAudioDetailsOnDownload``
-        /// covers senders who don't send them yet.
+        /// Whether to derive audio details from the audio itself. Always true
+        /// for outgoing media; conditional for incoming.
         let shouldDeriveAudioDetails: Bool
 
         init(

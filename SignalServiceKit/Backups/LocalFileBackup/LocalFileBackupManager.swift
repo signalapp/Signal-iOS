@@ -204,6 +204,10 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
 
                 let attachmentKey = try AttachmentKey(combinedKey: attachmentWithMetadata.metadata.localKey)
 
+                let shouldDeriveAudioDetails =
+                    BuildFlags.AudioWaveforms.deriveAudioDetailsFromBackups
+                        && attachmentWithMetadata.attachment.audioDetails == nil
+
                 var pendingAttachment: PendingAttachment
                 do {
                     pendingAttachment = try await attachmentValidator.validateDownloadedContents(
@@ -214,6 +218,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
                         mimeType: attachmentWithMetadata.attachment.mimeType,
                         renderingFlag: .default,
                         sourceFilename: nil,
+                        shouldDeriveAudioDetails: shouldDeriveAudioDetails,
                     )
                 } catch let error as CancellationError {
                     throw error
@@ -228,11 +233,17 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
                     continue
                 }
 
+                let derivedAudioDetails: Attachment.AudioDetails? = if shouldDeriveAudioDetails {
+                    Attachment.AudioDetails(pendingAttachment: pendingAttachment)
+                } else {
+                    nil
+                }
+
                 db.write { tx in
                     attachmentStore.updateLocalFileBackupAttachmentAsTransferred(
                         attachment: attachmentWithMetadata.attachment,
                         streamInfo: Attachment.StreamInfo(pendingAttachment: pendingAttachment),
-                        audioDetails: Attachment.AudioDetails(pendingAttachment: pendingAttachment),
+                        audioDetails: derivedAudioDetails,
                         tx: tx,
                     )
                     orphanedAttachmentCleaner.releasePendingAttachment(

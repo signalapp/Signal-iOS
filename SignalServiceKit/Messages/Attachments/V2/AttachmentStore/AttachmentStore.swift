@@ -617,6 +617,9 @@ public struct AttachmentStore {
         }
     }
 
+    /// - Parameter audioDetails
+    /// Details derived from the downloaded file. Ignored if the attachment
+    /// already has details, for example from the sender.
     public func updateLocalFileBackupAttachmentAsTransferred(
         attachment: Attachment,
         streamInfo: Attachment.StreamInfo,
@@ -630,7 +633,7 @@ public struct AttachmentStore {
         }
 
         attachment.streamInfo = streamInfo
-        attachment.audioDetails = audioDetails
+        attachment.audioDetails = attachment.audioDetails ?? audioDetails
         attachment.plaintextHash = streamInfo.plaintextHash
 
         let newRecord = Attachment.Record(attachment: attachment)
@@ -639,6 +642,9 @@ public struct AttachmentStore {
         }
     }
 
+    /// - Parameter audioDetails
+    /// Details derived from the downloaded file. Ignored if the attachment
+    /// already has details, for example from the sender.
     public func updateAttachmentAsDownloaded(
         attachment: Attachment,
         sourceType: QueuedAttachmentDownloadRecord.SourceType,
@@ -696,13 +702,13 @@ public struct AttachmentStore {
         switch sourceType {
         case .transitTier:
             attachment.streamInfo = streamInfo
-            attachment.audioDetails = audioDetails
+            attachment.audioDetails = attachment.audioDetails ?? audioDetails
             attachment.plaintextHash = streamInfo.plaintextHash
             attachment.latestTransitTierInfo = latestTransitTierInfo
             attachment.lastFullscreenViewTimestamp = lastFullscreenViewTimestamp ?? attachment.lastFullscreenViewTimestamp
         case .mediaTierFullsize:
             attachment.streamInfo = streamInfo
-            attachment.audioDetails = audioDetails
+            attachment.audioDetails = attachment.audioDetails ?? audioDetails
             attachment.plaintextHash = streamInfo.plaintextHash
             attachment.latestTransitTierInfo = latestTransitTierInfo
             if var mediaTierInfo = attachment.mediaTierInfo {

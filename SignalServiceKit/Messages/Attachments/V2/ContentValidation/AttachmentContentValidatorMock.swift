@@ -37,6 +37,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?,
+        shouldDeriveAudioDetails: Bool,
     ) async throws -> PendingAttachment {
         throw OWSAssertionError("Unimplemented")
     }
@@ -58,6 +59,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?,
+        shouldDeriveAudioDetails: Bool,
     ) async throws -> PendingAttachment {
         throw OWSAssertionError("Unimplemented")
     }

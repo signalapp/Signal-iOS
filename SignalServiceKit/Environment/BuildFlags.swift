@@ -62,10 +62,23 @@ public enum BuildFlags {
     // Then, delete all the code that's now dead.
     public static let migrateGroupRefreshedAt = true
 
-    // Turn this off once enough clients are sending audio waveforms and
-    // durations in AttachmentPointer. Then, delete all the code that's now
-    // dead because this is false.
-    public static let deriveAudioDetailsOnDownload = true
+    /// Covers "deriving" audio details for incoming audio attachments, which
+    /// are being migrated to a sender-provided structure.
+    ///
+    /// Once a flag is turned off, delete all the code that's dead because it's
+    /// false. Note that disabling these flags may make it so we can remove
+    /// `audioDetails` arguments from Attachment methods, for example because we
+    /// may only ever then pass `nil` to those arguments.
+    public enum AudioWaveforms {
+        // Turn this off once enough clients are sending audio waveforms and
+        // durations in AttachmentPointer. Then, delete dead code.
+        public static let deriveAudioDetailsOnDownload = true
+
+        // Turn this off once enough clients will have populated their Backups
+        // with waveform samples. See `AudioWaveformFileMigrator`. Then, delete
+        // dead code.
+        public static let deriveAudioDetailsFromBackups = true
+    }
 
     public enum KeyTransparency {
         public static let conservativeSelfCheck = build <= .internal

@@ -204,6 +204,42 @@ public class Attachment {
             self.waveformRelativeFilePath = waveformRelativeFilePath
         }
 
+        init?(
+            pointerProto proto: SSKProtoAttachmentPointer,
+            contentType: Attachment.ContentType,
+        ) {
+            switch contentType {
+            case .audio:
+                break
+            case .file, .image, .video:
+                return nil
+            }
+
+            guard
+                proto.hasAudioDurationSeconds,
+                proto.audioDurationSeconds.isFinite,
+                proto.audioDurationSeconds > 0
+            else {
+                // Duration is required for AudioDetails.
+                return nil
+            }
+
+            let waveformSamples: Data? = if
+                let waveformSamples = proto.audioWaveform,
+                (1...AudioWaveform.sampleCount).contains(waveformSamples.count)
+            {
+                waveformSamples
+            } else {
+                nil
+            }
+
+            self.init(
+                duration: TimeInterval(proto.audioDurationSeconds),
+                waveformSamples: waveformSamples,
+                waveformRelativeFilePath: nil,
+            )
+        }
+
         init?(pendingAttachment: PendingAttachment) {
             guard let duration = pendingAttachment.audioDuration else {
                 return nil

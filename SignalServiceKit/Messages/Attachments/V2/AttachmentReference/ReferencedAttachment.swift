@@ -297,7 +297,18 @@ extension ReferencedAttachment {
         builder.setDigest(ciphertextDigest)
         builder.setUploadTimestamp(pointer.uploadTimestamp)
 
-        pointer.attachment.blurHash.map(builder.setBlurHash(_:))
+        if let blurHash = pointer.attachment.blurHash {
+            builder.setBlurHash(blurHash)
+        }
+
+        if let audioDetails = pointer.attachment.audioDetails {
+            builder.setAudioDurationSeconds(Float(audioDetails.duration))
+
+            // Nil for Attachments we haven't yet migrated the waveforms of.
+            if let waveformSamples = audioDetails.waveformSamples {
+                builder.setAudioWaveform(waveformSamples)
+            }
+        }
 
         return builder.buildInfallibly()
     }

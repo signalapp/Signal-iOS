@@ -343,6 +343,7 @@ class BaseContext(object):
             "fixed64",
             "bool",
             "double",
+            "float",
         )
 
     def can_field_be_optional(self, field):
@@ -416,6 +417,8 @@ class BaseContext(object):
         elif field.proto_type == "fixed64":
             return "0"
         elif field.proto_type == "double":
+            return "0"
+        elif field.proto_type == "float":
             return "0"
         elif field.proto_type == "bool":
             return "false"

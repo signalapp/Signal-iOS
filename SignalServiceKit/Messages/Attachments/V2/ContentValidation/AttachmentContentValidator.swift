@@ -121,6 +121,7 @@ public protocol AttachmentContentValidator {
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?,
+        shouldDeriveAudioDetails: Bool,
     ) async throws -> PendingAttachment
 
     /// Just validate an encrypted attachment file's contents, based on the provided mimetype.
@@ -172,6 +173,7 @@ public protocol AttachmentContentValidator {
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?,
+        shouldDeriveAudioDetails: Bool,
     ) async throws -> PendingAttachment
 
     /// Truncates the provided message body if necessary for inlining in a message,

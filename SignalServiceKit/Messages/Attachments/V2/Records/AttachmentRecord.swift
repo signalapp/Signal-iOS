@@ -248,6 +248,7 @@ extension Attachment {
             mimeType: String,
             contentType: ContentType,
             encryptionKey: Data,
+            audioDetails: Attachment.AudioDetails?,
             latestTransitTierInfo: Attachment.TransitTierInfo,
         ) -> Record {
             return Record(
@@ -259,7 +260,7 @@ extension Attachment {
                 plaintextHash: nil,
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: nil,
-                audioDetails: nil,
+                audioDetails: audioDetails,
                 latestTransitTierInfo: latestTransitTierInfo,
                 originalTransitTierInfo: latestTransitTierInfo.encryptionKey == encryptionKey
                     ? latestTransitTierInfo : nil,

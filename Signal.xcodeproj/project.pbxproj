@@ -2840,6 +2840,7 @@
 		D948781D305376B0006942D6 /* AudioWaveformTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D948781C305376B0006942D6 /* AudioWaveformTest.swift */; };
 		D948781F30537C2F006942D6 /* AudioWaveformFileMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D948781E30537C2F006942D6 /* AudioWaveformFileMigrator.swift */; };
 		D948782130537C36006942D6 /* AudioWaveformFileMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D948782030537C36006942D6 /* AudioWaveformFileMigratorTest.swift */; };
+		D9487823305390AF006942D6 /* AttachmentAudioDetailsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9487822305390AF006942D6 /* AttachmentAudioDetailsTest.swift */; };
 		D9495A6D2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9495A6C2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift */; };
 		D9495A702C76965600843BC1 /* TSOutgoingMessageRecipientStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9495A6E2C76963F00843BC1 /* TSOutgoingMessageRecipientStateTest.swift */; };
 		D949C4052DF3A597007E095C /* BackupConfirmKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D949C4042DF3A588007E095C /* BackupConfirmKeyViewController.swift */; };
@@ -7235,6 +7236,7 @@
 		D948781C305376B0006942D6 /* AudioWaveformTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformTest.swift; sourceTree = "<group>"; };
 		D948781E30537C2F006942D6 /* AudioWaveformFileMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformFileMigrator.swift; sourceTree = "<group>"; };
 		D948782030537C36006942D6 /* AudioWaveformFileMigratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformFileMigratorTest.swift; sourceTree = "<group>"; };
+		D9487822305390AF006942D6 /* AttachmentAudioDetailsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentAudioDetailsTest.swift; sourceTree = "<group>"; };
 		D9495A6C2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessageRecipientState.swift; sourceTree = "<group>"; };
 		D9495A6E2C76963F00843BC1 /* TSOutgoingMessageRecipientStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessageRecipientStateTest.swift; sourceTree = "<group>"; };
 		D949C4042DF3A588007E095C /* BackupConfirmKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupConfirmKeyViewController.swift; sourceTree = "<group>"; };
@@ -10985,6 +10987,7 @@
 				66B78E042BE5AACB0022580E /* ViewOnce */,
 				66D7B91C2B97C5330005C98B /* Attachment+ContentType.swift */,
 				66E1AD752B8FD0B700C56B7B /* Attachment.swift */,
+				D9487822305390AF006942D6 /* AttachmentAudioDetailsTest.swift */,
 				66C38A392D4055D7004B6B15 /* AttachmentBackupPointer.swift */,
 				C1FE1F602C80CDC30031860B /* AttachmentBackupThumbnail.swift */,
 				66C38A3B2D405A19004B6B15 /* AttachmentPointer.swift */,
@@ -20646,6 +20649,7 @@
 				502E586D3040BED600D30164 /* AnyGroupIdentifierTest.swift in Sources */,
 				F908C67B29F08E4E00C3EFC4 /* AppExpiryTest.swift in Sources */,
 				66B1E2702CB48C53005F43AC /* Array+SSKTest.swift in Sources */,
+				D9487823305390AF006942D6 /* AttachmentAudioDetailsTest.swift in Sources */,
 				D92EFDEF2F69B9D80031D257 /* AttachmentBackfillManagerTest.swift in Sources */,
 				669573082C1B9ECD0092B755 /* AttachmentDownloadQueueDBTests.swift in Sources */,
 				66BE13CC2C1D02700081A1ED /* AttachmentDownloadStoreTests.swift in Sources */,
