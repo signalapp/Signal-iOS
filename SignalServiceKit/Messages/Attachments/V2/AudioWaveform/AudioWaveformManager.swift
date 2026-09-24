@@ -13,11 +13,6 @@ public protocol AudioWaveformManager {
         attachmentStream: AttachmentStream,
     ) -> Task<AudioWaveform, Error>
 
-    func computeAndCacheAudioWaveform(
-        audioPath: String,
-        cacheWaveformToPath waveformPath: String,
-    ) -> Task<AudioWaveform, Error>
-
     func computeAudioWaveform(
         audioFilePath: String,
     ) throws -> AudioWaveform
@@ -79,25 +74,10 @@ class AudioWaveformManagerImpl: AudioWaveformManager {
         }
     }
 
-    func computeAndCacheAudioWaveform(
-        audioPath: String,
-        cacheWaveformToPath: String,
-    ) -> Task<AudioWaveform, Error> {
-        return buildAudioWaveForm(
-            source: .unencryptedFile(path: audioPath),
-            cacheWaveformToPath: cacheWaveformToPath,
-            identifier: .file(UUID()),
-            highPriority: false,
-        )
-    }
-
     func computeAudioWaveform(
         audioFilePath: String,
     ) throws -> AudioWaveform {
-        return try _buildAudioWaveForm(
-            source: .unencryptedFile(path: audioFilePath),
-            cacheWaveformToPath: nil,
-        )
+        return try buildAudioWaveForm(source: .unencryptedFile(path: audioFilePath))
     }
 
     func computeAudioWaveform(
@@ -106,15 +86,12 @@ class AudioWaveformManagerImpl: AudioWaveformManager {
         plaintextDataLength: UInt32,
         mimeType: String,
     ) throws -> AudioWaveform {
-        return try _buildAudioWaveForm(
-            source: .encryptedFile(
-                path: encryptedAudioFilePath,
-                attachmentKey: attachmentKey,
-                plaintextDataLength: plaintextDataLength,
-                mimeType: mimeType,
-            ),
-            cacheWaveformToPath: nil,
-        )
+        return try buildAudioWaveForm(source: .encryptedFile(
+            path: encryptedAudioFilePath,
+            attachmentKey: attachmentKey,
+            plaintextDataLength: plaintextDataLength,
+            mimeType: mimeType,
+        ))
     }
 
     private enum AVAssetSource {
@@ -127,77 +104,7 @@ class AudioWaveformManagerImpl: AudioWaveformManager {
         )
     }
 
-    private enum WaveformId: Hashable {
-        case attachment(Attachment.IDType)
-        case file(UUID)
-
-        var cacheKey: Attachment.IDType? {
-            switch self {
-            case .attachment(let id):
-                return id
-            case .file:
-                // We don't cache ad-hoc file results.
-                return nil
-            }
-        }
-    }
-
-    /// "High priority" just gets its own queue.
-    private let taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
-    private let highPriorityTaskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
-
-    private var cache = LRUCache<Attachment.IDType, Weak<AudioWaveform>>(maxSize: 64)
-
-    private func buildAudioWaveForm(
-        source: AVAssetSource,
-        cacheWaveformToPath: String,
-        identifier: WaveformId,
-        highPriority: Bool,
-    ) -> Task<AudioWaveform, Error> {
-        return Task {
-            if
-                let cacheKey = identifier.cacheKey,
-                let cachedValue = self.cache[cacheKey]?.value
-            {
-                return cachedValue
-            }
-
-            let taskQueue = highPriority ? self.highPriorityTaskQueue : self.taskQueue
-            return try await taskQueue.runWithThrowingTask { [weak self] in
-                guard let self else {
-                    throw OWSAssertionError("Waveform manager deallocated!")
-                }
-                let waveform = try self._buildAudioWaveForm(
-                    source: source,
-                    cacheWaveformToPath: cacheWaveformToPath,
-                )
-
-                identifier.cacheKey.map { self.cache[$0] = Weak(value: waveform) }
-                return waveform
-            }
-        }
-    }
-
-    /// - Parameter cacheWaveformToPath: if non-nil, writes a waveform file to
-    /// this path.
-    private func _buildAudioWaveForm(
-        source: AVAssetSource,
-        cacheWaveformToPath: String?,
-    ) throws -> AudioWaveform {
-        if let waveformPath = cacheWaveformToPath {
-            do {
-                let waveformData = try Data(contentsOf: URL(fileURLWithPath: waveformPath))
-                // We have a cached waveform on disk, read it into memory.
-                return try AudioWaveform(archivedData: waveformData)
-            } catch POSIXError.ENOENT, CocoaError.fileReadNoSuchFile, CocoaError.fileNoSuchFile {
-                // The file doesn't exist...
-            } catch {
-                owsFailDebug("Error: \(error)")
-                // Remove the file from disk and create a new one.
-                OWSFileSystem.deleteFileIfExists(waveformPath)
-            }
-        }
-
+    private func buildAudioWaveForm(source: AVAssetSource) throws -> AudioWaveform {
         let asset: AVAsset
         switch source {
         case .unencryptedFile(let path):
@@ -219,30 +126,7 @@ class AudioWaveformManagerImpl: AudioWaveformManager {
             throw OWSAssertionError("audio too long for waveform: \(asset.duration)")
         }
 
-        let waveform = try sampleWaveform(asset: asset)
-
-        if let waveformPath = cacheWaveformToPath {
-            do {
-                let parentDirectoryPath = (waveformPath as NSString).deletingLastPathComponent
-                if OWSFileSystem.ensureDirectoryExists(parentDirectoryPath) {
-                    switch source {
-                    case .unencryptedFile:
-                        try waveform.write(toFile: waveformPath, atomically: true)
-                    case .encryptedFile(_, let attachmentKey, _, _):
-                        let waveformData = try waveform.archive()
-                        let (encryptedWaveform, _) = try Cryptography.encrypt(waveformData, attachmentKey: attachmentKey)
-                        try encryptedWaveform.write(to: URL(fileURLWithPath: waveformPath), options: .atomicWrite)
-                    }
-
-                } else {
-                    owsFailDebug("Could not create parent directory.")
-                }
-            } catch {
-                owsFailDebug("Error: \(error)")
-            }
-        }
-
-        return waveform
+        return try sampleWaveform(asset: asset)
     }
 
     private func assetFromUnencryptedAudioFile(
@@ -322,7 +206,9 @@ class AudioWaveformManagerImpl: AudioWaveformManager {
 
         try Task.checkCancellation()
 
-        return AudioWaveform(decibelSamples: decibelSamples)
+        return AudioWaveform(
+            levels: decibelSamples.map { AudioWaveform.level(fromDecibels: $0) },
+        )
     }
 
     private func readDecibels(from assetReader: AVAssetReader) throws -> [Float] {

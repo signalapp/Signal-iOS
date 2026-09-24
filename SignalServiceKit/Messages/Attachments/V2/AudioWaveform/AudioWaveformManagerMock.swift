@@ -13,22 +13,16 @@ public class AudioWaveformManagerMock: AudioWaveformManager {
 
     public func cachedAudioWaveform(attachmentStream: AttachmentStream) -> Task<AudioWaveform, Error> {
         return Task {
-            return AudioWaveform(decibelSamples: [])
-        }
-    }
-
-    public func computeAndCacheAudioWaveform(audioPath: String, cacheWaveformToPath waveformPath: String) -> Task<AudioWaveform, any Error> {
-        return Task {
-            return AudioWaveform(decibelSamples: [])
+            return AudioWaveform(levels: [])
         }
     }
 
     public func computeAudioWaveform(audioFilePath: String) throws -> AudioWaveform {
-        return AudioWaveform(decibelSamples: [])
+        return AudioWaveform(levels: [])
     }
 
     public func computeAudioWaveform(encryptedAudioFilePath: String, attachmentKey: AttachmentKey, plaintextDataLength: UInt32, mimeType: String) throws -> AudioWaveform {
-        return AudioWaveform(decibelSamples: [])
+        return AudioWaveform(levels: [])
     }
 }
 

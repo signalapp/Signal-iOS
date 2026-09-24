@@ -24,12 +24,10 @@ final class VoiceMessageInterruptedDraft: VoiceMessageSendableDraft {
 
     private let threadUniqueId: String
     private let audioFileUrl: URL
-    private let waveformFileUrl: URL
 
     init(threadUniqueId: String, directoryUrl: URL) {
         self.threadUniqueId = threadUniqueId
         self.audioFileUrl = URL(fileURLWithPath: Constants.audioFilename, relativeTo: directoryUrl)
-        self.waveformFileUrl = URL(fileURLWithPath: Constants.waveformFilename, relativeTo: directoryUrl)
     }
 
     static func currentDraft(for thread: TSThread, transaction: DBReadTransaction) -> VoiceMessageInterruptedDraft? {
@@ -48,13 +46,38 @@ final class VoiceMessageInterruptedDraft: VoiceMessageSendableDraft {
 
     // MARK: -
 
+    /// The waveform is used solely for UI, so it isn't sampled until something
+    /// asks for it. The samples are then cached for the life of the draft.
     private(set) lazy var audioWaveformTask: Task<AudioWaveform, Error> = {
-        // The file at `waveformPath` is created lazily by accessing this property.
-        // It's used solely for UI and thus isn't created until it's needed.
-        DependenciesBridge.shared.audioWaveformManager.computeAndCacheAudioWaveform(
-            audioPath: audioFileUrl.path,
-            cacheWaveformToPath: waveformFileUrl.path,
-        )
+        let audioFilePath = self.audioFileUrl.path
+        let threadUniqueId = self.threadUniqueId
+
+        return Task {
+            let audioWaveformManager = DependenciesBridge.shared.audioWaveformManager
+            let db = SSKEnvironment.shared.databaseStorageRef
+
+            let cachedSamples = db.read { tx in
+                VoiceMessageInterruptedDraftStore.waveformSamples(
+                    threadUniqueId: threadUniqueId,
+                    transaction: tx,
+                )
+            }
+            if let cachedSamples {
+                return AudioWaveform(waveformData: cachedSamples)
+            }
+
+            let waveform = try audioWaveformManager.computeAudioWaveform(audioFilePath: audioFilePath)
+
+            await db.awaitableWrite { tx in
+                VoiceMessageInterruptedDraftStore.setWaveformSamples(
+                    waveform.waveformData,
+                    threadUniqueId: threadUniqueId,
+                    transaction: tx,
+                )
+            }
+
+            return waveform
+        }
     }()
 
     private(set) lazy var audioPlayer: AudioPlayer = {

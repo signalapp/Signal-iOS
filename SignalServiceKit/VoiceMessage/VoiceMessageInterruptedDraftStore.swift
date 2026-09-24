@@ -20,10 +20,7 @@ public class VoiceMessageInterruptedDraftStore {
 
     public enum Constants {
         public static let audioFilename = "voice-memo.\(VoiceMessageConstants.fileExtension)"
-        public static let waveformFilename = "waveform.dat"
     }
-
-    // MARK: -
 
     private static func directoryUrl(relativePath: String) -> URL {
         return URL(fileURLWithPath: relativePath, isDirectory: true, relativeTo: Self.draftVoiceMessageDirectory)
@@ -42,7 +39,33 @@ public class VoiceMessageInterruptedDraftStore {
 
     // MARK: -
 
-    private static var keyValueStore: KeyValueStore { .init(collection: "DraftVoiceMessage") }
+    private static let keyValueStore = KeyValueStore(collection: "DraftVoiceMessage")
+    private static let waveformKeyValueStore = NewKeyValueStore(collection: "DraftVoiceMessageWaveform")
+
+    /// A draft's waveform, serialized as one byte per sample; see
+    /// ``AudioWaveform/waveformData``.
+    public static func waveformSamples(
+        threadUniqueId: String,
+        transaction: DBReadTransaction,
+    ) -> Data? {
+        return waveformKeyValueStore.fetchValue(
+            Data.self,
+            forKey: threadUniqueId,
+            tx: transaction,
+        )
+    }
+
+    public static func setWaveformSamples(
+        _ waveformSamples: Data,
+        threadUniqueId: String,
+        transaction: DBWriteTransaction,
+    ) {
+        waveformKeyValueStore.writeValue(
+            waveformSamples,
+            forKey: threadUniqueId,
+            tx: transaction,
+        )
+    }
 
     public static func hasDraft(for thread: TSThread, transaction: DBReadTransaction) -> Bool {
         hasDraft(for: thread.uniqueId, transaction: transaction)
@@ -53,15 +76,12 @@ public class VoiceMessageInterruptedDraftStore {
     }
 
     public static func allDraftFilePaths(transaction: DBReadTransaction) -> Set<String> {
-        return Set(keyValueStore.allKeys(transaction: transaction).compactMap { threadUniqueId -> [String]? in
-            guard let directoryPath = self.directoryPath(threadUniqueId: threadUniqueId, transaction: transaction) else {
+        return Set(keyValueStore.allKeys(transaction: transaction).compactMap { key -> String? in
+            guard let directoryPath = self.directoryPath(threadUniqueId: key, transaction: transaction) else {
                 return nil
             }
-            return [
-                directoryPath.appendingPathComponent(Constants.audioFilename),
-                directoryPath.appendingPathComponent(Constants.waveformFilename),
-            ]
-        }.reduce([], +))
+            return directoryPath.appendingPathComponent(Constants.audioFilename)
+        })
     }
 
     public static func clearDraft(for thread: TSThread, transaction: DBWriteTransaction) {
@@ -77,6 +97,7 @@ public class VoiceMessageInterruptedDraftStore {
             }
         }
         keyValueStore.removeValue(forKey: threadUniqueId, transaction: transaction)
+        waveformKeyValueStore.removeValue(forKey: threadUniqueId, tx: transaction)
     }
 
     public static func saveDraft(audioFileUrl: URL, threadUniqueId: String, transaction: DBWriteTransaction) -> URL {

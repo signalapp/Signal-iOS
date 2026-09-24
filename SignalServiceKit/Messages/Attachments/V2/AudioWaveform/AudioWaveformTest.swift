@@ -31,7 +31,8 @@ struct AudioWaveformTest {
         (0, 255),
     ] as [(decibels: Float, expectedByte: UInt8)])
     func decibelsToBarHeights(testCase: (decibels: Float, expectedByte: UInt8)) {
-        let waveform = AudioWaveform(decibelSamples: [testCase.decibels])
+        let level = AudioWaveform.level(fromDecibels: testCase.decibels)
+        let waveform = AudioWaveform(levels: [level])
         #expect(waveform.waveformData == Data([testCase.expectedByte]))
     }
 }
