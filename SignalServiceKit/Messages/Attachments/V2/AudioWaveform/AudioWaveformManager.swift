@@ -9,8 +9,10 @@ import Foundation
 
 public protocol AudioWaveformManager {
 
+    /// The waveform for this attachment. Throws if it doesn't have one; note
+    /// that an attachment needn't be downloaded to have one.
     func cachedAudioWaveform(
-        attachmentStream: AttachmentStream,
+        attachment: Attachment,
     ) -> Task<AudioWaveform, Error>
 
     func computeAudioWaveform(
@@ -32,18 +34,18 @@ class AudioWaveformManagerImpl: AudioWaveformManager {
     init() {}
 
     func cachedAudioWaveform(
-        attachmentStream: AttachmentStream,
+        attachment: Attachment,
     ) -> Task<AudioWaveform, Error> {
-        switch attachmentStream.contentType {
+        switch attachment.contentType {
         case .file, .image, .video:
             return Task {
-                throw OWSAssertionError("Unexpected contentType for audio waveform! \(attachmentStream.contentType)")
+                throw OWSAssertionError("Unexpected contentType for audio waveform! \(attachment.contentType)")
             }
         case .audio:
             break
         }
 
-        if let waveformSamples = attachmentStream.audioDetails?.waveformSamples {
+        if let waveformSamples = attachment.audioDetails?.waveformSamples {
             return Task {
                 AudioWaveform(waveformData: waveformSamples)
             }
@@ -51,26 +53,25 @@ class AudioWaveformManagerImpl: AudioWaveformManager {
 
         // This attachment predates storing waveforms alongside the attachment
         // and hasn't been migrated yet, so read the waveform file instead.
-        guard let waveformRelativeFilePath = attachmentStream.audioDetails?.waveformRelativeFilePath else {
-            // We failed to generate a waveform when we downloaded the attachment,
-            // so don't try again now.
+        if let waveformRelativeFilePath = attachment.audioDetails?.waveformRelativeFilePath {
             return Task {
-                throw OWSAssertionError("invalid audio file")
+                let fileURL = AttachmentStream.absoluteAttachmentFileURL(
+                    relativeFilePath: waveformRelativeFilePath,
+                )
+                // waveform is validated at creation time; no need to revalidate every read.
+                let data = try Cryptography.decryptFileWithoutValidating(
+                    at: fileURL,
+                    metadata: DecryptionMetadata(key: AttachmentKey(
+                        combinedKey: attachment.encryptionKey,
+                    )),
+                )
+                return try AudioWaveform(archivedData: data)
             }
         }
 
+        // No waveform: sender didn't send one, or we didn't generate one.
         return Task {
-            let fileURL = AttachmentStream.absoluteAttachmentFileURL(
-                relativeFilePath: waveformRelativeFilePath,
-            )
-            // waveform is validated at creation time; no need to revalidate every read.
-            let data = try Cryptography.decryptFileWithoutValidating(
-                at: fileURL,
-                metadata: DecryptionMetadata(key: AttachmentKey(
-                    combinedKey: attachmentStream.attachment.encryptionKey,
-                )),
-            )
-            return try AudioWaveform(archivedData: data)
+            throw OWSGenericError("No audio waveform for attachment!")
         }
     }
 

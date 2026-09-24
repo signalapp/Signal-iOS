@@ -11,6 +11,9 @@ class AudioMessageView: ManualStackView, CVAudioPlayerListener {
     private enum Constants {
         static let animationSize: CGFloat = 40
         static let waveformHeight: CGFloat = 32
+        static let progressTrackHeight: CGFloat = 4
+        static let thumbSize = CGSize(width: 24, height: 18)
+        static let undownloadedSliderAlpha: CGFloat = 0.5
         static let vSpacing: CGFloat = 2
         static let innerLayoutMargins = UIEdgeInsets(hMargin: 0, vMargin: 4)
     }
@@ -24,10 +27,6 @@ class AudioMessageView: ManualStackView, CVAudioPlayerListener {
     private var attachment: Attachment { presentation.audioAttachment.attachment }
     private var attachmentStream: AttachmentStream? { presentation.audioAttachment.attachmentStream?.attachmentStream }
     private var durationSeconds: TimeInterval? { presentation.audioAttachment.durationSeconds }
-
-    private var isIncoming: Bool {
-        presentation.isIncoming
-    }
 
     private weak var audioMessageViewDelegate: AudioMessageViewDelegate?
     private let mediaCache: CVMediaCache
@@ -55,7 +54,7 @@ class AudioMessageView: ManualStackView, CVAudioPlayerListener {
     private let playedDotAnimation: LottieAnimationView
     private let playPauseAnimation: LottieAnimationView
     private let playPauseContainer = ManualLayoutView.circleView(name: "playPauseContainer")
-    private let progressSlider = UISlider()
+    private let progressSlider = ProgressSlider()
     private let waveformProgress: AudioWaveformProgressView
     private let waveformContainer = ManualLayoutView(name: "waveformContainer")
     private let presentation: AudioPresenter
@@ -89,16 +88,23 @@ class AudioMessageView: ManualStackView, CVAudioPlayerListener {
             outerSubviews.append(topLabel)
         }
 
-        waveformProgress.playedColor = presentation.playedColor(isIncoming: isIncoming)
-        waveformProgress.unplayedColor = presentation.unplayedColor(isIncoming: isIncoming)
-        waveformProgress.thumbColor = presentation.thumbColor(isIncoming: isIncoming)
+        waveformProgress.playedColor = presentation.playedColor()
+        waveformProgress.unplayedColor = presentation.unplayedColor()
+        waveformProgress.thumbColor = presentation.waveformThumbColor()
+        waveformProgress.waveformDidFailToLoad = { [weak self] in
+            // No waveform for this audio; a progress bar is all we can show.
+            self?.setWaveformVisible(false)
+        }
+        waveformProgress.audioWaveformTask = presentation.audioWaveform(attachment: attachment)
+        setWaveformVisible(true)
         waveformContainer.addSubviewToFillSuperviewEdges(waveformProgress)
 
-        progressSlider.setThumbImage(UIImage(named: "audio_message_thumb")?.withTintColor(presentation.thumbColor(isIncoming: isIncoming), renderingMode: .alwaysTemplate), for: .normal)
-        progressSlider.setMinimumTrackImage(trackImage(color: presentation.playedColor(isIncoming: isIncoming)), for: .normal)
-        progressSlider.setMaximumTrackImage(trackImage(color: presentation.unplayedColor(isIncoming: isIncoming)), for: .normal)
-        progressSlider.isEnabled = presentation.audioAttachment.attachmentStream != nil
+        progressSlider.setThumbImage(Self.thumbImage(color: presentation.progressBarThumbColor()), for: .normal)
+        progressSlider.minimumTrackTintColor = presentation.playedColor()
+        progressSlider.maximumTrackTintColor = presentation.unplayedColor()
         progressSlider.isUserInteractionEnabled = false
+        // Dim the slider until the attachment is downloaded.
+        progressSlider.alpha = attachmentStream != nil ? 1 : Constants.undownloadedSliderAlpha
 
         waveformContainer.addSubview(progressSlider) { [progressSlider] view in
             var sliderFrame = view.bounds
@@ -131,9 +137,7 @@ class AudioMessageView: ManualStackView, CVAudioPlayerListener {
             let fillColorKeypath = AnimationKeypath(keypath: "**.Fill 1.Color")
             playPauseAnimation.setValueProvider(
                 ColorValueProvider(
-                    presentation.playPauseAnimationColor(
-                        isIncoming: isIncoming,
-                    ).lottieColorValue,
+                    presentation.playPauseAnimationColor().lottieColorValue,
                 ),
                 keypath: fillColorKeypath,
             )
@@ -141,7 +145,6 @@ class AudioMessageView: ManualStackView, CVAudioPlayerListener {
                 ColorValueProvider(
                     presentation.playedDotAnimationColor(
                         conversationStyle: conversationStyle,
-                        isIncoming: isIncoming,
                     ).lottieColorValue,
                 ),
                 keypath: fillColorKeypath,
@@ -149,7 +152,6 @@ class AudioMessageView: ManualStackView, CVAudioPlayerListener {
 
             playPauseContainer.backgroundColor = presentation.playPauseContainerBackgroundColor(
                 conversationStyle: conversationStyle,
-                isIncoming: isIncoming,
             )
             playPauseContainer.addSubviewToCenterOnSuperview(playPauseAnimation, size: CGSize(square: 24))
 
@@ -162,7 +164,9 @@ class AudioMessageView: ManualStackView, CVAudioPlayerListener {
                     attachmentID: attachment.id,
                     downloadState: downloadState,
                 ),
-                configuration: .init(conversationStyle: conversationStyle, isIncoming: isIncoming),
+                configuration: presentation.progressViewConfiguration(
+                    conversationStyle: conversationStyle,
+                ),
             )
         }
 
@@ -306,17 +310,18 @@ class AudioMessageView: ManualStackView, CVAudioPlayerListener {
     var isScrubbing = false
 
     func isPointInScrubbableRegion(_ point: CGPoint) -> Bool {
-        guard waveformProgress.canScrub else {
+        // Only downloaded audio can be scrubbed, waveform or not.
+        guard attachmentStream != nil, durationSeconds != nil else {
             return false
         }
 
-        let locationInSlider = convert(point, to: waveformProgress)
-        return locationInSlider.x >= 0 && locationInSlider.x <= waveformProgress.width
+        let locationInContainer = convert(point, to: waveformContainer)
+        return locationInContainer.x >= 0 && locationInContainer.x <= waveformContainer.width
     }
 
     func progressForLocation(_ point: CGPoint) -> CGFloat {
-        let sliderContainer = convert(waveformProgress.frame, from: waveformProgress.superview)
-        let newRatio = CGFloat.inverseLerp(point.x, min: sliderContainer.minX, max: sliderContainer.maxX).clamp01()
+        let containerFrame = convert(waveformContainer.bounds, from: waveformContainer)
+        let newRatio = CGFloat.inverseLerp(point.x, min: containerFrame.minX, max: containerFrame.maxX).clamp01()
         return newRatio.clamp01()
     }
 
@@ -410,16 +415,11 @@ class AudioMessageView: ManualStackView, CVAudioPlayerListener {
         guard !isScrubbing else { return }
 
         visibleProgressRatio = audioProgressRatio
+    }
 
-        if let attachmentStream {
-            waveformProgress.audioWaveformTask = presentation.audioWaveform(attachmentStream: attachmentStream)
-            waveformProgress.isHidden = false
-            progressSlider.isHidden = true
-        } else {
-            waveformProgress.isHidden = true
-            progressSlider.isHidden = false
-        }
-        waveformProgress.cachedAudioDuration = presentation.audioAttachment.durationSeconds
+    private func setWaveformVisible(_ isVisible: Bool) {
+        waveformProgress.isHidden = !isVisible
+        progressSlider.isHidden = isVisible
     }
 
     func setOverrideProgress(_ value: CGFloat, animated: Bool) {
@@ -430,12 +430,6 @@ class AudioMessageView: ManualStackView, CVAudioPlayerListener {
     func clearOverrideProgress(animated: Bool) {
         overrideProgress = nil
         updateContents(animated: animated)
-    }
-
-    private func trackImage(color: UIColor) -> UIImage? {
-        return UIImage(named: "audio_message_track")?
-            .withTintColor(color, renderingMode: .alwaysTemplate)
-            .resizableImage(withCapInsets: UIEdgeInsets(top: 0, leading: 2, bottom: 0, trailing: 2))
     }
 
     // MARK: Viewed State
@@ -511,5 +505,39 @@ class AudioMessageView: ManualStackView, CVAudioPlayerListener {
         guard playbackID == self.playbackID else { return }
 
         setViewed(true, animated: true)
+    }
+
+    // MARK: - Thumb
+
+    private static var thumbImageCache = [UIColor: UIImage]()
+
+    private static func thumbImage(color: UIColor) -> UIImage {
+        AssertIsOnMainThread()
+
+        if let cachedImage = thumbImageCache[color] {
+            return cachedImage
+        }
+
+        let image = UIGraphicsImageRenderer(size: Constants.thumbSize).image { _ in
+            color.setFill()
+            UIBezierPath(
+                roundedRect: CGRect(origin: .zero, size: Constants.thumbSize),
+                cornerRadius: Constants.thumbSize.height / 2,
+            ).fill()
+        }
+        thumbImageCache[color] = image
+        return image
+    }
+
+    // MARK: - ProgressSlider
+
+    // Overridden to set a custom track height.
+    private class ProgressSlider: UISlider {
+        override func trackRect(forBounds bounds: CGRect) -> CGRect {
+            var rect = super.trackRect(forBounds: bounds)
+            rect.size.height = Constants.progressTrackHeight
+            rect.origin.y = (bounds.height - Constants.progressTrackHeight) / 2
+            return rect
+        }
     }
 }

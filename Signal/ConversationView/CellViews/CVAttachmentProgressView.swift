@@ -31,7 +31,7 @@ class CVAttachmentProgressView: ManualLayoutView {
         let backgroundStyle: BackgroundStyle
         let margin: CGFloat
 
-        private init(foregroundColor: UIColor, backgroundStyle: BackgroundStyle, margin: CGFloat) {
+        init(foregroundColor: UIColor, backgroundStyle: BackgroundStyle, margin: CGFloat = 4) {
             self.foregroundColor = foregroundColor
             self.backgroundStyle = backgroundStyle
             self.margin = margin

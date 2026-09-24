@@ -10,10 +10,7 @@ public import SignalServiceKit
 // Represents a _playable_ audio attachment.
 public class AudioAttachment: Equatable {
     public enum State: Equatable {
-        case attachmentStream(
-            attachmentStream: ReferencedAttachmentStream,
-            audioDurationSeconds: TimeInterval?,
-        )
+        case attachmentStream(attachmentStream: ReferencedAttachmentStream)
         case attachmentPointer(
             attachmentPointer: ReferencedAttachmentPointer,
             downloadState: AttachmentDownloadState,
@@ -22,12 +19,11 @@ public class AudioAttachment: Equatable {
         public static func ==(lhs: AudioAttachment.State, rhs: AudioAttachment.State) -> Bool {
             switch (lhs, rhs) {
             case let (
-                .attachmentStream(lhsStream, lhsDuration),
-                .attachmentStream(rhsStream, rhsDuration),
+                .attachmentStream(lhsStream),
+                .attachmentStream(rhsStream),
             ):
                 return lhsStream.attachmentStream.id == rhsStream.attachmentStream.id
                     && lhsStream.reference.hasSameOwner(as: rhsStream.reference)
-                    && lhsDuration == rhsDuration
             case let (
                 .attachmentPointer(lhsPointer, lhsState),
                 .attachmentPointer(rhsPointer, rhsState),
@@ -44,6 +40,9 @@ public class AudioAttachment: Equatable {
     }
 
     public let state: State
+
+    /// The duration and waveform for this audio, if we know them.
+    public let audioDetails: Attachment.AudioDetails?
 
     public let receivedAtDate: Date
     public let owningMessage: TSMessage
@@ -65,31 +64,33 @@ public class AudioAttachment: Equatable {
             return nil
         }
 
-        let audioDurationSeconds = referencedAttachmentStream.attachmentStream.audioDetails?.duration
-        if let audioDurationSeconds, audioDurationSeconds < 0 {
-            return nil
-        }
-
-        self.state = .attachmentStream(
-            attachmentStream: referencedAttachmentStream,
-            audioDurationSeconds: audioDurationSeconds,
-        )
+        self.state = .attachmentStream(attachmentStream: referencedAttachmentStream)
+        self.audioDetails = referencedAttachmentStream.attachmentStream.audioDetails
         self.isDownloading = false
         self.receivedAtDate = receivedAtDate
         self.owningMessage = owningMessage
     }
 
-    public init(
+    public init?(
         attachmentPointer: ReferencedAttachmentPointer,
         owningMessage: TSMessage,
         metadata: MediaMetadata?,
         receivedAtDate: Date,
         downloadState: AttachmentDownloadState,
     ) {
+        switch attachmentPointer.attachment.contentType {
+        case .audio:
+            break
+        default:
+            return nil
+        }
+
         state = .attachmentPointer(
             attachmentPointer: attachmentPointer,
             downloadState: downloadState,
         )
+
+        self.audioDetails = attachmentPointer.attachment.audioDetails
 
         switch downloadState {
         case .failed, .none:
@@ -103,7 +104,7 @@ public class AudioAttachment: Equatable {
 
     public var attachment: Attachment {
         switch state {
-        case .attachmentStream(let attachmentStream, _):
+        case .attachmentStream(let attachmentStream):
             return attachmentStream.attachment
         case .attachmentPointer(let attachmentPointer, _):
             return attachmentPointer.attachment
@@ -112,7 +113,7 @@ public class AudioAttachment: Equatable {
 
     public var attachmentStream: ReferencedAttachmentStream? {
         switch state {
-        case .attachmentStream(let attachmentStream, _):
+        case .attachmentStream(let attachmentStream):
             return attachmentStream
         case .attachmentPointer:
             return nil
@@ -129,17 +130,25 @@ public class AudioAttachment: Equatable {
     }
 
     public var durationSeconds: TimeInterval? {
-        switch state {
-        case .attachmentStream(_, let audioDurationSeconds):
-            return audioDurationSeconds
-        case .attachmentPointer:
-            return nil
+        if
+            let duration = audioDetails?.duration,
+            duration.isFinite,
+            duration > 0
+        {
+            return duration
         }
+
+        // Audio that doesn't know its own duration still has one once it's
+        // been played.
+        let cvAudioPlayer = AppEnvironment.shared.cvAudioPlayerRef
+        return cvAudioPlayer.playbackDuration(
+            playbackID: CVAudioPlaybackID(audioAttachment: self),
+        )
     }
 
     public var isVoiceMessage: Bool {
         let renderingFlag: AttachmentReference.RenderingFlag = switch state {
-        case .attachmentStream(let attachmentStream, _):
+        case .attachmentStream(let attachmentStream):
             attachmentStream.reference.renderingFlag
         case .attachmentPointer(let attachmentPointer, _):
             attachmentPointer.reference.renderingFlag
@@ -150,7 +159,7 @@ public class AudioAttachment: Equatable {
 
     public var sourceFilename: String? {
         switch state {
-        case .attachmentStream(let attachmentStream, _):
+        case .attachmentStream(let attachmentStream):
             return attachmentStream.reference.sourceFilename
         case .attachmentPointer(let attachmentPointer, _):
             return attachmentPointer.reference.sourceFilename
@@ -187,6 +196,7 @@ public class AudioAttachment: Equatable {
 
     public static func ==(lhs: AudioAttachment, rhs: AudioAttachment) -> Bool {
         lhs.state == rhs.state &&
+            lhs.audioDetails == rhs.audioDetails &&
             lhs.owningMessage == rhs.owningMessage &&
             lhs.isDownloading == rhs.isDownloading
     }

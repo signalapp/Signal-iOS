@@ -18,9 +18,6 @@ protocol AudioPresenter {
     // This is used for debugging. The name is given to the root ManualStackView.
     var name: String { get }
 
-    // Is the current message incoming?
-    var isIncoming: Bool { get }
-
     // Thread for the message.
     var threadUniqueId: String { get }
 
@@ -31,25 +28,30 @@ protocol AudioPresenter {
     var audioPlaybackRate: AudioPlaybackRate { get }
 
     // Color for play/pause button.
-    func playPauseAnimationColor(isIncoming: Bool) -> UIColor
+    func playPauseAnimationColor() -> UIColor
 
     // Color for dot indicating listened/unlistened status.
-    func playedDotAnimationColor(conversationStyle: ConversationStyle, isIncoming: Bool) -> UIColor
+    func playedDotAnimationColor(conversationStyle: ConversationStyle) -> UIColor
 
-    // Color for scrubbing thumb.
-    func thumbColor(isIncoming: Bool) -> UIColor
+    // Color for the scrubbing thumb drawn over the waveform.
+    func waveformThumbColor() -> UIColor
 
-    // Color for waveform left of thumb.
-    func playedColor(isIncoming: Bool) -> UIColor
+    // Color for the scrubbing thumb on the progress bar shown when there's no
+    // waveform to draw.
+    func progressBarThumbColor() -> UIColor
 
-    // Color for waveform right of thumb.
-    func unplayedColor(isIncoming: Bool) -> UIColor
+    // Color for the progress bar left of the thumb.
+    func playedColor() -> UIColor
+
+    // Color for the progress bar right of the thumb.
+    func unplayedColor() -> UIColor
 
     // Color of circle enclosing the play/pause icon.
-    func playPauseContainerBackgroundColor(
-        conversationStyle: ConversationStyle,
-        isIncoming: Bool,
-    ) -> UIColor
+    func playPauseContainerBackgroundColor(conversationStyle: ConversationStyle) -> UIColor
+
+    // Configuration for the progress view shown in place of the play/pause
+    // button while the attachment is undownloaded.
+    func progressViewConfiguration(conversationStyle: ConversationStyle) -> CVAttachmentProgressView.Configuration
 
     // Last chance to adjust constraints before the view appears.
     func configureForRendering(conversationStyle: ConversationStyle)
@@ -73,8 +75,9 @@ protocol AudioPresenter {
     // For example, you could choose to show a filename when one exists.
     var topLabelConfig: CVLabelConfig? { get }
 
-    // The sampled waveform used to display the visual preview of the audio message.
-    func audioWaveform(attachmentStream: AttachmentStream) -> Task<AudioWaveform, Error>
+    // The sampled waveform used to display the visual preview of the audio
+    // message. Fails if it doesn't have one.
+    func audioWaveform(attachment: Attachment) -> Task<AudioWaveform, Error>
 }
 
 extension AudioPresenter {
@@ -98,7 +101,7 @@ extension AudioPresenter {
         return CVLabelConfig.unstyledText(
             text,
             font: UIFont.dynamicTypeCaption1Clamped,
-            textColor: ConversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming),
+            textColor: isIncoming ? .Signal.secondaryLabel : .Signal.ColorBase.labelSecondary,
         )
     }
 }

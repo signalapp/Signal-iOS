@@ -52,7 +52,7 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
         // start invisible
         self.alpha = 0
         self.backgroundColor = _backgroundColor
-        self.layer.cornerRadius = Constants.cornerRadius
+        addPillBlock()
 
         Self.playbackRateLabelConfig(
             playbackRate: playbackRate,
@@ -321,17 +321,13 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
     // MARK: - Colors
 
     open func makeBackgroundColor() -> UIColor {
-        isIncoming
-            ? (Theme.isDarkThemeEnabled ? UIColor.white : .black).withAlphaComponent(0.08)
-            : UIColor.ows_whiteAlpha20
+        isIncoming ? .Signal.MaterialBase.button : .Signal.ColorBase.button
     }
 
     private lazy var _backgroundColor = { makeBackgroundColor() }()
 
     open func makeTextColor() -> UIColor {
-        return isIncoming
-            ? (Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_gray60)
-            : .white
+        isIncoming ? .Signal.label : .Signal.ColorBase.labelPrimary
     }
 
     private lazy var textColor: UIColor = { makeTextColor() }()
@@ -358,7 +354,6 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
     }
 
     fileprivate enum Constants {
-        static let cornerRadius: CGFloat = 6
         static var font: UIFont { UIFont.dynamicTypeFootnote }
         static let maxFontSize: CGFloat = 20
 

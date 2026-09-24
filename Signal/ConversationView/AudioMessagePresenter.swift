@@ -9,13 +9,14 @@ import SignalUI
 // Defines the look of audio messages in the conversation view.
 class AudioMessagePresenter: AudioPresenter {
     let name = "AudioMessageView"
-    let isIncoming: Bool
     let playbackTimeLabel = CVLabel()
     let playedDotContainer = ManualLayoutView(name: "playedDotContainer")
     let playbackRateView: AudioMessagePlaybackRateView
     let audioAttachment: AudioAttachment
     let threadUniqueId: String
     let audioPlaybackRate: AudioPlaybackRate
+
+    private let isIncoming: Bool
 
     init(
         isIncoming: Bool,
@@ -44,26 +45,27 @@ class AudioMessagePresenter: AudioPresenter {
         }
     }
 
-    func primaryElementColor(isIncoming: Bool) -> UIColor {
+    func playedColor() -> UIColor {
+        isIncoming ? .Signal.secondaryLabel : .Signal.ColorBase.labelPrimary
+    }
+
+    func unplayedColor() -> UIColor {
+        isIncoming ? .Signal.quaternaryLabel : .Signal.ColorBase.labelTertiary
+    }
+
+    // Over the waveform the thumb sits among the bars, so it takes the label
+    // color to stand apart from them.
+    func waveformThumbColor() -> UIColor {
         isIncoming ? .Signal.label : .Signal.ColorBase.labelPrimary
     }
 
-    func playedColor(isIncoming: Bool) -> UIColor {
-        primaryElementColor(isIncoming: isIncoming)
+    // On the bare progress bar it's a capsule handle, white in both incoming
+    // and outgoing bubbles.
+    func progressBarThumbColor() -> UIColor {
+        .Signal.ColorBase.labelPrimary
     }
 
-    func unplayedColor(isIncoming: Bool) -> UIColor {
-        isIncoming ? .Signal.tertiaryLabel : .Signal.ColorBase.labelTertiary
-    }
-
-    func thumbColor(isIncoming: Bool) -> UIColor {
-        primaryElementColor(isIncoming: isIncoming)
-    }
-
-    func playPauseContainerBackgroundColor(
-        conversationStyle: ConversationStyle,
-        isIncoming: Bool,
-    ) -> UIColor {
+    func playPauseContainerBackgroundColor(conversationStyle: ConversationStyle) -> UIColor {
         switch (isIncoming, conversationStyle.hasWallpaper) {
         case (true, true): .Signal.MaterialBase.button
         case (true, _): .Signal.LightBase.button
@@ -71,12 +73,19 @@ class AudioMessagePresenter: AudioPresenter {
         }
     }
 
-    func playPauseAnimationColor(isIncoming: Bool) -> UIColor {
-        primaryElementColor(isIncoming: isIncoming)
+    func playPauseAnimationColor() -> UIColor {
+        isIncoming ? .Signal.label : .Signal.ColorBase.labelPrimary
     }
 
-    func playedDotAnimationColor(conversationStyle: ConversationStyle, isIncoming: Bool) -> UIColor {
+    func playedDotAnimationColor(conversationStyle: ConversationStyle) -> UIColor {
         conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
+    }
+
+    func progressViewConfiguration(conversationStyle: ConversationStyle) -> CVAttachmentProgressView.Configuration {
+        CVAttachmentProgressView.Configuration(
+            conversationStyle: conversationStyle,
+            isIncoming: isIncoming,
+        )
     }
 
     func configureForRendering(conversationStyle: ConversationStyle) {
@@ -166,9 +175,9 @@ class AudioMessagePresenter: AudioPresenter {
         )
     }
 
-    func audioWaveform(attachmentStream: AttachmentStream) -> Task<AudioWaveform, Error> {
+    func audioWaveform(attachment: Attachment) -> Task<AudioWaveform, Error> {
         DependenciesBridge.shared.audioWaveformManager.cachedAudioWaveform(
-            attachmentStream: attachmentStream,
+            attachment: attachment,
         )
     }
 }

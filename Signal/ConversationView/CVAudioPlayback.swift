@@ -78,6 +78,10 @@ public class CVAudioPlayer: NSObject, AudioPlayerDelegate, CVAudioPlaybackDelega
     // cells are reloaded or scrolled offscreen and unloaded.
     private var progressCache = LRUCache<CVAudioPlaybackID, TimeInterval>(maxSize: 512)
 
+    // Durations learned by playing an attachment, for audio that doesn't carry
+    // one of its own.
+    private var durationCache = LRUCache<CVAudioPlaybackID, TimeInterval>(maxSize: 512)
+
     // Playback rate cached by thread id, _not_ attachment ID. Playback rate is preserved
     // across all audio attachments in a given thread.
     //
@@ -233,6 +237,20 @@ public class CVAudioPlayer: NSObject, AudioPlayerDelegate, CVAudioPlaybackDelega
         return progressCache[playbackID] ?? 0
     }
 
+    // TODO: Remove this fallback once all senders are guaranteed to provide
+    // TODO: audio details, such that we never need to fall back for legitimate
+    // TODO: audio.
+    /// The duration of the given attachment, as learned by playing it, if we've
+    /// played it.
+    ///
+    /// Intended as a fallback for audio for which we are otherwise missing
+    /// audio details.
+    public func playbackDuration(
+        playbackID: CVAudioPlaybackID,
+    ) -> TimeInterval? {
+        return durationCache[playbackID]
+    }
+
     public func setPlaybackRate(
         _ rate: Float,
         forThreadUniqueId threadId: ThreadId,
@@ -276,6 +294,11 @@ public class CVAudioPlayer: NSObject, AudioPlayerDelegate, CVAudioPlaybackDelega
 
     fileprivate func audioPlaybackStateDidChange(_ audioPlayback: CVAudioPlayback) {
         AssertIsOnMainThread()
+
+        // Zero when playback stops; that tells us nothing about the audio.
+        if audioPlayback.duration > 0 {
+            durationCache[audioPlayback.playbackID] = audioPlayback.duration
+        }
 
         switch audioPlayback.audioPlaybackState {
         case .playing:

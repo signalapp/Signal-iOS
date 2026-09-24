@@ -1900,14 +1900,17 @@ private extension CVComponentState.Builder {
             )
         {
             self.audioAttachment = audioAttachment
-        } else if let referencedAttachmentPointer = referencedAttachment.asReferencedAnyPointer {
-            self.audioAttachment = AudioAttachment(
+        } else if
+            let referencedAttachmentPointer = referencedAttachment.asReferencedAnyPointer,
+            let audioAttachment = AudioAttachment(
                 attachmentPointer: referencedAttachmentPointer,
                 owningMessage: message,
                 metadata: nil,
                 receivedAtDate: interaction.receivedAtDate,
                 downloadState: referencedAttachmentPointer.attachmentPointer.downloadState(tx: transaction),
             )
+        {
+            self.audioAttachment = audioAttachment
         } else {
             self.undownloadableAttachment = .audio
         }

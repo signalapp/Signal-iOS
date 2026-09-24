@@ -22,8 +22,6 @@ class AudioAllMediaPresenter: AudioPresenter {
     }
 
     let name = "AudioAllMedia"
-    // Required by the AudioPresenter protocol, should not be used.
-    let isIncoming = false
 
     let sender: String
     let size: String
@@ -39,30 +37,44 @@ class AudioAllMediaPresenter: AudioPresenter {
     let dot2 = CVLabel()
 
     private static let middleDot = " · "
-    func playedColor(isIncoming: Bool) -> UIColor {
+    func playedColor() -> UIColor {
         return Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray90
     }
 
-    func unplayedColor(isIncoming: Bool) -> UIColor {
+    func unplayedColor() -> UIColor {
         return Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray20
     }
 
-    func thumbColor(isIncoming: Bool) -> UIColor {
-        return playedColor(isIncoming: true)
+    // These cells aren't message bubbles; the thumb matches the played bars
+    // whichever view it's drawn in.
+    func waveformThumbColor() -> UIColor {
+        return playedColor()
     }
 
-    func playPauseContainerBackgroundColor(
-        conversationStyle: ConversationStyle,
-        isIncoming: Bool,
-    ) -> UIColor {
+    func progressBarThumbColor() -> UIColor {
+        return playedColor()
+    }
+
+    func playPauseContainerBackgroundColor(conversationStyle: ConversationStyle) -> UIColor {
         return Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray05
     }
 
-    func playPauseAnimationColor(isIncoming: Bool) -> UIColor {
-        playedColor(isIncoming: true)
+    // These cells aren't message bubbles, so the incoming/outgoing colors of
+    // the default configuration don't apply. Match the play/pause button.
+    func progressViewConfiguration(conversationStyle: ConversationStyle) -> CVAttachmentProgressView.Configuration {
+        CVAttachmentProgressView.Configuration(
+            foregroundColor: playedColor(),
+            backgroundStyle: .solidColor(
+                playPauseContainerBackgroundColor(conversationStyle: conversationStyle),
+            ),
+        )
     }
 
-    func playedDotAnimationColor(conversationStyle: ConversationStyle, isIncoming: Bool) -> UIColor {
+    func playPauseAnimationColor() -> UIColor {
+        playedColor()
+    }
+
+    func playedDotAnimationColor(conversationStyle: ConversationStyle) -> UIColor {
         conversationStyle.bubbleSecondaryTextColor(isIncoming: true)
     }
 
@@ -357,9 +369,9 @@ class AudioAllMediaPresenter: AudioPresenter {
         )
     }
 
-    func audioWaveform(attachmentStream: AttachmentStream) -> Task<AudioWaveform, Error> {
+    func audioWaveform(attachment: Attachment) -> Task<AudioWaveform, Error> {
         DependenciesBridge.shared.audioWaveformManager.cachedAudioWaveform(
-            attachmentStream: attachmentStream,
+            attachment: attachment,
         )
     }
 }
@@ -381,7 +393,7 @@ class AllMediaAudioMessagePlaybackRateView: AudioMessagePlaybackRateView {
 extension AudioAttachment {
     var sizeString: String {
         switch state {
-        case .attachmentStream(let stream, _):
+        case .attachmentStream(let stream):
             return ByteCountFormatter().string(for: stream.attachmentStream.unencryptedByteCount) ?? ""
         case .attachmentPointer:
             // TODO: [Media Gallery]: Source byte information for undownloaded attachment

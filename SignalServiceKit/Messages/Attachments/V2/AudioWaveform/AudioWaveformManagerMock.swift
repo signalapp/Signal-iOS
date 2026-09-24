@@ -11,7 +11,7 @@ public class AudioWaveformManagerMock: AudioWaveformManager {
 
     public init() {}
 
-    public func cachedAudioWaveform(attachmentStream: AttachmentStream) -> Task<AudioWaveform, Error> {
+    public func cachedAudioWaveform(attachment: Attachment) -> Task<AudioWaveform, Error> {
         return Task {
             return AudioWaveform(levels: [])
         }

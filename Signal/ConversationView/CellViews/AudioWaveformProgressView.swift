@@ -45,15 +45,8 @@ class AudioWaveformProgressView: UIView {
         }
     }
 
-    var cachedAudioDuration: TimeInterval? {
-        didSet {
-            redrawSamples()
-        }
-    }
-
-    var canScrub: Bool {
-        return audioWaveform != nil || waveformWaitingTask == nil && cachedAudioDuration != nil
-    }
+    /// Called if the waveform we were given fails to load.
+    var waveformDidFailToLoad: (() -> Void)?
 
     override var bounds: CGRect {
         didSet {
@@ -109,8 +102,6 @@ class AudioWaveformProgressView: UIView {
     private func redrawSamples() {
         AssertIsOnMainThread()
 
-        // Show the loading state if sampling of the waveform hasn't finished yet.
-        // TODO: This will eventually be a lottie animation of a waveform moving up and down
         func resetContents(showLoadingAnimation: Bool) {
             playedShapeLayer.path = nil
             unplayedShapeLayer.path = nil
@@ -130,16 +121,12 @@ class AudioWaveformProgressView: UIView {
         // Calculate the number of lines we want to render based on the view width.
         let targetSamplesCount = Int((width + minSampleSpacing) / (sampleWidth + minSampleSpacing))
 
-        let amplitudes: [Float]
-        if let audioWaveform {
-            amplitudes = audioWaveform.normalizedLevelsToDisplay(sampleCount: targetSamplesCount)
-        } else if cachedAudioDuration != nil, waveformWaitingTask == nil {
-            // Generate a uniform audio waveform for the duration.
-            amplitudes = Array(repeating: 0.5, count: targetSamplesCount)
-        } else {
+        guard let audioWaveform else {
+            // Still waiting; audio with no waveform at all isn't shown here.
             resetContents(showLoadingAnimation: true)
             return
         }
+        let amplitudes = audioWaveform.normalizedLevelsToDisplay(sampleCount: targetSamplesCount)
 
         loadingAnimation.stop()
         loadingAnimation.isHidden = true
@@ -222,9 +209,13 @@ class AudioWaveformProgressView: UIView {
         waveformWaitingTask = Task<Void, Never> { [weak self] in
             let waveform = try? await audioWaveformTask.value
             self?.waveformWaitingTask = nil
-            if !Task.isCancelled {
-                self?.audioWaveform = waveform
-                self?.redrawSamples()
+            guard !Task.isCancelled else { return }
+
+            self?.audioWaveform = waveform
+            self?.redrawSamples()
+
+            if waveform == nil {
+                self?.waveformDidFailToLoad?()
             }
         }
     }
