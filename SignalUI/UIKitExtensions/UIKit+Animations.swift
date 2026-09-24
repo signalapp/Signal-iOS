@@ -103,67 +103,149 @@ public extension UIView {
         )
     }
 
+    /// Shows or hides the view by fading it, using a 0.2 s animation if `animated` is true.
+    ///
+    /// See ``setIsHidden(_:withAnimationDuration:completion:)``.
     func setIsHidden(_ isHidden: Bool, animated: Bool, completion: ((Bool) -> Void)? = nil) {
         setIsHidden(isHidden, withAnimationDuration: animated ? 0.2 : 0, completion: completion)
     }
 
+    /// Shows or hides the view by fading its `alpha`.
+    ///
+    /// A show sets `isHidden` to false right away and fades `alpha` in to 1. A hide fades `alpha` out,
+    /// and only once the animation finishes sets `isHidden` to true and restores `alpha` to 1.
+    ///
+    /// Changes may overlap: the most recent one wins, including over pending changes made with
+    /// ``setIsHidden(_:using:)``. A change with a `duration` of 0 is applied immediately.
+    ///
+    /// - Parameter completion: Called when the change has been applied. Called synchronously if
+    ///   the view needed no animation, for example because it was already in the requested state.
     func setIsHidden(_ isHidden: Bool, withAnimationDuration duration: TimeInterval, completion: ((Bool) -> Void)? = nil) {
-        guard duration > 0, isHidden != self.isHidden else {
-            self.isHidden = isHidden
+        guard duration > 0, let change = beginAnimatedIsHiddenChange(isHidden) else {
+            setIsHiddenWithoutAnimation(isHidden)
             completion?(true)
             return
-        }
-
-        if self.isHidden, alpha > 0 {
-            UIView.performWithoutAnimation {
-                self.alpha = 0
-                self.isHidden = false
-            }
         }
 
         UIView.animate(
             withDuration: duration,
             animations: {
-                self.alpha = isHidden ? 0 : 1
+                self.animateIsHiddenChange(change)
             },
             completion: { finished in
-                guard finished else {
-                    completion?(false)
-                    return
-                }
-                if isHidden {
-                    self.alpha = 1
-                    self.isHidden = true
-                }
-                completion?(true)
+                self.completeIsHiddenChange(change, finished: finished)
+                completion?(finished)
             },
         )
     }
 
+    /// Shows or hides the view by fading its `alpha` using `animator`.
+    ///
+    /// A show sets `isHidden` to false right away and fades `alpha` in to 1. A hide fades `alpha` out,
+    /// and only once `animator` finishes at its end sets `isHidden` to true and restores `alpha` to 1.
+    ///
+    /// Changes may overlap: the most recent one wins, even if the animator of an earlier change
+    /// hasn't started yet, or is stopped or reversed.
+    ///
+    /// - Parameter animator: The animator to add the fade to, which the caller must start.
+    ///   Pass nil to apply the change immediately.
     func setIsHidden(_ isHidden: Bool, using animator: UIViewPropertyAnimator?) {
-        guard self.isHidden != isHidden else {
-            return
-        }
-        guard let animator else {
-            self.isHidden = isHidden
+        guard let animator, let change = beginAnimatedIsHiddenChange(isHidden) else {
+            setIsHiddenWithoutAnimation(isHidden)
             return
         }
 
-        if self.isHidden, alpha > 0 {
+        animator.addAnimations {
+            self.animateIsHiddenChange(change)
+        }
+        animator.addCompletion { position in
+            self.completeIsHiddenChange(change, finished: position == .end)
+        }
+    }
+}
+
+// MARK: - Animated isHidden changes
+
+/// An animated change of `UIView.isHidden`, used to tell whether it has been superseded.
+private final class IsHiddenChange {
+    let isHidden: Bool
+
+    init(isHidden: Bool) {
+        self.isHidden = isHidden
+    }
+}
+
+private extension UIView {
+
+    static var pendingIsHiddenChangeKey: UInt8 = 0
+
+    /// The most recent animated change of `isHidden`, until it completes.
+    ///
+    /// `isHidden` is only updated once an animated hide completes, so it can't be used
+    /// to tell which state the view is heading to while an animation is in flight.
+    var pendingIsHiddenChange: IsHiddenChange? {
+        get {
+            objc_getAssociatedObject(self, &UIView.pendingIsHiddenChangeKey) as? IsHiddenChange
+        }
+        set {
+            objc_setAssociatedObject(self, &UIView.pendingIsHiddenChangeKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+
+    /// Makes `isHidden` the view's pending change and prepares the view to animate to it.
+    ///
+    /// - Returns: The new pending change, or nil if the view is already in that state and no
+    ///   other change is pending, in which case there is nothing to animate.
+    func beginAnimatedIsHiddenChange(_ isHidden: Bool) -> IsHiddenChange? {
+        // A pending change is superseded even if it's heading to the same state:
+        // its animator might never finish at its end.
+        guard pendingIsHiddenChange != nil || self.isHidden != isHidden else {
+            return nil
+        }
+
+        let change = IsHiddenChange(isHidden: isHidden)
+        pendingIsHiddenChange = change
+
+        if !isHidden, self.isHidden {
             UIView.performWithoutAnimation {
                 self.alpha = 0
                 self.isHidden = false
             }
         }
-        animator.addAnimations {
-            self.alpha = isHidden ? 0 : 1
-        }
-        animator.addCompletion { position in
-            guard isHidden, position == .end else { return }
+        return change
+    }
 
-            self.alpha = 1
-            self.isHidden = true
+    /// Called from the animation block of `change`.
+    func animateIsHiddenChange(_ change: IsHiddenChange) {
+        // Animators run their animation blocks when they start,
+        // which might be after a later change has been made.
+        guard pendingIsHiddenChange === change else {
+            return
         }
+        alpha = change.isHidden ? 0 : 1
+    }
+
+    /// Called from the completion handler of `change`.
+    func completeIsHiddenChange(_ change: IsHiddenChange, finished: Bool) {
+        guard pendingIsHiddenChange === change else {
+            return
+        }
+        pendingIsHiddenChange = nil
+
+        guard finished, change.isHidden else {
+            return
+        }
+        alpha = 1
+        isHidden = true
+    }
+
+    /// Applies `isHidden` immediately, superseding any pending change.
+    func setIsHiddenWithoutAnimation(_ isHidden: Bool) {
+        if pendingIsHiddenChange != nil {
+            pendingIsHiddenChange = nil
+            alpha = 1
+        }
+        self.isHidden = isHidden
     }
 }
 
