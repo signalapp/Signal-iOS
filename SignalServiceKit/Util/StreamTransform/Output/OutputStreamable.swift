@@ -21,7 +21,7 @@ extension OutputStream: OutputStreamable {
             return self.write(bytes, maxLength: data.count)
         }
         if writeLen != data.count {
-            owsFailDebug("The amount written doesn't match amount that was attempted.")
+            owsFailDebug("The amount written doesn't match amount that was attempted, streamError: \(String(describing: self.streamError?.shortDescription))")
         }
     }
 }
