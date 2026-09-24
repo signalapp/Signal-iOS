@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Combine
 import Foundation
 import MessageUI
 public import SignalServiceKit
@@ -38,20 +37,8 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
 
     // MARK: Configuration
 
-    private var viewModel: RecipientPickerViewModel?
-
-    private var loadedData: RecipientPickerViewModel.LoadedData? {
-        guard let viewModel, case .loaded(let loadedData) = viewModel.state else { return nil }
-        return loadedData
-    }
-
     public var allowsAddByAddress = true
-    public var shouldHideLocalRecipient = true {
-        didSet {
-            owsAssertDebug(!isViewLoaded, "shouldHideLocalRecipient must be set before the view loads")
-        }
-    }
-
+    public var shouldHideLocalRecipient = true
     public var selectionMode = SelectionMode.default
     public var groupsToShow = GroupsToShow.groupsThatUserIsMemberOfWhenSearching
     public var shouldShowInvites = false
@@ -59,6 +46,11 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
     public var shouldShowNewGroup = false
     public var findByPhoneNumberButtonTitle: String?
     public var searchBarPlaceholderTitle: String?
+
+    // MARK: Signal Connections
+
+    private var signalConnections = [ComparableDisplayName]()
+    private var signalConnectionAddresses = Set<SignalServiceAddress>()
 
     // MARK: Picker
 
@@ -70,18 +62,13 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
 
     // MARK: UIViewController
 
-    private var cancellables: Set<AnyCancellable> = []
-
     override public func viewDidLoad() {
         super.viewDidLoad()
 
         title = OWSLocalizedString("MESSAGE_COMPOSEVIEW_TITLE", comment: "")
 
-        let viewModel = RecipientPickerViewModel(
-            shouldHideLocalRecipient: shouldHideLocalRecipient,
-        )
-        self.viewModel = viewModel
-        viewModel.loadData()
+        updateSignalConnections()
+        SUIEnvironment.shared.contactsViewHelperRef.addObserver(self)
 
         let navigationItem = (parent ?? self).navigationItem
         navigationItem.searchController = searchController
@@ -112,13 +99,10 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
             for: .valueChanged,
         )
         tableView.refreshControl = refreshControl
-        applyTheme()
 
-        viewModel.statePublisher.sink { [weak self] _ in
-            guard let self else { return }
-            self.showContactAppropriateViews()
-            self.updateTableContents()
-        }.store(in: &cancellables)
+        updateTableContents()
+
+        applyTheme()
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -230,8 +214,11 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
     private var isNoContactsModeActive = false {
         didSet {
             guard oldValue != isNoContactsModeActive else { return }
+
             tableViewController.view.isHidden = isNoContactsModeActive
             noSignalContactsView.isHidden = !isNoContactsModeActive
+
+            updateTableContents()
         }
     }
 
@@ -273,6 +260,36 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         )
     }()
 
+    // MARK: - Fetching Signal Connections
+
+    private func updateSignalConnections() {
+        SSKEnvironment.shared.databaseStorageRef.read { tx in
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+            // All Signal Connections that we believe are registered. In theory, this
+            // should include your system contacts, the people you chat with, and Note to Self.
+            let whitelistedAddresses = Set(SSKEnvironment.shared.profileManagerRef.allWhitelistedRegisteredAddresses(tx: tx))
+            let blockedAddresses = SSKEnvironment.shared.blockingManagerRef.blockedAddresses(transaction: tx)
+            let hiddenAddresses = DependenciesBridge.shared.recipientHidingManager.hiddenAddresses(tx: tx)
+
+            var resolvedAddresses = Set(whitelistedAddresses).subtracting(blockedAddresses).subtracting(hiddenAddresses)
+
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
+                Logger.error("No local identifiers")
+                return
+            }
+
+            if !shouldHideLocalRecipient {
+                resolvedAddresses.insert(localIdentifiers.aciAddress)
+            } else {
+                resolvedAddresses.remove(localIdentifiers.aciAddress)
+            }
+
+            signalConnections = SSKEnvironment.shared.contactManagerImplRef.sortedComparableNames(for: resolvedAddresses, tx: tx).filter { $0.displayName.hasKnownValue }
+            signalConnectionAddresses = Set(signalConnections.lazy.map { $0.address })
+        }
+    }
+
     // MARK: Table Contents
 
     public func reloadContent() {
@@ -282,7 +299,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
     private func updateTableContents() {
         AssertIsOnMainThread()
 
-        guard let loadedData else {
+        guard !isNoContactsModeActive else {
             tableViewController.contents = OWSTableContents()
             return
         }
@@ -356,7 +373,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         if !pickedRecipients.isEmpty, !isSearching {
             let sectionRecipients = pickedRecipients.filter { recipient in
                 guard let recipientAddress = recipient.address else { return false }
-                if loadedData.contains(address: recipientAddress) {
+                if signalConnectionAddresses.contains(recipientAddress) {
                     return false
                 }
                 return true
@@ -457,6 +474,15 @@ extension RecipientPickerViewController: OWSTableViewControllerDelegate {
 extension RecipientPickerViewController: UISearchResultsUpdating {
     public func updateSearchResults(for searchController: UISearchController) {
         searchTextDidChange()
+    }
+}
+
+extension RecipientPickerViewController: ContactsViewHelperObserver {
+
+    public func contactsViewHelperDidUpdateContacts() {
+        updateSignalConnections()
+        updateTableContents()
+        showContactAppropriateViews()
     }
 }
 
@@ -681,8 +707,6 @@ extension RecipientPickerViewController {
     /// prevented Signal from accessing their contacts, we don't show the
     /// special UX and instead allow the banner to be visible.
     private func shouldNoContactsModeBeActive() -> Bool {
-        guard let loadedData else { return false }
-
         switch SSKEnvironment.shared.contactManagerImplRef.syncingAuthorization {
         case .denied, .restricted:
             // Return false so `contactAccessReminderSection` is invoked.
@@ -697,7 +721,7 @@ extension RecipientPickerViewController {
             // Return false so `noContactsTableSection` can show a spinner.
             return false
         case .authorized, .notAllowed:
-            if !loadedData.recipients.isEmpty {
+            if !signalConnections.isEmpty {
                 // Return false if we have any contacts; we want to show them!
                 return false
             }
@@ -874,11 +898,7 @@ extension RecipientPickerViewController {
 
 extension RecipientPickerViewController {
     private func contactsSection() -> [OWSTableSection] {
-        guard let loadedData else { return [] }
-
-        let recipients = loadedData.recipients
-
-        guard !recipients.isEmpty else {
+        guard !signalConnections.isEmpty else {
             return [noContactsTableSection()]
         }
 
@@ -889,33 +909,33 @@ extension RecipientPickerViewController {
                     "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
                     comment: "Table section header for contact listing when composing a new message",
                 ),
-                items: recipients.map { item(forRecipient: $0.pickedRecipient) },
+                items: signalConnections.map { item(forRecipient: PickedRecipient.for(address: $0.address)) },
             )]
         }
 
-        var collatedRecipients = collation.sectionTitles.map { _ in return [RecipientPickerViewModel.Recipient]() }
-        for recipient in recipients {
+        var collatedSignalConnections = collation.sectionTitles.map { _ in return [ComparableDisplayName]() }
+        for signalConnection in signalConnections {
             let section = collation.section(
-                for: CollatableComparableDisplayName(recipient.comparableDisplayName),
+                for: CollatableComparableDisplayName(signalConnection),
                 collationStringSelector: #selector(CollatableComparableDisplayName.collationString),
             )
             guard section >= 0 else {
                 continue
             }
-            collatedRecipients[section].append(recipient)
+            collatedSignalConnections[section].append(signalConnection)
         }
 
-        let contactSections = collatedRecipients.enumerated().map { index, sectionRecipients in
+        let contactSections = collatedSignalConnections.enumerated().map { index, signalConnections in
             // Don't show empty sections.
             // To accomplish this we add a section with a blank title rather than omitting the section altogether,
             // in order for section indexes to match up correctly
-            if sectionRecipients.isEmpty {
+            if signalConnections.isEmpty {
                 return OWSTableSection()
             }
 
             return OWSTableSection(
                 title: collation.sectionTitles[index].uppercased(),
-                items: sectionRecipients.map { item(forRecipient: $0.pickedRecipient) },
+                items: signalConnections.map { item(forRecipient: PickedRecipient.for(address: $0.address)) },
             )
         }
 

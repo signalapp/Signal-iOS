@@ -883,7 +883,6 @@
 		50BF510A2BB2031600C2C309 /* LinkPreviewFetchStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5003BB40299E1FD10037159B /* LinkPreviewFetchStateTest.swift */; };
 		50BF510C2BB2032500C2C309 /* MobileCoinHelperSDKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB78B8272C51E800DA0D04 /* MobileCoinHelperSDKTest.swift */; };
 		50BF510E2BB2033800C2C309 /* RecipientPickerViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509913BD2913274100F34F8E /* RecipientPickerViewControllerTest.swift */; };
-		B0AD302792B460C279F2579E /* RecipientPickerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFECE43A156F07034673DD1 /* RecipientPickerViewModelTests.swift */; };
 		50BF51102BB2035400C2C309 /* UIStackView+SignalUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C45D9329CB93E200B2CD2D /* UIStackView+SignalUITest.swift */; };
 		50C0203C2CA4A61E00BDC4EF /* ConcurrentTaskQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C0203B2CA4A61E00BDC4EF /* ConcurrentTaskQueue.swift */; };
 		50C0203E2CA4A7A500BDC4EF /* Retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C0203D2CA4A7A500BDC4EF /* Retry.swift */; };
@@ -957,7 +956,6 @@
 		55BD355C2F16DAC0008E989C /* input_video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5531BE0E2F15B97F002AF66F /* input_video.mp4 */; };
 		5AA002E62CA24566002D1CC2 /* SessionStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA002E52CA2455F002D1CC2 /* SessionStoreTest.swift */; };
 		616577F953D77424E32C7438 /* Pods_SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */; };
-		632E7593305328FF00315CF1 /* RecipientPickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 632E7592305328FB00315CF1 /* RecipientPickerViewModel.swift */; };
 		63AB899C30505F3D0065AEF3 /* SelectContactForSharingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AB899B30505F350065AEF3 /* SelectContactForSharingViewController.swift */; };
 		6600BB1A2BA3A0930005A035 /* LinkPreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB192BA3A0930005A035 /* LinkPreviewManager.swift */; };
 		6600BB212BA3BC540005A035 /* LinkPreviewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB202BA3BC540005A035 /* LinkPreviewHelper.swift */; };
@@ -5219,7 +5217,6 @@
 		5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSyncAttachmentBuilder.swift; sourceTree = "<group>"; };
 		5096BE682AF37A9900668F9F /* ContactOutputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactOutputStream.swift; sourceTree = "<group>"; };
 		509913BD2913274100F34F8E /* RecipientPickerViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerViewControllerTest.swift; sourceTree = "<group>"; };
-		7CFECE43A156F07034673DD1 /* RecipientPickerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerViewModelTests.swift; sourceTree = "<group>"; };
 		509A8DC12E25817E0024BF14 /* ConnectionLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionLock.swift; sourceTree = "<group>"; };
 		509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+SSKTest.swift"; sourceTree = "<group>"; };
 		50A0B3CF301015050053607C /* HydratedMessageBodyTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydratedMessageBodyTest.swift; sourceTree = "<group>"; };
@@ -5334,7 +5331,6 @@
 		5AA002E52CA2455F002D1CC2 /* SessionStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStoreTest.swift; sourceTree = "<group>"; };
 		5D6C4583F668E9D733E59B9B /* Pods-SignalServiceKitTests.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKitTests.testable release.xcconfig"; path = "Target Support Files/Pods-SignalServiceKitTests/Pods-SignalServiceKitTests.testable release.xcconfig"; sourceTree = "<group>"; };
 		5F85041386A219C9710EAB41 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
-		632E7592305328FB00315CF1 /* RecipientPickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerViewModel.swift; sourceTree = "<group>"; };
 		63AB899B30505F350065AEF3 /* SelectContactForSharingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectContactForSharingViewController.swift; sourceTree = "<group>"; };
 		65703441A3D2C7FE670E65ED /* Pods-SignalServiceKit.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.profiling.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.profiling.xcconfig"; sourceTree = "<group>"; };
 		6600BB192BA3A0930005A035 /* LinkPreviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewManager.swift; sourceTree = "<group>"; };
@@ -11788,8 +11784,6 @@
 				8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */,
 				F9B652BB28D514E6006914CA /* RecipientPickerViewController.swift */,
 				509913BD2913274100F34F8E /* RecipientPickerViewControllerTest.swift */,
-				632E7592305328FB00315CF1 /* RecipientPickerViewModel.swift */,
-				7CFECE43A156F07034673DD1 /* RecipientPickerViewModelTests.swift */,
 				34ACA7F42733183000E47AD4 /* RegistrationValues.swift */,
 				34A955A7271B510500B05242 /* ThreadViewModel.swift */,
 				50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */,
@@ -18332,7 +18326,6 @@
 				506A92512900888900A2EFC2 /* RecipientPickerContainerViewController.swift in Sources */,
 				88B986F528807D6F00F8C74D /* RecipientPickerDelegate.swift in Sources */,
 				F9B652BC28D514E6006914CA /* RecipientPickerViewController.swift in Sources */,
-				632E7593305328FF00315CF1 /* RecipientPickerViewModel.swift in Sources */,
 				34ACA7F62733183000E47AD4 /* RegistrationValues.swift in Sources */,
 				88B986FA28807EEA00F8C74D /* ReminderView.swift in Sources */,
 				7628DDBF2807505D009AA53D /* RotationControl.swift in Sources */,
@@ -18438,7 +18431,6 @@
 				50BF510C2BB2032500C2C309 /* MobileCoinHelperSDKTest.swift in Sources */,
 				D9C5634F2EB438500001626A /* OWSByteCountFormatStyleTest.swift in Sources */,
 				50BF510E2BB2033800C2C309 /* RecipientPickerViewControllerTest.swift in Sources */,
-				B0AD302792B460C279F2579E /* RecipientPickerViewModelTests.swift in Sources */,
 				50BF51102BB2035400C2C309 /* UIStackView+SignalUITest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
