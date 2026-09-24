@@ -72,6 +72,28 @@ class ContactShareAddress: ContactShareFieldBase<OWSContactAddress> {
     }
 }
 
+class OWSContactNote: OWSContactField {
+
+    let note: String
+
+    init(note: String) {
+        self.note = note
+    }
+
+    var isValid: Bool { true }
+
+    var localizedLabel: String { ContactFieldViewHelper.noteFieldLabel }
+}
+
+class ContactShareNoteField: ContactShareFieldBase<OWSContactNote> {
+
+    override func applyToContact(contact: ContactShareDraft) {
+        owsPrecondition(isIncluded)
+
+        contact.signalNote = value.note
+    }
+}
+
 // Stub class so that avatars conform to OWSContactField.
 class OWSContactAvatar: OWSContactField {
 

@@ -103,6 +103,9 @@ class ContactShareManagerImpl: ContactShareManager {
         if BuildFlags.accountIdentifierSharing, let aciBinary = contactProto.aciBinary {
             contact.aci = try? Aci.parseFrom(serviceIdBinary: aciBinary)
         }
+        if BuildFlags.accountIdentifierSharing {
+            contact.note = contactProto.note?.strippedOrNil
+        }
 
         return ValidatedContactShareProto(
             contact: contact,
@@ -148,6 +151,7 @@ class ContactShareManagerImpl: ContactShareManager {
             emails: draft.emails,
             phoneNumbers: draft.phoneNumbers,
             aci: draft.aci,
+            note: draft.signalNote,
             avatar: avatarDataSource,
         )
     }
@@ -162,6 +166,7 @@ class ContactShareManagerImpl: ContactShareManager {
                 emails: draft.emails,
                 addresses: draft.addresses,
                 aci: draft.aci,
+                note: draft.note,
             ),
             avatarDataSource: draft.avatar,
         )
@@ -200,6 +205,9 @@ class ContactShareManagerImpl: ContactShareManager {
 
         if BuildFlags.accountIdentifierSharing, let aci = contactShare.aci {
             contactBuilder.setAciBinary(aci.serviceIdBinary)
+        }
+        if BuildFlags.accountIdentifierSharing, let note = contactShare.note?.strippedOrNil {
+            contactBuilder.setNote(note)
         }
 
         contactBuilder.setNumber(contactShare.phoneNumbers.compactMap({ $0.proto() }))

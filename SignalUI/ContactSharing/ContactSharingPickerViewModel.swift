@@ -23,6 +23,7 @@ final class ContactSharingPickerViewModel {
     private let contactsSharingAuthorizationProvider: () -> ContactAuthorizationForSharing
     private let db: any DB
     private let displayNamesForRecipientsProvider: ([SignalRecipient], DBReadTransaction) -> [DisplayName]
+    private let nicknameRecordStore: any NicknameRecordStore
     private let phoneNumberUtil: PhoneNumberUtil
     private let phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher
     private let profileManager: any ProfileManager
@@ -91,6 +92,7 @@ final class ContactSharingPickerViewModel {
         contactsSharingAuthorizationProvider: (() -> ContactAuthorizationForSharing)? = nil,
         db: any DB = SSKEnvironment.shared.databaseStorageRef,
         displayNamesForRecipientsProvider: (([SignalRecipient], DBReadTransaction) -> [DisplayName])? = nil,
+        nicknameRecordStore: any NicknameRecordStore = NicknameRecordStoreImpl(),
         phoneNumberUtil: PhoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef,
         phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher = DependenciesBridge.shared.phoneNumberVisibilityFetcher,
         profileManager: any ProfileManager = SSKEnvironment.shared.profileManagerRef,
@@ -115,6 +117,7 @@ final class ContactSharingPickerViewModel {
         self.displayNamesForRecipientsProvider = displayNamesForRecipientsProvider ?? { recipients, tx in
             contactManager.displayNames(for: recipients.map(\.address), tx: tx)
         }
+        self.nicknameRecordStore = nicknameRecordStore
         self.phoneNumberUtil = phoneNumberUtil
         self.phoneNumberVisibilityFetcher = phoneNumberVisibilityFetcher
         self.profileManager = profileManager
@@ -340,6 +343,9 @@ final class ContactSharingPickerViewModel {
                 draft = contactShareDraft(for: systemContact, tx: tx)
             }
             draft.aci = row.shareableAci(recipientDatabaseTable: recipientDatabaseTable, transaction: tx)
+            if draft.aci != nil, let recipientRowId = row.signalContact?.recipient.id {
+                draft.signalNote = nicknameRecordStore.fetch(recipientRowID: recipientRowId, tx: tx)?.note?.strippedOrNil
+            }
             return draft
         }
     }
@@ -380,6 +386,7 @@ final class ContactSharingPickerViewModel {
             emails: [],
             phoneNumbers: phoneNumbers,
             aci: nil,
+            signalNote: nil,
             existingAvatarAttachment: nil,
             avatarImageData: userProfile?.loadAvatarData(),
         )
@@ -786,6 +793,7 @@ final class ContactSharingPickerViewModel {
                     )
                 },
                 aci: nil,
+                signalNote: nil,
                 existingAvatarAttachment: nil,
                 avatarImageData: nil,
             )

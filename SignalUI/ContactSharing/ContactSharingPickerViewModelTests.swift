@@ -16,6 +16,7 @@ import UIKit
 struct ContactSharingPickerViewModelTests {
 
     private let db = InMemoryDB()
+    private let nicknameRecordStore = NicknameRecordStoreImpl()
     private let phoneNumberVisibilityFetcher = MockPhoneNumberVisibilityFetcher()
     private let providers = StubbedProviders()
     private let recipientDatabaseTable = RecipientDatabaseTable()
@@ -694,6 +695,19 @@ struct ContactSharingPickerViewModelTests {
         #expect(shareableAci(of: row) == nil)
     }
 
+    // MARK: - Sharing the Note
+
+    @Test
+    func testASignalRowSharesTheNote() async throws {
+        let recipient = addContact(named: "Alice")
+        addNickname(for: recipient, note: "Met at the conference")
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        #expect(try await contactShareDraft(forFirstRowOf: viewModel).signalNote == "Met at the conference")
+    }
+
     // MARK: - Helpers
 
     private func makeViewModel() -> ContactSharingPickerViewModel {
@@ -707,6 +721,7 @@ struct ContactSharingPickerViewModelTests {
             contactsSharingAuthorizationProvider: { .authorized },
             db: db,
             displayNamesForRecipientsProvider: { recipients, _ in providers.displayNames(for: recipients) },
+            nicknameRecordStore: nicknameRecordStore,
             phoneNumberUtil: PhoneNumberUtil(),
             phoneNumberVisibilityFetcher: phoneNumberVisibilityFetcher,
             profileManager: OWSFakeProfileManager(),
@@ -773,6 +788,15 @@ struct ContactSharingPickerViewModelTests {
     private func shareableAci(of row: ContactSharingPickerViewModel.Row) -> Aci? {
         db.read { tx in
             row.shareableAci(recipientDatabaseTable: recipientDatabaseTable, transaction: tx)
+        }
+    }
+
+    private func addNickname(for recipient: SignalRecipient, note: String?) {
+        db.write { tx in
+            nicknameRecordStore.insert(
+                NicknameRecord(recipient: recipient, givenName: "Ali", familyName: nil, note: note),
+                tx: tx,
+            )
         }
     }
 

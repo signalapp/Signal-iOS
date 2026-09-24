@@ -35,6 +35,14 @@ public class ContactFieldViewHelper {
         )
     }
 
+    public static var noteFieldLabel: String {
+        OWSLocalizedString("CONTACT_FIELD_NOTES", comment: "Label for the 'notes' field of a contact.")
+    }
+
+    public class func contactFieldView(forNote note: String) -> UIView {
+        return simpleFieldView(name: noteFieldLabel, value: note, isMultiline: true)
+    }
+
     public class func contactFieldView(forPhoneNumber phoneNumber: OWSContactPhoneNumber) -> UIView {
         let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(e164: phoneNumber.phoneNumber)
         return simpleFieldView(name: phoneNumber.localizedLabel, value: formattedPhoneNumber)
@@ -44,7 +52,7 @@ public class ContactFieldViewHelper {
         return simpleFieldView(name: email.localizedLabel, value: email.email)
     }
 
-    private class func simpleFieldView(name: String?, value: String?) -> UIView {
+    private class func simpleFieldView(name: String?, value: String?, isMultiline: Bool = false) -> UIView {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.alignment = .leading
@@ -63,7 +71,12 @@ public class ContactFieldViewHelper {
         valueLabel.text = value
         valueLabel.font = .dynamicTypeBody
         valueLabel.textColor = Theme.primaryTextColor
-        valueLabel.lineBreakMode = .byTruncatingTail
+        if isMultiline {
+            valueLabel.lineBreakMode = .byWordWrapping
+            valueLabel.numberOfLines = 0
+        } else {
+            valueLabel.lineBreakMode = .byTruncatingTail
+        }
         stackView.addArrangedSubview(valueLabel)
 
         return stackView

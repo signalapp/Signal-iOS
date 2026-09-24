@@ -31,4 +31,20 @@ struct OWSContactTests {
     func contactWithNothingToShareIsInvalid() {
         #expect(!isValid())
     }
+
+    @Test
+    func noteSurvivesArchiving() throws {
+        let contact = OWSContact(
+            name: OWSContactName(givenName: "Alice"),
+            phoneNumbers: [],
+            emails: [],
+            addresses: [],
+            aci: .randomForTesting(),
+            note: "Met at the conference",
+        )
+        let data = try NSKeyedArchiver.archivedData(withRootObject: contact, requiringSecureCoding: true)
+        let decoded = try #require(try NSKeyedUnarchiver.unarchivedObject(ofClass: OWSContact.self, from: data))
+        #expect(decoded.note == "Met at the conference")
+        #expect(decoded == contact)
+    }
 }

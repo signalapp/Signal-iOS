@@ -260,6 +260,16 @@ class ContactViewController: OWSTableViewController2 {
                 },
             )
         }))
+        if let note = contactShare.note {
+            infoSection.add(OWSTableItem(
+                customCellBlock: {
+                    return Self.buildNoteCell(note)
+                },
+                actionBlock: { [weak self] in
+                    self?.didPressNote(note: note)
+                },
+            ))
+        }
         sections.append(infoSection)
 
         contents = OWSTableContents(sections: sections)
@@ -349,6 +359,11 @@ class ContactViewController: OWSTableViewController2 {
 
     private class func buildAddressCell(_ address: OWSContactAddress) -> UITableViewCell {
         let fieldContentView = ContactFieldViewHelper.contactFieldView(forAddress: address)
+        return buildTableViewCellWith(fieldContentView)
+    }
+
+    private class func buildNoteCell(_ note: String) -> UITableViewCell {
+        let fieldContentView = ContactFieldViewHelper.contactFieldView(forNote: note)
         return buildTableViewCellWith(fieldContentView)
     }
 }
@@ -485,6 +500,21 @@ extension ContactViewController {
             return
         }
         UIApplication.shared.open(url as URL, options: [:])
+    }
+
+    private func didPressNote(note: String) {
+        let actionSheet = ActionSheetController(title: nil, message: nil)
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "EDIT_ITEM_COPY_ACTION",
+                comment: "Short name for edit menu item to copy contents of media message.",
+            ),
+            style: .default,
+        ) { _ in
+            UIPasteboard.general.string = note
+        })
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        presentActionSheet(actionSheet)
     }
 
     private func didPressAddress(address: OWSContactAddress) {

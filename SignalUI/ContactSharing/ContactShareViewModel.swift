@@ -141,6 +141,10 @@ public class ContactShareViewModel: Equatable {
         }
     }
 
+    public var note: String? {
+        return dbRecord.note
+    }
+
     public var displayName: String {
         return dbRecord.name.displayName
     }
@@ -152,6 +156,7 @@ public class ContactShareViewModel: Equatable {
             emails: emails,
             phoneNumbers: phoneNumbers,
             aci: dbRecord.aci,
+            signalNote: dbRecord.note,
             existingAvatarAttachment: existingAvatarAttachment,
             avatarImageData: avatarImageData,
         )

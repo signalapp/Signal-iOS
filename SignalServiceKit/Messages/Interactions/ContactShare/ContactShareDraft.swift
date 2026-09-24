@@ -13,6 +13,7 @@ public class ContactShareDraft {
     public var emails: [OWSContactEmail]
     public var phoneNumbers: [OWSContactPhoneNumber]
     public var aci: Aci?
+    public var signalNote: String?
     public var existingAvatarAttachment: ReferencedAttachment?
 
     private var cachedAvatarImage: UIImage?
@@ -62,6 +63,7 @@ public class ContactShareDraft {
             emails: cnContact.emailAddresses.map(OWSContactEmail.init(cnLabeledValue:)),
             phoneNumbers: cnContact.phoneNumbers.map(OWSContactPhoneNumber.init(cnLabeledValue:)),
             aci: nil,
+            signalNote: nil,
             existingAvatarAttachment: nil,
             avatarImageData: avatarData,
         )
@@ -108,6 +110,7 @@ public class ContactShareDraft {
         emails: [OWSContactEmail],
         phoneNumbers: [OWSContactPhoneNumber],
         aci: Aci?,
+        signalNote: String?,
         existingAvatarAttachment: ReferencedAttachment?,
         avatarImageData: Data?,
     ) {
@@ -116,6 +119,7 @@ public class ContactShareDraft {
         self.emails = emails
         self.phoneNumbers = phoneNumbers
         self.aci = aci
+        self.signalNote = signalNote
         self.existingAvatarAttachment = existingAvatarAttachment
         self.avatarImageData = avatarImageData
     }
@@ -128,6 +132,7 @@ public class ContactShareDraft {
             emails: [],
             phoneNumbers: [],
             aci: aci,
+            signalNote: nil,
             existingAvatarAttachment: nil,
             avatarImageData: nil,
         )
@@ -155,6 +160,7 @@ public class ContactShareDraft {
         public let emails: [OWSContactEmail]
         public let phoneNumbers: [OWSContactPhoneNumber]
         public let aci: Aci?
+        public let note: String?
         public let avatar: AttachmentDataSource?
     }
 }

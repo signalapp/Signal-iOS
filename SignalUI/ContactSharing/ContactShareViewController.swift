@@ -48,6 +48,11 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
         ))
     }()
 
+    private lazy var noteField: ContactShareField? = {
+        guard let note = contactShareDraft.signalNote?.strippedOrNil else { return nil }
+        return ContactShareNoteField(OWSContactNote(note: note), includedByDefault: false)
+    }()
+
     private lazy var contactShareFields: [ContactShareField] = {
         var fields = [ContactShareField]()
 
@@ -69,6 +74,10 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
             if field.isIncluded {
                 field.applyToContact(contact: result)
             }
+        }
+
+        if let noteField, noteField.isIncluded {
+            noteField.applyToContact(contact: result)
         }
 
         return result
@@ -185,6 +194,19 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
                 },
             )
         }
+
+        // Note
+        if let noteField {
+            tableItems.append(OWSTableItem(
+                customCellBlock: {
+                    return ContactShareFieldCell(field: noteField)
+                },
+                actionBlock: { [weak self] in
+                    self?.toggleSelection(for: noteField)
+                },
+            ))
+        }
+
         contents = OWSTableContents(sections: [OWSTableSection(items: tableItems)])
     }
 
@@ -265,6 +287,9 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
 
                 case let addressField as ContactShareAddress:
                     return ContactFieldViewHelper.contactFieldView(forAddress: addressField.value)
+
+                case let noteField as ContactShareNoteField:
+                    return ContactFieldViewHelper.contactFieldView(forNote: noteField.value.note)
 
                 default:
                     owsFailDebug("Invalid field")
