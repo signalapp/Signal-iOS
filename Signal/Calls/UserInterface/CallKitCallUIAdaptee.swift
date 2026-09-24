@@ -435,6 +435,11 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
             callService.joinGroupCallIfNecessary(call, groupCall: groupThreadCall)
             action.fulfill()
         case .individual(let individualCall):
+            // Explicitly mute to put the mute button in the correct state
+            // if the user has disabled microphone permissions for the app.
+            if individualCall.isMuted {
+                setIsMuted(call: call, isMuted: true)
+            }
             // Explicitly start video to request permissions, if needed.
             // This has the added effect of putting the video mute button in the correct state
             // if the user has disabled camera permissions for the app.
@@ -489,7 +494,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
     @MainActor
     func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
         Logger.info("CallKit: CXSetMutedCallAction")
-        guard nil != callManager.callWithLocalId(action.callUUID) else {
+        guard let call = callManager.callWithLocalId(action.callUUID) else {
             Logger.info("Failing CXSetMutedCallAction for unknown (ended?) call: \(action.callUUID)")
             action.fail()
             return
@@ -497,6 +502,13 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
 
         defer { ignoreFirstUnmuteAfterRemoteAnswer = false }
         guard !ignoreFirstUnmuteAfterRemoteAnswer || action.isMuted else {
+            action.fulfill()
+            return
+        }
+
+        // Do nothing if the state already matches. The call screen applies the
+        // change before requesting the action, so this is a no-op for it.
+        guard call.isOutgoingAudioMuted != action.isMuted else {
             action.fulfill()
             return
         }
