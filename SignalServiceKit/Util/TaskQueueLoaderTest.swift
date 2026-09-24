@@ -697,11 +697,11 @@ public class TaskQueueLoaderTest: XCTestCase {
         func peek(
             count: UInt,
             tx: DBReadTransaction,
-        ) throws -> [MockTaskRecord] {
+        ) -> [MockTaskRecord] {
             return Array(records.get().prefix(Int(count)))
         }
 
-        func removeRecord(recordId: Int, tx: DBWriteTransaction) throws {
+        func removeRecord(recordId: Int, tx: DBWriteTransaction) {
             if let record = records.get().first(where: { $0.id == recordId }) {
                 records.remove(record)
             }
@@ -739,17 +739,17 @@ public class TaskQueueLoaderTest: XCTestCase {
             return await taskRunner(recordId)
         }
 
-        func didSucceed(recordId: Int, tx: DBWriteTransaction) throws {
+        func didSucceed(recordId: Int, tx: DBWriteTransaction) {
             noteRecordPresence(recordId: recordId)
             completedTasks.append(recordId)
         }
 
-        func didFail(recordId: Int, error: Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
+        func didFail(recordId: Int, error: Error, isRetryable: Bool, tx: DBWriteTransaction) {
             noteRecordPresence(recordId: recordId)
             failedTasks.append(recordId)
         }
 
-        func didObsolete(recordId: Int, tx: DBWriteTransaction) throws {
+        func didObsolete(recordId: Int, tx: DBWriteTransaction) {
             noteRecordPresence(recordId: recordId)
             cancelledTasks.append(recordId)
         }

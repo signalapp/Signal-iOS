@@ -821,7 +821,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
             }
         }
 
-        func removeRecord(recordId: TaskRecord.ID, tx: DBWriteTransaction) throws {
+        func removeRecord(recordId: TaskRecord.ID, tx: DBWriteTransaction) {
             // Rather than remove when we finish running a record, we mark it done
             // instead in the success callback, and delete it in failure callbacks.
             // So we do nothing here on purpose.

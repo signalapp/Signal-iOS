@@ -1253,16 +1253,16 @@ public class StickerManager: NSObject {
             }
         }
 
-        func didSucceed(recordId: Record.ID, tx: DBWriteTransaction) throws { }
+        func didSucceed(recordId: Record.ID, tx: DBWriteTransaction) { }
 
         func didFail(
             recordId: Record.ID,
             error: any Error,
             isRetryable: Bool,
             tx: DBWriteTransaction,
-        ) throws { }
+        ) { }
 
-        func didObsolete(recordId: Record.ID, tx: DBWriteTransaction) throws { }
+        func didObsolete(recordId: Record.ID, tx: DBWriteTransaction) { }
     }
 }
 

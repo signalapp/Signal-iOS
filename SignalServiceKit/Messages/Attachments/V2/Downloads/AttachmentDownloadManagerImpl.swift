@@ -712,7 +712,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         func didSucceed(
             recordId: DownloadTaskRecord.ID,
             tx: DBWriteTransaction,
-        ) throws {
+        ) {
             Logger.info("Succeeded download of attachment \(recordId.attachmentId) from \(recordId.sourceType)")
             let downloadKey = Self.downloadKey(recordId: recordId)
             let observers = consumeObservers(downloadKey: downloadKey)
@@ -722,7 +722,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         func didObsolete(
             recordId: DownloadTaskRecord.ID,
             tx: DBWriteTransaction,
-        ) throws {
+        ) {
             Logger.info("Obsoleted download of attachment \(recordId.attachmentId) from \(recordId.sourceType)")
             let downloadKey = Self.downloadKey(recordId: recordId)
             let observers = consumeObservers(downloadKey: downloadKey)

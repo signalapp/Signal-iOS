@@ -227,7 +227,7 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
             return .success
         }
 
-        func didSucceed(recordId: TaskRecord.ID, tx: DBWriteTransaction) throws {
+        func didSucceed(recordId: TaskRecord.ID, tx: DBWriteTransaction) {
             Logger.info("Finished deleting backup attachment \(recordId.rowId)")
 
             // Any time we successfully delete anything on remote cdn, optimistically wipe
@@ -241,11 +241,11 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
             error: any Error,
             isRetryable: Bool,
             tx: DBWriteTransaction,
-        ) throws {
+        ) {
             Logger.warn("Failed deleting backup attachment \(recordId.rowId), isRetryable: \(isRetryable), error: \(error)")
         }
 
-        func didObsolete(recordId: TaskRecord.ID, tx: DBWriteTransaction) throws {
+        func didObsolete(recordId: TaskRecord.ID, tx: DBWriteTransaction) {
             Logger.info("Obsoleted deleting backup attachment \(recordId.rowId)")
         }
     }

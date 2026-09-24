@@ -659,7 +659,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             return .success
         }
 
-        func didSucceed(recordId: TaskRecord.ID, tx: DBWriteTransaction) throws {
+        func didSucceed(recordId: TaskRecord.ID, tx: DBWriteTransaction) {
             logger.info("Finished backing up attachment \(recordId.attachmentRowId), upload \(recordId.rowId), fullsize? \(recordId.isFullsize)")
         }
 
@@ -675,7 +675,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             error: any Error,
             isRetryable: Bool,
             tx: DBWriteTransaction,
-        ) throws {
+        ) {
             logger.warn("Failed backing up attachment \(recordId.attachmentRowId), upload \(recordId.rowId), fullsize? \(recordId.isFullsize), isRetryable: \(isRetryable), error: \(error)")
 
             guard
@@ -703,10 +703,12 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             }
 
             record.minRetryTimestamp = dateProvider().addingTimeInterval(retryDelay).ows_millisecondsSince1970
-            try record.update(tx.database)
+            failIfThrows {
+                try record.update(tx.database)
+            }
         }
 
-        func didObsolete(recordId: TaskRecord.ID, tx: DBWriteTransaction) throws {
+        func didObsolete(recordId: TaskRecord.ID, tx: DBWriteTransaction) {
             logger.warn("Obsoleted backing up attachment \(recordId.attachmentRowId), upload \(recordId.rowId), fullsize? \(recordId.isFullsize)")
         }
 

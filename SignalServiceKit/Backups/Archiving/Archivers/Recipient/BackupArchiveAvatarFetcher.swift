@@ -310,14 +310,14 @@ public class BackupArchiveAvatarFetcher {
             }
         }
 
-        func didSucceed(recordId: Record.IDType, tx: DBWriteTransaction) throws {}
+        func didSucceed(recordId: Record.IDType, tx: DBWriteTransaction) {}
 
         func didFail(
             recordId: Record.IDType,
             error: any Error,
             isRetryable: Bool,
             tx: DBWriteTransaction,
-        ) throws {
+        ) {
             guard
                 isRetryable,
                 var record = store.fetchRecord(recordId: recordId, tx: tx),
@@ -327,10 +327,12 @@ public class BackupArchiveAvatarFetcher {
             }
             record.nextRetryTimestamp = dateProvider().addingTimeInterval(retryDelay).ows_millisecondsSince1970
             record.numRetries += 1
-            try record.update(tx.database)
+            failIfThrows {
+                try record.update(tx.database)
+            }
         }
 
-        func didObsolete(recordId: Record.IDType, tx: DBWriteTransaction) throws {}
+        func didObsolete(recordId: Record.IDType, tx: DBWriteTransaction) {}
     }
 
     // MARK: - TaskStore
@@ -340,11 +342,13 @@ public class BackupArchiveAvatarFetcher {
 
         init() {}
 
-        func peek(count: UInt, tx: DBReadTransaction) throws -> [Record] {
-            return try Record
-                .order(Column(Record.CodingKeys.nextRetryTimestamp).asc)
-                .limit(Int(count))
-                .fetchAll(tx.database)
+        func peek(count: UInt, tx: DBReadTransaction) -> [Record] {
+            return failIfThrows {
+                try Record
+                    .order(Column(Record.CodingKeys.nextRetryTimestamp).asc)
+                    .limit(Int(count))
+                    .fetchAll(tx.database)
+            }
         }
 
         func fetchRecord(recordId: Record.IDType, tx: DBReadTransaction) -> Record? {
@@ -353,8 +357,10 @@ public class BackupArchiveAvatarFetcher {
             }
         }
 
-        func removeRecord(recordId: Record.IDType, tx: DBWriteTransaction) throws {
-            _ = try Record.deleteOne(tx.database, key: recordId)
+        func removeRecord(recordId: Record.IDType, tx: DBWriteTransaction) {
+            failIfThrows {
+                _ = try Record.deleteOne(tx.database, key: recordId)
+            }
         }
     }
 
