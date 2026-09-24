@@ -1,6 +1,6 @@
 # Signal iOS
 
-Signal is a free and open source messaging app for simple private communication with friends.
+Signal is a free, open-source messaging app for simple, private communication with friends.
 
 [![Available on the App Store](https://signal.org/external/images/app-store-download-badge.svg)](https://apps.apple.com/app/id874139669)
 
@@ -33,7 +33,7 @@ The form and manner of this distribution makes it eligible for export under the 
 
 ## License
 
-Copyright 2013-2025 Signal Messenger, LLC
+Copyright 2013-2026 Signal Messenger, LLC
 
 Licensed under the GNU AGPLv3: https://www.gnu.org/licenses/agpl-3.0.html
 
