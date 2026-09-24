@@ -64,12 +64,12 @@ public struct BackupStickerPackDownloadStore {
 
     /// Remove the record from the download queue.
     public func removeRecordFromQueue(
-        record: QueuedBackupStickerPackDownload,
+        recordId: QueuedBackupStickerPackDownload.IDType,
         tx: DBWriteTransaction,
     ) {
         failIfThrows {
             try Record
-                .filter(Column(Record.CodingKeys.id) == record.id)
+                .filter(Column(Record.CodingKeys.id) == recordId)
                 .deleteAll(tx.database)
         }
     }

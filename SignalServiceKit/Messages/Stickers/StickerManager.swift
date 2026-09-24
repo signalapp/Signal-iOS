@@ -1184,8 +1184,13 @@ public class StickerManager: NSObject {
     // MARK: - StickerPack Download Task Queue
 
     private struct StickerPackDownloadTaskRecord: TaskRecord {
-        let id: Int64
-        let record: QueuedBackupStickerPackDownload
+        struct ID: Hashable {
+            let rowId: QueuedBackupStickerPackDownload.IDType
+            let packId: Data
+            let packKey: Data
+        }
+
+        let id: ID
     }
 
     private class StickerPackDownloadTaskRecordStore: TaskRecordStore {
@@ -1198,12 +1203,16 @@ public class StickerManager: NSObject {
 
         func peek(count: UInt, tx: DBReadTransaction) -> [StickerPackDownloadTaskRecord] {
             return store.peek(count: count, tx: tx).map {
-                return .init(id: $0.id!, record: $0)
+                return StickerPackDownloadTaskRecord(id: StickerPackDownloadTaskRecord.ID(
+                    rowId: $0.id!,
+                    packId: $0.packId,
+                    packKey: $0.packKey,
+                ))
             }
         }
 
-        func removeRecord(_ record: StickerPackDownloadTaskRecord, tx: DBWriteTransaction) {
-            store.removeRecordFromQueue(record: record.record, tx: tx)
+        func removeRecord(recordId: StickerPackDownloadTaskRecord.ID, tx: DBWriteTransaction) {
+            store.removeRecordFromQueue(recordId: recordId.rowId, tx: tx)
         }
     }
 
@@ -1216,8 +1225,14 @@ public class StickerManager: NSObject {
             self.store = store
         }
 
-        func runTask(record: Record, loader: TaskQueueLoader<StickerPackDownloadTaskRunner>) async -> TaskRecordResult {
-            let stickerPackInfo = StickerPackInfo(packId: record.record.packId, packKey: record.record.packKey)
+        func runTask(
+            recordId: Record.ID,
+            loader: TaskQueueLoader<StickerPackDownloadTaskRunner>,
+        ) async -> TaskRecordResult {
+            let stickerPackInfo = StickerPackInfo(
+                packId: recordId.packId,
+                packKey: recordId.packKey,
+            )
             do {
                 guard !StickerManager.isStickerPackInstalled(stickerPackInfo: stickerPackInfo) else {
                     return .success
@@ -1238,11 +1253,16 @@ public class StickerManager: NSObject {
             }
         }
 
-        func didSucceed(record: Record, tx: DBWriteTransaction) throws { }
+        func didSucceed(recordId: Record.ID, tx: DBWriteTransaction) throws { }
 
-        func didFail(record: Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws { }
+        func didFail(
+            recordId: Record.ID,
+            error: any Error,
+            isRetryable: Bool,
+            tx: DBWriteTransaction,
+        ) throws { }
 
-        func didObsolete(record: Record, tx: DBWriteTransaction) throws { }
+        func didObsolete(recordId: Record.ID, tx: DBWriteTransaction) throws { }
     }
 }
 

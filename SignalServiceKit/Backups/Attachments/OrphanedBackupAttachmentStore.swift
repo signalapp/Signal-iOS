@@ -118,11 +118,11 @@ public class OrphanedBackupAttachmentStore {
 
     /// Remove the task from the queue. Should be called once deleted on the cdn (or permanently failed).
     public func remove(
-        _ record: OrphanedBackupAttachment,
+        recordId: OrphanedBackupAttachment.IDType,
         tx: DBWriteTransaction,
     ) {
         failIfThrows {
-            try record.delete(tx.database)
+            _ = try OrphanedBackupAttachment.deleteOne(tx.database, key: recordId)
         }
     }
 }

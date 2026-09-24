@@ -105,7 +105,10 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
 
         private let errorCounts = ErrorCounts()
 
-        func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
+        func runTask(
+            recordId: TaskRecord.ID,
+            loader: TaskQueueLoader<TaskRunner>,
+        ) async -> TaskRecordResult {
             let (
                 localAci,
                 registrationState,
@@ -166,9 +169,9 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
 
             let mediaId: Data
 
-            if let recordMediaId = record.record.mediaId {
+            if let recordMediaId = recordId.mediaId {
                 mediaId = recordMediaId
-            } else if let type = record.record.type, let mediaName = record.record.mediaName {
+            } else if let type = recordId.type, let mediaName = recordId.mediaName {
                 let mediaNameToUse: String
                 switch type {
                 case .fullsize:
@@ -202,7 +205,7 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
             do {
                 try await backupRequestManager.deleteMediaObjects(
                     objects: [BackupArchive.Request.DeleteMediaTarget(
-                        cdn: record.record.cdnNumber,
+                        cdn: recordId.cdnNumber,
                         mediaId: mediaId,
                     )],
                     auth: backupAuth,
@@ -210,7 +213,7 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
                 )
             } catch let error {
                 if error.isNetworkFailureOrTimeout {
-                    let errorCount = await errorCounts.updateCount(record.id)
+                    let errorCount = await errorCounts.updateCount(recordId)
                     if error.isRetryable, errorCount < Constants.maxRetryableErrorCount {
                         return .retryableError(error)
                     } else {
@@ -224,8 +227,8 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
             return .success
         }
 
-        func didSucceed(record: Store.Record, tx: DBWriteTransaction) throws {
-            Logger.info("Finished deleting backup attachment \(record.id)")
+        func didSucceed(recordId: TaskRecord.ID, tx: DBWriteTransaction) throws {
+            Logger.info("Finished deleting backup attachment \(recordId.rowId)")
 
             // Any time we successfully delete anything on remote cdn, optimistically wipe
             // the local state saying we've consumed all media tier quota; we will set it
@@ -233,20 +236,32 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
             backupSettingsStore.setHasConsumedMediaTierCapacity(false, tx: tx)
         }
 
-        func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
-            Logger.warn("Failed deleting backup attachment \(record.id), isRetryable: \(isRetryable), error: \(error)")
+        func didFail(
+            recordId: TaskRecord.ID,
+            error: any Error,
+            isRetryable: Bool,
+            tx: DBWriteTransaction,
+        ) throws {
+            Logger.warn("Failed deleting backup attachment \(recordId.rowId), isRetryable: \(isRetryable), error: \(error)")
         }
 
-        func didObsolete(record: Store.Record, tx: DBWriteTransaction) throws {
-            Logger.info("Obsoleted deleting backup attachment \(record.id)")
+        func didObsolete(recordId: TaskRecord.ID, tx: DBWriteTransaction) throws {
+            Logger.info("Obsoleted deleting backup attachment \(recordId.rowId)")
         }
     }
 
     // MARK: - TaskRecordStore
 
     struct TaskRecord: SignalServiceKit.TaskRecord {
-        let id: OrphanedBackupAttachment.IDType
-        let record: OrphanedBackupAttachment
+        struct ID: Hashable {
+            let rowId: OrphanedBackupAttachment.IDType
+            let cdnNumber: UInt32
+            let mediaName: String?
+            let mediaId: Data?
+            let type: OrphanedBackupAttachment.SizeType?
+        }
+
+        let id: ID
     }
 
     class TaskStore: TaskRecordStore {
@@ -259,12 +274,18 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
 
         func peek(count: UInt, tx: DBReadTransaction) -> [TaskRecord] {
             return orphanedBackupAttachmentStore.peek(count: count, tx: tx).map { record in
-                return TaskRecord(id: record.id!, record: record)
+                return TaskRecord(id: TaskRecord.ID(
+                    rowId: record.id!,
+                    cdnNumber: record.cdnNumber,
+                    mediaName: record.mediaName,
+                    mediaId: record.mediaId,
+                    type: record.type,
+                ))
             }
         }
 
-        func removeRecord(_ record: TaskRecord, tx: DBWriteTransaction) {
-            orphanedBackupAttachmentStore.remove(record.record, tx: tx)
+        func removeRecord(recordId: TaskRecord.ID, tx: DBWriteTransaction) {
+            orphanedBackupAttachmentStore.remove(recordId: recordId.rowId, tx: tx)
         }
     }
 

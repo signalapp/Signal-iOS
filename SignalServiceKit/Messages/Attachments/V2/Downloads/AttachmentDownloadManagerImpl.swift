@@ -551,8 +551,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     // MARK: - Persisted Queue
 
     private struct DownloadTaskRecord: TaskRecord {
-        let id: Int64
-        let record: QueuedAttachmentDownloadRecord
+        struct ID: Hashable {
+            let rowId: QueuedAttachmentDownloadRecord.IDType
+            let attachmentId: Attachment.IDType
+            let sourceType: QueuedAttachmentDownloadRecord.SourceType
+        }
+
+        let id: ID
     }
 
     private class DownloadTaskRecordStore: TaskRecordStore {
@@ -566,14 +571,18 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         func peek(count: UInt, tx: DBReadTransaction) -> [DownloadTaskRecord] {
             return store.peek(count: count, tx: tx).map {
-                return .init(id: $0.id!, record: $0)
+                return DownloadTaskRecord(id: DownloadTaskRecord.ID(
+                    rowId: $0.id!,
+                    attachmentId: $0.attachmentId,
+                    sourceType: $0.sourceType,
+                ))
             }
         }
 
-        func removeRecord(_ record: DownloadTaskRecord, tx: DBWriteTransaction) {
+        func removeRecord(recordId: DownloadTaskRecord.ID, tx: DBWriteTransaction) {
             store.removeAttachmentFromQueue(
-                withId: record.record.attachmentId,
-                source: record.record.sourceType,
+                withId: recordId.attachmentId,
+                source: recordId.sourceType,
                 tx: tx,
             )
         }
@@ -673,45 +682,73 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             return DownloadKey(id: record.attachmentId, source: record.sourceType)
         }
 
+        static func downloadKey(recordId: DownloadTaskRecord.ID) -> DownloadKey {
+            return DownloadKey(id: recordId.attachmentId, source: recordId.sourceType)
+        }
+
         // MARK: TaskRecordRunner conformance
 
         func runTask(
-            record: DownloadTaskRecord,
+            recordId: DownloadTaskRecord.ID,
             loader: TaskQueueLoader<DownloadTaskRunner>,
         ) async -> TaskRecordResult {
-            Logger.info("Starting download of attachment \(record.record.attachmentId) from \(record.record.sourceType)")
-            let result = await self.downloadRecord(record.record)
-            await clearDownloadProgress(attachmentId: record.record.attachmentId)
+            Logger.info("Starting download of attachment \(recordId.attachmentId) from \(recordId.sourceType)")
+            guard
+                let record = db.read(block: { tx in
+                    attachmentDownloadStore.fetchRecord(id: recordId.rowId, tx: tx)
+                })
+            else {
+                // Fail rather than obsolete, since obsoleting tells observers
+                // the download succeeded.
+                return .unretryableError(
+                    OWSGenericError("Download removed from queue before running"),
+                )
+            }
+            let result = await self.downloadRecord(record)
+            await clearDownloadProgress(attachmentId: recordId.attachmentId)
             return result
         }
 
         func didSucceed(
-            record: DownloadTaskRecord,
+            recordId: DownloadTaskRecord.ID,
             tx: DBWriteTransaction,
         ) throws {
-            Logger.info("Succeeded download of attachment \(record.record.attachmentId) from \(record.record.sourceType)")
-            let downloadKey = Self.downloadKey(record: record.record)
+            Logger.info("Succeeded download of attachment \(recordId.attachmentId) from \(recordId.sourceType)")
+            let downloadKey = Self.downloadKey(recordId: recordId)
             let observers = consumeObservers(downloadKey: downloadKey)
             tx.addSyncCompletion { observers.forEach { $0.resume(with: .success(())) } }
         }
 
         func didObsolete(
-            record: DownloadTaskRecord,
+            recordId: DownloadTaskRecord.ID,
             tx: DBWriteTransaction,
         ) throws {
-            Logger.info("Obsoleted download of attachment \(record.record.attachmentId) from \(record.record.sourceType)")
-            let downloadKey = Self.downloadKey(record: record.record)
+            Logger.info("Obsoleted download of attachment \(recordId.attachmentId) from \(recordId.sourceType)")
+            let downloadKey = Self.downloadKey(recordId: recordId)
             let observers = consumeObservers(downloadKey: downloadKey)
             tx.addSyncCompletion { observers.forEach { $0.resume(with: .success(())) } }
         }
 
-        func didFail(record: DownloadTaskRecord, error: Error, isRetryable: Bool, tx: DBWriteTransaction) {
-            let record = record.record
-            Logger.warn("Failed download of attachment \(record.attachmentId) from \(record.sourceType). \(error)")
+        func didFail(
+            recordId: DownloadTaskRecord.ID,
+            error: Error,
+            isRetryable: Bool,
+            tx: DBWriteTransaction,
+        ) {
+            Logger.warn("Failed download of attachment \(recordId.attachmentId) from \(recordId.sourceType). \(error)")
+            guard
+                let record = attachmentDownloadStore.fetchRecord(id: recordId.rowId, tx: tx)
+            else {
+                // Removed from the queue while running (e.g. its attachment
+                // was deleted), so it won't be retried.
+                let observers = consumeObservers(downloadKey: Self.downloadKey(recordId: recordId))
+                tx.addSyncCompletion { observers.forEach { $0.resume(with: .failure(error)) } }
+                return
+            }
             if isRetryable, let retryTime = self.retryTime(for: record) {
                 // Don't update observers; they'll be updated when the retry succeeds.
                 attachmentDownloadStore.markQueuedDownloadFailed(
-                    withId: record.id!,
+                    withId: recordId.rowId,
                     minRetryTimestamp: retryTime,
                     tx: tx,
                 )

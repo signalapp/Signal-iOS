@@ -265,7 +265,10 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
             )
         }
 
-        func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
+        func runTask(
+            recordId: TaskRecord.ID,
+            loader: TaskQueueLoader<TaskRunner>,
+        ) async -> TaskRecordResult {
             struct SuspendedError: Error {}
             struct NeedsDiskSpaceError: Error {}
             struct NeedsBatteryError: Error {}
@@ -303,13 +306,21 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
             }
 
             let (
+                downloadRecord,
                 attachment,
                 backupPlan,
                 registrationState,
                 needsListMedia,
-            ) = db.read { tx -> (Attachment?, BackupPlan, TSRegistrationState, Bool) in
+            ) = db.read { tx -> (
+                QueuedBackupAttachmentDownload?,
+                Attachment?,
+                BackupPlan,
+                TSRegistrationState,
+                Bool
+            ) in
                 return (
-                    attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx),
+                    store.fetchRecord(recordId: recordId, tx: tx),
+                    attachmentStore.fetch(id: recordId.attachmentRowId, tx: tx),
                     backupSettingsStore.backupPlan(tx: tx),
                     tsAccountManager.registrationState(tx: tx),
                     self.listMediaManager.getNeedsQueryListMedia(tx: tx),
@@ -322,16 +333,16 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                 return .retryableError(NeedsListMediaError())
             }
 
-            guard let attachment else {
+            guard let downloadRecord, let attachment else {
                 return .obsolete
             }
 
             let progressSink: OWSProgressSink?
-            if record.record.isThumbnail {
+            if downloadRecord.isThumbnail {
                 progressSink = nil
             } else {
                 progressSink = progress.willBeginDownloadingFullsizeAttachment(
-                    withId: record.record.attachmentRowId,
+                    withId: downloadRecord.attachmentRowId,
                 )
             }
 
@@ -339,7 +350,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
             let remoteConfig = remoteConfigProvider.currentConfig()
             let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
                 attachment,
-                downloadRecord: record.record,
+                downloadRecord: downloadRecord,
                 currentTimestamp: nowMs,
                 backupPlan: backupPlan,
                 remoteConfig: remoteConfig,
@@ -348,7 +359,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
 
             struct NoLongerEligibleError: Error {}
             let relevantEligibilityState: QueuedBackupAttachmentDownload.State? = {
-                if record.record.isThumbnail {
+                if downloadRecord.isThumbnail {
                     return eligibility.thumbnailMediaTierState
                 } else {
                     return eligibility.fullsizeState
@@ -360,10 +371,10 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
             case nil:
                 // No longer at all eligible to download from this source.
                 // count this as having completed the download for progress tracking purposes.
-                if !record.record.isThumbnail {
+                if !downloadRecord.isThumbnail {
                     progress.didFinishDownloadOfFullsizeAttachment(
-                        withId: record.record.attachmentRowId,
-                        byteCount: UInt64(record.record.estimatedByteCount),
+                        withId: downloadRecord.attachmentRowId,
+                        byteCount: UInt64(downloadRecord.estimatedByteCount),
                     )
                 }
                 return .obsolete
@@ -376,7 +387,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                 await db.awaitableWrite { tx in
                     backupAttachmentDownloadStore.markIneligible(
                         attachmentId: attachment.id,
-                        thumbnail: record.record.isThumbnail,
+                        thumbnail: downloadRecord.isThumbnail,
                         tx: tx,
                     )
                 }
@@ -388,34 +399,34 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                 await db.awaitableWrite { tx in
                     backupAttachmentDownloadStore.markDone(
                         attachmentId: attachment.id,
-                        thumbnail: record.record.isThumbnail,
+                        thumbnail: downloadRecord.isThumbnail,
                         tx: tx,
                     )
                 }
                 // count this as having completed the download.
-                if !record.record.isThumbnail {
+                if !downloadRecord.isThumbnail {
                     progress.didFinishDownloadOfFullsizeAttachment(
-                        withId: record.record.attachmentRowId,
-                        byteCount: UInt64(record.record.estimatedByteCount),
+                        withId: downloadRecord.attachmentRowId,
+                        byteCount: UInt64(downloadRecord.estimatedByteCount),
                     )
                 }
                 return .retryableError(NoLongerEligibleError())
             }
 
             let source: DownloadSource = {
-                if record.record.isThumbnail {
+                if downloadRecord.isThumbnail {
                     return .mediaTierThumbnail
                 }
                 if
                     eligibility.fullsizeMediaTierState == .ready,
                     // Try media tier once first if available
-                    record.record.numRetries == 0
+                    downloadRecord.numRetries == 0
                 {
                     return .mediaTierFullsize
                 } else if
                     let transitTierInfo = attachment.latestTransitTierInfo,
                     eligibility.fullsizeMediaTierState != .ready
-                    || record.record.numRetries == 1,
+                    || downloadRecord.numRetries == 1,
                     eligibility.fullsizeTransitTierState == .ready
                 {
                     // Otherwise try transit tier if media tier has failed once before.
@@ -428,7 +439,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
 
             do {
                 try await self.attachmentDownloadManager.downloadAttachment(
-                    id: record.record.attachmentRowId,
+                    id: downloadRecord.attachmentRowId,
                     priority: .backupRestore,
                     source: source.asSourceType,
                     progress: progressSink,
@@ -514,7 +525,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                         case .paid, .paidExpiringSoon, .paidAsTester:
                             break
                         }
-                        guard let attachment = attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx) else {
+                        guard let attachment = attachmentStore.fetch(id: downloadRecord.attachmentRowId, tx: tx) else {
                             return false
                         }
                         return attachment.mediaTierInfo != nil
@@ -526,8 +537,8 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                 }
 
                 if
-                    !record.record.isThumbnail,
-                    record.record.numRetries == 0,
+                    !downloadRecord.isThumbnail,
+                    downloadRecord.numRetries == 0,
                     eligibility.fullsizeTransitTierState == .ready,
                     source == .mediaTierFullsize
                 {
@@ -538,17 +549,17 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                     ))
                 } else if
                     error.httpStatusCode == 404,
-                    !record.record.isThumbnail,
-                    record.record.canDownloadFromMediaTier,
+                    !downloadRecord.isThumbnail,
+                    downloadRecord.canDownloadFromMediaTier,
                     canRetryMediaTier404(),
                     let nextRetryTimestamp = { () -> UInt64? in
-                        guard record.record.numRetries < 32 else {
+                        guard downloadRecord.numRetries < 32 else {
                             owsFailDebug("Too many retries!")
                             return nil
                         }
                         // Exponential backoff, starting at 1 day.
                         let delay = OWSOperation.retryIntervalForExponentialBackoff(
-                            failureCount: record.record.numRetries,
+                            failureCount: downloadRecord.numRetries,
                             minAverageBackoff: .day,
                             maxAverageBackoff: .day * 30,
                         )
@@ -568,23 +579,23 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
 
             await statusManager.jobDidSucceed(token: statusToken, mode: mode)
 
-            if !record.record.isThumbnail {
+            if !downloadRecord.isThumbnail {
                 progress.didFinishDownloadOfFullsizeAttachment(
-                    withId: record.record.attachmentRowId,
-                    byteCount: UInt64(record.record.estimatedByteCount),
+                    withId: downloadRecord.attachmentRowId,
+                    byteCount: UInt64(downloadRecord.estimatedByteCount),
                 )
             }
 
             return .success
         }
 
-        func didSucceed(record: Store.Record, tx: DBWriteTransaction) {
-            logger.info("Finished restoring attachment \(record.record.attachmentRowId), download \(record.id), isThumbnail: \(record.record.isThumbnail)")
+        func didSucceed(recordId: TaskRecord.ID, tx: DBWriteTransaction) {
+            logger.info("Finished restoring attachment \(recordId.attachmentRowId), download \(recordId.rowId), isThumbnail: \(recordId.isThumbnail)")
             // Mark the record done when we succeed; this will filter it out
             // from future queue pop/peek operations.
             backupAttachmentDownloadStore.markDone(
-                attachmentId: record.record.attachmentRowId,
-                thumbnail: record.record.isThumbnail,
+                attachmentId: recordId.attachmentRowId,
+                thumbnail: recordId.isThumbnail,
                 tx: tx,
             )
         }
@@ -619,8 +630,13 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
             let source: DownloadSource
         }
 
-        func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) {
-            logger.warn("Failed restoring attachment \(record.record.attachmentRowId), download \(record.id), isRetryable: \(isRetryable), isThumbnail: \(record.record.isThumbnail), error: \(error)")
+        func didFail(
+            recordId: TaskRecord.ID,
+            error: any Error,
+            isRetryable: Bool,
+            tx: DBWriteTransaction,
+        ) {
+            logger.warn("Failed restoring attachment \(recordId.attachmentRowId), download \(recordId.rowId), isRetryable: \(isRetryable), isThumbnail: \(recordId.isThumbnail), error: \(error)")
 
             if
                 isRetryable,
@@ -628,11 +644,12 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                 (error as? RetryMediaTierError)?.nextRetryTimestamp
                     ?? (error as? Retry5xxError)?.nextRetryTimestamp
             {
-                var downloadRecord = record.record
-                downloadRecord.minRetryTimestamp = nextRetryTimestamp
-                downloadRecord.numRetries += 1
-                failIfThrows {
-                    try downloadRecord.update(tx.database)
+                if var downloadRecord = store.fetchRecord(recordId: recordId, tx: tx) {
+                    downloadRecord.minRetryTimestamp = nextRetryTimestamp
+                    downloadRecord.numRetries += 1
+                    failIfThrows {
+                        try downloadRecord.update(tx.database)
+                    }
                 }
             } else if
                 isRetryable,
@@ -640,15 +657,16 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
             {
                 // Just increment the retry count by 1 but don't update
                 // the retry timestamp so we retry immediately as transit tier.
-                var downloadRecord = record.record
-                downloadRecord.numRetries += 1
-                failIfThrows {
-                    try downloadRecord.update(tx.database)
+                if var downloadRecord = store.fetchRecord(recordId: recordId, tx: tx) {
+                    downloadRecord.numRetries += 1
+                    failIfThrows {
+                        try downloadRecord.update(tx.database)
+                    }
                 }
 
                 if
                     error.shouldWipeMediaTierInfo,
-                    let attachment = attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx)
+                    let attachment = attachmentStore.fetch(id: recordId.attachmentRowId, tx: tx)
                 {
                     attachmentStore.removeMediaTierInfo(
                         attachment: attachment,
@@ -662,8 +680,8 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                 }
             } else if !isRetryable {
                 backupAttachmentDownloadStore.remove(
-                    attachmentId: record.record.attachmentRowId,
-                    thumbnail: record.record.isThumbnail,
+                    attachmentId: recordId.attachmentRowId,
+                    thumbnail: recordId.isThumbnail,
                     tx: tx,
                 )
                 // For non-retryable 404 errors, go ahead and wipe the relevant cdn
@@ -671,7 +689,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                 if let error = error as? Unretryable404Error {
                     guard
                         let attachment = attachmentStore.fetch(
-                            id: record.record.attachmentRowId,
+                            id: recordId.attachmentRowId,
                             tx: tx,
                         )
                     else {
@@ -713,11 +731,11 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
             }
         }
 
-        func didObsolete(record: Store.Record, tx: DBWriteTransaction) {
-            logger.warn("Obsoleted restoring attachment \(record.record.attachmentRowId), download \(record.id), isThumbnail: \(record.record.isThumbnail)")
+        func didObsolete(recordId: TaskRecord.ID, tx: DBWriteTransaction) {
+            logger.warn("Obsoleted restoring attachment \(recordId.attachmentRowId), download \(recordId.rowId), isThumbnail: \(recordId.isThumbnail)")
             backupAttachmentDownloadStore.remove(
-                attachmentId: record.record.attachmentRowId,
-                thumbnail: record.record.isThumbnail,
+                attachmentId: recordId.attachmentRowId,
+                thumbnail: recordId.isThumbnail,
                 tx: tx,
             )
         }
@@ -749,8 +767,13 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
     // MARK: - TaskRecordStore
 
     struct TaskRecord: SignalServiceKit.TaskRecord {
-        let id: QueuedBackupAttachmentDownload.IDType
-        let record: QueuedBackupAttachmentDownload
+        struct ID: Hashable {
+            let rowId: QueuedBackupAttachmentDownload.IDType
+            let attachmentRowId: Attachment.IDType
+            let isThumbnail: Bool
+        }
+
+        let id: ID
         let nextRetryTimestamp: UInt64?
     }
 
@@ -779,14 +802,26 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                 tx: tx,
             ).map { record in
                 return TaskRecord(
-                    id: record.id!,
-                    record: record,
+                    id: TaskRecord.ID(
+                        rowId: record.id!,
+                        attachmentRowId: record.attachmentRowId,
+                        isThumbnail: record.isThumbnail,
+                    ),
                     nextRetryTimestamp: record.minRetryTimestamp,
                 )
             }
         }
 
-        func removeRecord(_ record: TaskRecord, tx: DBWriteTransaction) throws {
+        func fetchRecord(
+            recordId: TaskRecord.ID,
+            tx: DBReadTransaction,
+        ) -> QueuedBackupAttachmentDownload? {
+            return failIfThrows {
+                try QueuedBackupAttachmentDownload.fetchOne(tx.database, key: recordId.rowId)
+            }
+        }
+
+        func removeRecord(recordId: TaskRecord.ID, tx: DBWriteTransaction) throws {
             // Rather than remove when we finish running a record, we mark it done
             // instead in the success callback, and delete it in failure callbacks.
             // So we do nothing here on purpose.

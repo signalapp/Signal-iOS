@@ -6,10 +6,13 @@
 import Foundation
 
 /// A database record (or wrapper around one) representing an enqueued task
-/// to be run. Contains whatever ``TaskRecordRunner`` needs to run the
-/// task; all the generic ``TaskQueueLoader`` needs from it is some id
-/// for uniqueing purposes.
+/// to be run. The generic ``TaskQueueLoader`` needs from it only an id, for
+/// uniqueing purposes, and an optional retry timestamp.
 public protocol TaskRecord {
+    /// Identifies the record to runners and stores. Note that records may be
+    /// mutated or deleted while a task runs; for this reason,
+    /// ``TaskRecordRunner`` callbacks must re-fetch records using the ID as
+    /// necessary. May carry immutable columns alongside the row ID.
     associatedtype IDType: Hashable
 
     var id: IDType { get }
@@ -45,7 +48,7 @@ public protocol TaskRecordStore {
     /// Called by the ``TaskQueueLoader`` when the task either succeeds or fails with
     /// an unretryable error. Outside callers may remove queued records as they see fit.
     /// Removing a record that is currently running will not stop it from completing.
-    func removeRecord(_ record: Record, tx: DBWriteTransaction) throws
+    func removeRecord(recordId: Record.IDType, tx: DBWriteTransaction) throws
 }
 
 /// The result of a ``TaskRecordRunner`` run.
@@ -84,23 +87,24 @@ public protocol TaskRecordRunner {
     /// ``TaskQueueLoader/stop(reason:)`` if some error they encounter
     /// should stop all future tasks, not just the current one.
     func runTask(
-        record: Store.Record,
+        recordId: Store.Record.IDType,
         loader: TaskQueueLoader<Self>,
     ) async -> TaskRecordResult
 
     /// Called by ``TaskQueueLoader`` when the task completes successfully,
     /// with the same write transaction used to delete the task's database record.
+    /// Called before the record is deleted, so the runner may still fetch it.
     ///
     /// Thrown errors WILL interrupt task processing; it's assumed anything that goes
     /// wrong here is a severe error affecting the queue itself.
     func didSucceed(
-        record: Store.Record,
+        recordId: Store.Record.IDType,
         tx: DBWriteTransaction,
     ) throws
 
     /// Called by ``TaskQueueLoader`` when the task fails.
     /// If the error is non-retryable, the record is deleted from the databse in the
-    /// same transaction.
+    /// same transaction, after this method returns.
     /// Otherwise the record is left alone and it is up to the runner to modify it as
     /// needed. However it is modified, it will be retried by the loader the next time
     /// it is returned as a result of the store's `peek` method.
@@ -108,7 +112,7 @@ public protocol TaskRecordRunner {
     /// Thrown errors WILL interrupt task processing; it's assumed anything that goes
     /// wrong here is a severe error affecting the queue itself.
     func didFail(
-        record: Store.Record,
+        recordId: Store.Record.IDType,
         error: Error,
         isRetryable: Bool,
         tx: DBWriteTransaction,
@@ -116,11 +120,12 @@ public protocol TaskRecordRunner {
 
     /// Called by ``TaskQueueLoader`` when the task is obsoleted,
     /// with the same write transaction used to delete the task's database record.
+    /// Called before the record is deleted, so the runner may still fetch it.
     ///
     /// Thrown errors WILL interrupt task processing; it's assumed anything that goes
     /// wrong here is a severe error affecting the queue itself.
     func didObsolete(
-        record: Store.Record,
+        recordId: Store.Record.IDType,
         tx: DBWriteTransaction,
     ) throws
 
@@ -419,16 +424,24 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner & Sendable> {
                     {
                         try await self.sleep(NSEC_PER_MSEC * (nextRetryTimestamp - nowMs))
                     }
-                    let taskResult = await runner.runTask(record: record, loader: self)
+                    let taskResult = await runner.runTask(recordId: record.id, loader: self)
                     switch taskResult {
                     case .success:
-                        try await self.didSucceed(record: record)
+                        try await self.didSucceed(recordId: record.id)
                     case .retryableError(let error):
-                        try await self.didFail(record: record, error: error, isRetryable: true)
+                        try await self.didFail(
+                            recordId: record.id,
+                            error: error,
+                            isRetryable: true,
+                        )
                     case .unretryableError(let error):
-                        try await self.didFail(record: record, error: error, isRetryable: false)
+                        try await self.didFail(
+                            recordId: record.id,
+                            error: error,
+                            isRetryable: false,
+                        )
                     case .obsolete:
-                        try await self.didObsolete(record: record)
+                        try await self.didObsolete(recordId: record.id)
                     }
                     // As soon as we finish any task, start loading more tasks to run.
                     try await self._loadAndRunTasks(taskId: taskId)
@@ -438,30 +451,35 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner & Sendable> {
         }
     }
 
-    private func didSucceed(record: Store.Record) async throws {
+    private func didSucceed(recordId: Record.IDType) async throws {
         try await db.awaitableWrite { tx in
-            try self.store.removeRecord(record, tx: tx)
-            try self.runner.didSucceed(record: record, tx: tx)
+            try self.runner.didSucceed(recordId: recordId, tx: tx)
+            try self.store.removeRecord(recordId: recordId, tx: tx)
         }
-        self.currentTaskIds.remove(record.id)
+        self.currentTaskIds.remove(recordId)
     }
 
-    private func didFail(record: Store.Record, error: Error, isRetryable: Bool) async throws {
+    private func didFail(recordId: Record.IDType, error: Error, isRetryable: Bool) async throws {
         try await db.awaitableWrite { tx in
+            try self.runner.didFail(
+                recordId: recordId,
+                error: error,
+                isRetryable: isRetryable,
+                tx: tx,
+            )
             if !isRetryable {
                 // Remove the record for non-retryable errors.
-                try self.store.removeRecord(record, tx: tx)
+                try self.store.removeRecord(recordId: recordId, tx: tx)
             }
-            try self.runner.didFail(record: record, error: error, isRetryable: isRetryable, tx: tx)
         }
-        self.currentTaskIds.remove(record.id)
+        self.currentTaskIds.remove(recordId)
     }
 
-    private func didObsolete(record: Store.Record) async throws {
+    private func didObsolete(recordId: Record.IDType) async throws {
         try await db.awaitableWrite { tx in
-            try self.store.removeRecord(record, tx: tx)
-            try self.runner.didObsolete(record: record, tx: tx)
+            try self.runner.didObsolete(recordId: recordId, tx: tx)
+            try self.store.removeRecord(recordId: recordId, tx: tx)
         }
-        self.currentTaskIds.remove(record.id)
+        self.currentTaskIds.remove(recordId)
     }
 }

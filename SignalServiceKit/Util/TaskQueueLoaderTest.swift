@@ -646,6 +646,28 @@ public class TaskQueueLoaderTest: XCTestCase {
         XCTAssertEqual(runner.failedTasks.count, 0)
     }
 
+    func testRecordPresentDuringCallbacks() async throws {
+        let runner = MockRunner(numRecords: 9)
+        let loader = TaskQueueLoader(
+            maxConcurrentTasks: 4,
+            dateProvider: { Date() },
+            db: InMemoryDB(),
+            runner: runner,
+        )
+        runner.taskRunner = { id in
+            switch id % 3 {
+            case 0: return .success
+            case 1: return .unretryableError(MockError())
+            default: return .obsolete
+            }
+        }
+
+        try await loader.loadAndRunTasks()
+        XCTAssertEqual(runner.recordPresentDuringCallback.count, 9)
+        XCTAssert(runner.recordPresentDuringCallback.get().allSatisfy { $0 })
+        XCTAssert(runner.store.records.get().isEmpty)
+    }
+
     // MARK: - Mocks
 
     struct MockError: Error {}
@@ -679,8 +701,10 @@ public class TaskQueueLoaderTest: XCTestCase {
             return Array(records.get().prefix(Int(count)))
         }
 
-        func removeRecord(_ record: MockTaskRecord, tx: DBWriteTransaction) throws {
-            records.remove(record)
+        func removeRecord(recordId: Int, tx: DBWriteTransaction) throws {
+            if let record = records.get().first(where: { $0.id == recordId }) {
+                records.remove(record)
+            }
         }
     }
 
@@ -700,25 +724,34 @@ public class TaskQueueLoaderTest: XCTestCase {
         var completedTasks = AtomicArray<Int>(lock: .init())
         var failedTasks = AtomicArray<Int>(lock: .init())
         var cancelledTasks = AtomicArray<Int>(lock: .init())
+        var recordPresentDuringCallback = AtomicArray<Bool>(lock: .init())
+
+        private func noteRecordPresence(recordId: Int) {
+            let isPresent = store.records.get().contains(where: { $0.id == recordId })
+            recordPresentDuringCallback.append(isPresent)
+        }
 
         var taskRunner: (Int) async -> TaskRecordResult = { _ in
             return .success
         }
 
-        func runTask(record: MockTaskRecord, loader: TaskQueueLoader<MockRunner>) async -> TaskRecordResult {
-            return await taskRunner(record.id)
+        func runTask(recordId: Int, loader: TaskQueueLoader<MockRunner>) async -> TaskRecordResult {
+            return await taskRunner(recordId)
         }
 
-        func didSucceed(record: MockTaskRecord, tx: DBWriteTransaction) throws {
-            completedTasks.append(record.id)
+        func didSucceed(recordId: Int, tx: DBWriteTransaction) throws {
+            noteRecordPresence(recordId: recordId)
+            completedTasks.append(recordId)
         }
 
-        func didFail(record: MockTaskRecord, error: Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
-            failedTasks.append(record.id)
+        func didFail(recordId: Int, error: Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
+            noteRecordPresence(recordId: recordId)
+            failedTasks.append(recordId)
         }
 
-        func didObsolete(record: MockTaskRecord, tx: DBWriteTransaction) throws {
-            cancelledTasks.append(record.id)
+        func didObsolete(recordId: Int, tx: DBWriteTransaction) throws {
+            noteRecordPresence(recordId: recordId)
+            cancelledTasks.append(recordId)
         }
 
         var didDrainQueueBlock: (() async -> Void)?

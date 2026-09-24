@@ -311,19 +311,30 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             )
         }
 
-        func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
-            let result = await _runTask(record: record, loader: loader)
-            if case .success = result, record.record.isFullsize {
+        func runTask(
+            recordId: TaskRecord.ID,
+            loader: TaskQueueLoader<TaskRunner>,
+        ) async -> TaskRecordResult {
+            guard
+                let uploadRecord = db.read(block: { store.fetchRecord(recordId: recordId, tx: $0) })
+            else {
+                return .obsolete
+            }
+            let result = await _runTask(uploadRecord: uploadRecord, loader: loader)
+            if case .success = result, uploadRecord.isFullsize {
                 progress.didUpdateProgressForFullsizeAttachment(
-                    uploadRecord: record.record,
-                    completedByteCount: UInt64(safeCast: record.record.estimatedByteCount),
-                    totalByteCount: UInt64(safeCast: record.record.estimatedByteCount),
+                    uploadRecord: uploadRecord,
+                    completedByteCount: UInt64(safeCast: uploadRecord.estimatedByteCount),
+                    totalByteCount: UInt64(safeCast: uploadRecord.estimatedByteCount),
                 )
             }
             return result
         }
 
-        private func _runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
+        private func _runTask(
+            uploadRecord: QueuedBackupAttachmentUpload,
+            loader: TaskQueueLoader<TaskRunner>,
+        ) async -> TaskRecordResult {
             struct ExplicitlySuspendedError: Error {}
             struct NeedsBatteryError: Error {}
             struct NeedsInternetError: Error {}
@@ -364,7 +375,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 needsListMedia,
             ) = db.read { tx in
                 return (
-                    self.attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx),
+                    self.attachmentStore.fetch(id: uploadRecord.attachmentRowId, tx: tx),
                     self.backupSettingsStore.backupPlan(tx: tx),
                     self.backupAttachmentUploadEraStore.currentUploadEra(tx: tx),
                     self.accountKeyStore.getMediaRootBackupKey(tx: tx),
@@ -397,7 +408,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             // This is only defensive as we should be cancelling any deletes any time we
             // create an attachment stream and enqueue an upload to begin with.
             await db.awaitableWrite { tx in
-                if record.record.isFullsize {
+                if uploadRecord.isFullsize {
                     let mediaId = backupKey.mediaEncryptionMetadata(
                         mediaName: mediaName,
                         // Doesn't matter what we use, we just want the mediaId
@@ -481,7 +492,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 db.read(block: { tx in
                     backupAttachmentUploadScheduler.isEligibleToUpload(
                         attachment,
-                        mode: record.record.isFullsize ? .fullsize : .thumbnail,
+                        mode: uploadRecord.isFullsize ? .fullsize : .thumbnail,
                         currentUploadEra: currentUploadEra,
                         tx: tx,
                     )
@@ -492,7 +503,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             }
 
             do {
-                if record.record.isFullsize {
+                if uploadRecord.isFullsize {
                     try await attachmentUploadManager.uploadMediaTierAttachment(
                         attachmentId: attachment.id,
                         uploadEra: currentUploadEra,
@@ -504,7 +515,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                                 return
                             }
                             progress.didUpdateProgressForFullsizeAttachment(
-                                uploadRecord: record.record,
+                                uploadRecord: uploadRecord,
                                 completedByteCount: progressUpdate.completedByteCount,
                                 totalByteCount: totalByteCount,
                             )
@@ -631,7 +642,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                     return .retryableError(OWSGenericError(message))
                 }
             } catch let error {
-                if record.record.isFullsize {
+                if uploadRecord.isFullsize {
                     // For other errors stop the queue to prevent thundering herd;
                     // when it starts up again (e.g. on app launch) we will retry.
                     logger.error("Unknown error occurred; stopping the queue")
@@ -648,8 +659,8 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             return .success
         }
 
-        func didSucceed(record: Store.Record, tx: DBWriteTransaction) throws {
-            logger.info("Finished backing up attachment \(record.record.attachmentRowId), upload \(record.id), fullsize? \(record.record.isFullsize)")
+        func didSucceed(recordId: TaskRecord.ID, tx: DBWriteTransaction) throws {
+            logger.info("Finished backing up attachment \(recordId.attachmentRowId), upload \(recordId.rowId), fullsize? \(recordId.isFullsize)")
         }
 
         private struct RateLimitedRetryError: Error {
@@ -659,14 +670,21 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         private struct NetworkRetryError: Error {}
         private struct OutOfCapacityError: Error {}
 
-        func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
-            logger.warn("Failed backing up attachment \(record.record.attachmentRowId), upload \(record.id), fullsize? \(record.record.isFullsize), isRetryable: \(isRetryable), error: \(error)")
+        func didFail(
+            recordId: TaskRecord.ID,
+            error: any Error,
+            isRetryable: Bool,
+            tx: DBWriteTransaction,
+        ) throws {
+            logger.warn("Failed backing up attachment \(recordId.attachmentRowId), upload \(recordId.rowId), fullsize? \(recordId.isFullsize), isRetryable: \(isRetryable), error: \(error)")
 
-            guard isRetryable else {
+            guard
+                isRetryable,
+                var record = store.fetchRecord(recordId: recordId, tx: tx)
+            else {
                 return
             }
 
-            var record = record.record
             let retryDelay: TimeInterval
 
             if error is NetworkRetryError {
@@ -688,8 +706,8 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             try record.update(tx.database)
         }
 
-        func didObsolete(record: Store.Record, tx: DBWriteTransaction) throws {
-            logger.warn("Obsoleted backing up attachment \(record.record.attachmentRowId), upload \(record.id), fullsize? \(record.record.isFullsize)")
+        func didObsolete(recordId: TaskRecord.ID, tx: DBWriteTransaction) throws {
+            logger.warn("Obsoleted backing up attachment \(recordId.attachmentRowId), upload \(recordId.rowId), fullsize? \(recordId.isFullsize)")
         }
 
         func didDrainQueue() async {
@@ -707,12 +725,14 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
     // MARK: - TaskRecordStore
 
     struct TaskRecord: SignalServiceKit.TaskRecord {
-        let id: Int64
-        let record: QueuedBackupAttachmentUpload
-
-        var nextRetryTimestamp: UInt64? {
-            return record.minRetryTimestamp
+        struct ID: Hashable {
+            let rowId: QueuedBackupAttachmentUpload.IDType
+            let attachmentRowId: Attachment.IDType
+            let isFullsize: Bool
         }
+
+        let id: ID
+        let nextRetryTimestamp: UInt64?
     }
 
     class TaskStore: TaskRecordStore {
@@ -740,16 +760,32 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 isFullsize: forFullsizeUploads,
                 tx: tx,
             ).map {
-                return TaskRecord(id: $0.id!, record: $0)
+                return TaskRecord(
+                    id: TaskRecord.ID(
+                        rowId: $0.id!,
+                        attachmentRowId: $0.attachmentRowId,
+                        isFullsize: $0.isFullsize,
+                    ),
+                    nextRetryTimestamp: $0.minRetryTimestamp,
+                )
             }
         }
 
-        func removeRecord(_ record: TaskRecord, tx: DBWriteTransaction) {
+        func fetchRecord(
+            recordId: TaskRecord.ID,
+            tx: DBReadTransaction,
+        ) -> QueuedBackupAttachmentUpload? {
+            return failIfThrows {
+                try QueuedBackupAttachmentUpload.fetchOne(tx.database, key: recordId.rowId)
+            }
+        }
+
+        func removeRecord(recordId: TaskRecord.ID, tx: DBWriteTransaction) {
             // We don't actually delete records when finishing; we just mark
             // them done so we can still keep track of their byte count.
             backupAttachmentUploadStore.markUploadDone(
-                for: record.record.attachmentRowId,
-                fullsize: record.record.isFullsize,
+                for: recordId.attachmentRowId,
+                fullsize: recordId.isFullsize,
                 tx: tx,
             )
         }
