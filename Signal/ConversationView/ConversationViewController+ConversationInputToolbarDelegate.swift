@@ -200,7 +200,11 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         ImpactHapticFeedback.impactOccurred(style: .light)
 
-        ThreadUtil.enqueueMessage(withInstalledSticker: stickerInfo, thread: thread)
+        ThreadUtil.enqueueMessage(
+            withInstalledSticker: stickerInfo,
+            quotedReplyDraft: inputToolbar?.quotedReplyDraft,
+            thread: thread,
+        )
         messageWasSent()
     }
 

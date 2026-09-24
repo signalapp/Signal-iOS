@@ -8,6 +8,7 @@ public import SignalServiceKit
 public protocol StickerPackCollectionViewDelegate: StickerPickerDelegate {
     func stickerPreviewHostView() -> UIView?
     func stickerPreviewHasOverlay() -> Bool
+    func didRequestQuoteReplyPreview(for stickerInfo: StickerInfo, stickerView: UIView)
 }
 
 public class StickerPackCollectionView: UICollectionView {
@@ -391,7 +392,15 @@ extension StickerPackCollectionView: UICollectionViewDelegate {
             return
         }
 
-        self.stickerDelegate?.didSelectSticker(stickerInfo)
+        if BuildFlags.stickerReply, let stickerDelegate, stickerDelegate.shouldShowStickerPreview() {
+            guard let stickerView = imageView(forStickerInfo: stickerInfo) else {
+                Logger.warn("Couldn't load sticker for display")
+                return
+            }
+            stickerDelegate.didRequestQuoteReplyPreview(for: stickerInfo, stickerView: stickerView)
+        } else {
+            self.stickerDelegate?.didSelectSticker(stickerInfo)
+        }
     }
 }
 

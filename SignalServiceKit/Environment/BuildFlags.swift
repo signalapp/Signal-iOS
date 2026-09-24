@@ -87,6 +87,8 @@ public enum BuildFlags {
     public static let accountIdentifierSharing = false
 
     public static let phoneNumberlessRegistration = false
+
+    public static let stickerReply = build <= .dev
 }
 
 // MARK: -

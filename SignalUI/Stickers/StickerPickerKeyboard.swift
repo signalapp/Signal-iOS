@@ -12,6 +12,8 @@ public protocol StickerKeyboardDelegate: AnyObject {
     func stickerKeyboardDidRequestPresentManageStickersView(_ stickerKeyboard: StickerKeyboard)
 
     func stickerKeyboard(_: StickerKeyboard, didSelect stickerInfo: StickerInfo)
+
+    func shouldShowStickerPreview() -> Bool
 }
 
 public class StickerKeyboard: CustomKeyboard {
@@ -59,11 +61,19 @@ public class StickerKeyboard: CustomKeyboard {
         super.wasPresented()
         stickerPickerView.wasPresented()
     }
+
+    override public func willDismiss() {
+        super.willDismiss()
+        stickerPickerView.dismissQuoteReplyPreviewIfNeeded()
+    }
 }
 
 // MARK: StickerPacksToolbarDelegate
 
 extension StickerKeyboard: StickerPickerViewDelegate {
+    public func shouldShowStickerPreview() -> Bool {
+        return delegate?.shouldShowStickerPreview() ?? false
+    }
 
     func presentManageStickersView(for stickerPickerView: StickerPickerView) {
         delegate?.stickerKeyboardDidRequestPresentManageStickersView(self)

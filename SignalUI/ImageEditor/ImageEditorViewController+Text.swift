@@ -30,6 +30,10 @@ extension ImageEditorViewController {
         selectStickerItem(stickerItem)
         dismiss(animated: true)
     }
+
+    func shouldShowStickerPreview() -> Bool {
+        return false
+    }
 }
 
 // MARK: - Text

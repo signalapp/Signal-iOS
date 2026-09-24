@@ -89,6 +89,9 @@ public class StickerPickerSheet: InteractiveSheetViewController {
 // MARK: StickerPickerViewDelegate
 
 extension StickerPickerSheet: StickerPickerViewDelegate {
+    public func shouldShowStickerPreview() -> Bool {
+        return false
+    }
 
     func presentManageStickersView(for stickerPickerView: StickerPickerView) {
         guard let sheetDelegate else { return }

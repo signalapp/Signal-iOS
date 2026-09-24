@@ -111,7 +111,11 @@ public extension ThreadUtil {
 public extension ThreadUtil {
 
     @discardableResult
-    class func enqueueMessage(withInstalledSticker stickerInfo: StickerInfo, thread: TSThread) -> TSOutgoingMessage {
+    class func enqueueMessage(
+        withInstalledSticker stickerInfo: StickerInfo,
+        quotedReplyDraft: DraftQuotedReplyModel?,
+        thread: TSThread,
+    ) -> TSOutgoingMessage {
         AssertIsOnMainThread()
 
         let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread)
@@ -153,8 +157,19 @@ public extension ThreadUtil {
                 owsFailDebug("Failed to build sticker!")
                 return
             }
+
+            let quotedReplyDraft = try await quotedReplyDraft.mapAsync {
+                try await DependenciesBridge.shared.quotedReplyManager.prepareDraftForSending($0)
+            }
+
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                self.enqueueMessage(message, stickerDataSource: stickerDataSource, thread: thread, tx: tx)
+                self.enqueueMessage(
+                    message,
+                    stickerDataSource: stickerDataSource,
+                    quotedReplyDraft: quotedReplyDraft,
+                    thread: thread,
+                    tx: tx,
+                )
             }
         }
 
@@ -193,7 +208,13 @@ public extension ThreadUtil {
                 return
             }
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                self.enqueueMessage(message, stickerDataSource: stickerDataSource, thread: thread, tx: tx)
+                self.enqueueMessage(
+                    message,
+                    stickerDataSource: stickerDataSource,
+                    quotedReplyDraft: nil,
+                    thread: thread,
+                    tx: tx,
+                )
             }
         }
 
@@ -203,6 +224,7 @@ public extension ThreadUtil {
     private class func enqueueMessage(
         _ message: TSOutgoingMessage,
         stickerDataSource: MessageStickerDataSource,
+        quotedReplyDraft: DraftQuotedReplyModel.ForSending?,
         thread: TSThread,
         tx: DBWriteTransaction,
     ) {
@@ -211,9 +233,12 @@ public extension ThreadUtil {
         // stickers don't have bodies
         owsPrecondition(message.body == nil)
 
+        let quotedReplyDraftIfEnabled = BuildFlags.stickerReply ? quotedReplyDraft : nil
+
         let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
             message,
             body: nil,
+            quotedReplyDraft: quotedReplyDraftIfEnabled,
             messageStickerDraft: stickerDataSource,
         )
         let preparedMessage: PreparedOutgoingMessage

@@ -396,7 +396,7 @@ extension ForwardMessageViewController {
     }
 
     private func send(installedSticker stickerInfo: StickerInfo, thread: TSThread) {
-        ThreadUtil.enqueueMessage(withInstalledSticker: stickerInfo, thread: thread)
+        ThreadUtil.enqueueMessage(withInstalledSticker: stickerInfo, quotedReplyDraft: nil, thread: thread)
     }
 
     private func send(uninstalledSticker stickerMetadata: any StickerMetadata, stickerData: Data, thread: TSThread) {

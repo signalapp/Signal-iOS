@@ -985,7 +985,12 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         let hideAllTextFieldButtons = rightEdgeControlsState != .default || inputTextView.untrimmedText.rangeOfCharacter(from: .newlines) != nil
         // Sticker/keyboard buttons will also be hidden if there's whitespace-only input.
         let textFieldHasAnyInput = !inputTextView.untrimmedText.isEmpty
-        let hideInputMethodButtons = hideAllTextFieldButtons || textFieldHasAnyInput || hasQuotedMessage
+
+        var hideInputMethodButtons = hideAllTextFieldButtons || textFieldHasAnyInput
+        if !BuildFlags.stickerReply {
+            hideInputMethodButtons = hideInputMethodButtons || hasQuotedMessage
+        }
+
         let hideStickerButton = hideInputMethodButtons || desiredKeyboardType == .sticker
         let hideKeyboardButton = hideInputMethodButtons || !hideStickerButton
         ConversationInputToolbar.setView(stickerButton, hidden: hideStickerButton, usingAnimator: animator)
@@ -3356,6 +3361,9 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
 }
 
 extension ConversationInputToolbar: StickerKeyboardDelegate {
+    public func shouldShowStickerPreview() -> Bool {
+        return hasQuotedMessage
+    }
 
     public func stickerKeyboard(_: StickerKeyboard, didSelect stickerInfo: StickerInfo) {
         AssertIsOnMainThread()
