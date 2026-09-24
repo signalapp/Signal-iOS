@@ -14,6 +14,7 @@ public struct SystemContact {
     public static var contactKeys: [CNKeyDescriptor] {
         return [
             CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+            CNContactOrganizationNameKey as CNKeyDescriptor,
             CNContactPhoneNumbersKey as CNKeyDescriptor,
             CNContactEmailAddressesKey as CNKeyDescriptor,
         ]
@@ -23,6 +24,7 @@ public struct SystemContact {
     public let firstName: String
     public let lastName: String
     public let nickname: String
+    public let organizationName: String?
     public let fullName: String
     public let phoneNumbers: [(value: String, label: String?)]
     public let emailAddresses: [String]
@@ -47,6 +49,9 @@ public struct SystemContact {
         self.firstName = cnContact.givenName.stripped
         self.lastName = cnContact.familyName.stripped
         self.nickname = cnContact.nickname.stripped
+        self.organizationName = cnContact.isKeyAvailable(CNContactOrganizationNameKey)
+            ? cnContact.organizationName.stripped
+            : nil
         self.fullName = Self.formattedFullName(for: cnContact)
         self.phoneNumbers = phoneNumbers
         self.emailAddresses = emailAddresses
@@ -64,6 +69,9 @@ public struct SystemContact {
         hasher.combine(phoneNumbers.map { $0.value })
         hasher.combine(phoneNumbers.map { $0.label })
         // Don't include "emails" because it doesn't impact system contacts.
+        // Don't include "organizationName" either. This hash gates contact
+        // intersection, which is keyed on phone numbers, and SignalAccount has
+        // nowhere to persist an organization name.
         return hasher.finalize()
     }
 

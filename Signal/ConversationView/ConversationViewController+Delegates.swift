@@ -86,7 +86,7 @@ extension ConversationViewController: UIAdaptivePresentationControllerDelegate {
             self.openAttachmentKeyboard()
         case let navigationController as OWSNavigationController:
             switch navigationController.viewControllers.first {
-            case is ContactPickerViewController, is LocationPicker:
+            case is ContactPickerViewController, is ContactSharingPickerViewController, is LocationPicker:
                 self.openAttachmentKeyboard()
             default:
                 break
@@ -99,9 +99,14 @@ extension ConversationViewController: UIAdaptivePresentationControllerDelegate {
 
 // MARK: -
 
-extension ConversationViewController: ContactPickerDelegate {
+extension ConversationViewController: ContactPickerDelegate, ContactSharingPickerDelegate {
 
     public func contactPickerDidCancel(_: ContactPickerViewController) {
+        dismiss(animated: true, completion: nil)
+        self.openAttachmentKeyboard()
+    }
+
+    public func contactSharingPickerDidCancel(_ picker: ContactSharingPickerViewController) {
         dismiss(animated: true, completion: nil)
         self.openAttachmentKeyboard()
     }

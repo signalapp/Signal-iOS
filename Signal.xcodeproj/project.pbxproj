@@ -183,6 +183,7 @@
 		05B411252C62845000A1EDBC /* ChatListInboxFilterSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B411242C62845000A1EDBC /* ChatListInboxFilterSection.swift */; };
 		05FDBC292CD91B31000C87BC /* ChatListContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FDBC282CD91B31000C87BC /* ChatListContainerView.swift */; };
 		0CE014267EDFBD2538E940A0 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FF88FB580BC19B240EEB86A /* Pods_Signal.framework */; };
+		1027FFCCCC063C8107CCD1DD /* ContactSharingPickerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1FF7C99B8F2DF3BAF0DC9F /* ContactSharingPickerDelegate.swift */; };
 		1404D8B3276A353B0068E2F6 /* ChatListViewController+Multiselect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1404D8B2276A353A0068E2F6 /* ChatListViewController+Multiselect.swift */; };
 		1466AB282817F7E7003B3D9F /* PluralAware.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = 1466AB262817F7E7003B3D9F /* PluralAware.stringsdict */; };
 		1477630B275E20D700D1067E /* ThreadContextualActionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1477630A275E20D700D1067E /* ThreadContextualActionProvider.swift */; };
@@ -955,8 +956,9 @@
 		55B753602D97304100CCC91C /* RemoteMuteToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B7535F2D97303A00CCC91C /* RemoteMuteToast.swift */; };
 		55BD355C2F16DAC0008E989C /* input_video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5531BE0E2F15B97F002AF66F /* input_video.mp4 */; };
 		5AA002E62CA24566002D1CC2 /* SessionStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA002E52CA2455F002D1CC2 /* SessionStoreTest.swift */; };
+		5F0FCB3F9BC04E7EB4B5A9DA /* ContactSharingRowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C97A48E040D913B54956AB /* ContactSharingRowCell.swift */; };
 		616577F953D77424E32C7438 /* Pods_SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */; };
-		63AB899C30505F3D0065AEF3 /* SelectContactForSharingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AB899B30505F350065AEF3 /* SelectContactForSharingViewController.swift */; };
+		65D2854846F2127979853B12 /* ContactSharingPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE5380475512D4C3083EDC /* ContactSharingPickerViewController.swift */; };
 		6600BB1A2BA3A0930005A035 /* LinkPreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB192BA3A0930005A035 /* LinkPreviewManager.swift */; };
 		6600BB212BA3BC540005A035 /* LinkPreviewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB202BA3BC540005A035 /* LinkPreviewHelper.swift */; };
 		6600F34C298C81CD00B1EDB7 /* UnknownEnumCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */; };
@@ -1604,6 +1606,7 @@
 		76F958632A09A5AE00B43E63 /* DebugUIDiskUsage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F958622A09A5AE00B43E63 /* DebugUIDiskUsage.swift */; };
 		76FCCDBC27AB8FBE00BAA7F0 /* MediaControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76FCCDBB27AB8FBE00BAA7F0 /* MediaControls.swift */; };
 		83B9573927C9A1FA00A678FD /* CaptchaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B9573827C9A1FA00A678FD /* CaptchaView.swift */; };
+		848961B553640CEDA15C38D9 /* ContactSharingSystemContactWrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 691923222A44D263F4F0084D /* ContactSharingSystemContactWrapperTests.swift */; };
 		8803FF6628EF89B50023574A /* StorySharingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5FA9528EF7E02007AA1BF /* StorySharingTests.swift */; };
 		8806EF19248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8806EF18248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift */; };
 		8806EF1B248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */; };
@@ -1789,6 +1792,7 @@
 		A163E8AB16F3F6AA0094D68B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A163E8AA16F3F6A90094D68B /* Security.framework */; };
 		A1A018521805C5E800A052A6 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
 		A1A018531805C60D00A052A6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A091169C9E5E00537ABF /* CoreGraphics.framework */; };
+		A20EC336FE7D969EBAA7B99E /* ContactSharingPickerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B76A4C51840CBBECD4CA0ECE /* ContactSharingPickerViewModelTests.swift */; };
 		A5E7C675248C5443007C949A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A5E7C673248C5442007C949A /* InfoPlist.strings */; };
 		AB0C401C2E5BADCE00A1B2C3 /* NotificationSettingsBadgeCountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0C401B2E5BADCE00A1B2C3 /* NotificationSettingsBadgeCountViewController.swift */; };
 		B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60EDE031A05A01700D73516 /* AudioToolbox.framework */; };
@@ -1797,6 +1801,7 @@
 		B6B226971BE4B7D200860F4D /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6B226961BE4B7D200860F4D /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		B6F509971AA53F760068F56A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
 		B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */; };
+		B7770B9F27912921CCAEC395 /* ContactSharingPickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F23C21CD526C1F69ED4D55F /* ContactSharingPickerViewModel.swift */; };
 		B909C1592AAA5BAA00FED2AF /* AppIconSettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B909C1582AAA5BAA00FED2AF /* AppIconSettingsTableViewController.swift */; };
 		B91751C32EC5527B00FF7A9C /* AppIcon-news.icon in Resources */ = {isa = PBXBuildFile; fileRef = B91751C22EC5527B00FF7A9C /* AppIcon-news.icon */; };
 		B91751C72EC552DD00FF7A9C /* AppIcon-bubbles.icon in Resources */ = {isa = PBXBuildFile; fileRef = B91751C62EC552DD00FF7A9C /* AppIcon-bubbles.icon */; };
@@ -4442,6 +4447,7 @@
 		05FDBC282CD91B31000C87BC /* ChatListContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListContainerView.swift; sourceTree = "<group>"; };
 		09AF6C1F75C04D3196CCFD38 /* NotificationSettingsWhileMutedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsWhileMutedViewController.swift; sourceTree = "<group>"; };
 		0BADD293DAFC82BF3274F0F6 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0CAE5380475512D4C3083EDC /* ContactSharingPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSharingPickerViewController.swift; sourceTree = "<group>"; };
 		1404D8B2276A353A0068E2F6 /* ChatListViewController+Multiselect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+Multiselect.swift"; sourceTree = "<group>"; };
 		1466AB272817F7E7003B3D9F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = translations/en.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		1466AB292817F7F2003B3D9F /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = de; path = translations/de.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
@@ -4470,6 +4476,7 @@
 		1704690B25D4C92B000793D8 /* test-jpg-rotated.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "test-jpg-rotated.jpg"; sourceTree = "<group>"; };
 		17E6048F28A17BD200127680 /* ZkGroupIntegrationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZkGroupIntegrationTest.swift; sourceTree = "<group>"; };
 		17EC850B29133CDB00319C82 /* CancelledGroupRing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CancelledGroupRing.swift; sourceTree = "<group>"; };
+		25C97A48E040D913B54956AB /* ContactSharingRowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSharingRowCell.swift; sourceTree = "<group>"; };
 		299F6904BB7E4C0E2463A169 /* Pods-SignalNSE.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.app store release.xcconfig"; path = "Target Support Files/Pods-SignalNSE/Pods-SignalNSE.app store release.xcconfig"; sourceTree = "<group>"; };
 		2B0685730953D09782B1F911 /* Pods-SignalShareExtension.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.profiling.xcconfig"; path = "Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.profiling.xcconfig"; sourceTree = "<group>"; };
 		2C1CB05FE7FDA3C1F0138D7F /* Pods-SignalServiceKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKitTests.debug.xcconfig"; path = "Target Support Files/Pods-SignalServiceKitTests/Pods-SignalServiceKitTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -5331,7 +5338,6 @@
 		5AA002E52CA2455F002D1CC2 /* SessionStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStoreTest.swift; sourceTree = "<group>"; };
 		5D6C4583F668E9D733E59B9B /* Pods-SignalServiceKitTests.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKitTests.testable release.xcconfig"; path = "Target Support Files/Pods-SignalServiceKitTests/Pods-SignalServiceKitTests.testable release.xcconfig"; sourceTree = "<group>"; };
 		5F85041386A219C9710EAB41 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
-		63AB899B30505F350065AEF3 /* SelectContactForSharingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectContactForSharingViewController.swift; sourceTree = "<group>"; };
 		65703441A3D2C7FE670E65ED /* Pods-SignalServiceKit.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.profiling.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.profiling.xcconfig"; sourceTree = "<group>"; };
 		6600BB192BA3A0930005A035 /* LinkPreviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewManager.swift; sourceTree = "<group>"; };
 		6600BB202BA3BC540005A035 /* LinkPreviewHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewHelper.swift; sourceTree = "<group>"; };
@@ -5783,6 +5789,7 @@
 		66FFDADB2C823C270079C0E7 /* BackupArchive+Contexts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackupArchive+Contexts.swift"; sourceTree = "<group>"; };
 		67391FF368D9A60FC8B73F0E /* Pods-Signal.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.profiling.xcconfig"; path = "Target Support Files/Pods-Signal/Pods-Signal.profiling.xcconfig"; sourceTree = "<group>"; };
 		675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		691923222A44D263F4F0084D /* ContactSharingSystemContactWrapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSharingSystemContactWrapperTests.swift; sourceTree = "<group>"; };
 		6AA5EACC302E7D5800E5954E /* RingrtcSvcConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingrtcSvcConfig.swift; sourceTree = "<group>"; };
 		6BB92957776B3173894CD3E9 /* Pods-SignalServiceKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.app store release.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.app store release.xcconfig"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -6139,6 +6146,7 @@
 		88F5FA9528EF7E02007AA1BF /* StorySharingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySharingTests.swift; sourceTree = "<group>"; };
 		88FE237D249C22080041670F /* ConversationViewController+Scroll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Scroll.swift"; sourceTree = "<group>"; };
 		89BA19AB4B8B1BC811E53717 /* Pods-SignalServiceKit.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.testable release.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.testable release.xcconfig"; sourceTree = "<group>"; };
+		8F23C21CD526C1F69ED4D55F /* ContactSharingPickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSharingPickerViewModel.swift; sourceTree = "<group>"; };
 		91DA2BE463493965F5BC71C0 /* Pods_SignalServiceKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalServiceKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		948B2FC201146EF3BA459226 /* Pods_SignalServiceKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalServiceKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		94A685625E25E6F3EE3CC812 /* Pods-SignalUITests.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.testable release.xcconfig"; path = "Target Support Files/Pods-SignalUITests/Pods-SignalUITests.testable release.xcconfig"; sourceTree = "<group>"; };
@@ -6178,6 +6186,7 @@
 		B6BC3D0C1AA544B100C2907F /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = translations/da.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6F509961AA53F760068F56A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = translations/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
+		B76A4C51840CBBECD4CA0ECE /* ContactSharingPickerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSharingPickerViewModelTests.swift; sourceTree = "<group>"; };
 		B7DF4FBE40A1DE0CD288E0EB /* Pods-SignalUITests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.app store release.xcconfig"; path = "Target Support Files/Pods-SignalUITests/Pods-SignalUITests.app store release.xcconfig"; sourceTree = "<group>"; };
 		B909C1582AAA5BAA00FED2AF /* AppIconSettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconSettingsTableViewController.swift; sourceTree = "<group>"; };
 		B91751C22EC5527B00FF7A9C /* AppIcon-news.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "AppIcon-news.icon"; sourceTree = "<group>"; };
@@ -7864,6 +7873,7 @@
 		D9FC1C902C6FE5A50023AB87 /* BackupArchiveTSMessageEditHistoryArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveTSMessageEditHistoryArchiver.swift; sourceTree = "<group>"; };
 		D9FF515B2F03A2A10011982F /* DBUInt64.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBUInt64.swift; sourceTree = "<group>"; };
 		D9FF515D2F03A6CD0011982F /* DBUInt64Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBUInt64Test.swift; sourceTree = "<group>"; };
+		DA1FF7C99B8F2DF3BAF0DC9F /* ContactSharingPickerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSharingPickerDelegate.swift; sourceTree = "<group>"; };
 		E1447D8E2CCACFFA004D8FA2 /* BackupArchiveCallLinkRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveCallLinkRecipientArchiver.swift; sourceTree = "<group>"; };
 		E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientContextMenuHelper.swift; sourceTree = "<group>"; };
 		E15066C22CED498600F6F9AF /* RegistrationQuickRestoreQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationQuickRestoreQRCodeViewController.swift; sourceTree = "<group>"; };
@@ -11362,6 +11372,12 @@
 				76E08F3D2AE8763900032BC9 /* ContactShareField.swift */,
 				76E08F412AE879EB00032BC9 /* ContactShareViewController.swift */,
 				34A955A5271B510500B05242 /* ContactShareViewModel.swift */,
+				DA1FF7C99B8F2DF3BAF0DC9F /* ContactSharingPickerDelegate.swift */,
+				0CAE5380475512D4C3083EDC /* ContactSharingPickerViewController.swift */,
+				8F23C21CD526C1F69ED4D55F /* ContactSharingPickerViewModel.swift */,
+				B76A4C51840CBBECD4CA0ECE /* ContactSharingPickerViewModelTests.swift */,
+				25C97A48E040D913B54956AB /* ContactSharingRowCell.swift */,
+				691923222A44D263F4F0084D /* ContactSharingSystemContactWrapperTests.swift */,
 				34A9558D271B510500B05242 /* EditContactShareNameViewController.swift */,
 			);
 			path = ContactSharing;
@@ -11442,7 +11458,6 @@
 			children = (
 				8835DE02230DEC6A00DC6B66 /* AddToBlockListViewController.swift */,
 				8835DE00230DBF7E00DC6B66 /* ComposeViewController.swift */,
-				63AB899B30505F350065AEF3 /* SelectContactForSharingViewController.swift */,
 			);
 			path = RecipientPicker;
 			sourceTree = "<group>";
@@ -18197,6 +18212,10 @@
 				76E08F3E2AE8763900032BC9 /* ContactShareField.swift in Sources */,
 				76E08F422AE879EB00032BC9 /* ContactShareViewController.swift in Sources */,
 				3402AA63271D9DEC0084CBAE /* ContactShareViewModel.swift in Sources */,
+				1027FFCCCC063C8107CCD1DD /* ContactSharingPickerDelegate.swift in Sources */,
+				65D2854846F2127979853B12 /* ContactSharingPickerViewController.swift in Sources */,
+				B7770B9F27912921CCAEC395 /* ContactSharingPickerViewModel.swift in Sources */,
+				5F0FCB3F9BC04E7EB4B5A9DA /* ContactSharingRowCell.swift in Sources */,
 				3402AA7C271D9E180084CBAE /* ContactsViewHelper.swift in Sources */,
 				3402AAB2271D9E180084CBAE /* ContactTableViewCell.swift in Sources */,
 				B9754F542C73AD49000000E4 /* ConversationAvatarView+SwiftUI.swift in Sources */,
@@ -18424,6 +18443,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				507B69112C503FA800F1C6D7 /* CallLinkTest.swift in Sources */,
+				A20EC336FE7D969EBAA7B99E /* ContactSharingPickerViewModelTests.swift in Sources */,
+				848961B553640CEDA15C38D9 /* ContactSharingSystemContactWrapperTests.swift in Sources */,
 				50BF51082BB2030C00C2C309 /* FormattedNumberFieldTest.swift in Sources */,
 				509085BA2C498C4400409B85 /* HTMLMetadataTests.swift in Sources */,
 				5073EACB2C4F3A16001FBB3E /* LinkPreviewFetcherTest.swift in Sources */,
@@ -19165,7 +19186,6 @@
 				D959F1172FE4581900006744 /* ScreenshotBlocking.swift in Sources */,
 				D918B08D304B4CC6006865B2 /* ScreenshotBlockingManager.swift in Sources */,
 				667EDE6428F8D6B7001FB487 /* SDAnimatedImage+Duration.swift in Sources */,
-				63AB899C30505F3D0065AEF3 /* SelectContactForSharingViewController.swift in Sources */,
 				88C659B024688335002AC115 /* SelfSignedIdentity.swift in Sources */,
 				502D9AA4303CC73700FA0D7D /* SenderKeyExpirationJob.swift in Sources */,
 				4C4AE6A1224AF35700D4AF6F /* SendMediaNavigationController.swift in Sources */,

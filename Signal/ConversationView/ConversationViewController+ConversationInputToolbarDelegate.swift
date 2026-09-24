@@ -631,7 +631,8 @@ private extension ConversationViewController {
             purpose: .share,
             performWhenAllowed: {
                 if BuildFlags.accountIdentifierSharing {
-                    let contactsPicker = SelectContactForSharingViewController()
+                    let contactsPicker = ContactSharingPickerViewController()
+                    contactsPicker.contactSharingDelegate = self
                     let sheet = OWSNavigationController(rootViewController: contactsPicker)
                     sheet.presentationController?.delegate = self
                     self.presentFormSheet(sheet, animated: true)
