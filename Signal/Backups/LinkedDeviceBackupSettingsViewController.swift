@@ -328,7 +328,7 @@ final class LinkedDeviceBackupSettingsViewController: OWSTableViewController2 {
             trailingView = spinner
         case .loaded(let date):
             let valueLabel = UILabel()
-            valueLabel.text = BackupSettingsView.Strings.lastBackupString(date: date)
+            valueLabel.text = BackupSettingsView.Strings.lastBackupString(date: date, lowercaseRelativeDate: false)
             valueLabel.font = .dynamicTypeBody
             valueLabel.textColor = UIColor.Signal.secondaryLabel
             trailingView = valueLabel

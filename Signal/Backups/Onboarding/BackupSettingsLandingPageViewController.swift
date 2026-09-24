@@ -174,13 +174,21 @@ class BackupSettingsLandingPageViewController: OWSTableViewController2 {
             } else {
                 return [priceText, renewalDateText].joined(separator: "\n")
             }
-        case .freeAndEnabled, .paidButFreeForTesters:
+        case .freeAndEnabled:
             let freePlanDescription = BackupSettingsView.Strings.freePlanDescription
             if let lastBackupDetails {
                 let lastBackupDateString = BackupSettingsView.Strings.prefixedLastBackupString(date: lastBackupDetails.date)
                 return [freePlanDescription, lastBackupDateString].joined(separator: "\n")
             } else {
                 return freePlanDescription
+            }
+        case .paidButFreeForTesters:
+            let paidButFreePlanDescription = BackupSettingsView.Strings.paidPlanFreeForTestersLandingPageDescription
+            if let lastBackupDetails {
+                let lastBackupDateString = BackupSettingsView.Strings.prefixedLastBackupString(date: lastBackupDetails.date)
+                return [paidButFreePlanDescription, lastBackupDateString].joined(separator: "\n")
+            } else {
+                return paidButFreePlanDescription
             }
         case .paidButExpiring(let expirationDate):
             let canceledText = BackupSettingsView.Strings.paidPlanCanceledText

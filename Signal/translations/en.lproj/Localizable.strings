@@ -886,6 +886,9 @@
 /* Text describing that the user's paid backup plan did not correspond to a App Store subscription on this device. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_IAP_NOT_FOUND_LOCALLY_DESCRIPTION" = "Your subscription was not found on this device. Renew to continue using Signal Backups.";
 
+/* Text on the landing page describing that the user's backup plan is paid, but free for them as a tester. */
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_COMPLIMENTARY_DESCRIPTION" = "Your backup plan is paid (complimentary for TestFlight users)";
+
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Text + all media backup";
 

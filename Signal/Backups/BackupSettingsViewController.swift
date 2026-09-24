@@ -3073,7 +3073,7 @@ private struct BackupDetailsView: View {
 
     var body: some View {
         HStack {
-            let lastBackupMessage = lastBackupDetails.map { BackupSettingsView.Strings.lastBackupString(date: $0.date) }
+            let lastBackupMessage = lastBackupDetails.map { BackupSettingsView.Strings.lastBackupString(date: $0.date, lowercaseRelativeDate: false) }
 
             Text(BackupSettingsView.Strings.lastBackupLabel)
             Spacer()
@@ -3169,6 +3169,13 @@ extension BackupSettingsView {
             )
         }
 
+        static var paidPlanFreeForTestersLandingPageDescription: String {
+            OWSLocalizedString(
+                "BACKUP_SETTINGS_BACKUP_PLAN_PAID_COMPLIMENTARY_DESCRIPTION",
+                comment: "Text on the landing page describing that the user's backup plan is paid, but free for them as a tester.",
+            )
+        }
+
         static var paidPlanFreeForTestersText: String {
             OWSLocalizedString(
                 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION",
@@ -3195,28 +3202,36 @@ extension BackupSettingsView {
                 "BACKUP_SETTINGS_ENABLED_LAST_BACKUP_LABEL_LANDING_PAGE",
                 comment: "Label for a cell on the backups landing page explaining when the user's last backup occurred.",
             )
-            return [prefix, lastBackupString(date: date)].joined(separator: " ")
+            return [prefix, lastBackupString(date: date, lowercaseRelativeDate: true)].joined(separator: " ")
         }
 
-        static func lastBackupString(date: Date) -> String {
+        static func lastBackupString(date: Date, lowercaseRelativeDate: Bool) -> String {
             let timeString = DateFormatter.localizedString(from: date, dateStyle: .none, timeStyle: .short)
 
             if Calendar.current.isDateInToday(date) {
-                return String.nonPluralLocalizedStringWithFormat(
+                let todayString = String.nonPluralLocalizedStringWithFormat(
                     OWSLocalizedString(
                         "BACKUP_SETTINGS_ENABLED_LAST_BACKUP_TODAY_FORMAT",
                         comment: "Text explaining that the user's last backup was today. Embeds {{ the time of the backup }}.",
                     ),
                     timeString,
                 )
+                if lowercaseRelativeDate {
+                    return todayString.localizedLowercase
+                }
+                return todayString
             } else if Calendar.current.isDateInYesterday(date) {
-                return String.nonPluralLocalizedStringWithFormat(
+                let yesterdayString = String.nonPluralLocalizedStringWithFormat(
                     OWSLocalizedString(
                         "BACKUP_SETTINGS_ENABLED_LAST_BACKUP_YESTERDAY_FORMAT",
                         comment: "Text explaining that the user's last backup was yesterday. Embeds {{ the time of the backup }}.",
                     ),
                     timeString,
                 )
+                if lowercaseRelativeDate {
+                    return yesterdayString.localizedLowercase
+                }
+                return yesterdayString
             } else {
                 let dateString = DateFormatter.localizedString(from: date, dateStyle: .medium, timeStyle: .none)
                 return String.nonPluralLocalizedStringWithFormat(

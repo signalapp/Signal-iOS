@@ -544,7 +544,7 @@ class LocalFileBackupsSettingsViewController: OWSTableViewController2 {
         }
 
         if let lastBackupDate = lastBackupDetails?.date {
-            let lastBackupMessage = BackupSettingsView.Strings.lastBackupString(date: lastBackupDate)
+            let lastBackupMessage = BackupSettingsView.Strings.lastBackupString(date: lastBackupDate, lowercaseRelativeDate: false)
             section.add(OWSTableItem(
                 customCellBlock: {
                     let cell = OWSTableItem.buildCell(
