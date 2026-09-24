@@ -44,11 +44,12 @@ extension Attachment {
         var lastThumbnailDownloadAttemptTimestamp: UInt64?
         let localRelativeFilePath: String?
         let localRelativeFilePathThumbnail: String?
-        let cachedAudioDurationSeconds: Double?
         let cachedMediaHeightPixels: UInt32?
         let cachedMediaWidthPixels: UInt32?
         let cachedVideoDurationSeconds: Double?
+        let audioDurationSeconds: Double?
         let audioWaveformRelativeFilePath: String?
+        let audioWaveformSamples: Data?
         let videoStillFrameRelativeFilePath: String?
         let originalAttachmentIdForQuotedReply: Int64?
         let mediaTierIncrementalMac: Data?
@@ -110,11 +111,12 @@ extension Attachment {
             case lastThumbnailDownloadAttemptTimestamp
             case localRelativeFilePath
             case localRelativeFilePathThumbnail
-            case cachedAudioDurationSeconds
             case cachedMediaHeightPixels
             case cachedMediaWidthPixels
             case cachedVideoDurationSeconds
+            case audioDurationSeconds = "cachedAudioDurationSeconds"
             case audioWaveformRelativeFilePath
+            case audioWaveformSamples
             case videoStillFrameRelativeFilePath
             case originalAttachmentIdForQuotedReply
             case mediaTierIncrementalMac
@@ -151,6 +153,7 @@ extension Attachment {
                 plaintextHash: attachment.plaintextHash,
                 localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
                 streamInfo: attachment.streamInfo,
+                audioDetails: attachment.audioDetails,
                 latestTransitTierInfo: attachment.latestTransitTierInfo,
                 originalTransitTierInfo: attachment.originalTransitTierInfo,
                 mediaTierInfo: attachment.mediaTierInfo,
@@ -169,6 +172,7 @@ extension Attachment {
             plaintextHash: Data?,
             localRelativeFilePathThumbnail: String?,
             streamInfo: Attachment.StreamInfo?,
+            audioDetails: Attachment.AudioDetails?,
             latestTransitTierInfo: Attachment.TransitTierInfo?,
             originalTransitTierInfo: Attachment.TransitTierInfo?,
             mediaTierInfo: Attachment.MediaTierInfo?,
@@ -228,11 +232,12 @@ extension Attachment {
             self.originalAttachmentIdForQuotedReply = originalAttachmentIdForQuotedReply
             self._lastFullscreenViewTimestamp = DBUInt64Optional(wrappedValue: lastFullscreenViewTimestamp)
 
-            self.cachedAudioDurationSeconds = streamInfo?.cachedAudioDuration
             self.cachedMediaHeightPixels = streamInfo?.cachedMediaSizePixels.flatMap { UInt32(exactly: $0.height.rounded()) }
             self.cachedMediaWidthPixels = streamInfo?.cachedMediaSizePixels.flatMap { UInt32(exactly: $0.width.rounded()) }
             self.cachedVideoDurationSeconds = streamInfo?.cachedVideoDuration
-            self.audioWaveformRelativeFilePath = streamInfo?.cachedAudioWaveformRelativeFilePath
+            self.audioDurationSeconds = audioDetails?.duration
+            self.audioWaveformRelativeFilePath = audioDetails?.waveformRelativeFilePath
+            self.audioWaveformSamples = audioDetails?.waveformSamples
             self.videoStillFrameRelativeFilePath = streamInfo?.cachedVideoStillFrameRelativeFilePath
         }
 
@@ -254,6 +259,7 @@ extension Attachment {
                 plaintextHash: nil,
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: nil,
+                audioDetails: nil,
                 latestTransitTierInfo: latestTransitTierInfo,
                 originalTransitTierInfo: latestTransitTierInfo.encryptionKey == encryptionKey
                     ? latestTransitTierInfo : nil,
@@ -270,6 +276,7 @@ extension Attachment {
             contentType: ContentType,
             encryptionKey: Data,
             streamInfo: Attachment.StreamInfo,
+            audioDetails: Attachment.AudioDetails?,
             plaintextHash: Data,
         ) -> Record {
             return Record(
@@ -281,6 +288,7 @@ extension Attachment {
                 plaintextHash: plaintextHash,
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: streamInfo,
+                audioDetails: audioDetails,
                 latestTransitTierInfo: nil,
                 originalTransitTierInfo: nil,
                 mediaTierInfo: nil,
@@ -309,6 +317,7 @@ extension Attachment {
                 plaintextHash: plaintextHash,
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: nil,
+                audioDetails: nil,
                 latestTransitTierInfo: latestTransitTierInfo,
                 originalTransitTierInfo: latestTransitTierInfo?.encryptionKey == encryptionKey
                     ? latestTransitTierInfo : nil,
@@ -335,6 +344,7 @@ extension Attachment {
                 plaintextHash: nil,
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: nil,
+                audioDetails: nil,
                 latestTransitTierInfo: nil,
                 originalTransitTierInfo: nil,
                 mediaTierInfo: nil,
@@ -361,6 +371,7 @@ extension Attachment {
                 plaintextHash: nil,
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: nil,
+                audioDetails: nil,
                 latestTransitTierInfo: thumbnailTransitTierInfo,
                 originalTransitTierInfo: thumbnailTransitTierInfo?.encryptionKey == thumbnailEncryptionKey
                     ? thumbnailTransitTierInfo : nil,

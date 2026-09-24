@@ -840,7 +840,7 @@ public extension Cryptography {
             attachmentKey: AttachmentKey,
         ) throws {
             guard FileManager.default.fileExists(atPath: encryptedUrl.path) else {
-                throw OWSAssertionError("Missing attachment file.")
+                throw OWSGenericError("Missing attachment file.")
             }
 
             self.file = try LocalFileHandle(url: encryptedUrl)

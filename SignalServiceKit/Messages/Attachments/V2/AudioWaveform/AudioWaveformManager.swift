@@ -48,9 +48,17 @@ class AudioWaveformManagerImpl: AudioWaveformManager {
             break
         }
 
-        // We failed to generate a waveform file when we downloaded the attachment,
-        // so don't try again now.
-        guard let audioWaveformRelativeFilePath = attachmentStream.cachedAudioWaveformRelativeFilePath else {
+        if let waveformSamples = attachmentStream.audioDetails?.waveformSamples {
+            return Task {
+                AudioWaveform(waveformData: waveformSamples)
+            }
+        }
+
+        // This attachment predates storing waveforms alongside the attachment
+        // and hasn't been migrated yet, so read the waveform file instead.
+        guard let waveformRelativeFilePath = attachmentStream.audioDetails?.waveformRelativeFilePath else {
+            // We failed to generate a waveform when we downloaded the attachment,
+            // so don't try again now.
             return Task {
                 throw OWSAssertionError("invalid audio file")
             }
@@ -58,7 +66,7 @@ class AudioWaveformManagerImpl: AudioWaveformManager {
 
         return Task {
             let fileURL = AttachmentStream.absoluteAttachmentFileURL(
-                relativeFilePath: audioWaveformRelativeFilePath,
+                relativeFilePath: waveformRelativeFilePath,
             )
             // waveform is validated at creation time; no need to revalidate every read.
             let data = try Cryptography.decryptFileWithoutValidating(

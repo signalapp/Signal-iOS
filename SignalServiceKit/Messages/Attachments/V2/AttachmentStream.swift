@@ -16,6 +16,7 @@ public class AttachmentStream {
     public var id: Attachment.IDType { attachment.id }
     public var mimeType: String { attachment.mimeType }
     public var contentType: Attachment.ContentType { attachment.contentType }
+    public var audioDetails: Attachment.AudioDetails? { attachment.audioDetails }
 
     public var ciphertextDigest: Data { info.ciphertextDigest }
     public var plaintextHash: Data { info.plaintextHash }
@@ -25,8 +26,6 @@ public class AttachmentStream {
     public var cachedMediaSizePixels: CGSize? { info.cachedMediaSizePixels }
     public var cachedVideoDuration: TimeInterval? { info.cachedVideoDuration }
     public var cachedVideoStillFrameRelativeFilePath: String? { info.cachedVideoStillFrameRelativeFilePath }
-    public var cachedAudioDuration: TimeInterval? { info.cachedAudioDuration }
-    public var cachedAudioWaveformRelativeFilePath: String? { info.cachedAudioWaveformRelativeFilePath }
     public var localRelativeFilePath: String { info.localRelativeFilePath }
 
     // MARK: - Init

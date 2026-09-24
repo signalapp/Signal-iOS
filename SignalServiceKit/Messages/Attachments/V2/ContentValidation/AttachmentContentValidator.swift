@@ -40,7 +40,7 @@ public struct PendingAttachment {
     let videoDuration: TimeInterval?
     let videoStillFrameRelativeFilePath: String?
     let audioDuration: TimeInterval?
-    let audioWaveformRelativeFilePath: String?
+    let audioWaveformSamples: Data?
 
     var contentType: Attachment.ContentType {
         Attachment.ContentType(mimeType: mimeType)
@@ -61,14 +61,15 @@ public struct PendingAttachment {
 }
 
 public struct RevalidatedAttachment {
-    /// Orphan record for any created ancillary files, such as the audio waveform.
+    /// Orphan record for any created ancillary files, such as the video still
+    /// frame.
     let orphanRecordId: OrphanedAttachmentRecord.RowId
 
     let mediaPixelSize: CGSize?
     let videoDuration: TimeInterval?
     let videoStillFrameRelativeFilePath: String?
     let audioDuration: TimeInterval?
-    let audioWaveformRelativeFilePath: String?
+    let audioWaveformSamples: Data?
 }
 
 public protocol ValidatedInlineMessageBody {

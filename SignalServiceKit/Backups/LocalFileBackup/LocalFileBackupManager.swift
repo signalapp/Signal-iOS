@@ -232,6 +232,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
                     attachmentStore.updateLocalFileBackupAttachmentAsTransferred(
                         attachment: attachmentWithMetadata.attachment,
                         streamInfo: Attachment.StreamInfo(pendingAttachment: pendingAttachment),
+                        audioDetails: Attachment.AudioDetails(pendingAttachment: pendingAttachment),
                         tx: tx,
                     )
                     orphanedAttachmentCleaner.releasePendingAttachment(

@@ -2142,6 +2142,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         sourceType: source,
                         priority: priority,
                         streamInfo: streamInfo,
+                        audioDetails: Attachment.AudioDetails(pendingAttachment: pendingAttachment),
                         timestamp: timestamp,
                         tx: tx,
                     )
@@ -2308,6 +2309,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         contentType: pendingAttachment.contentType,
                         encryptionKey: pendingAttachment.encryptionKey,
                         streamInfo: streamInfo,
+                        audioDetails: Attachment.AudioDetails(pendingAttachment: pendingAttachment),
                         plaintextHash: pendingAttachment.plaintextHash,
                     )
 
@@ -2481,6 +2483,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         contentType: pendingThumbnailAttachment.contentType,
                         encryptionKey: pendingThumbnailAttachment.encryptionKey,
                         streamInfo: streamInfo,
+                        audioDetails: Attachment.AudioDetails(pendingAttachment: pendingThumbnailAttachment),
                         plaintextHash: pendingThumbnailAttachment.plaintextHash,
                     )
 

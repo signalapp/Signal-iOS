@@ -4,7 +4,9 @@
 //
 
 import Foundation
+import Testing
 import XCTest
+
 @testable import SignalServiceKit
 
 class AttachmentStoreTests: XCTestCase {
@@ -1099,6 +1101,116 @@ class AttachmentStoreTests: XCTestCase {
             XCTAssertEqual(paramsRecord, referenceRecord)
         case (.message, _), (.storyMessage, _), (.thread, _):
             XCTFail("Non matching owner types")
+        }
+    }
+}
+
+// MARK: -
+
+@MainActor
+struct AttachmentStoreAudioDetailsTests {
+
+    typealias AudioDetailsTestCase = (
+        duration: TimeInterval,
+        waveformSamples: Data?,
+        waveformRelativeFilePath: String?,
+    )
+
+    private let db = InMemoryDB()
+    private let attachmentStore = AttachmentStore()
+
+    @Test(arguments: [
+        // A waveform we computed ourselves, or one the sender gave us.
+        (12.5, Data(UInt8.min...UInt8.max), nil),
+        // Computing a waveform is best-effort; the duration survives without one.
+        (12.5, nil, nil),
+        // An attachment that has a waveform file, rather than samples.
+        (12.5, nil, "waveform-file-path"),
+    ] as [AudioDetailsTestCase])
+    func audioDetailsRoundTrip(testCase: AudioDetailsTestCase) throws {
+        let audioDetails = Attachment.AudioDetails(
+            duration: testCase.duration,
+            waveformSamples: testCase.waveformSamples,
+            waveformRelativeFilePath: testCase.waveformRelativeFilePath,
+        )
+
+        let (attachment, _) = try insertAudioAttachment(audioDetails: audioDetails)
+
+        #expect(attachment.audioDetails == audioDetails)
+    }
+
+    @Test
+    func offloadingKeepsAudioDetails() throws {
+        let audioDetails = Attachment.AudioDetails(
+            duration: 12.5,
+            waveformSamples: Data([0, 128, 255]),
+            waveformRelativeFilePath: nil,
+        )
+
+        let (attachment, messageRowId) = try insertAudioAttachment(audioDetails: audioDetails)
+        db.write { tx in
+            attachmentStore.markOffloaded(
+                attachment: attachment,
+                localRelativeFilePathThumbnail: nil,
+                tx: tx,
+            )
+        }
+
+        let offloadedAttachment = fetchAttachment(messageRowId: messageRowId)
+
+        #expect(offloadedAttachment.asStream() == nil)
+        #expect(offloadedAttachment.audioDetails == audioDetails)
+    }
+
+    // MARK: -
+
+    private func insertAudioAttachment(
+        audioDetails: Attachment.AudioDetails,
+    ) throws -> (attachment: Attachment, messageRowId: Int64) {
+        let (threadRowId, messageRowId) = insertThreadAndInteraction()
+
+        var attachmentParams = Attachment.Record.mockStream(
+            mimeType: "audio/mp4",
+            audioDetails: audioDetails,
+        )
+        let attachmentReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
+            attachmentRecord: attachmentParams,
+            messageRowId: messageRowId,
+            threadRowId: threadRowId,
+        )
+        try db.write { tx in
+            _ = try attachmentStore.insert(
+                &attachmentParams,
+                reference: attachmentReferenceParams,
+                tx: tx,
+            )
+        }
+
+        return (fetchAttachment(messageRowId: messageRowId), messageRowId)
+    }
+
+    private func fetchAttachment(messageRowId: Int64) -> Attachment {
+        return db.read { tx in
+            let references = attachmentStore.fetchReferences(
+                owners: [.messageBodyAttachment(messageRowId: messageRowId)],
+                tx: tx,
+            )
+            return attachmentStore.fetch(
+                ids: references.map(\.attachmentRowId),
+                tx: tx,
+            ).first!
+        }
+    }
+
+    private func insertThreadAndInteraction() -> (threadRowId: Int64, interactionRowId: Int64) {
+        return db.write { tx in
+            let thread = TSThread(uniqueId: UUID().uuidString)
+            try! thread.insert(tx.database)
+
+            let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
+            try! interaction.asRecord().insert(tx.database)
+
+            return (thread.sqliteRowId!, interaction.sqliteRowId!)
         }
     }
 }

@@ -594,6 +594,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 contentType: pendingAttachment.contentType,
                 encryptionKey: pendingAttachment.encryptionKey,
                 streamInfo: streamInfo,
+                audioDetails: Attachment.AudioDetails(pendingAttachment: pendingAttachment),
                 plaintextHash: pendingAttachment.plaintextHash,
             )
 
@@ -699,6 +700,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 sourceType: .mediaTierFullsize,
                 priority: .backupRestore,
                 streamInfo: Attachment.StreamInfo(pendingAttachment: pendingAttachment),
+                audioDetails: Attachment.AudioDetails(pendingAttachment: pendingAttachment),
                 // This is used for "last viewed" state which isn't used
                 // for oversize text so it doesn't really matter but give
                 // a real date anyway.

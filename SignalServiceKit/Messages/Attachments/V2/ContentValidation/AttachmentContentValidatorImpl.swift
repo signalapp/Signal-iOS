@@ -430,7 +430,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let videoDuration: TimeInterval?
         let videoStillFramePendingFile: PendingFile?
         let audioDuration: TimeInterval?
-        let audioWaveformPendingFile: PendingFile?
+        let audioWaveformSamples: Data?
     }
 
     private func validateContentType(
@@ -441,7 +441,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let videoDuration: TimeInterval?
         let videoStillFramePendingFile: PendingFile?
         let audioDuration: TimeInterval?
-        let audioWaveformPendingFile: PendingFile?
+        let audioWaveformSamples: Data?
 
         // Precompute some properties for this attachment, depending on what
         // type we think it is.
@@ -452,7 +452,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             videoDuration = nil
             videoStillFramePendingFile = nil
             audioDuration = nil
-            audioWaveformPendingFile = nil
+            audioWaveformSamples = nil
             if
                 input.mimeType == MimeType.textXSignalPlain.rawValue,
                 input.byteSize > OWSMediaUtils.kMaxOversizeTextMessageReceiveSizeBytes
@@ -467,7 +467,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             videoDuration = nil
             videoStillFramePendingFile = nil
             audioDuration = nil
-            audioWaveformPendingFile = nil
+            audioWaveformSamples = nil
         case .video:
             (
                 blurHash,
@@ -476,11 +476,11 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 videoStillFramePendingFile,
             ) = try validateVideoContentType(input)
             audioDuration = nil
-            audioWaveformPendingFile = nil
+            audioWaveformSamples = nil
         case .audio:
             (
                 audioDuration,
-                audioWaveformPendingFile,
+                audioWaveformSamples,
             ) = try validateAudioContentType(input)
             blurHash = nil
             mediaPixelSize = nil
@@ -495,7 +495,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             videoDuration: videoDuration,
             videoStillFramePendingFile: videoStillFramePendingFile,
             audioDuration: audioDuration,
-            audioWaveformPendingFile: audioWaveformPendingFile,
+            audioWaveformSamples: audioWaveformSamples,
         )
     }
 
@@ -650,7 +650,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         _ input: Input,
     ) throws -> (
         duration: TimeInterval?,
-        waveformPendingFile: PendingFile?,
+        waveformSamples: Data?,
     ) {
         let duration: TimeInterval?
         do {
@@ -660,16 +660,12 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             duration = nil
         }
 
-        // Don't require the waveform file.
-        let waveformPendingFile = try? self.createAudioWaveform(
-            input,
-            mimeType: input.mimeType,
-            attachmentKey: input.attachmentKey,
-        )
+        // Don't require the waveform.
+        let waveform = try? self.createAudioWaveform(input, mimeType: input.mimeType)
 
         return (
             duration,
-            waveformPendingFile,
+            waveform?.waveformData,
         )
     }
 
@@ -701,17 +697,10 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         }
     }
 
-    private enum AudioWaveformFile {
-        case unencrypted(URL)
-        case encrypted(URL, encryptionKey: Data)
-    }
-
     private func createAudioWaveform(
         _ input: Input,
         mimeType: String,
-        attachmentKey: AttachmentKey,
-    ) throws -> PendingFile {
-        let waveform: AudioWaveform
+    ) throws -> AudioWaveform {
         switch input.type {
         case .inMemory(let data):
             // We have to write the data to a temporary file.
@@ -721,33 +710,19 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 isAvailableWhileDeviceLocked: true,
             )
             try data.write(to: fileUrl)
-            waveform = try audioWaveformManager.computeAudioWaveform(audioFilePath: fileUrl.path)
+            return try audioWaveformManager.computeAudioWaveform(audioFilePath: fileUrl.path)
 
         case .unencryptedFile(let fileUrl):
-            waveform = try audioWaveformManager.computeAudioWaveform(audioFilePath: fileUrl.path)
+            return try audioWaveformManager.computeAudioWaveform(audioFilePath: fileUrl.path)
 
         case let .encryptedFile(fileUrl, attachmentKey, plaintextLength, _):
-            waveform = try audioWaveformManager.computeAudioWaveform(
+            return try audioWaveformManager.computeAudioWaveform(
                 encryptedAudioFilePath: fileUrl.path,
                 attachmentKey: attachmentKey,
                 plaintextDataLength: plaintextLength,
                 mimeType: mimeType,
             )
         }
-
-        let outputWaveformFile = OWSFileSystem.temporaryFileUrl(
-            fileExtension: nil,
-            isAvailableWhileDeviceLocked: true,
-        )
-
-        let waveformData = try waveform.archive()
-        let (encryptedWaveform, _) = try Cryptography.encrypt(waveformData, attachmentKey: attachmentKey)
-        try encryptedWaveform.write(to: outputWaveformFile, options: .atomicWrite)
-
-        return .init(
-            tmpFileUrl: outputWaveformFile,
-            isTmpFileEncrypted: true,
-        )
     }
 
     // MARK: - File Preparation
@@ -765,7 +740,6 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let primaryFile: PrimaryFile?
 
         var input: Input { contentResult.input }
-        var audioWaveformFile: PendingFile? { contentResult.audioWaveformPendingFile }
         var videoStillFrameFile: PendingFile? { contentResult.videoStillFramePendingFile }
     }
 
@@ -827,7 +801,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 videoDuration: contentResult.videoDuration,
                 videoStillFrameRelativeFilePath: contentResult.videoStillFramePendingFile?.reservedRelativeFilePath,
                 audioDuration: contentResult.audioDuration,
-                audioWaveformRelativeFilePath: contentResult.audioWaveformPendingFile?.reservedRelativeFilePath,
+                audioWaveformSamples: contentResult.audioWaveformSamples,
             )
         }
         return pendingAttachments
@@ -856,7 +830,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 videoDuration: contentResult.videoDuration,
                 videoStillFrameRelativeFilePath: contentResult.videoStillFramePendingFile?.reservedRelativeFilePath,
                 audioDuration: contentResult.audioDuration,
-                audioWaveformRelativeFilePath: contentResult.audioWaveformPendingFile?.reservedRelativeFilePath,
+                audioWaveformSamples: contentResult.audioWaveformSamples,
             )
         }
         return results
@@ -868,9 +842,6 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         var orphanRecords = [Key: OrphanedAttachmentRecord.InsertableRecord]()
         var filesForCopying = [PendingFile]()
         for (key, contentResult) in contentResults {
-            let audioWaveformFile = try contentResult.audioWaveformFile?.encryptFileIfNeeded(
-                attachmentKey: contentResult.input.attachmentKey,
-            )
             let videoStillFrameFile = try contentResult.videoStillFrameFile?.encryptFileIfNeeded(
                 attachmentKey: contentResult.input.attachmentKey,
             )
@@ -884,16 +855,13 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 localRelativeFilePath: contentResult.primaryFile?.pendingFile.reservedRelativeFilePath,
                 // We don't pre-generate thumbnails for local attachments.
                 localRelativeFilePathThumbnail: nil,
-                localRelativeFilePathAudioWaveform: audioWaveformFile?.reservedRelativeFilePath,
+                localRelativeFilePathAudioWaveform: nil,
                 localRelativeFilePathVideoStillFrame: videoStillFrameFile?.reservedRelativeFilePath,
                 timestamp: dateProvider().ows_millisecondsSince1970,
             )
             orphanRecords[key] = orphanRecord
             if let primaryPendingFile = contentResult.primaryFile?.pendingFile {
                 filesForCopying.append(primaryPendingFile)
-            }
-            if let audioWaveformFile {
-                filesForCopying.append(audioWaveformFile)
             }
             if let videoStillFrameFile {
                 filesForCopying.append(videoStillFrameFile)

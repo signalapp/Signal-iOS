@@ -149,7 +149,7 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
             videoDuration: nil,
             videoStillFrameRelativeFilePath: nil,
             audioDuration: nil,
-            audioWaveformRelativeFilePath: nil,
+            audioWaveformSamples: nil,
         )
         return AttachmentDataSource.pendingAttachment(pendingAttachment)
     }

@@ -365,6 +365,7 @@ public class GRDBSchemaMigrator {
         case removeInteractionConversationLoadCountIndex
         case removeObsoleteThreadReferences
         case removeInteractionConversationLoadDistanceIndex
+        case addAttachmentAudioWaveformSamples
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -494,7 +495,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 160
+    public static let grdbSchemaVersionLatest: UInt = 161
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5652,6 +5653,11 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.addAttachmentAudioWaveformSamples) { tx in
+            try addAttachmentAudioWaveformSamples(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -8531,6 +8537,12 @@ public class GRDBSchemaMigrator {
             (substr("key", 1, length('hiddenState_')) = 'hiddenState_' AND substr("key", length('hiddenState_') + 1) NOT IN (SELECT "uniqueId" FROM model_TSThread))
         );
         """)
+    }
+
+    static func addAttachmentAudioWaveformSamples(tx: DBWriteTransaction) throws {
+        try tx.database.alter(table: "Attachment") {
+            $0.add(column: "audioWaveformSamples", .blob)
+        }
     }
 
     static func dedupeSignalRecipients(tx: DBWriteTransaction) throws {

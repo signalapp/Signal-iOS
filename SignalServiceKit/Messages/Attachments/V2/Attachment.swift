@@ -82,6 +82,9 @@ public class Attachment {
     /// this for anything that would rely on this being historically correct.
     public var lastFullscreenViewTimestamp: UInt64?
 
+    /// Details for this attachment, if it is audio.
+    public var audioDetails: AudioDetails?
+
     // MARK: - Inner structs
 
     /// Information supporting "streaming" video, which requires computing an
@@ -126,12 +129,6 @@ public class Attachment {
         /// `encryptionKey`, if it is video.
         public var cachedVideoStillFrameRelativeFilePath: String?
 
-        /// A cached duration for this attachment, if it is audio.
-        public var cachedAudioDuration: TimeInterval?
-        /// A file path to a cached ``AudioWaveform`` file encrypted with this
-        /// attachment's `encryptionKey`, if it is audio.
-        public var cachedAudioWaveformRelativeFilePath: String?
-
         /// File digest info.
         ///
         /// SHA256Hash(iv + cyphertext + hmac),
@@ -154,8 +151,6 @@ public class Attachment {
                 cachedMediaSizePixels: pendingAttachment.mediaPixelSize,
                 cachedVideoDuration: pendingAttachment.videoDuration,
                 cachedVideoStillFrameRelativeFilePath: pendingAttachment.videoStillFrameRelativeFilePath,
-                cachedAudioDuration: pendingAttachment.audioDuration,
-                cachedAudioWaveformRelativeFilePath: pendingAttachment.audioWaveformRelativeFilePath,
                 ciphertextDigest: pendingAttachment.ciphertextDigest,
                 localRelativeFilePath: pendingAttachment.localRelativeFilePath,
             )
@@ -169,8 +164,6 @@ public class Attachment {
             cachedMediaSizePixels: CGSize?,
             cachedVideoDuration: TimeInterval?,
             cachedVideoStillFrameRelativeFilePath: String?,
-            cachedAudioDuration: TimeInterval?,
-            cachedAudioWaveformRelativeFilePath: String?,
             ciphertextDigest: Data,
             localRelativeFilePath: String,
         ) {
@@ -181,10 +174,60 @@ public class Attachment {
             self.cachedMediaSizePixels = cachedMediaSizePixels
             self.cachedVideoDuration = cachedVideoDuration
             self.cachedVideoStillFrameRelativeFilePath = cachedVideoStillFrameRelativeFilePath
-            self.cachedAudioDuration = cachedAudioDuration
-            self.cachedAudioWaveformRelativeFilePath = cachedAudioWaveformRelativeFilePath
             self.ciphertextDigest = ciphertextDigest
             self.localRelativeFilePath = localRelativeFilePath
+        }
+    }
+
+    /// Details only applicable to audio attachments.
+    public struct AudioDetails: Equatable {
+        /// Duration of the audio.
+        public var duration: TimeInterval
+
+        /// This attachment's waveform, serialized as one byte per sample; see
+        /// ``AudioWaveform/waveformData``.
+        public var waveformSamples: Data?
+
+        /// A file path to an archived ``AudioWaveform`` encrypted with this
+        /// attachment's `encryptionKey`.
+        ///
+        /// Superseded by `waveformSamples`.
+        public var waveformRelativeFilePath: String?
+
+        public init(
+            duration: TimeInterval,
+            waveformSamples: Data?,
+            waveformRelativeFilePath: String?,
+        ) {
+            self.duration = duration
+            self.waveformSamples = waveformSamples
+            self.waveformRelativeFilePath = waveformRelativeFilePath
+        }
+
+        init?(pendingAttachment: PendingAttachment) {
+            guard let duration = pendingAttachment.audioDuration else {
+                return nil
+            }
+
+            self.init(
+                duration: duration,
+                waveformSamples: pendingAttachment.audioWaveformSamples,
+                waveformRelativeFilePath: nil,
+            )
+        }
+
+        // Goes away once audio processing moves out of validation and
+        // `RevalidatedAttachment` stops carrying these.
+        init?(revalidatedAttachment: RevalidatedAttachment) {
+            guard let duration = revalidatedAttachment.audioDuration else {
+                return nil
+            }
+
+            self.init(
+                duration: duration,
+                waveformSamples: revalidatedAttachment.audioWaveformSamples,
+                waveformRelativeFilePath: nil,
+            )
         }
     }
 
@@ -283,6 +326,15 @@ public class Attachment {
         self.plaintextHash = record.plaintextHash
         self.localRelativeFilePathThumbnail = record.localRelativeFilePathThumbnail
         self.lastFullscreenViewTimestamp = record.lastFullscreenViewTimestamp
+        if let duration = record.audioDurationSeconds {
+            self.audioDetails = AudioDetails(
+                duration: duration,
+                waveformSamples: record.audioWaveformSamples,
+                waveformRelativeFilePath: record.audioWaveformRelativeFilePath,
+            )
+        } else {
+            self.audioDetails = nil
+        }
 
         if
             let plaintextHash = record.plaintextHash,
@@ -308,8 +360,6 @@ public class Attachment {
                 }(),
                 cachedVideoDuration: record.cachedVideoDurationSeconds,
                 cachedVideoStillFrameRelativeFilePath: record.videoStillFrameRelativeFilePath,
-                cachedAudioDuration: record.cachedAudioDurationSeconds,
-                cachedAudioWaveformRelativeFilePath: record.audioWaveformRelativeFilePath,
                 ciphertextDigest: ciphertextDigest,
                 localRelativeFilePath: localRelativeFilePath,
             )

@@ -7,6 +7,7 @@ import GRDB
 import SignalServiceKit
 
 class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
+    private let audioWaveformMigrator: AudioWaveformFileMigrator
     private let infoMessageMigrator: InfoMessageGroupUpdateMigrator
 
     init(
@@ -14,6 +15,10 @@ class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
         modelReadCaches: @escaping () -> ModelReadCaches,
         tsAccountManager: @escaping () -> TSAccountManager,
     ) {
+        self.audioWaveformMigrator = AudioWaveformFileMigrator(
+            dateProvider: { Date() },
+            db: databaseStorage,
+        )
         self.infoMessageMigrator = InfoMessageGroupUpdateMigrator(
             db: databaseStorage,
             modelReadCaches: modelReadCaches,
@@ -31,6 +36,10 @@ class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
             return .asSoonAsPossible
         }
 
+        if audioWaveformMigrator.needsToRun() {
+            return .asSoonAsPossible
+        }
+
         return .never
     }
 
@@ -40,6 +49,7 @@ class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
     /// `simulatePriorCancellation` to return true and run on a simulator.
     func run() async throws {
         try await infoMessageMigrator.run()
+        try await audioWaveformMigrator.run()
     }
 
 #if targetEnvironment(simulator)

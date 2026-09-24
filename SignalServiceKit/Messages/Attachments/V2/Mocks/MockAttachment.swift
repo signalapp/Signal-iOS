@@ -26,8 +26,6 @@ extension Attachment.StreamInfo {
             cachedMediaSizePixels: nil,
             cachedVideoDuration: nil,
             cachedVideoStillFrameRelativeFilePath: nil,
-            cachedAudioDuration: nil,
-            cachedAudioWaveformRelativeFilePath: nil,
             ciphertextDigest: ciphertextDigest,
             localRelativeFilePath: localRelativeFilePath,
         )
@@ -115,6 +113,7 @@ extension Attachment.Record {
         encryptionKey: AttachmentKey = .generate(),
         plaintextHash: Data = Randomness.generateRandomBytes(32),
         streamInfo: Attachment.StreamInfo? = nil,
+        audioDetails: Attachment.AudioDetails? = nil,
     ) -> Attachment.Record {
         return .forInsertingStream(
             blurHash: blurHash,
@@ -125,6 +124,7 @@ extension Attachment.Record {
                 plaintextHash: plaintextHash,
                 encryptionKey: encryptionKey,
             ),
+            audioDetails: audioDetails,
             plaintextHash: plaintextHash,
         )
     }
@@ -138,6 +138,7 @@ extension Attachment {
         encryptionKey: Data = Randomness.generateRandomBytes(64),
         plaintextHash: Data? = nil,
         streamInfo: Attachment.StreamInfo? = nil,
+        audioDetails: Attachment.AudioDetails? = nil,
         transitTierInfo: Attachment.TransitTierInfo? = nil,
         mediaTierInfo: Attachment.MediaTierInfo? = nil,
         thumbnailInfo: Attachment.ThumbnailMediaTierInfo? = nil,
@@ -154,6 +155,7 @@ extension Attachment {
             plaintextHash: plaintextHash ?? streamInfo?.plaintextHash,
             localRelativeFilePathThumbnail: localRelativeFilePathThumbnail,
             streamInfo: streamInfo,
+            audioDetails: audioDetails,
             latestTransitTierInfo: transitTierInfo,
             originalTransitTierInfo: transitTierInfo?.encryptionKey == encryptionKey ? transitTierInfo : nil,
             mediaTierInfo: mediaTierInfo,
@@ -172,6 +174,7 @@ extension AttachmentStream {
         blurHash: String? = nil,
         mimeType: String = MimeType.applicationOctetStream.rawValue,
         streamInfo: Attachment.StreamInfo = .mock(),
+        audioDetails: Attachment.AudioDetails? = nil,
         transitTierInfo: Attachment.TransitTierInfo? = nil,
         mediaTierInfo: Attachment.MediaTierInfo? = nil,
         thumbnailInfo: Attachment.ThumbnailMediaTierInfo? = nil,
@@ -181,6 +184,7 @@ extension AttachmentStream {
             blurHash: blurHash,
             mimeType: mimeType,
             streamInfo: streamInfo,
+            audioDetails: audioDetails,
             transitTierInfo: transitTierInfo,
             mediaTierInfo: mediaTierInfo,
             thumbnailInfo: thumbnailInfo,

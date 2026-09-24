@@ -84,7 +84,7 @@ enum ValidationBackfill: Int, CaseIterable {
         case .recomputeAudioDurations:
             return [
                 .init(
-                    column: .cachedAudioDurationSeconds,
+                    column: .audioDurationSeconds,
                     operator: ==,
                     value: 0,
                 ),
@@ -246,7 +246,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
                 isPendingAttachment: false,
                 localRelativeFilePath: nil,
                 localRelativeFilePathThumbnail: nil,
-                localRelativeFilePathAudioWaveform: streamInfo.cachedAudioWaveformRelativeFilePath,
+                localRelativeFilePathAudioWaveform: attachment.audioDetails?.waveformRelativeFilePath,
                 localRelativeFilePathVideoStillFrame: streamInfo.cachedVideoStillFrameRelativeFilePath,
                 timestamp: dateProvider().ows_millisecondsSince1970,
             )
@@ -258,8 +258,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
             mediaPixelSize: revalidatedAttachment.mediaPixelSize,
             videoDuration: revalidatedAttachment.videoDuration,
             videoStillFrameRelativeFilePath: revalidatedAttachment.videoStillFrameRelativeFilePath,
-            audioDuration: revalidatedAttachment.audioDuration,
-            audioWaveformRelativeFilePath: revalidatedAttachment.audioWaveformRelativeFilePath,
+            audioDetails: Attachment.AudioDetails(revalidatedAttachment: revalidatedAttachment),
             tx: tx,
         )
         // Clear out the orphan record for the _new_ ancillary files.

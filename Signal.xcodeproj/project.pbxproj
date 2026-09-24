@@ -2837,6 +2837,9 @@
 		D944D2FD2FBCE9C00026FD21 /* OWSDecryptionPlaceholderExpirationJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = D944D2FC2FBCE9C00026FD21 /* OWSDecryptionPlaceholderExpirationJob.swift */; };
 		D945319E2CE53CEB004DAB30 /* SubscriptionRedemptionNecessityChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D945319D2CE53CC8004DAB30 /* SubscriptionRedemptionNecessityChecker.swift */; };
 		D94852272F6A224000B130B2 /* GroupCallVideoContextMenuConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94852262F6A223500B130B2 /* GroupCallVideoContextMenuConfiguration.swift */; };
+		D948781D305376B0006942D6 /* AudioWaveformTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D948781C305376B0006942D6 /* AudioWaveformTest.swift */; };
+		D948781F30537C2F006942D6 /* AudioWaveformFileMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D948781E30537C2F006942D6 /* AudioWaveformFileMigrator.swift */; };
+		D948782130537C36006942D6 /* AudioWaveformFileMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D948782030537C36006942D6 /* AudioWaveformFileMigratorTest.swift */; };
 		D9495A6D2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9495A6C2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift */; };
 		D9495A702C76965600843BC1 /* TSOutgoingMessageRecipientStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9495A6E2C76963F00843BC1 /* TSOutgoingMessageRecipientStateTest.swift */; };
 		D949C4052DF3A597007E095C /* BackupConfirmKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D949C4042DF3A588007E095C /* BackupConfirmKeyViewController.swift */; };
@@ -7229,6 +7232,9 @@
 		D944D2FC2FBCE9C00026FD21 /* OWSDecryptionPlaceholderExpirationJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDecryptionPlaceholderExpirationJob.swift; sourceTree = "<group>"; };
 		D945319D2CE53CC8004DAB30 /* SubscriptionRedemptionNecessityChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionRedemptionNecessityChecker.swift; sourceTree = "<group>"; };
 		D94852262F6A223500B130B2 /* GroupCallVideoContextMenuConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoContextMenuConfiguration.swift; sourceTree = "<group>"; };
+		D948781C305376B0006942D6 /* AudioWaveformTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformTest.swift; sourceTree = "<group>"; };
+		D948781E30537C2F006942D6 /* AudioWaveformFileMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformFileMigrator.swift; sourceTree = "<group>"; };
+		D948782030537C36006942D6 /* AudioWaveformFileMigratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformFileMigratorTest.swift; sourceTree = "<group>"; };
 		D9495A6C2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessageRecipientState.swift; sourceTree = "<group>"; };
 		D9495A6E2C76963F00843BC1 /* TSOutgoingMessageRecipientStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessageRecipientStateTest.swift; sourceTree = "<group>"; };
 		D949C4042DF3A588007E095C /* BackupConfirmKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupConfirmKeyViewController.swift; sourceTree = "<group>"; };
@@ -10832,10 +10838,13 @@
 			isa = PBXGroup;
 			children = (
 				669A2FCD2BD9D48800166DB6 /* AudioWaveform.swift */,
+				D948781E30537C2F006942D6 /* AudioWaveformFileMigrator.swift */,
+				D948782030537C36006942D6 /* AudioWaveformFileMigratorTest.swift */,
 				F9C5CB62289453B200548EEE /* AudioWaveformManager.swift */,
 				669A2FCF2BDB068200166DB6 /* AudioWaveformManagerMock.swift */,
 				50BDC3672C88B7FA002294D0 /* AudioWaveformSampler.swift */,
 				50BDC3692C88C2C8002294D0 /* AudioWaveformSamplerTest.swift */,
+				D948781C305376B0006942D6 /* AudioWaveformTest.swift */,
 			);
 			path = AudioWaveform;
 			sourceTree = "<group>";
@@ -19461,6 +19470,7 @@
 				66B78E082BE5AAFC0022580E /* AttachmentViewOnceManagerImpl.swift in Sources */,
 				66B78E112BE5AB360022580E /* AttachmentViewOnceManagerMock.swift in Sources */,
 				669A2FCE2BD9D48800166DB6 /* AudioWaveform.swift in Sources */,
+				D948781F30537C2F006942D6 /* AudioWaveformFileMigrator.swift in Sources */,
 				F9C5CE34289453B400548EEE /* AudioWaveformManager.swift in Sources */,
 				669A2FD02BDB068200166DB6 /* AudioWaveformManagerMock.swift in Sources */,
 				50BDC3682C88B7FA002294D0 /* AudioWaveformSampler.swift in Sources */,
@@ -20644,7 +20654,9 @@
 				66C1A8852BB77EE00076C65A /* AttachmentUploadManagerTestHelper.swift in Sources */,
 				66C1A8862BB77EE30076C65A /* AttachmentUploadManagerTestMocks.swift in Sources */,
 				66C1A8802BB77EA50076C65A /* AttachmentUploadManagerTests.swift in Sources */,
+				D948782130537C36006942D6 /* AudioWaveformFileMigratorTest.swift in Sources */,
 				50BDC36A2C88C2C8002294D0 /* AudioWaveformSamplerTest.swift in Sources */,
+				D948781D305376B0006942D6 /* AudioWaveformTest.swift in Sources */,
 				50B6BCB62AEC68940010FB3B /* AuthorMergeHelperTest.swift in Sources */,
 				5088330C2FE0B1E500CE51AC /* AutoDownloadPolicyTest.swift in Sources */,
 				D93F4D5D2D801D750042926C /* AvatarDefaultColorManagerTest.swift in Sources */,

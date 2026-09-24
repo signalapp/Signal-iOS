@@ -65,7 +65,7 @@ public class AudioAttachment: Equatable {
             return nil
         }
 
-        let audioDurationSeconds = referencedAttachmentStream.attachmentStream.cachedAudioDuration
+        let audioDurationSeconds = referencedAttachmentStream.attachmentStream.audioDetails?.duration
         if let audioDurationSeconds, audioDurationSeconds < 0 {
             return nil
         }

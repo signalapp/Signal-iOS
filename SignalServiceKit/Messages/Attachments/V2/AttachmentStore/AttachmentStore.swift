@@ -620,6 +620,7 @@ public struct AttachmentStore {
     public func updateLocalFileBackupAttachmentAsTransferred(
         attachment: Attachment,
         streamInfo: Attachment.StreamInfo,
+        audioDetails: Attachment.AudioDetails?,
         tx: DBWriteTransaction,
     ) {
         guard fetch(id: attachment.id, tx: tx) != nil else {
@@ -629,6 +630,7 @@ public struct AttachmentStore {
         }
 
         attachment.streamInfo = streamInfo
+        attachment.audioDetails = audioDetails
         attachment.plaintextHash = streamInfo.plaintextHash
 
         let newRecord = Attachment.Record(attachment: attachment)
@@ -642,6 +644,7 @@ public struct AttachmentStore {
         sourceType: QueuedAttachmentDownloadRecord.SourceType,
         priority: AttachmentDownloadPriority,
         streamInfo: Attachment.StreamInfo,
+        audioDetails: Attachment.AudioDetails?,
         timestamp: UInt64,
         tx: DBWriteTransaction,
     ) throws(AttachmentInsertError) {
@@ -693,11 +696,13 @@ public struct AttachmentStore {
         switch sourceType {
         case .transitTier:
             attachment.streamInfo = streamInfo
+            attachment.audioDetails = audioDetails
             attachment.plaintextHash = streamInfo.plaintextHash
             attachment.latestTransitTierInfo = latestTransitTierInfo
             attachment.lastFullscreenViewTimestamp = lastFullscreenViewTimestamp ?? attachment.lastFullscreenViewTimestamp
         case .mediaTierFullsize:
             attachment.streamInfo = streamInfo
+            attachment.audioDetails = audioDetails
             attachment.plaintextHash = streamInfo.plaintextHash
             attachment.latestTransitTierInfo = latestTransitTierInfo
             if var mediaTierInfo = attachment.mediaTierInfo {
@@ -910,19 +915,16 @@ public struct AttachmentStore {
         mediaPixelSize: CGSize?,
         videoDuration: TimeInterval?,
         videoStillFrameRelativeFilePath: String?,
-        audioDuration: TimeInterval?,
-        audioWaveformRelativeFilePath: String?,
+        audioDetails: Attachment.AudioDetails?,
         tx: DBWriteTransaction,
     ) {
         if var streamInfo = attachment.streamInfo {
             streamInfo.cachedMediaSizePixels = mediaPixelSize
             streamInfo.cachedVideoDuration = videoDuration
             streamInfo.cachedVideoStillFrameRelativeFilePath = videoStillFrameRelativeFilePath
-            streamInfo.cachedAudioDuration = audioDuration
-            streamInfo.cachedAudioWaveformRelativeFilePath = audioWaveformRelativeFilePath
-
             attachment.streamInfo = streamInfo
         }
+        attachment.audioDetails = audioDetails
 
         let newRecord = Attachment.Record(attachment: attachment)
         failIfThrows {
