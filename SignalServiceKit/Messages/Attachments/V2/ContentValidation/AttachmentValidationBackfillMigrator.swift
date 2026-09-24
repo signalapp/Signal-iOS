@@ -37,6 +37,13 @@ enum ValidationBackfill: Int, CaseIterable {
 
     // MARK: - Properties
 
+    /// Whether this backfill should still be run, or is considered "inactive".
+    var isActive: Bool {
+        switch self {
+        case .recomputeAudioDurations: false
+        }
+    }
+
     /// Which content type + mime type to re-validate.
     enum ContentTypeFilter: Hashable {
         /// No content type filter; re-validate _everything_. This is very expensive
@@ -60,7 +67,7 @@ enum ValidationBackfill: Int, CaseIterable {
     var contentTypeFilter: ContentTypeFilter {
         switch self {
         case .recomputeAudioDurations:
-            return .contentType(.audio)
+            return .none
         }
     }
 
@@ -82,13 +89,7 @@ enum ValidationBackfill: Int, CaseIterable {
     var columnFilters: [Filter] {
         switch self {
         case .recomputeAudioDurations:
-            return [
-                .init(
-                    column: .audioDurationSeconds,
-                    operator: ==,
-                    value: 0,
-                ),
-            ]
+            return []
         }
     }
 }
@@ -237,6 +238,8 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
 
         // "Ancillary" files (e.g. video still frame) are regenerated on revalidation.
         // Whatever old ancillary files existed before must be orphaned.
+        // Not the audio waveform file, though: revalidation leaves audio
+        // details (and therefore that file) alone.
         let oldAncillaryFilesOrphanRecord: OrphanedAttachmentRecord.InsertableRecord? = {
             guard let streamInfo = attachment.streamInfo else {
                 return nil
@@ -246,7 +249,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
                 isPendingAttachment: false,
                 localRelativeFilePath: nil,
                 localRelativeFilePathThumbnail: nil,
-                localRelativeFilePathAudioWaveform: attachment.audioDetails?.waveformRelativeFilePath,
+                localRelativeFilePathAudioWaveform: nil,
                 localRelativeFilePathVideoStillFrame: streamInfo.cachedVideoStillFrameRelativeFilePath,
                 timestamp: dateProvider().ows_millisecondsSince1970,
             )
@@ -258,7 +261,6 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
             mediaPixelSize: revalidatedAttachment.mediaPixelSize,
             videoDuration: revalidatedAttachment.videoDuration,
             videoStillFrameRelativeFilePath: revalidatedAttachment.videoStillFrameRelativeFilePath,
-            audioDetails: Attachment.AudioDetails(revalidatedAttachment: revalidatedAttachment),
             tx: tx,
         )
         // Clear out the orphan record for the _new_ ancillary files.
@@ -300,6 +302,10 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
         let mimeTypeColumn = Column(Attachment.Record.CodingKeys.mimeType)
 
         for backfill in backfills {
+            guard backfill.isActive else {
+                continue
+            }
+
             // We AND these; any given backfill's filters must all match.
             var backfillPredicates = [SQLSpecificExpressible]()
             switch backfill.contentTypeFilter {

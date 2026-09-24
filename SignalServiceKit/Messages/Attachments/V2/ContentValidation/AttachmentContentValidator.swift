@@ -68,8 +68,6 @@ public struct RevalidatedAttachment {
     let mediaPixelSize: CGSize?
     let videoDuration: TimeInterval?
     let videoStillFrameRelativeFilePath: String?
-    let audioDuration: TimeInterval?
-    let audioWaveformSamples: Data?
 }
 
 public protocol ValidatedInlineMessageBody {
@@ -128,6 +126,8 @@ public protocol AttachmentContentValidator {
     /// Just validate an encrypted attachment file's contents, based on the provided mimetype.
     /// Returns the validated content type;  does no integrityCheck validation or primary file copy preparation.
     /// Errors are thrown if data reading/parsing/decryption fails.
+    ///
+    /// Note that this does not recompute audio details.
     func reValidateContents(
         ofEncryptedFileAt fileUrl: URL,
         attachmentKey: AttachmentKey,

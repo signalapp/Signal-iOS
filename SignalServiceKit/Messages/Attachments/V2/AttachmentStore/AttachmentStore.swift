@@ -915,7 +915,6 @@ public struct AttachmentStore {
         mediaPixelSize: CGSize?,
         videoDuration: TimeInterval?,
         videoStillFrameRelativeFilePath: String?,
-        audioDetails: Attachment.AudioDetails?,
         tx: DBWriteTransaction,
     ) {
         if var streamInfo = attachment.streamInfo {
@@ -924,7 +923,6 @@ public struct AttachmentStore {
             streamInfo.cachedVideoStillFrameRelativeFilePath = videoStillFrameRelativeFilePath
             attachment.streamInfo = streamInfo
         }
-        attachment.audioDetails = audioDetails
 
         let newRecord = Attachment.Record(attachment: attachment)
         failIfThrows {

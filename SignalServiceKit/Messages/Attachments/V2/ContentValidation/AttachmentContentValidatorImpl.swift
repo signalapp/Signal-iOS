@@ -47,6 +47,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             renderingFlag: renderingFlag,
             sourceFilename: sourceFilename,
             shouldComputeBlurHash: true,
+            // We're the sender, so derive audio details.
+            shouldDeriveAudioDetails: true,
         ))
         try dataSource.consumeAndDeleteIfNecessary()
         return pendingAttachment
@@ -69,6 +71,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             renderingFlag: renderingFlag,
             sourceFilename: sourceFilename,
             shouldComputeBlurHash: true,
+            // We're the sender, so derive audio details.
+            shouldDeriveAudioDetails: true,
         ))
         return pendingAttachment
     }
@@ -109,6 +113,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             sourceFilename: sourceFilename,
             // We use the sender-provided blurHash.
             shouldComputeBlurHash: false,
+            shouldDeriveAudioDetails: BuildFlags.deriveAudioDetailsOnDownload,
         ))
     }
 
@@ -138,6 +143,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 sourceFilename: nil,
                 // Revalidation doesn't touch the existing blurHash.
                 shouldComputeBlurHash: false,
+                // Revalidation doesn't touch the existing audio details.
+                shouldDeriveAudioDetails: false,
             ),
         )
         return try await prepareAttachmentContentTypeFiles(
@@ -195,6 +202,9 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             sourceFilename: sourceFilename,
             // We use the blurHash from the Backup proto.
             shouldComputeBlurHash: false,
+            // We derive audio details ourselves until we know senders are
+            // providing them instead.
+            shouldDeriveAudioDetails: BuildFlags.deriveAudioDetailsOnDownload,
         ))
     }
 
@@ -247,6 +257,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 sourceFilename: nil,
                 // Oversize text never has a blurHash.
                 shouldComputeBlurHash: false,
+                // Oversize text never has audio details.
+                shouldDeriveAudioDetails: false,
             )
         }
 
@@ -318,6 +330,10 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         /// An attachment's blurHash is the sender's responsibility, so we only
         /// compute one for outgoing media.
         let shouldComputeBlurHash: Bool
+        /// Senders provide audio details, so we only derive them ourselves for
+        /// outgoing audio, or while ``BuildFlags/deriveAudioDetailsOnDownload``
+        /// covers senders who don't send them yet.
+        let shouldDeriveAudioDetails: Bool
 
         init(
             type: InputType,
@@ -327,6 +343,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             renderingFlag: AttachmentReference.RenderingFlag,
             sourceFilename: String?,
             shouldComputeBlurHash: Bool,
+            shouldDeriveAudioDetails: Bool,
         ) {
             self.type = type
             self.primaryFilePlaintextHash = primaryFilePlaintextHash
@@ -335,6 +352,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             self.renderingFlag = renderingFlag
             self.sourceFilename = sourceFilename
             self.shouldComputeBlurHash = shouldComputeBlurHash
+            self.shouldDeriveAudioDetails = shouldDeriveAudioDetails
         }
 
         var byteSize: Int {
@@ -478,10 +496,15 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             audioDuration = nil
             audioWaveformSamples = nil
         case .audio:
-            (
-                audioDuration,
-                audioWaveformSamples,
-            ) = try validateAudioContentType(input)
+            if input.shouldDeriveAudioDetails {
+                (
+                    audioDuration,
+                    audioWaveformSamples,
+                ) = try validateAudioContentType(input)
+            } else {
+                audioDuration = nil
+                audioWaveformSamples = nil
+            }
             blurHash = nil
             mediaPixelSize = nil
             videoDuration = nil
@@ -829,8 +852,6 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 mediaPixelSize: contentResult.mediaPixelSize,
                 videoDuration: contentResult.videoDuration,
                 videoStillFrameRelativeFilePath: contentResult.videoStillFramePendingFile?.reservedRelativeFilePath,
-                audioDuration: contentResult.audioDuration,
-                audioWaveformSamples: contentResult.audioWaveformSamples,
             )
         }
         return results

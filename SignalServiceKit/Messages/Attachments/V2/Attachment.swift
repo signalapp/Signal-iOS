@@ -215,20 +215,6 @@ public class Attachment {
                 waveformRelativeFilePath: nil,
             )
         }
-
-        // Goes away once audio processing moves out of validation and
-        // `RevalidatedAttachment` stops carrying these.
-        init?(revalidatedAttachment: RevalidatedAttachment) {
-            guard let duration = revalidatedAttachment.audioDuration else {
-                return nil
-            }
-
-            self.init(
-                duration: duration,
-                waveformSamples: revalidatedAttachment.audioWaveformSamples,
-                waveformRelativeFilePath: nil,
-            )
-        }
     }
 
     public struct TransitTierInfo: Equatable {

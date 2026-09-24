@@ -62,6 +62,11 @@ public enum BuildFlags {
     // Then, delete all the code that's now dead.
     public static let migrateGroupRefreshedAt = true
 
+    // Turn this off once enough clients are sending audio waveforms and
+    // durations in AttachmentPointer. Then, delete all the code that's now
+    // dead because this is false.
+    public static let deriveAudioDetailsOnDownload = true
+
     public enum KeyTransparency {
         public static let conservativeSelfCheck = build <= .internal
     }
