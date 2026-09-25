@@ -1281,6 +1281,16 @@ public nonisolated struct BackupProto_Contact: @unchecked Sendable {
   /// Clears the value of `keyTransparencyData`. Subsequent reads from it will return its default value.
   public mutating func clearKeyTransparencyData() {_uniqueStorage()._keyTransparencyData = nil}
 
+  /// absent iff both `given` and `family` are empty, name provided by third party
+  public var sharedName: BackupProto_Contact.Name {
+    get {_storage._sharedName ?? BackupProto_Contact.Name()}
+    set {_uniqueStorage()._sharedName = newValue}
+  }
+  /// Returns true if `sharedName` has been explicitly set.
+  public var hasSharedName: Bool {_storage._sharedName != nil}
+  /// Clears the value of `sharedName`. Subsequent reads from it will return its default value.
+  public mutating func clearSharedName() {_uniqueStorage()._sharedName = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, consider the user to be registered
@@ -3207,6 +3217,21 @@ public nonisolated struct BackupProto_ContactAttachment: Sendable {
 
   public var organization: String = String()
 
+  /// should be 16 bytes
+  public var aci: Data = Data()
+
+  /// absent iff both `given` and `family` are empty
+  public var nickname: BackupProto_ContactAttachment.SignalNickname {
+    get {_nickname ?? BackupProto_ContactAttachment.SignalNickname()}
+    set {_nickname = newValue}
+  }
+  /// Returns true if `nickname` has been explicitly set.
+  public var hasNickname: Bool {self._nickname != nil}
+  /// Clears the value of `nickname`. Subsequent reads from it will return its default value.
+  public mutating func clearNickname() {self._nickname = nil}
+
+  public var note: String = String()
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public nonisolated struct Name: Sendable {
@@ -3225,6 +3250,21 @@ public nonisolated struct BackupProto_ContactAttachment: Sendable {
     public var middleName: String = String()
 
     public var nickname: String = String()
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public init() {}
+  }
+
+  /// The sharer's Signal nickname for this contact
+  public nonisolated struct SignalNickname: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    public var given: String = String()
+
+    public var family: String = String()
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -3435,6 +3475,7 @@ public nonisolated struct BackupProto_ContactAttachment: Sendable {
 
   fileprivate var _name: BackupProto_ContactAttachment.Name? = nil
   fileprivate var _avatar: BackupProto_FilePointer? = nil
+  fileprivate var _nickname: BackupProto_ContactAttachment.SignalNickname? = nil
 }
 
 public nonisolated struct BackupProto_StickerMessage: Sendable {
@@ -4767,12 +4808,21 @@ public nonisolated struct BackupProto_LearnedProfileChatUpdate: Sendable {
     set {previousName = .username(newValue)}
   }
 
+  public var sharedName: String {
+    get {
+      if case .sharedName(let v)? = previousName {return v}
+      return String()
+    }
+    set {previousName = .sharedName(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, importers should consider the previous name to be an empty string.
   public nonisolated enum OneOf_PreviousName: Equatable, Sendable {
     case e164(UInt64)
     case username(String)
+    case sharedName(String)
 
   }
 
@@ -7676,7 +7726,7 @@ nonisolated extension BackupProto_Recipient: SwiftProtobuf.Message, SwiftProtobu
 
 nonisolated extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Contact"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}aci\0\u{1}pni\0\u{1}username\0\u{1}e164\0\u{1}blocked\0\u{1}visibility\0\u{1}registered\0\u{1}notRegistered\0\u{1}profileKey\0\u{1}profileSharing\0\u{1}profileGivenName\0\u{1}profileFamilyName\0\u{1}hideStory\0\u{1}identityKey\0\u{1}identityState\0\u{1}nickname\0\u{1}note\0\u{1}systemGivenName\0\u{1}systemFamilyName\0\u{1}systemNickname\0\u{1}avatarColor\0\u{1}keyTransparencyData\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}aci\0\u{1}pni\0\u{1}username\0\u{1}e164\0\u{1}blocked\0\u{1}visibility\0\u{1}registered\0\u{1}notRegistered\0\u{1}profileKey\0\u{1}profileSharing\0\u{1}profileGivenName\0\u{1}profileFamilyName\0\u{1}hideStory\0\u{1}identityKey\0\u{1}identityState\0\u{1}nickname\0\u{1}note\0\u{1}systemGivenName\0\u{1}systemFamilyName\0\u{1}systemNickname\0\u{1}avatarColor\0\u{1}keyTransparencyData\0\u{2}\u{2}sharedName\0")
 
   fileprivate class _StorageClass {
     var _aci: Data? = nil
@@ -7700,6 +7750,7 @@ nonisolated extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf.
     var _systemNickname: String = String()
     var _avatarColor: BackupProto_AvatarColor? = nil
     var _keyTransparencyData: Data? = nil
+    var _sharedName: BackupProto_Contact.Name? = nil
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -7731,6 +7782,7 @@ nonisolated extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf.
       _systemNickname = source._systemNickname
       _avatarColor = source._avatarColor
       _keyTransparencyData = source._keyTransparencyData
+      _sharedName = source._sharedName
     }
   }
 
@@ -7795,6 +7847,7 @@ nonisolated extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf.
         case 20: try { try decoder.decodeSingularStringField(value: &_storage._systemNickname) }()
         case 21: try { try decoder.decodeSingularEnumField(value: &_storage._avatarColor) }()
         case 22: try { try decoder.decodeSingularBytesField(value: &_storage._keyTransparencyData) }()
+        case 24: try { try decoder.decodeSingularMessageField(value: &_storage._sharedName) }()
         default: break
         }
       }
@@ -7878,6 +7931,9 @@ nonisolated extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf.
       try { if let v = _storage._keyTransparencyData {
         try visitor.visitSingularBytesField(value: v, fieldNumber: 22)
       } }()
+      try { if let v = _storage._sharedName {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 24)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7908,6 +7964,7 @@ nonisolated extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._systemNickname != rhs_storage._systemNickname {return false}
         if _storage._avatarColor != rhs_storage._avatarColor {return false}
         if _storage._keyTransparencyData != rhs_storage._keyTransparencyData {return false}
+        if _storage._sharedName != rhs_storage._sharedName {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -10331,7 +10388,7 @@ nonisolated extension BackupProto_ViewOnceMessage: SwiftProtobuf.Message, SwiftP
 
 nonisolated extension BackupProto_ContactAttachment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ContactAttachment"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{2}\u{2}number\0\u{1}email\0\u{1}address\0\u{1}avatar\0\u{1}organization\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{2}\u{2}number\0\u{1}email\0\u{1}address\0\u{1}avatar\0\u{1}organization\0\u{1}aci\0\u{1}nickname\0\u{1}note\0\u{c}\u{2}\u{1}")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -10345,6 +10402,9 @@ nonisolated extension BackupProto_ContactAttachment: SwiftProtobuf.Message, Swif
       case 5: try { try decoder.decodeRepeatedMessageField(value: &self.address) }()
       case 6: try { try decoder.decodeSingularMessageField(value: &self._avatar) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self.organization) }()
+      case 8: try { try decoder.decodeSingularBytesField(value: &self.aci) }()
+      case 9: try { try decoder.decodeSingularMessageField(value: &self._nickname) }()
+      case 10: try { try decoder.decodeSingularStringField(value: &self.note) }()
       default: break
       }
     }
@@ -10373,6 +10433,15 @@ nonisolated extension BackupProto_ContactAttachment: SwiftProtobuf.Message, Swif
     if !self.organization.isEmpty {
       try visitor.visitSingularStringField(value: self.organization, fieldNumber: 7)
     }
+    if !self.aci.isEmpty {
+      try visitor.visitSingularBytesField(value: self.aci, fieldNumber: 8)
+    }
+    try { if let v = self._nickname {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
+    } }()
+    if !self.note.isEmpty {
+      try visitor.visitSingularStringField(value: self.note, fieldNumber: 10)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -10383,6 +10452,9 @@ nonisolated extension BackupProto_ContactAttachment: SwiftProtobuf.Message, Swif
     if lhs.address != rhs.address {return false}
     if lhs._avatar != rhs._avatar {return false}
     if lhs.organization != rhs.organization {return false}
+    if lhs.aci != rhs.aci {return false}
+    if lhs._nickname != rhs._nickname {return false}
+    if lhs.note != rhs.note {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -10438,6 +10510,41 @@ nonisolated extension BackupProto_ContactAttachment.Name: SwiftProtobuf.Message,
     if lhs.suffix != rhs.suffix {return false}
     if lhs.middleName != rhs.middleName {return false}
     if lhs.nickname != rhs.nickname {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension BackupProto_ContactAttachment.SignalNickname: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = BackupProto_ContactAttachment.protoMessageName + ".SignalNickname"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}given\0\u{1}family\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.given) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.family) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.given.isEmpty {
+      try visitor.visitSingularStringField(value: self.given, fieldNumber: 1)
+    }
+    if !self.family.isEmpty {
+      try visitor.visitSingularStringField(value: self.family, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_ContactAttachment.SignalNickname, rhs: BackupProto_ContactAttachment.SignalNickname) -> Bool {
+    if lhs.given != rhs.given {return false}
+    if lhs.family != rhs.family {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -11884,7 +11991,7 @@ nonisolated extension BackupProto_ProfileChangeChatUpdate: SwiftProtobuf.Message
 
 nonisolated extension BackupProto_LearnedProfileChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".LearnedProfileChatUpdate"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}e164\0\u{1}username\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}e164\0\u{1}username\0\u{1}sharedName\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11908,6 +12015,14 @@ nonisolated extension BackupProto_LearnedProfileChatUpdate: SwiftProtobuf.Messag
           self.previousName = .username(v)
         }
       }()
+      case 3: try {
+        var v: String?
+        try decoder.decodeSingularStringField(value: &v)
+        if let v = v {
+          if self.previousName != nil {try decoder.handleConflictingOneOf()}
+          self.previousName = .sharedName(v)
+        }
+      }()
       default: break
       }
     }
@@ -11926,6 +12041,10 @@ nonisolated extension BackupProto_LearnedProfileChatUpdate: SwiftProtobuf.Messag
     case .username?: try {
       guard case .username(let v)? = self.previousName else { preconditionFailure() }
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    }()
+    case .sharedName?: try {
+      guard case .sharedName(let v)? = self.previousName else { preconditionFailure() }
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
     }()
     case nil: break
     }
