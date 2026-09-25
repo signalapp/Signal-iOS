@@ -89,24 +89,14 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     }
 
     public func didRegisterOrProvision(
-        aci: Aci,
-        phoneNumber: LocalIdentifiers.PhoneNumber?,
-        authToken: String,
-        deviceId: DeviceId,
+        account: AuthedAccount.Explicit,
         tx: DBWriteTransaction,
     ) {
-        tsAccountManager.initializeLocalIdentifiers(
-            aci: aci,
-            phoneNumber: phoneNumber,
-            deviceId: deviceId,
-            serverAuthToken: authToken,
-            tx: tx,
-        )
+        tsAccountManager.initializeLocalIdentifiers(account: account, tx: tx)
         didUpdateLocalIdentifiers(
-            aci: aci,
-            phoneNumber: phoneNumber,
-            deviceId: deviceId,
-            shouldUpdateStorageService: deviceId == .primary,
+            account.localIdentifiers,
+            deviceId: account.deviceId,
+            shouldUpdateStorageService: account.deviceId == .primary,
             tx: tx,
         )
         tx.addSyncCompletion {
@@ -123,8 +113,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         tsAccountManager.changeLocalNumber(aci: aci, phoneNumber: phoneNumber, tx: tx)
 
         didUpdateLocalIdentifiers(
-            aci: aci,
-            phoneNumber: phoneNumber,
+            LocalIdentifiers(aci: aci, accountType: .forPhoneNumber(phoneNumber)),
             deviceId: .primary,
             shouldUpdateStorageService: false,
             tx: tx,
@@ -328,8 +317,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     // MARK: - Helpers
 
     private func didUpdateLocalIdentifiers(
-        aci: Aci,
-        phoneNumber: LocalIdentifiers.PhoneNumber?,
+        _ localIdentifiers: LocalIdentifiers,
         deviceId: DeviceId,
         shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction,
@@ -341,12 +329,12 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         authCredentialStore.removeAllCallLinkAuthCredentials(tx: tx)
         cron.resetMostRecentDates(tx: tx)
 
-        storageServiceManager.setLocalIdentifiers(LocalIdentifiers(aci: aci, phoneNumber: phoneNumber))
+        storageServiceManager.setLocalIdentifiers(localIdentifiers)
 
         var recipient = recipientMerger.applyMergeForLocalAccount(
-            aci: aci,
-            phoneNumber: phoneNumber?.e164,
-            pni: phoneNumber?.pni,
+            aci: localIdentifiers.aci,
+            phoneNumber: E164(localIdentifiers.phoneNumber),
+            pni: localIdentifiers.pni,
             shouldUpdateStorageService: shouldUpdateStorageService,
             tx: tx,
         )
@@ -393,22 +381,17 @@ extension RegistrationStateChangeManagerImpl {
     ) {
         owsAssertDebug(CurrentAppContext().isRunningTests)
 
-        let phoneNumber = LocalIdentifiers.PhoneNumber(
-            e164: E164(localIdentifiers.phoneNumber)!,
-            pni: localIdentifiers.pni!,
+        let account = AuthedAccount.Explicit(
+            aci: localIdentifiers.aci,
+            accountType: localIdentifiers.accountType,
+            deviceId: .primary,
+            authPassword: "",
         )
 
-        tsAccountManager.initializeLocalIdentifiers(
-            aci: localIdentifiers.aci,
-            phoneNumber: phoneNumber,
-            deviceId: .primary,
-            serverAuthToken: "",
-            tx: tx,
-        )
+        tsAccountManager.initializeLocalIdentifiers(account: account, tx: tx)
         didUpdateLocalIdentifiers(
-            aci: localIdentifiers.aci,
-            phoneNumber: phoneNumber,
-            deviceId: .primary,
+            localIdentifiers,
+            deviceId: account.deviceId,
             shouldUpdateStorageService: false,
             tx: tx,
         )

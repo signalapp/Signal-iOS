@@ -150,9 +150,13 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
 
         let authCredentialResponse = try JSONDecoder().decode(AuthCredentialResponse.self, from: bodyData)
 
-        // TODO: [#less] Use authCredentialSalt.
-        if let localPni = localIdentifiers.pni, authCredentialResponse.pni != localPni {
-            Logger.warn("Auth credential \(authCredentialResponse.pni) didn't match local \(localPni)")
+        switch localIdentifiers.accountType {
+        case .phoneNumberfull(_, let localPni):
+            if let localPni, authCredentialResponse.pni?.wrappedValue != localPni {
+                Logger.warn("auth credential \(authCredentialResponse.pni?.wrappedValue as Optional) didn't match local \(localPni)")
+            }
+        case .phoneNumberless:
+            break
         }
 
         let serverPublicParams = TSConstants.serverPublicParams()
@@ -163,12 +167,26 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
                 owsFailDebug("Dropping auth credential we didn't ask for")
                 continue
             }
-            let receivedValue = try clientZkAuthOperations.receiveAuthCredentialWithPniAsServiceId(
-                aci: localIdentifiers.aci,
-                pni: authCredentialResponse.pni,
-                redemptionTime: fetchedValue.redemptionTime,
-                authCredentialResponse: AuthCredentialWithPniResponse(contents: fetchedValue.credential),
-            )
+            let receivedValue: AuthCredentialWithPni
+            switch localIdentifiers.accountType {
+            case .phoneNumberfull:
+                guard let pni = authCredentialResponse.pni else {
+                    throw OWSGenericError("auth credential response missing required pni")
+                }
+                receivedValue = try clientZkAuthOperations.receiveAuthCredentialWithPniAsServiceId(
+                    aci: localIdentifiers.aci,
+                    pni: pni.wrappedValue,
+                    redemptionTime: fetchedValue.redemptionTime,
+                    authCredentialResponse: AuthCredentialWithPniResponse(contents: fetchedValue.credential),
+                )
+            case .phoneNumberless(let authCredentialSalt):
+                receivedValue = try clientZkAuthOperations.receiveAuthCredentialWithoutPni(
+                    aci: localIdentifiers.aci,
+                    salt: authCredentialSalt.rawValue,
+                    redemptionTime: fetchedValue.redemptionTime,
+                    authCredentialResponse: AuthCredentialWithPniResponse(contents: fetchedValue.credential),
+                )
+            }
             result.groupAuthCredentials.append((fetchedValue.redemptionTime, receivedValue))
         }
         for fetchedValue in authCredentialResponse.callLinkAuthCredentials {
@@ -201,7 +219,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
             case callLinkAuthCredentials
         }
 
-        @PniUuid var pni: Pni
+        var pni: PniUuid?
         var groupAuthCredentials: [AuthCredential]
         var callLinkAuthCredentials: [AuthCredential]
 

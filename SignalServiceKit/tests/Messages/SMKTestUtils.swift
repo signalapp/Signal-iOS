@@ -20,7 +20,10 @@ class MockClient {
     }
 
     var localIdentifiers: LocalIdentifiers {
-        LocalIdentifiers(aci: aci, pni: nil, phoneNumber: phoneNumber.stringValue)
+        LocalIdentifiers(aci: aci, accountType: .phoneNumberfull(
+            phoneNumber: phoneNumber.stringValue,
+            pni: nil,
+        ))
     }
 
     let aci: Aci

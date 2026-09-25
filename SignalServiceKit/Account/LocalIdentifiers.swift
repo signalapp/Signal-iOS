@@ -24,27 +24,56 @@ public final class LocalIdentifiers {
         }
     }
 
+    public enum AccountType {
+        case phoneNumberfull(phoneNumber: String, pni: Pni?)
+        case phoneNumberless(AuthCredentialSalt)
+
+        public static func forPhoneNumber(_ phoneNumber: LocalIdentifiers.PhoneNumber) -> Self {
+            return .phoneNumberfull(phoneNumber: phoneNumber.e164.stringValue, pni: phoneNumber.pni)
+        }
+    }
+
+    public let accountType: AccountType
+
     /// The PNI for the current user.
     ///
     /// - Note: Primary & linked devices may not have access to their PNI. The
     /// primary may need to fetch it from the server, and a linked device may be
     /// waiting to learn about it from the primary.
-    public let pni: Pni?
+    public var pni: Pni? {
+        switch self.accountType {
+        case .phoneNumberfull(_, let pni):
+            return pni
+        case .phoneNumberless:
+            return nil
+        }
+    }
 
     /// The phone number for the current user.
     ///
     /// - Note: This is a `String` because the phone number we've saved to disk
     /// in prior versions of the application may not be a valid E164.
-    public let phoneNumber: String?
-
-    public init(aci: Aci, pni: Pni?, phoneNumber: String?) {
-        self.aci = aci
-        self.pni = pni
-        self.phoneNumber = phoneNumber
+    public var phoneNumber: String? {
+        switch self.accountType {
+        case .phoneNumberfull(let phoneNumber, _):
+            return phoneNumber
+        case .phoneNumberless:
+            return nil
+        }
     }
 
-    public convenience init(aci: Aci, phoneNumber: PhoneNumber?) {
-        self.init(aci: aci, pni: phoneNumber?.pni, phoneNumber: phoneNumber?.e164.stringValue)
+    public var authCredentialSalt: AuthCredentialSalt? {
+        switch self.accountType {
+        case .phoneNumberfull:
+            return nil
+        case .phoneNumberless(let authCredentialSalt):
+            return authCredentialSalt
+        }
+    }
+
+    public init(aci: Aci, accountType: AccountType) {
+        self.aci = aci
+        self.accountType = accountType
     }
 
     /// Checks if `serviceId` refers to ourself.
@@ -119,13 +148,15 @@ extension LocalIdentifiers {
     static var forUnitTests: LocalIdentifiers {
         return LocalIdentifiers(
             aci: Aci.constantForTesting("00000000-0000-4000-8000-000000000AAA"),
-            pni: Pni.constantForTesting("PNI:00000000-0000-4000-8000-000000000BBB"),
-            phoneNumber: "+16505550100",
+            accountType: .phoneNumberfull(
+                phoneNumber: "+16505550100",
+                pni: Pni.constantForTesting("PNI:00000000-0000-4000-8000-000000000BBB"),
+            ),
         )
     }
 
     func withoutPni() -> Self {
-        return Self(aci: self.aci, pni: nil, phoneNumber: self.phoneNumber)
+        return Self(aci: self.aci, accountType: .phoneNumberfull(phoneNumber: self.phoneNumber!, pni: nil))
     }
 }
 

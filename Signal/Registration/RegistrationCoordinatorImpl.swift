@@ -1525,10 +1525,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             deps.svr.invalidateBackupAttemptForEveryEnclave(tx: tx)
 
             deps.registrationStateChangeManager.didRegisterOrProvision(
-                aci: accountIdentity.aci,
-                phoneNumber: LocalIdentifiers.PhoneNumber(e164: accountIdentity.e164, pni: accountIdentity.pni),
-                authToken: accountIdentity.authPassword,
-                deviceId: .primary,
+                account: accountIdentity.authedAccountExplicit,
                 tx: tx,
             )
             deps.tsAccountManager.setIsManualMessageFetchEnabled(inMemoryState.isManualMessageFetchEnabled, tx: tx)
@@ -4819,12 +4816,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         var authedAccount: AuthedAccount {
-            return .explicit(AuthedAccount.Explicit(
+            return .explicit(authedAccountExplicit)
+        }
+
+        var authedAccountExplicit: AuthedAccount.Explicit {
+            return AuthedAccount.Explicit(
                 aci: aci,
-                phoneNumber: LocalIdentifiers.PhoneNumber(e164: e164, pni: pni),
+                accountType: .forPhoneNumber(LocalIdentifiers.PhoneNumber(e164: e164, pni: pni)),
                 deviceId: .primary,
                 authPassword: authPassword,
-            ))
+            )
         }
 
         var chatServiceAuth: ChatServiceAuth {
@@ -4832,7 +4833,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         var localIdentifiers: LocalIdentifiers {
-            return LocalIdentifiers(aci: aci, phoneNumber: LocalIdentifiers.PhoneNumber(e164: e164, pni: pni))
+            return authedAccountExplicit.localIdentifiers
         }
     }
 

@@ -13,19 +13,19 @@ public enum AuthedAccount {
 
     public struct Explicit {
         public let aci: Aci
-        public let phoneNumber: LocalIdentifiers.PhoneNumber?
+        public let accountType: LocalIdentifiers.AccountType
         public let deviceId: DeviceId
         public var isPrimaryDevice: Bool { self.deviceId == .primary }
         public let authPassword: String
 
         public init(
             aci: Aci,
-            phoneNumber: LocalIdentifiers.PhoneNumber?,
+            accountType: LocalIdentifiers.AccountType,
             deviceId: DeviceId,
             authPassword: String,
         ) {
             self.aci = aci
-            self.phoneNumber = phoneNumber
+            self.accountType = accountType
             self.deviceId = deviceId
             self.authPassword = authPassword
         }
@@ -68,7 +68,7 @@ extension AuthedAccount.Explicit {
     }
 
     public var localIdentifiers: LocalIdentifiers {
-        return LocalIdentifiers(aci: aci, phoneNumber: phoneNumber)
+        return LocalIdentifiers(aci: aci, accountType: accountType)
     }
 
     public var chatServiceAuth: ChatServiceAuth {

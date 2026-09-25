@@ -378,18 +378,17 @@ public class RegistrationCoordinatorTest {
             bodyData: try JSONEncoder().encode(identityResponse),
         ))
 
-        func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(AuthedAccount.Explicit(
+        func expectedAuth() -> ChatServiceAuth {
+            return ChatServiceAuth.explicit(
                 aci: identityResponse.aci,
-                phoneNumber: LocalIdentifiers.PhoneNumber(e164: Stubs.e164, pni: identityResponse.pni),
                 deviceId: .primary,
-                authPassword: authPassword,
-            ))
+                password: authPassword,
+            )
         }
 
         // When registered, we should create pre-keys.
         preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
-            #expect(auth == expectedAuthedAccount().chatServiceAuth)
+            #expect(auth == expectedAuth())
         })
 
         var didMarkReglockEnabled = false
@@ -404,7 +403,7 @@ public class RegistrationCoordinatorTest {
 
         // Once we sync push tokens, we should restore from storage service.
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
+            #expect(auth.chatServiceAuth == expectedAuth())
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(initialMasterKey.rawData == explicitMasterKey.rawData)
@@ -512,18 +511,17 @@ public class RegistrationCoordinatorTest {
             bodyData: try JSONEncoder().encode(identityResponse),
         ))
 
-        func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(AuthedAccount.Explicit(
+        func expectedAuth() -> ChatServiceAuth {
+            return ChatServiceAuth.explicit(
                 aci: identityResponse.aci,
-                phoneNumber: LocalIdentifiers.PhoneNumber(e164: Stubs.e164, pni: identityResponse.pni),
                 deviceId: .primary,
-                authPassword: authPassword,
-            ))
+                password: authPassword,
+            )
         }
 
         // When registered, we should create pre-keys.
         preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
-            #expect(auth == expectedAuthedAccount().chatServiceAuth)
+            #expect(auth == expectedAuth())
         })
 
         // We haven't marked the PIN enabled; that should happen now.
@@ -535,7 +533,7 @@ public class RegistrationCoordinatorTest {
 
         // Once we sync push tokens, we should restore from storage service.
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
+            #expect(auth.chatServiceAuth == expectedAuth())
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(initialMasterKey.rawData == explicitMasterKey.rawData)
@@ -882,18 +880,17 @@ public class RegistrationCoordinatorTest {
             ),
         )
 
-        func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(AuthedAccount.Explicit(
+        func expectedAuth() -> ChatServiceAuth {
+            return ChatServiceAuth.explicit(
                 aci: identityResponse.aci,
-                phoneNumber: LocalIdentifiers.PhoneNumber(e164: Stubs.e164, pni: identityResponse.pni),
                 deviceId: .primary,
-                authPassword: authPassword,
-            ))
+                password: authPassword,
+            )
         }
 
         // When registered, it should try and sync pre-keys.
         preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
-            #expect(auth == expectedAuthedAccount().chatServiceAuth)
+            #expect(auth == expectedAuth())
         })
 
         // We haven't marked the PIN enabled; that should happen.
@@ -904,7 +901,7 @@ public class RegistrationCoordinatorTest {
 
         // Once we back up to svr, we should restore from storage service.
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
+            #expect(auth.chatServiceAuth == expectedAuth())
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(initialMasterKey.rawData == explicitMasterKey.rawData)
@@ -914,7 +911,7 @@ public class RegistrationCoordinatorTest {
         })
 
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
+            #expect(auth.chatServiceAuth == expectedAuth())
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(finalMasterKey.rawData == explicitMasterKey.rawData)
@@ -1225,18 +1222,17 @@ public class RegistrationCoordinatorTest {
             bodyJson: accountIdentityResponse,
         ))
 
-        func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(AuthedAccount.Explicit(
+        func expectedAuth() -> ChatServiceAuth {
+            return ChatServiceAuth.explicit(
                 aci: accountIdentityResponse.aci,
-                phoneNumber: LocalIdentifiers.PhoneNumber(e164: Stubs.e164, pni: accountIdentityResponse.pni),
                 deviceId: .primary,
-                authPassword: authPassword,
-            ))
+                password: authPassword,
+            )
         }
 
         // When registered, we should create pre-keys.
         preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
-            #expect(auth == expectedAuthedAccount().chatServiceAuth)
+            #expect(auth == expectedAuth())
         })
 
         var didMarkReglockEnabled = false
@@ -1251,7 +1247,7 @@ public class RegistrationCoordinatorTest {
 
         // Once we sync push tokens, we should restore from storage service.
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
+            #expect(auth.chatServiceAuth == expectedAuth())
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(remoteMasterKey.rawData == explicitMasterKey.rawData)
@@ -1548,18 +1544,17 @@ public class RegistrationCoordinatorTest {
             ),
         )
 
-        func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(AuthedAccount.Explicit(
+        func expectedAuth() -> ChatServiceAuth {
+            return ChatServiceAuth.explicit(
                 aci: accountIdentityResponse.aci,
-                phoneNumber: LocalIdentifiers.PhoneNumber(e164: Stubs.e164, pni: accountIdentityResponse.pni),
                 deviceId: .primary,
-                authPassword: authPassword,
-            ))
+                password: authPassword,
+            )
         }
 
         // When registered, it should try and create pre-keys.
         preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
-            #expect(auth == expectedAuthedAccount().chatServiceAuth)
+            #expect(auth == expectedAuth())
         })
 
         // Once we create pre-keys, we mark the PIN enabled.
@@ -1570,7 +1565,7 @@ public class RegistrationCoordinatorTest {
 
         // Once we back up to svr, we should restore from storage service.
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
+            #expect(auth.chatServiceAuth == expectedAuth())
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(initialMasterKey.rawData == explicitMasterKey.rawData)
@@ -1815,13 +1810,12 @@ public class RegistrationCoordinatorTest {
             ),
         )
 
-        func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(AuthedAccount.Explicit(
+        func expectedAuth() -> ChatServiceAuth {
+            return ChatServiceAuth.explicit(
                 aci: accountIdentityResponse.aci,
-                phoneNumber: LocalIdentifiers.PhoneNumber(e164: Stubs.e164, pni: accountIdentityResponse.pni),
                 deviceId: .primary,
-                authPassword: authPassword,
-            ))
+                password: authPassword,
+            )
         }
 
         // Once we are registered, we should finalize prekeys.
@@ -1835,7 +1829,7 @@ public class RegistrationCoordinatorTest {
         // Then we should try and create one time pre-keys
         // with the credentials we got in the identity response.
         preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
-            #expect(auth == expectedAuthedAccount().chatServiceAuth)
+            #expect(auth == expectedAuth())
         })
 
         // Finish the validation.
@@ -1847,7 +1841,7 @@ public class RegistrationCoordinatorTest {
 
         // Once we sync push tokens, we should restore from storage service.
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
+            #expect(auth.chatServiceAuth == expectedAuth())
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(newMasterKey.rawData == explicitMasterKey.rawData)
@@ -2839,13 +2833,12 @@ public class RegistrationCoordinatorTest {
             ),
         )
 
-        func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(AuthedAccount.Explicit(
+        func expectedAuth() -> ChatServiceAuth {
+            return ChatServiceAuth.explicit(
                 aci: accountIdentityResponse.aci,
-                phoneNumber: LocalIdentifiers.PhoneNumber(e164: Stubs.e164, pni: accountIdentityResponse.pni),
                 deviceId: .primary,
-                authPassword: authPassword,
-            ))
+                password: authPassword,
+            )
         }
 
         // Once we are registered, we should finalize prekeys.
@@ -2859,7 +2852,7 @@ public class RegistrationCoordinatorTest {
         // Then we should try and create one time pre-keys
         // with the credentials we got in the identity response.
         preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
-            #expect(auth == expectedAuthedAccount().chatServiceAuth)
+            #expect(auth == expectedAuth())
         })
 
         // When we skip the pin, it should skip any SVR backups.
@@ -2874,7 +2867,7 @@ public class RegistrationCoordinatorTest {
 
         // Once we sync push tokens, we should restore from storage service.
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
+            #expect(auth.chatServiceAuth == expectedAuth())
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(newMasterKey.rawData == explicitMasterKey.rawData)
@@ -2956,13 +2949,12 @@ public class RegistrationCoordinatorTest {
             ),
         )
 
-        func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(AuthedAccount.Explicit(
+        func expectedAuth() -> ChatServiceAuth {
+            return ChatServiceAuth.explicit(
                 aci: accountIdentityResponse.aci,
-                phoneNumber: LocalIdentifiers.PhoneNumber(e164: Stubs.e164, pni: accountIdentityResponse.pni),
                 deviceId: .primary,
-                authPassword: authPassword,
-            ))
+                password: authPassword,
+            )
         }
 
         // Once we are registered, we should finalize prekeys.
@@ -2976,7 +2968,7 @@ public class RegistrationCoordinatorTest {
         // Then we should try and create one time pre-keys
         // with the credentials we got in the identity response.
         preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
-            #expect(auth == expectedAuthedAccount().chatServiceAuth)
+            #expect(auth == expectedAuth())
         })
 
         // When we skip the pin, it should skip any SVR backups.
@@ -2985,7 +2977,7 @@ public class RegistrationCoordinatorTest {
         }
 
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
+            #expect(auth.chatServiceAuth == expectedAuth())
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(newMasterKey.rawData == explicitMasterKey.rawData)

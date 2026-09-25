@@ -472,13 +472,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         }
 
         await self.db.awaitableWrite { tx in
-            self.registrationStateChangeManager.didRegisterOrProvision(
-                aci: authedAccount.aci,
-                phoneNumber: authedAccount.phoneNumber,
-                authToken: authedAccount.authPassword,
-                deviceId: authedAccount.deviceId,
-                tx: tx,
-            )
+            self.registrationStateChangeManager.didRegisterOrProvision(account: authedAccount, tx: tx)
         }
 
         await registrationWebSocketManager.releaseRestrictedWebSocket(isRegistered: true)
@@ -615,7 +609,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
 
         return AuthedAccount.Explicit(
             aci: provisionMessage.aci,
-            phoneNumber: provisionMessage.phoneNumberState.phoneNumber,
+            accountType: .forPhoneNumber(provisionMessage.phoneNumberState.phoneNumber),
             deviceId: verifyDeviceResponse.deviceId,
             authPassword: serverAuthToken,
         )

@@ -15,7 +15,10 @@ final class OutgoingGroupCallUpdateMessageSerializationTest: SSKBaseTest {
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: LocalIdentifiers(
                     aci: .randomForTesting(),
-                    phoneNumber: LocalIdentifiers.PhoneNumber(e164: E164("+17735550199")!, pni: .randomForTesting()),
+                    accountType: .phoneNumberfull(
+                        phoneNumber: "+17735550199",
+                        pni: .randomForTesting(),
+                    ),
                 ),
                 tx: tx,
             )

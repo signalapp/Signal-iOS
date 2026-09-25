@@ -38,7 +38,10 @@ class OWSRecipientIdentityTest: SSKBaseTest {
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: LocalIdentifiers(
                     aci: localAci,
-                    phoneNumber: LocalIdentifiers.PhoneNumber(e164: E164("+16505550100")!, pni: .randomForTesting()),
+                    accountType: .phoneNumberfull(
+                        phoneNumber: "+16505550100",
+                        pni: .randomForTesting(),
+                    ),
                 ),
                 tx: tx,
             )

@@ -16,8 +16,10 @@ class SignalRecipientTest: SSKBaseTest {
     private lazy var localPhoneNumber = E164("+16505550199")!
     private lazy var localIdentifiers = LocalIdentifiers(
         aci: localAci,
-        pni: Pni.randomForTesting(),
-        phoneNumber: localPhoneNumber.stringValue,
+        accountType: .phoneNumberfull(
+            phoneNumber: localPhoneNumber.stringValue,
+            pni: Pni.randomForTesting(),
+        ),
     )
 
     override func setUp() {

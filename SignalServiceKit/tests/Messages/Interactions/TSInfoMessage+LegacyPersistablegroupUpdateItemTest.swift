@@ -77,9 +77,9 @@ class TSInfoMessageLegacyPersistableGroupUpdateItemTest: XCTestCase {
                     oldGroupModel: nil,
                     localIdentifiers: LocalIdentifiers(
                         aci: .randomForTesting(),
-                        phoneNumber: LocalIdentifiers.PhoneNumber(
-                            e164: E164("+15555555555")!,
-                            pni: Pni.constantForTesting("PNI:7CE80DE3-6243-4AD5-AE60-0D1F205391DA"),
+                        accountType: .phoneNumberfull(
+                            phoneNumber: "+15555555555",
+                            pni: .constantForTesting("PNI:7CE80DE3-6243-4AD5-AE60-0D1F205391DA"),
                         ),
                     ),
                 )

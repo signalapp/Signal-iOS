@@ -341,7 +341,10 @@ class TSOutgoingMessageTest: SSKBaseTest {
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: LocalIdentifiers(
                     aci: aci,
-                    phoneNumber: LocalIdentifiers.PhoneNumber(e164: E164("+17775550199")!, pni: .randomForTesting()),
+                    accountType: .phoneNumberfull(
+                        phoneNumber: "+17775550199",
+                        pni: .randomForTesting(),
+                    ),
                 ),
                 tx: tx,
             )

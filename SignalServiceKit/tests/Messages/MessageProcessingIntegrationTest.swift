@@ -37,7 +37,10 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: LocalIdentifiers(
                     aci: localAci,
-                    phoneNumber: LocalIdentifiers.PhoneNumber(e164: E164(localE164Identifier)!, pni: .randomForTesting()),
+                    accountType: .phoneNumberfull(
+                        phoneNumber: localE164Identifier,
+                        pni: .randomForTesting(),
+                    ),
                 ),
                 tx: tx,
             )

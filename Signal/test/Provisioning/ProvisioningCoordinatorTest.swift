@@ -155,11 +155,11 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         pushRegistrationManagerMock.mockRegistrationId = .init(apnsToken: "apn")
 
         var didSetLocalIdentifiers = false
-        registrationStateChangeManagerMock.didRegisterOrProvisionMock = { aci, phoneNumber, _, storedDeviceId in
-            XCTAssertEqual(phoneNumber?.e164, e164)
-            XCTAssertEqual(aci, provisioningMessage.aci)
-            XCTAssertEqual(phoneNumber?.pni, pni)
-            XCTAssertEqual(storedDeviceId, deviceId)
+        registrationStateChangeManagerMock.didRegisterOrProvisionMock = { account in
+            XCTAssertEqual(account.localIdentifiers.phoneNumber, e164.stringValue)
+            XCTAssertEqual(account.aci, provisioningMessage.aci)
+            XCTAssertEqual(account.localIdentifiers.pni, pni)
+            XCTAssertEqual(account.deviceId, deviceId)
             didSetLocalIdentifiers = true
         }
 

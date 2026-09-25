@@ -45,7 +45,10 @@ struct LocalFileBackupExportJobRunnerTests {
         mockTSAccountManager.localIdentifiersMock = {
             return LocalIdentifiers(
                 aci: Aci.randomForTesting(),
-                phoneNumber: LocalIdentifiers.PhoneNumber(e164: E164("+16505550101")!, pni: .randomForTesting()),
+                accountType: .phoneNumberfull(
+                    phoneNumber: "+16505550101",
+                    pni: .randomForTesting(),
+                ),
             )
         }
 

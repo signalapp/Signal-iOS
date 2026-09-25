@@ -21,22 +21,16 @@ open class MockRegistrationStateChangeManager: RegistrationStateChangeManager {
     }
 
     public lazy var didRegisterOrProvisionMock: (
-        _ aci: Aci,
-        _ phoneNumber: LocalIdentifiers.PhoneNumber?,
-        _ authToken: String,
-        _ deviceId: DeviceId,
-    ) -> Void = { [weak self] aci, phoneNumber, _, _ in
-        self?.registrationStateMock = { .registered(LocalIdentifiers(aci: aci, phoneNumber: phoneNumber)) }
+        _ account: AuthedAccount.Explicit,
+    ) -> Void = { [weak self] account in
+        self?.registrationStateMock = { .registered(account.localIdentifiers) }
     }
 
     open func didRegisterOrProvision(
-        aci: Aci,
-        phoneNumber: LocalIdentifiers.PhoneNumber?,
-        authToken: String,
-        deviceId: DeviceId,
+        account: AuthedAccount.Explicit,
         tx: DBWriteTransaction,
     ) {
-        didRegisterOrProvisionMock(aci, phoneNumber, authToken, deviceId)
+        didRegisterOrProvisionMock(account)
     }
 
     public var didUpdateLocalPhoneNumberMock: (

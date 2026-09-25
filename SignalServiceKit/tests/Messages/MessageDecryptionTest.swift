@@ -34,7 +34,10 @@ class MessageDecryptionTest: SSKBaseTest {
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: LocalIdentifiers(
                     aci: Aci(fromUUID: localAci),
-                    phoneNumber: LocalIdentifiers.PhoneNumber(e164: E164(localE164Identifier)!, pni: Pni(fromUUID: localPni)),
+                    accountType: .phoneNumberfull(
+                        phoneNumber: localE164Identifier,
+                        pni: Pni(fromUUID: localPni),
+                    ),
                 ),
                 tx: tx,
             )

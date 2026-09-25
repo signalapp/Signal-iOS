@@ -28,10 +28,7 @@ public protocol RegistrationStateChangeManager {
     func registrationState(tx: DBReadTransaction) -> TSRegistrationState
 
     func didRegisterOrProvision(
-        aci: Aci,
-        phoneNumber: LocalIdentifiers.PhoneNumber?,
-        authToken: String,
-        deviceId: DeviceId,
+        account: AuthedAccount.Explicit,
         tx: DBWriteTransaction,
     )
 

@@ -72,7 +72,10 @@ public class ProvisioningManagerTests {
 
         let localIdentifiers = LocalIdentifiers(
             aci: myAci,
-            phoneNumber: LocalIdentifiers.PhoneNumber(e164: myPhoneNumber, pni: myPni),
+            accountType: .phoneNumberfull(
+                phoneNumber: myPhoneNumber.stringValue,
+                pni: myPni,
+            ),
         )
         mockTsAccountManager.registrationStateMock = {
             return .registered(localIdentifiers)
