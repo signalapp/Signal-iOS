@@ -213,7 +213,7 @@ public struct DonationSubscriptionConfiguration {
         public let levels: [DonationSubscriptionLevel]
     }
 
-    public struct PaymentMethodsConfiguration: Equatable {
+    public struct PaymentMethodsConfiguration {
         public let supportedPaymentMethodsByCurrency: [Currency.Code: Set<DonationPaymentMethod>]
     }
 

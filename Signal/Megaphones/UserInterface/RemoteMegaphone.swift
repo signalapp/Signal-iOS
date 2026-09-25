@@ -85,17 +85,17 @@ class RemoteMegaphone: Megaphone {
                 self.markAsSnoozedWithSneakyTransaction()
             }
 
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             guard
-                DonationUtilities.canDonateInAnyWay(
-                    tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-                )
+                let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction(),
+                let donationAllowedToken = DonationAllowedToken(registeredState: registeredState, remoteConfig: .current)
             else {
                 done()
                 DonationViewsUtil.openDonateWebsite()
                 return
             }
 
-            let donateVc = DonateViewController(preferredDonateMode: .oneTime) { finishResult in
+            let donateVc = DonateViewController(preferredDonateMode: .oneTime, donationAllowedToken: donationAllowedToken) { finishResult in
                 let frontVc = { CurrentAppContext().frontmostViewController() }
                 switch finishResult {
                 case let .completedDonation(donateSheet, receiptCredentialSuccessMode):
@@ -129,18 +129,18 @@ class RemoteMegaphone: Megaphone {
                 self.markAsSnoozedWithSneakyTransaction()
             }
 
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             guard
-                DonationUtilities.canDonate(
-                    inMode: .gift,
-                    tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-                )
+                let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction(),
+                let donationAllowedToken = DonationAllowedToken(registeredState: registeredState, remoteConfig: .current),
+                donationAllowedToken.canDonate(inMode: .gift)
             else {
                 done()
                 DonationViewsUtil.openDonateWebsite()
                 return
             }
 
-            let donateVc = BadgeGiftingChooseBadgeViewController()
+            let donateVc = BadgeGiftingChooseBadgeViewController(donationAllowedToken: donationAllowedToken)
             let navController = OWSNavigationController(rootViewController: donateVc)
             fromViewController.present(navController, animated: true, completion: done)
         case .unrecognized(let actionId):

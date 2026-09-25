@@ -10,15 +10,18 @@ class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewCon
     typealias PaymentMethodsConfiguration = DonationSubscriptionConfiguration.PaymentMethodsConfiguration
 
     private let badge: ProfileBadge
+    private let donationAllowedToken: DonationAllowedToken
     private let price: FiatMoney
     private let paymentMethodsConfiguration: PaymentMethodsConfiguration
 
     init(
         badge: ProfileBadge,
+        donationAllowedToken: DonationAllowedToken,
         price: FiatMoney,
         paymentMethodsConfiguration: PaymentMethodsConfiguration,
     ) {
         self.badge = badge
+        self.donationAllowedToken = donationAllowedToken
         self.price = price
         self.paymentMethodsConfiguration = paymentMethodsConfiguration
     }
@@ -76,6 +79,7 @@ extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate, Us
         let thread = SSKEnvironment.shared.databaseStorageRef.write { TSContactThread.getOrCreateThread(withContactAddress: address, transaction: $0) }
         let vc = BadgeGiftingConfirmationViewController(
             badge: badge,
+            donationAllowedToken: donationAllowedToken,
             price: price,
             paymentMethodsConfiguration: paymentMethodsConfiguration,
             thread: thread,

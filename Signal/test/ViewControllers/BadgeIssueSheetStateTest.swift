@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
 import XCTest
 @testable import Signal
+@testable import SignalServiceKit
 
 class BadgeIssueSheetStateTest: XCTestCase {
     typealias State = BadgeIssueSheetState
@@ -43,12 +43,19 @@ class BadgeIssueSheetStateTest: XCTestCase {
         return result
     }
 
+    private func donationAllowedToken() -> DonationAllowedToken {
+        return DonationAllowedToken(
+            registeredState: try! RegisteredState(registrationState: .registered(.forUnitTests)),
+            remoteConfig: MockRemoteConfigProvider().currentConfig(),
+        )!
+    }
+
     func testBadge() throws {
         let badge = getSubscriptionBadge()
         let state = State(
             badge: badge,
+            donationAllowedToken: donationAllowedToken(),
             mode: .subscriptionBankPaymentProcessing,
-            canDonate: true,
         )
         XCTAssertIdentical(state.badge, badge)
     }
@@ -57,69 +64,77 @@ class BadgeIssueSheetStateTest: XCTestCase {
         let dismissButtonStates: [State] = [
             .init(
                 badge: getGiftBadge(),
+                donationAllowedToken: donationAllowedToken(),
                 mode: .giftBadgeExpired(hasCurrentSubscription: true),
-                canDonate: true,
             ),
             .init(
                 badge: getGiftBadge(),
+                donationAllowedToken: donationAllowedToken(),
                 mode: .giftBadgeExpired(hasCurrentSubscription: true),
-                canDonate: true,
             ),
             .init(
                 badge: getBoostBadge(),
+                donationAllowedToken: nil,
                 mode: .boostExpired(hasCurrentSubscription: true),
-                canDonate: false,
             ),
             .init(
                 badge: getGiftBadge(),
+                donationAllowedToken: donationAllowedToken(),
                 mode: .giftNotRedeemed(fullName: ""),
-                canDonate: true,
             ),
             .init(
                 badge: getBoostBadge(),
+                donationAllowedToken: donationAllowedToken(),
                 mode: .boostBankPaymentProcessing,
-                canDonate: true,
             ),
             .init(
                 badge: getSubscriptionBadge(),
+                donationAllowedToken: donationAllowedToken(),
                 mode: .subscriptionBankPaymentProcessing,
-                canDonate: true,
             ),
         ]
         for state in dismissButtonStates {
-            XCTAssertEqual(state.actionButton.action, .dismiss)
+            if case .dismiss = state.actionButton.action {
+                // OK
+            } else {
+                XCTFail()
+            }
             XCTAssertFalse(state.actionButton.hasNotNow)
         }
 
         let donateButtonStates: [State] = [
             .init(
                 badge: getSubscriptionBadge(),
+                donationAllowedToken: donationAllowedToken(),
                 mode: .subscriptionExpiredBecauseOfChargeFailure(chargeFailureCode: nil, paymentMethod: nil),
-                canDonate: true,
             ),
             .init(
                 badge: getBoostBadge(),
+                donationAllowedToken: donationAllowedToken(),
                 mode: .boostExpired(hasCurrentSubscription: false),
-                canDonate: true,
             ),
             .init(
                 badge: getBoostBadge(),
+                donationAllowedToken: donationAllowedToken(),
                 mode: .boostExpired(hasCurrentSubscription: true),
-                canDonate: true,
             ),
             .init(
                 badge: getGiftBadge(),
+                donationAllowedToken: donationAllowedToken(),
                 mode: .giftBadgeExpired(hasCurrentSubscription: false),
-                canDonate: true,
             ),
             .init(
                 badge: getSubscriptionBadge(),
+                donationAllowedToken: donationAllowedToken(),
                 mode: .bankPaymentFailed(chargeFailureCode: nil),
-                canDonate: true,
             ),
         ]
         for state in donateButtonStates {
-            XCTAssertEqual(state.actionButton.action, .openDonationView)
+            if case .openDonationView = state.actionButton.action {
+                // OK
+            } else {
+                XCTFail()
+            }
             XCTAssertTrue(state.actionButton.hasNotNow)
         }
     }

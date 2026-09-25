@@ -309,7 +309,11 @@ extension DonationSettingsViewController {
                 guard let self else { return }
 
                 guard let errorState else {
-                    self.showDonateViewController(preferredDonateMode: .monthly)
+                    guard let donationAllowedToken = Self.donationAllowedToken() else {
+                        // TODO: Handle deregistered users with an active subscription.
+                        return
+                    }
+                    self.showDonateViewController(preferredDonateMode: .monthly, donationAllowedToken: donationAllowedToken)
                     return
                 }
 
@@ -466,14 +470,27 @@ extension DonationSettingsViewController {
                 comment: "Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again.",
             ),
         )
-        actionSheet.addAction(OWSActionSheets.okayAction)
+        let donationAllowedToken = Self.donationAllowedToken()
         actionSheet.addAction(ActionSheetAction(
-            title: CommonStrings.tryAgainButton,
-            handler: { [weak self] _ in
-                guard let self else { return }
-                self.presentAwaitingIDEALAuthorizationActionSheet(donateMode: donateMode)
+            title: CommonStrings.okButton,
+            style: .cancel,
+            handler: { _ in
+                if donationAllowedToken == nil {
+                    let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+                    databaseStorage.write { tx in
+                        Self.clearPendingIDEALDonation(donateMode: donateMode, tx: tx)
+                    }
+                }
             },
         ))
+        if let donationAllowedToken {
+            actionSheet.addAction(ActionSheetAction(
+                title: CommonStrings.tryAgainButton,
+                handler: { [weak self] _ in
+                    self?.presentAwaitingIDEALAuthorizationActionSheet(donateMode: donateMode, donationAllowedToken: donationAllowedToken)
+                },
+            ))
+        }
         self.presentActionSheet(actionSheet, animated: true)
     }
 
@@ -506,11 +523,20 @@ extension DonationSettingsViewController {
 
         switch preferredDonateMode {
         case .monthly:
-            actionSheet.addAction(showDonateAndCancelSubscriptionAction(title: .tryAgain))
+            if let donationAllowedToken = Self.donationAllowedToken() {
+                actionSheet.addAction(cancelSubscriptionAndShowDonateAction(title: .tryAgain, donationAllowedToken: donationAllowedToken))
+                actionSheet.addAction(OWSActionSheets.cancelAction)
+            } else {
+                actionSheet.addAction(okAndCancelSubscriptionAction())
+            }
         case .oneTime:
-            actionSheet.addAction(showOneTimeDonateAndClearErrorAction(title: .tryAgain))
+            if let donationAllowedToken = Self.donationAllowedToken() {
+                actionSheet.addAction(clearOneTimeErrorAndShowDonateAction(title: .tryAgain, donationAllowedToken: donationAllowedToken))
+                actionSheet.addAction(OWSActionSheets.cancelAction)
+            } else {
+                actionSheet.addAction(okAndClearOneTimeErrorAction())
+            }
         }
-        actionSheet.addAction(OWSActionSheets.cancelAction)
 
         self.presentActionSheet(actionSheet, animated: true)
     }
@@ -541,8 +567,12 @@ extension DonationSettingsViewController {
             message: actionSheetMessage,
         )
 
-        actionSheet.addAction(showDonateAndCancelSubscriptionAction(title: .renewSubscription))
-        actionSheet.addAction(OWSActionSheets.cancelAction)
+        if let donationAllowedToken = Self.donationAllowedToken() {
+            actionSheet.addAction(cancelSubscriptionAndShowDonateAction(title: .renewSubscription, donationAllowedToken: donationAllowedToken))
+            actionSheet.addAction(OWSActionSheets.cancelAction)
+        } else {
+            actionSheet.addAction(okAndCancelSubscriptionAction())
+        }
 
         self.presentActionSheet(actionSheet, animated: true)
     }
@@ -564,30 +594,75 @@ extension DonationSettingsViewController {
         }
     }
 
-    private func showOneTimeDonateAndClearErrorAction(title: ShowDonateActionTitle) -> ActionSheetAction {
-        clearErrorAndShowDonateAction(title: title.localizedTitle, donateMode: .oneTime) { tx in
-            DependenciesBridge.shared.donationReceiptCredentialResultStore
-                .clearRequestError(errorMode: .oneTimeBoost, tx: tx)
-        }
+    private func okAndClearAction(clearError: @escaping () async throws -> Void) -> ActionSheetAction {
+        return ActionSheetAction(
+            title: CommonStrings.okButton,
+            handler: { _ in
+                Task {
+                    do {
+                        try await clearError()
+                        await self.loadAndUpdateState()
+                    } catch {
+                        Logger.warn("couldn't clear error: \(error)")
+                    }
+                }
+            },
+        )
     }
 
-    private func showDonateAndCancelSubscriptionAction(title: ShowDonateActionTitle) -> ActionSheetAction {
+    private func clearOneTimeErrorAndShowDonateAction(title: ShowDonateActionTitle, donationAllowedToken: DonationAllowedToken) -> ActionSheetAction {
+        clearErrorAndShowDonateAction(
+            title: title.localizedTitle,
+            donateMode: .oneTime,
+            donationAllowedToken: donationAllowedToken,
+            clearErrorBlock: { tx in
+                Self.clearOneTimeError(tx: tx)
+            },
+        )
+    }
+
+    private func okAndClearOneTimeErrorAction() -> ActionSheetAction {
+        return okAndClearAction(clearError: {
+            let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+            await databaseStorage.awaitableWrite { tx in
+                Self.clearOneTimeError(tx: tx)
+            }
+        })
+    }
+
+    private static func clearOneTimeError(tx: DBWriteTransaction) {
+        let donationReceiptCredentialResultStore = DependenciesBridge.shared.donationReceiptCredentialResultStore
+        donationReceiptCredentialResultStore.clearRequestError(errorMode: .oneTimeBoost, tx: tx)
+    }
+
+    private func okAndCancelSubscriptionAction() -> ActionSheetAction {
+        return okAndClearAction(clearError: { try await Self.cancelSubscription() })
+    }
+
+    private func cancelSubscriptionAndShowDonateAction(title: ShowDonateActionTitle, donationAllowedToken: DonationAllowedToken) -> ActionSheetAction {
         return ActionSheetAction(title: title.localizedTitle) { _ in
-            Task.detached {
+            Task {
                 do {
-                    let subscriberId = SSKEnvironment.shared.databaseStorageRef.read { tx in
-                        return DependenciesBridge.shared.donationSubscriptionManager.getSubscriberID(tx: tx)
-                    }
-                    if let subscriberId {
-                        try await DependenciesBridge.shared.donationSubscriptionManager.cancelSubscription(for: subscriberId)
-                    }
+                    try await Self.cancelSubscription()
                     await self.loadAndUpdateState()
-                    await self.showDonateViewController(preferredDonateMode: .monthly)
+                    self.showDonateViewController(preferredDonateMode: .monthly, donationAllowedToken: donationAllowedToken)
                 } catch {
-                    Logger.error("Error with subscription: \(error)")
+                    Logger.error("couldn't cancel subscription: \(error)")
                 }
             }
         }
+    }
+
+    @concurrent
+    private static func cancelSubscription() async throws {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let donationSubscriptionManager = DependenciesBridge.shared.donationSubscriptionManager
+
+        let subscriberId = databaseStorage.read { tx in donationSubscriptionManager.getSubscriberID(tx: tx) }
+        guard let subscriberId else {
+            return
+        }
+        try await donationSubscriptionManager.cancelSubscription(for: subscriberId)
     }
 
     private func mySupportErrorIconView() -> UIView {

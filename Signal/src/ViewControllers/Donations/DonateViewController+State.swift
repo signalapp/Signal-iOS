@@ -15,7 +15,7 @@ extension DonateViewController {
     /// supported for monthly donations but not one-time ones. If EUR is
     /// selected in monthly mode and you switch, we need to change the selected
     /// currency.
-    struct State: Equatable {
+    struct State {
 
         // MARK: Typealiases
 
@@ -25,14 +25,14 @@ extension DonateViewController {
 
         // MARK: - One-time state
 
-        struct OneTimeState: Equatable {
-            enum SelectedAmount: Equatable {
+        struct OneTimeState {
+            enum SelectedAmount {
                 case nothingSelected(currencyCode: Currency.Code)
                 case selectedPreset(amount: FiatMoney)
                 case choseCustomAmount(amount: FiatMoney)
             }
 
-            enum OneTimePaymentRequest: Equatable {
+            enum OneTimePaymentRequest {
                 case alreadyHasPaymentProcessing(paymentMethod: DonationPaymentMethod)
                 case awaitingIDEALAuthorization
                 case noAmountSelected
@@ -52,7 +52,7 @@ extension DonateViewController {
             fileprivate let receiptCredentialRequestError: DonationReceiptCredentialRequestError?
             fileprivate let pendingIDEALOneTimeDonation: PendingOneTimeIDEALDonation?
 
-            fileprivate let localNumber: String?
+            fileprivate let donationAllowedToken: DonationAllowedToken
 
             var amount: FiatMoney? {
                 switch selectedAmount {
@@ -79,10 +79,10 @@ extension DonateViewController {
             /// The set of supported currency codes. Excludes currencies for
             /// which there are no supported payment methods.
             fileprivate var supportedCurrencyCodes: Set<Currency.Code> {
-                Set(presets.keys).supported(
+                return donationAllowedToken.filterSupportedCurrencyCodes(
+                    Set(presets.keys),
                     forDonationMode: .oneTime,
                     withConfig: paymentMethodConfiguration,
-                    localNumber: localNumber,
                 )
             }
 
@@ -141,7 +141,7 @@ extension DonateViewController {
                     paymentMethodConfiguration: paymentMethodConfiguration,
                     receiptCredentialRequestError: receiptCredentialRequestError,
                     pendingIDEALOneTimeDonation: pendingIDEALOneTimeDonation,
-                    localNumber: localNumber,
+                    donationAllowedToken: donationAllowedToken,
                 )
             }
 
@@ -175,26 +175,25 @@ extension DonateViewController {
                     paymentMethodConfiguration: paymentMethodConfiguration,
                     receiptCredentialRequestError: receiptCredentialRequestError,
                     pendingIDEALOneTimeDonation: pendingIDEALOneTimeDonation,
-                    localNumber: localNumber,
+                    donationAllowedToken: donationAllowedToken,
                 )
             }
 
             private func supportedPaymentMethods(
                 forCurrencyCode currencyCode: Currency.Code,
             ) -> Set<DonationPaymentMethod> {
-                DonationUtilities.supportedDonationPaymentMethods(
+                return donationAllowedToken.supportedPaymentMethods(
                     forDonationMode: .oneTime,
                     usingCurrency: currencyCode,
                     withConfiguration: paymentMethodConfiguration,
-                    localNumber: localNumber,
                 )
             }
         }
 
         // MARK: - Monthly state
 
-        struct MonthlyState: Equatable {
-            struct MonthlyPaymentRequest: Equatable {
+        struct MonthlyState {
+            struct MonthlyPaymentRequest {
                 let amount: FiatMoney
                 let profileBadge: ProfileBadge
                 let supportedPaymentMethods: Set<DonationPaymentMethod>
@@ -210,7 +209,7 @@ extension DonateViewController {
 
             fileprivate let paymentMethodConfiguration: PaymentMethodsConfiguration
             fileprivate let receiptCredentialRequestError: DonationReceiptCredentialRequestError?
-            fileprivate let localNumber: String?
+            fileprivate let donationAllowedToken: DonationAllowedToken
 
             /// Get the currency codes supported by all subscription levels.
             ///
@@ -229,10 +228,10 @@ extension DonateViewController {
             }
 
             fileprivate var supportedCurrencyCodes: Set<Currency.Code> {
-                Self.supportedCurrencyCodes(subscriptionLevels: subscriptionLevels).supported(
+                return donationAllowedToken.filterSupportedCurrencyCodes(
+                    Self.supportedCurrencyCodes(subscriptionLevels: subscriptionLevels),
                     forDonationMode: .monthly,
                     withConfig: paymentMethodConfiguration,
-                    localNumber: localNumber,
                 )
             }
 
@@ -305,7 +304,7 @@ extension DonateViewController {
                     pendingIDEALSubscription: pendingIDEALSubscription,
                     paymentMethodConfiguration: paymentMethodConfiguration,
                     receiptCredentialRequestError: receiptCredentialRequestError,
-                    localNumber: localNumber,
+                    donationAllowedToken: donationAllowedToken,
                 )
             }
 
@@ -321,25 +320,24 @@ extension DonateViewController {
                     pendingIDEALSubscription: pendingIDEALSubscription,
                     paymentMethodConfiguration: paymentMethodConfiguration,
                     receiptCredentialRequestError: receiptCredentialRequestError,
-                    localNumber: localNumber,
+                    donationAllowedToken: donationAllowedToken,
                 )
             }
 
             private func supportedPaymentMethods(
                 forCurrencyCode currencyCode: Currency.Code,
             ) -> Set<DonationPaymentMethod> {
-                DonationUtilities.supportedDonationPaymentMethods(
+                return donationAllowedToken.supportedPaymentMethods(
                     forDonationMode: .monthly,
                     usingCurrency: currencyCode,
                     withConfiguration: paymentMethodConfiguration,
-                    localNumber: localNumber,
                 )
             }
         }
 
         // MARK: - Load state
 
-        enum LoadState: Equatable {
+        enum LoadState {
             case initializing
             case loading
             case loadFailed
@@ -459,6 +457,7 @@ extension DonateViewController {
             oneTimeConfig: OneTimeConfiguration,
             monthlyConfig: MonthlyConfiguration,
             paymentMethodsConfig: PaymentMethodsConfiguration,
+            donationAllowedToken: DonationAllowedToken,
             currentMonthlySubscription: Subscription?,
             subscriberID: Data?,
             previousMonthlySubscriptionCurrencyCode: Currency.Code?,
@@ -468,17 +467,15 @@ extension DonateViewController {
             pendingIDEALOneTimeDonation: PendingOneTimeIDEALDonation?,
             pendingIDEALSubscription: PendingMonthlyIDEALDonation?,
             locale: Locale,
-            localNumber: String?,
         ) -> State {
             let localeCurrency = locale.currencyCode?.uppercased()
 
             let oneTime: OneTimeState? = { () -> OneTimeState? in
-                let oneTimeSupportedCurrencies = Set(oneTimeConfig.presetAmounts.keys)
-                    .supported(
-                        forDonationMode: .oneTime,
-                        withConfig: paymentMethodsConfig,
-                        localNumber: localNumber,
-                    )
+                let oneTimeSupportedCurrencies = donationAllowedToken.filterSupportedCurrencyCodes(
+                    Set(oneTimeConfig.presetAmounts.keys),
+                    forDonationMode: .oneTime,
+                    withConfig: paymentMethodsConfig,
+                )
 
                 guard
                     let oneTimeDefaultCurrency = DonationUtilities.chooseDefaultCurrency(
@@ -500,17 +497,15 @@ extension DonateViewController {
                     paymentMethodConfiguration: paymentMethodsConfig,
                     receiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
                     pendingIDEALOneTimeDonation: pendingIDEALOneTimeDonation,
-                    localNumber: localNumber,
+                    donationAllowedToken: donationAllowedToken,
                 )
             }()
 
             let monthly: MonthlyState? = {
-                let supportedMonthlyCurrencies = MonthlyState.supportedCurrencyCodes(
-                    subscriptionLevels: monthlyConfig.levels,
-                ).supported(
+                let supportedMonthlyCurrencies = donationAllowedToken.filterSupportedCurrencyCodes(
+                    MonthlyState.supportedCurrencyCodes(subscriptionLevels: monthlyConfig.levels),
                     forDonationMode: .monthly,
                     withConfig: paymentMethodsConfig,
-                    localNumber: localNumber,
                 )
 
                 guard
@@ -550,7 +545,7 @@ extension DonateViewController {
                     pendingIDEALSubscription: pendingIDEALSubscription,
                     paymentMethodConfiguration: paymentMethodsConfig,
                     receiptCredentialRequestError: recurringSubscriptionReceiptCredentialRequestError,
-                    localNumber: localNumber,
+                    donationAllowedToken: donationAllowedToken,
                 )
             }()
 
@@ -630,18 +625,17 @@ extension DonateViewController {
     }
 }
 
-private extension Set where Element == Currency.Code {
-    func supported(
+private extension DonationAllowedToken {
+    func filterSupportedCurrencyCodes(
+        _ currencyCodes: Set<Currency.Code>,
         forDonationMode donationMode: DonationMode,
         withConfig paymentMethodConfig: DonateViewController.State.PaymentMethodsConfiguration,
-        localNumber: String?,
-    ) -> Self {
-        filter { currencyCode in
-            !DonationUtilities.supportedDonationPaymentMethods(
+    ) -> Set<Currency.Code> {
+        return currencyCodes.filter { currencyCode in
+            return !self.supportedPaymentMethods(
                 forDonationMode: donationMode,
                 usingCurrency: currencyCode,
                 withConfiguration: paymentMethodConfig,
-                localNumber: localNumber,
             ).isEmpty
         }
     }

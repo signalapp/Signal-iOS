@@ -78,14 +78,14 @@ class BadgeDetailsSheet: HeroSheetViewController {
 
     private static func donate(from vc: UIViewController) {
         vc.dismiss(animated: true) {
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             if
-                DonationUtilities.canDonateInAnyWay(
-                    tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-                )
+                let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction(),
+                let donationAllowedToken = DonationAllowedToken(registeredState: registeredState, remoteConfig: .current)
             {
                 let frontVc = { CurrentAppContext().frontmostViewController() }
 
-                let donateVc = DonateViewController(preferredDonateMode: .oneTime) { finishResult in
+                let donateVc = DonateViewController(preferredDonateMode: .oneTime, donationAllowedToken: donationAllowedToken) { finishResult in
                     switch finishResult {
                     case let .completedDonation(donateSheet, receiptCredentialSuccessMode):
                         donateSheet.dismiss(animated: true) {

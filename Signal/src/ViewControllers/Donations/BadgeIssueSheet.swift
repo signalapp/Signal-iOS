@@ -14,7 +14,7 @@ protocol BadgeIssueSheetDelegate: AnyObject {
 
 public enum BadgeIssueSheetAction {
     case dismiss
-    case openDonationView
+    case openDonationView(DonationAllowedToken)
 }
 
 public class BadgeIssueSheetState {
@@ -56,13 +56,13 @@ public class BadgeIssueSheetState {
     }
 
     public let badge: ProfileBadge
+    private let donationAllowedToken: DonationAllowedToken?
     private let mode: Mode
-    private let canDonate: Bool
 
-    public init(badge: ProfileBadge, mode: Mode, canDonate: Bool) {
+    public init(badge: ProfileBadge, donationAllowedToken: DonationAllowedToken?, mode: Mode) {
         self.badge = badge
+        self.donationAllowedToken = donationAllowedToken
         self.mode = mode
-        self.canDonate = canDonate
     }
 
     public lazy var titleText: String = {
@@ -184,23 +184,25 @@ public class BadgeIssueSheetState {
     public lazy var actionButton: ActionButton = {
         enum AskUserToDonateMode {
             case dontAsk
-            case askToDonate
-            case askToTryAgain
-            case askToRenewSubscription
+            case askToDonate(DonationAllowedToken)
+            case askToTryAgain(DonationAllowedToken)
+            case askToRenewSubscription(DonationAllowedToken)
         }
 
         let askUserToDonateMode: AskUserToDonateMode = {
-            guard canDonate else { return .dontAsk }
+            guard let donationAllowedToken else {
+                return .dontAsk
+            }
 
             switch mode {
             case
                 .boostExpired,
                 .giftBadgeExpired(hasCurrentSubscription: false):
-                return .askToDonate
+                return .askToDonate(donationAllowedToken)
             case .bankPaymentFailed:
-                return .askToTryAgain
+                return .askToTryAgain(donationAllowedToken)
             case .subscriptionExpiredBecauseOfChargeFailure:
-                return .askToRenewSubscription
+                return .askToRenewSubscription(donationAllowedToken)
             case
                 .giftBadgeExpired(hasCurrentSubscription: true),
                 .giftNotRedeemed,
@@ -217,24 +219,24 @@ public class BadgeIssueSheetState {
                 text: CommonStrings.okayButton,
                 hasNotNow: false,
             )
-        case .askToDonate:
+        case .askToDonate(let donationAllowedToken):
             return ActionButton(
-                action: .openDonationView,
+                action: .openDonationView(donationAllowedToken),
                 text: OWSLocalizedString(
                     "BADGE_EXPIRED_DONATE_BUTTON",
                     comment: "Button text when a badge expires, asking users to donate",
                 ),
                 hasNotNow: true,
             )
-        case .askToTryAgain:
+        case .askToTryAgain(let donationAllowedToken):
             return ActionButton(
-                action: .openDonationView,
+                action: .openDonationView(donationAllowedToken),
                 text: CommonStrings.tryAgainButton,
                 hasNotNow: true,
             )
-        case .askToRenewSubscription:
+        case .askToRenewSubscription(let donationAllowedToken):
             return ActionButton(
-                action: .openDonationView,
+                action: .openDonationView(donationAllowedToken),
                 text: OWSLocalizedString(
                     "DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE",
                     comment: "Title for a button asking the user to renew their subscription, because it has expired.",
@@ -267,12 +269,16 @@ class BadgeIssueSheet: OWSTableSheetViewController {
     weak var delegate: BadgeIssueSheetDelegate?
 
     init(badge: ProfileBadge, mode: BadgeIssueSheetState.Mode) {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         self.state = BadgeIssueSheetState(
             badge: badge,
+            donationAllowedToken: {
+                guard let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction() else {
+                    return nil
+                }
+                return DonationAllowedToken(registeredState: registeredState, remoteConfig: .current)
+            }(),
             mode: mode,
-            canDonate: DonationUtilities.canDonateInAnyWay(
-                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-            ),
         )
 
         super.init()

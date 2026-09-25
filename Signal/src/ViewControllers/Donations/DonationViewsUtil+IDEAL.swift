@@ -221,16 +221,23 @@ extension DonationViewsUtil {
                 clearPendingDonation()
             }
         }))
-        actionSheet.addAction(
-            .init(
-                title: CommonStrings.tryAgainButton,
-                style: .default,
-                handler: { _ in
-                    clearPendingDonation()
-                    donationsVC.showDonateViewController(preferredDonateMode: donationType.asDonationMode)
-                },
-            ),
-        )
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        if
+            let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction(),
+            let donationAllowedToken = DonationAllowedToken(registeredState: registeredState, remoteConfig: .current),
+            donationAllowedToken.canDonate(inMode: donationType.asDonationMode.asDonationMode)
+        {
+            actionSheet.addAction(
+                .init(
+                    title: CommonStrings.tryAgainButton,
+                    style: .default,
+                    handler: { _ in
+                        clearPendingDonation()
+                        donationsVC.showDonateViewController(preferredDonateMode: donationType.asDonationMode, donationAllowedToken: donationAllowedToken)
+                    },
+                ),
+            )
+        }
 
         if let frontVc = CurrentAppContext().frontmostViewController() {
             frontVc.presentActionSheet(actionSheet, animated: true)

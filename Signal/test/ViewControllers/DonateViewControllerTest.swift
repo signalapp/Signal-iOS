@@ -161,7 +161,12 @@ final class DonateViewControllerTest: SignalBaseTest {
     private static let defaultMonthlyConfig = MonthlyFixtures.configWithDefaults()
     private static let defaultPaymentMethodsConfig = PaymentMethodsFixtures.configWithDefaults()
 
-    private static var localNumber: String = "+17735550100"
+    private static func donationAllowedToken() -> DonationAllowedToken {
+        return DonationAllowedToken(
+            registeredState: try! RegisteredState(registrationState: .registered(.forUnitTests)),
+            remoteConfig: MockRemoteConfigProvider().currentConfig(),
+        )!
+    }
 
     private var initializing: State { .init(donateMode: .oneTime) }
 
@@ -174,6 +179,7 @@ final class DonateViewControllerTest: SignalBaseTest {
             oneTimeConfig: Self.defaultOneTimeConfig,
             monthlyConfig: Self.defaultMonthlyConfig,
             paymentMethodsConfig: Self.defaultPaymentMethodsConfig,
+            donationAllowedToken: Self.donationAllowedToken(),
             currentMonthlySubscription: nil,
             subscriberID: nil,
             previousMonthlySubscriptionCurrencyCode: nil,
@@ -183,7 +189,6 @@ final class DonateViewControllerTest: SignalBaseTest {
             pendingIDEALOneTimeDonation: nil,
             pendingIDEALSubscription: nil,
             locale: Locale(identifier: "en-US"),
-            localNumber: Self.localNumber,
         )
     }
 
@@ -192,6 +197,7 @@ final class DonateViewControllerTest: SignalBaseTest {
             oneTimeConfig: Self.defaultOneTimeConfig,
             monthlyConfig: Self.defaultMonthlyConfig,
             paymentMethodsConfig: Self.defaultPaymentMethodsConfig,
+            donationAllowedToken: Self.donationAllowedToken(),
             currentMonthlySubscription: Self.subscription(at: 2),
             subscriberID: Data([1, 2, 3]),
             previousMonthlySubscriptionCurrencyCode: "USD",
@@ -201,7 +207,6 @@ final class DonateViewControllerTest: SignalBaseTest {
             pendingIDEALOneTimeDonation: nil,
             pendingIDEALSubscription: nil,
             locale: Locale(identifier: "en-US"),
-            localNumber: Self.localNumber,
         )
     }
 
@@ -218,6 +223,7 @@ final class DonateViewControllerTest: SignalBaseTest {
             oneTimeConfig: oneTimeConfig,
             monthlyConfig: monthlyConfig,
             paymentMethodsConfig: paymentMethodsConfig,
+            donationAllowedToken: Self.donationAllowedToken(),
             currentMonthlySubscription: currentMonthlySubscription,
             subscriberID: subscriberID,
             previousMonthlySubscriptionCurrencyCode: previousMonthlySubscriptionCurrencyCode,
@@ -227,7 +233,6 @@ final class DonateViewControllerTest: SignalBaseTest {
             pendingIDEALOneTimeDonation: nil,
             pendingIDEALSubscription: nil,
             locale: locale,
-            localNumber: Self.localNumber,
         )
     }
 
@@ -252,6 +257,7 @@ final class DonateViewControllerTest: SignalBaseTest {
             oneTimeConfig: Self.defaultOneTimeConfig,
             monthlyConfig: Self.defaultMonthlyConfig,
             paymentMethodsConfig: Self.defaultPaymentMethodsConfig,
+            donationAllowedToken: Self.donationAllowedToken(),
             currentMonthlySubscription: Self.subscription(
                 at: 2,
                 isPaymentProcessing: recurringProcessingViaSubscription,
@@ -272,14 +278,17 @@ final class DonateViewControllerTest: SignalBaseTest {
             pendingIDEALOneTimeDonation: nil,
             pendingIDEALSubscription: nil,
             locale: Locale(identifier: "en-US"),
-            localNumber: Self.localNumber,
         )
     }
 
     // MARK: - Initialization
 
     func testInitialization() {
-        XCTAssertEqual(initializing.loadState, .initializing)
+        if case .initializing = initializing.loadState {
+            // OK
+        } else {
+            XCTFail()
+        }
     }
 
     // MARK: - Top-level getters
@@ -340,18 +349,30 @@ final class DonateViewControllerTest: SignalBaseTest {
     // MARK: - Top-level state changes
 
     func testLoading() {
-        XCTAssertEqual(loading.loadState, .loading)
+        if case .loading = loading.loadState {
+            // OK
+        } else {
+            XCTFail()
+        }
     }
 
     func testLoadFailed() {
-        XCTAssertEqual(loadFailed.loadState, .loadFailed)
+        if case .loadFailed = loadFailed.loadState {
+            // OK
+        } else {
+            XCTFail()
+        }
     }
 
     func testLoadedBoringSettingOfProperties() {
         let oneTime = loadedWithSubscription.oneTime
         let monthly = loadedWithSubscription.monthly
         XCTAssertEqual(oneTime?.selectedPreset, Self.defaultOneTimeConfig.presetAmounts["USD"])
-        XCTAssertEqual(oneTime?.selectedAmount, .nothingSelected(currencyCode: "USD"))
+        if case .nothingSelected(currencyCode: "USD") = oneTime?.selectedAmount {
+            // OK
+        } else {
+            XCTFail()
+        }
         XCTAssertEqual(oneTime?.profileBadge, Self.defaultOneTimeConfig.badge)
         XCTAssertEqual(monthly?.subscriptionLevels, Self.defaultMonthlyConfig.levels)
         XCTAssertEqual(monthly?.currentSubscription, Self.subscription(at: 2))

@@ -69,17 +69,12 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     private var avatarView: ConversationAvatarView = DonationViewsUtil.avatarView()
 
-    private static var canDonateInAnyWay: Bool {
-        DonationUtilities.canDonateInAnyWay(
-            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-        )
-    }
-
-    private static var canSendGiftBadges: Bool {
-        DonationUtilities.canDonate(
-            inMode: .gift,
-            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-        )
+    static func donationAllowedToken() -> DonationAllowedToken? {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction() else {
+            return nil
+        }
+        return DonationAllowedToken(registeredState: registeredState, remoteConfig: .current)
     }
 
     var showExpirationSheet: Bool
@@ -306,11 +301,11 @@ class DonationSettingsViewController: OWSTableViewController2 {
             let button = UIButton(
                 configuration: .largePrimary(title: buttonTitle),
                 primaryAction: UIAction { [weak self] _ in
-                    if Self.canDonateInAnyWay {
-                        self?.showDonateViewController(preferredDonateMode: .oneTime)
-                    } else {
+                    guard let donationAllowedToken = Self.donationAllowedToken() else {
                         DonationViewsUtil.openDonateWebsite()
+                        return
                     }
+                    self?.showDonateViewController(preferredDonateMode: .oneTime, donationAllowedToken: donationAllowedToken)
                 },
             )
             heroStack.addArrangedSubview(button)
@@ -367,7 +362,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             section.add(donationReceiptsItem(profileBadgeLookup: profileBadgeLookup))
         }
 
-        if Self.canSendGiftBadges {
+        if let donationAllowedToken = Self.donationAllowedToken(), donationAllowedToken.canDonate(inMode: .gift) {
             section.add(.disclosureItem(
                 icon: .donateGift,
                 withText: OWSLocalizedString(
@@ -377,7 +372,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 actionBlock: { [weak self] in
                     guard let self else { return }
 
-                    let vc = BadgeGiftingChooseBadgeViewController()
+                    let vc = BadgeGiftingChooseBadgeViewController(donationAllowedToken: donationAllowedToken)
                     self.navigationController?.pushViewController(vc, animated: true)
                 },
             ))
@@ -422,8 +417,11 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     // MARK: - Showing subscription view controller
 
-    func showDonateViewController(preferredDonateMode: DonateViewController.DonateMode) {
-        let donateVc = DonateViewController(preferredDonateMode: preferredDonateMode) { [weak self] finishResult in
+    func showDonateViewController(
+        preferredDonateMode: DonateViewController.DonateMode,
+        donationAllowedToken: DonationAllowedToken,
+    ) {
+        let donateVc = DonateViewController(preferredDonateMode: preferredDonateMode, donationAllowedToken: donationAllowedToken) { [weak self] finishResult in
             guard let self else { return }
             switch finishResult {
             case let .completedDonation(_, receiptCredentialSuccessMode):
@@ -520,13 +518,15 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 message: message,
             )
 
-            actionSheet.addAction(ActionSheetAction(
-                title: CommonStrings.tryAgainButton,
-                handler: { [weak self] _ in
-                    guard let self else { return }
-                    self.presentAwaitingIDEALAuthorizationActionSheet(donateMode: donationMode)
-                },
-            ))
+            if let donationAllowedToken = Self.donationAllowedToken() {
+                actionSheet.addAction(ActionSheetAction(
+                    title: CommonStrings.tryAgainButton,
+                    handler: { [weak self] _ in
+                        guard let self else { return }
+                        self.presentAwaitingIDEALAuthorizationActionSheet(donateMode: donationMode, donationAllowedToken: donationAllowedToken)
+                    },
+                ))
+            }
 
             actionSheet.addAction(.init(
                 title: CommonStrings.okayButton,
@@ -557,7 +557,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
                 // cleanup
                 SSKEnvironment.shared.databaseStorageRef.write { tx in
-                    idealStore.clearPendingOneTimeDonation(tx: tx)
+                    Self.clearPendingIDEALDonation(donateMode: .oneTime, tx: tx)
                 }
             } else {
                 let title = OWSLocalizedString(
@@ -584,7 +584,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 )
                 showError(title: title, message: message, donationMode: .monthly)
                 SSKEnvironment.shared.databaseStorageRef.write { tx in
-                    idealStore.clearPendingSubscription(tx: tx)
+                    Self.clearPendingIDEALDonation(donateMode: .monthly, tx: tx)
                 }
             } else {
                 let title = OWSLocalizedString(
@@ -603,7 +603,10 @@ class DonationSettingsViewController: OWSTableViewController2 {
         return false
     }
 
-    func presentAwaitingIDEALAuthorizationActionSheet(donateMode: DonateViewController.DonateMode) {
+    func presentAwaitingIDEALAuthorizationActionSheet(
+        donateMode: DonateViewController.DonateMode,
+        donationAllowedToken: DonationAllowedToken,
+    ) {
         let actionSheet = ActionSheetController(
             title: nil,
             message: OWSLocalizedString(
@@ -618,6 +621,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 comment: "Button title confirming the user wants to begin a new donation.",
             ),
             preferredDonateMode: donateMode,
+            donationAllowedToken: donationAllowedToken,
         ))
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
@@ -627,22 +631,27 @@ class DonationSettingsViewController: OWSTableViewController2 {
     private func showDonateAndClearPendingIDEALDonation(
         title: String,
         preferredDonateMode: DonateViewController.DonateMode,
+        donationAllowedToken: DonationAllowedToken,
     ) -> ActionSheetAction {
-        return clearErrorAndShowDonateAction(title: title, donateMode: preferredDonateMode) { tx in
-            switch preferredDonateMode {
-            case .oneTime:
-                DependenciesBridge.shared.pendingIDEALDonationStore
-                    .clearPendingOneTimeDonation(tx: tx)
-            case .monthly:
-                DependenciesBridge.shared.pendingIDEALDonationStore
-                    .clearPendingSubscription(tx: tx)
-            }
+        return clearErrorAndShowDonateAction(title: title, donateMode: preferredDonateMode, donationAllowedToken: donationAllowedToken) { tx in
+            Self.clearPendingIDEALDonation(donateMode: preferredDonateMode, tx: tx)
+        }
+    }
+
+    static func clearPendingIDEALDonation(donateMode: DonateViewController.DonateMode, tx: DBWriteTransaction) {
+        let pendingIDEALDonationStore = DependenciesBridge.shared.pendingIDEALDonationStore
+        switch donateMode {
+        case .oneTime:
+            pendingIDEALDonationStore.clearPendingOneTimeDonation(tx: tx)
+        case .monthly:
+            pendingIDEALDonationStore.clearPendingSubscription(tx: tx)
         }
     }
 
     func clearErrorAndShowDonateAction(
         title: String,
         donateMode: DonateViewController.DonateMode,
+        donationAllowedToken: DonationAllowedToken,
         clearErrorBlock: @escaping (DBWriteTransaction) -> Void,
     ) -> ActionSheetAction {
         return ActionSheetAction(title: title) { [self] _ in
@@ -655,7 +664,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             // methods for updating the state outside the normal loading flow.
             Task { [weak self] in
                 await self?.loadAndUpdateState()
-                self?.showDonateViewController(preferredDonateMode: donateMode)
+                self?.showDonateViewController(preferredDonateMode: donateMode, donationAllowedToken: donationAllowedToken)
             }
         }
     }
@@ -668,8 +677,8 @@ extension DonationSettingsViewController: BadgeIssueSheetDelegate {
         switch action {
         case .dismiss:
             break
-        case .openDonationView:
-            self.showDonateViewController(preferredDonateMode: .oneTime)
+        case .openDonationView(let donationAllowedToken):
+            self.showDonateViewController(preferredDonateMode: .oneTime, donationAllowedToken: donationAllowedToken)
         }
     }
 }

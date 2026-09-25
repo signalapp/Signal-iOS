@@ -9,15 +9,6 @@ import SignalServiceKit
 import SignalUI
 
 class DonateViewController: OWSViewController, OWSNavigationChildController {
-    private static func canMakeNewDonations(
-        forDonateMode donateMode: DonateMode,
-    ) -> Bool {
-        DonationUtilities.canDonate(
-            inMode: donateMode.asDonationMode,
-            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-        )
-    }
-
     static let cornerRadius: CGFloat = 18
     static var bubbleBackgroundColor: CGColor { DonationViewsUtil.bubbleBackgroundColor.cgColor }
     static var selectedColor: CGColor { UIColor.Signal.accent.cgColor }
@@ -54,19 +45,22 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         )
     }
 
+    let donationAllowedToken: DonationAllowedToken
     let onFinished: (FinishResult) -> Void
 
     private var scrollToOneTimeContinueButtonWhenKeyboardAppears = false
 
     init(
         preferredDonateMode: DonateMode,
+        donationAllowedToken: DonationAllowedToken,
         onFinished: @escaping (FinishResult) -> Void,
     ) {
-        if Self.canMakeNewDonations(forDonateMode: preferredDonateMode) {
+        if donationAllowedToken.canDonate(inMode: preferredDonateMode.asDonationMode) {
             self.state = .init(donateMode: preferredDonateMode)
         } else {
             self.state = .init(donateMode: .monthly)
         }
+        self.donationAllowedToken = donationAllowedToken
         self.onFinished = onFinished
 
         super.init()
@@ -791,6 +785,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 oneTimeConfig: donationConfiguration.boost,
                 monthlyConfig: donationConfiguration.subscription,
                 paymentMethodsConfig: donationConfiguration.paymentMethods,
+                donationAllowedToken: donationAllowedToken,
                 currentMonthlySubscription: currentSubscription,
                 subscriberID: subscriberID,
                 previousMonthlySubscriptionCurrencyCode: previousSubscriberCurrencyCode,
@@ -800,7 +795,6 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 pendingIDEALOneTimeDonation: pendingIDEALOneTimeDonation,
                 pendingIDEALSubscription: pendingIDEALSubscription,
                 locale: Locale.current,
-                localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,
             )
         } catch {
             Logger.warn("[Donations] \(error)")
@@ -930,7 +924,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         if !wasLoaded || oldState?.donateMode != state.donateMode {
             var subviews: [UIView] = [currencyPickerContainerView]
 
-            if Self.canMakeNewDonations(forDonateMode: state.donateMode) {
+            if donationAllowedToken.canDonate(inMode: state.donateMode.asDonationMode) {
                 subviews.append(donateModePickerView)
             }
 
@@ -1446,7 +1440,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
             if
                 currentSubscription.active,
-                Self.canMakeNewDonations(forDonateMode: .monthly)
+                donationAllowedToken.canDonate(inMode: .monthly)
             {
                 let updateTitle = OWSLocalizedString(
                     "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON",

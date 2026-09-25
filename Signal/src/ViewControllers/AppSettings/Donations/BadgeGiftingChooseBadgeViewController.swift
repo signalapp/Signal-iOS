@@ -10,6 +10,12 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
     typealias GiftConfiguration = DonationSubscriptionConfiguration.GiftConfiguration
     typealias PaymentMethodsConfiguration = DonationSubscriptionConfiguration.PaymentMethodsConfiguration
 
+    private let donationAllowedToken: DonationAllowedToken
+
+    init(donationAllowedToken: DonationAllowedToken) {
+        self.donationAllowedToken = donationAllowedToken
+    }
+
     // MARK: - State management
 
     enum State {
@@ -112,6 +118,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             }
             let vc = BadgeGiftingChooseRecipientViewController(
                 badge: giftConfiguration.badge,
+                donationAllowedToken: donationAllowedToken,
                 price: price,
                 paymentMethodsConfiguration: paymentMethodsConfiguration,
             )

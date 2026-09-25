@@ -1484,16 +1484,16 @@ extension ChatListViewController {
             internalCompletion = { profile.presentUsernameLinkCorruptedResolution() }
 
         case let .donate(donateMode):
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             guard
-                DonationUtilities.canDonate(
-                    inMode: donateMode.asDonationMode,
-                    tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-                )
+                let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction(),
+                let donationAllowedToken = DonationAllowedToken(registeredState: registeredState, remoteConfig: .current),
+                donationAllowedToken.canDonate(inMode: donateMode.asDonationMode)
             else {
                 DonationViewsUtil.openDonateWebsite()
                 return
             }
-            let donate = DonateViewController(preferredDonateMode: donateMode) { [weak self] finishResult in
+            let donate = DonateViewController(preferredDonateMode: donateMode, donationAllowedToken: donationAllowedToken) { [weak self] finishResult in
                 switch finishResult {
                 case let .completedDonation(donateSheet, receiptCredentialSuccessMode):
                     donateSheet.dismiss(animated: true) { [weak self] in

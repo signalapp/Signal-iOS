@@ -12,6 +12,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     // MARK: - View state
 
     let badge: ProfileBadge
+    private let donationAllowedToken: DonationAllowedToken
     let price: FiatMoney
     private let paymentMethodsConfiguration: PaymentMethodsConfiguration
     let thread: TSContactThread
@@ -23,11 +24,13 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
     init(
         badge: ProfileBadge,
+        donationAllowedToken: DonationAllowedToken,
         price: FiatMoney,
         paymentMethodsConfiguration: PaymentMethodsConfiguration,
         thread: TSContactThread,
     ) {
         self.badge = badge
+        self.donationAllowedToken = donationAllowedToken
         self.price = price
         self.paymentMethodsConfiguration = paymentMethodsConfiguration
         self.thread = thread
@@ -88,11 +91,10 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                 amount: self.price,
                 badge: self.badge,
                 donationMode: .gift(recipientFullName: recipientFullName),
-                supportedPaymentMethods: DonationUtilities.supportedDonationPaymentMethods(
+                supportedPaymentMethods: donationAllowedToken.supportedPaymentMethods(
                     forDonationMode: .gift,
                     usingCurrency: self.price.currencyCode,
                     withConfiguration: self.paymentMethodsConfiguration,
-                    localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,
                 ),
                 didChoosePaymentMethod: { [weak self] sheet, paymentMethod in
                     sheet.dismiss(animated: true) { [weak self] in
