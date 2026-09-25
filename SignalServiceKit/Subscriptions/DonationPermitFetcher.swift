@@ -12,8 +12,6 @@ public import LibSignalClient
 /// Despite the name `DonationPermit`, these are also a dependency for some APIs
 /// consumed by Backups subscriptions.
 public class DonationPermitFetcher {
-    private static let serverPublicParams = try! ServerPublicParams(contents: TSConstants.serverPublicParams)
-
     private let dateProvider: DateProvider
     private let logger: PrefixedLogger
     private let networkManager: NetworkManager
@@ -76,7 +74,7 @@ public class DonationPermitFetcher {
 
         let libsignalPermits: [LibSignalClient.DonationPermit] = try permitContext.receive(
             response: permitResponse,
-            publicParams: Self.serverPublicParams,
+            publicParams: TSConstants.serverPublicParams(),
             now: now,
         )
 

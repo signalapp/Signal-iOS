@@ -12,12 +12,6 @@ public class GroupsV2Protos {
 
     // MARK: -
 
-    public class func serverPublicParams() -> ServerPublicParams {
-        return try! ServerPublicParams(contents: TSConstants.serverPublicParams)
-    }
-
-    // MARK: -
-
     public class func buildMemberProto(
         profileKeyCredential: ExpiringProfileKeyCredential,
         role: GroupsProtoMemberRole,
@@ -75,7 +69,7 @@ public class GroupsV2Protos {
         profileKeyCredential: ExpiringProfileKeyCredential,
         groupV2Params: GroupV2Params,
     ) throws -> Data {
-        let serverPublicParams = self.serverPublicParams()
+        let serverPublicParams = TSConstants.serverPublicParams()
         let profileOperations = ClientZkProfileOperations(serverPublicParams: serverPublicParams)
         let presentation = try profileOperations.createProfileKeyCredentialPresentation(
             groupSecretParams: groupV2Params.groupSecretParams,
@@ -231,7 +225,7 @@ public class GroupsV2Protos {
         }
         if case .verifySignature = verificationOperation {
             let serverSignature = try NotarySignature(contents: changeProto.serverSignature ?? Data())
-            try self.serverPublicParams().verifySignature(message: changeActionsProtoData, notarySignature: serverSignature)
+            try TSConstants.serverPublicParams().verifySignature(message: changeActionsProtoData, notarySignature: serverSignature)
         }
         let result = try GroupsProtoGroupChangeActions(serializedData: changeActionsProtoData)
         if case .verifySignature(let groupId) = verificationOperation {

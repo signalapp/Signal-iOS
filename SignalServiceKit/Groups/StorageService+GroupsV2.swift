@@ -196,7 +196,7 @@ public extension StorageService {
         groupSecretParams: GroupSecretParams,
         authCredential: AuthCredentialWithPni,
     ) throws {
-        let serverPublicParams = GroupsV2Protos.serverPublicParams()
+        let serverPublicParams = TSConstants.serverPublicParams()
         let clientZkAuthOperations = ClientZkAuthOperations(serverPublicParams: serverPublicParams)
         let authCredentialPresentation = try clientZkAuthOperations.createAuthCredentialPresentation(groupSecretParams: groupSecretParams, authCredential: authCredential)
         let authCredentialPresentationData = authCredentialPresentation.serialize()

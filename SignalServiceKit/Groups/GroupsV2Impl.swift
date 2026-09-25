@@ -1318,7 +1318,7 @@ public class GroupsV2Impl: GroupsV2 {
                 groupMembers: fullMembers,
                 localUser: localAci,
                 groupParams: secretParams,
-                serverParams: GroupsV2Protos.serverPublicParams(),
+                serverParams: TSConstants.serverPublicParams(),
             )
             let combinedEndorsement = receivedEndorsements.combinedEndorsement
             var individualEndorsements = [(ServiceId, GroupSendEndorsement)]()

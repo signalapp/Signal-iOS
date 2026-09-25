@@ -166,7 +166,7 @@ public struct ReceiptCredentialManager {
     }
 
     private static func clientZKReceiptOperations() -> ClientZkReceiptOperations {
-        let params = GroupsV2Protos.serverPublicParams()
+        let params = TSConstants.serverPublicParams()
         return ClientZkReceiptOperations(serverPublicParams: params)
     }
 }

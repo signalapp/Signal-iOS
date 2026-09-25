@@ -98,7 +98,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
     // MARK: -
 
     public func clientZkProfileOperations() -> ClientZkProfileOperations {
-        return ClientZkProfileOperations(serverPublicParams: GroupsV2Protos.serverPublicParams())
+        return ClientZkProfileOperations(serverPublicParams: TSConstants.serverPublicParams())
     }
 
     // MARK: - Update

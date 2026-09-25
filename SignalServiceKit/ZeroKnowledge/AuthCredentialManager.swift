@@ -154,7 +154,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
             Logger.warn("Auth credential \(authCredentialResponse.pni) didn't match local \(localPni)")
         }
 
-        let serverPublicParams = GroupsV2Protos.serverPublicParams()
+        let serverPublicParams = TSConstants.serverPublicParams()
         let clientZkAuthOperations = ClientZkAuthOperations(serverPublicParams: serverPublicParams)
         var result = ReceivedAuthCredentials()
         for fetchedValue in authCredentialResponse.groupAuthCredentials {

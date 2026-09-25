@@ -50,10 +50,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     private var adHocCallStateObserver: AdHocCallStateObserver?
 
-    class func serverPublicParams() -> ServerPublicParams {
-        return try! ServerPublicParams(contents: TSConstants.serverPublicParams)
-    }
-
     /// Needs to be lazily initialized, because it uses singletons that are not
     /// available when this class is initialized.
     private lazy var groupCallAccessoryMessageDelegate: GroupCallAccessoryMessageDelegate = {
@@ -685,7 +681,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             let callLinkRecord = callLinkStore.fetch(roomId: callLink.rootKey.deriveRoomId(), tx: tx)
             return (callLinkRecord?.adminPasskey, callLinkRecord?.isDeleted == true)
         }
-        let serverPublicParams = CallService.serverPublicParams()
+        let serverPublicParams = TSConstants.serverPublicParams()
         if isDeleted {
             throw OWSGenericError("Can't join a call link that you've deleted.")
         }

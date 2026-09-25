@@ -433,7 +433,7 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
             throw OWSAssertionError("Missing auth credentials of type \(key.credentialType) in response!", logger: logger)
         }
 
-        let backupServerPublicParams = try GenericServerPublicParams(contents: TSConstants.backupServerPublicParams)
+        let backupServerPublicParams = TSConstants.backupServerPublicParams()
 
         let receivedAuthCredentials = try authCredentialsOfKeyType.compactMap { credential -> ReceivedBackupAuthCredential? in
             guard timestampRange.contains(credential.redemptionTime) else {

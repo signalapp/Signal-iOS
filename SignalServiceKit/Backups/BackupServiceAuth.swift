@@ -42,7 +42,7 @@ public struct BackupServiceAuth {
         authCredential: BackupAuthCredential,
         type: BackupAuthCredentialType,
     ) {
-        let backupServerPublicParams = try! GenericServerPublicParams(contents: TSConstants.backupServerPublicParams)
+        let backupServerPublicParams = TSConstants.backupServerPublicParams()
         let presentation = authCredential.present(serverParams: backupServerPublicParams).serialize()
         let signedPresentation = privateKey.generateSignature(message: presentation)
 

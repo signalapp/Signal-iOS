@@ -370,7 +370,7 @@ extension AppSetup.GlobalsContinuation {
 
         let authCredentialStore = AuthCredentialStore()
 
-        let callLinkPublicParams = try! GenericServerPublicParams(contents: tsConstants.callLinkPublicParams)
+        let callLinkPublicParams = tsConstants.callLinkPublicParams()
         let authCredentialManager = AuthCredentialManagerImpl(
             authCredentialStore: authCredentialStore,
             callLinkPublicParams: callLinkPublicParams,
