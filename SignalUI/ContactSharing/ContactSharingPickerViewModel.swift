@@ -157,7 +157,8 @@ final class ContactSharingPickerViewModel {
     ) -> SignalContactsData {
         db.read { tx in
             let excludedRecipients = blockedRecipients(tx: tx) + recipientHidingManager.hiddenRecipients(tx: tx)
-            let localIdentifiers = try? tsAccountManager.registeredState(tx: tx).localIdentifiers
+            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
+                .owsFailUnwrap("must have been registered at some point")
 
             var recipientsById = [SignalRecipient.RowId: SignalRecipient]()
             for recipient in recipientDatabaseTable.fetchWhitelistedRecipients(tx: tx) where recipient.isRegistered {
@@ -165,7 +166,6 @@ final class ContactSharingPickerViewModel {
             }
 
             if
-                let localIdentifiers,
                 let localRecipient = recipientDatabaseTable.fetchRecipient(serviceId: localIdentifiers.aci, transaction: tx),
                 localRecipient.isRegistered
             {
@@ -181,7 +181,7 @@ final class ContactSharingPickerViewModel {
 
             return SignalContactsData(
                 excludedPhoneNumbers: Set(excludedRecipients.lazy.compactMap(Self.canonicalPhoneNumber(of:))),
-                localPhoneNumber: localIdentifiers?.phoneNumberAsOptional
+                localPhoneNumber: localIdentifiers.phoneNumber
                     .flatMap { E164($0) }
                     .map { CanonicalPhoneNumber(nonCanonicalPhoneNumber: $0) },
                 recipients: zip(recipients, displayNames).map { recipient, displayName in

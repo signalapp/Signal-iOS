@@ -161,7 +161,7 @@ public protocol LocalIdentifiersSetter {
     /// Initialize local identifiers state after registration, linking, reregistration, or relinking.
     func initializeLocalIdentifiers(
         aci: Aci,
-        phoneNumber: LocalIdentifiers.PhoneNumber,
+        phoneNumber: LocalIdentifiers.PhoneNumber?,
         deviceId: DeviceId,
         serverAuthToken: String,
         tx: DBWriteTransaction,

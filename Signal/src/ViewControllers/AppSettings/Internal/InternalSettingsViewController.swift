@@ -141,7 +141,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
         regSection.add(.copyableItem(label: "ACI", value: localIdentifiers.aci.serviceIdString))
         regSection.add(.copyableItem(label: "PNI", value: localIdentifiers.pni?.serviceIdString))
         if let loggingKey = DebugLogger.shared.loggingKey {
-            regSection.add(.copyableItem(label: "Phone Number Log Hash", value: loggingKey.hashForLogging(string: localIdentifiers.phoneNumber)))
+            regSection.add(.copyableItem(label: "Phone Number Log Hash", value: localIdentifiers.phoneNumber.map { loggingKey.hashForLogging(string: $0) }))
             regSection.add(.copyableItem(label: "ACI Log Hash", value: loggingKey.hashForLogging(aci: localIdentifiers.aci)))
             regSection.add(.copyableItem(label: "PNI Log Hash", value: localIdentifiers.pni.map { loggingKey.hashForLogging(pni: $0) }))
         }

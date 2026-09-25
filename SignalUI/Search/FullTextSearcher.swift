@@ -327,7 +327,10 @@ public class FullTextSearcher {
 
     private func noteToSelfMatch(searchText: String, localIdentifiers: LocalIdentifiers, tx: DBReadTransaction) -> NoteToSelfMatch {
         let searchTerms = searchText.split(separator: " ")
-        if searchTerms.contains(where: { localIdentifiers.phoneNumber.contains($0) }) {
+        if
+            let phoneNumber = localIdentifiers.phoneNumber,
+            searchTerms.contains(where: { phoneNumber.contains($0) })
+        {
             return .nameOrNumber
         }
         let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: localIdentifiers.aciAddress, tx: tx).resolvedValue()

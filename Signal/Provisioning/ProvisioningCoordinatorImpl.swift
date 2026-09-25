@@ -86,10 +86,11 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         switch self.tsAccountManager.registrationStateWithMaybeSneakyTransaction {
         case .reregistering(let localIdentifiers):
             oldLocalIdentifiers = localIdentifiers
-            let oldPhoneNumber: String = localIdentifiers.phoneNumber
-            guard oldPhoneNumber == provisionMessage.phoneNumberState.phoneNumber.e164.stringValue else {
-                Logger.warn("can't re-link primary a different phone number")
-                throw .previouslyLinkedWithDifferentAccount
+            if let oldPhoneNumber = localIdentifiers.phoneNumber {
+                guard oldPhoneNumber == provisionMessage.phoneNumberState.phoneNumber.e164.stringValue else {
+                    Logger.warn("can't re-link primary a different phone number")
+                    throw .previouslyLinkedWithDifferentAccount
+                }
             }
         case .relinking(let localIdentifiers):
             oldLocalIdentifiers = localIdentifiers

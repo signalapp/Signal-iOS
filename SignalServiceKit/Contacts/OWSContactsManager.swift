@@ -1030,7 +1030,9 @@ extension OWSContactsManager: ContactManager {
         if case .deltaIntersection(let priorPhoneNumbers) = intersectionMode {
             phoneNumbersToIntersect.subtract(priorPhoneNumbers)
         }
-        phoneNumbersToIntersect.remove(registeredState.localIdentifiers.phoneNumber)
+        if let phoneNumber = registeredState.localIdentifiers.phoneNumber {
+            phoneNumbersToIntersect.remove(phoneNumber)
+        }
 
         switch intersectionMode {
         case .fullIntersection:

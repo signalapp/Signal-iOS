@@ -35,21 +35,16 @@ public final class LocalIdentifiers {
     ///
     /// - Note: This is a `String` because the phone number we've saved to disk
     /// in prior versions of the application may not be a valid E164.
-    public let phoneNumber: String
+    public let phoneNumber: String?
 
-    /// The phone number for the current user, as an optional.
-    ///
-    /// This is a temporary and will go away when `phoneNumber` is optional.
-    public var phoneNumberAsOptional: String? { self.phoneNumber }
-
-    public init(aci: Aci, pni: Pni?, phoneNumber: String) {
+    public init(aci: Aci, pni: Pni?, phoneNumber: String?) {
         self.aci = aci
         self.pni = pni
         self.phoneNumber = phoneNumber
     }
 
-    public convenience init(aci: Aci, phoneNumber: PhoneNumber) {
-        self.init(aci: aci, pni: phoneNumber.pni, phoneNumber: phoneNumber.e164.stringValue)
+    public convenience init(aci: Aci, phoneNumber: PhoneNumber?) {
+        self.init(aci: aci, pni: phoneNumber?.pni, phoneNumber: phoneNumber?.e164.stringValue)
     }
 
     /// Checks if `serviceId` refers to ourself.

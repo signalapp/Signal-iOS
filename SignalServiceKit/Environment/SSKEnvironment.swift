@@ -251,7 +251,7 @@ public class SSKEnvironment: NSObject {
 
         guard
             let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction(),
-            registeredState.localIdentifiers.phoneNumberAsOptional != nil
+            registeredState.localIdentifiers.phoneNumber != nil
         else {
             // We must be a registered account with a phone number for this check.
             return
@@ -290,7 +290,7 @@ public class SSKEnvironment: NSObject {
                 return // Not registered yet.
             }
             let phoneNumberObj: E164?
-            if let phoneNumber = localIdentifiers.phoneNumberAsOptional {
+            if let phoneNumber = localIdentifiers.phoneNumber {
                 guard let _phoneNumberObj = E164(phoneNumber) else {
                     return // Registered with an invalid phone number.
                 }

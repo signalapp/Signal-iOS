@@ -84,7 +84,10 @@ public class ProvisioningManager {
         let myAci = provisioningState.localIdentifiers.aci
 
         var phoneNumberState: LinkingProvisioningMessage.PhoneNumberState?
-        if let myPhoneNumber = E164(provisioningState.localIdentifiers.phoneNumber) {
+        if let myPhoneNumber = provisioningState.localIdentifiers.phoneNumber {
+            guard let myE164 = E164(myPhoneNumber) else {
+                owsFail("can't provision without phone number")
+            }
             guard let myPni = provisioningState.localIdentifiers.pni else {
                 owsFail("can't provision without pni")
             }
@@ -92,7 +95,7 @@ public class ProvisioningManager {
                 owsFail("can't provision without pni identity key")
             }
             phoneNumberState = LinkingProvisioningMessage.PhoneNumberState(
-                phoneNumber: LocalIdentifiers.PhoneNumber(e164: myPhoneNumber, pni: myPni),
+                phoneNumber: LocalIdentifiers.PhoneNumber(e164: myE164, pni: myPni),
                 pniIdentityKeyPair: pniIdentityKeyPair.identityKeyPair,
             )
         }

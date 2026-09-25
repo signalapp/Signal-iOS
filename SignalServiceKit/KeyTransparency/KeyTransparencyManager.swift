@@ -314,11 +314,11 @@ public final class KeyTransparencyManager {
 
         let e164Info: KeyTransparency.E164Info?
         if let uak = udManager.udAccessKey(for: localIdentifiers.aci, tx: tx) {
-            if tsAccountManager.phoneNumberDiscoverability(tx: tx).orDefault.isDiscoverable {
-                e164Info = KeyTransparency.E164Info(
-                    e164: localIdentifiers.phoneNumber,
-                    unidentifiedAccessKey: uak.keyData,
-                )
+            if
+                let phoneNumber = localIdentifiers.phoneNumber,
+                tsAccountManager.phoneNumberDiscoverability(tx: tx).orDefault.isDiscoverable
+            {
+                e164Info = KeyTransparency.E164Info(e164: phoneNumber, unidentifiedAccessKey: uak.keyData)
             } else {
                 // If discoverability is disabled, we still want to do a
                 // self-check but won't be able to self-check our E164.

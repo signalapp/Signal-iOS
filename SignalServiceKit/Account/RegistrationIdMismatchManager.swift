@@ -49,7 +49,7 @@ public class RegistrationIdMismatchManagerImpl: RegistrationIdMismatchManager {
             try await _checkRegistrationIdMatches(identity: .aci, serviceId: registeredState.localIdentifiers.aci)
 
             // Check PNI
-            if registeredState.localIdentifiers.phoneNumberAsOptional != nil {
+            if registeredState.localIdentifiers.phoneNumber != nil {
                 if let pni = registeredState.localIdentifiers.pni {
                     try await _checkRegistrationIdMatches(identity: .pni, serviceId: pni)
                 } else {

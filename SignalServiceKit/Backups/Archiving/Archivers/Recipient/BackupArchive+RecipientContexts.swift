@@ -111,7 +111,7 @@ extension BackupArchive {
         let localSignalRecipientRowId: SignalRecipient.RowId
 
         var localRecipientAddress: ContactAddress {
-            return .init(
+            return ContactAddress(
                 aci: localIdentifiers.aci,
                 pni: localIdentifiers.pni,
                 e164: E164(localIdentifiers.phoneNumber),

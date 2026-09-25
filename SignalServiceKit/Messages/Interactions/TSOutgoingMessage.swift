@@ -529,7 +529,8 @@ extension TSOutgoingMessage {
             // No PNI signature needed.
             return nil
         }
-        guard let pni = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.pni else {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let pni = tsAccountManager.localIdentifiers(tx: tx)?.pni else {
             owsFailDebug("missing PNI")
             return nil
         }
@@ -627,7 +628,8 @@ extension TSOutgoingMessage {
             return
         }
 
-        guard let currentPni = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.pni else {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let currentPni = tsAccountManager.localIdentifiers(tx: transaction)?.pni else {
             owsFailDebug("missing local PNI")
             return
         }

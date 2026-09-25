@@ -285,7 +285,6 @@ extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
         {
             defaultCountry = localCountry
         } else {
-            owsFailDebug("Couldn't determine local country.")
             defaultCountry = .defaultValue
         }
         updateCountry(defaultCountry)

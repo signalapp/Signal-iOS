@@ -384,7 +384,7 @@ class RecipientMergerImpl: RecipientMerger {
         // we can't fulfill the request. If we did fulfill the request, we'd either
         // return a result without a PNI or a result with a stale PNI. Both of
         // those are unacceptable.
-        if localIdentifiers.pni == pni {
+        if localIdentifiers.contains(serviceId: pni) {
             return nil
         }
         // Finally, if CDS tells us our ACI is associated with another phone

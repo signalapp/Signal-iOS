@@ -156,9 +156,9 @@ public class ProvisioningCoordinatorTest: XCTestCase {
 
         var didSetLocalIdentifiers = false
         registrationStateChangeManagerMock.didRegisterOrProvisionMock = { aci, phoneNumber, _, storedDeviceId in
-            XCTAssertEqual(phoneNumber.e164, e164)
+            XCTAssertEqual(phoneNumber?.e164, e164)
             XCTAssertEqual(aci, provisioningMessage.aci)
-            XCTAssertEqual(phoneNumber.pni, pni)
+            XCTAssertEqual(phoneNumber?.pni, pni)
             XCTAssertEqual(storedDeviceId, deviceId)
             didSetLocalIdentifiers = true
         }

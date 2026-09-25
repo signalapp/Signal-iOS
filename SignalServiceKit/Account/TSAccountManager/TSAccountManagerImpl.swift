@@ -161,24 +161,24 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
 
     public func initializeLocalIdentifiers(
         aci: Aci,
-        phoneNumber: LocalIdentifiers.PhoneNumber,
+        phoneNumber: LocalIdentifiers.PhoneNumber?,
         deviceId: DeviceId,
         serverAuthToken: String,
         tx: DBWriteTransaction,
     ) {
         mutateWithLock(tx: tx) {
             let oldNumber = kvStore.fetchValue(String.self, forKey: Keys.localPhoneNumber, tx: tx)
-            Self.regStateLogger.info("local number \(oldNumber ?? "nil") -> \(phoneNumber.e164)")
-            kvStore.writeValue(phoneNumber.e164.stringValue, forKey: Keys.localPhoneNumber, tx: tx)
+            Self.regStateLogger.info("local number \(oldNumber ?? "nil") -> \(phoneNumber?.e164 as Optional)")
+            kvStore.writeValue(phoneNumber?.e164.stringValue, forKey: Keys.localPhoneNumber, tx: tx)
 
             let oldAci = Aci.parseFrom(aciString: kvStore.fetchValue(String.self, forKey: Keys.localAci, tx: tx))
             Self.regStateLogger.info("local aci \(oldAci?.logString ?? "nil") -> \(aci)")
             kvStore.writeValue(aci.serviceIdUppercaseString, forKey: Keys.localAci, tx: tx)
 
             let oldPni = Pni.parseFrom(pniString: kvStore.fetchValue(String.self, forKey: Keys.localPni, tx: tx))
-            Self.regStateLogger.info("local pni \(oldPni?.logString ?? "nil") -> \(phoneNumber.pni)")
+            Self.regStateLogger.info("local pni \(oldPni?.logString ?? "nil") -> \(phoneNumber?.pni as Optional)")
             // Encoded without the "PNI:" prefix for backwards compatibility.
-            kvStore.writeValue(phoneNumber.pni.rawUUID.uuidString, forKey: Keys.localPni, tx: tx)
+            kvStore.writeValue(phoneNumber?.pni.rawUUID.uuidString, forKey: Keys.localPni, tx: tx)
 
             Self.regStateLogger.info("device id is primary? \(deviceId == .primary)")
             kvStore.writeValue(Int64(deviceId.uint32Value), forKey: Keys.deviceId, tx: tx)
@@ -542,16 +542,17 @@ extension TSAccountManagerImpl {
                     return .transferringIncoming
                 }
             }
-            let reregistrationPhoneNumber = kvStore.fetchValue(String.self, forKey: Keys.reregistrationPhoneNumber, tx: tx)
-            if let reregistrationPhoneNumber {
+            let reregisteringLocalIdentifiers = ReregisteringLocalIdentifiers(
+                phoneNumber: kvStore.fetchValue(String.self, forKey: Keys.reregistrationPhoneNumber, tx: tx),
+                aci: Aci.parseFrom(aciString: kvStore.fetchValue(String.self, forKey: Keys.reregistrationAci, tx: tx)),
+            )
+            if let reregisteringLocalIdentifiers {
                 // (Note: isDeregistered is probably also true; this takes precedence.)
-                let reregistrationAci = Aci.parseFrom(aciString: kvStore.fetchValue(String.self, forKey: Keys.reregistrationAci, tx: tx))
-
                 let shouldDefaultToPrimaryDevice = UIDevice.current.userInterfaceIdiom == .phone
                 if kvStore.fetchValue(Bool.self, forKey: Keys.reregistrationWasPrimaryDevice, tx: tx) ?? shouldDefaultToPrimaryDevice {
-                    return .reregistering(ReregisteringLocalIdentifiers(phoneNumber: reregistrationPhoneNumber, aci: reregistrationAci))
+                    return .reregistering(reregisteringLocalIdentifiers)
                 } else {
-                    return .relinking(ReregisteringLocalIdentifiers(phoneNumber: reregistrationPhoneNumber, aci: reregistrationAci))
+                    return .relinking(reregisteringLocalIdentifiers)
                 }
             }
             let isDeregisteredOrDelinked = kvStore.fetchValue(Bool.self, forKey: Keys.isDeregisteredOrDelinked, tx: tx) ?? false
@@ -572,7 +573,7 @@ extension TSAccountManagerImpl {
                     return .delinked(localIdentifiers)
                 }
             }
-            if let aci, let phoneNumber {
+            if let aci {
                 let localIdentifiers = LocalIdentifiers(aci: aci, pni: pni, phoneNumber: phoneNumber)
                 // We have local identifiers, so we are registered/provisioned.
                 switch isPrimaryDevice {

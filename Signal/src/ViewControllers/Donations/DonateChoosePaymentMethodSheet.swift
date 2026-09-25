@@ -131,10 +131,10 @@ class DonateChoosePaymentMethodSheet: StackSheetViewController {
         let paymentMethods: [DonationPaymentMethod]
         let applePayFirstRegions = PhoneNumberRegions(["1"])
 
-        if
-            let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,
-            applePayFirstRegions.contains(e164: localNumber)
-        {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction
+            .owsFailUnwrap("must have been registered at some point")
+        if applePayFirstRegions.contains(e164: localIdentifiers.phoneNumber) {
             paymentMethods = [
                 .applePay,
                 .creditOrDebitCard,

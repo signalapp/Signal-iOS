@@ -107,7 +107,7 @@ final class CallKitCallManager {
         }
 
         let phoneNumber: String? = {
-            let localNumber: String = registeredState.localIdentifiers.phoneNumber
+            let localNumber = registeredState.localIdentifiers.phoneNumber
             let phoneNumbers = phoneNumberUtil.parsePhoneNumbers(
                 userSpecifiedText: handle,
                 localPhoneNumber: localNumber,

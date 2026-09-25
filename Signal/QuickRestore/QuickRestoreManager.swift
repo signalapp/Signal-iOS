@@ -125,8 +125,16 @@ public class QuickRestoreManager {
         }
 
         let myAci = localIdentifiers.aci
-        guard let myPhoneNumber = E164(localIdentifiers.phoneNumber) else {
-            owsFailDebug("Can't quick restore without e164")
+        let myE164: E164
+        if let phoneNumber = localIdentifiers.phoneNumber {
+            guard let _myE164 = E164(phoneNumber) else {
+                owsFailDebug("can't quick restore without e164")
+                throw Error.missingRestoreInformation
+            }
+            myE164 = _myE164
+        } else {
+            // TODO: [#less] Add support for Quick Restore.
+            owsFailDebug("can't quick restore without e164")
             throw Error.missingRestoreInformation
         }
 
@@ -147,7 +155,7 @@ public class QuickRestoreManager {
             aci: myAci,
             aciIdentityKeyPair: aciIdentityKeyPair.identityKeyPair,
             phoneNumberState: RegistrationProvisioningMessage.PhoneNumberState(
-                phoneNumber: myPhoneNumber,
+                phoneNumber: myE164,
                 pniIdentityKeyPair: pniIdentityKeyPair.identityKeyPair,
             ),
             accountEntropyPool: accountEntropyPool,

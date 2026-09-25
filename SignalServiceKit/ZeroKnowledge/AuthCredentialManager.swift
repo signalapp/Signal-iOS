@@ -150,6 +150,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
 
         let authCredentialResponse = try JSONDecoder().decode(AuthCredentialResponse.self, from: bodyData)
 
+        // TODO: [#less] Use authCredentialSalt.
         if let localPni = localIdentifiers.pni, authCredentialResponse.pni != localPni {
             Logger.warn("Auth credential \(authCredentialResponse.pni) didn't match local \(localPni)")
         }

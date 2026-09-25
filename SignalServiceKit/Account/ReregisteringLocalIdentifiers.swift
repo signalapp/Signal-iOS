@@ -7,6 +7,14 @@ import Foundation
 public import LibSignalClient
 
 public struct ReregisteringLocalIdentifiers {
-    public let phoneNumber: String
+    public let phoneNumber: String?
     public let aci: Aci?
+
+    init?(phoneNumber: String?, aci: Aci?) {
+        guard phoneNumber != nil || aci != nil else {
+            return nil
+        }
+        self.phoneNumber = phoneNumber
+        self.aci = aci
+    }
 }

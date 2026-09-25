@@ -26,7 +26,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if registeredStateAtStart.localIdentifiers.phoneNumberAsOptional != nil {
+        if registeredStateAtStart.localIdentifiers.phoneNumber != nil {
             shouldAvoidKeyboard = true
         }
 
@@ -43,7 +43,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             )
         }
 
-        if let phoneNumber = registeredStateAtStart.localIdentifiers.phoneNumberAsOptional {
+        if let phoneNumber = registeredStateAtStart.localIdentifiers.phoneNumber {
             populateDefaultPhoneNumberCountry(phoneNumber: phoneNumber)
         }
         updateTableContents()
@@ -52,7 +52,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     override func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
 
-        if registeredStateAtStart.localIdentifiers.phoneNumberAsOptional != nil {
+        if registeredStateAtStart.localIdentifiers.phoneNumber != nil {
             nationalNumberTextField.becomeFirstResponder()
         }
     }
@@ -192,7 +192,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     }
 
     private func didTapDelete() {
-        if let phoneNumber = registeredStateAtStart.localIdentifiers.phoneNumberAsOptional {
+        if let phoneNumber = registeredStateAtStart.localIdentifiers.phoneNumber {
             guard hasEnteredLocalNumber(phoneNumber: phoneNumber) else {
                 OWSActionSheets.showActionSheet(
                     title: OWSLocalizedString(
@@ -214,7 +214,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             return
         }
 
-        if registeredStateAtStart.localIdentifiers.phoneNumberAsOptional != nil {
+        if registeredStateAtStart.localIdentifiers.phoneNumber != nil {
             nationalNumberTextField.resignFirstResponder()
         }
 

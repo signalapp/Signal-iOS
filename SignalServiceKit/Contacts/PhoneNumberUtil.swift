@@ -248,7 +248,7 @@ public class PhoneNumberUtil: NSObject {
     }
 
     public func localCallingCode(localIdentifiers: LocalIdentifiers) -> LocalCallingCode {
-        guard let phoneNumber = localIdentifiers.phoneNumberAsOptional else {
+        guard let phoneNumber = localIdentifiers.phoneNumber else {
             return .phoneNumberless
         }
         return .phoneNumberfull(parseE164(phoneNumber)?.getCallingCode())

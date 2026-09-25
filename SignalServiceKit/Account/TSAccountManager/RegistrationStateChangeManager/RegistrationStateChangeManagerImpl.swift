@@ -90,7 +90,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
     public func didRegisterOrProvision(
         aci: Aci,
-        phoneNumber: LocalIdentifiers.PhoneNumber,
+        phoneNumber: LocalIdentifiers.PhoneNumber?,
         authToken: String,
         deviceId: DeviceId,
         tx: DBWriteTransaction,
@@ -329,7 +329,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
     private func didUpdateLocalIdentifiers(
         aci: Aci,
-        phoneNumber: LocalIdentifiers.PhoneNumber,
+        phoneNumber: LocalIdentifiers.PhoneNumber?,
         deviceId: DeviceId,
         shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction,
@@ -345,8 +345,8 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
         var recipient = recipientMerger.applyMergeForLocalAccount(
             aci: aci,
-            phoneNumber: phoneNumber.e164,
-            pni: phoneNumber.pni,
+            phoneNumber: phoneNumber?.e164,
+            pni: phoneNumber?.pni,
             shouldUpdateStorageService: shouldUpdateStorageService,
             tx: tx,
         )

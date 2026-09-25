@@ -506,13 +506,13 @@ class AppSettingsViewController: OWSTableViewController2 {
             return containerView
         }
 
-        if let phoneNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction
+        if let phoneNumber = localIdentifiers?.phoneNumber {
             addSubtitleLabel(
                 text: PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(phoneNumber),
                 textColor: Theme.primaryTextColor,
             )
-        } else {
-            owsFailDebug("Missing local number")
         }
 
         if let localUsernameState {

@@ -658,7 +658,9 @@ public class GroupsV2OutgoingChanges {
             var promotedLocalAci: Bool
             let isLocalInvitedByAci = currentGroupMembership.isInvitedMember(localAci)
             let isLocalInvitedByPni = {
-                guard let localPni = localIdentifiers.pni else { return false }
+                guard let localPni = localIdentifiers.pni else {
+                    return false
+                }
                 return currentGroupMembership.isInvitedMember(localPni)
             }()
 

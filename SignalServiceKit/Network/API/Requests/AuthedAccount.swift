@@ -13,14 +13,14 @@ public enum AuthedAccount {
 
     public struct Explicit {
         public let aci: Aci
-        public let phoneNumber: LocalIdentifiers.PhoneNumber
+        public let phoneNumber: LocalIdentifiers.PhoneNumber?
         public let deviceId: DeviceId
         public var isPrimaryDevice: Bool { self.deviceId == .primary }
         public let authPassword: String
 
         public init(
             aci: Aci,
-            phoneNumber: LocalIdentifiers.PhoneNumber,
+            phoneNumber: LocalIdentifiers.PhoneNumber?,
             deviceId: DeviceId,
             authPassword: String,
         ) {
