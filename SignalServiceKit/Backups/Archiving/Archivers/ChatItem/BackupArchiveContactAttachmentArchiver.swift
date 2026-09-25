@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
     private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
@@ -71,6 +72,28 @@ class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
 
         if let organization = contact.name.organizationName {
             contactProto.organization = organization
+        }
+
+        if let aci = contact.aci {
+            contactProto.aci = aci.serviceIdBinary
+        }
+
+        if
+            let nickname = contact.nickname,
+            let profileName = ProfileName(givenName: nickname.givenName, familyName: nickname.familyName)
+        {
+            var nicknameProto = BackupProto_ContactAttachment.SignalNickname()
+            if let givenName = profileName.givenName {
+                nicknameProto.given = givenName
+            }
+            if let familyName = profileName.familyName {
+                nicknameProto.family = familyName
+            }
+            contactProto.nickname = nicknameProto
+        }
+
+        if let note = contact.note?.strippedOrNil {
+            contactProto.note = note
         }
 
         if let contactAvatarReferencedAttachment {
@@ -299,6 +322,33 @@ class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
                 return error
             }
         }
+
+        if !contactProto.aci.isEmpty {
+            if let aci = try? Aci.parseFrom(serviceIdBinary: contactProto.aci) {
+                contact.aci = aci
+            } else {
+                partialErrors.append(.restoreFrameError(
+                    .invalidProtoData(.invalidAci(protoClass: BackupProto_ContactAttachment.self)),
+                ))
+            }
+        }
+
+        if contactProto.hasNickname {
+            if
+                let nickname = ProfileName(
+                    givenName: contactProto.nickname.given,
+                    familyName: contactProto.nickname.family,
+                )
+            {
+                contact.nickname = nickname.nameComponents
+            } else {
+                partialErrors.append(.restoreFrameError(
+                    .invalidProtoData(.contactAttachmentInvalidNickname),
+                ))
+            }
+        }
+
+        contact.note = contactProto.note.strippedOrNil
 
         // Note: the contact attachment's avatar is restored later (if any is set).
 

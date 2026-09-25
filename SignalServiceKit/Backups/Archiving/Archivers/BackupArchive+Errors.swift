@@ -665,6 +665,8 @@ extension BackupArchive {
                 /// A ``BackupProto_ContactAttachment/PostalAddress`` with all empty fields;
                 /// at least some field has to be nonempty to be a valid address.
                 case contactAttachmentEmptyAddress
+                /// A ``BackupProto_ContactAttachment/nickname`` was empty or too long.
+                case contactAttachmentInvalidNickname
 
                 /// A `BackupProto_Group's` gv2 master key could not be parsed by libsignal.
                 case invalidGV2MasterKey
@@ -926,6 +928,7 @@ extension BackupArchive {
                     .contactAttachmentPhoneNumberMissingValue,
                     .contactAttachmentEmailMissingValue,
                     .contactAttachmentEmptyAddress,
+                    .contactAttachmentInvalidNickname,
                     .invalidGV2MasterKey,
                     .missingGV2GroupSnapshot,
                     .invalidGroupSnapshot,
@@ -1041,6 +1044,7 @@ extension BackupArchive {
                     .contactAttachmentPhoneNumberMissingValue,
                     .contactAttachmentEmailMissingValue,
                     .contactAttachmentEmptyAddress,
+                    .contactAttachmentInvalidNickname,
                     .invalidGV2MasterKey,
                     .missingGV2GroupSnapshot,
                     .invalidGroupSnapshot,

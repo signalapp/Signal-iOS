@@ -18,6 +18,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
     typealias RestoreFrameResult = BackupArchive.RestoreFrameResult
     private typealias RestoreFrameError = BackupArchive.RestoreFrameError
 
+    private let aciContactShareNameManager: AciContactShareNameManager
     private let avatarDefaultColorManager: AvatarDefaultColorManager
     private let avatarFetcher: BackupArchiveAvatarFetcher
     private let blockingManager: BackupArchive.Shims.BlockingManager
@@ -35,6 +36,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
     private let usernameLookupManager: UsernameLookupManager
 
     public init(
+        aciContactShareNameManager: AciContactShareNameManager,
         avatarDefaultColorManager: AvatarDefaultColorManager,
         avatarFetcher: BackupArchiveAvatarFetcher,
         blockingManager: BackupArchive.Shims.BlockingManager,
@@ -51,6 +53,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
         tsAccountManager: TSAccountManager,
         usernameLookupManager: UsernameLookupManager,
     ) {
+        self.aciContactShareNameManager = aciContactShareNameManager
         self.avatarDefaultColorManager = avatarDefaultColorManager
         self.avatarFetcher = avatarFetcher
         self.blockingManager = blockingManager
@@ -204,6 +207,10 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                     for: recipient,
                     tx: context.tx,
                 ),
+                aciContactShareName: self.aciContactShareNameManager.fetchName(
+                    recipient: recipient,
+                    tx: context.tx,
+                ),
                 isBlocked: blockedRecipientIds.contains(recipient.id),
                 isWhitelisted: recipient.isWhitelisted,
                 isStoryHidden: isStoryHidden,
@@ -344,6 +351,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                     e164: contactAddress.e164,
                     username: nil, // If we have a user profile, we have no username.
                     nicknameRecord: nil, // Only contacts with SignalRecipients can have nicknames.
+                    aciContactShareName: nil, // Only contacts with SignalRecipients can have shared names.
                     isBlocked: false, // Only contacts with SignalRecipients can be blocked.
                     isWhitelisted: false, // Only contacts with SignalRecipients can be whitelisted.
                     isStoryHidden: false, // Can't have a story if there's no recipient.
@@ -420,6 +428,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
             e164: address.e164,
             username: nil,
             nicknameRecord: nil, // Only contacts with SignalRecipients can have nicknames.
+            aciContactShareName: nil, // Only contacts with SignalRecipients can have shared names.
             isBlocked: false, // only contacts with SignalRecipients can be blocked.
             isWhitelisted: false, // only contacts with SignalRecipients can be whitelisted.
             // If there's no recipient, neither can be hidden
@@ -466,6 +475,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
         e164: E164?,
         username: String?,
         nicknameRecord: NicknameRecord?,
+        aciContactShareName: AciContactShareName?,
         isBlocked: Bool,
         isWhitelisted: Bool,
         isStoryHidden: Bool,
@@ -534,6 +544,16 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
         }
         if let note = nicknameRecord?.note?.nilIfEmpty {
             contact.note = note
+        }
+        if let aciContactShareName {
+            var sharedNameProto = BackupProto_Contact.Name()
+            if let givenName = aciContactShareName.givenName {
+                sharedNameProto.given = givenName
+            }
+            if let familyName = aciContactShareName.familyName {
+                sharedNameProto.family = familyName
+            }
+            contact.sharedName = sharedNameProto
         }
         if let signalAccount {
             contact.systemGivenName = signalAccount.givenName
@@ -747,6 +767,17 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
             self.nicknameManager.createOrUpdate(
                 nicknameRecord: nicknameRecord,
                 updateStorageServiceFor: nil,
+                tx: context.tx,
+            )
+        }
+
+        if contactProto.hasSharedName {
+            aciContactShareNameManager.saveName(
+                givenName: contactProto.sharedName.given,
+                familyName: contactProto.sharedName.family,
+                recipient: recipient,
+                allowOverwrite: true,
+                updateStorageService: false,
                 tx: context.tx,
             )
         }

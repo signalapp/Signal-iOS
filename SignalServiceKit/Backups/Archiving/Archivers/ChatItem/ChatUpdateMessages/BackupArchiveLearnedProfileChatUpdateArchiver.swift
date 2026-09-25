@@ -45,8 +45,8 @@ final class BackupArchiveLearnedProfileChatUpdateArchiver {
             learnedProfileChatUpdate.previousName = .e164(e164.uint64Value)
         case .username(let username):
             learnedProfileChatUpdate.previousName = .username(username)
-        case .sharedName:
-            return messageFailure(.learnedProfileUpdateMissingPreviousName)
+        case .sharedName(let sharedName):
+            learnedProfileChatUpdate.previousName = .sharedName(sharedName)
         }
 
         var chatUpdateMessage = BackupProto_ChatUpdateMessage()
@@ -97,6 +97,8 @@ final class BackupArchiveLearnedProfileChatUpdateArchiver {
             displayNameBefore = .phoneNumber(e164.stringValue)
         case .username(let username):
             displayNameBefore = .username(username)
+        case .sharedName(let sharedName):
+            displayNameBefore = .sharedName(sharedName)
         case nil:
             // This isn't great, but we just use an empty username.
             displayNameBefore = .username("")

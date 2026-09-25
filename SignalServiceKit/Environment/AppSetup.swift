@@ -1506,6 +1506,7 @@ extension AppSetup.GlobalsContinuation {
             tsAccountManager: tsAccountManager,
         )
         let backupContactRecipientArchiver = BackupArchiveContactRecipientArchiver(
+            aciContactShareNameManager: aciContactShareNameManager,
             avatarDefaultColorManager: avatarDefaultColorManager,
             avatarFetcher: backupArchiveAvatarFetcher,
             blockingManager: BackupArchive.Wrappers.BlockingManager(blockingManager),
