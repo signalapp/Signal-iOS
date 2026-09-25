@@ -1069,7 +1069,7 @@ extension RecipientPickerViewController {
 // MARK: - Find by Number
 
 struct PhoneNumberFinder {
-    let localNumber: String?
+    let localNumber: String
     let contactDiscoveryManager: ContactDiscoveryManager
     let phoneNumberUtil: PhoneNumberUtil
 
@@ -1123,7 +1123,7 @@ struct PhoneNumberFinder {
         let uniqueResults = OrderedSet(
             phoneNumberUtil.parsePhoneNumbers(
                 userSpecifiedText: searchText,
-                localPhoneNumber: localNumber ?? "",
+                localPhoneNumber: localNumber,
             ).lazy.compactMap { self.validE164(from: $0) },
         )
         if !uniqueResults.isEmpty {
@@ -1145,10 +1145,7 @@ struct PhoneNumberFinder {
         let potentialE164: String
         if filteredValue.hasPrefix("+") {
             potentialE164 = filteredValue
-        } else if
-            let localNumber,
-            let callingCode = phoneNumberUtil.parseE164(localNumber)?.getCallingCode()
-        {
+        } else if let callingCode = phoneNumberUtil.parseE164(localNumber)?.getCallingCode() {
             potentialE164 = "+\(callingCode)\(filteredValue)"
         } else {
             owsFailDebug("No localNumber")
@@ -1229,8 +1226,11 @@ extension RecipientPickerViewController {
         for searchResults: RecipientSearchResultSet,
         skipping alreadyMatchedPhoneNumbers: Set<String>,
     ) -> OWSTableSection? {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction
+            .owsFailUnwrap("must have been registered at some point")
         let phoneNumberFinder = PhoneNumberFinder(
-            localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,
+            localNumber: localIdentifiers.phoneNumber,
             contactDiscoveryManager: SSKEnvironment.shared.contactDiscoveryManagerRef,
             phoneNumberUtil: SSKEnvironment.shared.phoneNumberUtilRef,
         )
@@ -1238,8 +1238,8 @@ extension RecipientPickerViewController {
         // Don't show phone numbers that are visible in other sections.
         phoneNumberResults.removeAll { alreadyMatchedPhoneNumbers.contains($0.maybeValidE164) }
         // Don't show the user's own number if they can't select it.
-        if shouldHideLocalRecipient, let localNumber = phoneNumberFinder.localNumber {
-            phoneNumberResults.removeAll { localNumber == $0.maybeValidE164 }
+        if shouldHideLocalRecipient {
+            phoneNumberResults.removeAll { phoneNumberFinder.localNumber == $0.maybeValidE164 }
         }
         guard !phoneNumberResults.isEmpty else {
             return nil

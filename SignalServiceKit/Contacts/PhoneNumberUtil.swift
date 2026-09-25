@@ -362,34 +362,30 @@ public class PhoneNumberUtil: NSObject {
 
         // Order matters; better results should appear first so prefer
         // matches with the same country code as this client's phone number.
-        guard let localPhoneNumber else {
-            owsFailDebug("localPhoneNumber is missing")
-            return results
-        }
+        if let localPhoneNumber {
+            let callingCodeForLocalNumber = parseE164(localPhoneNumber)?.getCallingCode()
+            owsAssertDebug(callingCodeForLocalNumber != nil, "callingCodeForLocalNumber is missing")
+            if let callingCodeForLocalNumber {
+                // Parse the number as a national number with the same calling code as the
+                // local user's phone number.
+                //
+                // For example, a French person living in Italy might have an Italian phone
+                // number but use French region/language for their phone. They're likely to
+                // have both Italian and French contacts (though I don't know why they
+                // wouldn't prepend the correct international prefix...).
+                let callingCodePrefix = "+\(callingCodeForLocalNumber)"
+                tryParsing(callingCodePrefix + text)
 
-        guard let callingCodeForLocalNumber = parseE164(localPhoneNumber)?.getCallingCode() else {
-            owsFailDebug("callingCodeForLocalNumber is missing")
-            return results
-        }
-
-        // Parse the number as a national number with the same calling code as the
-        // local user's phone number.
-        //
-        // For example, a French person living in Italy might have an Italian phone
-        // number but use French region/language for their phone. They're likely to
-        // have both Italian and French contacts (though I don't know why they
-        // wouldn't prepend the correct international prefix...).
-        let callingCodePrefix = "+\(callingCodeForLocalNumber)"
-        tryParsing(callingCodePrefix + text)
-
-        let phoneNumberWithAreaCodeIfMissing = Self.phoneNumberWithAreaCodeIfMissing(
-            normalizedText: text,
-            localCallingCode: callingCodeForLocalNumber,
-            localPhoneNumber: localPhoneNumber,
-        )
-        if let phoneNumberWithAreaCodeIfMissing {
-            owsAssertDebug(phoneNumberWithAreaCodeIfMissing.hasPrefix("+"))
-            tryParsing(phoneNumberWithAreaCodeIfMissing)
+                let phoneNumberWithAreaCodeIfMissing = Self.phoneNumberWithAreaCodeIfMissing(
+                    normalizedText: text,
+                    localCallingCode: callingCodeForLocalNumber,
+                    localPhoneNumber: localPhoneNumber,
+                )
+                if let phoneNumberWithAreaCodeIfMissing {
+                    owsAssertDebug(phoneNumberWithAreaCodeIfMissing.hasPrefix("+"))
+                    tryParsing(phoneNumberWithAreaCodeIfMissing)
+                }
+            }
         }
 
         return results

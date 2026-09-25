@@ -241,8 +241,9 @@ private class AddContactShareToContactsFlow {
         }
         if let oldContact = existingContact {
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            let phoneNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
-            let canonicalPhoneNumber = E164(phoneNumber).map(CanonicalPhoneNumber.init(nonCanonicalPhoneNumber:))
+            let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction
+                .owsFailUnwrap("must have been registered to save a contact")
+            let canonicalPhoneNumber = E164(localIdentifiers.phoneNumber).map(CanonicalPhoneNumber.init(nonCanonicalPhoneNumber:))
             return mergeContact(newContact, into: oldContact, localPhoneNumber: canonicalPhoneNumber)
         }
         return newContact

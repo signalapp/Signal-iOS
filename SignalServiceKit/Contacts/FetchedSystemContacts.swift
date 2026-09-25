@@ -25,7 +25,7 @@ public struct FetchedSystemContacts {
     static func parseContacts(
         _ orderedContacts: [SystemContact],
         phoneNumberUtil: PhoneNumberUtil,
-        localPhoneNumber: String?,
+        localPhoneNumber: String,
     ) -> FetchedSystemContacts {
         // A given Contact may have multiple phone numbers.
         var phoneNumberToContactRef = [CanonicalPhoneNumber: SystemContactRef]()

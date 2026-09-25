@@ -83,11 +83,14 @@ public class ContactShareDraft {
             return systemAvatarImageData
         }
 
-        let localPhoneNumber = tsAccountManager.localIdentifiers(tx: tx)?.phoneNumber
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
+            owsFailDebug("can't fetch profile avatar unless registered at some point")
+            return nil
+        }
         let canonicalPhoneNumbers = FetchedSystemContacts.parsePhoneNumbers(
             for: signalContact(),
             phoneNumberUtil: phoneNumberUtil,
-            localPhoneNumber: E164(localPhoneNumber).map(CanonicalPhoneNumber.init(nonCanonicalPhoneNumber:)),
+            localPhoneNumber: E164(localIdentifiers.phoneNumber).map(CanonicalPhoneNumber.init(nonCanonicalPhoneNumber:)),
         )
         for canonicalPhoneNumber in canonicalPhoneNumbers {
             for phoneNumber in [canonicalPhoneNumber.rawValue] + canonicalPhoneNumber.alternatePhoneNumbers() {

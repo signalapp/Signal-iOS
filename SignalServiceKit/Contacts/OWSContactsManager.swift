@@ -988,26 +988,34 @@ extension OWSContactsManager: ContactManager {
 
     private func _updateContacts(_ addressBookContacts: [SystemContact]?, isUserRequested: Bool) {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        let localNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+        let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction
+        guard let localIdentifiers else {
+            Logger.warn("can't fetch contacts unless registered at some point")
+            return
+        }
         let fetchedSystemContacts = FetchedSystemContacts.parseContacts(
             addressBookContacts ?? [],
             phoneNumberUtil: SSKEnvironment.shared.phoneNumberUtilRef,
-            localPhoneNumber: localNumber,
+            localPhoneNumber: localIdentifiers.phoneNumber,
         )
         setFetchedSystemContacts(fetchedSystemContacts)
 
         intersectContacts(
             fetchedSystemContacts: fetchedSystemContacts,
-            localNumber: localNumber,
             isUserRequested: isUserRequested,
         )
     }
 
     private func intersectContacts(
         fetchedSystemContacts: FetchedSystemContacts,
-        localNumber: String?,
         isUserRequested: Bool,
     ) {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction() else {
+            Logger.warn("can't intersect contacts unless currently registered")
+            return
+        }
+
         let systemContactPhoneNumbers = fetchedSystemContacts.phoneNumberToContactRef.keys
 
         let (intersectionMode, signalRecipientPhoneNumbers) = SSKEnvironment.shared.databaseStorageRef.read { tx in
@@ -1022,9 +1030,7 @@ extension OWSContactsManager: ContactManager {
         if case .deltaIntersection(let priorPhoneNumbers) = intersectionMode {
             phoneNumbersToIntersect.subtract(priorPhoneNumbers)
         }
-        if let localNumber {
-            phoneNumbersToIntersect.remove(localNumber)
-        }
+        phoneNumbersToIntersect.remove(registeredState.localIdentifiers.phoneNumber)
 
         switch intersectionMode {
         case .fullIntersection:
