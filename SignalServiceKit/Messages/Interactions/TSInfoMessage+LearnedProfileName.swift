@@ -10,6 +10,7 @@ extension TSInfoMessage {
     public enum DisplayNameBeforeLearningProfileName: Equatable {
         case phoneNumber(String)
         case username(String)
+        case sharedName(String)
     }
 
     static func insertLearnedProfileNameMessage(
@@ -43,6 +44,8 @@ extension TSInfoMessage {
             [.phoneNumberDisplayNameBeforeLearningProfileName: phoneNumber]
         case .username(let username):
             [.usernameDisplayNameBeforeLearningProfileName: username]
+        case .sharedName(let sharedName):
+            [.sharedNameDisplayNameBeforeLearningProfileName: sharedName]
         }
 
         return TSInfoMessage(
@@ -60,6 +63,8 @@ public extension TSInfoMessage {
             return .phoneNumber(phoneNumber)
         } else if let username: String = infoMessageValue(forKey: .usernameDisplayNameBeforeLearningProfileName) {
             return .username(username)
+        } else if let sharedName: String = infoMessageValue(forKey: .sharedNameDisplayNameBeforeLearningProfileName) {
+            return .sharedName(sharedName)
         }
 
         return nil
@@ -72,7 +77,7 @@ public extension TSInfoMessage {
 
         let format = OWSLocalizedString(
             "INFO_MESSAGE_LEARNED_PROFILE_KEY",
-            comment: "When you start a chat with someone and then later learn their profile name, we insert an in-chat message with this string to record the identifier you originally used to contact them. Embeds {{ the identifier, either a phone number or a username }}.",
+            comment: "When you start a chat with someone and then later learn their profile name, we insert an in-chat message with this string to record the identifier you originally used to contact them. Embeds {{ the identifier, either a phone number, a username, or a name someone else shared }}.",
         )
 
         switch displayNameBeforeLearningProfileName {
@@ -80,6 +85,8 @@ public extension TSInfoMessage {
             return String.nonPluralLocalizedStringWithFormat(format, phoneNumber)
         case .username(let username):
             return String.nonPluralLocalizedStringWithFormat(format, username)
+        case .sharedName(let sharedName):
+            return String.nonPluralLocalizedStringWithFormat(format, sharedName.filterForDisplay)
         }
     }
 }

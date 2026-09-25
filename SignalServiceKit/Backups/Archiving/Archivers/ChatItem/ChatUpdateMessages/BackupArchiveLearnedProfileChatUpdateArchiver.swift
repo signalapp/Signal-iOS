@@ -45,6 +45,8 @@ final class BackupArchiveLearnedProfileChatUpdateArchiver {
             learnedProfileChatUpdate.previousName = .e164(e164.uint64Value)
         case .username(let username):
             learnedProfileChatUpdate.previousName = .username(username)
+        case .sharedName:
+            return messageFailure(.learnedProfileUpdateMissingPreviousName)
         }
 
         var chatUpdateMessage = BackupProto_ChatUpdateMessage()

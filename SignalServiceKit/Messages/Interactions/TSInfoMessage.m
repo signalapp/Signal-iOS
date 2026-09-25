@@ -36,6 +36,8 @@ const InfoMessageUserInfoKey InfoMessageUserInfoKeyPhoneNumberDisplayNameBeforeL
     = @"InfoMessageUserInfoKeyPhoneNumberDisplayNameBeforeLearningProfileName";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyUsernameDisplayNameBeforeLearningProfileName
     = @"InfoMessageUserInfoKeyUsernameDisplayNameBeforeLearningProfileName";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeySharedNameDisplayNameBeforeLearningProfileName
+    = @"InfoMessageUserInfoKeySharedNameDisplayNameBeforeLearningProfileName";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyEndPoll = @"InfoMessageUserInfoKeyEndPoll";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyPinnedMessage = @"InfoMessageUserInfoKeyPinnedMessage";
 

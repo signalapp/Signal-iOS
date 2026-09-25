@@ -133,6 +133,39 @@ class UserProfileTest: SignalBaseTest {
         )
     }
 
+    func testLearningProfileNameRecordsAciContactShareNameBeforeLearning() {
+        let aci = Aci.randomForTesting()
+        let address = SignalServiceAddress(aci)
+        let aciContactShareNameManager = DependenciesBridge.shared.aciContactShareNameManager
+
+        let recipient = write { tx in
+            DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
+        }
+
+        let thread = write { tx in
+            DependenciesBridge.shared.usernameLookupManager.saveUsername("shared.01", forAci: aci, transaction: tx)
+            aciContactShareNameManager.saveName(givenName: "Shared", familyName: "Name", recipient: recipient, allowOverwrite: true, updateStorageService: false, tx: tx)
+            OWSUserProfile(address: .otherUser(address)).anyInsert(transaction: tx)
+            return TSContactThread.getOrCreateThread(withContactAddress: address, transaction: tx)
+        }
+
+        write { tx in
+            OWSUserProfile.getUserProfile(for: .otherUser(address), tx: tx)?.update(
+                givenName: .setTo("Alice"),
+                userProfileWriter: .profileFetch,
+                transaction: tx,
+            )
+        }
+
+        let learnedProfileNameMessages = read { tx in
+            try! InteractionFinder(threadUniqueId: thread.uniqueId)
+                .fetchAllInteractions(rowIdFilter: .newest, limit: Int.max, tx: tx)
+                .compactMap { $0 as? TSInfoMessage }
+                .filter { $0.messageType == .learnedProfileName }
+        }
+        XCTAssertEqual(learnedProfileNameMessages.map(\.displayNameBeforeLearningProfileName), [.sharedName("Shared Name")])
+    }
+
     func testGetUserProfile() {
         let addresses: [SignalServiceAddress] = [
             SignalServiceAddress(Aci.randomForTesting()),

@@ -1296,10 +1296,22 @@ extension OWSUserProfile {
             signalServiceAddress = _address
         }
 
+        let aciContactShareNameManager = DependenciesBridge.shared.aciContactShareNameManager
         let usernameLookupManager = DependenciesBridge.shared.usernameLookupManager
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
 
         if
+            let aci = signalServiceAddress.serviceId as? Aci,
+            let recipient = recipientDatabaseTable.fetchRecipient(serviceId: aci, transaction: tx),
+            let sharedName = ProfileName(aciContactShareName: aciContactShareNameManager.fetchName(recipient: recipient, tx: tx))
+        {
+            /// A name someone else shared outranks usernames and phone numbers
+            /// as a display name, so it's the name this chat was shown with.
+            return DisplayNameBeforeLearningProfileName(
+                serviceId: aci,
+                displayName: .sharedName(OWSFormat.formatNameComponents(sharedName.nameComponents)),
+            )
+        } else if
             let aci = signalServiceAddress.serviceId as? Aci,
             let username = usernameLookupManager.fetchUsername(forAci: aci, transaction: tx)
         {
