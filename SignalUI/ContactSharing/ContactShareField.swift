@@ -72,6 +72,28 @@ class ContactShareAddress: ContactShareFieldBase<OWSContactAddress> {
     }
 }
 
+class OWSContactNickname: OWSContactField {
+
+    let nickname: PersonNameComponents
+
+    init(nickname: PersonNameComponents) {
+        self.nickname = nickname
+    }
+
+    var isValid: Bool { true }
+
+    var localizedLabel: String { ContactFieldViewHelper.nicknameFieldLabel }
+}
+
+class ContactShareNicknameField: ContactShareFieldBase<OWSContactNickname> {
+
+    override func applyToContact(contact: ContactShareDraft) {
+        owsPrecondition(isIncluded)
+
+        contact.signalNickname = value.nickname
+    }
+}
+
 class OWSContactNote: OWSContactField {
 
     let note: String

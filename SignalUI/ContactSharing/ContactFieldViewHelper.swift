@@ -35,6 +35,14 @@ public class ContactFieldViewHelper {
         )
     }
 
+    public static var nicknameFieldLabel: String {
+        OWSLocalizedString("CONTACT_FIELD_NICKNAME", comment: "Label for the 'nickname' field of a contact.")
+    }
+
+    public class func contactFieldView(forNickname nickname: PersonNameComponents) -> UIView {
+        return simpleFieldView(name: nicknameFieldLabel, value: OWSFormat.formatNameComponents(nickname))
+    }
+
     public static var noteFieldLabel: String {
         OWSLocalizedString("CONTACT_FIELD_NOTES", comment: "Label for the 'notes' field of a contact.")
     }

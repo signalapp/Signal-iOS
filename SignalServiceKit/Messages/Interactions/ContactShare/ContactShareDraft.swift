@@ -13,6 +13,7 @@ public class ContactShareDraft {
     public var emails: [OWSContactEmail]
     public var phoneNumbers: [OWSContactPhoneNumber]
     public var aci: Aci?
+    public var signalNickname: PersonNameComponents?
     public var signalNote: String?
     public var existingAvatarAttachment: ReferencedAttachment?
 
@@ -63,6 +64,7 @@ public class ContactShareDraft {
             emails: cnContact.emailAddresses.map(OWSContactEmail.init(cnLabeledValue:)),
             phoneNumbers: cnContact.phoneNumbers.map(OWSContactPhoneNumber.init(cnLabeledValue:)),
             aci: nil,
+            signalNickname: nil,
             signalNote: nil,
             existingAvatarAttachment: nil,
             avatarImageData: avatarData,
@@ -113,6 +115,7 @@ public class ContactShareDraft {
         emails: [OWSContactEmail],
         phoneNumbers: [OWSContactPhoneNumber],
         aci: Aci?,
+        signalNickname: PersonNameComponents?,
         signalNote: String?,
         existingAvatarAttachment: ReferencedAttachment?,
         avatarImageData: Data?,
@@ -122,6 +125,7 @@ public class ContactShareDraft {
         self.emails = emails
         self.phoneNumbers = phoneNumbers
         self.aci = aci
+        self.signalNickname = signalNickname
         self.signalNote = signalNote
         self.existingAvatarAttachment = existingAvatarAttachment
         self.avatarImageData = avatarImageData
@@ -135,6 +139,7 @@ public class ContactShareDraft {
             emails: [],
             phoneNumbers: [],
             aci: aci,
+            signalNickname: nil,
             signalNote: nil,
             existingAvatarAttachment: nil,
             avatarImageData: nil,
@@ -163,6 +168,7 @@ public class ContactShareDraft {
         public let emails: [OWSContactEmail]
         public let phoneNumbers: [OWSContactPhoneNumber]
         public let aci: Aci?
+        public let nickname: PersonNameComponents?
         public let note: String?
         public let avatar: AttachmentDataSource?
     }

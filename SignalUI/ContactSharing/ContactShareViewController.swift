@@ -48,6 +48,11 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
         ))
     }()
 
+    private lazy var nicknameField: ContactShareField? = {
+        guard let nickname = contactShareDraft.signalNickname else { return nil }
+        return ContactShareNicknameField(OWSContactNickname(nickname: nickname), includedByDefault: false)
+    }()
+
     private lazy var noteField: ContactShareField? = {
         guard let note = contactShareDraft.signalNote?.strippedOrNil else { return nil }
         return ContactShareNoteField(OWSContactNote(note: note), includedByDefault: false)
@@ -74,6 +79,10 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
             if field.isIncluded {
                 field.applyToContact(contact: result)
             }
+        }
+
+        if let nicknameField, nicknameField.isIncluded {
+            nicknameField.applyToContact(contact: result)
         }
 
         if let noteField, noteField.isIncluded {
@@ -195,6 +204,18 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
             )
         }
 
+        // Nickname
+        if let nicknameField {
+            tableItems.append(OWSTableItem(
+                customCellBlock: {
+                    return ContactShareFieldCell(field: nicknameField)
+                },
+                actionBlock: { [weak self] in
+                    self?.toggleSelection(for: nicknameField)
+                },
+            ))
+        }
+
         // Note
         if let noteField {
             tableItems.append(OWSTableItem(
@@ -287,6 +308,9 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
 
                 case let addressField as ContactShareAddress:
                     return ContactFieldViewHelper.contactFieldView(forAddress: addressField.value)
+
+                case let nicknameField as ContactShareNicknameField:
+                    return ContactFieldViewHelper.contactFieldView(forNickname: nicknameField.value.nickname)
 
                 case let noteField as ContactShareNoteField:
                     return ContactFieldViewHelper.contactFieldView(forNote: noteField.value.note)

@@ -260,13 +260,23 @@ class ContactViewController: OWSTableViewController2 {
                 },
             )
         }))
+        if let nickname = contactShare.nickname {
+            infoSection.add(OWSTableItem(
+                customCellBlock: {
+                    return Self.buildNicknameCell(nickname)
+                },
+                actionBlock: { [weak self] in
+                    self?.presentCopyActionSheet(text: OWSFormat.formatNameComponents(nickname))
+                },
+            ))
+        }
         if let note = contactShare.note {
             infoSection.add(OWSTableItem(
                 customCellBlock: {
                     return Self.buildNoteCell(note)
                 },
                 actionBlock: { [weak self] in
-                    self?.didPressNote(note: note)
+                    self?.presentCopyActionSheet(text: note)
                 },
             ))
         }
@@ -359,6 +369,11 @@ class ContactViewController: OWSTableViewController2 {
 
     private class func buildAddressCell(_ address: OWSContactAddress) -> UITableViewCell {
         let fieldContentView = ContactFieldViewHelper.contactFieldView(forAddress: address)
+        return buildTableViewCellWith(fieldContentView)
+    }
+
+    private class func buildNicknameCell(_ nickname: PersonNameComponents) -> UITableViewCell {
+        let fieldContentView = ContactFieldViewHelper.contactFieldView(forNickname: nickname)
         return buildTableViewCellWith(fieldContentView)
     }
 
@@ -502,7 +517,7 @@ extension ContactViewController {
         UIApplication.shared.open(url as URL, options: [:])
     }
 
-    private func didPressNote(note: String) {
+    private func presentCopyActionSheet(text: String) {
         let actionSheet = ActionSheetController(title: nil, message: nil)
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString(
@@ -511,7 +526,7 @@ extension ContactViewController {
             ),
             style: .default,
         ) { _ in
-            UIPasteboard.general.string = note
+            UIPasteboard.general.string = text
         })
         actionSheet.addAction(OWSActionSheets.cancelAction)
         presentActionSheet(actionSheet)

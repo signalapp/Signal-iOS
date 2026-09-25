@@ -708,6 +708,20 @@ struct ContactSharingPickerViewModelTests {
         #expect(try await contactShareDraft(forFirstRowOf: viewModel).signalNote == "Met at the conference")
     }
 
+    // MARK: - Sharing the Nickname
+
+    @Test
+    func testASignalRowSharesTheNickname() async throws {
+        let recipient = addContact(named: "Alice")
+        addNickname(for: recipient, note: nil)
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        let nickname = try #require(try await contactShareDraft(forFirstRowOf: viewModel).signalNickname)
+        #expect(nickname.givenName == "Ali" && nickname.familyName == "Cat")
+    }
+
     // MARK: - Helpers
 
     private func makeViewModel() -> ContactSharingPickerViewModel {
@@ -794,7 +808,7 @@ struct ContactSharingPickerViewModelTests {
     private func addNickname(for recipient: SignalRecipient, note: String?) {
         db.write { tx in
             nicknameRecordStore.insert(
-                NicknameRecord(recipient: recipient, givenName: "Ali", familyName: nil, note: note),
+                NicknameRecord(recipient: recipient, givenName: "Ali", familyName: "Cat", note: note),
                 tx: tx,
             )
         }

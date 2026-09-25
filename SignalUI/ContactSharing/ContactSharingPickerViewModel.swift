@@ -343,8 +343,13 @@ final class ContactSharingPickerViewModel {
                 draft = contactShareDraft(forSystemContact: systemContact, tx: tx)
             }
             draft.aci = row.shareableAci(recipientDatabaseTable: recipientDatabaseTable, transaction: tx)
-            if draft.aci != nil, let recipientRowId = row.signalContact?.recipient.id {
-                draft.signalNote = nicknameRecordStore.fetch(recipientRowID: recipientRowId, tx: tx)?.note?.strippedOrNil
+            if
+                draft.aci != nil,
+                let recipientRowId = row.signalContact?.recipient.id,
+                let nicknameRecord = nicknameRecordStore.fetch(recipientRowID: recipientRowId, tx: tx)
+            {
+                draft.signalNickname = ProfileName(nicknameRecord: nicknameRecord)?.nameComponents
+                draft.signalNote = nicknameRecord.note?.strippedOrNil
             }
             return draft
         }
@@ -386,6 +391,7 @@ final class ContactSharingPickerViewModel {
             emails: [],
             phoneNumbers: phoneNumbers,
             aci: nil,
+            signalNickname: nil,
             signalNote: nil,
             existingAvatarAttachment: nil,
             avatarImageData: userProfile?.loadAvatarData(),
@@ -793,6 +799,7 @@ final class ContactSharingPickerViewModel {
                     )
                 },
                 aci: nil,
+                signalNickname: nil,
                 signalNote: nil,
                 existingAvatarAttachment: nil,
                 avatarImageData: nil,

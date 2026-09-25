@@ -103,6 +103,9 @@ class ContactShareManagerImpl: ContactShareManager {
         if BuildFlags.accountIdentifierSharing, let aciBinary = contactProto.aciBinary {
             contact.aci = try? Aci.parseFrom(serviceIdBinary: aciBinary)
         }
+        if BuildFlags.accountIdentifierSharing, let nicknameProto = contactProto.nickname {
+            contact.nickname = ProfileName(givenName: nicknameProto.given, familyName: nicknameProto.family)?.nameComponents
+        }
         if BuildFlags.accountIdentifierSharing {
             contact.note = contactProto.note?.strippedOrNil
         }
@@ -151,6 +154,7 @@ class ContactShareManagerImpl: ContactShareManager {
             emails: draft.emails,
             phoneNumbers: draft.phoneNumbers,
             aci: draft.aci,
+            nickname: draft.signalNickname,
             note: draft.signalNote,
             avatar: avatarDataSource,
         )
@@ -166,6 +170,7 @@ class ContactShareManagerImpl: ContactShareManager {
                 emails: draft.emails,
                 addresses: draft.addresses,
                 aci: draft.aci,
+                nickname: draft.nickname,
                 note: draft.note,
             ),
             avatarDataSource: draft.avatar,
@@ -205,6 +210,20 @@ class ContactShareManagerImpl: ContactShareManager {
 
         if BuildFlags.accountIdentifierSharing, let aci = contactShare.aci {
             contactBuilder.setAciBinary(aci.serviceIdBinary)
+        }
+        if
+            BuildFlags.accountIdentifierSharing,
+            let nickname = contactShare.nickname,
+            let profileName = ProfileName(givenName: nickname.givenName, familyName: nickname.familyName)
+        {
+            let nicknameBuilder = SSKProtoDataMessageContactSignalNickname.builder()
+            if let givenName = profileName.givenName {
+                nicknameBuilder.setGiven(givenName)
+            }
+            if let familyName = profileName.familyName {
+                nicknameBuilder.setFamily(familyName)
+            }
+            contactBuilder.setNickname(nicknameBuilder.buildInfallibly())
         }
         if BuildFlags.accountIdentifierSharing, let note = contactShare.note?.strippedOrNil {
             contactBuilder.setNote(note)
