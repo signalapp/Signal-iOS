@@ -23,7 +23,7 @@ public enum ProvisioningServiceResponses {
     }
 
     public struct VerifySecondaryDeviceResponse: Codable, Equatable {
-        @PniUuid public var pni: Pni
+        public let pni: PniUuid?
         public let deviceId: DeviceId
     }
 }

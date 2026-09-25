@@ -125,10 +125,15 @@ public class ProvisioningManagerTests {
         // values populated by the old device
         #expect(provisionMessage.aep == accountEntropyPool)
         #expect(provisionMessage.aci == myAci)
-        #expect(provisionMessage.phoneNumberState.phoneNumber.e164 == myPhoneNumber)
-        #expect(provisionMessage.phoneNumberState.phoneNumber.pni == myPni)
         #expect(provisionMessage.aciIdentityKeyPair.publicKey == myAciIdentityKeyPair.publicKey)
-        #expect(provisionMessage.phoneNumberState.pniIdentityKeyPair.publicKey == myPniIdentityKeyPair.publicKey)
+        switch provisionMessage.accountType {
+        case .phoneNumberfull(let phoneNumberState):
+            #expect(phoneNumberState.phoneNumber.e164 == myPhoneNumber)
+            #expect(phoneNumberState.phoneNumber.pni == myPni)
+            #expect(phoneNumberState.pniIdentityKeyPair.publicKey == myPniIdentityKeyPair.publicKey)
+        case .phoneNumberless:
+            Issue.record("wrong type of account")
+        }
         #expect(provisionMessage.profileKey == profileKey)
         #expect(provisionMessage.areReadReceiptsEnabled == readReceiptsEnabled)
         #expect(provisionMessage.provisioningCode == provisioningCode)

@@ -108,10 +108,10 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             aci: .randomForTesting(),
             aciIdentityKeyPair: .generate(),
             aep: aep,
-            phoneNumberState: LinkingProvisioningMessage.PhoneNumberState(
+            accountType: .phoneNumberfull(LinkingProvisioningMessage.PhoneNumberState(
                 phoneNumber: LocalIdentifiers.PhoneNumber(e164: e164, pni: pni),
                 pniIdentityKeyPair: pniIdentityKeyPair,
-            ),
+            )),
             profileKey: .generateRandom(),
             mrbk: MediaRootBackupKey(backupKey: .generateRandom()),
             ephemeralBackupKey: nil,
@@ -124,7 +124,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         let mockSession = UrlSessionMock()
 
         let verificationResponse = ProvisioningServiceResponses.VerifySecondaryDeviceResponse(
-            pni: pni,
+            pni: PniUuid(wrappedValue: pni),
             deviceId: deviceId,
         )
 

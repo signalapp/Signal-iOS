@@ -104,6 +104,9 @@ public enum BuildFlags {
     /// The ability to share account identifiers when sharing contacts.
     public static let accountIdentifierSharing = false
 
+    public static let phoneNumberlessCanLinkNewDevices = false
+    public static let phoneNumberlessCanBeLinkedDevice = false
+
     public static let phoneNumberlessRegistration = false
 
     public static let stickerReply = build <= .dev

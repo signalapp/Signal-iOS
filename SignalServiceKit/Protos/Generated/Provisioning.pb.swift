@@ -205,6 +205,16 @@ public nonisolated struct ProvisioningProtos_ProvisionMessage: Sendable {
   /// Clears the value of `pniBinary`. Subsequent reads from it will return its default value.
   public mutating func clearPniBinary() {self._pniBinary = nil}
 
+  /// 16-bytes
+  public var authCredentialSalt: Data {
+    get {_authCredentialSalt ?? Data()}
+    set {_authCredentialSalt = newValue}
+  }
+  /// Returns true if `authCredentialSalt` has been explicitly set.
+  public var hasAuthCredentialSalt: Bool {self._authCredentialSalt != nil}
+  /// Clears the value of `authCredentialSalt`. Subsequent reads from it will return its default value.
+  public mutating func clearAuthCredentialSalt() {self._authCredentialSalt = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -224,6 +234,7 @@ public nonisolated struct ProvisioningProtos_ProvisionMessage: Sendable {
   fileprivate var _mediaRootBackupKey: Data? = nil
   fileprivate var _aciBinary: Data? = nil
   fileprivate var _pniBinary: Data? = nil
+  fileprivate var _authCredentialSalt: Data? = nil
 }
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -271,7 +282,7 @@ nonisolated extension ProvisioningProtos_ProvisionEnvelope: SwiftProtobuf.Messag
 
 nonisolated extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ProvisionMessage"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}aciIdentityKeyPublic\0\u{1}aciIdentityKeyPrivate\0\u{1}number\0\u{1}provisioningCode\0\u{1}userAgent\0\u{1}profileKey\0\u{1}readReceipts\0\u{2}\u{2}provisioningVersion\0\u{2}\u{2}pniIdentityKeyPublic\0\u{1}pniIdentityKeyPrivate\0\u{2}\u{2}ephemeralBackupKey\0\u{1}accountEntropyPool\0\u{1}mediaRootBackupKey\0\u{1}aciBinary\0\u{1}pniBinary\0\u{c}\u{8}\u{1}\u{c}\u{a}\u{1}\u{c}\u{d}\u{1}")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}aciIdentityKeyPublic\0\u{1}aciIdentityKeyPrivate\0\u{1}number\0\u{1}provisioningCode\0\u{1}userAgent\0\u{1}profileKey\0\u{1}readReceipts\0\u{2}\u{2}provisioningVersion\0\u{2}\u{2}pniIdentityKeyPublic\0\u{1}pniIdentityKeyPrivate\0\u{2}\u{2}ephemeralBackupKey\0\u{1}accountEntropyPool\0\u{1}mediaRootBackupKey\0\u{1}aciBinary\0\u{1}pniBinary\0\u{1}authCredentialSalt\0\u{c}\u{8}\u{1}\u{c}\u{a}\u{1}\u{c}\u{d}\u{1}")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -294,6 +305,7 @@ nonisolated extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message
       case 16: try { try decoder.decodeSingularBytesField(value: &self._mediaRootBackupKey) }()
       case 17: try { try decoder.decodeSingularBytesField(value: &self._aciBinary) }()
       case 18: try { try decoder.decodeSingularBytesField(value: &self._pniBinary) }()
+      case 19: try { try decoder.decodeSingularBytesField(value: &self._authCredentialSalt) }()
       default: break
       }
     }
@@ -349,6 +361,9 @@ nonisolated extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message
     try { if let v = self._pniBinary {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 18)
     } }()
+    try { if let v = self._authCredentialSalt {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 19)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -368,6 +383,7 @@ nonisolated extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message
     if lhs._mediaRootBackupKey != rhs._mediaRootBackupKey {return false}
     if lhs._aciBinary != rhs._aciBinary {return false}
     if lhs._pniBinary != rhs._pniBinary {return false}
+    if lhs._authCredentialSalt != rhs._authCredentialSalt {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

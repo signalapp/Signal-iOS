@@ -26,7 +26,7 @@ public struct AccountAttributes: Codable {
     /// A randomly generated ID that is associated with the user's PNI that identifies
     /// a single registration and is sent to e.g. message recipients. If this changes, it tells
     /// you the sender has re-registered, and is cheaper to compare than doing full key comparison.
-    public let pniRegistrationId: UInt32
+    public let pniRegistrationId: UInt32?
 
     /// Base64-encoded SMKUDAccessKey generated from the user's profile key.
     public let unidentifiedAccessKey: String?
@@ -78,7 +78,7 @@ public struct AccountAttributes: Codable {
     public init(
         isManualMessageFetchEnabled: Bool,
         registrationId: UInt32,
-        pniRegistrationId: UInt32,
+        pniRegistrationId: UInt32?,
         unidentifiedAccessKey: String?,
         unrestrictedUnidentifiedAccess: Bool,
         reglockToken: String?,
@@ -105,6 +105,7 @@ public struct AccountAttributes: Codable {
         public let spqr = true
         public let attachmentBackfill = true
         public let usernameChangeSyncMessage = true
+        public let optionalPhoneNumber = BuildFlags.phoneNumberlessCanBeLinkedDevice
 
         public enum CodingKeys: String, CodingKey {
             case transfer
@@ -112,6 +113,7 @@ public struct AccountAttributes: Codable {
             case spqr
             case attachmentBackfill
             case usernameChangeSyncMessage
+            case optionalPhoneNumber
         }
 
         public init(hasSVRBackups: Bool) {

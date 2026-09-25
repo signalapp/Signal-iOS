@@ -22,7 +22,7 @@ extension ProvisioningCoordinatorImpl {
             verificationCode: String,
             aci: Aci,
             aciPreKeyBundle: RegistrationPreKeyUploadBundle,
-            pniPreKeyBundle: RegistrationPreKeyUploadBundle,
+            pniPreKeyBundle: RegistrationPreKeyUploadBundle?,
             authPassword: String,
             accountAttributes: AccountAttributes,
             apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,

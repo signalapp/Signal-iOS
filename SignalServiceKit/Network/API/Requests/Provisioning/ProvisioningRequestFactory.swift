@@ -12,7 +12,7 @@ public enum ProvisioningRequestFactory {
         verificationCode: String,
         aci: Aci,
         aciPreKeyBundle: RegistrationPreKeyUploadBundle,
-        pniPreKeyBundle: RegistrationPreKeyUploadBundle,
+        pniPreKeyBundle: RegistrationPreKeyUploadBundle?,
         authPassword: String,
         attributes: AccountAttributes,
         apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
@@ -33,8 +33,8 @@ public enum ProvisioningRequestFactory {
             accountAttributes: attributes,
             aciSignedPreKey: OWSRequestFactory.SignedPreKey(aciPreKeyBundle.signedPreKey),
             aciPqLastResortPreKey: OWSRequestFactory.KyberPreKey(aciPreKeyBundle.lastResortPreKey),
-            pniSignedPreKey: OWSRequestFactory.SignedPreKey(pniPreKeyBundle.signedPreKey),
-            pniPqLastResortPreKey: OWSRequestFactory.KyberPreKey(pniPreKeyBundle.lastResortPreKey),
+            pniSignedPreKey: pniPreKeyBundle.map { OWSRequestFactory.SignedPreKey($0.signedPreKey) },
+            pniPqLastResortPreKey: pniPreKeyBundle.map { OWSRequestFactory.KyberPreKey($0.lastResortPreKey) },
             apnToken: apnRegistrationId,
         )
 
@@ -49,8 +49,8 @@ public enum ProvisioningRequestFactory {
         var accountAttributes: AccountAttributes
         var aciSignedPreKey: OWSRequestFactory.SignedPreKey
         var aciPqLastResortPreKey: OWSRequestFactory.KyberPreKey
-        var pniSignedPreKey: OWSRequestFactory.SignedPreKey
-        var pniPqLastResortPreKey: OWSRequestFactory.KyberPreKey
+        var pniSignedPreKey: OWSRequestFactory.SignedPreKey?
+        var pniPqLastResortPreKey: OWSRequestFactory.KyberPreKey?
         var apnToken: RegistrationRequestFactory.ApnRegistrationId?
     }
 }

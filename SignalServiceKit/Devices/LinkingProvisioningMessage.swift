@@ -24,10 +24,15 @@ public struct LinkingProvisioningMessage {
         }
     }
 
+    public enum AccountType {
+        case phoneNumberfull(PhoneNumberState)
+        case phoneNumberless(AuthCredentialSalt)
+    }
+
     public let aci: Aci
     public let aciIdentityKeyPair: IdentityKeyPair
     public let aep: AccountEntropyPool
-    public let phoneNumberState: PhoneNumberState
+    public let accountType: AccountType
     public let profileKey: Aes256Key
     public let mrbk: MediaRootBackupKey
     public let ephemeralBackupKey: MessageRootBackupKey?
@@ -40,7 +45,7 @@ public struct LinkingProvisioningMessage {
         aci: Aci,
         aciIdentityKeyPair: IdentityKeyPair,
         aep: AccountEntropyPool,
-        phoneNumberState: PhoneNumberState,
+        accountType: AccountType,
         profileKey: Aes256Key,
         mrbk: MediaRootBackupKey,
         ephemeralBackupKey: MessageRootBackupKey?,
@@ -51,7 +56,7 @@ public struct LinkingProvisioningMessage {
     ) {
         self.aep = aep
         self.aci = aci
-        self.phoneNumberState = phoneNumberState
+        self.accountType = accountType
         self.aciIdentityKeyPair = aciIdentityKeyPair
         self.profileKey = profileKey
         self.mrbk = mrbk
@@ -80,7 +85,7 @@ public struct LinkingProvisioningMessage {
         let provisioningVersion = proto.provisioningVersion
         self.provisioningVersion = provisioningVersion
 
-        var phoneNumberState: PhoneNumberState?
+        let accountType: AccountType
         if proto.hasNumber {
             guard let e164 = E164(proto.number) else {
                 throw OWSGenericError("malformed number in provisioning message")
@@ -94,13 +99,18 @@ public struct LinkingProvisioningMessage {
                 privateKey: PrivateKey(proto.pniIdentityKeyPrivate),
             )
             let phoneNumber = LocalIdentifiers.PhoneNumber(e164: e164, pni: pni)
-            phoneNumberState = PhoneNumberState(phoneNumber: phoneNumber, pniIdentityKeyPair: pniIdentityKeyPair)
+            accountType = .phoneNumberfull(PhoneNumberState(
+                phoneNumber: phoneNumber,
+                pniIdentityKeyPair: pniIdentityKeyPair,
+            ))
+        } else {
+            guard BuildFlags.phoneNumberlessCanBeLinkedDevice else {
+                throw OWSGenericError("missing phone number")
+            }
+            let authCredentialSalt = try AuthCredentialSalt(rawValue: proto.authCredentialSalt)
+            accountType = .phoneNumberless(authCredentialSalt)
         }
-        guard let phoneNumberState else {
-            // TODO: [#less] Allow linking accounts without phone numbers.
-            throw OWSGenericError("missing phone number")
-        }
-        self.phoneNumberState = phoneNumberState
+        self.accountType = accountType
 
         self.aci = try Aci.parseFrom(serviceIdBinary: proto.aciBinary)
 
@@ -133,13 +143,14 @@ public struct LinkingProvisioningMessage {
         if let ephemeralBackupKey {
             message.ephemeralBackupKey = ephemeralBackupKey.serialize()
         }
-        // TODO: [#less] Don't include this when phoneNumber is nil.
-        let phoneNumberState = self.phoneNumberState
-        do {
+        switch accountType {
+        case .phoneNumberfull(let phoneNumberState):
             message.number = phoneNumberState.phoneNumber.e164.stringValue
             message.pniBinary = phoneNumberState.phoneNumber.pni.rawUUID.data
             message.pniIdentityKeyPublic = phoneNumberState.pniIdentityKeyPair.publicKey.serialize()
             message.pniIdentityKeyPrivate = phoneNumberState.pniIdentityKeyPair.privateKey.serialize()
+        case .phoneNumberless(let authCredentialSalt):
+            message.authCredentialSalt = authCredentialSalt.rawValue
         }
 
         let plainTextProvisionMessage = try message.serializedData()

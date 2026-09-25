@@ -87,8 +87,13 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         case .reregistering(let localIdentifiers):
             oldLocalIdentifiers = localIdentifiers
             if let oldPhoneNumber = localIdentifiers.phoneNumber {
-                guard oldPhoneNumber == provisionMessage.phoneNumberState.phoneNumber.e164.stringValue else {
-                    Logger.warn("can't re-link primary a different phone number")
+                switch provisionMessage.accountType {
+                case .phoneNumberfull(let phoneNumberState):
+                    guard oldPhoneNumber == phoneNumberState.phoneNumber.e164.stringValue else {
+                        Logger.warn("can't re-link primary a different phone number")
+                        throw .previouslyLinkedWithDifferentAccount
+                    }
+                case .phoneNumberless:
                     throw .previouslyLinkedWithDifferentAccount
                 }
             }
@@ -214,7 +219,12 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         deviceName: String,
     ) async throws(CompleteProvisioningError) -> CompleteProvisioningStepResult {
         // Update censorship circumvention state as e164 could be changing.
-        signalService.updateHasCensoredPhoneNumberDuringProvisioning(provisionMessage.phoneNumberState.phoneNumber.e164)
+        switch provisionMessage.accountType {
+        case .phoneNumberfull(let phoneNumberState):
+            signalService.updateHasCensoredPhoneNumberDuringProvisioning(phoneNumberState.phoneNumber.e164)
+        case .phoneNumberless:
+            break
+        }
 
         return try await completeProvisioning_createPreKeys(
             provisionMessage: provisionMessage,
@@ -232,10 +242,16 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             forIdentity: .aci,
             keyPair: provisionMessage.aciIdentityKeyPair,
         )
-        let pniPreKeyBundle = await self.preKeyManager.createPreKeysForProvisioning(
-            forIdentity: .pni,
-            keyPair: provisionMessage.phoneNumberState.pniIdentityKeyPair,
-        )
+        let pniPreKeyBundle: RegistrationPreKeyUploadBundle?
+        switch provisionMessage.accountType {
+        case .phoneNumberfull(let phoneNumberState):
+            pniPreKeyBundle = await self.preKeyManager.createPreKeysForProvisioning(
+                forIdentity: .pni,
+                keyPair: phoneNumberState.pniIdentityKeyPair,
+            )
+        case .phoneNumberless:
+            pniPreKeyBundle = nil
+        }
 
         return try await completeProvisioning_createRegistrationIds(
             provisionMessage: provisionMessage,
@@ -247,10 +263,12 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                 aciPreKeyBundle,
                 uploadDidSucceed: false,
             )
-            await self.preKeyManager.finalizeRegistrationPreKeyBundle(
-                pniPreKeyBundle,
-                uploadDidSucceed: false,
-            )
+            if let pniPreKeyBundle {
+                await self.preKeyManager.finalizeRegistrationPreKeyBundle(
+                    pniPreKeyBundle,
+                    uploadDidSucceed: false,
+                )
+            }
         }
     }
 
@@ -258,15 +276,23 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         provisionMessage: LinkingProvisioningMessage,
         deviceName: String,
         aciPreKeyBundle: RegistrationPreKeyUploadBundle,
-        pniPreKeyBundle: RegistrationPreKeyUploadBundle,
+        pniPreKeyBundle: RegistrationPreKeyUploadBundle?,
     ) async throws(CompleteProvisioningError) -> CompleteProvisioningStepResult {
+        let aciRegistrationId = RegistrationIdGenerator.generate()
+        let pniRegistrationId: UInt32?
+        switch provisionMessage.accountType {
+        case .phoneNumberfull:
+            pniRegistrationId = RegistrationIdGenerator.generate()
+        case .phoneNumberless:
+            pniRegistrationId = nil
+        }
         return try await completeProvisioning_verifyAndLinkOnServer(
             provisionMessage: provisionMessage,
             deviceName: deviceName,
             aciPreKeyBundle: aciPreKeyBundle,
             pniPreKeyBundle: pniPreKeyBundle,
-            aciRegistrationId: RegistrationIdGenerator.generate(),
-            pniRegistrationId: RegistrationIdGenerator.generate(),
+            aciRegistrationId: aciRegistrationId,
+            pniRegistrationId: pniRegistrationId,
         ).withUndoOnFailureStep {
             await self.db.awaitableWrite { tx in
                 self.tsAccountManager.clearRegistrationIds(tx: tx)
@@ -278,9 +304,9 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         provisionMessage: LinkingProvisioningMessage,
         deviceName: String,
         aciPreKeyBundle: RegistrationPreKeyUploadBundle,
-        pniPreKeyBundle: RegistrationPreKeyUploadBundle,
+        pniPreKeyBundle: RegistrationPreKeyUploadBundle?,
         aciRegistrationId: UInt32,
-        pniRegistrationId: UInt32,
+        pniRegistrationId: UInt32?,
     ) async throws(CompleteProvisioningError) -> CompleteProvisioningStepResult {
         let apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?
         let encryptedDeviceName: Data
@@ -323,10 +349,10 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private func completeProvisioning_setLocalKeys(
         provisionMessage: LinkingProvisioningMessage,
         aciPreKeyBundle: RegistrationPreKeyUploadBundle,
-        pniPreKeyBundle: RegistrationPreKeyUploadBundle,
+        pniPreKeyBundle: RegistrationPreKeyUploadBundle?,
         authedAccount: AuthedAccount.Explicit,
         aciRegistrationId: UInt32,
-        pniRegistrationId: UInt32,
+        pniRegistrationId: UInt32?,
     ) async throws(CompleteProvisioningError) -> CompleteProvisioningStepResult {
         let error: CompleteProvisioningError? = await self.db.awaitableWrite { tx in
             self.identityManager.setIdentityKeyPair(
@@ -334,11 +360,16 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                 for: .aci,
                 tx: tx,
             )
-            self.identityManager.setIdentityKeyPair(
-                provisionMessage.phoneNumberState.pniIdentityKeyPair.asECKeyPair,
-                for: .pni,
-                tx: tx,
-            )
+            switch provisionMessage.accountType {
+            case .phoneNumberfull(let phoneNumberState):
+                self.identityManager.setIdentityKeyPair(
+                    phoneNumberState.pniIdentityKeyPair.asECKeyPair,
+                    for: .pni,
+                    tx: tx,
+                )
+            case .phoneNumberless:
+                break
+            }
 
             self.profileManager.setLocalProfileKey(
                 provisionMessage.profileKey,
@@ -347,7 +378,9 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             )
 
             self.tsAccountManager.setRegistrationId(aciRegistrationId, for: .aci, tx: tx)
-            self.tsAccountManager.setRegistrationId(pniRegistrationId, for: .pni, tx: tx)
+            if let pniRegistrationId {
+                self.tsAccountManager.setRegistrationId(pniRegistrationId, for: .pni, tx: tx)
+            }
 
             self.svr.storeKeys(
                 fromProvisioningMessage: provisionMessage,
@@ -396,11 +429,13 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private func completeProvisioning_finalizePrekeys(
         provisionMessage: LinkingProvisioningMessage,
         aciPreKeyBundle: RegistrationPreKeyUploadBundle,
-        pniPreKeyBundle: RegistrationPreKeyUploadBundle,
+        pniPreKeyBundle: RegistrationPreKeyUploadBundle?,
         authedAccount: AuthedAccount.Explicit,
     ) async throws(CompleteProvisioningError) -> CompleteProvisioningStepResult {
         await self.preKeyManager.finalizeRegistrationPreKeyBundle(aciPreKeyBundle, uploadDidSucceed: true)
-        await self.preKeyManager.finalizeRegistrationPreKeyBundle(pniPreKeyBundle, uploadDidSucceed: true)
+        if let pniPreKeyBundle {
+            await self.preKeyManager.finalizeRegistrationPreKeyBundle(pniPreKeyBundle, uploadDidSucceed: true)
+        }
         do {
             try await self.preKeyManager
                 .rotateOneTimePreKeysForRegistration(auth: authedAccount.chatServiceAuth)
@@ -559,9 +594,9 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private func verifyAndLinkOnServer(
         provisionMessage: LinkingProvisioningMessage,
         aciPreKeyBundle: RegistrationPreKeyUploadBundle,
-        pniPreKeyBundle: RegistrationPreKeyUploadBundle,
+        pniPreKeyBundle: RegistrationPreKeyUploadBundle?,
         aciRegistrationId: UInt32,
-        pniRegistrationId: UInt32,
+        pniRegistrationId: UInt32?,
         encryptedDeviceName: Data,
         apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
     ) async throws(CompleteProvisioningError) -> AuthedAccount.Explicit {
@@ -600,16 +635,30 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         case .success(let response):
             verifyDeviceResponse = response
         }
-        if provisionMessage.phoneNumberState.phoneNumber.pni != verifyDeviceResponse.pni {
+        let expectedPni: Pni?
+        switch provisionMessage.accountType {
+        case .phoneNumberfull(let phoneNumberState):
+            expectedPni = phoneNumberState.phoneNumber.pni
+        case .phoneNumberless:
+            expectedPni = nil
+        }
+        guard expectedPni == verifyDeviceResponse.pni?.wrappedValue else {
             throw .genericError(OWSAssertionError("PNI from primary is out of sync with the server!"))
         }
         if verifyDeviceResponse.deviceId.isPrimary {
             throw .genericError(OWSAssertionError("Server is trying to link device as primary!"))
         }
 
+        let accountType: LocalIdentifiers.AccountType
+        switch provisionMessage.accountType {
+        case .phoneNumberfull(let phoneNumberState):
+            accountType = .forPhoneNumber(phoneNumberState.phoneNumber)
+        case .phoneNumberless(let authCredentialSalt):
+            accountType = .phoneNumberless(authCredentialSalt)
+        }
         return AuthedAccount.Explicit(
             aci: provisionMessage.aci,
-            accountType: .forPhoneNumber(provisionMessage.phoneNumberState.phoneNumber),
+            accountType: accountType,
             deviceId: verifyDeviceResponse.deviceId,
             authPassword: serverAuthToken,
         )
@@ -656,7 +705,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         isManualMessageFetchEnabled: Bool,
         profileKey: Aes256Key,
         aciRegistrationId: UInt32,
-        pniRegistrationId: UInt32,
+        pniRegistrationId: UInt32?,
         tx: DBReadTransaction,
     ) -> AccountAttributes {
         let udAccessKey = SMKUDAccessKey(profileKey: profileKey).keyData.base64EncodedString()

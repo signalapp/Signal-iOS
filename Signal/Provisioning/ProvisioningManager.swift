@@ -83,25 +83,27 @@ public class ProvisioningManager {
 
         let myAci = provisioningState.localIdentifiers.aci
 
-        var phoneNumberState: LinkingProvisioningMessage.PhoneNumberState?
-        if let myPhoneNumber = provisioningState.localIdentifiers.phoneNumber {
+        let accountType: LinkingProvisioningMessage.AccountType
+        switch provisioningState.localIdentifiers.accountType {
+        case .phoneNumberfull(let myPhoneNumber, let myPni):
             guard let myE164 = E164(myPhoneNumber) else {
                 owsFail("can't provision without phone number")
             }
-            guard let myPni = provisioningState.localIdentifiers.pni else {
+            guard let myPni else {
                 owsFail("can't provision without pni")
             }
             guard let pniIdentityKeyPair = provisioningState.pniIdentityKeyPair else {
                 owsFail("can't provision without pni identity key")
             }
-            phoneNumberState = LinkingProvisioningMessage.PhoneNumberState(
+            accountType = .phoneNumberfull(LinkingProvisioningMessage.PhoneNumberState(
                 phoneNumber: LocalIdentifiers.PhoneNumber(e164: myE164, pni: myPni),
                 pniIdentityKeyPair: pniIdentityKeyPair.identityKeyPair,
-            )
-        }
-        // TODO: [#less] Allow provisioning without a phone number.
-        guard let phoneNumberState else {
-            owsFail("can't provision without phone number state")
+            ))
+        case .phoneNumberless(let authCredentialSalt):
+            guard BuildFlags.phoneNumberlessCanLinkNewDevices else {
+                owsFail("can't provision without phone number state")
+            }
+            accountType = .phoneNumberless(authCredentialSalt)
         }
 
         let ephemeralBackupKey: MessageRootBackupKey?
@@ -120,7 +122,7 @@ public class ProvisioningManager {
             aci: myAci,
             aciIdentityKeyPair: provisioningState.aciIdentityKeyPair.identityKeyPair,
             aep: provisioningState.aep,
-            phoneNumberState: phoneNumberState,
+            accountType: accountType,
             profileKey: provisioningState.profileKey,
             mrbk: provisioningState.mediaRootBackupKey,
             ephemeralBackupKey: ephemeralBackupKey,

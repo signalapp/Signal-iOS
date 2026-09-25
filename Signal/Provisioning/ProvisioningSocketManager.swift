@@ -197,6 +197,9 @@ class ProvisioningSocketManager: ProvisioningConnectionListener {
             if shouldLinkAndSync {
                 capabilities.append(.linknsync)
             }
+            if BuildFlags.phoneNumberlessCanBeLinkedDevice {
+                capabilities.append(.nopni)
+            }
         case .quickRestore:
             if
                 #available(iOS 26.0, *),
