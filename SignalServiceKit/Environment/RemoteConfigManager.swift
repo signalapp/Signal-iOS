@@ -9,6 +9,10 @@ import LibSignalClient
 
 public class RemoteConfig {
 
+    enum Constants {
+        static let phoneNumberlessCallingCode = 99999
+    }
+
     public static var current: RemoteConfig {
         return SSKEnvironment.shared.remoteConfigManagerRef.currentConfig()
     }
@@ -621,6 +625,8 @@ public class RemoteConfig {
         switch callingCode {
         case .phoneNumberfull(.some(let callingCode)):
             resolvedCallingCode = String(callingCode)
+        case .phoneNumberless:
+            resolvedCallingCode = String(Constants.phoneNumberlessCallingCode)
         case .phoneNumberfull(.none), nil:
             resolvedCallingCode = nil
         }

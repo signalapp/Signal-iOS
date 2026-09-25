@@ -23,12 +23,17 @@ public struct PhoneNumberRegions {
 
     public var isEmpty: Bool { regions.isEmpty }
 
-    public func contains(e164: String) -> Bool {
-        guard let e164 = E164(e164) else {
-            owsFailDebug("Invalid e164: \(e164)")
-            return false
+    public func contains(e164: String?) -> Bool {
+        let e164WithoutPrefix: String
+        if let e164 {
+            guard let e164 = E164(e164) else {
+                owsFailDebug("Invalid e164: \(e164)")
+                return false
+            }
+            e164WithoutPrefix = e164.withoutPrefix()
+        } else {
+            e164WithoutPrefix = String(RemoteConfig.Constants.phoneNumberlessCallingCode)
         }
-        let e164WithoutPrefix = e164.withoutPrefix()
         for regionCount in self.regionCounts {
             if self.regions.contains(e164WithoutPrefix.prefix(regionCount)) {
                 return true

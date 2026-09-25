@@ -244,10 +244,14 @@ public class PhoneNumberUtil: NSObject {
 
     public enum LocalCallingCode {
         case phoneNumberfull(Int?)
+        case phoneNumberless
     }
 
     public func localCallingCode(localIdentifiers: LocalIdentifiers) -> LocalCallingCode {
-        return .phoneNumberfull(parseE164(localIdentifiers.phoneNumber)?.getCallingCode())
+        guard let phoneNumber = localIdentifiers.phoneNumberAsOptional else {
+            return .phoneNumberless
+        }
+        return .phoneNumberfull(parseE164(phoneNumber)?.getCallingCode())
     }
 
     private func _parsePhoneNumber(filteredValue: String, countryCode: String = defaultCountryCode()) -> PhoneNumber? {

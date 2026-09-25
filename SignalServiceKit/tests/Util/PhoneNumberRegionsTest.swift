@@ -41,4 +41,15 @@ struct PhoneNumberRegionsTest {
         // This tests the caching behavior, which should not affect results.
         #expect(!regions.contains(e164: "+33639981234"))
     }
+
+    @Test(arguments: [
+        (["999"], true),
+        (["99999"], true),
+        (["999999"], false),
+        (["1"], false),
+        ([], false),
+    ])
+    func testNumberless(testCase: (regions: [String], result: Bool)) {
+        #expect(PhoneNumberRegions(testCase.regions).contains(e164: nil) == testCase.result)
+    }
 }
