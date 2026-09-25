@@ -16,23 +16,25 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
-env:
-  # Path format pulled from https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md#xcode
-  DEVELOPER_DIR: /Applications/Xcode_26.6.app
-
 jobs:
   build_and_test:
     name: Build and Test
     timeout-minutes: 20
-    runs-on: macos-26-xlarge
+    runs-on: ${{matrix.os}}
     env:
       FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 7
 
     strategy:
       matrix:
         # Add additional Xcode versions here if necessary.
-        xcode: ["Xcode_26.6"]
+        xcode: ["Xcode_26.6", "Xcode_27.0"]
+        include:
+          - xcode: Xcode_26.6
+            os: macos-26-xlarge
+          - xcode: Xcode_27.0
+            os: xcode-27-xlarge
 
+    # Path format pulled from https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md#xcode
     steps:
       - name: Set Xcode version
         run: |
@@ -41,6 +43,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Check Xcode version
+        if: ${{ matrix.xcode != 'Xcode_27.0' }}
         run: |
           Scripts/check_xcode_version.py --relaxed
 
@@ -91,6 +94,10 @@ jobs:
     if: github.event_name == 'pull_request'
 
     steps:
+      - name: Set Xcode version
+        run: |
+          echo DEVELOPER_DIR=/Applications/Xcode_26.6.app >> "$GITHUB_ENV"
+
       - uses: actions/checkout@v6
 
       - name: Run genstrings
