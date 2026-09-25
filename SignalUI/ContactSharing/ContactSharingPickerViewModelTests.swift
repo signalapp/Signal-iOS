@@ -590,7 +590,7 @@ struct ContactSharingPickerViewModelTests {
         let row = try #require(try await displayedRows(of: viewModel).rows.first)
         #expect(row.displayName == "Bob (landlord)", "The row shows what the user calls them.")
 
-        let contactName = viewModel.contactShareDraft(for: row).name
+        let contactName = viewModel.contactShareDraft(forRow: row).name
         #expect(
             contactName.givenName == "Robert" && contactName.familyName == "Tables",
             "A share carries the name they publish, never the user's private nickname.",
@@ -749,7 +749,7 @@ struct ContactSharingPickerViewModelTests {
         forFirstRowOf viewModel: ContactSharingPickerViewModel,
     ) async throws -> ContactShareDraft {
         let row = try #require(try await displayedRows(of: viewModel).rows.first)
-        return viewModel.contactShareDraft(for: row)
+        return viewModel.contactShareDraft(forRow: row)
     }
 
     private func names(of viewModel: ContactSharingPickerViewModel) async throws -> [String] {

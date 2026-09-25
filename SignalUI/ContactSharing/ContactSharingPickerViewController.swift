@@ -156,7 +156,7 @@ public class ContactSharingPickerViewController: OWSTableViewController2, UISear
 
         contactSharingDelegate?.contactSharingPicker(
             self,
-            didSelect: viewModel.contactShareDraft(for: row),
+            didSelect: viewModel.contactShareDraft(forRow: row),
         )
     }
 

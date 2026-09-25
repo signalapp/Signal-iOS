@@ -326,21 +326,21 @@ final class ContactSharingPickerViewModel {
 
     // MARK: - Sharing
 
-    func contactShareDraft(for row: Row) -> ContactShareDraft {
+    func contactShareDraft(forRow row: Row) -> ContactShareDraft {
         db.read { tx in
             let draft: ContactShareDraft
             switch row {
             case .signalContact(let signalContact, let systemContact):
                 if let systemContact {
-                    draft = contactShareDraft(for: systemContact, tx: tx)
+                    draft = contactShareDraft(forSystemContact: systemContact, tx: tx)
                     if row.namingSystemContact == nil {
                         draft.name = contactName(for: signalContact, tx: tx)
                     }
                 } else {
-                    draft = contactShareDraft(for: signalContact, tx: tx)
+                    draft = contactShareDraft(forSignalContact: signalContact, tx: tx)
                 }
             case .systemContact(let systemContact):
-                draft = contactShareDraft(for: systemContact, tx: tx)
+                draft = contactShareDraft(forSystemContact: systemContact, tx: tx)
             }
             draft.aci = row.shareableAci(recipientDatabaseTable: recipientDatabaseTable, transaction: tx)
             if draft.aci != nil, let recipientRowId = row.signalContact?.recipient.id {
@@ -350,7 +350,7 @@ final class ContactSharingPickerViewModel {
         }
     }
 
-    private func contactShareDraft(for systemContact: SystemContactWrapper, tx: DBReadTransaction) -> ContactShareDraft {
+    private func contactShareDraft(forSystemContact systemContact: SystemContactWrapper, tx: DBReadTransaction) -> ContactShareDraft {
         guard let cnContact = contactManager.cnContact(withId: systemContact.systemContact.cnContactId) else {
             Logger.warn("The address book card went away; sharing what was loaded from it.")
             return systemContact.contactShareDraft(phoneNumberUtil: phoneNumberUtil)
@@ -368,7 +368,7 @@ final class ContactSharingPickerViewModel {
         )
     }
 
-    private func contactShareDraft(for signalContact: SignalContact, tx: DBReadTransaction) -> ContactShareDraft {
+    private func contactShareDraft(forSignalContact signalContact: SignalContact, tx: DBReadTransaction) -> ContactShareDraft {
         let recipient = signalContact.recipient
         let userProfile = userProfileProvider(recipient, tx)
 
