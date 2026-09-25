@@ -319,15 +319,15 @@ public class _RegistrationCoordinator_StorageServiceManagerMock: _RegistrationCo
     public func addRotateManifestMock(_ mock: @escaping RotateManifestMock) { rotateManifestMocks.append(mock) }
     public func rotateManifest(mode: StorageServiceManagerManifestRotationMode, authedAccount: AuthedAccount) async throws {
         run.addObservedStep(.rotateManifest)
-        return try await rotateManifestMocks.removeFirst()(mode, authedAccount).awaitable()
+        try await rotateManifestMocks.removeFirst()(mode, authedAccount).awaitable()
     }
 
-    public typealias RestoreOrCreateManifestIfNecessaryMock = (AuthedAccount, StorageService.MasterKeySource) -> Promise<Void>
+    public typealias RestoreOrCreateManifestIfNecessaryMock = (AuthedAccount, StorageService.MasterKeySource) async throws -> Void
     private var restoreOrCreateManifestIfNecessaryMocks = [RestoreOrCreateManifestIfNecessaryMock]()
     public func addRestoreOrCreateManifestIfNecessaryMock(_ mock: @escaping RestoreOrCreateManifestIfNecessaryMock) { restoreOrCreateManifestIfNecessaryMocks.append(mock) }
-    public func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount, masterKeySource: StorageService.MasterKeySource) -> Promise<Void> {
+    public func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount, masterKeySource: StorageService.MasterKeySource) async throws {
         run.addObservedStep(.restoreStorageService)
-        return restoreOrCreateManifestIfNecessaryMocks.removeFirst()(authedAccount, masterKeySource)
+        try await restoreOrCreateManifestIfNecessaryMocks.removeFirst()(authedAccount, masterKeySource)
     }
 
     public var backupPendingChangesMock: ((SignalServiceKit.AuthedAccount) -> Void) = { _ in }

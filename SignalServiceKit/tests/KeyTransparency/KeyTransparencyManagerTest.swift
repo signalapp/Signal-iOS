@@ -387,8 +387,7 @@ private class MockStorageServiceManager: StorageServiceManager {
     func restoreOrCreateManifestIfNecessary(
         authedAccount: AuthedAccount,
         masterKeySource: StorageService.MasterKeySource,
-    ) -> Promise<Void> {
-        return .value(())
+    ) async throws {
     }
 
     func waitForPendingRestores() async throws {}

@@ -26,10 +26,10 @@ public class FakeStorageServiceManager: StorageServiceManager {
 
     public func backupPendingChanges(authedAccount: AuthedAccount) {}
 
-    public var restoreOrCreateManifestIfNecessaryMock: (AuthedAccount, StorageService.MasterKeySource) -> Promise<Void> = { _, _ in .value(()) }
+    public var restoreOrCreateManifestIfNecessaryMock: (AuthedAccount, StorageService.MasterKeySource) async throws -> Void = { _, _ in }
 
-    public func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount, masterKeySource: StorageService.MasterKeySource) -> Promise<Void> {
-        return restoreOrCreateManifestIfNecessaryMock(authedAccount, masterKeySource)
+    public func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount, masterKeySource: StorageService.MasterKeySource) async throws {
+        return try await restoreOrCreateManifestIfNecessaryMock(authedAccount, masterKeySource)
     }
 
     public func rotateManifest(mode: ManifestRotationMode, authedAccount: AuthedAccount) async throws {}

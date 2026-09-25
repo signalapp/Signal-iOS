@@ -517,10 +517,11 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         authedAccount: AuthedAccount,
     ) async throws(CompleteProvisioningError) {
         do {
-            try await self.storageServiceManager
-                .restoreOrCreateManifestIfNecessary(authedAccount: authedAccount, masterKeySource: .implicit)
-                .timeout(seconds: 60, substituteValue: ())
-                .awaitable()
+            try await withUncooperativeTimeout(seconds: 60) {
+                try await self.storageServiceManager.restoreOrCreateManifestIfNecessary(authedAccount: authedAccount, masterKeySource: .implicit)
+            }
+        } catch is UncooperativeTimeoutError {
+            // OK
         } catch {
             throw .genericError(error)
         }

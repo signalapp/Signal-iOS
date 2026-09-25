@@ -411,7 +411,6 @@ public class RegistrationCoordinatorTest {
             default:
                 Issue.record("Unexpected master key used in storage service operation.")
             }
-            return .value(())
         })
 
         storageServiceManagerMock.addRotateManifestMock({ _, _ in return .value(()) })
@@ -543,7 +542,6 @@ public class RegistrationCoordinatorTest {
             default:
                 Issue.record("Unexpected master key used in storage service operation.")
             }
-            return .value(())
         })
 
         storageServiceManagerMock.addRotateManifestMock({ _, _ in return .value(()) })
@@ -913,7 +911,6 @@ public class RegistrationCoordinatorTest {
             default:
                 Issue.record("Unexpected master key used in storage service operation.")
             }
-            return .value(())
         })
 
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
@@ -924,7 +921,6 @@ public class RegistrationCoordinatorTest {
             default:
                 Issue.record("Unexpected master key used in storage service operation.")
             }
-            return .value(())
         })
 
         storageServiceManagerMock.addRotateManifestMock({ _, _ in return .value(()) })
@@ -1262,7 +1258,6 @@ public class RegistrationCoordinatorTest {
             default:
                 Issue.record("Unexpected master key used in storage service operation.")
             }
-            return .value(())
         })
 
         // Once we restore from storage service, we should attempt to reclaim
@@ -1582,7 +1577,6 @@ public class RegistrationCoordinatorTest {
             default:
                 Issue.record("Unexpected master key used in storage service operation.")
             }
-            return .value(())
         })
 
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
@@ -1592,7 +1586,6 @@ public class RegistrationCoordinatorTest {
             default:
                 Issue.record("Unexpected master key used in storage service operation.")
             }
-            return .value(())
         })
 
         storageServiceManagerMock.addRotateManifestMock({ _, _ in return .value(()) })
@@ -1861,7 +1854,6 @@ public class RegistrationCoordinatorTest {
             default:
                 Issue.record("Unexpected master key used in storage service operation.")
             }
-            return .value(())
         })
 
         // Once we restore from storage service, we should attempt to reclaim
@@ -2875,9 +2867,7 @@ public class RegistrationCoordinatorTest {
             Issue.record("Shouldn't mark PIN enabled with skipped PIN!")
         }
 
-        storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ _, _ in
-            return .value(())
-        })
+        storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ _, _ in })
 
         // Once we skip the storage service restore,
         // then we are finished!
@@ -2891,7 +2881,6 @@ public class RegistrationCoordinatorTest {
             default:
                 Issue.record("Unexpected master key used in storage service operation.")
             }
-            return .value(())
         })
 
         storageServiceManagerMock.addRotateManifestMock({ _, _ in
@@ -3003,7 +2992,6 @@ public class RegistrationCoordinatorTest {
             default:
                 Issue.record("Unexpected master key used in storage service operation.")
             }
-            return .value(())
         })
 
         storageServiceManagerMock.addRotateManifestMock({ _, _ in return .value(()) })

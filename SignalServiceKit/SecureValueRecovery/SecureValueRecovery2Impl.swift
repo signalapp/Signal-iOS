@@ -135,10 +135,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             // Trigger a re-fetch of the storage manifest if our keys have changed or
             // if we've gotten a key that we requested.
             tx.addSyncCompletion { [storageServiceManager] in
-                storageServiceManager.restoreOrCreateManifestIfNecessary(
-                    authedAccount: authedAccount,
-                    masterKeySource: .implicit,
-                )
+                Task {
+                    try await storageServiceManager.restoreOrCreateManifestIfNecessary(
+                        authedAccount: authedAccount,
+                        masterKeySource: .implicit,
+                    )
+                }
             }
         }
     }

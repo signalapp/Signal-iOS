@@ -36,8 +36,7 @@ public protocol StorageServiceManager {
 
     func backupPendingChanges(authedAccount: AuthedAccount)
 
-    @discardableResult
-    func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount, masterKeySource: StorageService.MasterKeySource) -> Promise<Void>
+    func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount, masterKeySource: StorageService.MasterKeySource) async throws
 
     func rotateManifest(
         mode: ManifestRotationMode,
@@ -194,7 +193,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                     authedAccount: .implicit,
                     masterKeySource: .implicit,
                     isRunningViaCron: true,
-                ).awaitableWithUncooperativeCancellationHandling()
+                )
             },
         )
     }
@@ -282,7 +281,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             var authedAccount: AuthedAccount
             var masterKeySource: StorageService.MasterKeySource
             var isRunningViaCron: Bool
-            var futures: [Future<Void>]
+            var continuations: [CancellableContinuation<Void>]
         }
 
         var pendingRestore: PendingRestore?
@@ -407,9 +406,9 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                 return ({
                     do {
                         try await restoreOperation()
-                        pendingRestore.futures.forEach { $0.resolve() }
+                        pendingRestore.continuations.forEach { $0.resume(with: .success(())) }
                     } catch {
-                        pendingRestore.futures.forEach { $0.reject(error) }
+                        pendingRestore.continuations.forEach { $0.resume(with: .failure(error)) }
                         throw error
                     }
                 }, { $0.mostRecentRestoreError = $1 })
@@ -560,12 +559,11 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
     // MARK: - Actions
 
-    @discardableResult
     public func restoreOrCreateManifestIfNecessary(
         authedAccount: AuthedAccount,
         masterKeySource: StorageService.MasterKeySource,
-    ) -> Promise<Void> {
-        return _restoreOrCreateManifestIfNecessary(
+    ) async throws {
+        return try await _restoreOrCreateManifestIfNecessary(
             authedAccount: authedAccount,
             masterKeySource: masterKeySource,
             isRunningViaCron: false,
@@ -576,22 +574,22 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         authedAccount: AuthedAccount,
         masterKeySource: StorageService.MasterKeySource,
         isRunningViaCron: Bool,
-    ) -> Promise<Void> {
-        let (promise, future) = Promise<Void>.pending()
+    ) async throws {
+        let continuation = CancellableContinuation<Void>()
         updateManagerState { managerState in
             var pendingRestore = managerState.pendingRestore ?? .init(
                 authedAccount: .implicit,
                 masterKeySource: .implicit,
                 isRunningViaCron: false,
-                futures: [],
+                continuations: [],
             )
-            pendingRestore.futures.append(future)
+            pendingRestore.continuations.append(continuation)
             pendingRestore.authedAccount = authedAccount.orIfImplicitUse(pendingRestore.authedAccount)
             pendingRestore.masterKeySource = masterKeySource.orIfImplicitUse(pendingRestore.masterKeySource)
             pendingRestore.isRunningViaCron = isRunningViaCron || pendingRestore.isRunningViaCron
             managerState.pendingRestore = pendingRestore
         }
-        return promise
+        try await continuation.wait()
     }
 
     public func rotateManifest(

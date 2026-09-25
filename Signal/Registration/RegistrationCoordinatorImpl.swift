@@ -4146,7 +4146,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 try await self.deps.storageServiceManager.restoreOrCreateManifestIfNecessary(
                     authedAccount: accountIdentity.authedAccount,
                     masterKeySource: masterKeySource,
-                ).awaitable()
+                )
             }
             loadProfileState()
             if inMemoryState.hasProfileName {

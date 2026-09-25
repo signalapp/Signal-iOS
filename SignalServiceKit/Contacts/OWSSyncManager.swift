@@ -277,10 +277,15 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
                 }
             }
         case .storageManifest:
-            SSKEnvironment.shared.storageServiceManagerRef.restoreOrCreateManifestIfNecessary(
-                authedAccount: .implicit,
-                masterKeySource: .implicit,
-            )
+            let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
+            transaction.addSyncCompletion {
+                Task {
+                    try await storageServiceManager.restoreOrCreateManifestIfNecessary(
+                        authedAccount: .implicit,
+                        masterKeySource: .implicit,
+                    )
+                }
+            }
         case .subscriptionStatus:
             Logger.warn("Ignoring subscription status update fetch-latest sync message.")
         }

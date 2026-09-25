@@ -439,10 +439,12 @@ public final class KeyTransparencyManager {
             // about it. Kick off a storage service fetch, to try and make sure
             // we're up to date before our next attempt.
             tx.addSyncCompletion { [self] in
-                storageServiceManager.restoreOrCreateManifestIfNecessary(
-                    authedAccount: .implicit,
-                    masterKeySource: .implicit,
-                )
+                Task {
+                    try await storageServiceManager.restoreOrCreateManifestIfNecessary(
+                        authedAccount: .implicit,
+                        masterKeySource: .implicit,
+                    )
+                }
             }
 
         case .failedOnce:

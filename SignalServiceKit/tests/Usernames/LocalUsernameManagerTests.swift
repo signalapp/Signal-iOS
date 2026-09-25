@@ -678,7 +678,7 @@ private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) { owsFail("Not implemented!") }
     func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey]) { owsFail("Not implemented!") }
     func backupPendingChanges(authedAccount: AuthedAccount) { owsFail("Not implemented!") }
-    func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount, masterKeySource: StorageService.MasterKeySource) -> Promise<Void> { owsFail("Not implemented!") }
+    func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount, masterKeySource: StorageService.MasterKeySource) async throws { owsFail("Not implemented!") }
     func rotateManifest(mode: ManifestRotationMode, authedAccount: AuthedAccount) async throws { owsFail("Not implemented!") }
 }
 

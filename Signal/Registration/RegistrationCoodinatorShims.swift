@@ -386,7 +386,7 @@ public class _RegistrationCoordinator_ReceiptManagerWrapper: _RegistrationCoordi
 
 public protocol _RegistrationCoordinator_StorageServiceManagerShim {
     func rotateManifest(mode: StorageServiceManagerManifestRotationMode, authedAccount: AuthedAccount) async throws
-    func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount, masterKeySource: StorageService.MasterKeySource) -> Promise<Void>
+    func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount, masterKeySource: StorageService.MasterKeySource) async throws
     func backupPendingChanges(authedAccount: AuthedAccount)
     func recordPendingLocalAccountUpdates()
 }
@@ -405,8 +405,8 @@ public class _RegistrationCoordinator_StorageServiceManagerWrapper: _Registratio
     public func restoreOrCreateManifestIfNecessary(
         authedAccount: AuthedAccount,
         masterKeySource: StorageService.MasterKeySource,
-    ) -> Promise<Void> {
-        manager.restoreOrCreateManifestIfNecessary(authedAccount: authedAccount, masterKeySource: masterKeySource)
+    ) async throws {
+        try await manager.restoreOrCreateManifestIfNecessary(authedAccount: authedAccount, masterKeySource: masterKeySource)
     }
 
     public func backupPendingChanges(authedAccount: AuthedAccount) {
