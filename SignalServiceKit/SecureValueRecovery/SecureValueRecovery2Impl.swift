@@ -136,10 +136,14 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             // if we've gotten a key that we requested.
             tx.addSyncCompletion { [storageServiceManager] in
                 Task {
-                    try await storageServiceManager.restoreOrCreateManifestIfNecessary(
-                        authedAccount: authedAccount,
-                        masterKeySource: .implicit,
-                    )
+                    do {
+                        try await storageServiceManager.restoreOrCreateManifestIfNecessary(
+                            authedAccount: authedAccount,
+                            masterKeySource: .implicit,
+                        )
+                    } catch {
+                        Logger.warn("couldn't fetch or restore: \(error)")
+                    }
                 }
             }
         }

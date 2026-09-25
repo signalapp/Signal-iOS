@@ -280,10 +280,14 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
             transaction.addSyncCompletion {
                 Task {
-                    try await storageServiceManager.restoreOrCreateManifestIfNecessary(
-                        authedAccount: .implicit,
-                        masterKeySource: .implicit,
-                    )
+                    do {
+                        try await storageServiceManager.restoreOrCreateManifestIfNecessary(
+                            authedAccount: .implicit,
+                            masterKeySource: .implicit,
+                        )
+                    } catch {
+                        Logger.warn("couldn't fetch or restore: \(error)")
+                    }
                 }
             }
         case .subscriptionStatus:

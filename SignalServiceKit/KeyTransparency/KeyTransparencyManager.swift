@@ -440,10 +440,14 @@ public final class KeyTransparencyManager {
             // we're up to date before our next attempt.
             tx.addSyncCompletion { [self] in
                 Task {
-                    try await storageServiceManager.restoreOrCreateManifestIfNecessary(
-                        authedAccount: .implicit,
-                        masterKeySource: .implicit,
-                    )
+                    do {
+                        try await storageServiceManager.restoreOrCreateManifestIfNecessary(
+                            authedAccount: .implicit,
+                            masterKeySource: .implicit,
+                        )
+                    } catch {
+                        Logger.warn("couldn't fetch or restore: \(error)")
+                    }
                 }
             }
 
