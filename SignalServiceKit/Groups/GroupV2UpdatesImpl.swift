@@ -551,9 +551,6 @@ public extension GroupV2UpdatesImpl {
         options: TSGroupModelOptions,
     ) async throws {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
-            throw OWSAssertionError("Missing localIdentifiers.")
-        }
 
         let groupV2Params = try GroupV2Params(groupSecretParams: secretParams)
         let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
@@ -565,15 +562,14 @@ public extension GroupV2UpdatesImpl {
         var lastVerifiedGroupNameHash: Data?
         if !threadExists {
             // Only check rev0 if we're about to insert a new thread.
+            let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
             lastVerifiedGroupNameHash = await lastVerifiedHashIfLocalUserCreatedGroup(
                 secretParams: secretParams,
-                localIdentifiers: localIdentifiers,
+                localIdentifiers: registeredState.localIdentifiers,
             )
         }
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction) else {
-                throw OWSAssertionError("Missing localIdentifiers.")
-            }
+            let registeredState = try tsAccountManager.registeredState(tx: transaction)
             guard let localDeviceId = tsAccountManager.storedDeviceId(tx: transaction).ifValid else {
                 throw OWSAssertionError("Missing localDeviceId.")
             }
@@ -596,7 +592,7 @@ public extension GroupV2UpdatesImpl {
                     groupV2Params: groupV2Params,
                     groupChanges: groupChanges,
                     groupModelOptions: options,
-                    localIdentifiers: localIdentifiers,
+                    localIdentifiers: registeredState.localIdentifiers,
                     localDeviceId: localDeviceId,
                     lastVerifiedGroupNameHash: lastVerifiedGroupNameHash,
                     transaction: transaction,
@@ -615,7 +611,7 @@ public extension GroupV2UpdatesImpl {
                         groupChange: groupChange,
                         profileKeysByAci: &profileKeysByAci,
                         authoritativeProfileKeysByAci: &authoritativeProfileKeysByAci,
-                        localIdentifiers: localIdentifiers,
+                        localIdentifiers: registeredState.localIdentifiers,
                         localDeviceId: localDeviceId,
                         spamReportingMetadata: spamReportingMetadata,
                         transaction: transaction,
@@ -633,7 +629,7 @@ public extension GroupV2UpdatesImpl {
             GroupManager.storeProfileKeysFromGroupProtos(
                 allProfileKeysByAci: profileKeysByAci,
                 authoritativeProfileKeysByAci: authoritativeProfileKeysByAci,
-                localIdentifiers: localIdentifiers,
+                localIdentifiers: registeredState.localIdentifiers,
                 tx: transaction,
             )
 
@@ -666,7 +662,7 @@ public extension GroupV2UpdatesImpl {
                     tx: transaction,
                 )
             } else if
-                let groupProfileKey = profileKeysByAci[localIdentifiers.aci],
+                let groupProfileKey = profileKeysByAci[registeredState.localIdentifiers.aci],
                 let localProfileKey = SSKEnvironment.shared.profileManagerRef.localUserProfile(tx: transaction)?.profileKey,
                 groupProfileKey != localProfileKey.keyData
             {
@@ -686,7 +682,7 @@ public extension GroupV2UpdatesImpl {
                     groupRowId: groupRecord.rowId,
                     secretParams: secretParams,
                     membership: groupThread.groupMembership,
-                    localAci: localIdentifiers.aci,
+                    localAci: registeredState.localIdentifiers.aci,
                     tx: transaction,
                 )
             }

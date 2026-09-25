@@ -2109,15 +2109,14 @@ public class GroupsV2Impl: GroupsV2 {
         groupV2Params: GroupV2Params,
         newRevision: UInt32,
     ) throws -> GroupsProtoGroupChangeActions {
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
-            throw OWSAssertionError("Missing localAci.")
-        }
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
 
         var actionsBuilder = GroupsProtoGroupChangeActions.builder()
         actionsBuilder.setRevision(newRevision)
 
         var actionBuilder = GroupsProtoGroupChangeActionsDeleteRequestingMemberAction.builder()
-        let userId = try groupV2Params.userId(for: localAci)
+        let userId = try groupV2Params.userId(for: registeredState.localIdentifiers.aci)
         actionBuilder.setDeletedUserID(userId)
         actionsBuilder.addDeleteRequestingMembers(actionBuilder.buildInfallibly())
 
