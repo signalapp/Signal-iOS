@@ -209,31 +209,35 @@ extension ConversationViewController: SingleOrDoubleTapGestureDelegate {
 
     private func addDoubleTapHeartReaction(to messageId: String) {
         SSKEnvironment.shared.databaseStorageRef.asyncWrite { tx -> Bool in
-            // Re-fetch inside the write: the message may have expired or been deleted
-            // since the gesture began. Read the reaction here to handle rapid repeats.
-            guard
-                let message = TSMessage.fetchMessageViaCache(uniqueId: messageId, transaction: tx) as? TSIncomingMessage,
-                !message.wasRemotelyDeleted,
-                let thread = message.thread(tx: tx),
-                thread.canSendReactionToThread,
-                let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci,
-                message.reaction(for: localAci, tx: tx)?.emoji != "❤️"
-            else {
-                return false
-            }
-            ReactionManager.localUserReacted(
-                to: messageId,
-                emoji: "❤️",
-                isRemoving: false,
-                tx: tx,
-            )
-            return true
+            Self.addDoubleTapHeartReaction(to: messageId, tx: tx)
         } completion: { didReact in
             if didReact {
                 ImpactHapticFeedback.impactOccurred(style: .light)
             }
         }
     }
+
+    // Keep the read and write in one transaction so repeated gestures are idempotent.
+    nonisolated static func addDoubleTapHeartReaction(to messageId: String, tx: DBWriteTransaction) -> Bool {
+        guard
+            let message = TSMessage.fetchMessageViaCache(uniqueId: messageId, transaction: tx) as? TSIncomingMessage,
+            !message.wasRemotelyDeleted,
+            let thread = message.thread(tx: tx),
+            thread.canSendReactionToThread,
+            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci,
+            message.reaction(for: localAci, tx: tx)?.emoji != "❤️"
+        else {
+            return false
+        }
+        ReactionManager.localUserReacted(
+            to: messageId,
+            emoji: "❤️",
+            isRemoving: false,
+            tx: tx,
+        )
+        return true
+    }
+
 }
 
 extension ConversationViewController {
