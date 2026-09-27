@@ -155,7 +155,7 @@ class BackupSettingsViewController:
                     backupSettingsStore: backupSettingsStore,
                     tx: tx,
                 ),
-                hasBackupFailed: backupFailureStateManager.hasFailedBackup(tx: tx),
+                hasBackupFailed: backupFailureStateManager.hasFailedRemoteBackup(tx: tx),
                 isBackgroundAppRefreshDisabled: Self.isBackgroundAppRefreshDisabled(),
             )
 
@@ -267,7 +267,7 @@ class BackupSettingsViewController:
                         }
 
                         db.read { tx in
-                            self.viewModel.hasBackupFailed = self.backupFailureStateManager.hasFailedBackup(tx: tx)
+                            self.viewModel.hasBackupFailed = self.backupFailureStateManager.hasFailedRemoteBackup(tx: tx)
                         }
                     }
 
@@ -541,7 +541,7 @@ class BackupSettingsViewController:
         case .free, .paid, .paidExpiringSoon, .paidAsTester: false
         }
 
-        Task {
+        Task { [self] in
             if areBackupsDisabled {
                 guard
                     let aep = db.read(block: { accountKeyStore.getAccountEntropyPool(tx: $0) }),
@@ -906,7 +906,7 @@ class BackupSettingsViewController:
                 }
             }
 
-            let newLoadingState: BackupSettingsViewModel.BackupSubscriptionLoadingState
+            let newLoadingState: BackupSubscriptionLoadingState
             do {
                 let backupSubscription = try await _loadBackupSubscription()
                 newLoadingState = .loaded(backupSubscription)
@@ -928,83 +928,13 @@ class BackupSettingsViewController:
         }
     }
 
-    private func _loadBackupSubscription() async throws -> BackupSettingsViewModel.BackupSubscriptionLoadingState.LoadedBackupSubscription {
-        var currentBackupPlan = db.read { backupPlanManager.backupPlan(tx: $0) }
-
-        switch currentBackupPlan {
-        case .free:
-            return .freeAndEnabled
-        case .paidAsTester:
-            return .paidButFreeForTesters
-        case .disabling, .disabled:
-            // Our IAP subscription may be active even if Backups are disabled,
-            // and if so we want to load the state of said subscription.
-            break
-        case .paid, .paidExpiringSoon:
-            break
-        }
-
-        let fetchedBackupSubscription: Subscription? = try await backupSubscriptionManager
-            .fetchAndMaybeDowngradeSubscription()
-
-        // Now that we've fetched a subscription, refetch state that may have
-        // changed as a result.
-        var backupIAPNotFoundLocally: Bool!
-        db.read { tx in
-            currentBackupPlan = backupPlanManager.backupPlan(tx: tx)
-            backupIAPNotFoundLocally = backupSubscriptionIssueStore.shouldShowIAPSubscriptionNotFoundLocallyWarning(tx: tx)
-        }
-
-        if backupIAPNotFoundLocally {
-            return .paidButIAPNotFoundLocally
-        }
-
-        let backupSubscription: Subscription
-        switch currentBackupPlan {
-        case .free:
-            return .freeAndEnabled
-        case .paidAsTester:
-            return .paidButFreeForTesters
-        case .disabling, .disabled:
-            if let fetchedBackupSubscription {
-                backupSubscription = fetchedBackupSubscription
-            } else {
-                return .freeAndDisabled
-            }
-        case .paid, .paidExpiringSoon:
-            if let fetchedBackupSubscription {
-                backupSubscription = fetchedBackupSubscription
-            } else {
-                owsFailDebug("Missing Backups subscription after fetch, but still on paid plan!")
-                return .freeAndEnabled
-            }
-        }
-
-        switch backupSubscription.status {
-        case .canceled, .unrecognized:
-            fallthrough
-        case .active:
-            let endOfCurrentPeriod = backupSubscription.endOfCurrentPeriod
-            if backupSubscription.cancelAtEndOfPeriod {
-                if endOfCurrentPeriod.isAfterNow {
-                    return .paidButExpiring(expirationDate: endOfCurrentPeriod)
-                } else {
-                    return .paidButExpired(expirationDate: endOfCurrentPeriod)
-                }
-            } else {
-                return .paid(
-                    price: backupSubscription.amount,
-                    renewalDate: endOfCurrentPeriod,
-                )
-            }
-        case .pastDue:
-            // The .pastDue status is returned if we're in the IAP "billing
-            // retry", period, which indicates something has gone wrong with a
-            // subscription renewal.
-            //
-            // SeeAlso: BackupSubscriptionManager
-            return .paidButFailedToRenew
-        }
+    private func _loadBackupSubscription() async throws -> BackupSubscriptionLoadingState.LoadedBackupSubscription {
+        return try await BackupSubscriptionLoader(
+            backupPlanManager: backupPlanManager,
+            backupSubscriptionManager: backupSubscriptionManager,
+            backupSubscriptionIssueStore: backupSubscriptionIssueStore,
+            db: db,
+        ).load()
     }
 
     // MARK: -
@@ -1044,6 +974,8 @@ class BackupSettingsViewController:
                 )
                 actionSheet.addAction(.ok)
                 self?.presentActionSheet(actionSheet)
+            } catch {
+                Logger.error("Unexpected error encountered: \(error)")
             }
         }
     }
@@ -1475,7 +1407,7 @@ class BackupSettingsViewController:
                         )
                     }
                 }),
-                .showCreateNewKey(onPressed: { saveKeyViewController in
+                .showCreateNewKey(onPressed: { [self] saveKeyViewController in
                     Task { [weak self] in
                         guard let self else { return }
 
@@ -1497,10 +1429,16 @@ class BackupSettingsViewController:
         let (
             currentBackupPlan,
             isRegisteredPrimaryDevice,
+            rotateAEPRestrictions,
         ) = db.read { tx in
+            // Don't warn the user about the flow they are currently in, that is handled in-flow.
+            var restrictions = accountEntropyPoolManager.verifyRequirementsForSettingAccountEntropyPool(tx: tx)
+            restrictions.remove(.remoteBackupsEnabled)
+
             return (
                 backupSettingsStore.backupPlan(tx: tx),
                 tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
+                restrictions,
             )
         }
 
@@ -1512,6 +1450,13 @@ class BackupSettingsViewController:
                 ),
                 fromViewController: self,
             )
+            return
+        }
+
+        if rotateAEPRestrictions.contains(.localFileBackupsEnabled) {
+            if let sheet = CannotRotateAEPActionSheet(restrictions: rotateAEPRestrictions, fromViewController: fromViewController) {
+                fromViewController.presentActionSheet(sheet)
+            }
             return
         }
 
@@ -1611,7 +1556,7 @@ class BackupSettingsViewController:
             ),
             primaryButton: HeroSheetViewController.Button(
                 title: primaryButtonTitle,
-                action: { sheet in
+                action: { [self] sheet in
                     sheet.dismiss(animated: true) { [weak self] in
                         guard let self else { return }
                         showSaveNewRecoveryKey()
@@ -1665,10 +1610,15 @@ class BackupSettingsViewController:
             case .disabled:
                 Logger.warn("Rotating AEP.")
 
-                accountEntropyPoolManager.setAccountEntropyPool(
-                    newAccountEntropyPool: newCandidateAEP,
-                    tx: tx,
-                )
+                do {
+                    try accountEntropyPoolManager.setAccountEntropyPool(
+                        newAccountEntropyPool: newCandidateAEP,
+                        tx: tx,
+                    )
+                } catch {
+                    owsFailDebug("Failed to set AEP: \(error)")
+                    return
+                }
             case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
                 Logger.warn("Disabling Backups, then rotating AEP.")
 
@@ -1769,25 +1719,6 @@ private class BackupSettingsViewModel: ObservableObject {
         func showBackupSubscriptionAlreadyRedeemedSheet()
         func showBackupIAPNotFoundLocallySheet()
         func showBackgroundAppRefreshDisabledWarningSheet()
-    }
-
-    enum BackupSubscriptionLoadingState: Equatable {
-        enum LoadedBackupSubscription: Equatable {
-            case freeAndEnabled
-            case freeAndDisabled
-            case paidButFreeForTesters
-            case paid(price: FiatMoney, renewalDate: Date)
-            case paidButExpiring(expirationDate: Date)
-            case paidButExpired(expirationDate: Date)
-            case paidButFailedToRenew
-            case paidButIAPNotFoundLocally
-        }
-
-        case loading
-        case loaded(LoadedBackupSubscription)
-        case networkError
-        case notRegisteredError
-        case genericError
     }
 
     @Published var backupSubscriptionConfiguration: BackupSubscriptionConfiguration
@@ -2342,7 +2273,7 @@ private struct YellowBadgeView: View {
 }
 
 private struct ReenableBackupsButton: View {
-    let backupSubscriptionLoadingState: BackupSettingsViewModel.BackupSubscriptionLoadingState
+    let backupSubscriptionLoadingState: BackupSubscriptionLoadingState
     let viewModel: BackupSettingsViewModel
 
     private var enableBackupsPlanSelectionOption: BackupSettingsViewModel.EnableBackupsPlanSelectionOption? {
@@ -2403,7 +2334,7 @@ private struct BackupExportProgressView: View {
             let percentUploadCompleted = latestExportProgressUpdate.progress(for: .backupFileUpload)?.percentComplete ?? 0
             let percentComplete = (0.95 * percentExportCompleted) + (0.05 * percentUploadCompleted)
             return ProgressBarState(
-                style: .determinate(percentComplete: percentComplete),
+                style: .determinate(percentComplete: percentComplete, pulse: true),
                 label: String.nonPluralLocalizedStringWithFormat(
                     OWSLocalizedString(
                         "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PREPARING_BACKUP",
@@ -2415,7 +2346,7 @@ private struct BackupExportProgressView: View {
 
         case .attachmentUpload:
             return ProgressBarState(
-                style: .determinate(percentComplete: latestAttachmentUploadUpdate?.percentageUploaded ?? 0),
+                style: .determinate(percentComplete: latestAttachmentUploadUpdate?.percentageUploaded ?? 0, pulse: true),
                 label: BackupAttachmentUploadProgressView.subtitleText(
                     uploadUpdate: latestAttachmentUploadUpdate,
                 ),
@@ -2488,9 +2419,9 @@ private struct PerformManualBackupButton: View {
 
 // MARK: -
 
-private struct StyledProgressBar: View {
+struct StyledProgressBar: View {
     enum Style {
-        case determinate(percentComplete: Float)
+        case determinate(percentComplete: Float, pulse: Bool)
         case indeterminate
     }
 
@@ -2499,7 +2430,10 @@ private struct StyledProgressBar: View {
     var body: some View {
         VStack {
             switch style {
-            case .determinate(let percentComplete):
+            case .determinate(let percentComplete, pulse: false):
+                LinearProgressView(progress: percentComplete)
+                    .clipShape(RoundedRectangle(cornerRadius: 3))
+            case .determinate(let percentComplete, pulse: true):
                 PulsingProgressBar(value: percentComplete)
                     .tint(.Signal.accent)
                     .clipShape(RoundedRectangle(cornerRadius: 3))
@@ -2514,120 +2448,6 @@ private struct StyledProgressBar: View {
         }
         .scaleEffect(x: 1, y: 1.5)
         .padding(.vertical, 12)
-    }
-}
-
-private struct PulsingProgressBar: View {
-    struct ClearTrackProgressView: UIViewRepresentable {
-        let value: Float
-        let tintColor: UIColor
-
-        func makeUIView(context: Context) -> UIProgressView {
-            let progressView = UIProgressView()
-            progressView.trackTintColor = .clear
-            progressView.progressTintColor = tintColor
-            return progressView
-        }
-
-        func updateUIView(_ uiView: UIProgressView, context: Context) {
-            uiView.setProgress(value, animated: false)
-        }
-    }
-
-    let value: Float
-    let animationDuration: TimeInterval = 1
-    let stopAfter: TimeInterval = 3
-
-    init(value: Float) {
-        self.value = value
-    }
-
-    @State private var animationPart1Progress: Float = 0
-    @State private var animationPart2Progress: Float = 0
-    @State private var animationPart3Progress: Float = 0
-    @State private var lastValue: Float?
-    @State private var isAnimating = true
-    @State private var animationTimer: Timer?
-    @State private var animationStopTimer: Timer?
-
-    var body: some View {
-        ZStack {
-            ProgressView(value: value)
-                .progressViewStyle(.linear)
-            ClearTrackProgressView(
-                value: value * animationPart1Progress,
-                tintColor: .tintColor
-                    .blended(with: .white, alpha: 0.2),
-            )
-            ClearTrackProgressView(
-                value: value * animationPart2Progress,
-                tintColor: .tintColor,
-            )
-            .onAppear {
-                // The animation gets started once and runs forever;
-                // it just no-ops on each loop if not animating.
-                startLoopingAnimation()
-            }
-            .onChange(of: value) { newValue in
-                if lastValue != newValue {
-                    // When the value changes, reset
-                    // the stop timer.
-                    startStopTimer()
-                }
-            }
-            .onDisappear {
-                self.animationTimer?.invalidate()
-                self.animationTimer = nil
-                self.animationStopTimer?.invalidate()
-                self.animationStopTimer = nil
-                self.isAnimating = true
-            }
-        }
-    }
-
-    private func startLoopingAnimation() {
-        self.animationTimer = Timer.scheduledTimer(
-            withTimeInterval: animationDuration / 100,
-            repeats: true,
-            block: { _ in
-                // Don't animate under 20%; it looks ugly
-                guard self.isAnimating, (self.lastValue ?? 0) > 0.2 else {
-                    animationPart1Progress = 0
-                    animationPart2Progress = 0
-                    animationPart3Progress = 0
-                    return
-                }
-                if animationPart1Progress < 0.75 {
-                    animationPart1Progress += 0.01
-                } else if animationPart2Progress < 0.99 {
-                    if animationPart1Progress < 0.99 {
-                        animationPart1Progress += 0.01
-                    }
-                    animationPart2Progress += 0.01
-                } else if animationPart3Progress < 1 {
-                    animationPart3Progress += 0.01
-                } else {
-                    animationPart1Progress = 0
-                    animationPart2Progress = 0
-                    animationPart3Progress = 0
-                }
-            },
-        )
-        startStopTimer()
-    }
-
-    /// We stop the animation after stopAfter seconds of no updates.
-    private func startStopTimer() {
-        self.animationStopTimer?.invalidate()
-        self.isAnimating = true
-        self.animationStopTimer = Timer.scheduledTimer(
-            withTimeInterval: stopAfter,
-            repeats: false,
-            block: { [self] _ in
-                self.isAnimating = false
-            },
-        )
-        self.lastValue = value
     }
 }
 
@@ -2887,7 +2707,7 @@ private struct BackupAttachmentUploadProgressView: View {
 
 private struct BackupSubscriptionView: View {
     let backupSubscriptionConfiguration: BackupSubscriptionConfiguration
-    let loadingState: BackupSettingsViewModel.BackupSubscriptionLoadingState
+    let loadingState: BackupSubscriptionLoadingState
     let viewModel: BackupSettingsViewModel
 
     var body: some View {
@@ -2993,7 +2813,7 @@ private struct BackupSubscriptionView: View {
 
 private struct BackupSubscriptionLoadedView: View {
     let backupSubscriptionConfiguration: BackupSubscriptionConfiguration
-    let loadedBackupSubscription: BackupSettingsViewModel.BackupSubscriptionLoadingState.LoadedBackupSubscription
+    let loadedBackupSubscription: BackupSubscriptionLoadingState.LoadedBackupSubscription
     let viewModel: BackupSettingsViewModel
 
     private var headerLabels: some View {
@@ -3368,6 +3188,14 @@ extension BackupSettingsView {
                 "BACKUP_SETTINGS_ENABLED_LAST_BACKUP_LABEL",
                 comment: "Label for a menu item explaining when the user's last backup occurred.",
             )
+        }
+
+        static func prefixedLastBackupString(date: Date) -> String {
+            let prefix = OWSLocalizedString(
+                "BACKUP_SETTINGS_ENABLED_LAST_BACKUP_LABEL_LANDING_PAGE",
+                comment: "Label for a cell on the backups landing page explaining when the user's last backup occurred.",
+            )
+            return [prefix, lastBackupString(date: date)].joined(separator: " ")
         }
 
         static func lastBackupString(date: Date) -> String {

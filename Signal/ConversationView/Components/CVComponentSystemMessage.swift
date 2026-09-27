@@ -751,9 +751,13 @@ extension CVComponentSystemMessage {
         let font = Self.textLabelFont
         let labelText = NSMutableAttributedString()
 
-        func applyParagraphStyling() {
+        func applyParagraphStyling(hasParagraphSpacing: Bool) {
             let paragraphStyle = NSMutableParagraphStyle()
-            paragraphStyle.paragraphSpacing = 12
+            // This line is for the placement of the Signal Symbol relative to the text
+            paragraphStyle.baseWritingDirection = CurrentAppContext().isRTL ? .rightToLeft : .leftToRight
+            if hasParagraphSpacing {
+                paragraphStyle.paragraphSpacing = 12
+            }
             paragraphStyle.alignment = .center
             labelText.addAttributeToEntireString(.paragraphStyle, value: paragraphStyle)
         }
@@ -782,14 +786,13 @@ extension CVComponentSystemMessage {
                 }
             }
 
-            if displayableGroupUpdates.count > 1 {
-                applyParagraphStyling()
-            }
+            applyParagraphStyling(hasParagraphSpacing: displayableGroupUpdates.count > 1)
 
             return labelText
         }
 
-        if let symbol = symbol(forInteraction: interaction) {
+        let symbol = symbol(forInteraction: interaction)
+        if let symbol {
             labelText.append(symbol.attributedString(dynamicTypeBaseSize: font.pointSize))
             labelText.append(" ", attributes: [:])
         }
@@ -806,6 +809,10 @@ extension CVComponentSystemMessage {
         if shouldShowTimestamp {
             labelText.append(LocalizationNotNeeded(" · "))
             labelText.append(DateUtil.formatTimestampAsTime(interaction.timestamp))
+        }
+
+        if symbol != nil {
+            applyParagraphStyling(hasParagraphSpacing: false)
         }
 
         return labelText

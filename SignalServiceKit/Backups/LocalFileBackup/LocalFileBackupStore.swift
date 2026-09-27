@@ -22,12 +22,18 @@ public struct LocalFileBackupStore {
         static let shouldOverrideShowBackupsOnboarding = "shouldOverrideShowBackupsOnboardingKey"
         static let lastBackupDate = "lastBackupDateKey"
         static let lastBackupSizeBytes = "lastBackupSizeBytesKey"
+        static let lastLocalFileBackupEnabledDate = "lastBackupEnabledDate"
+
+        static let backgroundLocalFileBackupErrorCount = "backgroundLocalFileBackupErrorCount"
+        static let interactiveLocalFileBackupErrorCount = "interactiveLocalFileBackupErrorCount"
     }
 
     private let kvStore: NewKeyValueStore
+    private let errorStateStore: NewKeyValueStore
 
     public init() {
         self.kvStore = NewKeyValueStore(collection: "LocalFileBackups")
+        self.errorStateStore = NewKeyValueStore(collection: "LocalFileBackupsErrors")
     }
 
     func importRecords(batchSize: Int, tx: DBReadTransaction) -> [BackupLocalFileAttachmentImportRecord] {
@@ -43,6 +49,24 @@ public struct LocalFileBackupStore {
             try BackupLocalFileAttachmentExportRecord
                 .limit(batchSize)
                 .fetchAll(tx.database)
+        }
+    }
+
+    func exportRecordsCount(tx: DBReadTransaction) -> Int {
+        failIfThrows {
+            try BackupLocalFileAttachmentExportRecord
+                .fetchCount(tx.database)
+        }
+    }
+
+    func attachmentCountSinceLastFetched(tx: DBReadTransaction) -> Int {
+        failIfThrows {
+            var query = Attachment.Record
+                .filter(Column(Attachment.Record.CodingKeys.plaintextHash) != nil)
+            if let lastId = fetchLastEnumeratedAttachmentRowId(tx: tx) {
+                query = query.filter(Column(Attachment.Record.CodingKeys.sqliteId) > lastId)
+            }
+            return try query.fetchCount(tx.database)
         }
     }
 
@@ -83,9 +107,52 @@ public struct LocalFileBackupStore {
         }
     }
 
+    func totalUnencryptedByteCountOfQueuedImports(tx: DBReadTransaction) -> UInt64 {
+        let importTable = BackupLocalFileAttachmentImportRecord.databaseTableName
+        let metadataTable = BackupLocalFileAttachmentMetadataRecord.databaseTableName
+        let idColumn = BackupLocalFileAttachmentMetadataRecord.CodingKeys.attachmentRowId.stringValue
+        let byteCountColumn = BackupLocalFileAttachmentMetadataRecord.CodingKeys.unencryptedByteCount.stringValue
+
+        let sql = """
+        SELECT SUM("\(metadataTable)"."\(byteCountColumn)")
+        FROM "\(metadataTable)"
+        INNER JOIN "\(importTable)"
+            ON "\(metadataTable)"."\(idColumn)" = "\(importTable)"."\(idColumn)"
+        """
+
+        return failIfThrows {
+            UInt64(try Int64.fetchOne(tx.database, sql: sql) ?? 0)
+        }
+    }
+
+    func totalUnencryptedByteCountOfQueuedExports(tx: DBReadTransaction) -> UInt64 {
+        let exportTable = BackupLocalFileAttachmentExportRecord.databaseTableName
+        let metadataTable = BackupLocalFileAttachmentMetadataRecord.databaseTableName
+        let idColumn = BackupLocalFileAttachmentMetadataRecord.CodingKeys.attachmentRowId.stringValue
+        let byteCountColumn = BackupLocalFileAttachmentMetadataRecord.CodingKeys.unencryptedByteCount.stringValue
+
+        let sql = """
+        SELECT SUM("\(metadataTable)"."\(byteCountColumn)")
+        FROM "\(metadataTable)"
+        INNER JOIN "\(exportTable)"
+            ON "\(metadataTable)"."\(idColumn)" = "\(exportTable)"."\(idColumn)"
+        """
+
+        return failIfThrows {
+            UInt64(try Int64.fetchOne(tx.database, sql: sql) ?? 0)
+        }
+    }
+
     func insertExportRecord(attachmentId: Attachment.IDType, tx: DBWriteTransaction) {
-        let attachmentToExport = BackupLocalFileAttachmentExportRecord(attachmentRowId: attachmentId)
         failIfThrows {
+            let attachmentExists = try Attachment.Record
+                .filter(key: attachmentId)
+                .fetchCount(tx.database) > 0
+            guard attachmentExists else {
+                Logger.warn("Skipping export queue insert; attachment \(attachmentId) was deleted after backup proto was created")
+                return
+            }
+            let attachmentToExport = BackupLocalFileAttachmentExportRecord(attachmentRowId: attachmentId)
             try attachmentToExport.insert(tx.database)
         }
     }
@@ -94,6 +161,14 @@ public struct LocalFileBackupStore {
         let localFileBackupAttachmentImport = BackupLocalFileAttachmentImportRecord(attachmentRowId: attachmentId)
         failIfThrows {
             try localFileBackupAttachmentImport.insert(tx.database)
+        }
+    }
+
+    func hasPendingImportRecord(attachmentId: Attachment.IDType, tx: DBReadTransaction) -> Bool {
+        failIfThrows {
+            try BackupLocalFileAttachmentImportRecord
+                .filter(key: attachmentId)
+                .fetchOne(tx.database) != nil
         }
     }
 
@@ -184,6 +259,7 @@ public struct LocalFileBackupStore {
         kvStore.writeValue(value, forKey: StoreKeys.isEnabled, tx: tx)
         if value {
             kvStore.writeValue(true, forKey: StoreKeys.haveEverBeenEnabled, tx: tx)
+            kvStore.writeValue(Date(), forKey: StoreKeys.lastLocalFileBackupEnabledDate, tx: tx)
         }
     }
 
@@ -246,6 +322,9 @@ public struct LocalFileBackupStore {
         tx.addSyncCompletion {
             NotificationCenter.default.postOnMainThread(name: .lastLocalBackupDetailsDidChange, object: nil)
         }
+
+        // We did a backup, so clear all error state.
+        clearErrorStateStore(tx: tx)
     }
 
     public func clearLastBackupDetails(
@@ -253,5 +332,41 @@ public struct LocalFileBackupStore {
     ) {
         kvStore.removeValue(forKey: StoreKeys.lastBackupDate, tx: tx)
         kvStore.removeValue(forKey: StoreKeys.lastBackupSizeBytes, tx: tx)
+    }
+
+    // MARK: - LastBackupEnabledTime
+
+    public func lastLocalFileBackupEnabledDate(
+        tx: DBReadTransaction,
+    ) -> Date? {
+        kvStore.fetchValue(Date.self, forKey: StoreKeys.lastLocalFileBackupEnabledDate, tx: tx)
+    }
+
+    public func clearLastBackupEnabledDetails(tx: DBWriteTransaction) {
+        kvStore.removeValue(forKey: StoreKeys.lastLocalFileBackupEnabledDate, tx: tx)
+    }
+
+    // MARK: - Local File Backup Errors
+
+    public func getInteractiveLocalFileBackupErrorCount(tx: DBReadTransaction) -> UInt64 {
+        errorStateStore.fetchValue(UInt64.self, forKey: StoreKeys.interactiveLocalFileBackupErrorCount, tx: tx) ?? 0
+    }
+
+    public func incrementInteractiveLocalFileBackupErrorCount(tx: DBWriteTransaction) {
+        let nextCount = getInteractiveLocalFileBackupErrorCount(tx: tx) + 1
+        errorStateStore.writeValue(nextCount, forKey: StoreKeys.interactiveLocalFileBackupErrorCount, tx: tx)
+    }
+
+    public func getBackgroundLocalFileBackupErrorCount(tx: DBReadTransaction) -> UInt64 {
+        errorStateStore.fetchValue(UInt64.self, forKey: StoreKeys.backgroundLocalFileBackupErrorCount, tx: tx) ?? 0
+    }
+
+    public func incrementBackgroundLocalFileBackupErrorCount(tx: DBWriteTransaction) {
+        let nextCount = getBackgroundLocalFileBackupErrorCount(tx: tx) + 1
+        errorStateStore.writeValue(nextCount, forKey: StoreKeys.backgroundLocalFileBackupErrorCount, tx: tx)
+    }
+
+    public func clearErrorStateStore(tx: DBWriteTransaction) {
+        errorStateStore.removeAll(tx: tx)
     }
 }

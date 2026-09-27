@@ -516,18 +516,18 @@ private class GiftWrapView: UIView {
         wrappingContainer.autoPinEdgesToSuperviewEdges()
 
         let wrappingView = self.wrappingView
-        wrappingView.backgroundColor = .ows_accentBlue
+        wrappingView.backgroundColor = .Signal.accent
         wrappingContainer.addSubview(wrappingView)
 
         let horizontalWrap = UIView()
-        horizontalWrap.backgroundColor = .ows_white
+        horizontalWrap.backgroundColor = .white
         wrappingContainer.addSubview(horizontalWrap)
         horizontalWrap.autoSetDimension(.height, toSize: wrapWidth)
         horizontalWrap.autoPinWidthToSuperview()
         horizontalWrap.autoCenterInSuperview()
 
         let verticalWrap = UIView()
-        verticalWrap.backgroundColor = .ows_white
+        verticalWrap.backgroundColor = .white
         wrappingContainer.addSubview(verticalWrap)
         verticalWrap.autoSetDimension(.width, toSize: wrapWidth)
         verticalWrap.autoPinHeightToSuperview()

@@ -145,7 +145,7 @@ extension ConversationViewController: BadgeIssueSheetDelegate {
         case .dismiss:
             break
         case .openDonationView:
-            let appSettings = AppSettingsViewController.inModalNavigationController(appReadiness: appReadiness)
+            let appSettings = AppSettingsViewController.inModalNavigationController()
             let donateViewController = DonateViewController(preferredDonateMode: .oneTime) { [weak self] finishResult in
                 switch finishResult {
                 case let .completedDonation(donateSheet, receiptCredentialSuccessMode):

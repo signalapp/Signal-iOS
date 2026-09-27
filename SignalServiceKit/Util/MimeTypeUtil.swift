@@ -65,6 +65,30 @@ public enum MimeTypeUtil {
             || isSupportedMaybeAnimatedMimeType(contentType)
     }
 
+    /// The given MIME type, or one inferred from the source filename if the
+    /// MIME type is missing. Falls back to octet-stream.
+    ///
+    /// Senders may omit the MIME type if they can't infer one from the file
+    /// extension themselves.
+    public static func mimeType(
+        _ mimeType: String?,
+        orInferredFrom sourceFilename: String?,
+    ) -> String {
+        if let mimeType = mimeType?.nilIfEmpty {
+            return mimeType
+        }
+        if
+            let sourceFilename,
+            let fileExtension = (sourceFilename as NSString).pathExtension.lowercased().nilIfEmpty,
+            let inferredMimeType = mimeTypeForFileExtension(fileExtension)?.nilIfEmpty
+        {
+            Logger.warn("Missing attachment content type! Inferred MIME type: \(inferredMimeType)")
+            return inferredMimeType
+        }
+        Logger.warn("Missing attachment content type! Failed to infer MIME type, falling back to octet-stream.")
+        return MimeType.applicationOctetStream.rawValue
+    }
+
     // MARK: - Supported Uti Types
 
     public static let supportedVideoUtiTypes: Set<String> = utiTypesForMimeTypes(supportedVideoMimeTypes)
@@ -2259,11 +2283,8 @@ public enum MimeTypeUtil {
         "zirz": "application/vnd.zul",
         "zmm": "application/vnd.handheld-entertainment+xml",
     ]
-}
 
-// MARK: - Audio file handling
-
-extension MimeTypeUtil {
+    // MARK: - Audio file handling
 
     public static func alternativeAudioFileExtension(fileExtension: String) -> String? {
         // In some cases, Android sends audio messages with the "audio/mpeg" mime type. This
@@ -2308,11 +2329,8 @@ extension MimeTypeUtil {
         }
         return nil
     }
-}
 
-// MARK: - Thumbnail Handling
-
-extension MimeTypeUtil {
+    // MARK: - Thumbnail Handling
 
     public static func thumbnailMimetype(
         fullsizeMimeType: String,
@@ -2323,5 +2341,30 @@ extension MimeTypeUtil {
         }
         let isWebp = fullsizeMimeType == MimeType.imageWebp.rawValue
         return isWebp ? MimeType.imagePng.rawValue : MimeType.imageJpeg.rawValue
+    }
+}
+
+// MARK: -
+
+extension SSKProtoAttachmentPointer {
+    /// The MIME type to use for this attachment.
+    ///
+    /// The proto's content type may be unset if the sending client couldn't
+    /// infer a MIME type from the file extension, so fall back to inferring it
+    /// from the source filename ourselves.
+    public var mimeType: String {
+        return MimeTypeUtil.mimeType(contentType, orInferredFrom: fileName)
+    }
+
+    /// Whether this attachment will render as visual media (an image or a
+    /// video), as opposed to audio or a generic file.
+    public var isVisualMedia: Bool {
+        return MimeTypeUtil.isSupportedVisualMediaMimeType(mimeType)
+    }
+
+    /// Whether this attachment holds the oversize-text body of its owning
+    /// message, rather than being rendered as an attachment.
+    public var isOversizeText: Bool {
+        return mimeType == MimeType.textXSignalPlain.rawValue
     }
 }

@@ -11,6 +11,7 @@ protocol RegistrationTransferStatusPresenter: AnyObject {
 }
 
 class RegistrationDeviceTransferStatusViewController: DeviceTransferStatusViewController {
+
     init(
         coordinator: DeviceTransferCoordinator,
         presenter: RegistrationTransferStatusPresenter? = nil,

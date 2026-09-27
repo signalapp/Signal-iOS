@@ -315,8 +315,8 @@ open class OWSViewController: UIViewController {
             ]
         } else {
             var bottomMargin: CGFloat = 0
-            // iPhones with home button have zero bottom layout margin for some reason. No bueno!
-            if !isiPad, !UIDevice.current.hasIPhoneXNotch {
+            // iPhones with home button have zero bottom layout margin for some reason.
+            if isiPad == false, let appWindow = CurrentAppContext().mainWindow, appWindow.safeAreaInsets.bottom.isZero {
                 bottomMargin = 20
             }
             constraints += [
@@ -497,6 +497,7 @@ public extension OWSViewController {
 
         if isScrollable {
             let scrollView = UIScrollView()
+            scrollView.clipsToBounds = false
             scrollView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(scrollView)
             scrollView.addSubview(stackView)

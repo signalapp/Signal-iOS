@@ -3,22 +3,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import GRDB
+import GRDB
 
 public class BackupAttachmentDownloadProgressObserver {
-    private weak var progress: BackupAttachmentDownloadProgress?
     fileprivate let id: UUID = UUID()
     fileprivate let block: (OWSProgress) -> Void
 
-    fileprivate init(progress: BackupAttachmentDownloadProgress? = nil, block: @escaping (OWSProgress) -> Void) {
-        self.progress = progress
+    fileprivate init(block: @escaping (OWSProgress) -> Void) {
         self.block = block
-    }
-
-    deinit {
-        Task { [weak progress, id] in
-            await progress?.removeObserver(id)
-        }
     }
 }
 
@@ -35,21 +27,23 @@ public protocol BackupAttachmentDownloadProgress: AnyObject {
     typealias Observer = BackupAttachmentDownloadProgressObserver
 
     /// Begin observing progress of all backup attachment downloads.
-    /// The observer will immediately be provided the current progress if any, and then updated with future progress state.
-    func addObserver(_ block: @escaping (OWSProgress) -> Void) async -> Observer
+    ///
+    /// The observer will be called with the current progress if available, and
+    /// updated as progress changes in the future.
+    func addObserver(_ block: @escaping (OWSProgress) -> Void) -> Observer
 
-    func removeObserver(_ observer: Observer) async
-
-    func removeObserver(_ id: UUID) async
+    func removeObserver(_ observer: Observer)
 
     /// Compute total pending bytes to download, and set up observation for attachments to be downloaded.
-    func beginObserving() async throws
+    /// - Important
+    /// Reads from the database; avoid calling on the main thread.
+    func beginObserving()
 
     /// Create an OWSProgressSink for a single attachment to be downloaded.
     /// Should be called prior to downloading any backup attachment.
     func willBeginDownloadingFullsizeAttachment(
         withId id: Attachment.IDType,
-    ) async -> OWSProgressSink
+    ) -> OWSProgressSink
 
     /// Stopgap to inform that an attachment finished downloading.
     /// There are a couple edge cases (e.g. we already have a stream) that result in downloads
@@ -58,50 +52,44 @@ public protocol BackupAttachmentDownloadProgress: AnyObject {
     func didFinishDownloadOfFullsizeAttachment(
         withId id: Attachment.IDType,
         byteCount: UInt64,
-    ) async
+    )
 
     /// Called when there are no more enqueued downloads.
     /// As a final stopgap, in case we missed some bytes and counting got out of sync,
     /// this should fully advance the downloaded byte count to the total byte count.
-    func didEmptyFullsizeDownloadQueue() async
+    func didEmptyFullsizeDownloadQueue()
 }
 
-public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgress {
+// MARK: -
 
-    // MARK: - Public API
+class BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgress {
 
-    public func addObserver(_ block: @escaping (OWSProgress) -> Void) async -> Observer {
+    func addObserver(_ block: @escaping (OWSProgress) -> Void) -> Observer {
         let observer = Observer(block: block)
+        let latestProgress = state.update { _state -> OWSProgress? in
+            _state.observers.append(observer)
+            return _state.latestProgress
+        }
+        // If we don't have progress yet, the observer will be called back
+        // when we do; see `initializeProgress`.
         if let latestProgress {
             block(latestProgress)
-        } else {
-            await initializeProgress()
-            latestProgress.map(block)
         }
-        observers.append(observer)
         return observer
     }
 
-    public func removeObserver(_ observer: Observer) {
-        self.removeObserver(observer.id)
+    func removeObserver(_ observer: Observer) {
+        state.update {
+            $0.observers.removeAll(where: { $0.id == observer.id })
+        }
     }
 
-    // MARK: - BackupAttachmentDownloadManager API
-
-    public func beginObserving() async throws {
-        await initializeProgress()
-
-        let pendingByteCount: UInt64
-        let finishedByteCount: UInt64
-        (pendingByteCount, finishedByteCount) = db.read { tx -> (UInt64, UInt64) in
-            return (
-                backupAttachmentDownloadStore.computeEstimatedRemainingFullsizeByteCount(tx: tx) ?? 0,
-                backupAttachmentDownloadStore.computeEstimatedFinishedFullsizeByteCount(tx: tx) ?? 0,
-            )
-        }
+    func beginObserving() {
+        let (pendingByteCount, finishedByteCount) = fetchEstimatedByteCounts()
         let totalByteCount = pendingByteCount + finishedByteCount
 
-        if pendingByteCount == 0 {
+        guard pendingByteCount > 0 else {
+            // Nothing left to download, so we're already done.
             updateObservers(OWSProgress(
                 completedUnitCount: totalByteCount,
                 totalUnitCount: totalByteCount,
@@ -109,71 +97,86 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
             return
         }
 
-        if totalByteCount == 0 {
-            return
+        updateObservers(OWSProgress(
+            completedUnitCount: finishedByteCount,
+            totalUnitCount: totalByteCount,
+        ))
+
+        let sink = OWSProgress.createSink { [weak self] progress in
+            self?.updateObservers(progress)
         }
-
-        didEmptyFullsizeQueue = false
-
-        let sink = OWSProgress.createSink({ [weak self] progress in
-            await self?.updateObservers(progress)
-        })
 
         let source = sink.addSource(withLabel: "", unitCount: totalByteCount)
-        if totalByteCount > pendingByteCount {
-            source.incrementCompletedUnitCount(by: totalByteCount - pendingByteCount)
+        if finishedByteCount > 0 {
+            source.incrementCompletedUnitCount(by: finishedByteCount)
         }
-        self.sink = sink
-        self.source = source
+        state.update { _state in
+            _state.sink = sink
+            _state.source = source
+        }
     }
 
-    /// Create an OWSProgressSink for a single attachment to be downloaded.
-    /// Should be called prior to downloading any backup attachment.
-    public func willBeginDownloadingFullsizeAttachment(
+    func willBeginDownloadingFullsizeAttachment(
         withId id: Attachment.IDType,
-    ) async -> OWSProgressSink {
-        let sink = OWSProgress.createSink { [weak self] progress in
-            Task { await self?.didUpdateProgressForActiveDownload(
-                id: .init(atachmentId: id),
+    ) -> OWSProgressSink {
+        return OWSProgress.createSink { [weak self] progress in
+            self?.didUpdateProgressForActiveDownload(
+                id: id,
                 completedByteCount: progress.completedUnitCount,
                 totalByteCount: progress.totalUnitCount,
             )
-            }
         }
-        return sink
     }
 
-    public func didFinishDownloadOfFullsizeAttachment(
+    func didFinishDownloadOfFullsizeAttachment(
         withId id: Attachment.IDType,
         byteCount: UInt64,
     ) {
         didUpdateProgressForActiveDownload(
-            id: .init(atachmentId: id),
+            id: id,
             completedByteCount: byteCount,
             totalByteCount: byteCount,
         )
     }
 
-    public func didEmptyFullsizeDownloadQueue() async {
-        didEmptyFullsizeQueue = true
-
-        activeDownloadByteCounts = [:]
-        if let source {
-            if source.totalUnitCount > 0, source.totalUnitCount > source.completedUnitCount {
+    func didEmptyFullsizeDownloadQueue() {
+        state.update { _state in
+            _state.activeDownloadByteCounts = [:]
+            if
+                let source = _state.source,
+                source.totalUnitCount > 0,
+                source.totalUnitCount > source.completedUnitCount
+            {
                 source.incrementCompletedUnitCount(by: source.totalUnitCount - source.completedUnitCount)
             }
         }
     }
 
-    // MARK: - Private
+    // MARK: -
 
-    private nonisolated let appContext: AppContext
-    private nonisolated let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
-    private nonisolated let backupSettingsStore: BackupSettingsStore
-    private nonisolated let dateProvider: DateProvider
-    private nonisolated let db: DB
-    private nonisolated let remoteConfigProvider: RemoteConfigProvider
-    private var didEmptyFullsizeQueue: Bool = false
+    private struct State {
+        var observers = WeakArray<BackupAttachmentDownloadProgressObserver>()
+
+        /// Seeded from the queue's estimated byte counts, and updated as
+        /// downloads increment the completed byte count.
+        var latestProgress: OWSProgress?
+
+        /// Set up in `beginObserving`
+        var sink: OWSProgressSink?
+        var source: OWSProgressSource?
+
+        /// Currently active downloads for which we update progress byte-by-byte.
+        var activeDownloadByteCounts = [Attachment.IDType: UInt64]()
+    }
+
+    private let appContext: AppContext
+    private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
+    private let backupSettingsStore: BackupSettingsStore
+    private let dateProvider: DateProvider
+    private let db: DB
+    private let remoteConfigProvider: RemoteConfigProvider
+
+    private let state = AtomicValue<State>(State(), lock: .init())
 
     init(
         appContext: AppContext,
@@ -192,39 +195,28 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
         self.remoteConfigProvider = remoteConfigProvider
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
-            Task {
-                await self?.initializeProgress()
+            self?.initializeProgress()
+        }
+    }
+
+    /// Populate an initial progress value at launch, so we can report progress
+    /// for a queue that has downloads pending but isn't running yet.
+    private func initializeProgress() {
+        Task { @concurrent [self] in
+            guard
+                appContext.isMainApp,
+                state.get().latestProgress == nil
+            else {
+                return
             }
-        }
-    }
 
-    private var initializationTask: Task<Void, Never>?
+            let (pendingByteCount, finishedByteCount) = fetchEstimatedByteCounts()
+            let totalByteCount = pendingByteCount + finishedByteCount
 
-    private func initializeProgress() async {
-        guard appContext.isMainApp else { return }
-        if let initializationTask {
-            await initializationTask.value
-            return
-        }
-        initializationTask = Task { [weak self] in
-            await self?._initializeProgress()
-        }
-    }
+            guard totalByteCount > 0 else {
+                return
+            }
 
-    private func _initializeProgress() {
-        if latestProgress != nil { return }
-        // Initialize the `latestProgress` value using the on-disk cached values.
-        // Later we will (expensively) recompute the remaining byte count.
-        let pendingByteCount: UInt64
-        let finishedByteCount: UInt64
-        (pendingByteCount, finishedByteCount) = db.read { tx -> (UInt64, UInt64) in
-            return (
-                backupAttachmentDownloadStore.computeEstimatedRemainingFullsizeByteCount(tx: tx) ?? 0,
-                backupAttachmentDownloadStore.computeEstimatedFinishedFullsizeByteCount(tx: tx) ?? 0,
-            )
-        }
-        let totalByteCount = pendingByteCount + finishedByteCount
-        if totalByteCount > 0 {
             updateObservers(OWSProgress(
                 completedUnitCount: finishedByteCount,
                 totalUnitCount: totalByteCount,
@@ -232,60 +224,71 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
         }
     }
 
-    private var observers = WeakArray<Observer>()
-
-    /// Initialized to cached values (if available) and updated as
-    /// downloads increment the completed byte count.
-    private var latestProgress: OWSProgress?
-
-    /// Set up in `beginObserving`
-    private var sink: OWSProgressSink?
-    private var source: OWSProgressSource?
-
-    private struct DownloadId: Equatable, Hashable {
-        let atachmentId: Attachment.IDType
+    private func fetchEstimatedByteCounts() -> (pendingByteCount: UInt64, finishedByteCount: UInt64) {
+        return db.read { tx -> (UInt64, UInt64) in
+            return (
+                backupAttachmentDownloadStore.computeEstimatedRemainingFullsizeByteCount(tx: tx) ?? 0,
+                backupAttachmentDownloadStore.computeEstimatedFinishedFullsizeByteCount(tx: tx) ?? 0,
+            )
+        }
     }
 
-    /// Currently active downloads for which we update progress byte-by-byte.
-    private var activeDownloadByteCounts = [DownloadId: UInt64]()
-
     private func didUpdateProgressForActiveDownload(
-        id: DownloadId,
+        id: Attachment.IDType,
         completedByteCount: UInt64,
         totalByteCount: UInt64,
     ) {
         guard totalByteCount != 0 else {
             return
         }
-        let prevByteCount = activeDownloadByteCounts[id] ?? 0
-        if let source {
+        state.update { _state in
+            _didUpdateProgressForActiveDownload(
+                state: &_state,
+                id: id,
+                completedByteCount: completedByteCount,
+                totalByteCount: totalByteCount,
+            )
+        }
+    }
+
+    private func _didUpdateProgressForActiveDownload(
+        state: inout State,
+        id: Attachment.IDType,
+        completedByteCount: UInt64,
+        totalByteCount: UInt64,
+    ) {
+        let prevByteCount = state.activeDownloadByteCounts[id] ?? 0
+        if let source = state.source {
             let diff = min(max(completedByteCount, prevByteCount) - prevByteCount, source.totalUnitCount - source.completedUnitCount)
-            owsAssertDebug(self.source != nil, "Updating progress before setting up observation!")
             if diff > 0 {
-                self.source?.incrementCompletedUnitCount(by: diff)
+                source.incrementCompletedUnitCount(by: diff)
             }
         }
         if completedByteCount < totalByteCount {
-            activeDownloadByteCounts[id] = completedByteCount
+            state.activeDownloadByteCounts[id] = completedByteCount
         }
     }
 
+    // MARK: -
+
+    /// Serializes potentially-concurrent progress updates being stored and
+    /// published to observers.
+    private let updateObserversTaskQueue = SerialTaskQueue()
+
     private func updateObservers(_ progress: OWSProgress) {
-        self.latestProgress = progress
-        observers.elements.forEach { $0.block(progress) }
-    }
-
-    public func removeObserver(_ id: UUID) {
-        observers.removeAll(where: { $0.id == id })
+        updateObserversTaskQueue.enqueue { [self] in
+            let observers = state.update { _state -> [Observer] in
+                _state.latestProgress = progress
+                return _state.observers.elements
+            }
+            for observer in observers {
+                observer.block(progress)
+            }
+        }
     }
 }
 
-extension QueuedBackupAttachmentDownload: TableRecord {
-    static let attachment = belongsTo(
-        Attachment.Record.self,
-        using: ForeignKey([QueuedBackupAttachmentDownload.CodingKeys.attachmentRowId.rawValue]),
-    )
-}
+// MARK: -
 
 #if TESTABLE_BUILD
 
@@ -295,36 +298,36 @@ open class BackupAttachmentDownloadProgressMock: BackupAttachmentDownloadProgres
 
     open func addObserver(
         _ block: @escaping (OWSProgress) -> Void,
-    ) async -> BackupAttachmentDownloadProgressObserver {
-        return BackupAttachmentDownloadProgressObserver(block: block)
+    ) -> Observer {
+        return Observer(block: block)
     }
 
-    open func removeObserver(_ observer: Observer) async {
+    open func removeObserver(_ observer: Observer) {
         // Do nothing
     }
 
-    open func removeObserver(_ id: UUID) async {
+    open func removeObserver(_ id: UUID) {
         // Do nothing
     }
 
-    open func beginObserving() async throws {
+    open func beginObserving() {
         // Do nothing
     }
 
     open func willBeginDownloadingFullsizeAttachment(
         withId id: Attachment.IDType,
-    ) async -> any OWSProgressSink {
+    ) -> any OWSProgressSink {
         return OWSProgress.createSink({ _ in })
     }
 
     open func didFinishDownloadOfFullsizeAttachment(
         withId id: Attachment.IDType,
         byteCount: UInt64,
-    ) async {
+    ) {
         // Do nothing
     }
 
-    open func didEmptyFullsizeDownloadQueue() async {
+    open func didEmptyFullsizeDownloadQueue() {
         // Do nothing
     }
 }

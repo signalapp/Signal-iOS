@@ -1,1 +1,1 @@
-• ہم نے ایک آسان شارٹ کٹ شامل کیا ہے جس کی مدد سے آپ Signal کی گروپ کال کے دوران بولنا شروع کرنے کے بعد جلدی سے اپنا ہاتھ نیچے کر سکتے ہیں۔ اس ریلیز میں یہ ہمارا سب سے فیورٹ فیچر ہے۔
+• This update introduces a new custom mute option so you can easily specify the exact date and time when you would like to end your moment of silence for notifications in a specific chat.

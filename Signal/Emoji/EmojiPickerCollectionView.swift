@@ -305,8 +305,12 @@ class EmojiPickerCollectionView: UICollectionView {
         loadEmojiSearch()
         if emojiSearchIndex == nil, emojiSearchLocalization != nil {
             Task {
-                try await EmojiSearchIndex.updateManifest()
-                self.loadEmojiSearch()
+                do {
+                    try await EmojiSearchIndex.updateManifest()
+                    self.loadEmojiSearch()
+                } catch {
+                    Logger.debug("Unable to update emoji search index: \(error)")
+                }
             }
         }
     }

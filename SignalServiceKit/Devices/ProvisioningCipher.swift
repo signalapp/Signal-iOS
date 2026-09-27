@@ -7,10 +7,6 @@ public import CommonCrypto
 import CryptoKit
 public import LibSignalClient
 
-public enum ProvisioningError: Error {
-    case invalidProvisionMessage(_ description: String)
-}
-
 public class ProvisioningCipher {
 
     private enum Constants {
@@ -39,14 +35,16 @@ public class ProvisioningCipher {
 
         let infoData = Constants.info
         let totalLength = Constants.cipherKeyLength + Constants.macKeyLength
-        let derivedSecret = try hkdf(outputLength: totalLength, inputKeyMaterial: sharedSecret, salt: [], info: Data(infoData.utf8))
+        let derivedSecret = failIfThrows {
+            return try hkdf(outputLength: totalLength, inputKeyMaterial: sharedSecret, salt: [], info: Data(infoData.utf8))
+        }
         owsPrecondition(derivedSecret.count == totalLength)
         let cipherKey = derivedSecret.prefix(Constants.cipherKeyLength)
         let macKey = derivedSecret.dropFirst(Constants.cipherKeyLength)
         owsAssertDebug(macKey.count == Constants.macKeyLength)
 
         guard data.count < Int.max - (kCCBlockSizeAES128 + initializationVector.count) else {
-            throw ProvisioningError.invalidProvisionMessage("data too long to encrypt.")
+            throw OWSGenericError("data too long to encrypt.")
         }
 
         let ciphertextData = try Cryptography.encrypt(plaintextData: data, key: cipherKey, iv: initializationVector)
@@ -82,23 +80,25 @@ public class ProvisioningCipher {
         let ciphertext = bytes
 
         guard let version, initializationVector.count == ivLength, theirMac.count == macLength, !ciphertext.isEmpty else {
-            throw ProvisioningError.invalidProvisionMessage("provisioning message too short.")
+            throw OWSGenericError("provisioning message too short.")
         }
 
         guard version == Constants.version else {
-            throw ProvisioningError.invalidProvisionMessage("Unexpected version on provisioning message: \(version)")
+            throw OWSGenericError("Unexpected version on provisioning message: \(version)")
         }
 
         let agreement = ourKeyPair.privateKey.keyAgreement(with: theirPublicKey)
 
-        let keyBytes = try hkdf(outputLength: 64, inputKeyMaterial: agreement, salt: [], info: Data(Constants.info.utf8))
+        let keyBytes = failIfThrows {
+            return try hkdf(outputLength: 64, inputKeyMaterial: agreement, salt: [], info: Data(Constants.info.utf8))
+        }
         owsPrecondition(keyBytes.count == 64)
         let cipherKey = keyBytes.prefix(32)
         let macKey = keyBytes.dropFirst(32).prefix(32)
 
         let ourHMAC = Data(HMAC<SHA256>.authenticationCode(for: messageToAuthenticate, using: .init(data: macKey)))
         guard ourHMAC.ows_constantTimeIsEqual(to: theirMac) else {
-            throw ProvisioningError.invalidProvisionMessage("mac mismatch")
+            throw OWSGenericError("mac mismatch")
         }
 
         return try Cryptography.decrypt(encryptedData: ciphertext, key: cipherKey, iv: initializationVector)

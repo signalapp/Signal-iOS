@@ -59,14 +59,15 @@ public class Cron {
 
     /// Unique keys that identify Cron jobs.
     ///
-    /// All state related to these keys is cleared when the app's version number
-    /// changes. These are therefore safe to add/remove/rename without migrating
-    /// anything that's been written to disk. (This statement is not true for
-    /// local builds, but it's true for all TestFlight/App Store builds.)
+    /// These can be removed without writing GRDB migrations.
+    ///
+    /// If shouldRunOnAppUpgrade is true, renaming one of these will force the
+    /// job to run without delay during the next upgrade.
     public enum UniqueKey: String {
         case checkUsername
         case cleanUpCallingAssets
         case cleanUpMessageSendLog
+        case cleanUpObsoleteKeyValueStores
         case cleanUpOrphanedAttachments
         case cleanUpOrphanedData
         case cleanUpViewOnceMessages
@@ -77,7 +78,6 @@ public class Cron {
         case fetchLocalProfile
         case fetchMegaphones
         case fetchSenderCertificates
-        case fetchStaleGroup
         case fetchStaleProfiles
         case fetchStorageService
         case fetchSubscriptionConfig
@@ -85,6 +85,13 @@ public class Cron {
         case refreshBackup
         case refreshSVRCredentials
         case updateAttributes
+
+        var shouldRunOnAppUpgrade: Bool {
+            switch self {
+            case .keyTransparencySelfCheck: false
+            default: true
+            }
+        }
     }
 
     init(
@@ -368,14 +375,23 @@ public class Cron {
         }
         if mostRecentAppVersion != self.appVersion.wrappedValue.rawValue {
             await self.db.awaitableWrite { tx in
-                self.resetMostRecentDates(tx: tx)
+                self._resetMostRecentDates(isAppUpgrade: true, tx: tx)
                 self.metadataStore.writeValue(self.appVersion.wrappedValue.rawValue, forKey: appVersionKey, tx: tx)
             }
         }
     }
 
     public func resetMostRecentDates(tx: DBWriteTransaction) {
-        dateStore.removeAll(tx: tx)
+        _resetMostRecentDates(isAppUpgrade: false, tx: tx)
+    }
+
+    private func _resetMostRecentDates(isAppUpgrade: Bool, tx: DBWriteTransaction) {
+        for key in dateStore.fetchKeys(tx: tx) {
+            if let uniqueKey = UniqueKey(rawValue: key), isAppUpgrade, !uniqueKey.shouldRunOnAppUpgrade {
+                continue
+            }
+            dateStore.removeValue(forKey: key, tx: tx)
+        }
     }
 
     public func runOnce(ctx: CronContext) async {

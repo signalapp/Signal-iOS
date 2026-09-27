@@ -53,7 +53,7 @@ class CallHeader: UIView {
         // Back button
 
         let backButton = UIButton()
-        backButton.setTemplateImage(UIImage(imageLiteralResourceName: "NavBarBack"), tintColor: .ows_white)
+        backButton.setTemplateImage(UIImage(imageLiteralResourceName: "NavBarBack"), tintColor: .white)
         backButton.autoSetDimensions(to: CGSize(square: 40))
         backButton.ows_imageEdgeInsets = UIEdgeInsets(top: -12, leading: -18, bottom: 0, trailing: 0)
         backButton.addAction(

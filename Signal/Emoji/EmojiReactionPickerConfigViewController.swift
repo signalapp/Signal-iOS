@@ -44,16 +44,12 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
             self?.doneButtonTapped()
         }
 
-        navigationItem.leftBarButtonItem = .button(
-            title: OWSLocalizedString(
-                "RESET",
-                comment: "Configure reactions reset button text",
-            ),
-            style: .plain,
-            action: { [weak self] in
-                self?.resetButtonTapped()
-            },
-        )
+        navigationItem.leftBarButtonItem = .button(title: OWSLocalizedString(
+            "RESET",
+            comment: "Configure reactions reset button text",
+        )) { [weak self] in
+            self?.resetButtonTapped()
+        }
 
         // Reaction picker
         reactionPicker.delegate = self

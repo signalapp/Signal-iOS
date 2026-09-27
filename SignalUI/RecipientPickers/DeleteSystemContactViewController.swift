@@ -151,7 +151,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         ) = dependencies.databaseStorage.read { tx in
             let image = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
                 forAddress: addressForProfileLookup,
-                diameterPixels: Constants.avatarDiameter * UIScreen.main.scale,
+                diameterPixels: Constants.avatarDiameter * traitCollection.displayScale,
                 localUserDisplayMode: .asUser,
                 transaction: tx,
             )
@@ -213,7 +213,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
                             "DELETE_CONTACT_BUTTON",
                             comment: "Title of button for deleting system contact.",
                         ),
-                        textColor: .ows_accentRed,
+                        textColor: .Signal.red,
                         accessoryType: .none,
                     )
                 },

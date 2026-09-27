@@ -217,6 +217,7 @@ private extension Paypal {
             self.approvalUrl = approvalUrl
         }
 
+        @MainActor
         func start(presentationContextProvider: ASWebAuthenticationPresentationContextProviding) async throws -> ApprovalParams {
             var authSession: ASWebAuthenticationSession!
             defer {

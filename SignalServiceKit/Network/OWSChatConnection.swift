@@ -707,6 +707,10 @@ class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OW
         switch request.body {
         case .data(let bodyData):
             body = bodyData
+        case .encodable(let bodyValue):
+            // TODO: Do we need body & headers for requests with no parameters?
+            body = try JSONEncoder().encode(bodyValue)
+            httpHeaders["Content-Type"] = "application/json"
         case .parameters(let bodyParameters):
             // TODO: Do we need body & headers for requests with no parameters?
             body = try TSRequest.Body.encodedParameters(bodyParameters)

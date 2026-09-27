@@ -5,7 +5,7 @@
 
 import Foundation
 import SafariServices
-import SignalServiceKit
+public import SignalServiceKit
 import UIKit
 
 public class GroupViewUtils {
@@ -26,6 +26,24 @@ public class GroupViewUtils {
             )
         }
         return String.localizedStringWithFormat(format, memberCount)
+    }
+
+    /// Localized comma-separated list of members, with "You" at the end if present
+    public static func membersNamesPreview(for groupThread: TSGroupThread, tx: DBReadTransaction) -> String {
+        var hasYou = false
+        var memberNames = SSKEnvironment.shared.contactManagerRef
+            .sortedComparableNames(for: groupThread.groupModel.groupMembership.fullMembers, tx: tx)
+            .compactMap { comparableName -> String? in
+                if comparableName.address.isLocalAddress {
+                    hasYou = true
+                    return nil
+                }
+                return comparableName.resolvedValue(useShortNameIfAvailable: true)
+            }
+        if hasYou {
+            memberNames.append(CommonStrings.you)
+        }
+        return ListFormatter.localizedString(byJoining: memberNames)
     }
 
     @MainActor

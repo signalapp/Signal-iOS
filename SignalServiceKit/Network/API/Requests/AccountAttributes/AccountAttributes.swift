@@ -99,7 +99,7 @@ public struct AccountAttributes: Codable {
         self.capabilities = capabilities
     }
 
-    public struct Capabilities: Codable {
+    public struct Capabilities: Codable, Equatable {
         public let transfer = true
         public let hasSVRBackups: Bool
         public let spqr = true
@@ -116,11 +116,6 @@ public struct AccountAttributes: Codable {
 
         public init(hasSVRBackups: Bool) {
             self.hasSVRBackups = hasSVRBackups
-        }
-
-        var requestParameters: [String: NSNumber] {
-            let jsonData = try! JSONEncoder().encode(self)
-            return try! JSONSerialization.jsonObject(with: jsonData) as! [String: NSNumber]
         }
     }
 }

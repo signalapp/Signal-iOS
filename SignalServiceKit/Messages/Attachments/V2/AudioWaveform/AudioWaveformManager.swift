@@ -155,7 +155,7 @@ class AudioWaveformManagerImpl: AudioWaveformManager {
             }
 
             let taskQueue = highPriority ? self.highPriorityTaskQueue : self.taskQueue
-            return try await taskQueue.run { [weak self] in
+            return try await taskQueue.runWithThrowingTask { [weak self] in
                 guard let self else {
                     throw OWSAssertionError("Waveform manager deallocated!")
                 }

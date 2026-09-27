@@ -468,10 +468,7 @@ extension DonationSettingsViewController {
         )
         actionSheet.addAction(OWSActionSheets.okayAction)
         actionSheet.addAction(ActionSheetAction(
-            title: OWSLocalizedString(
-                "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE",
-                comment: "Title for a button asking the user to try their donation again, because something went wrong.",
-            ),
+            title: CommonStrings.tryAgainButton,
             handler: { [weak self] _ in
                 guard let self else { return }
                 self.presentAwaitingIDEALAuthorizationActionSheet(donateMode: donateMode)
@@ -562,10 +559,7 @@ extension DonationSettingsViewController {
                     comment: "Title for an action in an action sheet asking the user to renew a subscription that has failed to renew.",
                 )
             case .tryAgain:
-                return OWSLocalizedString(
-                    "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN",
-                    comment: "Title for an action in an action sheet asking the user to try again, in reference to a donation that failed.",
-                )
+                return CommonStrings.tryAgainButton
             }
         }
     }
@@ -580,14 +574,18 @@ extension DonationSettingsViewController {
     private func showDonateAndCancelSubscriptionAction(title: ShowDonateActionTitle) -> ActionSheetAction {
         return ActionSheetAction(title: title.localizedTitle) { _ in
             Task.detached {
-                let subscriberId = SSKEnvironment.shared.databaseStorageRef.read { tx in
-                    return DependenciesBridge.shared.donationSubscriptionManager.getSubscriberID(tx: tx)
+                do {
+                    let subscriberId = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                        return DependenciesBridge.shared.donationSubscriptionManager.getSubscriberID(tx: tx)
+                    }
+                    if let subscriberId {
+                        try await DependenciesBridge.shared.donationSubscriptionManager.cancelSubscription(for: subscriberId)
+                    }
+                    await self.loadAndUpdateState()
+                    await self.showDonateViewController(preferredDonateMode: .monthly)
+                } catch {
+                    Logger.error("Error with subscription: \(error)")
                 }
-                if let subscriberId {
-                    try await DependenciesBridge.shared.donationSubscriptionManager.cancelSubscription(for: subscriberId)
-                }
-                await self.loadAndUpdateState()
-                await self.showDonateViewController(preferredDonateMode: .monthly)
             }
         }
     }
@@ -595,7 +593,7 @@ extension DonationSettingsViewController {
     private func mySupportErrorIconView() -> UIView {
         let imageView = UIImageView.withTemplateImageName(
             "error-circle",
-            tintColor: .ows_accentRed,
+            tintColor: .Signal.red,
         )
         imageView.autoPinToSquareAspectRatio()
 

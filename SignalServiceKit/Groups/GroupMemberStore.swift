@@ -11,8 +11,8 @@ public protocol GroupMemberStore {
     func update(fullGroupMember: TSGroupMember, tx: DBWriteTransaction)
     func remove(fullGroupMember: TSGroupMember, tx: DBWriteTransaction)
 
-    func groupThreadIds(withFullMember serviceId: ServiceId, tx: DBReadTransaction) -> [String]
-    func groupThreadIds(withFullMember phoneNumber: E164, tx: DBReadTransaction) -> [String]
+    func groupThreadUniqueIds(withFullMember serviceId: ServiceId, tx: DBReadTransaction) -> [String]
+    func groupThreadUniqueIds(withFullMember phoneNumber: E164, tx: DBReadTransaction) -> [String]
 
     func sortedFullGroupMembers(in groupThreadId: String, tx: DBReadTransaction) -> [TSGroupMember]
 }
@@ -30,13 +30,13 @@ class GroupMemberStoreImpl: GroupMemberStore {
         groupMember.anyRemove(transaction: tx)
     }
 
-    func groupThreadIds(withFullMember serviceId: ServiceId, tx: DBReadTransaction) -> [String] {
-        Self.groupThreadIds(withFullMember: serviceId, tx: tx)
+    func groupThreadUniqueIds(withFullMember serviceId: ServiceId, tx: DBReadTransaction) -> [String] {
+        Self.groupThreadUniqueIds(withFullMember: serviceId, tx: tx)
     }
 
-    fileprivate static func groupThreadIds(withFullMember serviceId: ServiceId, tx: DBReadTransaction) -> [String] {
+    fileprivate static func groupThreadUniqueIds(withFullMember serviceId: ServiceId, tx: DBReadTransaction) -> [String] {
         let sql = """
-            SELECT \(TSGroupMember.columnName(.groupThreadId))
+            SELECT \(TSGroupMember.columnName(.threadUniqueId))
             FROM \(TSGroupMember.databaseTableName)
             WHERE \(TSGroupMember.columnName(.serviceId)) = ?
         """
@@ -49,13 +49,13 @@ class GroupMemberStoreImpl: GroupMemberStore {
         }
     }
 
-    func groupThreadIds(withFullMember phoneNumber: E164, tx: DBReadTransaction) -> [String] {
-        Self.groupThreadIds(withFullMember: phoneNumber, tx: tx)
+    func groupThreadUniqueIds(withFullMember phoneNumber: E164, tx: DBReadTransaction) -> [String] {
+        Self.groupThreadUniqueIds(withFullMember: phoneNumber, tx: tx)
     }
 
-    fileprivate static func groupThreadIds(withFullMember phoneNumber: E164, tx: DBReadTransaction) -> [String] {
+    fileprivate static func groupThreadUniqueIds(withFullMember phoneNumber: E164, tx: DBReadTransaction) -> [String] {
         let sql = """
-            SELECT \(TSGroupMember.columnName(.groupThreadId))
+            SELECT \(TSGroupMember.columnName(.threadUniqueId))
             FROM \(TSGroupMember.databaseTableName)
             WHERE \(TSGroupMember.columnName(.phoneNumber)) = ?
         """
@@ -75,7 +75,7 @@ class GroupMemberStoreImpl: GroupMemberStore {
     fileprivate static func sortedFullGroupMembers(in groupThreadId: String, tx: DBReadTransaction) -> [TSGroupMember] {
         let sql = """
             SELECT * FROM \(TSGroupMember.databaseTableName)
-            WHERE \(TSGroupMember.columnName(.groupThreadId)) = ?
+            WHERE \(TSGroupMember.columnName(.threadUniqueId)) = ?
             ORDER BY \(TSGroupMember.columnName(.lastInteractionTimestamp)) DESC
         """
         return failIfThrows {
@@ -105,15 +105,15 @@ class MockGroupMemberStore: GroupMemberStore {
         db.remove(model: groupMember)
     }
 
-    func groupThreadIds(withFullMember serviceId: ServiceId, tx: DBReadTransaction) -> [String] {
+    func groupThreadUniqueIds(withFullMember serviceId: ServiceId, tx: DBReadTransaction) -> [String] {
         db.read { tx in
-            GroupMemberStoreImpl.groupThreadIds(withFullMember: serviceId, tx: tx)
+            GroupMemberStoreImpl.groupThreadUniqueIds(withFullMember: serviceId, tx: tx)
         }
     }
 
-    func groupThreadIds(withFullMember phoneNumber: E164, tx: DBReadTransaction) -> [String] {
+    func groupThreadUniqueIds(withFullMember phoneNumber: E164, tx: DBReadTransaction) -> [String] {
         db.read { tx in
-            GroupMemberStoreImpl.groupThreadIds(withFullMember: phoneNumber, tx: tx)
+            GroupMemberStoreImpl.groupThreadUniqueIds(withFullMember: phoneNumber, tx: tx)
         }
     }
 

@@ -761,25 +761,21 @@ class CameraCaptureSession: NSObject {
         }
     }
 
-    private func videoAspectRatio() -> CGFloat {
-        AssertIsOnMainThread()
-        let size = UIScreen.main.bounds.size
-        let screenAspect: CGFloat
-        if size.width == 0 || size.height == 0 {
-            screenAspect = 0
-        } else if size.width > size.height {
-            screenAspect = size.height / size.width
-        } else {
-            screenAspect = size.width / size.height
-        }
-        return screenAspect.clamp(9 / 16, 3 / 4)
-    }
-
     private func startVideoRecording() {
         AssertIsOnMainThread()
 
         guard videoRecordingState == .ready else {
             owsFailBeta("Invalid recording state: \(videoRecordingState)")
+            return
+        }
+
+        guard let screen = CurrentAppContext().mainWindow?.screen else {
+            owsFailBeta("Could not get UIScreen.")
+            return
+        }
+        let screenSize = screen.bounds.size
+        guard screenSize.isNonEmpty else {
+            owsFailBeta("Screen size is empty.")
             return
         }
 
@@ -792,7 +788,13 @@ class CameraCaptureSession: NSObject {
         videoRecordingState = .started
         delegate.cameraCaptureSessionWillStartVideoRecording(self)
 
-        let aspectRatio = videoAspectRatio()
+        let screenAspectRatio: CGFloat
+        if screenSize.width > screenSize.height {
+            screenAspectRatio = screenSize.height / screenSize.width
+        } else {
+            screenAspectRatio = screenSize.width / screenSize.height
+        }
+        let videoAspectRatio = screenAspectRatio.clamp(9 / 16, 3 / 4)
         let videoCapture = videoCapture
         sessionQueue.async {
             self.setTorchMode(self.flashMode.toTorchMode)
@@ -801,7 +803,7 @@ class CameraCaptureSession: NSObject {
 
             do {
                 try videoCapture.beginRecording(
-                    aspectRatio: aspectRatio,
+                    aspectRatio: videoAspectRatio,
                     includeAudio: audioCaptureStarted,
                 )
             } catch {

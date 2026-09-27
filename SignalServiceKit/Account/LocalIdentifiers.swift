@@ -10,6 +10,20 @@ public final class LocalIdentifiers {
     /// The ACI for the current user.
     public let aci: Aci
 
+    // TODO: [#less] Use within LocalIdentifiers.
+    public struct PhoneNumber: Equatable {
+        /// The phone number for the current user.
+        public let e164: E164
+
+        /// The PNI for the current user.
+        public let pni: Pni
+
+        public init(e164: E164, pni: Pni) {
+            self.e164 = e164
+            self.pni = pni
+        }
+    }
+
     /// The PNI for the current user.
     ///
     /// - Note: Primary & linked devices may not have access to their PNI. The
@@ -23,14 +37,19 @@ public final class LocalIdentifiers {
     /// in prior versions of the application may not be a valid E164.
     public let phoneNumber: String
 
+    /// The phone number for the current user, as an optional.
+    ///
+    /// This is a temporary and will go away when `phoneNumber` is optional.
+    public var phoneNumberAsOptional: String? { self.phoneNumber }
+
     public init(aci: Aci, pni: Pni?, phoneNumber: String) {
         self.aci = aci
         self.pni = pni
         self.phoneNumber = phoneNumber
     }
 
-    public convenience init(aci: Aci, pni: Pni?, e164: E164) {
-        self.init(aci: aci, pni: pni, phoneNumber: e164.stringValue)
+    public convenience init(aci: Aci, phoneNumber: PhoneNumber) {
+        self.init(aci: aci, pni: phoneNumber.pni, phoneNumber: phoneNumber.e164.stringValue)
     }
 
     /// Checks if `serviceId` refers to ourself.
@@ -69,11 +88,12 @@ public final class LocalIdentifiers {
         return false
     }
 
-    public func containsAnyOf(aci: Aci?, phoneNumber: E164?, pni: Pni?) -> Bool {
+    // TODO: [#less] Accept an E164 (when LocalIdentifiers also accepts one).
+    public func containsAnyOf(aci: Aci?, phoneNumber: String?, pni: Pni?) -> Bool {
         if let aci, self.aci == aci {
             return true
         }
-        if let phoneNumber, self.phoneNumber == phoneNumber.stringValue {
+        if let phoneNumber, self.phoneNumber == phoneNumber {
             return true
         }
         if let pni, self.pni == pni {

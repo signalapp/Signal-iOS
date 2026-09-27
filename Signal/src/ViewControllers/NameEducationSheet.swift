@@ -15,10 +15,6 @@ class NameEducationSheet: StackSheetViewController {
         UIColor.Signal.secondaryBackground
     }
 
-    override var handleBackgroundColor: UIColor {
-        UIColor.Signal.transparentSeparator
-    }
-
     private static let capsuleColor = UIColor.Signal.warningLabel
     private let type: SafetyTipsType
 

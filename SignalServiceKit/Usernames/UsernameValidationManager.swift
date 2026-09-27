@@ -50,7 +50,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
 
     public func validateUsername() async throws -> Bool {
         do {
-            return try await taskQueue.run {
+            return try await taskQueue.runWithThrowingTask {
                 return try await self._validateUsername()
             }
         } catch {

@@ -7,14 +7,13 @@ import SignalServiceKit
 
 struct ChatListFilterStore {
     private enum Constants {
-        static let collectionName = "ChatListFilterStore"
         static let inboxFilterKey = "inboxFilter"
     }
 
-    private let store = KeyValueStore(collection: Constants.collectionName)
+    private let store = NewKeyValueStore(collection: "ChatListFilterStore")
 
-    func inboxFilter(transaction: some DBReadTransaction) -> InboxFilter? {
-        let rawValue = store.getInt(Constants.inboxFilterKey, defaultValue: 0, transaction: transaction)
+    func inboxFilter(transaction: DBReadTransaction) -> InboxFilter? {
+        let rawValue = store.fetchValue(Int64.self, forKey: Constants.inboxFilterKey, tx: transaction) ?? 0
         guard let inboxFilter = InboxFilter(rawValue: rawValue) else {
             owsFailDebug("Unknown inbox filter (rawValue \(rawValue))")
             return nil
@@ -22,7 +21,7 @@ struct ChatListFilterStore {
         return inboxFilter
     }
 
-    func setInboxFilter(_ inboxFilter: InboxFilter, transaction: some DBWriteTransaction) {
-        store.setInt(inboxFilter.rawValue, key: Constants.inboxFilterKey, transaction: transaction)
+    func setInboxFilter(_ inboxFilter: InboxFilter, transaction: DBWriteTransaction) {
+        store.writeValue(inboxFilter.rawValue, forKey: Constants.inboxFilterKey, tx: transaction)
     }
 }

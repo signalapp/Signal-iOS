@@ -260,15 +260,23 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
 
     lazy var contentDimmerView: UIView = {
         let dimmerView = UIView()
-        dimmerView.backgroundColor = .Signal.mediaBackground.withAlphaComponent(0.4)
+        dimmerView.backgroundColor = .ows_blackAlpha40
         return dimmerView
     }()
 
     // MARK: - View Lifecycle
 
     override public var prefersStatusBarHidden: Bool {
-        guard DependenciesBridge.shared.currentCallProvider.hasCurrentCall == false else { return false }
-        return (UIDevice.current.isIPad || UIDevice.current.hasIPhoneXNotch) == false
+        guard DependenciesBridge.shared.currentCallProvider.hasCurrentCall == false else {
+            return super.prefersStatusBarHidden
+        }
+        guard
+            let appWindow = CurrentAppContext().mainWindow,
+            appWindow.shouldHideStatusBarForFullScreenPresentation
+        else {
+            return super.prefersStatusBarHidden
+        }
+        return true
     }
 
     override public var preferredStatusBarStyle: UIStatusBarStyle {
@@ -1081,24 +1089,28 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
     // MARK: - Media Quality Selection UI
 
     private func mediaQualitySelectionMenu() -> UIMenu {
-        let sdQualityItem = UIAction(title: ImageQuality.standard.localizedString) { [weak self] _ in
+        let sdQualityItem = UIAction(
+            title: ImageQuality.standard.localizedString,
+            subtitle: OWSLocalizedString(
+                "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE",
+                comment: "Subtitle for the 'standard' option for media quality.",
+            ),
+        ) { [weak self] _ in
             // Setter updates UI.
             self?.outputImageQuality = .standard
         }
-        sdQualityItem.subtitle = OWSLocalizedString(
-            "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE",
-            comment: "Subtitle for the 'standard' option for media quality.",
-        )
         sdQualityItem.state = outputImageQuality == .standard ? .on : .off
 
-        let hdQualityItem = UIAction(title: ImageQuality.high.localizedString) { [weak self] _ in
+        let hdQualityItem = UIAction(
+            title: ImageQuality.high.localizedString,
+            subtitle: OWSLocalizedString(
+                "ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE",
+                comment: "Subtitle for the 'high' option for media quality.",
+            ),
+        ) { [weak self] _ in
             // Setter updates UI.
             self?.outputImageQuality = .high
         }
-        hdQualityItem.subtitle = OWSLocalizedString(
-            "ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE",
-            comment: "Subtitle for the 'high' option for media quality.",
-        )
         hdQualityItem.state = outputImageQuality == .high ? .on : .off
 
         return UIMenu(

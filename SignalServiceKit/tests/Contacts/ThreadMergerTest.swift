@@ -17,8 +17,6 @@ final class ThreadMergerTest: XCTestCase {
     private var disappearingMessagesConfigurationManager: ThreadMerger_MockDisappearingMessagesConfigurationManager!
     private var disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore!
     private var interactionStore: MockInteractionStore!
-    private var threadAssociatedDataManager: ThreadMerger_MockThreadAssociatedDataManager!
-    private var threadAssociatedDataStore: MockThreadAssociatedDataStore!
     private var threadStore: MockThreadStore!
     private var threadRemover: ThreadRemover!
     private var threadReplyInfoStore: ThreadReplyInfoStore!
@@ -43,8 +41,6 @@ final class ThreadMergerTest: XCTestCase {
         disappearingMessagesConfigurationStore = MockDisappearingMessagesConfigurationStore()
         disappearingMessagesConfigurationManager = ThreadMerger_MockDisappearingMessagesConfigurationManager(disappearingMessagesConfigurationStore)
         interactionStore = MockInteractionStore()
-        threadAssociatedDataStore = MockThreadAssociatedDataStore()
-        threadAssociatedDataManager = ThreadMerger_MockThreadAssociatedDataManager(threadAssociatedDataStore)
         threadReplyInfoStore = ThreadReplyInfoStore()
         threadStore = MockThreadStore()
         wallpaperStore = WallpaperStore(
@@ -58,12 +54,13 @@ final class ThreadMergerTest: XCTestCase {
             databaseStorage: ThreadRemover_MockDatabaseStorage(),
             deletedCallRecordStore: DeletedCallRecordStoreImpl(),
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
+            groupMemberUpdater: MockGroupMemberUpdater(),
             lastVisibleInteractionStore: LastVisibleInteractionStore(),
-            threadAssociatedDataStore: threadAssociatedDataStore,
             threadReadCache: ThreadRemover_MockThreadReadCache(),
             threadReplyInfoStore: threadReplyInfoStore,
             threadStore: threadStore,
             wallpaperStore: wallpaperStore,
+            observers: [],
         )
         threadMerger = ThreadMerger(
             callRecordStore: callRecordStore,
@@ -73,8 +70,6 @@ final class ThreadMergerTest: XCTestCase {
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             interactionStore: interactionStore,
             sdsThreadMerger: ThreadMerger_MockSDSThreadMerger(),
-            threadAssociatedDataManager: threadAssociatedDataManager,
-            threadAssociatedDataStore: threadAssociatedDataStore,
             threadRemover: threadRemover,
             threadReplyInfoStore: threadReplyInfoStore,
             threadStore: threadStore,
@@ -160,20 +155,16 @@ final class ThreadMergerTest: XCTestCase {
     // MARK: - Thread Associated Data
 
     private func setThreadAssociatedData(for thread: TSContactThread, isArchived: Bool, isMarkedUnread: Bool, mutedUntilTimestamp: UInt64, audioPlaybackRate: Float) {
-        threadAssociatedDataStore.values[thread.uniqueId] = ThreadAssociatedData(
-            threadUniqueId: thread.uniqueId,
-            isArchived: isArchived,
-            isMarkedUnread: isMarkedUnread,
-            mutedUntilTimestamp: mutedUntilTimestamp,
-            audioPlaybackRate: audioPlaybackRate,
-            lastVerifiedGroupNameHash: nil,
-        )
+        thread.isArchived = isArchived
+        thread.isMarkedUnread = isMarkedUnread
+        thread.mutedUntilTimestamp = mutedUntilTimestamp
+        thread.audioPlaybackRate = audioPlaybackRate
     }
 
     private func getThreadAssociatedDatas() -> [String: String] {
-        threadAssociatedDataStore.values.mapValues {
-            "\($0.isArchived)-\($0.isMarkedUnread)-\($0.mutedUntilTimestamp)-\($0.audioPlaybackRate)"
-        }
+        return Dictionary(uniqueKeysWithValues: threadStore.threads.map {
+            ($0.uniqueId, "\($0.isArchived)-\($0.isMarkedUnread)-\($0.mutedUntilTimestamp)-\($0.audioPlaybackRate)")
+        })
     }
 
     func testThreadAssociatedDataNeither() {
@@ -297,7 +288,6 @@ final class ThreadMergerTest: XCTestCase {
             phoneNumber: phoneNumber?.stringValue,
             cache: _signalServiceAddressCache,
         ))
-        threadAssociatedDataStore.values[result.uniqueId] = ThreadAssociatedData(threadUniqueId: result.uniqueId)
         return result
     }
 }

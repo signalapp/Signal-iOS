@@ -101,7 +101,7 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
     }
 
     func renewEntitlementIfNecessary() async throws {
-        try await serialTaskQueue.run {
+        try await serialTaskQueue.runWithThrowingTask {
             try await _renewEntitlementIfNecessary()
         }
     }

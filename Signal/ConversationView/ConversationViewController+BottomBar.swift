@@ -46,7 +46,7 @@ public extension ConversationViewController {
             if viewState.bottomViewType != newValue {
                 if viewState.bottomViewType == .inputToolbar {
                     // Dismiss the keyboard if we're swapping out the input toolbar
-                    dismissKeyBoard()
+                    dismissKeyboard()
                 }
                 viewState.bottomViewType = newValue
                 updateBottomBar()
@@ -103,13 +103,12 @@ public extension ConversationViewController {
             if appExpiry.isExpired(now: Date()) {
                 return .appExpired
             }
-            switch tsAccountManager.registrationStateWithMaybeSneakyTransaction.deregistrationState {
-            case .deregistered:
-                return .notRegistered
-            case .delinked:
-                return .notLinked
-            case nil:
-                break
+            if let deregisteredState = tsAccountManager.registrationStateWithMaybeSneakyTransaction.deregisteredState {
+                if deregisteredState.isPrimary {
+                    return .notRegistered
+                } else {
+                    return .notLinked
+                }
             }
             if
                 let groupModel = thread.groupModelIfGroupThread as? TSGroupModelV2,
@@ -196,7 +195,10 @@ public extension ConversationViewController {
             let notRegisteredView = BlockingErrorBottomPanelView(
                 text: notRegisteredErrorText(),
                 onTap: { [unowned self] in
-                    RegistrationUtils.showReregistrationUI(fromViewController: self, appReadiness: appReadiness)
+                    let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+                    let registrationState = tsAccountManager.registrationStateWithMaybeSneakyTransaction
+                    let deregisteredState = registrationState.deregisteredState.owsFailUnwrap("must be deregistered")
+                    RegistrationUtils.showReRegistrationPrompt(fromViewController: self, deregisteredState: deregisteredState)
                 },
             )
             requestView = notRegisteredView
@@ -204,8 +206,11 @@ public extension ConversationViewController {
         case .notLinked:
             let notRegisteredView = BlockingErrorBottomPanelView(
                 text: notLinkedErrorText(),
-                onTap: { [unowned self] in
-                    RegistrationUtils.showReregistrationUI(fromViewController: self, appReadiness: appReadiness)
+                onTap: {
+                    let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+                    let registrationState = tsAccountManager.registrationStateWithMaybeSneakyTransaction
+                    let deregisteredState = registrationState.deregisteredState.owsFailUnwrap("must be deregistered")
+                    RegistrationUtils.showReLinking(deregisteredState: deregisteredState)
                 },
             )
             requestView = notRegisteredView
@@ -404,7 +409,7 @@ public extension ConversationViewController {
         inputToolbar.beginEditingMessage()
     }
 
-    func dismissKeyBoard() {
+    func dismissKeyboard() {
         AssertIsOnMainThread()
 
         guard hasViewWillAppearEverBegun else {

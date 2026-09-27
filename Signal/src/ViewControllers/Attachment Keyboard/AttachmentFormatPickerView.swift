@@ -185,9 +185,6 @@ class AttachmentFormatPickerView: UIView {
 
         private static var contactCases: [AttachmentType] {
             var casesToExclude: [AttachmentType] = []
-            if !BuildFlags.pollOneOnOneSend {
-                casesToExclude.append(.poll)
-            }
             if !SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled {
                 casesToExclude.append(.payment)
             }

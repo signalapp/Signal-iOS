@@ -106,6 +106,14 @@ public extension Error {
         return error.responseHeaders
     }
 
+    var isCancellation: Bool {
+        switch self {
+        case is CancellationError: true
+        case URLError.cancelled: true
+        default: false
+        }
+    }
+
     /// Does this error represent a transient networking issue?
     ///
     /// a.k.a. "the internet gave up" (see also `isTimeout`)

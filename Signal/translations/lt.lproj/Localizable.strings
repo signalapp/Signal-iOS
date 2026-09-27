@@ -124,6 +124,12 @@
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Ar norėtumėte pasidalinti savo profiliu su šiuo naudotoju?";
 
+/* Message shown in an action sheet when attempting to rotate AEP, but local backups is enabled. */
+"AEP_MANAGER_LOCAL_BACKUPS_DISABLE_REQUIRED" = "Prieš tęsdami privalote išjungti atsargines kopijas įrenginyje.";
+
+/* Button in an action sheet that takes the user to On-Device Backup settings. */
+"AEP_MANAGER_ON_DEVICE_BACKUP_SETTINGS_BUTTON" = "Atsarginių kopijų įrenginyje nustatymai";
+
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Supratau";
 
@@ -238,6 +244,9 @@
 /* Action in an action sheet offering to attempt recovery of a corrupted database. */
 "APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE" = "Taisyti";
 
+/* Action in an action sheet offering to exit the app. */
+"APP_LAUNCH_FAILURE_EXIT_APP_ACTION_TITLE" = "Palikti „Signal“";
+
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Atnaujinkite į naujausią „Signal“ versiją.";
 
@@ -250,11 +259,11 @@
 /* Error indicating that the app crashed during the previous launch. */
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Nepavyko atidaryti „Signal“";
 
-/* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Nepavyko atverti „Signal“, nes saugykloje trūksta vietos. Norėdami naudotis „Signal“, atlaisvinkite vietos saugykloje per nustatymus.";
+/* Message for an error sheet shown when the app cannot launch because the device is out of storage space. Embeds 1:{{ the localized name of the user's device model, e.g. iPhone }}; 2:{{ an amount of storage space as a file size, e.g. 1 GB }}. */
+"APP_LAUNCH_FAILURE_NOT_ENOUGH_STORAGE_SPACE_MESSAGE_FORMAT" = "Nepavyko atverti „Signal“, nes jūsų %1$@ saugykloje nebėra vietos. Atlaisvinkite bent %2$@ ir vėl atverkite „Signal“.\n\nEikite į „iOS Settings“ > „General“ > „Storage“ ir pašalinkite nenaudojamas programėles, ištrinkite didelius vaizdo įrašus iš programėlės „Photos“ ar kitų programėlių ir ištrinkite atsisiųstą muziką bei įrašus.";
 
-/* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Mažai vietos saugykloje";
+/* Title for an error sheet shown when the app cannot launch because the device is out of storage space. */
+"APP_LAUNCH_FAILURE_NOT_ENOUGH_STORAGE_SPACE_TITLE" = "Nepakanka vietos saugykloje";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Nepavyko atkurti iš senojo įrenginio perkeltų duomenų. Nusiųskite derinimo žurnalą adresu support@signal.org, kad galėtume išspręsti šią problemą. Jei iš naujo įdiegsite „Signal“, galite prarasti žinučių istoriją.";
@@ -718,9 +727,6 @@
 /* Title for a view allowing users to save their newly-created 'Recovery Key', emphasizing that the key is new. */
 "BACKUP_RECORD_KEY_NEW_TITLE" = "Išsaugokite naują atkūrimo raktą";
 
-/* Name used as both the username and title for the user's 'Recovery Key' credential when saving it to a password manager. */
-"BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME" = "„Signal“ atkūrimo raktas";
-
 /* Subtitle for a view allowing users to save their 'Recovery Key'. */
 "BACKUP_RECORD_KEY_SUBTITLE" = "Šis raktas reikalingas norint atkurti paskyrą ir duomenis. Išsaugokite jį saugioje vietoje. Pamiršę raktą savo paskyros atkurti negalėsite.";
 
@@ -1020,6 +1026,9 @@
 
 /* Label for a menu item explaining when the user's last backup occurred. */
 "BACKUP_SETTINGS_ENABLED_LAST_BACKUP_LABEL" = "Paskutinė atsarginė kopija";
+
+/* Label for a cell on the backups landing page explaining when the user's last backup occurred. */
+"BACKUP_SETTINGS_ENABLED_LAST_BACKUP_LABEL_LANDING_PAGE" = "Paskutinė atsarginė kopija";
 
 /* Text explaining that the user's last backup was in the past. Embeds 1:{{ the date of the backup }} and 2:{{ the time of the backup }}. */
 "BACKUP_SETTINGS_ENABLED_LAST_BACKUP_PAST_FORMAT" = "%1$@, %2$@";
@@ -2122,6 +2131,27 @@
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
 "CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtruoti neperskaitytus";
 
+/* Title shown on chat list banner for restoring media from a backup is finished */
+"CHAT_LIST_LOCAL_FILE_BACKUP_RESTORE_FINISHED_TITLE" = "Atkūrimas užbaigtas";
+
+/* Progress label showing bytes restored from an on-device backup. Embeds {{ %1$@ formatted bytes restored, %2$@ formatted total bytes to restore }}. */
+"CHAT_LIST_LOCAL_FILE_BACKUP_RESTORE_PROGRESS_VIEW_PROGRESS_FORMAT" = "%1$@ iš %2$@";
+
+/* Title shown on the chat list banner while restoring attachments from an on-device backup. */
+"CHAT_LIST_LOCAL_FILE_BACKUP_RESTORE_PROGRESS_VIEW_TITLE" = "Atkuriama atsarginė kopija įrenginyje";
+
+/* Progress label showing the amount uploaded out of the total. Embeds {{ %1$@ bytes uploaded, %2$@ total bytes to upload }}. */
+"CHAT_LIST_LOCAL_FILE_BACKUPS_PROGRESS_COPYING_ATTACHMENTS_FORMAT" = "%1$@ iš %2$@";
+
+/* Title label shown in the chat list backup progress view while backup attachments are being uploaded. */
+"CHAT_LIST_LOCAL_FILE_BACKUPS_PROGRESS_COPYING_ATTACHMENTS_TITLE" = "Kuriama atsarginė kopija įrenginyje";
+
+/* Title label shown in the chat list local file backup progress view while the attachments are being prepared */
+"CHAT_LIST_LOCAL_FILE_BACKUPS_PROGRESS_PREPARING_ATTACHMENTS" = "Ruošiami priedai";
+
+/* Title label shown in the chat list local file backup progress view while the backup file is being prepared. */
+"CHAT_LIST_LOCAL_FILE_BACKUPS_PROGRESS_PREPARING_BACKUP" = "Ruošiama atsarginė kopija";
+
 /* Message shown in the chat list when the chat list is empty. */
 "CHAT_LIST_NO_CHATS_SUBTITLE" = "Čia bus rodomi naujausi pokalbiai.";
 
@@ -2204,13 +2234,13 @@
 "CHOOSE_BACKUP_PLAN_TITLE" = "Pasirinkite atsarginės kopijos planą";
 
 /* Text on a screen shown when the app can't be used until the user corrects their device's date and time. Embeds {{ the device's current date and time, in UTC }}. */
-"CLOCK_SKEW_APP_BLOCKING_DEVICE_TIME_FORMAT" = "Your device’s time is %1$@ UTC.";
+"CLOCK_SKEW_APP_BLOCKING_DEVICE_TIME_FORMAT" = "Jūsų įrenginio data ir laikas: %1$@ UTC.";
 
 /* Subtitle for a screen shown when the app can't be used until the user corrects their device's date and time. */
-"CLOCK_SKEW_APP_BLOCKING_SUBTITLE" = "Signal can’t be used while your device’s date and time are incorrect. Open Settings to correct them.";
+"CLOCK_SKEW_APP_BLOCKING_SUBTITLE" = "Negalima naudotis „Signal“, kol jūsų įrenginio data ir laikas neteisingi. Atidarykite „Signal“ nustatymus ir juos ištaisykite.";
 
 /* Title for a screen shown when the app can't be used until the user corrects their device's date and time. */
-"CLOCK_SKEW_APP_BLOCKING_TITLE" = "Date is Inaccurate";
+"CLOCK_SKEW_APP_BLOCKING_TITLE" = "Data netiksli";
 
 /* VoiceOver hint for an expanded collapse set button. */
 "COLLAPSE_SET_ACCESSIBILITY_HINT_COLLAPSE" = "Slėpti atnaujinimus";
@@ -2464,9 +2494,6 @@
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "„Signal“ negalėjo įvykdyti jūsų palaikymo užklausos.";
 
-/* button text */
-"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Bandykite dar kartą";
-
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Turėdami derinimo žurnalus greičiau išspręsime jūsų problemą. Žurnalų pateikti neprivaloma.";
 
@@ -2539,26 +2566,11 @@
 /* Title for the button in a warning sheet shown before the user pastes their 'Recovery Key' into the chat input text field that acknowledges the warning and proceeds with the paste. */
 "CONVERSATION_INPUT_PASTE_RECOVERY_KEY_WARNING_SHEET_SHARE_BUTTON_TITLE" = "Dalintis raktu";
 
-/* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Nutildyti šį pokalbį…";
-
-/* 1 day */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 diena";
-
-/* 1 hour */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 valanda";
-
-/* 1 week */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "1 savaitė";
-
-/* 8 hours */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_8H" = "8 valandos";
-
-/* Always */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Visada";
-
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Siųsti žinutes į šią grupę gali tik administratoriai.";
+
+/* Displayed at the bottom of chat picker in gray if no chats are selected. */
+"CONVERSATION_PICKER_CHOOSE_RECIPIENT" = "Pasirinkite gavėją";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Grupės";
@@ -2701,6 +2713,9 @@
 /* Button to mute the chat */
 "CONVERSATION_SETTINGS_MUTE_BUTTON" = "Nutildyti";
 
+/* Label for button to mute a thread until a date the user picks. */
+"CONVERSATION_SETTINGS_MUTE_CUSTOM_ACTION" = "Mute until…";
+
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 valandos";
 
@@ -2713,7 +2728,7 @@
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 diena";
 
-/* Label for button to mute a thread for a hour. */
+/* Label for button to mute a thread for an hour. */
 "CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 valanda";
 
 /* Label for button to mute a thread for a week. */
@@ -3154,11 +3169,26 @@
 /* An error indicating the user must update their device before trying to transfer. */
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Atnaujinkite į naujausią „Signal“ versiją ir bandykite dar kartą.";
 
+/* Body of the device transfer screen for pairing a new device, from the new device */
+"DEVICE_TRANSFER_PAIR_NEW_DEVICE_MESSAGE" = "Norėdami perkelti paskyrą, susiekite šį įrenginį su senuoju.";
+
+/* Title of the device transfer screen for pairing a new device, from the new device */
+"DEVICE_TRANSFER_PAIR_NEW_DEVICE_TITLE" = "Susiekite su naujuoju įrenginiu";
+
+/* Body of the device transfer screen for pairing a new device, from the old device */
+"DEVICE_TRANSFER_PAIR_OLD_DEVICE_MESSAGE" = "Norėdami perkelti paskyrą, susiekite šį įrenginį su naujuoju.";
+
+/* Title of the device transfer screen for pairing a new device, from the old device */
+"DEVICE_TRANSFER_PAIR_OLD_DEVICE_TITLE" = "Susiekite su senuoju įrenginiu";
+
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Laikykite įrenginius vieną šalia kito. Neišjunkite įrenginių ir palikite „Signal“ atvertą. Perkėlimai yra šifruoti ištisiniu būdu.";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Gaunami duomenys";
+
+/* Description in the progress view displayed during device transfer finalization. */
+"DEVICE_TRANSFER_STATUS_DEVICE_FINISHING" = "Baigiamas perkėlimas…";
 
 /* Status message on new device when cancelling transfer. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CANCELLING" = "Atšaukiamas prisijungimas prie senojo „iPhone“…";
@@ -3168,6 +3198,12 @@
 
 /* Description message on new device displayed during device transfer. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "Senąjį įrenginį turėkite šalia ir pasirūpinkite, kad būtų įjungtas „Wi-Fi“ ir „Bluetooth“.";
+
+/* Description message on new device displayed during device transfer when using WiFiAware. */
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_WIFI_AWARE_MESSAGE" = "Senąjį įrenginį turėkite šalia ir pasirūpinkite, kad būtų įjungtas „Wi-Fi“ ir „Bluetooth“. Pasirinkite šį įrenginį iš įrenginių sąrašo senajame įrenginyje.  Jei įrenginio nematote senajame įrenginyje, pasirinkite „Susieti naują įrenginį“.";
+
+/* Title for paring an old device to transfer to. */
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_PAIR_DEVICE" = "Susieti šį įrenginį";
 
 /* Status message on new device when transfer is starting. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Laukiama, kol bus prisijungta prie senojo įrenginio…";
@@ -3193,11 +3229,38 @@
 /* Description message on old device displayed during device transfer. */
 "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "Naująjį įrenginį turėkite šalia ir pasirūpinkite, kad būtų įjungtas „Wi-Fi“ ir „Bluetooth“.";
 
+/* Description message on old device displayed during device connection when using WiFiAware. */
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_WIFI_AWARE_MESSAGE" = "Naująjį įrenginį turėkite šalia ir pasirūpinkite, kad būtų įjungtas „Wi-Fi“ ir „Bluetooth“.";
+
+/* Title for paring an new device to transfer to. */
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_PAIR_DEVICE" = "Susieti su naujuoju įrenginiu";
+
 /* Status message on old device when transfer is starting. */
 "DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Laukiama, kol bus prisijungta prie naujojo įrenginio…";
 
-/* Action asking user to try again after transfer failure. */
-"DEVICE_TRANSFER_TRY_AGAIN_ACTION" = "Bandykite dar kartą";
+/* Status message on old device when WiFiAware transfer is starting. */
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING_WIFI_AWARE" = "Pasirinkite naują įrenginį, prie kurio prisijungsite…";
+
+/* Description message on old device displayed during device discovery when using WiFiAware. */
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING_WIFI_AWARE_MESSAGE" = "Pasirinkite naują įrenginį iš toliau pateikto susietų įrenginių sąrašo. Jei naujo įrenginio nematote, pasirinkite „Susieti naują įrenginį“, kad pradėtumėte procesą.";
+
+/* Message informing the user to continue on the old device */
+"DEVICE_TRANSFER_TUTORIAL_CONTINUE_OLD_DEVICE_MESSAGE" = "Tęskite senajame įrenginyje.";
+
+/* Message informing the user to enable wifi and bluetooth on device */
+"DEVICE_TRANSFER_TUTORIAL_ENABLE_WIFI_MESSAGE" = "Įjunkite „WiFi“ ir „Bluetooth“ abiejuose įrenginiuose.";
+
+/* Message informing the user to select the new device when prompted */
+"DEVICE_TRANSFER_TUTORIAL_SELECT_NEW_DEVICE_MESSAGE" = "Paraginti pasirinkite naująjį įrenginį.";
+
+/* Message informing the user to tap on the pair device button */
+"DEVICE_TRANSFER_TUTORIAL_TAP_PAIR_DEVICE_MESSAGE" = "Bakstelėkite „Susieti šį įrenginį“ toliau.";
+
+/* Message informing the user to tap on the pair device button */
+"DEVICE_TRANSFER_TUTORIAL_TAP_PAIR_NEW_DEVICE_MESSAGE" = "Bakstelėkite „Susieti su naujuoju įrenginiu“ toliau.";
+
+/* Label for a toast that confirms that local backups are disabled. */
+"DISABLE_LOCAL_FILE_BACKUPS_TOAST_CONFIRM" = "Atsarginės kopijos įrenginyje išjungtos. Atsargines kopijas įjunkite Nustatymuose.";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Dingstančios žinutės";
@@ -3385,9 +3448,6 @@
 /* Title for a button asking the user to renew their subscription, because it has expired. */
 "DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Atnaujinti prenumeratą";
 
-/* Title for a button asking the user to try their donation again, because something went wrong. */
-"DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE" = "Bandykite dar kartą";
-
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
 "DONATION_FOR_A_FRIEND_ROW_DURATION" = "Galioja %1$@";
 
@@ -3555,9 +3615,6 @@
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Atnaujinti prenumeratą";
-
-/* Title for an action in an action sheet asking the user to try again, in reference to a donation that failed. */
-"DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Bandykite dar kartą";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Nepavyko patvirtinti jūsų „iDEAL“ | „Wero“ paramos. Patikrinkite savo banko programėlę ir patvirtinkite paramą arba bandykite dar kartą.";
@@ -3733,14 +3790,8 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Kodėl gi ko nors nepakvietus?";
 
-/* Button for a sheet asking the user if they want to enable local file backups */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_BUTTON" = "Įjungti atsargines kopijas įrenginyje";
-
-/* Message for a sheet asking the user if they want to enable local file backups. */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE" = "Tam, kad galėtumėte naudotis atsarginėmis kopijomis įrenginyje, turėsite įjungti jas šioje paskyroje. Tai bet kada galite atlikti skiltyje Nustatymai > Atsarginės kopijos.";
-
-/* Title for a sheet asking the user if they want to enable local file backups. */
-"ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE" = "Įjungti atsargines kopijas įrenginyje?";
+/* Label for a toast that confirms that local backups are enabled. */
+"ENABLE_LOCAL_FILE_BACKUPS_TOAST_CONFIRM" = "Atsarginės kopijos įrenginyje įjungtos";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Užimta";
@@ -4957,6 +5008,9 @@
 /* Title for the 'Select Chats' option in the ChatList. */
 "HOME_VIEW_TITLE_SELECT_CHATS" = "Rinktis pokalbius";
 
+/* Title for the mute duration menu in the toolbar of the chat list if multi-select is active. */
+"HOME_VIEW_TOOLBAR_MUTE_MENU_TITLE" = "Nutildyti pasirinktus pokalbius…";
+
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Žymėti visus kaip perskaitytus";
 
@@ -5037,6 +5091,12 @@
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Gavus naują žinutę suarchyvuoti pokalbiai bus perkelti į gautuosius.";
+
+/* Body of prompt notifying device transfer will continue on other device. */
+"INCOMING_DEVICE_TRANSFER_CONTINUE_BODY" = "Paskyros perkėlimą tęskite kitame įrenginyje.";
+
+/* Title of prompt notifying device transfer will continue on other device. */
+"INCOMING_DEVICE_TRANSFER_CONTINUE_TITLE" = "Tęskite kitame įrenginyje";
 
 /* info message text in conversation view */
 "INCOMING_VIDEO_CALL" = "Gaunamasis vaizdo skambutis";
@@ -5428,6 +5488,9 @@
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Neuždarykite programėlės.";
 
+/* Body for a sheet warning users about creating a new Recovery Key. */
+"LOCAL_BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Naują raktą sukurti būtina tik tuo atveju, jei kažkas kitas žino jūsų raktą. Norint sukurti naują raktą pirmiausia reikia išjungti atsargines kopijas įrenginyje.\n\nIšjungę atsargines kopijas įrenginyje ir sukūrę naują raktą turėsite iš naujo įjungti atsargines kopijas įrenginyje.";
+
 /* Body for an error sheet shown when the user's folder choice does not contain a backup file. */
 "LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_BODY" = "Pasirinktame aplanke „Signal“ atsarginės kopijos nerasta. Bandykite kitą aplanką.";
 
@@ -5452,6 +5515,12 @@
 /* Title for a sheet asking the user to select their backup to restore from during registration. */
 "LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "Pasirinkite atsarginės kopijos aplanką";
 
+/* Message for an action sheet informing the user we were unable to save their local backup location */
+"LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_MESSAGE" = "Kažkas nepavyko – jūsų pasirinkta aplanko vieta neišsaugota. Bandykite dar kartą. Jei problema išlieka, kreipkitės į palaikymo komandą.";
+
+/* Title for an action sheet informing the user we were unable to save their local backup location */
+"LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_TITLE" = "Nepavyko išsaugoti aplanko vietos";
+
 /* Button for a sheet asking the user to choose a new local file backup folder */
 "LOCAL_FILE_BACKUP_CHOOSE_NEW_FOLDER_SHEET_BUTTON" = "Pasirinkti aplanką";
 
@@ -5471,7 +5540,7 @@
 "LOCAL_FILE_BACKUP_ONBOARDING_INTRO_BULLET_3" = "Atsargines kopijas galite bet kada išjungti";
 
 /* Subtitle for a view introducing local file backups during the onboarding flow. */
-"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Back up your messages to a folder on your device. Your backup is end-to-end encrypted and can be restored by installing a new copy of Signal and choosing “Restore or Transfer“.";
+"LOCAL_FILE_BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Sukurkite žinučių atsarginę kopiją savo įrenginio aplanke. Jūsų atsarginė kopija yra visiškai užšifruota ir ją galėsite atkurti įdiegę naują „Signal“ kopiją ir pasirinkę „Atkurti arba perkelti“.";
 
 /* Title for a view introducing local file backups during the onboarding flow. */
 "LOCAL_FILE_BACKUP_ONBOARDING_INTRO_TITLE" = "Atsarginės kopijos įrenginyje";
@@ -5486,22 +5555,22 @@
 "LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "Pasirinkti aplanką";
 
 /* Warning shown when a user tries to enable local file backups with optimize media enabled */
-"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET" = "You have Optimize Signal Storage on. If you want to include all media in your on-device backup, turn the setting off.";
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET" = "Esate įjungę „Optimizuoti „Signal“ saugyklą“. Jei į atsarginę kopiją įrenginyje norite įtraukti visus įrašus, išjunkite šį nustatymą.";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with local backups enabled. */
-"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_BODY" = "Turning on “Optimize Signal storage“ will offload old media from your device. You can download it again at any time. It will also remove old media from your on-device backup.";
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_BODY" = "Įjungus „Optimizuoti „Signal“ saugyklą“, seni įrašai bus perkelti iš jūsų įrenginio. Juos bet kada galėsite vėl atsisiųsti. Ši funkcija taip pat pašalins senus įrašus iš jūsų atsarginės kopijos įrenginyje.";
 
 /* Title for a sheet warning the user about enabling Optimize Storage with local backups enabled. */
-"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_TITLE" = "Media Will Be Removed From Your On-Device Backup";
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_TITLE" = "Įrašai bus pašalinti iš jūsų atsarginės kopijos įrenginyje";
 
 /* Action in a sheet warning the user about enabling Optimize Storage with local backups enabled, that turns on Optimize Storage. */
-"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_TURN_ON" = "Turn on";
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_TURN_ON" = "Įjungti";
 
 /* Action in an action sheet offering to continue anyway. */
-"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_CONTINUE" = "Continue Without Turning Off";
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_CONTINUE" = "Tęsti neišjungus";
 
 /* Action in an action sheet offering to go to the optimize local storage setting. */
-"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_VIEW_SETTING" = "View Setting";
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_VIEW_SETTING" = "Rodyti nustatymą";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Ieškoti pagal vardą arba adresą";
@@ -5518,8 +5587,17 @@
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Žinutė";
 
-/* Message for a sheet warning the user that their device is low on storage space. */
-"LOW_DISK_SPACE_WARNING_SHEET_MESSAGE" = "Jūsų įrenginyje liko mažai saugyklos vietos. Jei išnaudosite, nebegalėsite naudotis „Signal“. Atlaisvinkite vietos saugykloje per nustatymus.";
+/* Message for a sheet warning the user that their device is low on storage space. Embeds 1:{{ the localized name of the user's device model, e.g. iPhone }}; 2:{{ an amount of storage space as a file size, e.g. 1 GB }}. */
+"LOW_DISK_SPACE_WARNING_SHEET_MESSAGE_FORMAT" = "Jūsų %1$@ liko mažai saugyklos vietos. Jei saugykla užsipildys, „Signal“ nebeveiks ir gali būti, kad prarasite duomenis. Atlaisvinkite bent %2$@ vietos.";
+
+/* A suggestion for freeing up storage space, on a sheet warning the user that their device is low on storage space. */
+"LOW_DISK_SPACE_WARNING_SHEET_SUGGESTION_DELETE_CAMERA_ROLL_MEDIA" = "Ištrinkite didelius vaizdo įrašus iš programėlės „Photos“, „Signal“ ar kitų pokalbių programėlių.";
+
+/* A suggestion for freeing up storage space, on a sheet warning the user that their device is low on storage space. */
+"LOW_DISK_SPACE_WARNING_SHEET_SUGGESTION_DELETE_DOWNLOADED_MEDIA" = "Ištrinkite atsisiųstą muziką ar kitus įrašus.";
+
+/* A suggestion for freeing up storage space, on a sheet warning the user that their device is low on storage space. */
+"LOW_DISK_SPACE_WARNING_SHEET_SUGGESTION_REMOVE_APPS" = "Eikite į „iOS Settings“ > „General“ > „Storage“. Peržiūrėkite rekomendacijas ir pašalinkite nenaudojamas programėles.";
 
 /* Title for a sheet warning the user that their device is low on storage space. */
 "LOW_DISK_SPACE_WARNING_SHEET_TITLE" = "Mažai vietos saugykloje";
@@ -6100,6 +6178,15 @@
 /* Text for a toast confirming that the mic has been muted for a call. */
 "MUTE_CONFIRMATION_TOAST_LABEL" = "Mikrofonas išjungtas";
 
+/* Label next to the selected date and time on the sheet for muting a chat's notifications until a custom date. */
+"MUTE_UNTIL_SHEET_MUTE_UNTIL_LABEL" = "Mute Until";
+
+/* Footer on the sheet for muting a chat's notifications until a custom date, clarifying which time zone the selected date and time are in. Embeds {{the name of the current time zone}}. */
+"MUTE_UNTIL_SHEET_TIME_ZONE_FOOTER_FORMAT" = "All times in %1$@";
+
+/* Title for the sheet for muting a chat's notifications until a custom date. */
+"MUTE_UNTIL_SHEET_TITLE" = "Mute Notifications";
+
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Nutildytas";
 
@@ -6311,7 +6398,7 @@
 "NOTE_TO_SELF" = "Priminimas sau";
 
 /* Body for a notification shown when Signal can't fetch messages because the device's date and time are incorrect. */
-"NOTIFICATION_BODY_CLOCK_SKEW" = "Signal can’t receive messages while your device’s date and time are incorrect. Open Settings to correct them.";
+"NOTIFICATION_BODY_CLOCK_SKEW" = "„Signal“ negali gauti žinučių, kol jūsų įrenginio data ir laikas neteisingi. Atidarykite „Signal“ nustatymus ir juos ištaisykite.";
 
 /* Body for a notification representing a message request. */
 "NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Žinutės užklausa";
@@ -6410,10 +6497,10 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Praleisti PIN kodo įrašą?";
 
 /* Subtitle for the sheet that lets users pick from available local backups to restore. */
-"ONBOARDING_CHOOSE_BACKUP_SHEET_SUBTITLE" = "Choosing an older backup may result in lost messages or media.";
+"ONBOARDING_CHOOSE_BACKUP_SHEET_SUBTITLE" = "Pasirinkę senesnę atsarginę kopiją galite prarasti žinutes arba įrašus.";
 
 /* Title for the sheet that lets users pick from available local backups to restore. */
-"ONBOARDING_CHOOSE_BACKUP_SHEET_TITLE" = "Choose a Backup to Restore";
+"ONBOARDING_CHOOSE_BACKUP_SHEET_TITLE" = "Pasirinkite atsarginę kopiją, kurią norite atkurti";
 
 /* The body for the device transfer 'choice' view 'restore backup' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Atkurkite paskyrą ir tekstines žinutes iš savo „Signal“ atsarginės kopijos";
@@ -6467,7 +6554,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_PAID" = "visus jūsų įrašus;";
 
 /* Text for action button that opens a picker to choose an older local backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_CHOOSE_OLDER_ACTION" = "Choose an Older Backup";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_CHOOSE_OLDER_ACTION" = "Rinktis senesnę atsarginę kopiją";
 
 /* Text for action button confirming the restore. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "Atkurti atsarginę kopiją";
@@ -6718,6 +6805,15 @@
 /* Title of prompt notifying device transfer completed. */
 "OUTGOING_DEVICE_TRANSFER_COMPLETE_TITLE" = "Perkėlimas užbaigtas";
 
+/* Body of prompt confirming the start of device transfer. */
+"OUTGOING_DEVICE_TRANSFER_CONFIRM_BODY" = "Jūsų paskyra bus perkelta į naują įrenginį. Šis įrenginys galės matyti jūsų grupes ir adresatus, gauti prieigą prie jūsų pokalbių bei siųsti žinutes jūsų vardu.";
+
+/* Title of prompt confirming the start of device transfer. */
+"OUTGOING_DEVICE_TRANSFER_CONFIRM_TITLE" = "Perkelti paskyrą į „%1$@“?";
+
+/* Action prompt confirming the start of device transfer. */
+"OUTGOING_DEVICE_TRANSFER_START_TRANSFER_ACTION" = "Pradėti perkėlimą";
+
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "Neatsakytas vaizdo skambutis";
 
@@ -6744,6 +6840,9 @@
 
 /* Title for sheet shown when tapping oversized text that has expired and is unavailable for download */
 "OVERSIZE_TEXT_UNAVAILABLE_SHEET_TITLE" = "Visa žinutė nepasiekiama";
+
+/* The name of the Signal app, used as the title for an entry in a user's password manager for their Signal Recovery Key. Should be localized with the same value as the app's name in the iOS App Store. */
+"PASSWORD_MANAGER_SIGNAL_APP_NAME" = "„Signal“ – privatūs pokalbiai";
 
 /* Header title for bank payment details screen */
 "PAYMENT_DETAILS_BANK_TITLE" = "Banko pavedimas";
@@ -7897,6 +7996,12 @@
 /* Title for a sheet warning users about an incorrect recovery key. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_INCORRECT_KEY_TITLE" = "Nepavyksta rasti atsarginės kopijos";
 
+/* Message for a sheet warning users about an invalid local backup location */
+"REGISTRATION_BACKUP_RESTORE_ERROR_LOCAL_BACKUP_LOCATION_MESSAGE" = "Nepavyko atkurti jūsų atsarginės kopijos įrenginyje. Taip galėjo nutikti todėl, kad perkėlėte arba ištrynėte atsarginės kopijos aplanką.";
+
+/* Title for a sheet warning users about an invalid local backup location */
+"REGISTRATION_BACKUP_RESTORE_ERROR_LOCAL_BACKUP_LOCATION_TITLE" = "Neįmanoma atkurti atsarginės kopijos";
+
 /* Body for a sheet warning users about a network error during backup restore. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "Šiuo metu negalima atkurti jūsų atsarginės kopijos. Patikrinkite interneto ryšį ir bandykite dar kartą.";
 
@@ -7911,9 +8016,6 @@
 
 /* Skip restore action label for backup restore error recovery. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_SKIP_RESTORE_ACTION" = "Praleisti atkūrimą";
-
-/* Try again action label for backup restore error recovery. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_TRY_AGAIN_ACTION" = "Bandykite dar kartą";
 
 /* Body for a sheet telling users restoring a backup unrecoverably failed. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_UNRETRYABLE_SERVER_ERROR_BODY" = "Atkuriant atsarginę kopiją įvyko klaida. Jūsų atsarginės kopijos atkurti negalima. Dėl pagalbos kreipkitės į aptarnavimo komandą.";
@@ -8043,6 +8145,12 @@
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
 "REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Nepavyko išsiųsti SMS žinutės jūsų numeriu. Bandykite dar kartą po kelių minučių.";
+
+/* Message for a button in the registration flow that allows restoring from a local backup */
+"REGISTRATION_RESTORE_FROM_LOCAL_BACKUP_BUTTON_MESSAGE" = "Atkurkite paskyrą ir žinutes iš įrenginyje išsaugoto aplanko.";
+
+/* Title for a button in the registration flow that allows restoring from a local backup */
+"REGISTRATION_RESTORE_FROM_LOCAL_BACKUP_BUTTON_TITLE" = "Atkurti atsarginę kopiją įrenginyje";
 
 /* Third step in directions for how to make a backup */
 "REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "Įjunkite atsargines kopijas ir palaukite, kol bus sukurta atsarginė kopija";
@@ -8176,6 +8284,18 @@
 /* Configure reactions reset button text */
 "RESET" = "Atstatyti";
 
+/* Button on a sheet prompting the user to pick a folder on their device where on-device backups will be saved */
+"RESTORE_COMPLETE_LOCAL_FILE_BACKUPS_HERO_SHEET_CHOOSE_FOLDER_BUTTON" = "Pasirinkti aplanką";
+
+/* Button for a sheet asking the user if they want to disable local backups */
+"RESTORE_COMPLETE_LOCAL_FILE_BACKUPS_HERO_SHEET_DISABLE_BUTTON" = "Išjungti atsargines kopijas";
+
+/* Message for a sheet asking the user if they want to enable local file backups. */
+"RESTORE_COMPLETE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE" = "Norėdami ir toliau naudoti atsargines kopijas įrenginyje, pasirinkite aplanką savo įrenginyje, kur bus išsaugomos naujos atsarginės kopijos.";
+
+/* Title for a sheet asking the user if they want to enable local file backups. */
+"RESTORE_COMPLETE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE" = "Atkūrimas užbaigtas";
+
 /* Body for a sheet allowing users to cancel an in-progress media restore. */
 "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_BODY" = "Jūsų įrašų atkūrimas nebaigtas. Jei nuspręsite atšaukti, vėl galėsite juos atkurti iš naujo susieję šį įrenginį.";
 
@@ -8265,6 +8385,9 @@
 
 /* Text for a toast confirming that ringing has been turned on for a call. */
 "RING_ON_CONFIRMATION_TOAST_LABEL" = "Skambėjimas įjungtas";
+
+/* Message shown in an action sheet when attempting to disable PIN, but Backups is enabled. */
+"ROTATE_AEP_ACTION_BACKUPS_DISABLE_REQUIRED" = "Prieš tęsdami privalote išjungti atsargines kopijas.";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Vis tiek pridėti";
@@ -8428,6 +8551,9 @@
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Norėdami naudotis ekrano užraktu savo „iOS“ nustatymuose turite įjungti slaptažodį.";
 
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to confirm a change to the 'screen lock' settings. */
+"SCREEN_LOCK_REASON_CHANGE_SCREEN_LOCK_SETTINGS" = "Authenticate to change Screen Lock settings.";
+
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Atlikite autentifikavimą norėdami atverti „Signal“.";
 
@@ -8544,6 +8670,12 @@
 
 /* Button text to select all in any list selection mode */
 "SELECT_ALL" = "Žymėti viską";
+
+/* Placeholder text for the search bar on the 'Select Contact' view */
+"SELECT_CONTACT_FOR_SHARING_SEARCH_BAR_PLACEHOLDER" = "Ieškoti";
+
+/* Title for the 'Select Contact' view */
+"SELECT_CONTACT_FOR_SHARING_VIEW_TITLE" = "Pasirinkti kontaktą";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Siųsti dar kartą";
@@ -8682,9 +8814,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Išjungti PIN kodą";
-
-/* Message shown in an action sheet when attempting to disable PIN, but Backups is enabled. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_BACKUPS_DISABLE_REQUIRED" = "Prieš išjungdami savo PIN privalote išjungti atsargines kopijas.";
 
 /* Message shown in an action sheet when attempting to disable PIN, but registration lock is enabled. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION_REGLOCK_DISABLE_REQUIRED" = "Prieš išjungdami savo PIN privalote išjungti registracijos užraktą.";
@@ -8933,22 +9062,49 @@
 "SETTINGS_LOCAL_FILE_BACKUPS_LAST_BACKUP_DATE" = "Paskutinė atsarginė kopija";
 
 /* Message for an action sheet when a user cannot perform a remote backup because a local backup is in progress */
-"SETTINGS_LOCAL_FILE_BACKUPS_LOCAL_BACKUP_IN_PROGRESS_MESSAGE" = "Unable to perform a Signal Secure Backup because an on-device backup is in progress. Try again later.";
+"SETTINGS_LOCAL_FILE_BACKUPS_LOCAL_BACKUP_IN_PROGRESS_MESSAGE" = "Nepavyko sukurti „Signal“ atsarginės kopijos, nes kuriama atsarginė kopija įrenginyje. Bandykite vėliau.";
+
+/* Label for a progress bar while attachments are being copied for an on-device backup. Embeds 1:{{%1$@ completed bytes copied, %2$@ total bytes to copy, %3$@ percentage complete }}. */
+"SETTINGS_LOCAL_FILE_BACKUPS_PROGRESS_COPYING_ATTACHMENTS" = "Kuriama atsarginė kopija įrenginyje %1$@ iš %2$@ (%3$@)";
+
+/* Label for a progress bar while the attachments are being prepared for an on-device backup. Embeds 1:{{ percentage complete }}. */
+"SETTINGS_LOCAL_FILE_BACKUPS_PROGRESS_PREPARING_ATTACHMENTS" = "Ruošiami priedai (%1$@)";
+
+/* Label for a progress bar while the on-device backup is being prepared. Embeds 1:{{ percentage complete }}. */
+"SETTINGS_LOCAL_FILE_BACKUPS_PROGRESS_PREPARING_BACKUP" = "Ruošiama atsarginė kopija (%1$@)";
+
+/* Label for a progress bar while attachments are being restored for an on-device backup. Embeds {{%1$@ completed bytes restored, %2$@ total bytes to restore  }}. */
+"SETTINGS_LOCAL_FILE_BACKUPS_PROGRESS_RESTORING_ATTACHMENTS" = "Atkuriama atsarginė kopija įrenginyje (%1$@ iš %2$@)";
 
 /* Message for an action sheet when a user cannot perform a local backup because a remote backup is in progress */
-"SETTINGS_LOCAL_FILE_BACKUPS_REMOTE_BACKUP_IN_PROGRESS_MESSAGE" = "Unable to perform an on-device backup because a Signal Secure Backup is in progress. Try again later.";
+"SETTINGS_LOCAL_FILE_BACKUPS_REMOTE_BACKUP_IN_PROGRESS_MESSAGE" = "Nepavyko sukurti atsarginės kopijos įrenginyje, nes kuriama „Signal“ atsarginė kopija. Bandykite vėliau.";
 
 /* Footer text on the on-device backups settings page explaining how to restore a backup. */
 "SETTINGS_LOCAL_FILE_BACKUPS_RESTORE_FOOTER" = "Norėdami atkurti atsarginę kopiją, įsidiekite naują „Signal“ kopiją. Atverkite programėlę, bakstelėkite „Atkurti arba perkelti“, tada pasirinkite „Atsarginė kopija įrenginyje“.";
 
 /* Label for the button that turns off on-device backups. */
-"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "Turn Off & Delete Backup";
+"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF" = "Išjungti ir ištrinti atsarginę kopiją";
+
+/* Button for an action sheet asking the user to confirm they would like to turn off local backups */
+"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF_CONFIRMATION_BUTTON" = "Išjungti ir ištrinti";
+
+/* Message for an action sheet asking the user to confirm they would like to turn off local backups */
+"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF_CONFIRMATION_MESSAGE" = "Jūsų atsarginė kopija bus ištrinta ir nebus sukurtos naujos atsarginės kopijos.";
+
+/* Title for an action sheet asking the user to confirm they would like to turn off local backups */
+"SETTINGS_LOCAL_FILE_BACKUPS_TURN_OFF_CONFIRMATION_TITLE" = "Išjungti ir ištrinti atsarginę kopiją?";
 
 /* Message shown on an action sheet when a user's backup fails to delete. Embeds {{ local file backup location }} */
-"SETTINGS_LOCAL_FILE_BACKUPS_TURNING_OFF_ERROR_MESSAGE_FORMAT" = "Your backup could not be deleted due to an error. You must manually delete the folder. In the Files app, go to “%1$@” and manually delete the folder and its contents. No new backups will be created.";
+"SETTINGS_LOCAL_FILE_BACKUPS_TURNING_OFF_ERROR_MESSAGE_FORMAT" = "Nepavyko ištrinti jūsų atsarginės kopijos, nes įvyko klaida. Turėsite patys ištrinti aplanką. Failų programėlėje eikite į „%1$@“ ir patys ištrinkite aplanką bei jo turinį. Nebebus sukurta naujų atsarginių kopijų.";
+
+/* Message shown on an action sheet when a user's backup fails to delete because the file isn't found. */
+"SETTINGS_LOCAL_FILE_BACKUPS_TURNING_OFF_ERROR_NO_FILE_MESSAGE" = "Nepavyko patvirtinti, kad jūsų atsarginė kopia ištrinta, nes įvyko klaida. Taip galėjo nutikti dėl to, kad pervadinote arba perkėlėte aplanką. Failų programėlėje ir patys ištrinkite aplanką bei jo turinį. Nebebus sukurta naujų atsarginių kopijų.";
+
+/* Title shown on an action sheet when a user's backup fails to delete because the file isn't found */
+"SETTINGS_LOCAL_FILE_BACKUPS_TURNING_OFF_ERROR_NO_FILE_TITLE" = "Nepavyko patvirtinti ištrynimo";
 
 /* Title shown on an action sheet when a user's backup fails to delete */
-"SETTINGS_LOCAL_FILE_BACKUPS_TURNING_OFF_ERROR_TITLE" = "Couldn’t Delete Backup";
+"SETTINGS_LOCAL_FILE_BACKUPS_TURNING_OFF_ERROR_TITLE" = "Nepavyko ištrinti atsarginės kopijos";
 
 /* Label for the row that shows the on-device backup recovery key. */
 "SETTINGS_LOCAL_FILE_BACKUPS_VIEW_RECOVERY_KEY" = "Rodyti atkūrimo raktą";
@@ -8983,8 +9139,20 @@
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Nustatymai";
 
+/* Label for the setting controlling whether the app icon badge counts unread messages or unread chats. */
+"SETTINGS_NOTIFICATION_BADGE_COUNT" = "Ženklelyje rodomas skaičius";
+
+/* Explanation for the setting controlling whether the app icon badge counts unread messages or unread chats. */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_FOOTER" = "Pasirinkite, ar ženklelyje rodomas skaičius bus neperskaitytos žinutės, ar neperskaityti pokalbiai.";
+
 /* A setting controlling whether muted conversations are shown in the badge count */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Įtraukti nutildytus pokalbius";
+
+/* Label for the option that makes the app icon badge show the number of unread chats. */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_UNREAD_CHATS" = "Neperskaityti pokalbiai";
+
+/* Label for the option that makes the app icon badge show the number of unread messages. */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_UNREAD_MESSAGES" = "Neperskaitytos žinutės";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Skambučių ir žinučių pranešimai gali būti rodomi, kai telefonas užrakintas.";
@@ -8999,10 +9167,28 @@
 "SETTINGS_NOTIFICATIONS" = "Pranešimai";
 
 /* Header for the section of notification settings controlling the app icon's badge. */
-"SETTINGS_NOTIFICATIONS_APP_BADGE_SECTION" = "App Badge";
+"SETTINGS_NOTIFICATIONS_APP_BADGE_SECTION" = "Programėlės ženklelis";
 
 /* Explanation for the switch controlling whether a notification is shown when a phone contact joins Signal. */
-"SETTINGS_NOTIFICATIONS_CONTACT_JOINED_SIGNAL_FOOTER" = "Show a notification when a phone contact joins Signal.";
+"SETTINGS_NOTIFICATIONS_CONTACT_JOINED_SIGNAL_FOOTER" = "Rodyti pranešimą telefono adresatui prisijungus prie „Signal“.";
+
+/* Label for a switch controlling whether reactions to your messages generate notifications. */
+"SETTINGS_NOTIFICATIONS_REACTIONS" = "Reakcijų pranešimai";
+
+/* Explanation for the switch controlling whether reactions to your messages generate notifications. */
+"SETTINGS_NOTIFICATIONS_REACTIONS_FOOTER" = "Rodyti pranešimus, kai sureaguojama į jūsų išsiųstas žinutes.";
+
+/* Label for a button that resets all notification settings to their defaults. */
+"SETTINGS_NOTIFICATIONS_RESET" = "Atstatyti pranešimų nustatymus";
+
+/* Label for the button that confirms notification settings should be reset. */
+"SETTINGS_NOTIFICATIONS_RESET_CONFIRMATION_ACTION" = "Atstatyti";
+
+/* Question confirming that notification settings should be reset. */
+"SETTINGS_NOTIFICATIONS_RESET_CONFIRMATION_MESSAGE" = "Visuose pokalbiuose atstatyti visus pranešimų nustatymus į numatytuosius?";
+
+/* Explanation for the button that resets all notification settings. */
+"SETTINGS_NOTIFICATIONS_RESET_FOOTER" = "Atstatyti pranešimų nustatymus į numatytuosius, įskaitant tinkintus jūsų pokalbių nustatymus.";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Aktyvuoti";
@@ -9667,6 +9853,36 @@
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Versija";
 
+/* Title for the settings page controlling which notifications are still shown for muted chats. Also used as the label for the rows that link to this page. */
+"SETTINGS_WHILE_MUTED" = "Kai nutildyta";
+
+/* Label for the switch controlling whether calls ring or notify in muted chats. */
+"SETTINGS_WHILE_MUTED_CALLS" = "Skambučiai";
+
+/* Explanation for the switch controlling whether calls ring or notify while this chat is muted. */
+"SETTINGS_WHILE_MUTED_CALLS_CHAT_FOOTER" = "Skambinti arba pranešti, kai gaunamas skambutis nutildytame pokalbyje.";
+
+/* Explanation for the switch controlling whether calls ring or notify in muted chats. */
+"SETTINGS_WHILE_MUTED_CALLS_FOOTER" = "Skambinti arba pranešti, kai pradedamas skambutis nutildytuose pokalbiuose.";
+
+/* Label for the switch controlling whether mentions of you notify in muted chats. */
+"SETTINGS_WHILE_MUTED_MENTIONS" = "Paminėjimai";
+
+/* Explanation for the switch controlling whether mentions of you notify while this chat is muted. */
+"SETTINGS_WHILE_MUTED_MENTIONS_CHAT_FOOTER" = "Pranešti, kai jus paminėjo nutildytame pokalbyje.";
+
+/* Explanation for the switch controlling whether mentions of you notify in muted chats. */
+"SETTINGS_WHILE_MUTED_MENTIONS_FOOTER" = "Pranešti, kai jus pamini nutildytuose pokalbiuose.";
+
+/* Label for the switch controlling whether replies to your messages notify in muted chats. */
+"SETTINGS_WHILE_MUTED_REPLIES" = "Atsakymai";
+
+/* Explanation for the switch controlling whether replies to your messages notify while this chat is muted. */
+"SETTINGS_WHILE_MUTED_REPLIES_CHAT_FOOTER" = "Pranešti, kai kas nors atsako į jūsų žinutę nutildytame pokalbyje.";
+
+/* Explanation for the switch controlling whether replies to your messages notify in muted chats. */
+"SETTINGS_WHILE_MUTED_REPLIES_FOOTER" = "Pranešti, kai kas nors atsako į jūsų žinutes nutildytuose pokalbiuose.";
+
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "Paštas";
 
@@ -9674,7 +9890,7 @@
 "SHARE_ACTION_MESSAGE" = "Žinutė";
 
 /* Message for an action sheet shown when sharing fails because the device's date and time are incorrect. */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_CLOCK_SKEW_MESSAGE" = "Your device’s date and time are incorrect, and Signal may not have sent your message. Open Settings to correct your device’s date and time.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_CLOCK_SKEW_MESSAGE" = "Jūsų įrenginio data ir laikas neteisingi – gali būti, kad „Signal“ neišsiuntė jūsų žinutės. Atidarykite „Signal“ nustatymus ir ištaisykite įrenginio datą bei laiką.";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Jūsų saugumo numeris su %1$@ neseniai pasikeitė. Rekomenduojame jį patvirtinti pagrindinėje programėlėje prieš siunčiant iš naujo.";
@@ -10359,6 +10575,9 @@
 
 /* Notification prompting the user to relaunch Signal after a device transfer completed. */
 "TRANSFER_RELAUNCH_NOTIFICATION" = "Atverkite „Signal“ ir pradėkite susirašinėti";
+
+/* Label for a button that says 'Try Again'. */
+"TRY_AGAIN_BUTTON_TITLE" = "Bandykite dar kartą";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Atšaukti";

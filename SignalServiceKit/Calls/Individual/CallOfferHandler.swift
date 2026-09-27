@@ -9,17 +9,20 @@ import SignalRingRTC
 
 public class CallOfferHandlerImpl {
     private let identityManager: any OWSIdentityManager
+    private let notificationPreferencesManager: NotificationPreferencesManager
     private let notificationPresenter: NotificationPresenter
     private let profileManager: any ProfileManager
     private let tsAccountManager: any TSAccountManager
 
     public init(
         identityManager: any OWSIdentityManager,
+        notificationPreferencesManager: NotificationPreferencesManager,
         notificationPresenter: NotificationPresenter,
         profileManager: any ProfileManager,
         tsAccountManager: any TSAccountManager,
     ) {
         self.identityManager = identityManager
+        self.notificationPreferencesManager = notificationPreferencesManager
         self.notificationPresenter = notificationPresenter
         self.profileManager = profileManager
         self.tsAccountManager = tsAccountManager
@@ -159,6 +162,16 @@ public class CallOfferHandlerImpl {
             // Store the call as a missed call for the local user. They will see it in the conversation
             // along with the message request dialog. When they accept the dialog, they can call back
             // or the caller can try again.
+            insertMissedCallInteraction(outcome: .incomingMissed, tx: tx)
+            return nil
+        }
+
+        if
+            BuildFlags.improvedNotifications,
+            thread.isMuted,
+            !notificationPreferencesManager.notifyForCallsWhenMuted(thread: thread, tx: tx)
+        {
+            Logger.info("Ignoring call offer from \(caller) due to mute settings.")
             insertMissedCallInteraction(outcome: .incomingMissed, tx: tx)
             return nil
         }

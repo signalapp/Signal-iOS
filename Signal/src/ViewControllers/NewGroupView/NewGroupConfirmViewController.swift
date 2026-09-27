@@ -56,17 +56,12 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
             comment: "The title for the 'name new group' view.",
         )
 
-        navigationItem.rightBarButtonItem = {
-            let button = UIBarButtonItem(
-                title: OWSLocalizedString(
-                    "NEW_GROUP_CREATE_BUTTON",
-                    comment: "The title for the 'create group' button.",
-                ),
-                primaryAction: UIAction { [weak self] _ in self?.createNewGroup() },
-            )
-            button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "create")
-            return button
-        }()
+        navigationItem.rightBarButtonItem = .prominentButton(title: OWSLocalizedString(
+            "NEW_GROUP_CREATE_BUTTON",
+            comment: "The title for the 'create group' button.",
+        )) { [weak self] in
+            self?.createNewGroup()
+        }
 
         // First section.
 
@@ -214,8 +209,9 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
     private func createNewGroup() {
         AssertIsOnMainThread()
 
-        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
-            owsFailDebug("missing local address")
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction() else {
+            owsFailDebug("not registered")
             return
         }
         guard let groupName = newGroupState.groupName.flatMap({ StrippedNonEmptyString(rawValue: $0) }) else {
@@ -225,7 +221,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         owsAssertDebug(allMembersSupportGroupsV2(), "Members must already be checked for v2 support.")
 
         let avatarData = newGroupState.avatarData
-        let memberSet = Set([localAddress] + recipientSet.orderedMembers.compactMap { $0.address })
+        let memberSet = Set([registeredState.localIdentifiers.aciAddress] + recipientSet.orderedMembers.compactMap { $0.address })
         let members = Array(memberSet)
         let newGroupSeed = groupSeed
         let disappearingMessageToken = disappearingMessagesConfiguration.asToken

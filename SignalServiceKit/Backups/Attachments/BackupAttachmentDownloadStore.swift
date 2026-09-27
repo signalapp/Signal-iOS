@@ -16,8 +16,10 @@ public class BackupAttachmentDownloadStore {
 
     /// "Enqueue" an attachment from a backup for download (using its reference).
     ///
-    /// If the same attachment pointed to by the reference is already enqueued, updates it to the greater
-    /// of the existing and new reference's timestamp.
+    /// Updates existing records in place. Does nothing if a record exists, and
+    /// nothing would change about it. (Caveat: retry-related properties are
+    /// excluded from "nothing would change", and are reset if the record is
+    /// updated.)
     ///
     /// Doesn't actually trigger a download; callers must later call ``BackupAttachmentDownloadManager``
     /// to actually kick off downloads.
@@ -53,36 +55,21 @@ public class BackupAttachmentDownloadStore {
             return try existingRecordQuery.fetchOne(db)
         }
 
+        // Use the greater of the existing and new timestamps.
+        // (nil timestamp counts as the largest timestamp)
         if
             let existingRecord,
-            existingRecord.maxOwnerTimestamp ?? .max < timestamp ?? .max
+            existingRecord.maxOwnerTimestamp ?? .max >= timestamp ?? .max
         {
-            // If we have an existing record with a smaller timestamp,
-            // delete it in favor of the new row we are about to insert.
-            // (nil timestamp counts as the largest timestamp)
-            // This will also reset the retry count, which is fine.
-            failIfThrows {
-                try existingRecord.delete(db)
-            }
-        } else if
-            let existingRecord,
-            existingRecord.state != state
-            || existingRecord.canDownloadFromMediaTier != canDownloadFromMediaTier
-        {
-            // We can modify the state of the existing record even if the
-            // new timestamp doesn't match; use the greater timestamp and
-            // delete the old record so we write a new one.
-            failIfThrows {
-                try existingRecord.delete(db)
-            }
-            if existingRecord.maxOwnerTimestamp ?? .max > timestamp ?? .max {
-                timestamp = existingRecord.maxOwnerTimestamp
-            }
-        } else if existingRecord != nil {
-            // Otherwise we had an existing record with a larger
-            // timestamp, stop.
-            return
+            timestamp = existingRecord.maxOwnerTimestamp
         }
+
+        let estimatedByteCount = QueuedBackupAttachmentDownload.estimatedByteCount(
+            attachment: referencedAttachment.attachment,
+            reference: referencedAttachment.reference,
+            isThumbnail: thumbnail,
+            canDownloadFromMediaTier: canDownloadFromMediaTier,
+        )
 
         // Initialize the min retry timestamp to a lower value
         // the higher the timestamp is, as we dequeue in ASC order.
@@ -93,6 +80,39 @@ public class BackupAttachmentDownloadStore {
             minRetryTimestamp = 0
         }
 
+        if var existingRecord {
+            if
+                existingRecord.state == state,
+                existingRecord.canDownloadFromMediaTier == canDownloadFromMediaTier,
+                existingRecord.maxOwnerTimestamp == timestamp,
+                existingRecord.estimatedByteCount == estimatedByteCount
+            {
+                // The state, media-tier eligibility, timestamp, and expected
+                // size are all the same; nothing to update.
+                //
+                // Avoids resetting minRetryTimestamp or numRetries.
+                return
+            }
+
+            existingRecord.canDownloadFromMediaTier = canDownloadFromMediaTier
+            existingRecord.estimatedByteCount = estimatedByteCount
+            existingRecord.maxOwnerTimestamp = timestamp
+            existingRecord.state = state
+
+            // If we're changing one of the above download-affecting values,
+            // reset retries so we try downloading "fresh".
+            existingRecord.minRetryTimestamp = minRetryTimestamp
+            existingRecord.numRetries = 0
+
+            failIfThrows {
+                try existingRecord.update(db)
+                if let file, let function, let line {
+                    Logger.info("Updated [id:\(referencedAttachment.attachment.id)] [thumbnail:\(thumbnail)] [state:\(state)] from \(file) \(line): \(function)")
+                }
+            }
+            return
+        }
+
         var record = QueuedBackupAttachmentDownload(
             attachmentRowId: referencedAttachment.attachment.id,
             isThumbnail: thumbnail,
@@ -100,12 +120,7 @@ public class BackupAttachmentDownloadStore {
             maxOwnerTimestamp: timestamp,
             minRetryTimestamp: minRetryTimestamp,
             state: state,
-            estimatedByteCount: QueuedBackupAttachmentDownload.estimatedByteCount(
-                attachment: referencedAttachment.attachment,
-                reference: referencedAttachment.reference,
-                isThumbnail: thumbnail,
-                canDownloadFromMediaTier: canDownloadFromMediaTier,
-            ),
+            estimatedByteCount: estimatedByteCount,
         )
         failIfThrows {
             try record.insert(db)

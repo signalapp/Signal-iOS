@@ -46,6 +46,12 @@ extension Array {
     }
 }
 
+extension Array where Element: Hashable {
+    func removingDuplicates() -> [Element] {
+        return self.removingDuplicates(uniquingElementsBy: { $0 })
+    }
+}
+
 extension Collection where Self: RandomAccessCollection {
     /// Computes the index for a new element in an already-sorted collection.
     ///

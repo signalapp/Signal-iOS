@@ -178,10 +178,8 @@ final class GroupThreadCall: Signal.GroupCall {
 
     override func groupCall(onPeekChanged groupCall: SignalRingRTC.GroupCall) {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard let localAci = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
-            owsFailDebug("Peek changed for a group call, but we're not registered?")
-            return
-        }
+        let registeredState = tsAccountManager.mustBeRegisteredStateWithMaybeSneakyTransaction()
+        let localAci = registeredState.localIdentifiers.aci
 
         if let peekInfo = groupCall.peekInfo {
             // Note that we track this regardless of whether ringing is available.

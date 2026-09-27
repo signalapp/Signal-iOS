@@ -51,15 +51,23 @@ class ConversationHeaderView: UIView {
         return titleIconView
     }()
 
-    private var titleIconSizeConstraint: NSLayoutConstraint!
+    @available(iOS, deprecated: 26)
+    private var useCompactVerticalLayout: Bool {
+        // iPhones in portrait, iPads etc.
+        if traitCollection.verticalSizeClass == .regular { return false }
+
+        // Most recent iOS versions (starting with 17) seem to always have 44 dp navigation bar,
+        // even on smaller devices in landscape.
+        if bounds.size.height >= 44 { return false }
+
+        return true
+    }
 
     private var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass {
         // One size for the navigation bar on iOS 26.
-        guard #unavailable(iOS 26) else { return .forty }
+        if #available(iOS 26, *) { return .forty }
 
-        return traitCollection.verticalSizeClass == .compact && !UIDevice.current.isPlusSizePhone
-            ? .twentyFour
-            : .thirtySix
+        return useCompactVerticalLayout ? .twentyFour : .thirtySix
     }
 
     private(set) lazy var avatarView = ConversationAvatarView(
@@ -162,6 +170,14 @@ class ConversationHeaderView: UIView {
         }
     }
 
+    override var bounds: CGRect {
+        didSet {
+            if #unavailable(iOS 26), oldValue.height != bounds.height {
+                updateVerticalLayoutIfNecessary()
+            }
+        }
+    }
+
     override var intrinsicContentSize: CGSize {
         // Grow to fill as much of the navbar as possible.
         return .init(width: .greatestFiniteMagnitude, height: UIView.noIntrinsicMetric)
@@ -170,13 +186,18 @@ class ConversationHeaderView: UIView {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        // One size for the navigation bar on iOS 26.
-        guard #unavailable(iOS 26) else { return }
+        if #unavailable(iOS 26), traitCollection.verticalSizeClass != previousTraitCollection?.verticalSizeClass {
+            updateVerticalLayoutIfNecessary()
+        }
+    }
 
-        guard traitCollection.verticalSizeClass != previousTraitCollection?.verticalSizeClass else { return }
+    @available(iOS, deprecated: 26)
+    private func updateVerticalLayoutIfNecessary() {
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.sizeClass = avatarSizeClass
         }
+        // Single line of text when vertically compact layout.
+        subtitleLabel.isHidden = useCompactVerticalLayout
     }
 
     // MARK: Spinning Title

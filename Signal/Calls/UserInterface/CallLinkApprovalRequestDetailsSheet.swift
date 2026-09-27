@@ -126,13 +126,10 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
                 transaction: tx,
             ) != nil
 
-            let mutualThreads = TSGroupThread.groupThreads(
-                with: self.approvalRequest.address,
-                transaction: tx,
+            let mutualThreads = TSGroupThread.mutualVisibleGroupThreads(
+                withFullMember: self.approvalRequest.address,
+                tx: tx,
             )
-            .filter(\.groupModel.groupMembership.isLocalUserFullMember)
-            .filter(\.shouldThreadBeVisible)
-            .filter { !$0.isTerminatedGroup }
 
             let contactTitle = ConversationHeaderBuilder.threadAttributedString(
                 threadName: self.approvalRequest.name,

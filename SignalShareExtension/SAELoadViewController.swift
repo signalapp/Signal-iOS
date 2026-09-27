@@ -89,7 +89,7 @@ class SAELoadViewController: UIViewController, OWSNavigationChildController {
         self.view.addSubview(progressView)
         progressView.autoVCenterInSuperview()
         progressView.autoPinWidthToSuperview(withMargin: .scaleFromIPhone5(30))
-        progressView.progressTintColor = Theme.accentBlueColor
+        progressView.progressTintColor = .Signal.accent
 
         updateProgressViewVisibility()
 

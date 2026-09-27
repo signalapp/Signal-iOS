@@ -16,11 +16,11 @@ class ProxyLinkSheetViewController: StackSheetViewController {
     }
 
     override var stackViewInsets: UIEdgeInsets {
-        guard #available(iOS 26, *), UIDevice.current.hasIPhoneXNotch else { return super.stackViewInsets }
-
         // Reduced bottom margins looks better when there's a bottom safe area margin present.
         var insets = super.stackViewInsets
-        insets.bottom = 0
+        if #available(iOS 26, *), view.safeAreaInsets.bottom > 0 {
+            insets.bottom = 0
+        }
         return insets
     }
 

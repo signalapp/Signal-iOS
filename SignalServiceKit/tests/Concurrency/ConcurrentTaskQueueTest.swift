@@ -13,7 +13,7 @@ struct ConcurrentTaskQueueTest {
     @Test
     func testMultiple() async throws {
         let queue = ConcurrentTaskQueue(concurrentLimit: 2)
-        try await queue.run {
+        try await queue.runWithThrowingTask {
             try await queue.run {
                 // nothing
             }
@@ -25,8 +25,8 @@ struct ConcurrentTaskQueueTest {
     func testCancellation() async {
         let queue = ConcurrentTaskQueue(concurrentLimit: 2)
         let task = Task {
-            try await queue.run {
-                try await queue.run {
+            try await queue.runWithThrowingTask {
+                try await queue.runWithThrowingTask {
                     try await queue.run {}
                 }
             }

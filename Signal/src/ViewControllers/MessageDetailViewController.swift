@@ -222,7 +222,6 @@ class MessageDetailViewController: OWSTableViewController2 {
             owsFailDebug("Missing thread.")
             return nil
         }
-        let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
 
         let conversationStyle = ConversationStyle(
             type: .messageDetails,
@@ -241,7 +240,6 @@ class MessageDetailViewController: OWSTableViewController2 {
         return CVLoader.buildStandaloneRenderItem(
             interaction: interaction,
             thread: thread,
-            threadAssociatedData: threadAssociatedData,
             conversationStyle: conversationStyle,
             spoilerState: spoilerState,
             groupNameColors: groupNameColors,
@@ -1456,7 +1454,7 @@ private class AnimationController: NSObject, UIViewControllerAnimatedTransitioni
                 // messed with. We don't want the keyboard to present when returning
                 // from message details, so we dismiss it when we leave the view.
                 if let fromViewController = transitionContext.viewController(forKey: .from) as? ConversationViewController {
-                    fromViewController.dismissKeyBoard()
+                    fromViewController.dismissKeyboard()
                 }
             }
 

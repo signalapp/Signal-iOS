@@ -184,7 +184,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         case .free:
             Logger.warn("Local backupPlan is paid but credential is free")
             await backupMediaErrorNotificationPresenter.notifyIfNecessary()
-            try? await taskQueue.stop()
+            await taskQueue.stop()
             return
         case .paid:
             break
@@ -199,7 +199,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 switch status {
                 case .expired:
                     Task {
-                        try await taskQueue?.stop()
+                        await taskQueue?.stop()
                     }
                 case .couldNotStart, .success:
                     break
@@ -210,31 +210,31 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             logger.info("Finished \(logString) Backup uploads.")
         case .suspended:
             logger.info("Skipping \(logString) Backup uploads: suspende by user.")
-            try await taskQueue.stop()
+            await taskQueue.stop()
         case .empty:
             logger.info("Skipping \(logString) Backup uploads: queue is empty.")
             return
         case .notRegisteredAndReady:
             logger.warn("Skipping \(logString) Backup uploads: not registered and ready.")
-            try await taskQueue.stop()
+            await taskQueue.stop()
         case .noWifiReachability:
             logger.warn("Skipping \(logString) Backup uploads: need wifi.")
-            try await taskQueue.stop()
+            await taskQueue.stop()
         case .noReachability:
             logger.warn("Skipping \(logString) Backup uploads: need internet.")
-            try await taskQueue.stop()
+            await taskQueue.stop()
         case .lowBattery:
             logger.warn("Skipping \(logString) Backup uploads: low battery.")
-            try await taskQueue.stop()
+            await taskQueue.stop()
         case .lowPowerMode:
             logger.warn("Skipping \(logString) Backup uploads: low power mode.")
-            try await taskQueue.stop()
+            await taskQueue.stop()
         case .appBackgrounded:
             logger.warn("Skipping \(logString) Backup uploads: app backgrounded")
-            try await taskQueue.stop()
+            await taskQueue.stop()
         case .hasConsumedMediaTierCapacity:
             logger.warn("Skipping \(logString) Backup uploads: out of capacity")
-            try await taskQueue.stop()
+            await taskQueue.stop()
         }
     }
 
@@ -314,7 +314,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
         func runTask(record: Store.Record, loader: TaskQueueLoader<TaskRunner>) async -> TaskRecordResult {
             let result = await _runTask(record: record, loader: loader)
             if case .success = result, record.record.isFullsize {
-                await progress.didUpdateProgressForFullsizeAttachment(
+                progress.didUpdateProgressForFullsizeAttachment(
                     uploadRecord: record.record,
                     completedByteCount: UInt64(safeCast: record.record.estimatedByteCount),
                     totalByteCount: UInt64(safeCast: record.record.estimatedByteCount),
@@ -337,22 +337,22 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 // The queue will stop on its own, finish this task.
                 break
             case .suspended:
-                try? await loader.stop()
+                await loader.stop()
                 return .retryableError(ExplicitlySuspendedError())
             case .lowBattery, .lowPowerMode:
-                try? await loader.stop()
+                await loader.stop()
                 return .retryableError(NeedsBatteryError())
             case .noWifiReachability, .noReachability:
-                try? await loader.stop()
+                await loader.stop()
                 return .retryableError(NeedsInternetError())
             case .notRegisteredAndReady:
-                try? await loader.stop()
+                await loader.stop()
                 return .retryableError(NeedsToBeRegisteredError())
             case .appBackgrounded:
-                try? await loader.stop()
+                await loader.stop()
                 return .retryableError(AppBackgroundedError())
             case .hasConsumedMediaTierCapacity:
-                try? await loader.stop()
+                await loader.stop()
                 return .retryableError(OutOfCapacityError())
             }
 
@@ -374,7 +374,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
 
             if needsListMedia {
                 // If we need to list media, quit out early so we can do that.
-                try? await loader.stop(reason: NeedsListMediaError())
+                await loader.stop(reason: NeedsListMediaError())
                 return .retryableError(NeedsListMediaError())
             }
 
@@ -396,40 +396,36 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             // We're about to upload; ensure we aren't also enqueuing a media tier delete.
             // This is only defensive as we should be cancelling any deletes any time we
             // create an attachment stream and enqueue an upload to begin with.
-            do {
-                try await db.awaitableWrite { tx in
-                    if record.record.isFullsize {
-                        let mediaId = try backupKey.mediaEncryptionMetadata(
-                            mediaName: mediaName,
-                            // Doesn't matter what we use, we just want the mediaId
-                            type: .outerLayerFullsizeOrThumbnail,
-                        ).mediaId
-                        orphanedBackupAttachmentStore.removeFullsize(
-                            mediaName: mediaName,
-                            fullsizeMediaId: mediaId,
-                            tx: tx,
-                        )
-                    } else {
-                        let mediaId = try backupKey.mediaEncryptionMetadata(
-                            mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
-                            // Doesn't matter what we use, we just want the mediaId
-                            type: .outerLayerFullsizeOrThumbnail,
-                        ).mediaId
-                        orphanedBackupAttachmentStore.removeThumbnail(
-                            fullsizeMediaName: mediaName,
-                            thumbnailMediaId: mediaId,
-                            tx: tx,
-                        )
-                    }
+            await db.awaitableWrite { tx in
+                if record.record.isFullsize {
+                    let mediaId = backupKey.mediaEncryptionMetadata(
+                        mediaName: mediaName,
+                        // Doesn't matter what we use, we just want the mediaId
+                        type: .outerLayerFullsizeOrThumbnail,
+                    ).mediaId
+                    orphanedBackupAttachmentStore.removeFullsize(
+                        mediaName: mediaName,
+                        fullsizeMediaId: mediaId,
+                        tx: tx,
+                    )
+                } else {
+                    let mediaId = backupKey.mediaEncryptionMetadata(
+                        mediaName: AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName),
+                        // Doesn't matter what we use, we just want the mediaId
+                        type: .outerLayerFullsizeOrThumbnail,
+                    ).mediaId
+                    orphanedBackupAttachmentStore.removeThumbnail(
+                        fullsizeMediaName: mediaName,
+                        thumbnailMediaId: mediaId,
+                        tx: tx,
+                    )
                 }
-            } catch {
-                owsFailDebug("Unable to delete orphan row. Proceeding anyway.")
             }
 
             struct IsFreeTierError: Error {}
             switch backupPlan {
             case .disabled, .disabling, .free:
-                try? await loader.stop()
+                await loader.stop()
                 return .retryableError(IsFreeTierError())
             case .paid, .paidExpiringSoon, .paidAsTester:
                 break
@@ -442,12 +438,12 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 localAci = registeredState.localIdentifiers.aci
                 isPrimary = registeredState.isPrimary
             } catch {
-                try? await loader.stop(reason: error)
+                await loader.stop(reason: error)
                 return .retryableError(error)
             }
             guard isPrimary else {
                 let error = OWSAssertionError("not primary")
-                try? await loader.stop(reason: error)
+                await loader.stop(reason: error)
                 return .retryableError(error)
             }
 
@@ -466,7 +462,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                     logger: logger,
                 )
             } catch let error {
-                try? await loader.stop(reason: error)
+                await loader.stop(reason: error)
                 return .retryableError(error)
             }
 
@@ -476,7 +472,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             case .free:
                 // If we find ourselves with a free tier credential,
                 // all uploads will fail. Just quit.
-                try? await loader.stop()
+                await loader.stop()
                 await backupMediaErrorNotificationPresenter.notifyIfNecessary()
                 return .retryableError(IsFreeTierError())
             }
@@ -507,7 +503,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                             guard let totalByteCount = progressUpdate.totalByteCount else {
                                 return
                             }
-                            await progress.didUpdateProgressForFullsizeAttachment(
+                            progress.didUpdateProgressForFullsizeAttachment(
                                 uploadRecord: record.record,
                                 completedByteCount: progressUpdate.completedByteCount,
                                 totalByteCount: totalByteCount,
@@ -526,7 +522,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 }
             } catch let cancellationError as CancellationError {
                 logger.info("Cancelled; stopping the queue")
-                try? await loader.stop(reason: cancellationError)
+                await loader.stop(reason: cancellationError)
                 return .retryableError(cancellationError)
             } catch BackupArchive.Response.CopyToMediaTierError.sourceObjectNotFound,
                 BackupArchive.Response.CopyToMediaTierError.badArgument
@@ -551,7 +547,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                 switch credential?.backupLevel {
                 case .free, nil:
                     await backupMediaErrorNotificationPresenter.notifyIfNecessary()
-                    try? await loader.stop()
+                    await loader.stop()
                     return .retryableError(IsFreeTierError())
                 case .paid:
                     return .retryableError(OWSGenericError("Refreshed credential is paid: should retry upload."))
@@ -571,7 +567,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                     }
                 }
                 let error = OutOfCapacityError()
-                try? await loader.stop(reason: error)
+                await loader.stop(reason: error)
                 return .retryableError(error)
             } catch SignalError.rateLimitedError(let retryAfter, _) {
                 return .retryableError(RateLimitedRetryError(retryAfter: retryAfter))
@@ -631,7 +627,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                     let message = "No more upload retries; stopping the queue"
                     logger.warn(message)
                     await backupMediaErrorNotificationPresenter.notifyIfNecessary()
-                    try? await loader.stop()
+                    await loader.stop()
                     return .retryableError(OWSGenericError(message))
                 }
             } catch let error {
@@ -640,7 +636,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                     // when it starts up again (e.g. on app launch) we will retry.
                     logger.error("Unknown error occurred; stopping the queue")
                     await backupMediaErrorNotificationPresenter.notifyIfNecessary()
-                    try? await loader.stop()
+                    await loader.stop()
                     return .retryableError(error)
                 } else {
                     // Ignore the error if we e.g. fail to generate a thumbnail;
@@ -700,7 +696,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             switch mode {
             case .fullsize:
                 logger.info("Did drain fullsize upload queue")
-                await progress.didEmptyFullsizeUploadQueue()
+                progress.didEmptyFullsizeUploadQueue()
             case .thumbnail:
                 logger.info("Did drain thumbnail upload queue")
             }

@@ -8,7 +8,7 @@ import SignalUI
 
 class LinkOrSyncPickerSheet: StackSheetViewController {
 
-    override var handleBackgroundColor: UIColor { .clear }
+    override var prefersGrabberVisible: Bool { false }
 
     override var sheetBackgroundColor: UIColor {
         UIColor.Signal.groupedBackground

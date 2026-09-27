@@ -333,6 +333,10 @@ struct KeyValueStoreMigrator {
         return try migrateKey(key, withValueOfType: NSNumber.self, toNewValue: { Int64($0.uint32Value) }, tx: tx)
     }
 
+    func migrateInt64(_ key: String, tx: DBWriteTransaction) throws {
+        return try migrateKey(key, withValueOfType: NSNumber.self, toNewValue: { $0.int64Value }, tx: tx)
+    }
+
     func migrateUInt64(_ key: String, tx: DBWriteTransaction) throws {
         return try migrateKey(key, withValueOfType: NSNumber.self, toNewValue: { Int64(bitPattern: $0.uint64Value) }, tx: tx)
     }
@@ -343,5 +347,94 @@ struct KeyValueStoreMigrator {
 
     func migrateDouble(_ key: String, tx: DBWriteTransaction) throws {
         return try migrateKey(key, withValueOfType: NSNumber.self, toNewValue: \.doubleValue, tx: tx)
+    }
+}
+
+// MARK: -
+
+public struct KeyValueStoreDeleter {
+    private let db: any DB
+
+    public init(db: any DB) {
+        self.db = db
+    }
+
+    private static let deprecatedCollections: [String] = [
+        "AvatarDefaultColorStorageServiceMigrator",
+        "BackupArchiveErrorPresenterImpl",
+        "BackupRequestManager",
+        "CallLinkAuthCredential",
+        "ChangePhoneNumber",
+        "ContactsManagerCache.allContacts",
+        "ContactsManagerCache.phoneNumberStore",
+        "ContactsManagerCache.uniqueIdStore",
+        "DeleteForMeInfoSheetCoordinator",
+        "DeleteForMeSyncMessageSettingsStoreImpl",
+        "EditManager",
+        "Emoji+availableStore",
+        "Emoji+metadataStore",
+        "ForwardMessageViewController",
+        "GroupManager.announcementOnlyGroupsCapability",
+        "GroupManager.groupsV2Capability",
+        "GroupManager.groupsV2MigrationCapability",
+        "GroupManager.senderKeyCapability",
+        "GroupsV2Impl.groupsFromStorageService_All",
+        "IncrementalMessageTSAttachmentMigrator",
+        "KeyTransparencyManager",
+        "LearnMyOwnPniManagerImpl",
+        "LinkAndSyncManagerImpl",
+        "MasterKeyOneTimeSyncManager",
+        "MessageBackupErrorPresenterImpl",
+        "MultiFingerprintVC",
+        "OWSChatConnectionWithLibSignalShadowing",
+        "OWSOrphanDataCleaner_Collection",
+        "OrchestratingSVRImpl",
+        "PinnedConversationManager",
+        "PniHelloWorldManagerImpl",
+        "PreKeyManager",
+        "RemoteMegaphoneFetcher",
+        "SSKKyberPreKeyStoreACIKeyStore",
+        "SSKKyberPreKeyStorePNIKeyStore",
+        "SSRecIkmCapStore",
+        "SVR🐝AuthCredential",
+        "SecureValueRecovery2Impl",
+        "StorageServiceUnknownFieldMigrator",
+        "TSInteraction_TSAttachmentMigration",
+        "TSStorageManagerAppUpgradeNagCollection",
+        "TSStorageManagerPNIPreKeyStoreCollection",
+        "TSStorageManagerPNISessionStoreCollection",
+        "TSStorageManagerPNISignedPreKeyStoreCollection",
+        "TSStorageManagerPreKeyStoreCollection",
+        "TSStorageManagerSessionStoreCollection",
+        "TSStorageManagerSignedPreKeyStoreCollection",
+        "UsernameValidation",
+        "VersionedProfiles.credentialStore",
+        "arePaymentsEnabledForUserStore",
+        "groupRefreshStore",
+        "kOWS2FAManager_Collection",
+        "kOWSKeyBackupService_Keys",
+        "kOWSKeyBackupService_Token",
+        "kOWSProfileManager_UserUUIDWhitelistCollection",
+        "kOWSProfileManager_UserWhitelistCollection",
+        "viewOnceMessages",
+    ]
+
+    public func cleanUpDeprecatedCollections() async {
+        struct KeyValueTable: TableRecord {
+            static let databaseTableName: String = NewKeyValueStore.tableName
+        }
+        let collections = db.read { tx in
+            return failIfThrows {
+                let collection = Column(NewKeyValueStore.collectionColumnName)
+                return try KeyValueTable.selectDistinct(collection, as: String.self, tx: tx)
+            }
+        }
+        let obsoleteCollections = Set(collections).intersection(Self.deprecatedCollections)
+        for obsoleteCollection in obsoleteCollections {
+            Logger.info("deleting obsolete key value collection: \(obsoleteCollection)")
+            await db.awaitableWrite { tx in
+                NewKeyValueStore(collection: obsoleteCollection).removeAll(tx: tx)
+            }
+        }
     }
 }

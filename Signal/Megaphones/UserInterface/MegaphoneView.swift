@@ -94,7 +94,6 @@ class MegaphoneView: UIView {
     private let bodyText: String
     private let buttons: [Megaphone.Button]
 
-    private let darkThemeBackgroundOverlay = UIView()
     private let stackView = UIStackView()
 
     init(
@@ -115,20 +114,21 @@ class MegaphoneView: UIView {
         layer.cornerRadius = 12
         clipsToBounds = true
 
-        let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+        blurEffectView.overrideUserInterfaceStyle = .dark
         addSubview(blurEffectView)
         blurEffectView.autoPinEdgesToSuperviewEdges()
 
+        // We want this background to change color with dark / light interface, but not the rest of the UI.
+        let darkThemeBackgroundOverlay = UIView()
+        darkThemeBackgroundOverlay.backgroundColor = UIColor(light: .clear, dark: .white.withAlphaComponent(0.1))
         addSubview(darkThemeBackgroundOverlay)
         darkThemeBackgroundOverlay.autoPinEdgesToSuperviewEdges()
-        darkThemeBackgroundOverlay.backgroundColor = UIColor.white.withAlphaComponent(0.10)
 
+        stackView.overrideUserInterfaceStyle = .dark
         stackView.axis = .vertical
         addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
-
-        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .themeDidChange, object: nil)
-        applyTheme()
     }
 
     required init(coder: NSCoder) {
@@ -175,24 +175,19 @@ class MegaphoneView: UIView {
 
     // MARK: -
 
-    @objc
-    private func applyTheme() {
-        darkThemeBackgroundOverlay.isHidden = !Theme.isDarkThemeEnabled
-    }
-
     private func createLabelStack() -> UIStackView {
         let titleLabel = UILabel()
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.font = UIFont.semiboldFont(ofSize: 17)
-        titleLabel.textColor = Theme.darkThemePrimaryColor
+        titleLabel.font = .semiboldFont(ofSize: 17)
+        titleLabel.textColor = .Signal.label
         titleLabel.text = titleText
 
         let bodyLabel = UILabel()
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
-        bodyLabel.font = UIFont.systemFont(ofSize: 15)
-        bodyLabel.textColor = Theme.darkThemeSecondaryTextAndIconColor
+        bodyLabel.font = .systemFont(ofSize: 15)
+        bodyLabel.textColor = .Signal.secondaryLabel
         bodyLabel.text = bodyText
 
         let topSpacer = UIView()
@@ -225,15 +220,22 @@ class MegaphoneView: UIView {
     private func createButtonView(
         _ button: Megaphone.Button,
         font: UIFont = .regularFont(ofSize: 15),
-    ) -> OWSFlatButton {
-        let buttonView = OWSFlatButton()
+    ) -> UIButton {
+        var buttonConfig = UIButton.Configuration.plain()
+        buttonConfig.contentInsets = .zero
+        buttonConfig.cornerStyle = .fixed
+        buttonConfig.background.cornerRadius = 0
+        buttonConfig.title = button.title
+        buttonConfig.attributedTitle?.font = font
+        buttonConfig.baseForegroundColor = .Signal.label
 
-        buttonView.setTitle(title: button.title, font: font, titleColor: Theme.darkThemePrimaryColor)
-        buttonView.setPressedBlock { button.action() }
+        let uiButton = UIButton(
+            configuration: buttonConfig,
+            primaryAction: UIAction { _ in button.action() },
+        )
+        uiButton.autoSetDimension(.height, toSize: 44)
 
-        buttonView.autoSetDimension(.height, toSize: 44)
-
-        return buttonView
+        return uiButton
     }
 
     private func createButtonsStack() -> UIStackView {

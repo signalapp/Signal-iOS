@@ -385,9 +385,9 @@ public class _RegistrationCoordinator_ReceiptManagerWrapper: _RegistrationCoordi
 // MARK: - StorageService
 
 public protocol _RegistrationCoordinator_StorageServiceManagerShim {
-    func rotateManifest(mode: StorageServiceManagerManifestRotationMode, authedDevice: AuthedDevice) async throws
-    func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice, masterKeySource: StorageService.MasterKeySource) -> Promise<Void>
-    func backupPendingChanges(authedDevice: AuthedDevice)
+    func rotateManifest(mode: StorageServiceManagerManifestRotationMode, authedAccount: AuthedAccount) async throws
+    func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount, masterKeySource: StorageService.MasterKeySource) -> Promise<Void>
+    func backupPendingChanges(authedAccount: AuthedAccount)
     func recordPendingLocalAccountUpdates()
 }
 
@@ -397,20 +397,20 @@ public class _RegistrationCoordinator_StorageServiceManagerWrapper: _Registratio
 
     public func rotateManifest(
         mode: StorageServiceManagerManifestRotationMode,
-        authedDevice: AuthedDevice,
+        authedAccount: AuthedAccount,
     ) async throws {
-        try await self.manager.rotateManifest(mode: mode, authedDevice: authedDevice)
+        try await self.manager.rotateManifest(mode: mode, authedAccount: authedAccount)
     }
 
     public func restoreOrCreateManifestIfNecessary(
-        authedDevice: AuthedDevice,
+        authedAccount: AuthedAccount,
         masterKeySource: StorageService.MasterKeySource,
     ) -> Promise<Void> {
-        manager.restoreOrCreateManifestIfNecessary(authedDevice: authedDevice, masterKeySource: masterKeySource)
+        manager.restoreOrCreateManifestIfNecessary(authedAccount: authedAccount, masterKeySource: masterKeySource)
     }
 
-    public func backupPendingChanges(authedDevice: AuthedDevice) {
-        manager.backupPendingChanges(authedDevice: authedDevice)
+    public func backupPendingChanges(authedAccount: AuthedAccount) {
+        manager.backupPendingChanges(authedAccount: authedAccount)
     }
 
     public func recordPendingLocalAccountUpdates() {

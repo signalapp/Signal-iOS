@@ -446,7 +446,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
             comment: "label for accepting incoming calls",
         )
-        audioAnswerIncomingButton.unselectedBackgroundColor = .ows_accentGreen
+        audioAnswerIncomingButton.unselectedBackgroundColor = .Signal.green
         audioAnswerIncomingButton.accessibilityLabel = OWSLocalizedString(
             "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
             comment: "label for accepting incoming calls",
@@ -456,7 +456,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
             comment: "label for declining incoming calls",
         )
-        audioDeclineIncomingButton.unselectedBackgroundColor = .ows_accentRed
+        audioDeclineIncomingButton.unselectedBackgroundColor = .Signal.red
         audioDeclineIncomingButton.accessibilityLabel = OWSLocalizedString(
             "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
             comment: "label for declining incoming calls",
@@ -473,7 +473,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
             comment: "label for accepting incoming calls",
         )
-        videoAnswerIncomingButton.unselectedBackgroundColor = .ows_accentGreen
+        videoAnswerIncomingButton.unselectedBackgroundColor = .Signal.green
         videoAnswerIncomingButton.accessibilityLabel = OWSLocalizedString(
             "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
             comment: "label for accepting incoming calls",
@@ -492,7 +492,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
             comment: "label for declining incoming calls",
         )
-        videoDeclineIncomingButton.unselectedBackgroundColor = .ows_accentRed
+        videoDeclineIncomingButton.unselectedBackgroundColor = .Signal.red
         videoDeclineIncomingButton.accessibilityLabel = OWSLocalizedString(
             "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
             comment: "label for declining incoming calls",

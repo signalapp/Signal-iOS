@@ -14,9 +14,9 @@ class MPCDeviceTransferSession:
     MCSessionDelegate
 {
     let identity: SecIdentity
-    var localPeerId: any DeviceTransfer.PeerID { MPCDeviceTransferPeerId(mcPeerID: session.myPeerID) }
-    let _remotePeerId: MPCDeviceTransferPeerId
-    var remotePeerId: any DeviceTransfer.PeerID { _remotePeerId }
+    var localPeerId: any DeviceTransfer.Peer { MPCDeviceTransferPeer(mcPeerID: session.myPeerID) }
+    let _remotePeerId: MPCDeviceTransferPeer
+    var remotePeerId: any DeviceTransfer.Peer { _remotePeerId }
 
     let session: MCSession
 
@@ -40,7 +40,7 @@ class MPCDeviceTransferSession:
         tsAccountManager: TSAccountManager,
     ) {
         self.identity = identity
-        self._remotePeerId = MPCDeviceTransferPeerId(mcPeerID: remoteDevicePeerID)
+        self._remotePeerId = MPCDeviceTransferPeer(mcPeerID: remoteDevicePeerID)
         let session = MCSession(peer: peerID, securityIdentity: [identity], encryptionPreference: .required)
         self.session = session
 
@@ -73,7 +73,7 @@ class MPCDeviceTransferSession:
     }
 
     @MainActor
-    func disconnect(error: Error?) {
+    func disconnect(error: Error?) async {
         lock.withLock {
             self.connected = false
             self.activeSends.values.forEach { $0.resume(throwing: CancellationError()) }
@@ -90,6 +90,7 @@ class MPCDeviceTransferSession:
         let mode: MCSessionSendDataMode = switch message {
         case .backgroundApp: .unreliable
         case .done: .reliable
+        case .transferFailed: .reliable
         }
         try session.send(
             message.data,
@@ -190,7 +191,7 @@ class MPCDeviceTransferSession:
         didFinishReceivingResourceWithName resourceName: String,
         fromPeer peerId: MCPeerID,
         at localURL: URL?,
-        withError error: Swift.Error?,
+        withError error: Error?,
     ) {
         if let error {
             messageSink.finish(throwing: error)

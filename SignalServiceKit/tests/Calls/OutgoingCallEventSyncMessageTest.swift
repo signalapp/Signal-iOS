@@ -59,10 +59,9 @@ final class OutgoingCallEventSyncMessageSerializationTest: SSKBaseTest {
     func testCallEventRoundTrip() throws {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .init(
-                    aci: .init(fromUUID: UUID()),
-                    pni: .init(fromUUID: UUID()),
-                    e164: .init("+17735550199")!,
+                localIdentifiers: LocalIdentifiers(
+                    aci: .randomForTesting(),
+                    phoneNumber: LocalIdentifiers.PhoneNumber(e164: E164("+17735550199")!, pni: .randomForTesting()),
                 ),
                 tx: tx,
             )

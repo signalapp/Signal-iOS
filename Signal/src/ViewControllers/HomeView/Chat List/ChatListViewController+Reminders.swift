@@ -6,6 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
+@MainActor
 public class CLVReminderViews {
 
     let reminderViewCell = UITableViewCell()
@@ -17,7 +18,7 @@ public class CLVReminderViews {
         osExpiry: OsExpiry.default,
         device: UIDevice.current,
     )
-    fileprivate var deregisteredView = UIView()
+    private var deregisteredView: UIView?
     fileprivate var outageView = UIView()
     fileprivate var archiveReminderView = UIView()
     fileprivate let paymentsReminderView = UIView()
@@ -27,44 +28,12 @@ public class CLVReminderViews {
     public weak var chatListViewController: ChatListViewController?
 
     init() {
-        AssertIsOnMainThread()
-
         reminderStackView.axis = .vertical
         reminderStackView.spacing = 0
         reminderViewCell.selectionStyle = .none
         reminderViewCell.contentView.addSubview(reminderStackView)
         reminderViewCell.backgroundColor = .clear
         reminderStackView.autoPinEdgesToSuperviewEdges()
-
-        let deregisteredText: String
-        let deregisteredActionTitle: String
-        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? true {
-            deregisteredText = OWSLocalizedString(
-                "DEREGISTRATION_WARNING",
-                comment: "Label warning the user that they have been de-registered.",
-            )
-            deregisteredActionTitle = OWSLocalizedString(
-                "DEREGISTRATION_WARNING_ACTION_TITLE",
-                comment: "If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning.",
-            )
-        } else {
-            deregisteredText = OWSLocalizedString(
-                "UNLINKED_WARNING",
-                comment: "Label warning the user that they have been unlinked from their primary device.",
-            )
-            deregisteredActionTitle = OWSLocalizedString(
-                "UNLINKED_WARNING_ACTION_TITLE",
-                comment: "If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning.",
-            )
-        }
-        deregisteredView = ReminderView(
-            style: .warning,
-            text: deregisteredText,
-            actionTitle: deregisteredActionTitle,
-            tapAction: { [weak self] in self?.didTapDeregisteredView() },
-        )
-        reminderStackView.addArrangedSubview(deregisteredView)
-        deregisteredView.accessibilityIdentifier = "deregisteredView"
 
         reminderStackView.addArrangedSubview(expiredView)
         expiredView.accessibilityIdentifier = "expiredView"
@@ -134,17 +103,55 @@ public class CLVReminderViews {
         ])
     }
 
-    private func didTapDeregisteredView() {
-        AssertIsOnMainThread()
-
-        guard let chatListViewController else {
+    fileprivate func updateDeregisteredView(_ deregisteredState: DeregisteredState?) {
+        guard let deregisteredState else {
+            deregisteredView?.removeFromSuperview()
+            deregisteredView = nil
             return
         }
-
-        RegistrationUtils.showReregistrationUI(
-            fromViewController: chatListViewController,
-            appReadiness: chatListViewController.appReadiness,
+        guard deregisteredView == nil else {
+            // It already exists.
+            return
+        }
+        let deregisteredText: String
+        let deregisteredActionTitle: String
+        if deregisteredState.isPrimary {
+            deregisteredText = OWSLocalizedString(
+                "DEREGISTRATION_WARNING",
+                comment: "Label warning the user that they have been de-registered.",
+            )
+            deregisteredActionTitle = OWSLocalizedString(
+                "DEREGISTRATION_WARNING_ACTION_TITLE",
+                comment: "If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning.",
+            )
+        } else {
+            deregisteredText = OWSLocalizedString(
+                "UNLINKED_WARNING",
+                comment: "Label warning the user that they have been unlinked from their primary device.",
+            )
+            deregisteredActionTitle = OWSLocalizedString(
+                "UNLINKED_WARNING_ACTION_TITLE",
+                comment: "If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning.",
+            )
+        }
+        let deregisteredView = ReminderView(
+            style: .warning,
+            text: deregisteredText,
+            actionTitle: deregisteredActionTitle,
+            tapAction: { [weak self] in
+                if deregisteredState.isPrimary {
+                    guard let self, let chatListViewController else {
+                        return
+                    }
+                    RegistrationUtils.showReRegistrationPrompt(fromViewController: chatListViewController, deregisteredState: deregisteredState)
+                } else {
+                    RegistrationUtils.showReLinking(deregisteredState: deregisteredState)
+                }
+            },
         )
+        self.deregisteredView = deregisteredView
+        reminderStackView.insertArrangedSubview(deregisteredView, at: 0)
+        deregisteredView.accessibilityIdentifier = "deregisteredView"
     }
 
     private func didTapUsernameCorruptedReminderView() {
@@ -178,7 +185,7 @@ public class CLVReminderViews {
     public var hasVisibleReminders: Bool {
 
         !self.archiveReminderView.isHidden ||
-            !self.deregisteredView.isHidden ||
+            self.deregisteredView?.isHidden == false ||
             !self.outageView.isHidden ||
             !self.expiredView.isHidden ||
             !self.paymentsReminderView.isHidden ||
@@ -194,7 +201,6 @@ extension ChatListViewController {
 
     private var reminderViews: CLVReminderViews { viewState.reminderViews }
     fileprivate var expiredView: ExpirationNagView { reminderViews.expiredView }
-    fileprivate var deregisteredView: UIView { reminderViews.deregisteredView }
     fileprivate var outageView: UIView { reminderViews.outageView }
     fileprivate var archiveReminderView: UIView { reminderViews.archiveReminderView }
     fileprivate var paymentsReminderView: UIView { reminderViews.paymentsReminderView }
@@ -206,8 +212,9 @@ extension ChatListViewController {
     }
 
     public func updateRegistrationReminderView() {
-        let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction
-        deregisteredView.isHidden = !tsRegistrationState.isDeregistered
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let tsRegistrationState = tsAccountManager.registrationStateWithMaybeSneakyTransaction
+        reminderViews.updateDeregisteredView(tsRegistrationState.deregisteredState)
     }
 
     public func updateOutageDetectionReminderView() {
@@ -252,7 +259,7 @@ extension ChatListViewController {
         let failureStateManager = DependenciesBridge.shared.backupFailureStateManager
 
         viewState.backupFailureAlerts = db.read { tx -> Set<BackupFailureAlertType> in
-            guard failureStateManager.hasFailedBackup(tx: tx) else {
+            guard failureStateManager.hasFailedAnyBackup(tx: tx) else {
                 return []
             }
 

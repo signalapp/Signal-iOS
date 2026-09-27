@@ -24,12 +24,12 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
 
-struct GroupsProtos_AvatarUploadAttributes: Sendable {
+nonisolated struct GroupsProtos_AvatarUploadAttributes: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -54,7 +54,7 @@ struct GroupsProtos_AvatarUploadAttributes: Sendable {
 }
 
 /// Represents a member of the group.
-struct GroupsProtos_Member: Sendable {
+nonisolated struct GroupsProtos_Member: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -81,7 +81,7 @@ struct GroupsProtos_Member: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum Role: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum Role: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case unknown // = 0
 
@@ -131,7 +131,7 @@ struct GroupsProtos_Member: Sendable {
 /// Here, "pending" refers to "pending profile key", as invited members'
 /// profile keys will be missing; to become a full member, they must add their
 /// profile key to the group.
-struct GroupsProtos_PendingMember: Sendable {
+nonisolated struct GroupsProtos_PendingMember: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -160,7 +160,7 @@ struct GroupsProtos_PendingMember: Sendable {
 }
 
 /// A user who has requested to join the group, and is pending admin approval.
-struct GroupsProtos_RequestingMember: Sendable {
+nonisolated struct GroupsProtos_RequestingMember: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -184,7 +184,7 @@ struct GroupsProtos_RequestingMember: Sendable {
 }
 
 /// A user who has been banned from the group.
-struct GroupsProtos_BannedMember: Sendable {
+nonisolated struct GroupsProtos_BannedMember: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -200,7 +200,7 @@ struct GroupsProtos_BannedMember: Sendable {
   init() {}
 }
 
-struct GroupsProtos_AccessControl: Sendable {
+nonisolated struct GroupsProtos_AccessControl: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -217,7 +217,7 @@ struct GroupsProtos_AccessControl: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum AccessRequired: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum AccessRequired: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case unknown // = 0
     case any // = 1
@@ -270,7 +270,7 @@ struct GroupsProtos_AccessControl: Sendable {
   init() {}
 }
 
-struct GroupsProtos_Group: @unchecked Sendable {
+nonisolated struct GroupsProtos_Group: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -368,7 +368,7 @@ struct GroupsProtos_Group: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct GroupsProtos_GroupAttributeBlob: Sendable {
+nonisolated struct GroupsProtos_GroupAttributeBlob: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -409,7 +409,7 @@ struct GroupsProtos_GroupAttributeBlob: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_Content: Equatable, Sendable {
+  nonisolated enum OneOf_Content: Equatable, Sendable {
     case title(String)
     case avatar(Data)
     case disappearingMessagesDuration(UInt32)
@@ -420,7 +420,7 @@ struct GroupsProtos_GroupAttributeBlob: Sendable {
   init() {}
 }
 
-struct GroupsProtos_GroupInviteLink: Sendable {
+nonisolated struct GroupsProtos_GroupInviteLink: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -437,12 +437,12 @@ struct GroupsProtos_GroupInviteLink: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_Contents: Equatable, Sendable {
+  nonisolated enum OneOf_Contents: Equatable, Sendable {
     case contentsV1(GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1)
 
   }
 
-  struct GroupInviteLinkContentsV1: Sendable {
+  nonisolated struct GroupInviteLinkContentsV1: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -459,7 +459,7 @@ struct GroupsProtos_GroupInviteLink: Sendable {
   init() {}
 }
 
-struct GroupsProtos_GroupJoinInfo: Sendable {
+nonisolated struct GroupsProtos_GroupJoinInfo: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -485,7 +485,7 @@ struct GroupsProtos_GroupJoinInfo: Sendable {
   init() {}
 }
 
-struct GroupsProtos_GroupChange: Sendable {
+nonisolated struct GroupsProtos_GroupChange: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -500,7 +500,7 @@ struct GroupsProtos_GroupChange: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  struct Actions: @unchecked Sendable {
+  nonisolated struct Actions: @unchecked Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -720,7 +720,7 @@ struct GroupsProtos_GroupChange: Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    struct AddMemberAction: Sendable {
+    nonisolated struct AddMemberAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -743,7 +743,7 @@ struct GroupsProtos_GroupChange: Sendable {
       fileprivate var _added: GroupsProtos_Member? = nil
     }
 
-    struct DeleteMemberAction: Sendable {
+    nonisolated struct DeleteMemberAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -755,7 +755,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct ModifyMemberRoleAction: Sendable {
+    nonisolated struct ModifyMemberRoleAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -769,7 +769,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct ModifyMemberLabelAction: Sendable {
+    nonisolated struct ModifyMemberLabelAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -786,7 +786,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct ModifyMemberProfileKeyAction: Sendable {
+    nonisolated struct ModifyMemberProfileKeyAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -802,7 +802,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct AddPendingMemberAction: Sendable {
+    nonisolated struct AddPendingMemberAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -823,7 +823,7 @@ struct GroupsProtos_GroupChange: Sendable {
       fileprivate var _added: GroupsProtos_PendingMember? = nil
     }
 
-    struct DeletePendingMemberAction: Sendable {
+    nonisolated struct DeletePendingMemberAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -835,7 +835,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct PromotePendingMemberAction: Sendable {
+    nonisolated struct PromotePendingMemberAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -851,7 +851,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct PromoteMemberPendingPniAciProfileKeyAction: Sendable {
+    nonisolated struct PromoteMemberPendingPniAciProfileKeyAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -874,7 +874,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct AddRequestingMemberAction: Sendable {
+    nonisolated struct AddRequestingMemberAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -895,7 +895,7 @@ struct GroupsProtos_GroupChange: Sendable {
       fileprivate var _added: GroupsProtos_RequestingMember? = nil
     }
 
-    struct DeleteRequestingMemberAction: Sendable {
+    nonisolated struct DeleteRequestingMemberAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -907,7 +907,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct PromoteRequestingMemberAction: Sendable {
+    nonisolated struct PromoteRequestingMemberAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -921,7 +921,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct AddBannedMemberAction: Sendable {
+    nonisolated struct AddBannedMemberAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -942,7 +942,7 @@ struct GroupsProtos_GroupChange: Sendable {
       fileprivate var _added: GroupsProtos_BannedMember? = nil
     }
 
-    struct DeleteBannedMemberAction: Sendable {
+    nonisolated struct DeleteBannedMemberAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -954,7 +954,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct ModifyTitleAction: Sendable {
+    nonisolated struct ModifyTitleAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -967,7 +967,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct ModifyAvatarAction: Sendable {
+    nonisolated struct ModifyAvatarAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -980,7 +980,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct ModifyDisappearingMessagesTimerAction: Sendable {
+    nonisolated struct ModifyDisappearingMessagesTimerAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -994,7 +994,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct ModifyAttributesAccessControlAction: Sendable {
+    nonisolated struct ModifyAttributesAccessControlAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1006,7 +1006,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct ModifyAvatarAccessControlAction: Sendable {
+    nonisolated struct ModifyAvatarAccessControlAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1018,7 +1018,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct ModifyMembersAccessControlAction: Sendable {
+    nonisolated struct ModifyMembersAccessControlAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1030,7 +1030,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct ModifyAddFromInviteLinkAccessControlAction: Sendable {
+    nonisolated struct ModifyAddFromInviteLinkAccessControlAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1042,7 +1042,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct ModifyMemberLabelAccessControlAction: Sendable {
+    nonisolated struct ModifyMemberLabelAccessControlAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1054,7 +1054,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct ModifyInviteLinkPasswordAction: Sendable {
+    nonisolated struct ModifyInviteLinkPasswordAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1066,7 +1066,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct ModifyDescriptionAction: Sendable {
+    nonisolated struct ModifyDescriptionAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1079,7 +1079,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct ModifyAnnouncementsOnlyAction: Sendable {
+    nonisolated struct ModifyAnnouncementsOnlyAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1091,7 +1091,7 @@ struct GroupsProtos_GroupChange: Sendable {
       init() {}
     }
 
-    struct TerminateGroupAction: Sendable {
+    nonisolated struct TerminateGroupAction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1109,7 +1109,7 @@ struct GroupsProtos_GroupChange: Sendable {
   init() {}
 }
 
-struct GroupsProtos_GroupExternalCredential: Sendable {
+nonisolated struct GroupsProtos_GroupExternalCredential: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1121,7 +1121,7 @@ struct GroupsProtos_GroupExternalCredential: Sendable {
   init() {}
 }
 
-struct GroupsProtos_GroupResponse: Sendable {
+nonisolated struct GroupsProtos_GroupResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1144,7 +1144,7 @@ struct GroupsProtos_GroupResponse: Sendable {
   fileprivate var _group: GroupsProtos_Group? = nil
 }
 
-struct GroupsProtos_GroupChanges: Sendable {
+nonisolated struct GroupsProtos_GroupChanges: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1155,7 +1155,7 @@ struct GroupsProtos_GroupChanges: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  struct GroupChangeState: Sendable {
+  nonisolated struct GroupChangeState: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1189,7 +1189,7 @@ struct GroupsProtos_GroupChanges: Sendable {
   init() {}
 }
 
-struct GroupsProtos_GroupChangeResponse: Sendable {
+nonisolated struct GroupsProtos_GroupChangeResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1214,9 +1214,9 @@ struct GroupsProtos_GroupChangeResponse: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "GroupsProtos"
+fileprivate nonisolated let _protobuf_package = "GroupsProtos"
 
-extension GroupsProtos_AvatarUploadAttributes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_AvatarUploadAttributes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AvatarUploadAttributes"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}key\0\u{1}credential\0\u{1}acl\0\u{1}algorithm\0\u{1}date\0\u{1}policy\0\u{1}signature\0")
 
@@ -1276,7 +1276,7 @@ extension GroupsProtos_AvatarUploadAttributes: SwiftProtobuf.Message, SwiftProto
   }
 }
 
-extension GroupsProtos_Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Member"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userId\0\u{1}role\0\u{1}profileKey\0\u{1}presentation\0\u{1}joinedAtRevision\0\u{3}label_emoji\0\u{3}label_string\0")
 
@@ -1336,11 +1336,11 @@ extension GroupsProtos_Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
   }
 }
 
-extension GroupsProtos_Member.Role: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_Member.Role: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}DEFAULT\0\u{1}ADMINISTRATOR\0")
 }
 
-extension GroupsProtos_PendingMember: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_PendingMember: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PendingMember"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}member\0\u{1}addedByUserId\0\u{1}timestamp\0")
 
@@ -1384,7 +1384,7 @@ extension GroupsProtos_PendingMember: SwiftProtobuf.Message, SwiftProtobuf._Mess
   }
 }
 
-extension GroupsProtos_RequestingMember: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_RequestingMember: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RequestingMember"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userId\0\u{1}profileKey\0\u{1}presentation\0\u{1}timestamp\0")
 
@@ -1429,7 +1429,7 @@ extension GroupsProtos_RequestingMember: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
-extension GroupsProtos_BannedMember: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_BannedMember: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".BannedMember"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userId\0\u{1}bannedAtTimestamp\0")
 
@@ -1464,7 +1464,7 @@ extension GroupsProtos_BannedMember: SwiftProtobuf.Message, SwiftProtobuf._Messa
   }
 }
 
-extension GroupsProtos_AccessControl: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_AccessControl: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AccessControl"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}attributes\0\u{1}members\0\u{1}addFromInviteLink\0\u{3}member_label\0")
 
@@ -1509,11 +1509,11 @@ extension GroupsProtos_AccessControl: SwiftProtobuf.Message, SwiftProtobuf._Mess
   }
 }
 
-extension GroupsProtos_AccessControl.AccessRequired: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_AccessControl.AccessRequired: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}ANY\0\u{1}MEMBER\0\u{1}ADMINISTRATOR\0\u{1}UNSATISFIABLE\0")
 }
 
-extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Group"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}publicKey\0\u{1}title\0\u{1}avatar\0\u{1}disappearingMessagesTimer\0\u{1}accessControl\0\u{1}revision\0\u{1}members\0\u{1}pendingMembers\0\u{1}requestingMembers\0\u{1}inviteLinkPassword\0\u{1}descriptionBytes\0\u{1}announcementsOnly\0\u{1}bannedMembers\0\u{1}terminated\0")
 
@@ -1674,7 +1674,7 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
   }
 }
 
-extension GroupsProtos_GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupAttributeBlob"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}title\0\u{1}avatar\0\u{1}disappearingMessagesDuration\0\u{1}descriptionText\0")
 
@@ -1755,7 +1755,7 @@ extension GroupsProtos_GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension GroupsProtos_GroupInviteLink: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupInviteLink: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupInviteLink"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contentsV1\0")
 
@@ -1801,7 +1801,7 @@ extension GroupsProtos_GroupInviteLink: SwiftProtobuf.Message, SwiftProtobuf._Me
   }
 }
 
-extension GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupInviteLink.protoMessageName + ".GroupInviteLinkContentsV1"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}groupMasterKey\0\u{1}inviteLinkPassword\0")
 
@@ -1836,7 +1836,7 @@ extension GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1: SwiftProtobuf.
   }
 }
 
-extension GroupsProtos_GroupJoinInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupJoinInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupJoinInfo"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}publicKey\0\u{1}title\0\u{1}avatar\0\u{1}memberCount\0\u{1}addFromInviteLink\0\u{1}revision\0\u{1}pendingAdminApproval\0\u{1}descriptionBytes\0")
 
@@ -1901,7 +1901,7 @@ extension GroupsProtos_GroupJoinInfo: SwiftProtobuf.Message, SwiftProtobuf._Mess
   }
 }
 
-extension GroupsProtos_GroupChange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupChange"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}actions\0\u{1}serverSignature\0\u{1}changeEpoch\0")
 
@@ -1941,7 +1941,7 @@ extension GroupsProtos_GroupChange: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.protoMessageName + ".Actions"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sourceUserId\0\u{1}revision\0\u{1}addMembers\0\u{1}deleteMembers\0\u{1}modifyMemberRoles\0\u{1}modifyMemberProfileKeys\0\u{1}addPendingMembers\0\u{1}deletePendingMembers\0\u{1}promotePendingMembers\0\u{1}modifyTitle\0\u{1}modifyAvatar\0\u{1}modifyDisappearingMessagesTimer\0\u{1}modifyAttributesAccess\0\u{1}modifyMemberAccess\0\u{1}modifyAddFromInviteLinkAccess\0\u{1}addRequestingMembers\0\u{1}deleteRequestingMembers\0\u{1}promoteRequestingMembers\0\u{1}modifyInviteLinkPassword\0\u{1}modifyDescription\0\u{1}modifyAnnouncementsOnly\0\u{1}addBannedMembers\0\u{1}deleteBannedMembers\0\u{1}promotePniPendingMembers\0\u{3}group_id\0\u{1}modifyMemberLabel\0\u{3}modify_member_label_access\0\u{3}terminate_group\0")
 
@@ -2200,7 +2200,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.AddMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.AddMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".AddMemberAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}added\0\u{1}joinFromInviteLink\0")
 
@@ -2239,7 +2239,7 @@ extension GroupsProtos_GroupChange.Actions.AddMemberAction: SwiftProtobuf.Messag
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.DeleteMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.DeleteMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".DeleteMemberAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}deletedUserId\0")
 
@@ -2269,7 +2269,7 @@ extension GroupsProtos_GroupChange.Actions.DeleteMemberAction: SwiftProtobuf.Mes
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyMemberRoleAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userId\0\u{1}role\0")
 
@@ -2304,7 +2304,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction: SwiftProtobuf
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.ModifyMemberLabelAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.ModifyMemberLabelAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyMemberLabelAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}user_id\0\u{3}label_emoji\0\u{3}label_string\0")
 
@@ -2344,7 +2344,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyMemberLabelAction: SwiftProtobu
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyMemberProfileKeyAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}presentation\0\u{3}user_id\0\u{3}profile_key\0")
 
@@ -2384,7 +2384,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction: SwiftPr
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.AddPendingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.AddPendingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".AddPendingMemberAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}added\0")
 
@@ -2418,7 +2418,7 @@ extension GroupsProtos_GroupChange.Actions.AddPendingMemberAction: SwiftProtobuf
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.DeletePendingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.DeletePendingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".DeletePendingMemberAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}deletedUserId\0")
 
@@ -2448,7 +2448,7 @@ extension GroupsProtos_GroupChange.Actions.DeletePendingMemberAction: SwiftProto
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.PromotePendingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.PromotePendingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".PromotePendingMemberAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}presentation\0\u{3}user_id\0\u{3}profile_key\0")
 
@@ -2488,7 +2488,7 @@ extension GroupsProtos_GroupChange.Actions.PromotePendingMemberAction: SwiftProt
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".PromoteMemberPendingPniAciProfileKeyAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}presentation\0\u{3}user_id\0\u{1}pni\0\u{3}profile_key\0")
 
@@ -2533,7 +2533,7 @@ extension GroupsProtos_GroupChange.Actions.PromoteMemberPendingPniAciProfileKeyA
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.AddRequestingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.AddRequestingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".AddRequestingMemberAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}added\0")
 
@@ -2567,7 +2567,7 @@ extension GroupsProtos_GroupChange.Actions.AddRequestingMemberAction: SwiftProto
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".DeleteRequestingMemberAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}deletedUserId\0")
 
@@ -2597,7 +2597,7 @@ extension GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction: SwiftPr
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".PromoteRequestingMemberAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}userId\0\u{1}role\0")
 
@@ -2632,7 +2632,7 @@ extension GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction: SwiftP
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.AddBannedMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.AddBannedMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".AddBannedMemberAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}added\0")
 
@@ -2666,7 +2666,7 @@ extension GroupsProtos_GroupChange.Actions.AddBannedMemberAction: SwiftProtobuf.
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".DeleteBannedMemberAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}deletedUserId\0")
 
@@ -2696,7 +2696,7 @@ extension GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction: SwiftProtob
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.ModifyTitleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.ModifyTitleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyTitleAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}title\0")
 
@@ -2726,7 +2726,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyTitleAction: SwiftProtobuf.Mess
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.ModifyAvatarAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.ModifyAvatarAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyAvatarAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}avatar\0")
 
@@ -2756,7 +2756,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyAvatarAction: SwiftProtobuf.Mes
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyDisappearingMessagesTimerAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}timer\0")
 
@@ -2786,7 +2786,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyAttributesAccessControlAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}attributesAccess\0")
 
@@ -2816,7 +2816,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction: 
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyAvatarAccessControlAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}avatarAccess\0")
 
@@ -2846,7 +2846,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction: Swif
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyMembersAccessControlAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}membersAccess\0")
 
@@ -2876,7 +2876,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction: Swi
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyAddFromInviteLinkAccessControlAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}addFromInviteLinkAccess\0")
 
@@ -2906,7 +2906,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlA
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.ModifyMemberLabelAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.ModifyMemberLabelAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyMemberLabelAccessControlAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}member_label_access\0")
 
@@ -2936,7 +2936,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyMemberLabelAccessControlAction:
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyInviteLinkPasswordAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}inviteLinkPassword\0")
 
@@ -2966,7 +2966,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction: Swift
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.ModifyDescriptionAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.ModifyDescriptionAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyDescriptionAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}descriptionBytes\0")
 
@@ -2996,7 +2996,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyDescriptionAction: SwiftProtobu
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyAnnouncementsOnlyAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}announcementsOnly\0")
 
@@ -3026,7 +3026,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction: SwiftP
   }
 }
 
-extension GroupsProtos_GroupChange.Actions.TerminateGroupAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChange.Actions.TerminateGroupAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".TerminateGroupAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -3045,7 +3045,7 @@ extension GroupsProtos_GroupChange.Actions.TerminateGroupAction: SwiftProtobuf.M
   }
 }
 
-extension GroupsProtos_GroupExternalCredential: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupExternalCredential: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupExternalCredential"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}token\0")
 
@@ -3075,7 +3075,7 @@ extension GroupsProtos_GroupExternalCredential: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension GroupsProtos_GroupResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupResponse"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}group\0\u{3}group_send_endorsements_response\0")
 
@@ -3114,7 +3114,7 @@ extension GroupsProtos_GroupResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
   }
 }
 
-extension GroupsProtos_GroupChanges: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChanges: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupChanges"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}groupChanges\0\u{3}group_send_endorsements_response\0")
 
@@ -3149,7 +3149,7 @@ extension GroupsProtos_GroupChanges: SwiftProtobuf.Message, SwiftProtobuf._Messa
   }
 }
 
-extension GroupsProtos_GroupChanges.GroupChangeState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChanges.GroupChangeState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChanges.protoMessageName + ".GroupChangeState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}groupChange\0\u{1}groupState\0")
 
@@ -3188,7 +3188,7 @@ extension GroupsProtos_GroupChanges.GroupChangeState: SwiftProtobuf.Message, Swi
   }
 }
 
-extension GroupsProtos_GroupChangeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension GroupsProtos_GroupChangeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupChangeResponse"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}group_change\0\u{3}group_send_endorsements_response\0")
 

@@ -73,15 +73,9 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
 
         navigationItem.setHidesBackButton(true, animated: false)
         if !(presenter?.presentedAsModal ?? true) {
-            navigationItem.rightBarButtonItem = {
-                let button = UIBarButtonItem(
-                    title: CommonStrings.nextButton,
-                    primaryAction: UIAction { [weak self] _ in self?.didTapSave() },
-                )
-                button.style = if #available(iOS 26, *) { .prominent } else { .done }
-                button.accessibilityIdentifier = "registration.phoneNumberDiscoverability.nextButton"
-                return button
-            }()
+            navigationItem.rightBarButtonItem = .nextButton { [weak self] in
+                self?.didTapSave()
+            }
         }
 
         let titleLabel = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
@@ -246,7 +240,7 @@ private extension RegistrationPhoneNumberDiscoverabilityViewController {
                 heightAnchor.constraint(greaterThanOrEqualToConstant: 48),
             ])
 
-            addBottomStroke(color: .Signal.opaqueSeparator, strokeWidth: .hairlineWidth)
+            addBottomStroke(color: .Signal.opaqueSeparator)
 
             apply(configuration)
         }

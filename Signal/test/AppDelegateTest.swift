@@ -3,19 +3,24 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
+import Testing
+import UIKit
+
 @testable import Signal
 
-class AppDelegateTest: XCTestCase {
+@MainActor
+struct AppDelegateTest {
+
+    @Test
     func testApplicationShortcutItems() throws {
         func hasNewMessageShortcut(_ shortcuts: [UIApplicationShortcutItem]) -> Bool {
             shortcuts.contains(where: { $0.type.contains("quickCompose") })
         }
 
-        let unregistered = AppDelegate.applicationShortcutItems(isRegistered: false)
-        XCTAssertFalse(hasNewMessageShortcut(unregistered))
+        let unregistered = AppLifecycleManager.applicationShortcutItems(isRegistered: false)
+        #expect(!hasNewMessageShortcut(unregistered))
 
-        let registered = AppDelegate.applicationShortcutItems(isRegistered: true)
-        XCTAssertTrue(hasNewMessageShortcut(registered))
+        let registered = AppLifecycleManager.applicationShortcutItems(isRegistered: true)
+        #expect(hasNewMessageShortcut(registered))
     }
 }

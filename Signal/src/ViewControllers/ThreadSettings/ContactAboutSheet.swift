@@ -121,10 +121,6 @@ class ContactAboutSheet: StackSheetViewController {
         UIColor.Signal.secondaryBackground
     }
 
-    override var handleBackgroundColor: UIColor {
-        UIColor.Signal.transparentSeparator
-    }
-
     // MARK: - Content
 
     /// Updates the contents with a database read and reloads the view.
@@ -382,16 +378,12 @@ class ContactAboutSheet: StackSheetViewController {
             return
         }
 
-        mutualGroupThreads = TSGroupThread.groupThreads(
-            with: self.thread.contactAddress,
-            transaction: tx,
-        )
-        .filter(\.groupModel.groupMembership.isLocalUserFullMember)
-        .filter(\.shouldThreadBeVisible)
-        .filter { !$0.isTerminatedGroup }
         // We don't want to show "no groups in common",
         // so return nil instead of an empty array.
-        .nilIfEmpty
+        mutualGroupThreads = TSGroupThread.mutualVisibleGroupThreads(
+            withFullMember: self.thread.contactAddress,
+            tx: tx,
+        ).nilIfEmpty
     }
 
     // MARK: Note

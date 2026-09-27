@@ -44,7 +44,7 @@ public class ProvisioningManagerTests {
     }
 
     @Test
-    func testProvisioningWithMasterKey() async throws {
+    func testProvisioning() async throws {
         let myAciIdentityKeyPair = IdentityKeyPair.generate()
         let myPniIdentityKeyPair = IdentityKeyPair.generate()
         let myAci = Aci.randomForTesting()
@@ -70,12 +70,15 @@ public class ProvisioningManagerTests {
             _ = try! SignalRecipient.insertRecord(aci: myAci, phoneNumber: myPhoneNumber, pni: myPni, tx: tx)
         }
 
+        let localIdentifiers = LocalIdentifiers(
+            aci: myAci,
+            phoneNumber: LocalIdentifiers.PhoneNumber(e164: myPhoneNumber, pni: myPni),
+        )
+        mockTsAccountManager.registrationStateMock = {
+            return .registered(localIdentifiers)
+        }
         mockTsAccountManager.localIdentifiersMock = {
-            return LocalIdentifiers(
-                aci: myAci,
-                pni: myPni,
-                e164: myPhoneNumber,
-            )
+            return localIdentifiers
         }
         mockProfileManager.localProfile = OWSUserProfile(address: .localUser, profileKey: profileKey)
         mockReceiptManager.areReadReceiptsEnabledValue = readReceiptsEnabled
@@ -104,7 +107,7 @@ public class ProvisioningManagerTests {
         // message, encrypt id, and send the envelope back to the new device
         _ = try await provisioningManager.provision(with: provisioningUrl, shouldLinkNSync: false)
         let (messageBody, _) = self.mockDeviceProvisioningService.provisionedDevices.removeFirst()
-        let provisionEnvelope = try ProvisioningProtoProvisionEnvelope(serializedData: messageBody)
+        let provisionEnvelope = try ProvisioningProtos_ProvisionEnvelope(serializedBytes: messageBody)
 
         // New device: take the received provisioning envelope and decrypts the
         // envelope.body using the envelope.publicKey and the new device keypair
@@ -113,16 +116,16 @@ public class ProvisioningManagerTests {
             data: provisionEnvelope.body,
             theirPublicKey: PublicKey(provisionEnvelope.publicKey),
         )
-        let provisionMessage = try LinkingProvisioningMessage(plaintext: provisionMessageData)
+        let provisionMessage = try LinkingProvisioningMessage(ProvisioningProtos_ProvisionMessage(serializedBytes: provisionMessageData))
 
         // Validate that all the data in the decrypted envelope on the new device side matches the
         // values populated by the old device
         #expect(provisionMessage.aep == accountEntropyPool)
         #expect(provisionMessage.aci == myAci)
-        #expect(provisionMessage.phoneNumber == myPhoneNumber.stringValue)
-        #expect(provisionMessage.pni == myPni)
+        #expect(provisionMessage.phoneNumberState.phoneNumber.e164 == myPhoneNumber)
+        #expect(provisionMessage.phoneNumberState.phoneNumber.pni == myPni)
         #expect(provisionMessage.aciIdentityKeyPair.publicKey == myAciIdentityKeyPair.publicKey)
-        #expect(provisionMessage.pniIdentityKeyPair.publicKey == myPniIdentityKeyPair.publicKey)
+        #expect(provisionMessage.phoneNumberState.pniIdentityKeyPair.publicKey == myPniIdentityKeyPair.publicKey)
         #expect(provisionMessage.profileKey == profileKey)
         #expect(provisionMessage.areReadReceiptsEnabled == readReceiptsEnabled)
         #expect(provisionMessage.provisioningCode == provisioningCode)

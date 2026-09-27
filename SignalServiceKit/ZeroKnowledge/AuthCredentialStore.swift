@@ -13,7 +13,7 @@ public class AuthCredentialStore {
     private let backupMediaAuthCredentialStore: NewKeyValueStore
 
     public init() {
-        self.callLinkAuthCredentialStore = NewKeyValueStore(collection: "CallLinkAuthCredential")
+        self.callLinkAuthCredentialStore = NewKeyValueStore(collection: "CallLinkAuthCredentialV2")
         self.groupAuthCredentialStore = NewKeyValueStore(collection: "GroupsV2Impl.authCredentialStoreStore")
         self.backupMessagesAuthCredentialStore = NewKeyValueStore(collection: "BackupAuthCredential")
         self.backupMediaAuthCredentialStore = NewKeyValueStore(collection: "MediaAuthCredential")

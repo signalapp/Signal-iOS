@@ -33,7 +33,7 @@ public class DonationPermitFetcher {
     }
 
     public func fetchDonationPermit() async throws -> DonationPermit {
-        return try await taskQueue.run {
+        return try await taskQueue.runWithThrowingTask {
             try await _fetchDonationPermit()
         }
     }

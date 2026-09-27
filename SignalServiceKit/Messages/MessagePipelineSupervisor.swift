@@ -41,6 +41,7 @@ public class MessagePipelineSupervisor: NSObject {
         case registrationProvisioning
         case pendingChangeNumber
         case linkNsync
+        case deviceTransfer
 
         fileprivate var reasonString: String {
             switch self {
@@ -52,6 +53,8 @@ public class MessagePipelineSupervisor: NSObject {
                 return "Pending change number"
             case .linkNsync:
                 return "Link'N'Sync"
+            case .deviceTransfer:
+                return "Device Transfer"
             }
         }
     }

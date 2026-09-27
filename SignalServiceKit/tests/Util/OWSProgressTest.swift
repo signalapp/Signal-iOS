@@ -1192,7 +1192,7 @@ class OWSProgressTest: XCTestCase {
 
     func testUpdatePeriodically_estimatedTimeFinishesFirst() async {
         let (sink, stream) = OWSProgress.createSink()
-        Task {
+        _ = Task {
             let source = sink.addSource(withLabel: "1", unitCount: 100)
             try await source.updatePeriodically(
                 timeInterval: 0.001,
@@ -1212,7 +1212,7 @@ class OWSProgressTest: XCTestCase {
 
     func testUpdatePeriodically_WorkFinishesFirst() async {
         let (sink, stream) = OWSProgress.createSink()
-        Task {
+        _ = Task {
             let source = sink.addSource(withLabel: "1", unitCount: 100)
             try await source.updatePeriodically(
                 timeInterval: 0.001,
@@ -1281,7 +1281,7 @@ class OWSProgressTest: XCTestCase {
 
     func testUpdatePeriodically_NonZeroStart() async {
         let (sink, stream) = OWSProgress.createSink()
-        Task {
+        _ = Task {
             let source = sink.addSource(withLabel: "1", unitCount: 100)
             source.incrementCompletedUnitCount(by: 50)
             try await source.updatePeriodically(

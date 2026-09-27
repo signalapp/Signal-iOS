@@ -276,7 +276,7 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
         let sourceAci: Aci
         if muteSource == groupCall.localDeviceState.demuxId {
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            sourceAci = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aci
+            sourceAci = tsAccountManager.mustBeRegisteredStateWithMaybeSneakyTransaction().localIdentifiers.aci
         } else if let remoteDeviceState = groupCall.remoteDeviceStates[muteSource] {
             sourceAci = remoteDeviceState.aci
         } else {

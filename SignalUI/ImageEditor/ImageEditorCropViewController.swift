@@ -114,6 +114,8 @@ class ImageEditorCropViewController: OWSViewController {
         let footerView = UIView()
         footerView.preservesSuperviewLayoutMargins = true
 
+        footerView.addLayoutGuide(footerViewContentLayoutGuide)
+
         rotationControl.translatesAutoresizingMaskIntoConstraints = false
         footerView.addSubview(rotationControl)
 
@@ -121,18 +123,51 @@ class ImageEditorCropViewController: OWSViewController {
         footerView.addSubview(toolbar)
 
         NSLayoutConstraint.activate([
-            rotationControl.topAnchor.constraint(equalTo: footerView.layoutMarginsGuide.topAnchor),
-            rotationControl.leadingAnchor.constraint(greaterThanOrEqualTo: footerView.leadingAnchor),
-            rotationControl.centerXAnchor.constraint(equalTo: footerView.centerXAnchor),
+            footerViewContentLayoutGuide.topAnchor.constraint(equalTo: footerView.layoutMarginsGuide.topAnchor),
+            footerViewContentLayoutGuide.bottomAnchor.constraint(equalTo: footerView.bottomAnchor),
+            footerViewContentLayoutGuide.leadingAnchor.constraint(
+                greaterThanOrEqualTo: footerView.safeAreaLayoutGuide.leadingAnchor,
+            ),
+            footerViewContentLayoutGuide.centerXAnchor.constraint(
+                equalTo: footerView.safeAreaLayoutGuide.centerXAnchor,
+            ),
+
+            rotationControl.topAnchor.constraint(equalTo: footerViewContentLayoutGuide.topAnchor),
+            rotationControl.leadingAnchor.constraint(equalTo: footerViewContentLayoutGuide.leadingAnchor),
+            rotationControl.trailingAnchor.constraint(equalTo: footerViewContentLayoutGuide.trailingAnchor),
 
             toolbar.topAnchor.constraint(equalTo: rotationControl.bottomAnchor, constant: 18),
-            toolbar.leadingAnchor.constraint(equalTo: footerView.leadingAnchor),
-            toolbar.trailingAnchor.constraint(equalTo: footerView.trailingAnchor),
-            toolbar.bottomAnchor.constraint(equalTo: footerView.bottomAnchor),
+            toolbar.leadingAnchor.constraint(equalTo: footerViewContentLayoutGuide.leadingAnchor),
+            toolbar.trailingAnchor.constraint(equalTo: footerViewContentLayoutGuide.trailingAnchor),
+            toolbar.bottomAnchor.constraint(equalTo: footerViewContentLayoutGuide.bottomAnchor),
         ])
 
         return footerView
     }()
+
+    private let footerViewContentLayoutGuide = UILayoutGuide()
+    // Restricts footer's content width when in 'regular' horizontal layout.
+    private var footerViewContentWidthConstraint: NSLayoutConstraint?
+
+    private func updateFooterViewContentWidthConstraint() {
+        if let footerViewContentWidthConstraint {
+            NSLayoutConstraint.deactivate([footerViewContentWidthConstraint])
+        }
+        let footerViewContentWidthConstraint: NSLayoutConstraint
+        if traitCollection.horizontalSizeClass == .regular {
+            footerViewContentWidthConstraint = footerViewContentLayoutGuide.widthAnchor.constraint(
+                equalToConstant: 668, // breakover width
+            )
+            // Lower priority in case width is too much even for `regular` width.
+            footerViewContentWidthConstraint.priority = .required - 50
+        } else {
+            footerViewContentWidthConstraint = footerViewContentLayoutGuide.widthAnchor.constraint(
+                equalTo: footerView.safeAreaLayoutGuide.widthAnchor,
+            )
+        }
+        NSLayoutConstraint.activate([footerViewContentWidthConstraint])
+        self.footerViewContentWidthConstraint = footerViewContentWidthConstraint
+    }
 
     private lazy var rotationControl = RotationControl()
 
@@ -201,6 +236,7 @@ class ImageEditorCropViewController: OWSViewController {
             footerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             footerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+        updateFooterViewContentWidthConstraint()
 
         // MARK: - Layout guides for clip view
 
@@ -298,9 +334,24 @@ class ImageEditorCropViewController: OWSViewController {
         transitionUI(toState: .final, animated: true)
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if previousTraitCollection?.horizontalSizeClass != traitCollection.horizontalSizeClass {
+            updateFooterViewContentWidthConstraint()
+        }
+    }
+
     override var prefersStatusBarHidden: Bool {
-        guard DependenciesBridge.shared.currentCallProvider.hasCurrentCall == false else { return false }
-        return (UIDevice.current.isIPad || UIDevice.current.hasIPhoneXNotch) == false
+        guard DependenciesBridge.shared.currentCallProvider.hasCurrentCall == false else {
+            return super.prefersStatusBarHidden
+        }
+        guard
+            let appWindow = CurrentAppContext().mainWindow,
+            appWindow.shouldHideStatusBarForFullScreenPresentation
+        else {
+            return super.prefersStatusBarHidden
+        }
+        return true
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {

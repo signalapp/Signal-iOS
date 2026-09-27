@@ -773,30 +773,12 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
     /// Because a failed username mutation request leaves us in a corrupted
     /// state, add retries for network errors to avoid unnecessary corruption
     /// where possible.
-    private func makeRequestWithNetworkRetries<T>(
-        requestBlock: () async throws -> T,
-        retriesRemaining: Int? = nil,
-    ) async throws -> T {
-        do {
-            return try await requestBlock()
-        } catch {
-            let retriesRemaining = retriesRemaining ?? self.maxNetworkRequestRetries
-
-            guard error.isNetworkFailureOrTimeout else {
-                UsernameLogger.shared.error("Non-network error during username request!")
-                throw error
-            }
-
-            guard retriesRemaining > 0 else {
-                UsernameLogger.shared.error("Exhausted retries during username request!")
-                throw error
-            }
-
-            return try await self.makeRequestWithNetworkRetries(
-                requestBlock: requestBlock,
-                retriesRemaining: retriesRemaining - 1,
-            )
-        }
+    private func makeRequestWithNetworkRetries<T>(requestBlock: () async throws -> T) async throws -> T {
+        return try await Retry.performWithBackoff(
+            maxAttempts: self.maxNetworkRequestRetries + 1,
+            isRetryable: { $0.isNetworkFailureOrTimeout },
+            block: requestBlock,
+        )
     }
 
     // MARK: -

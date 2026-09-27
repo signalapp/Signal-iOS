@@ -24,12 +24,12 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
 
-struct SVR2Proto_Request: Sendable {
+nonisolated struct SVR2Proto_Request: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -82,7 +82,7 @@ struct SVR2Proto_Request: Sendable {
   fileprivate var _delete: SVR2Proto_DeleteRequest? = nil
 }
 
-struct SVR2Proto_Response: Sendable {
+nonisolated struct SVR2Proto_Response: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -135,7 +135,7 @@ struct SVR2Proto_Response: Sendable {
   fileprivate var _delete: SVR2Proto_DeleteResponse? = nil
 }
 
-struct SVR2Proto_BackupRequest: Sendable {
+nonisolated struct SVR2Proto_BackupRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -157,7 +157,7 @@ struct SVR2Proto_BackupRequest: Sendable {
   init() {}
 }
 
-struct SVR2Proto_BackupResponse: Sendable {
+nonisolated struct SVR2Proto_BackupResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -166,7 +166,7 @@ struct SVR2Proto_BackupResponse: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum Status: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum Status: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
 
     /// never returned
@@ -207,7 +207,7 @@ struct SVR2Proto_BackupResponse: Sendable {
   init() {}
 }
 
-struct SVR2Proto_RestoreRequest: Sendable {
+nonisolated struct SVR2Proto_RestoreRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -220,7 +220,7 @@ struct SVR2Proto_RestoreRequest: Sendable {
   init() {}
 }
 
-struct SVR2Proto_RestoreResponse: Sendable {
+nonisolated struct SVR2Proto_RestoreResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -235,7 +235,7 @@ struct SVR2Proto_RestoreResponse: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum Status: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum Status: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
 
     /// never returned
@@ -288,7 +288,7 @@ struct SVR2Proto_RestoreResponse: Sendable {
   init() {}
 }
 
-struct SVR2Proto_DeleteRequest: Sendable {
+nonisolated struct SVR2Proto_DeleteRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -298,7 +298,7 @@ struct SVR2Proto_DeleteRequest: Sendable {
   init() {}
 }
 
-struct SVR2Proto_DeleteResponse: Sendable {
+nonisolated struct SVR2Proto_DeleteResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -308,7 +308,7 @@ struct SVR2Proto_DeleteResponse: Sendable {
   init() {}
 }
 
-struct SVR2Proto_ExposeRequest: Sendable {
+nonisolated struct SVR2Proto_ExposeRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -320,7 +320,7 @@ struct SVR2Proto_ExposeRequest: Sendable {
   init() {}
 }
 
-struct SVR2Proto_ExposeResponse: Sendable {
+nonisolated struct SVR2Proto_ExposeResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -329,7 +329,7 @@ struct SVR2Proto_ExposeResponse: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum Status: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum Status: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
 
     /// never returned
@@ -379,7 +379,7 @@ struct SVR2Proto_ExposeResponse: Sendable {
   init() {}
 }
 
-struct SVR2Proto_ClientHandshakeStart: Sendable {
+nonisolated struct SVR2Proto_ClientHandshakeStart: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -407,7 +407,7 @@ struct SVR2Proto_ClientHandshakeStart: Sendable {
 /// An attested RaftGroupConfig will be returned as part of the evidence.
 /// Clients must validate that the attested configuration matches their
 /// expected configuration.
-struct SVR2Proto_RaftGroupConfig: Sendable {
+nonisolated struct SVR2Proto_RaftGroupConfig: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -435,9 +435,9 @@ struct SVR2Proto_RaftGroupConfig: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "SVR2Proto"
+fileprivate nonisolated let _protobuf_package = "SVR2Proto"
 
-extension SVR2Proto_Request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SVR2Proto_Request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Request"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}backup\0\u{1}restore\0\u{1}delete\0\u{1}expose\0\u{c}\u{1}\u{1}")
 
@@ -486,7 +486,7 @@ extension SVR2Proto_Request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
   }
 }
 
-extension SVR2Proto_Response: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SVR2Proto_Response: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Response"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}backup\0\u{1}restore\0\u{1}delete\0\u{1}expose\0")
 
@@ -535,7 +535,7 @@ extension SVR2Proto_Response: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
   }
 }
 
-extension SVR2Proto_BackupRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SVR2Proto_BackupRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".BackupRequest"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}data\0\u{1}pin\0\u{3}max_tries\0")
 
@@ -575,7 +575,7 @@ extension SVR2Proto_BackupRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
   }
 }
 
-extension SVR2Proto_BackupResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SVR2Proto_BackupResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".BackupResponse"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0")
 
@@ -605,11 +605,11 @@ extension SVR2Proto_BackupResponse: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension SVR2Proto_BackupResponse.Status: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SVR2Proto_BackupResponse.Status: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNSET\0\u{1}OK\0")
 }
 
-extension SVR2Proto_RestoreRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SVR2Proto_RestoreRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RestoreRequest"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}pin\0")
 
@@ -639,7 +639,7 @@ extension SVR2Proto_RestoreRequest: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension SVR2Proto_RestoreResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SVR2Proto_RestoreResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RestoreResponse"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{1}data\0\u{1}tries\0")
 
@@ -679,11 +679,11 @@ extension SVR2Proto_RestoreResponse: SwiftProtobuf.Message, SwiftProtobuf._Messa
   }
 }
 
-extension SVR2Proto_RestoreResponse.Status: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SVR2Proto_RestoreResponse.Status: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNSET\0\u{1}OK\0\u{1}MISSING\0\u{1}PIN_MISMATCH\0")
 }
 
-extension SVR2Proto_DeleteRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SVR2Proto_DeleteRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DeleteRequest"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -702,7 +702,7 @@ extension SVR2Proto_DeleteRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
   }
 }
 
-extension SVR2Proto_DeleteResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SVR2Proto_DeleteResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DeleteResponse"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -721,7 +721,7 @@ extension SVR2Proto_DeleteResponse: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension SVR2Proto_ExposeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SVR2Proto_ExposeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ExposeRequest"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}data\0")
 
@@ -751,7 +751,7 @@ extension SVR2Proto_ExposeRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
   }
 }
 
-extension SVR2Proto_ExposeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SVR2Proto_ExposeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ExposeResponse"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0")
 
@@ -781,11 +781,11 @@ extension SVR2Proto_ExposeResponse: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension SVR2Proto_ExposeResponse.Status: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SVR2Proto_ExposeResponse.Status: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNSET\0\u{1}OK\0\u{1}ERROR\0")
 }
 
-extension SVR2Proto_ClientHandshakeStart: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SVR2Proto_ClientHandshakeStart: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ClientHandshakeStart"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}test_only_pubkey\0\u{1}evidence\0\u{1}endorsement\0")
 
@@ -825,7 +825,7 @@ extension SVR2Proto_ClientHandshakeStart: SwiftProtobuf.Message, SwiftProtobuf._
   }
 }
 
-extension SVR2Proto_RaftGroupConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SVR2Proto_RaftGroupConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RaftGroupConfig"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}group_id\0\u{3}min_voting_replicas\0\u{3}max_voting_replicas\0\u{3}super_majority\0")
 

@@ -135,6 +135,84 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
         }
     }
 
+    func testReenqueueUpdatesInPlace() throws {
+        var attachmentRecord = Attachment.Record.mockPointer()
+
+        let (threadRowId, messageRowId) = insertThreadAndInteraction()
+
+        func enqueue(state: QueuedBackupAttachmentDownload.State, tx: DBWriteTransaction) {
+            let attachment = Attachment(record: attachmentRecord)
+            let reference = insertMessageAttachmentReferenceRecord(
+                attachment: attachment,
+                messageRowId: messageRowId,
+                threadRowId: threadRowId,
+                timestamp: 1234,
+                tx: tx,
+            )
+            store.enqueue(
+                ReferencedAttachment(reference: reference, attachment: attachment),
+                thumbnail: false,
+                canDownloadFromMediaTier: true,
+                state: state,
+                currentTimestamp: 5678,
+                tx: tx,
+            )
+        }
+
+        let originalRowId: Int64 = try db.write { tx in
+            try attachmentRecord.insert(tx.database)
+            enqueue(state: .ready, tx: tx)
+            let row = try QueuedBackupAttachmentDownload.fetchOne(tx.database)
+            return try XCTUnwrap(row?.id)
+        }
+
+        // Simulate a failed download attempt, which sets a backoff timestamp
+        // and bumps the retry count.
+        try db.write { tx in
+            var row = try XCTUnwrap(QueuedBackupAttachmentDownload.fetchOne(tx.database))
+            row.numRetries = 3
+            row.minRetryTimestamp = 999999
+            try row.update(tx.database)
+        }
+
+        // Re-enqueueing with nothing meaningful changed should be a no-op, and
+        // in particular should leave the in-progress retry state alone.
+        try db.write { tx in
+            enqueue(state: .ready, tx: tx)
+            let row = try XCTUnwrap(QueuedBackupAttachmentDownload.fetchOne(tx.database))
+            XCTAssertEqual(row.id, originalRowId)
+            XCTAssertEqual(row.numRetries, 3)
+            XCTAssertEqual(row.minRetryTimestamp, 999999)
+            XCTAssertEqual(try QueuedBackupAttachmentDownload.fetchCount(tx.database), 1)
+        }
+
+        // A state change should update in place, keeping the same row id and
+        // resetting the retry state so we download fresh.
+        try db.write { tx in
+            enqueue(state: .ineligible, tx: tx)
+            let row = try XCTUnwrap(QueuedBackupAttachmentDownload.fetchOne(tx.database))
+            XCTAssertEqual(row.id, originalRowId)
+            XCTAssertEqual(row.state, .ineligible)
+            XCTAssertEqual(row.numRetries, 0)
+            XCTAssertEqual(row.minRetryTimestamp, 5678 - 1234)
+            XCTAssertEqual(try QueuedBackupAttachmentDownload.fetchCount(tx.database), 1)
+        }
+
+        // A no-op re-enqueue shouldn't refresh minRetryTimestamp either.
+        try db.write { tx in
+            var row = try XCTUnwrap(QueuedBackupAttachmentDownload.fetchOne(tx.database))
+            row.minRetryTimestamp = 42
+            try row.update(tx.database)
+
+            enqueue(state: .ineligible, tx: tx)
+
+            row = try XCTUnwrap(QueuedBackupAttachmentDownload.fetchOne(tx.database))
+            XCTAssertEqual(row.id, originalRowId)
+            // Left alone; only used for sort order.
+            XCTAssertEqual(row.minRetryTimestamp, 42)
+        }
+    }
+
     func testPeek() throws {
         let nowTimestamp = Date().ows_millisecondsSince1970
 

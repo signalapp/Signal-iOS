@@ -71,7 +71,7 @@ public final actor ConcurrentTaskQueue {
     ///     return try await block()
     ///
     /// - Throws: An error thrown from `block` or a `CancellationError`.
-    public func run<T>(_ block: () async throws -> T) async throws -> T {
+    public func runWithThrowingTask<T>(_ block: () async throws -> T) async throws -> T {
         return try await _run(isCancellable: true, block).get()
     }
 

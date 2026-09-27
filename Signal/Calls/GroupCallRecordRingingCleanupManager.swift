@@ -109,10 +109,14 @@ class GroupCallRecordRingingCleanupManager {
 
         for (groupId, callRecords) in callRecordsByGroupId {
             Task {
-                try await peekGroupAndNotifyIfNecessary(
-                    groupId: groupId,
-                    callRecords: callRecords,
-                )
+                do {
+                    try await peekGroupAndNotifyIfNecessary(
+                        groupId: groupId,
+                        callRecords: callRecords,
+                    )
+                } catch {
+                    Logger.error("Unable to peek group: \(error)")
+                }
             }
         }
     }

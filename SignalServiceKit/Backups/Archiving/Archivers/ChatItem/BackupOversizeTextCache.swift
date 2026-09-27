@@ -77,7 +77,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
     private let db: DB
-    private let kvStore: KeyValueStore
+    private let kvStore: NewKeyValueStore
     private let logger: PrefixedLogger
     private let orphanedAttachmentStore: OrphanedAttachmentStore
 
@@ -99,7 +99,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
         self.attachmentStore = attachmentStore
         self.db = db
         self.logger = PrefixedLogger(prefix: "[Backups]")
-        self.kvStore = KeyValueStore(collection: "BackupOversizeTextCacheStore")
+        self.kvStore = NewKeyValueStore(collection: "BackupOversizeTextCacheStore")
         self.orphanedAttachmentStore = orphanedAttachmentStore
     }
 
@@ -349,7 +349,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
         let progressSource: OWSProgressSource?
         if let progress {
             let unitCount = db.read { tx in
-                let minId = kvStore.getInt64(Self.lastRestoredRowIdKey, defaultValue: 0, transaction: tx)
+                let minId = kvStore.fetchValue(Int64.self, forKey: Self.lastRestoredRowIdKey, tx: tx) ?? 0
 
                 return failIfThrows {
                     try BackupOversizeTextCache
@@ -427,7 +427,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
     // Returns true if done (no more rows to restore)
     private func finishRestoringOversizedTextAttachmentBatch() async -> Bool {
         let records = db.read { tx in
-            let minId = kvStore.getInt64(Self.lastRestoredRowIdKey, defaultValue: 0, transaction: tx)
+            let minId = kvStore.fetchValue(Int64.self, forKey: Self.lastRestoredRowIdKey, tx: tx) ?? 0
             let query = BackupOversizeTextCache
                 .filter(Column(BackupOversizeTextCache.CodingKeys.id) > minId)
                 .order(Column(BackupOversizeTextCache.CodingKeys.id).asc)
@@ -473,7 +473,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
                 var maxRecordId: BackupOversizeTextCache.IDType = 0
                 defer {
                     // Mark progress by writing the max record id.
-                    kvStore.setInt64(maxRecordId, key: Self.lastRestoredRowIdKey, transaction: tx)
+                    kvStore.writeValue(maxRecordId, forKey: Self.lastRestoredRowIdKey, tx: tx)
                 }
                 for (recordId, validatedMessageBody) in pendingAttachments {
                     maxRecordId = max(maxRecordId, recordId)
@@ -507,7 +507,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
             // so all we can do is drop this long text to avoid bricking the app entirely.
             let maxRecordId: BackupOversizeTextCache.IDType = records.lazy.compactMap(\.id).max() ?? 0
             await db.awaitableWrite { tx in
-                kvStore.setInt64(maxRecordId, key: Self.lastRestoredRowIdKey, transaction: tx)
+                kvStore.writeValue(maxRecordId, forKey: Self.lastRestoredRowIdKey, tx: tx)
             }
         }
         return false

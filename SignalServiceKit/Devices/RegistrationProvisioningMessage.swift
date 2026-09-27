@@ -20,6 +20,21 @@ public struct RegistrationProvisioningEnvelope {
 
 public struct RegistrationProvisioningMessage {
 
+    public enum Capability: String {
+        case wifiaware = "wifiaware"
+    }
+
+    /// Wraps state that's only available for accounts with phone numbers.
+    public struct PhoneNumberState {
+        public let phoneNumber: E164
+        public let pniIdentityKeyPair: IdentityKeyPair
+
+        public init(phoneNumber: E164, pniIdentityKeyPair: IdentityKeyPair) {
+            self.phoneNumber = phoneNumber
+            self.pniIdentityKeyPair = pniIdentityKeyPair
+        }
+    }
+
     public enum Platform {
         case ios
         case android
@@ -30,11 +45,10 @@ public struct RegistrationProvisioningMessage {
         case paid
     }
 
-    public let accountEntropyPool: AccountEntropyPool
     public let aci: Aci
     public let aciIdentityKeyPair: IdentityKeyPair
-    public let pniIdentityKeyPair: IdentityKeyPair
-    public let phoneNumber: E164
+    public let phoneNumberState: PhoneNumberState
+    public let accountEntropyPool: AccountEntropyPool
     public let pin: String?
     public let platform: Platform
     public let tier: BackupTier?
@@ -44,13 +58,13 @@ public struct RegistrationProvisioningMessage {
     public let restoreMethodToken: String?
     public let lastBackupForwardSecrecyToken: LibSignalClient.BackupForwardSecrecyToken?
     public let nextBackupSecretData: BackupNonce.NextSecretMetadata?
+    public let capabilites: [Capability]
 
     public init(
-        accountEntropyPool: AccountEntropyPool,
         aci: Aci,
         aciIdentityKeyPair: IdentityKeyPair,
-        pniIdentityKeyPair: IdentityKeyPair,
-        phoneNumber: E164,
+        phoneNumberState: PhoneNumberState,
+        accountEntropyPool: AccountEntropyPool,
         pin: String?,
         tier: BackupTier?,
         backupVersion: UInt64?,
@@ -59,13 +73,13 @@ public struct RegistrationProvisioningMessage {
         restoreMethodToken: String?,
         lastBackupForwardSecrecyToken: LibSignalClient.BackupForwardSecrecyToken?,
         nextBackupSecretData: BackupNonce.NextSecretMetadata?,
+        capabilites: [Capability],
     ) {
         self.platform = .ios
         self.accountEntropyPool = accountEntropyPool
         self.aci = aci
         self.aciIdentityKeyPair = aciIdentityKeyPair
-        self.pniIdentityKeyPair = pniIdentityKeyPair
-        self.phoneNumber = phoneNumber
+        self.phoneNumberState = phoneNumberState
         self.pin = pin
         self.tier = tier
         self.backupVersion = backupVersion
@@ -74,35 +88,31 @@ public struct RegistrationProvisioningMessage {
         self.restoreMethodToken = restoreMethodToken
         self.lastBackupForwardSecrecyToken = lastBackupForwardSecrecyToken
         self.nextBackupSecretData = nextBackupSecretData
+        self.capabilites = capabilites
     }
 
-    public init(plaintext: Data) throws {
-        let proto = try RegistrationProtos_RegistrationProvisionMessage(serializedBytes: plaintext)
-
+    public init(_ proto: RegistrationProtos_RegistrationProvisionMessage) throws {
         self.aciIdentityKeyPair = try IdentityKeyPair(
             publicKey: PublicKey(proto.aciIdentityKeyPublic),
             privateKey: PrivateKey(proto.aciIdentityKeyPrivate),
         )
 
-        self.pniIdentityKeyPair = try IdentityKeyPair(
+        let pniIdentityKeyPair = try IdentityKeyPair(
             publicKey: PublicKey(proto.pniIdentityKeyPublic),
             privateKey: PrivateKey(proto.pniIdentityKeyPrivate),
         )
 
-        guard
-            let accountEntropyPool = proto.accountEntropyPool.nilIfEmpty,
-            let aep = try? AccountEntropyPool(key: accountEntropyPool)
-        else {
-            throw ProvisioningError.invalidProvisionMessage("missing master key from provisioning message")
-        }
-        self.accountEntropyPool = aep
+        self.accountEntropyPool = try AccountEntropyPool(key: proto.accountEntropyPool)
 
         self.aci = try Aci.parseFrom(serviceIdBinary: proto.aci)
 
-        guard let e164 = E164(proto.e164) else {
-            throw ProvisioningError.invalidProvisionMessage("missing number from provisioning message")
+        guard let phoneNumber = E164(proto.e164) else {
+            throw OWSGenericError("missing number from provisioning message")
         }
-        self.phoneNumber = e164
+        self.phoneNumberState = PhoneNumberState(
+            phoneNumber: phoneNumber,
+            pniIdentityKeyPair: pniIdentityKeyPair,
+        )
 
         self.pin = proto.pin
 
@@ -114,6 +124,8 @@ public struct RegistrationProvisioningMessage {
         self.backupSizeBytes = proto.backupSizeBytes
 
         self.restoreMethodToken = proto.restoreMethodToken
+
+        self.capabilites = proto.capabilities.compactMap { Capability(rawValue: $0) }
 
         if let data = proto.lastBackupForwardSecrecyToken.nilIfEmpty {
             self.lastBackupForwardSecrecyToken = try LibSignalClient.BackupForwardSecrecyToken(contents: data)
@@ -133,7 +145,6 @@ public struct RegistrationProvisioningMessage {
 
         messageBuilder.accountEntropyPool = accountEntropyPool.rawString
         messageBuilder.aci = aci.serviceIdBinary
-        messageBuilder.e164 = phoneNumber.stringValue
         if let pin {
             messageBuilder.pin = pin
         }
@@ -141,8 +152,12 @@ public struct RegistrationProvisioningMessage {
         messageBuilder.aciIdentityKeyPublic = aciIdentityKeyPair.publicKey.serialize()
         messageBuilder.aciIdentityKeyPrivate = aciIdentityKeyPair.privateKey.serialize()
 
-        messageBuilder.pniIdentityKeyPublic = pniIdentityKeyPair.publicKey.serialize()
-        messageBuilder.pniIdentityKeyPrivate = pniIdentityKeyPair.privateKey.serialize()
+        let phoneNumberState = self.phoneNumberState
+        do {
+            messageBuilder.e164 = phoneNumberState.phoneNumber.stringValue
+            messageBuilder.pniIdentityKeyPublic = phoneNumberState.pniIdentityKeyPair.publicKey.serialize()
+            messageBuilder.pniIdentityKeyPrivate = phoneNumberState.pniIdentityKeyPair.privateKey.serialize()
+        }
 
         messageBuilder.platform = .ios
 
@@ -177,6 +192,8 @@ public struct RegistrationProvisioningMessage {
         if let nextBackupSecretData {
             messageBuilder.nextBackupSecretData = nextBackupSecretData.data
         }
+
+        messageBuilder.capabilities = capabilites.map { $0.rawValue }
 
         let plainTextMessage = try messageBuilder.serializedData()
 

@@ -140,6 +140,7 @@ public class DependenciesBridge {
     public let linkPreviewSettingManager: any LinkPreviewSettingManager
     public let accountKeyStore: AccountKeyStore
     let localProfileChecker: LocalProfileChecker
+    public let localFileBackupAttachmentRestoreProgress: LocalFileBackupAttachmentRestoreProgress
     public let localFileBackupExportJobRunner: LocalFileBackupExportJobRunner
     public let localFileBackupManager: LocalFileBackupManager
     public let localUsernameManager: LocalUsernameManager
@@ -147,6 +148,7 @@ public class DependenciesBridge {
     public let messageSender: any MessageSender
     public let messageStickerManager: MessageStickerManager
     public let nicknameManager: any NicknameManager
+    public let notificationPreferencesManager: NotificationPreferencesManager
     public let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
     public let archivedPaymentStore: ArchivedPaymentStore
     public let pendingIDEALDonationStore: PendingIDEALDonationStore
@@ -178,13 +180,13 @@ public class DependenciesBridge {
     public let signalProtocolStoreManager: SignalProtocolStoreManager
     public let svr: SecureValueRecovery
     public let svrAuthCredentialManager: SVRAuthCredentialManager
+    public let senderKeyStore: SenderKeyStore
     public let storageServiceRecordIkmMigrator: StorageServiceRecordIkmMigrator
     public let storyMessageExpirationJob: StoryMessageExpirationJob
     public let storyRecipientManager: StoryRecipientManager
     public let storyRecipientStore: StoryRecipientStore
     public let subscriptionConfigManager: SubscriptionConfigManager
     public let svrLocalStorage: SVRLocalStorage
-    public let threadAssociatedDataStore: ThreadAssociatedDataStore
     public let threadReplyInfoStore: ThreadReplyInfoStore
     public let threadDeletionManager: ThreadDeletionManager
     public let threadStore: ThreadStore
@@ -289,6 +291,7 @@ public class DependenciesBridge {
         linkPreviewManager: LinkPreviewManager,
         linkPreviewSettingStore: LinkPreviewSettingStore,
         linkPreviewSettingManager: any LinkPreviewSettingManager,
+        localFileBackupAttachmentRestoreProgress: LocalFileBackupAttachmentRestoreProgress,
         localFileBackupExportJobRunner: LocalFileBackupExportJobRunner,
         accountKeyStore: AccountKeyStore,
         localFileBackupManager: LocalFileBackupManager,
@@ -298,6 +301,7 @@ public class DependenciesBridge {
         messageSender: any MessageSender,
         messageStickerManager: MessageStickerManager,
         nicknameManager: any NicknameManager,
+        notificationPreferencesManager: NotificationPreferencesManager,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         archivedPaymentStore: ArchivedPaymentStore,
         pendingIDEALDonationStore: PendingIDEALDonationStore,
@@ -324,6 +328,7 @@ public class DependenciesBridge {
         remoteReleaseNotesService: any RemoteReleaseNotesServiceProtocol,
         searchableNameIndexer: SearchableNameIndexer,
         senderKeySendingManager: SenderKeySendingManager,
+        senderKeyStore: SenderKeyStore,
         sentMessageTranscriptReceiver: SentMessageTranscriptReceiver,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         storageServiceRecordIkmMigrator: StorageServiceRecordIkmMigrator,
@@ -334,7 +339,6 @@ public class DependenciesBridge {
         svr: SecureValueRecovery,
         svrAuthCredentialManager: SVRAuthCredentialManager,
         svrLocalStorage: SVRLocalStorage,
-        threadAssociatedDataStore: ThreadAssociatedDataStore,
         threadReplyInfoStore: ThreadReplyInfoStore,
         threadDeletionManager: ThreadDeletionManager,
         threadStore: ThreadStore,
@@ -439,6 +443,7 @@ public class DependenciesBridge {
         self.linkPreviewSettingStore = linkPreviewSettingStore
         self.linkPreviewSettingManager = linkPreviewSettingManager
         self.accountKeyStore = accountKeyStore
+        self.localFileBackupAttachmentRestoreProgress = localFileBackupAttachmentRestoreProgress
         self.localFileBackupExportJobRunner = localFileBackupExportJobRunner
         self.localFileBackupManager = localFileBackupManager
         self.localProfileChecker = localProfileChecker
@@ -447,6 +452,7 @@ public class DependenciesBridge {
         self.messageSender = messageSender
         self.messageStickerManager = messageStickerManager
         self.nicknameManager = nicknameManager
+        self.notificationPreferencesManager = notificationPreferencesManager
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
         self.archivedPaymentStore = archivedPaymentStore
         self.pendingIDEALDonationStore = pendingIDEALDonationStore
@@ -474,6 +480,7 @@ public class DependenciesBridge {
         self.remoteReleaseNotesService = remoteReleaseNotesService
         self.searchableNameIndexer = searchableNameIndexer
         self.senderKeySendingManager = senderKeySendingManager
+        self.senderKeyStore = senderKeyStore
         self.sentMessageTranscriptReceiver = sentMessageTranscriptReceiver
         self.signalProtocolStoreManager = signalProtocolStoreManager
         self.storageServiceRecordIkmMigrator = storageServiceRecordIkmMigrator
@@ -484,7 +491,6 @@ public class DependenciesBridge {
         self.svr = svr
         self.svrAuthCredentialManager = svrAuthCredentialManager
         self.svrLocalStorage = svrLocalStorage
-        self.threadAssociatedDataStore = threadAssociatedDataStore
         self.threadReplyInfoStore = threadReplyInfoStore
         self.threadDeletionManager = threadDeletionManager
         self.threadStore = threadStore

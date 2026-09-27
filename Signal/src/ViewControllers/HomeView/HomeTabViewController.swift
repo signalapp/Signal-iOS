@@ -77,7 +77,11 @@ extension HomeTabViewController {
             let wrapper = UIView.container()
             wrapper.addSubview(contextButton)
             contextButton.autoPinEdgesToSuperviewEdges()
-            wrapper.addCircleBadge(color: badgeColor)
+            wrapper.addCircleBadge(
+                color: badgeColor,
+                onCircleView: avatarView,
+                circleDiameter: CGFloat(sizeClass.diameter),
+            )
             barButtonView = wrapper
         } else {
             barButtonView = contextButton

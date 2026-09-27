@@ -35,19 +35,20 @@ public final class LowDiskSpaceManager {
         self.kvStore = NewKeyValueStore(collection: "LowDiskSpaceWarningManager")
     }
 
-    public static func hasEnoughDiskSpaceToLaunch() -> Bool {
+    /// - Returns
+    /// The number of additional bytes required to be available in order to
+    /// launch, or `nil` if launch should not be blocked.
+    public static func additionalBytesRequiredToLaunch() -> UInt64? {
         guard let diskSpace = Self.checkDiskSpace() else {
-            // Err on the side of blocking app launch if we're having trouble
-            // checking disk space. This should never happen!
-            return false
+            return nil
         }
 
-        guard diskSpace.available > Constants.minBytesAvailableToLaunch else {
+        if Constants.minBytesAvailableToLaunch > diskSpace.available {
             logger.warn("Not enough disk space to launch: \(diskSpace.logDescription)")
-            return false
+            return Constants.minBytesAvailableToLaunch - diskSpace.available
+        } else {
+            return nil
         }
-
-        return true
     }
 
     // MARK: -
@@ -66,20 +67,28 @@ public final class LowDiskSpaceManager {
 
     // MARK: -
 
-    public func getNeedsWarning(now: Date, tx: DBReadTransaction) -> Bool {
+    /// - Returns
+    /// The number of bytes required to silence warnings, or nil if no warning
+    /// should be shown.
+    public func getNeedsWarning(now: Date, tx: DBReadTransaction) -> UInt64? {
         guard let diskSpace = Self.checkDiskSpace() else {
-            return false
+            return nil
         }
 
         if
             let lastWarningDate = kvStore.fetchValue(Date.self, forKey: StoreKeys.lastWarningDate, tx: tx),
             now < lastWarningDate.addingTimeInterval(3 * .day)
         {
-            return false
+            return nil
         }
 
         let minBytesWarningThreshold = Constants.minBytesAvailableBeforeWarning(totalBytes: diskSpace.total)
-        return diskSpace.available < minBytesWarningThreshold
+
+        if diskSpace.available < minBytesWarningThreshold {
+            return minBytesWarningThreshold
+        } else {
+            return nil
+        }
     }
 
     public func setShowedWarning(now: Date, tx: DBWriteTransaction) {

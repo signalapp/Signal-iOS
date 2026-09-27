@@ -17,6 +17,7 @@ public struct TSRequest: CustomDebugStringConvertible {
 
     public enum Body {
         case parameters([String: Any])
+        case encodable(any Encodable)
         case data(Data)
 
         static func encodedParameters(_ parameters: [String: Any]) throws -> Data {
@@ -222,6 +223,8 @@ public struct TSRequest: CustomDebugStringConvertible {
         switch body {
         case .data:
             fatalError()
+        case .encodable(let bodyValue):
+            return try! JSONSerialization.jsonObject(with: try JSONEncoder().encode(bodyValue)) as! [String: Any]
         case .parameters(let bodyParameters):
             return bodyParameters
         }

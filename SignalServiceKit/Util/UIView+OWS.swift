@@ -410,7 +410,7 @@ public extension NSDirectionalEdgeInsets {
 
 public extension CGFloat {
     var pointsAsPixels: CGFloat {
-        self * UIScreen.main.scale
+        self * UITraitCollection.current.displayScale
     }
 
     // An epsilon is a small, non-zero value.

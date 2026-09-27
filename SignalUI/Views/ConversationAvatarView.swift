@@ -365,7 +365,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // `nextModelGeneration` can be read on a background thread, so it needs to be atomic.
     // All updates are performed on the main thread.
     private var currentModelGeneration: UInt = 0
-    private var nextModelGeneration = AtomicUInt(0, lock: .sharedGlobal)
+    private let nextModelGeneration = AtomicUInt(0, lock: .init())
     @discardableResult
     private func setNeedsModelUpdate() -> UInt { nextModelGeneration.increment() }
 
@@ -386,25 +386,22 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         let configurationAtEnqueue = configuration
 
         Self.serialQueue.async { [weak self] in
-            guard let self, self.nextModelGeneration.get() == generationAtEnqueue else {
+            guard self?.nextModelGeneration.get() == generationAtEnqueue else {
                 return
             }
 
-            let (updatedAvatar, updatedBadge) = SSKEnvironment.shared.databaseStorageRef.read { transaction -> (UIImage?, UIImage?) in
-                guard self.nextModelGeneration.get() == generationAtEnqueue else {
-                    return (nil, nil)
-                }
-
-                let avatarImage = configurationAtEnqueue.dataSource?.buildImage(configuration: configurationAtEnqueue, transaction: transaction)
-                let badgeImage = configurationAtEnqueue.dataSource?.fetchBadge(configuration: configurationAtEnqueue, transaction: transaction)
+            let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+            let (updatedAvatar, updatedBadge) = databaseStorage.read { tx -> (UIImage?, UIImage?) in
+                let avatarImage = configurationAtEnqueue.dataSource?.buildImage(configuration: configurationAtEnqueue, transaction: tx)
+                let badgeImage = configurationAtEnqueue.dataSource?.fetchBadge(configuration: configurationAtEnqueue, transaction: tx)
                 return (avatarImage, badgeImage)
             }
 
             DispatchQueue.main.async {
-                guard self.nextModelGeneration.get() == generationAtEnqueue else {
+                guard self?.nextModelGeneration.get() == generationAtEnqueue else {
                     return
                 }
-                self.updateViewContent(avatarImage: updatedAvatar, primaryBadgeImage: updatedBadge)
+                self?.updateViewContent(avatarImage: updatedAvatar, primaryBadgeImage: updatedBadge)
             }
         }
     }
@@ -478,7 +475,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             storyStateView.layer.borderWidth = configuration.sizeClass.storyViewedBorderSize
         case .unviewed:
             storyStateView.isHidden = false
-            storyStateView.layer.borderColor = UIColor.ows_accentBlue.cgColor
+            storyStateView.layer.borderColor = UIColor.Signal.accent.cgColor
             storyStateView.layer.borderWidth = configuration.sizeClass.storyUnviewedBorderSize
         }
 

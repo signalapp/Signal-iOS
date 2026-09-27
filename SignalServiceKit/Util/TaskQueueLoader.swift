@@ -320,24 +320,24 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner & Sendable> {
             onCancel: {
                 continuation.cancel()
                 Task {
-                    try await observerDidCancel(observerId)
+                    await observerDidCancel(observerId)
                 }
             },
         )
     }
 
-    private func observerDidCancel(_ id: UUID) throws {
+    private func observerDidCancel(_ id: UUID) {
         guard runningTaskObservers.contains(id) else {
             return
         }
         self.runningTaskObservers.remove(id)
         if runningTaskObservers.isEmpty {
             // We can stop and cancel the running task.
-            try self.stop()
+            self.stop()
         }
     }
 
-    public func stop(reason: Error? = nil) throws {
+    public func stop(reason: Error? = nil) {
         switch state {
         case .notRunning:
             break

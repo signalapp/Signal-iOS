@@ -80,7 +80,7 @@ extension RecipientHidingManager {
             }
             throw RecipientHidingError.invalidRecipientAddress(address)
         }()
-        try addHiddenRecipient(
+        addHiddenRecipient(
             &recipient,
             inKnownMessageRequestState: inKnownMessageRequestState,
             wasLocallyInitiated: wasLocallyInitiated,

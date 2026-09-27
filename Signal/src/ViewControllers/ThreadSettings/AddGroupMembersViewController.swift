@@ -46,13 +46,12 @@ public class AddGroupMembersViewController: BaseGroupMemberViewController {
 
     fileprivate func updateNavbar() {
         if hasUnsavedChanges {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(
-                title: OWSLocalizedString(
-                    "EDIT_GROUP_UPDATE_BUTTON",
-                    comment: "The title for the 'update group' button.",
-                ),
-                primaryAction: UIAction { [weak self] _ in self?.updateGroupPressed() },
-            )
+            navigationItem.rightBarButtonItem = .button(title: OWSLocalizedString(
+                "EDIT_GROUP_UPDATE_BUTTON",
+                comment: "The title for the 'update group' button.",
+            )) { [weak self] in
+                self?.updateGroupPressed()
+            }
         } else {
             navigationItem.rightBarButtonItem = nil
         }

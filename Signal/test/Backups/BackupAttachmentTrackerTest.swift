@@ -8,10 +8,10 @@ import Testing
 
 @testable import Signal
 
-class BackupAttachmentTrackerTest<Update: Equatable> {
-    struct ExpectedUpdate {
+class BackupAttachmentTrackerTest<Update: Sendable & Equatable> {
+    struct ExpectedUpdate: Sendable {
         let update: Update
-        let nextSteps: () async -> Void
+        let nextSteps: @Sendable () async -> Void
     }
 
     actor ExpectedUpdateCompletionTracker {

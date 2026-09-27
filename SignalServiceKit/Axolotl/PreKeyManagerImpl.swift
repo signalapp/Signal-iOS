@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import LibSignalClient
 
 /// Broadly speaking, this class does not perform PreKey operations. It just manages scheduling
 /// them (they must occur in serial), including deciding which need to happen in the first place.
@@ -37,7 +38,6 @@ public class PreKeyManagerImpl: PreKeyManager {
 
     private let db: any DB
     private let identityManager: OWSIdentityManager
-    private let keyValueStore: KeyValueStore
     private let protocolStoreManager: SignalProtocolStoreManager
     private let chatConnectionManager: any ChatConnectionManager
     private let tsAccountManager: any TSAccountManager
@@ -58,7 +58,6 @@ public class PreKeyManagerImpl: PreKeyManager {
     ) {
         self.db = db
         self.identityManager = identityManager
-        self.keyValueStore = KeyValueStore(collection: "PreKeyManager")
         self.protocolStoreManager = protocolStoreManager
         self.chatConnectionManager = chatConnectionManager
         self.tsAccountManager = tsAccountManager
@@ -154,7 +153,7 @@ public class PreKeyManagerImpl: PreKeyManager {
             targets.insert(target: .oneTimePreKey)
             targets.insert(target: .oneTimePqPreKey)
         }
-        try await taskQueue.run {
+        try await taskQueue.runWithThrowingTask {
             try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
             try Task.checkCancellation()
             try await taskManager.refresh(identity: .aci, targets: targets, auth: .implicit())
@@ -169,37 +168,31 @@ public class PreKeyManagerImpl: PreKeyManager {
         }
     }
 
-    public func createPreKeysForRegistration() async -> RegistrationPreKeyUploadBundles {
+    public func createPreKeysForRegistration(forIdentity identity: OWSIdentity) async -> RegistrationPreKeyUploadBundle {
         logger.info("Create registration prekeys")
-        return await taskManager.createForRegistration()
+        return await taskManager.createForRegistration(forIdentity: identity)
     }
 
     public func createPreKeysForProvisioning(
-        aciIdentityKeyPair: ECKeyPair,
-        pniIdentityKeyPair: ECKeyPair,
-    ) async -> RegistrationPreKeyUploadBundles {
+        forIdentity identity: OWSIdentity,
+        keyPair: IdentityKeyPair,
+    ) async -> RegistrationPreKeyUploadBundle {
         logger.info("Create provisioning prekeys")
-        return await taskManager.createForProvisioning(
-            aciIdentityKeyPair: aciIdentityKeyPair,
-            pniIdentityKeyPair: pniIdentityKeyPair,
-        )
+        return await taskManager.createForProvisioning(forIdentity: identity, keyPair: keyPair)
     }
 
-    public func finalizeRegistrationPreKeys(
-        _ bundles: RegistrationPreKeyUploadBundles,
+    public func finalizeRegistrationPreKeyBundle(
+        _ bundle: RegistrationPreKeyUploadBundle,
         uploadDidSucceed: Bool,
     ) async {
         logger.info("Finalize registration prekeys")
-        await taskManager.persistAfterRegistration(
-            bundles: bundles,
-            uploadDidSucceed: uploadDidSucceed,
-        )
+        await taskManager.persistRegistrationBundle(bundle, uploadDidSucceed: uploadDidSucceed)
     }
 
     public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async throws {
         logger.info("Rotate one-time prekeys for registration")
 
-        return try await taskQueue.run {
+        return try await taskQueue.runWithThrowingTask {
             try Task.checkCancellation()
             try await taskManager.createOneTimePreKeys(identity: .aci, auth: auth)
             try Task.checkCancellation()
@@ -231,7 +224,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         }
         try await waitUntilNotChangingNumberIfNeeded(targets: targets)
 
-        try await taskQueue.run {
+        try await taskQueue.runWithThrowingTask {
             try Task.checkCancellation()
             try await taskManager.refresh(
                 identity: identity,

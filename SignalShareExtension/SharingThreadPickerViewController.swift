@@ -580,7 +580,7 @@ extension SharingThreadPickerViewController: ConversationPickerDelegate {
     }
 
     func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode {
-        return typedItems.isEmpty ? .loading : .next
+        typedItems.isEmpty ? .loading : .next
     }
 
     func conversationPickerDidBeginEditingText() {}

@@ -87,7 +87,6 @@ extension ConversationSettingsViewController {
         }
 
         if
-            BuildFlags.GroupTerminate.send,
             let groupModelV2 = currentGroupModel as? TSGroupModelV2,
             groupModelV2.groupMembership.isLocalUserFullMemberAndAdministrator,
             !groupModelV2.isTerminated
@@ -353,6 +352,24 @@ extension ConversationSettingsViewController {
 
     // MARK: Middle sections
 
+    private func mediaThumbnailButton(referencedAttachment: ReferencedAttachment) -> UIButton {
+        let button = UIButton(
+            configuration: .plain(),
+            primaryAction: UIAction { [weak self] _ in
+                self?.showMediaPageView(for: referencedAttachment)
+            },
+        )
+        button.configuration?.cornerStyle = .fixed
+        button.configuration?.background = {
+            let imageView = createThumbnailView(for: referencedAttachment)
+            var background = UIBackgroundConfiguration.clear()
+            background.customView = imageView
+            background.cornerRadius = imageView.layer.cornerRadius
+            return background
+        }()
+        return button
+    }
+
     private func addAllMediaSectionIfNecessary(to contents: OWSTableContents) {
         guard !recentMedia.isEmpty else { return }
 
@@ -377,20 +394,8 @@ extension ConversationSettingsViewController {
                 let availableWidth = self.view.width - ((Self.cellHInnerMargin * 2) + self.cellOuterInsets.totalWidth + self.view.safeAreaInsets.totalWidth)
                 let imageWidth = (availableWidth - totalSpacerSize) / CGFloat(self.maximumRecentMedia)
 
-                for (referencedAttachment, imageView) in self.recentMedia.orderedValues {
-                    let button = UIButton(
-                        configuration: .plain(),
-                        primaryAction: UIAction { [weak self] _ in
-                            self?.showMediaPageView(for: referencedAttachment)
-                        },
-                    )
-                    button.configuration?.cornerStyle = .fixed
-                    button.configuration?.background = {
-                        var background = UIBackgroundConfiguration.clear()
-                        background.customView = imageView
-                        background.cornerRadius = imageView.layer.cornerRadius
-                        return background
-                    }()
+                for referencedAttachment in self.recentMedia {
+                    let button = mediaThumbnailButton(referencedAttachment: referencedAttachment)
                     stackView.addArrangedSubview(button)
                     button.autoSetDimensions(to: CGSize(square: imageWidth))
                 }
@@ -757,7 +762,7 @@ extension ConversationSettingsViewController {
                             "LEAVE_GROUP_ACTION",
                             comment: "table cell label in conversation settings",
                         ),
-                        customColor: UIColor.ows_accentRed,
+                        customColor: .Signal.red,
                         accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "leave_group"),
                     )
                 },
@@ -809,7 +814,7 @@ extension ConversationSettingsViewController {
                                 comment: "Label for 'block user' action in conversation settings view.",
                             )
                         }
-                        customColor = UIColor.ows_accentRed
+                        customColor = .Signal.red
                     }
                     let cell = OWSTableItem.buildCell(
                         icon: .chatSettingsBlock,
@@ -846,7 +851,7 @@ extension ConversationSettingsViewController {
                             "CONVERSATION_SETTINGS_REPORT_SPAM",
                             comment: "Label for 'report spam' action in conversation settings view.",
                         ),
-                        customColor: UIColor.ows_accentRed,
+                        customColor: .Signal.red,
                         accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "report_spam"),
                     )
                 },
@@ -875,7 +880,7 @@ extension ConversationSettingsViewController {
                         "END_GROUP_LABEL",
                         comment: "Label in conversation settings to end a group",
                     ),
-                    customColor: UIColor.ows_accentRed,
+                    customColor: .Signal.red,
                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "end_group"),
                 )
             },
@@ -1296,11 +1301,18 @@ extension ConversationSettingsViewController {
             groupThreadsToRender = mutualGroupThreads
         }
 
-        for groupThread in groupThreadsToRender {
+        let db = DependenciesBridge.shared.db
+        let groups = db.read { tx in
+            groupThreadsToRender.map { thread in
+                (thread, GroupViewUtils.membersNamesPreview(for: thread, tx: tx))
+            }
+        }
+
+        for (groupThread, subtitle) in groups {
             section.add(OWSTableItem(
                 customCellBlock: {
                     let cell = GroupTableViewCell()
-                    cell.configure(thread: groupThread)
+                    cell.configure(thread: groupThread, customSubtitle: subtitle)
                     return cell
                 },
                 actionBlock: {
@@ -1394,7 +1406,7 @@ extension ConversationSettingsViewController {
                         "CONVERSATION_SETTINGS_DELETE_CHAT",
                         comment: "Label for 'delete chat' action in conversation settings view.",
                     ),
-                    customColor: UIColor.ows_accentRed,
+                    customColor: .Signal.red,
                 )
             },
             actionBlock: { [weak self] in

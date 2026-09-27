@@ -101,7 +101,7 @@ public struct SpoilerMetalConfiguration {
         } else {
             pixelSize = 8192
         }
-        return pixelSize / UIScreen.main.scale
+        return pixelSize / UITraitCollection.current.displayScale
     }
 }
 
@@ -229,7 +229,7 @@ class SpoilerParticleView: MTKView {
             isPaused = true
             return
         }
-        let scale = UIScreen.main.scale
+        let scale = traitCollection.displayScale
 
         var particlesPerUnitArea = fidelity.particlesPerUnitAreaPerLayer
 
@@ -253,7 +253,7 @@ class SpoilerParticleView: MTKView {
         }
         var drawRects = [DrawRect]()
 
-        let scale = UIScreen.main.scale
+        let scale = traitCollection.displayScale
 
         owsAssertDebug(spec.spoilerFrames.count <= SpoilerAnimationManager.maxSpoilerFrameCount)
         for spoilerFrame in spec.spoilerFrames {

@@ -95,7 +95,7 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         chatServiceAuth auth: ChatServiceAuth,
         logger: PrefixedLogger,
     ) async throws -> BackupServiceAuth {
-        return try await serialTaskQueue.run {
+        return try await serialTaskQueue.runWithThrowingTask {
             try await _fetchBackupServiceAuthForRegistration(
                 key: key,
                 localAci: localAci,
@@ -132,7 +132,7 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         forceRefreshUnlessCachedPaidCredential: Bool,
         logger: PrefixedLogger,
     ) async throws -> BackupServiceAuth {
-        return try await serialTaskQueue.run {
+        return try await serialTaskQueue.runWithThrowingTask {
             try await _fetchBackupServiceAuth(
                 key: key,
                 localAci: localAci,
@@ -190,7 +190,7 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         chatServiceAuth auth: ChatServiceAuth,
         logger: PrefixedLogger,
     ) async throws -> LibSignalClient.Auth {
-        try await serialTaskQueue.run {
+        try await serialTaskQueue.runWithThrowingTask {
             try await _fetchSVRBAuthCredential(
                 key: key,
                 chatServiceAuth: auth,

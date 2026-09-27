@@ -57,7 +57,7 @@ enum ContextualActionBuilder {
             action.image = image?.withTitle(
                 title,
                 font: .dynamicTypeFootnote.medium(),
-                color: .ows_white,
+                color: .white,
                 maxTitleWidth: 68,
                 minimumScaleFactor: CGFloat(8) / CGFloat(13),
                 spacing: 4,

@@ -181,10 +181,13 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
         if updateStorageService, didTouchStorageServiceProperty {
             switch sourceContext {
             case .group(let groupId):
-                guard let thread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction) else {
-                    return owsFailDebug("Unexpectedly missing thread for storage service update.")
+                guard
+                    let groupRecord = GroupStore().fetchGroup(forGroupIdData: groupId, tx: transaction),
+                    let masterKey = groupRecord.masterKey
+                else {
+                    return owsFailDebug("missing master key for storage service update")
                 }
-                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: thread.groupModel)
+                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedGroupV2MasterKeys: [masterKey])
             case .contact(let contactAci):
                 SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: [SignalServiceAddress(contactAci)])
             }

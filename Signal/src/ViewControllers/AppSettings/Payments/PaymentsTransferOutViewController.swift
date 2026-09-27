@@ -57,12 +57,9 @@ class PaymentsTransferOutViewController: OWSTableViewController2, UITextFieldDel
         navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
             self?.didTapDismiss()
         }
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: CommonStrings.nextButton,
-            primaryAction: UIAction { [weak self] _ in
-                self?.didTapNext()
-            },
-        )
+        navigationItem.rightBarButtonItem = .nextButton { [weak self] in
+            self?.didTapNext()
+        }
 
         updateTableContents()
     }

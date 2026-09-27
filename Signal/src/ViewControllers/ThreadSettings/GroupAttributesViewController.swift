@@ -141,14 +141,9 @@ class GroupAttributesViewController: OWSTableViewController2 {
 
     fileprivate func updateNavbar() {
         if helper.hasUnsavedChanges {
-            navigationItem.rightBarButtonItem = {
-                let button = UIBarButtonItem(
-                    title: CommonStrings.setButton,
-                    primaryAction: UIAction { [weak self] _ in self?.setButtonPressed() },
-                )
-                button.style = if #available(iOS 26, *) { .prominent } else { .done }
-                return button
-            }()
+            navigationItem.rightBarButtonItem = .setButton { [weak self] in
+                self?.setButtonPressed()
+            }
         } else {
             navigationItem.rightBarButtonItem = nil
         }

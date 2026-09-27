@@ -117,7 +117,7 @@ extension BackupNonce.MetadataHeader {
 
 public class BackupNonceMetadataStore {
 
-    private let kvStore = KeyValueStore(collection: "BackupNonceMetadataStore")
+    private let kvStore = NewKeyValueStore(collection: "BackupNonceMetadataStore")
 
     public init() {}
 
@@ -133,12 +133,12 @@ public class BackupNonceMetadataStore {
         sha.update(data: backupKey.serialize())
         let hashedBackupKey = Data(sha.finalize())
         guard
-            let associatedBackupKeyHash = kvStore.getData(Keys.lastForwardSecrecyTokenAssociatedBackupKeyHash, transaction: tx),
+            let associatedBackupKeyHash = kvStore.fetchValue(Data.self, forKey: Keys.lastForwardSecrecyTokenAssociatedBackupKeyHash, tx: tx),
             associatedBackupKeyHash == hashedBackupKey
         else {
             return nil
         }
-        return try kvStore.getData(Keys.lastForwardSecrecyToken, transaction: tx).map(BackupForwardSecrecyToken.init(contents:))
+        return try kvStore.fetchValue(Data.self, forKey: Keys.lastForwardSecrecyToken, tx: tx).map(BackupForwardSecrecyToken.init(contents:))
     }
 
     /// We should only call this method in one place only:
@@ -154,8 +154,8 @@ public class BackupNonceMetadataStore {
         var sha = SHA256()
         sha.update(data: backupKey.serialize())
         let hashedBackupKey = Data(sha.finalize())
-        kvStore.setData(hashedBackupKey, key: Keys.lastForwardSecrecyTokenAssociatedBackupKeyHash, transaction: tx)
-        kvStore.setData(token.serialize(), key: Keys.lastForwardSecrecyToken, transaction: tx)
+        kvStore.writeValue(hashedBackupKey, forKey: Keys.lastForwardSecrecyTokenAssociatedBackupKeyHash, tx: tx)
+        kvStore.writeValue(token.serialize(), forKey: Keys.lastForwardSecrecyToken, tx: tx)
     }
 
     /// Get the next "secret metadata" which should be used to encrypt the next backup
@@ -170,12 +170,12 @@ public class BackupNonceMetadataStore {
         sha.update(data: backupKey.serialize())
         let hashedBackupKey = Data(sha.finalize())
         guard
-            let associatedBackupKeyHash = kvStore.getData(Keys.nextSecretMetadataAssociatedBackupKeyHash, transaction: tx),
+            let associatedBackupKeyHash = kvStore.fetchValue(Data.self, forKey: Keys.nextSecretMetadataAssociatedBackupKeyHash, tx: tx),
             associatedBackupKeyHash == hashedBackupKey
         else {
             return nil
         }
-        return kvStore.getData(Keys.nextSecretMetadata, transaction: tx).map(BackupNonce.NextSecretMetadata.init(data:))
+        return kvStore.fetchValue(Data.self, forKey: Keys.nextSecretMetadata, tx: tx).map(BackupNonce.NextSecretMetadata.init(data:))
     }
 
     /// We should only call this method in two places:
@@ -195,13 +195,13 @@ public class BackupNonceMetadataStore {
         var sha = SHA256()
         sha.update(data: backupKey.serialize())
         let hashedBackupKey = Data(sha.finalize())
-        kvStore.setData(hashedBackupKey, key: Keys.nextSecretMetadataAssociatedBackupKeyHash, transaction: tx)
-        kvStore.setData(metadata.data, key: Keys.nextSecretMetadata, transaction: tx)
+        kvStore.writeValue(hashedBackupKey, forKey: Keys.nextSecretMetadataAssociatedBackupKeyHash, tx: tx)
+        kvStore.writeValue(metadata.data, forKey: Keys.nextSecretMetadata, tx: tx)
     }
 
     public func deleteNextSecretMetadata(tx: DBWriteTransaction) {
-        kvStore.removeValue(forKey: Keys.nextSecretMetadata, transaction: tx)
-        kvStore.removeValue(forKey: Keys.nextSecretMetadataAssociatedBackupKeyHash, transaction: tx)
+        kvStore.removeValue(forKey: Keys.nextSecretMetadata, tx: tx)
+        kvStore.removeValue(forKey: Keys.nextSecretMetadataAssociatedBackupKeyHash, tx: tx)
     }
 
     private enum Keys {

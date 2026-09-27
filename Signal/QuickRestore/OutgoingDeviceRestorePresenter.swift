@@ -16,6 +16,7 @@ extension Notification.Name {
 }
 
 class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
+    private let logger = PrefixedLogger(prefix: "[DeviceRestore][Outgoing]")
 
     private enum Constants {
         static let lastBackupAgeThreshold: TimeInterval = 30 * .minute
@@ -26,6 +27,8 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
     private let db: DB
     private let backupSettingsStore: BackupSettingsStore
     private let deviceSleepManager: DeviceSleepManager?
+    private let messagePipelineSupervisor: MessagePipelineSupervisor
+    private let messageProcessor: MessageProcessor
     private let quickRestoreManager: QuickRestoreManager
     private let registrationStateChangeManager: RegistrationStateChangeManager
     private let tsAccountManager: TSAccountManager
@@ -38,6 +41,8 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
         db: DB,
         backupSettingsStore: BackupSettingsStore,
         deviceSleepManager: DeviceSleepManager?,
+        messagePipelineSupervisor: MessagePipelineSupervisor,
+        messageProcessor: MessageProcessor,
         quickRestoreManager: QuickRestoreManager,
         registrationStateChangeManager: RegistrationStateChangeManager,
         tsAccountManager: TSAccountManager,
@@ -46,6 +51,8 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
         self.db = db
         self.backupSettingsStore = backupSettingsStore
         self.deviceSleepManager = deviceSleepManager
+        self.messagePipelineSupervisor = messagePipelineSupervisor
+        self.messageProcessor = messageProcessor
         self.quickRestoreManager = quickRestoreManager
         self.registrationStateChangeManager = registrationStateChangeManager
         self.tsAccountManager = tsAccountManager
@@ -61,6 +68,8 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
             db: db,
             deviceProvisioningURL: provisioningURL,
             deviceSleepManager: deviceSleepManager,
+            messagePipelineSupervisor: messagePipelineSupervisor,
+            messageProcessor: messageProcessor,
             quickRestoreManager: quickRestoreManager,
             registrationStateChangeManager: registrationStateChangeManager,
             tsAccountManager: tsAccountManager,
@@ -223,7 +232,7 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
 
             if await pushBackupPropmtViewController(presentingViewController: presentingViewController) {
                 internalNavigationController.dismiss(animated: true)
-                Task { @MainActor in
+                Task { @MainActor [self] in
                     SignalApp.shared.showAppSettings(
                         mode: .backups(
                             page: .remote(
@@ -251,19 +260,115 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
                 await displayRestoreMessage(isBackup: true, presentingViewController: presentingViewController)
             case .decline:
                 await displayRestoreMessage(isBackup: false, presentingViewController: presentingViewController)
-            case .deviceTransfer(let transferUrl):
-                // Push the status sheet if this is a transfer
+            case .deviceTransfer:
+                let selectedPeer = viewModel.transferStatusViewModel.selectedPeer
+                if selectedPeer == nil {
+                    viewModel.transferStatusViewModel.onPeerDiscovered = { [weak self] peer in
+                        self?.logger.info("Peer discovered")
+                        // Only run this if ddwe have the pairing UI presented
+                        guard self?.presentingViewController?.presentedViewController != nil else { return }
+                        Task {
+                            await self?.dismissSystemModalIfPresented(presentingViewController: presentingViewController)
+                            await self?.presentTransferConfirmationSheet(
+                                peer: peer,
+                                presentingViewController: presentingViewController,
+                            ) {
+                                self?.viewModel?.waitForPeerContinuation.swap(nil)?.resume(returning: peer)
+                            }
+                        }
+                    }
+                    viewModel.transferStatusViewModel.onPeerSelected = { [weak self] peer in
+                        self?.logger.info("Peer selected")
+                        Task {
+                            await self?.dismissSystemModalIfPresented(presentingViewController: presentingViewController)
+                            await self?.presentTransferConfirmationSheet(
+                                peer: peer,
+                                presentingViewController: presentingViewController,
+                            ) {
+                                self?.viewModel?.waitForPeerContinuation.swap(nil)?.resume(returning: peer)
+                            }
+                        }
+                    }
+                }
                 await pushProgressViewController(
                     viewModel: viewModel,
                     presentingViewController: presentingViewController,
                 )
-                try await viewModel.waitForDeviceConnection(transferUrl: transferUrl)
+
+                let targetPeer: any DeviceTransfer.Peer
+                if let selectedPeer {
+                    targetPeer = selectedPeer
+                } else {
+                    targetPeer = try await withCheckedThrowingContinuation {
+                        self.viewModel?.waitForPeerContinuation.set($0)
+                    }
+                }
+                try await viewModel.waitForDeviceConnection(peer: targetPeer)
                 try await viewModel.startTransfer()
                 await displayTransferComplete(presentingViewController: presentingViewController)
             }
         } catch {
             await handleError(error, presentingViewController: presentingViewController)
         }
+    }
+
+    @MainActor
+    private func dismissSystemModalIfPresented(presentingViewController: UIViewController?) async {
+        guard let presentingViewController else {
+            owsFailDebug("Attempting dismiss with no presenting view controller")
+            return
+        }
+        guard let viewModel else {
+            return
+        }
+        if
+            let presentedVC = presentingViewController.presentedViewController,
+            let frontmostVC = UIApplication.shared.frontmostViewController,
+            frontmostVC != presentedVC
+        {
+            // onPeerSelected happens when the DeviceDiscoveryUI returns a selected peer
+            // However, DeviceDiscoveryUI has unfortunate behavior that dismisses _all_
+            // presented UI, and results in dismissing the progress VC along with it's
+            // own UI. To remedy this, preemptively dismiss and re-present the transfer progress UI.
+            await presentingViewController.awaitableDismiss(animated: true)
+            await self.pushProgressViewController(
+                viewModel: viewModel,
+                presentingViewController: presentingViewController,
+            )
+        }
+    }
+
+    @MainActor
+    private func presentTransferConfirmationSheet(
+        peer: any DeviceTransfer.Peer,
+        presentingViewController: UIViewController?,
+        completion: @escaping () -> Void,
+    ) async {
+        let format = OWSLocalizedString(
+            "OUTGOING_DEVICE_TRANSFER_CONFIRM_TITLE",
+            comment: "Title of prompt confirming the start of device transfer.",
+        )
+        let sheet = HeroSheetViewController(
+            hero: .image(UIImage(resource: .transferConfirm)),
+            title: String.localizedStringWithFormat(format, peer.displayName),
+            body: OWSLocalizedString(
+                "OUTGOING_DEVICE_TRANSFER_CONFIRM_BODY",
+                comment: "Body of prompt confirming the start of device transfer.",
+            ),
+            primaryButton: HeroSheetViewController.Button(
+                title: OWSLocalizedString(
+                    "OUTGOING_DEVICE_TRANSFER_START_TRANSFER_ACTION",
+                    comment: "Action prompt confirming the start of device transfer.",
+                ),
+                action: { sheet in
+                    sheet.dismiss(animated: true) {
+                        completion()
+                    }
+                },
+            ),
+            secondaryButton: .dismissing(title: CommonStrings.cancelButton),
+        )
+        await presentingViewController?.presentedViewController?.awaitablePresent(sheet, animated: true)
     }
 
     @MainActor

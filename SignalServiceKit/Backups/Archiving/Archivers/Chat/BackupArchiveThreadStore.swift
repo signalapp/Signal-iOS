@@ -29,13 +29,6 @@ public final class BackupArchiveThreadStore {
         try threadStore.enumerateStoryThreads(tx: tx, block: block)
     }
 
-    func fetchOrDefaultAssociatedData(
-        for thread: TSThread,
-        tx: DBReadTransaction,
-    ) -> ThreadAssociatedData {
-        return threadStore.fetchOrDefaultAssociatedData(for: thread, tx: tx)
-    }
-
     func fetchContactThread(
         recipient: SignalRecipient,
         tx: DBReadTransaction,
@@ -94,7 +87,7 @@ public final class BackupArchiveThreadStore {
         for aci in acis {
             let groupMember = TSGroupMember(
                 address: NormalizedDatabaseRecordAddress(aci: aci),
-                groupThreadId: groupThread.uniqueId,
+                threadUniqueId: groupThread.uniqueId,
                 // This gets updated in post frame restore actions.
                 lastInteractionTimestamp: 0,
             )
@@ -149,21 +142,30 @@ public final class BackupArchiveThreadStore {
         )
     }
 
-    func createAssociatedData(
-        for thread: TSThread,
+    func updateThread(
+        _ thread: TSThread,
         isArchived: Bool,
         isMarkedUnread: Bool,
         mutedUntilTimestamp: UInt64?,
         context: BackupArchive.ChatRestoringContext,
     ) throws {
-        let threadAssociatedData = ThreadAssociatedData(
-            threadUniqueId: thread.uniqueId,
-            isArchived: isArchived,
-            isMarkedUnread: isMarkedUnread,
-            mutedUntilTimestamp: mutedUntilTimestamp ?? 0,
-            audioPlaybackRate: 1,
-            lastVerifiedGroupNameHash: nil,
+        let threadId = thread.sqliteRowId.owsFailUnwrap("must exist")
+        try context.tx.database.execute(
+            sql: """
+            UPDATE \(TSThread.databaseTableName)
+            SET
+                \(threadColumn: .isArchived) = ?,
+                \(threadColumn: .isMarkedUnread) = ?,
+                \(threadColumn: .mutedUntilTimestamp) = ?
+            WHERE
+                \(threadColumn: .id) = ?
+            """,
+            arguments: [
+                isArchived,
+                isMarkedUnread,
+                mutedUntilTimestamp ?? 0,
+                threadId,
+            ],
         )
-        try threadAssociatedData.insert(context.tx.database)
     }
 }

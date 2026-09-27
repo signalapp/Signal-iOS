@@ -313,9 +313,7 @@ extension SignalAccount: IndexableName {
         let fullName = systemContactName.resolvedValue(config: DisplayName.Config(shouldUseSystemContactNicknames: false))
         let nickname = systemContactName.resolvedValue(config: DisplayName.Config(shouldUseSystemContactNicknames: true))
 
-        return [fullName, nickname]
-            .removingDuplicates(uniquingElementsBy: { $0 })
-            .joined(separator: " ")
+        return [fullName, nickname].removingDuplicates().joined(separator: " ")
     }
 }
 
@@ -369,7 +367,7 @@ extension SignalRecipient: IndexableName {
 
         return [phoneNumber.stringValue, nationalNumber]
             .compacted()
-            .removingDuplicates(uniquingElementsBy: { $0 })
+            .removingDuplicates()
             .joined(separator: " ")
     }
 }

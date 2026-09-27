@@ -17,13 +17,14 @@ private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingUpdates(updatedRecipientUniqueIds: [RecipientUniqueId]) {}
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {}
     func recordPendingUpdates(updatedGroupV2MasterKeys: [GroupMasterKey]) {}
+    func recordPendingInsertions(forGroupMasterKeys groupMasterKeys: [GroupMasterKey]) {}
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) {}
     func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey]) {}
     func recordPendingLocalAccountUpdates() {}
-    func backupPendingChanges(authedDevice: AuthedDevice) {}
+    func backupPendingChanges(authedAccount: AuthedAccount) {}
     func resetLocalData(transaction: DBWriteTransaction) {}
-    func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice, masterKeySource: StorageService.MasterKeySource) -> Promise<Void> { Promise<Void>(error: OWSGenericError("Not implemented.")) }
-    func rotateManifest(mode: ManifestRotationMode, authedDevice: AuthedDevice) async throws { throw OWSGenericError("Not implemented.") }
+    func restoreOrCreateManifestIfNecessary(authedAccount: AuthedAccount, masterKeySource: StorageService.MasterKeySource) -> Promise<Void> { Promise<Void>(error: OWSGenericError("Not implemented.")) }
+    func rotateManifest(mode: ManifestRotationMode, authedAccount: AuthedAccount) async throws { throw OWSGenericError("Not implemented.") }
     func waitForPendingRestores() async throws { throw OWSGenericError("Not implemented.") }
     func waitForSteadyState() async throws(CancellationError) { fatalError("Not implemented.") }
 }
@@ -36,7 +37,6 @@ private class TestDependencies {
     let recipientFetcher: RecipientFetcher
     let recipientIdFinder: RecipientIdFinder
     let sessionStore: SignalServiceKit.SessionStore
-    let threadAssociatedDataStore: MockThreadAssociatedDataStore
     let threadStore: MockThreadStore
     let threadMerger: ThreadMerger
 
@@ -52,10 +52,8 @@ private class TestDependencies {
         identityManager.recipientIdentities = [:]
         identityManager.sessionSwitchoverMessages = []
         sessionStore = SignalServiceKit.SessionStore()
-        threadAssociatedDataStore = MockThreadAssociatedDataStore()
         threadStore = MockThreadStore()
         threadMerger = ThreadMerger.forUnitTests(
-            threadAssociatedDataStore: threadAssociatedDataStore,
             threadStore: threadStore,
         )
         recipientMerger = RecipientMergerImpl(
@@ -421,7 +419,6 @@ class RecipientMergerTest: XCTestCase {
                     ))
                     thread.shouldThreadBeVisible = true
                     d.threadStore.insertThread(thread)
-                    d.threadAssociatedDataStore.values[thread.uniqueId] = ThreadAssociatedData(threadUniqueId: thread.uniqueId)
                 }
             }
 

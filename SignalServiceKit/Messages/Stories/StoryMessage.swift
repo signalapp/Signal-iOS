@@ -591,7 +591,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             let sql: String = """
             SELECT COUNT(*)
             FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("Interaction_storyReply_partial", or: "index_model_TSInteraction_on_StoryContext"))
+            \(DEBUG_INDEXED_BY("Interaction_storyReply_partial"))
             WHERE \(interactionColumn: .storyTimestamp) = ?
             AND \(interactionColumn: .storyAuthorUuidString) = ?
             AND \(interactionColumn: .isGroupStoryReply) = ?

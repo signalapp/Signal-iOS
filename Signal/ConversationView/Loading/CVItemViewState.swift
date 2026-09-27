@@ -184,7 +184,6 @@ struct CVItemModelBuilder: CVItemBuilding {
     static func buildStandaloneItem(
         interaction: TSInteraction,
         thread: TSThread,
-        threadAssociatedData: ThreadAssociatedData,
         threadViewModel: ThreadViewModel,
         itemBuildingContext: CVItemBuildingContext,
         groupNameColors: GroupNameColors,
@@ -199,7 +198,6 @@ struct CVItemModelBuilder: CVItemBuilding {
             let itemBuilder = Self.itemBuilder(
                 forInteraction: interaction,
                 thread: thread,
-                threadAssociatedData: threadAssociatedData,
                 itemBuildingContext: itemBuildingContext,
                 componentStateCache: ComponentStateCache(),
             )
@@ -292,7 +290,7 @@ struct CVItemModelBuilder: CVItemBuilding {
             itemViewState.giftBadgeState = CVComponentGiftBadge.buildViewState(giftBadge)
         }
 
-        itemViewState.audioPlaybackRate = threadViewModel.associatedData.audioPlaybackRate
+        itemViewState.audioPlaybackRate = threadViewModel.threadRecord.audioPlaybackRate
 
         if interaction.interactionType == .dateHeader {
             itemViewState.dateHeaderState = CVComponentDateHeader.buildState(interaction: interaction)
@@ -562,7 +560,6 @@ struct CVItemModelBuilder: CVItemBuilding {
             attachment.attachment.asStream()?.contentType.isAudio
             ?? MimeTypeUtil.isSupportedAudioMimeType(attachment.attachment.mimeType)
         {
-
             if let stream = attachment.asReferencedStream {
                 itemViewState.nextAudioAttachment = AudioAttachment(
                     attachmentStream: stream,
@@ -631,7 +628,6 @@ struct CVItemModelBuilder: CVItemBuilding {
             let item = Self.itemBuilder(
                 forInteraction: interaction,
                 thread: thread,
-                threadAssociatedData: threadAssociatedData,
                 itemBuildingContext: itemBuildingContext,
                 componentStateCache: componentStateCache,
             )
@@ -674,7 +670,6 @@ struct CVItemModelBuilder: CVItemBuilding {
     private static func itemBuilder(
         forInteraction interaction: TSInteraction,
         thread: TSThread,
-        threadAssociatedData: ThreadAssociatedData,
         itemBuildingContext: CVItemBuildingContext,
         componentStateCache: ComponentStateCache,
     ) -> ItemBuilder? {
@@ -693,7 +688,6 @@ struct CVItemModelBuilder: CVItemBuilding {
         return ItemBuilder(
             interaction: interaction,
             thread: thread,
-            threadAssociatedData: threadAssociatedData,
             componentState: componentState,
         )
     }
@@ -781,19 +775,16 @@ private extension MessageLoader {
 private class ItemBuilder {
     let interaction: TSInteraction
     let thread: TSThread
-    let threadAssociatedData: ThreadAssociatedData
     let componentState: CVComponentState
     var itemViewState = CVItemViewState.Builder()
 
     init(
         interaction: TSInteraction,
         thread: TSThread,
-        threadAssociatedData: ThreadAssociatedData,
         componentState: CVComponentState,
     ) {
         self.interaction = interaction
         self.thread = thread
-        self.threadAssociatedData = threadAssociatedData
         self.componentState = componentState
     }
 
@@ -801,7 +792,6 @@ private class ItemBuilder {
         CVItemModel(
             interaction: interaction,
             thread: thread,
-            threadAssociatedData: threadAssociatedData,
             componentState: componentState,
             itemViewState: itemViewState.build(),
             coreState: coreState,

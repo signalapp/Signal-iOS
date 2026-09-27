@@ -74,7 +74,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         // from eating events after the VC is dismissed.
         messageTextView.resignFirstResponder()
 
-        Task {
+        Task { [self] in
             guard await DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: self.thread) else {
                 Logger.warn("[Gifting] User canceled flow")
                 return

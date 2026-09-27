@@ -1,1 +1,1 @@
-• Signal 그룹 통화 중에 발언을 시작한 후 손을 바로 내릴 수 있는 편리한 단축키를 추가했습니다.
+• This update introduces a new custom mute option so you can easily specify the exact date and time when you would like to end your moment of silence for notifications in a specific chat.

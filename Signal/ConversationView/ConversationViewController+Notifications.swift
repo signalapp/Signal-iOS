@@ -183,7 +183,7 @@ extension ConversationViewController {
         dismissPresentedViewControllerIfNecessary()
         saveLastVisibleSortIdAndOnScreenPercentage()
 
-        self.dismissKeyBoard()
+        self.dismissKeyboard()
     }
 
     @objc

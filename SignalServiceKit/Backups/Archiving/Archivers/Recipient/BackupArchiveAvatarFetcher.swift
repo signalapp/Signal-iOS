@@ -51,10 +51,18 @@ public class BackupArchiveAvatarFetcher {
             ),
         )
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
-            Task { [weak self] in
-                try await self?.runIfNeeded()
-            }
+            self?.runAvatarFetch()
             self?.startObserving()
+        }
+    }
+
+    private func runAvatarFetch() {
+        Task { [weak self] in
+            do {
+                try await self?.runIfNeeded()
+            } catch {
+                Logger.debug("Failed to fetch avatars: \(error)")
+            }
         }
     }
 
@@ -122,16 +130,12 @@ public class BackupArchiveAvatarFetcher {
 
     @objc
     private func didUpdateRegistrationState() {
-        Task {
-            try await runIfNeeded()
-        }
+        runAvatarFetch()
     }
 
     @objc
     private func reachabililityDidChange() {
-        Task {
-            try await runIfNeeded()
-        }
+        runAvatarFetch()
     }
 
     // MARK: - TaskRunner
@@ -174,7 +178,7 @@ public class BackupArchiveAvatarFetcher {
             loader: TaskQueueLoader<TaskRunner>,
         ) async -> TaskRecordResult {
             guard let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction() else {
-                try? await loader.stop()
+                await loader.stop()
                 return .obsolete
             }
 
@@ -197,16 +201,16 @@ public class BackupArchiveAvatarFetcher {
                 do {
                     if registeredState.localIdentifiers.contains(serviceId: serviceId) {
                         _ = try await profileManager.fetchLocalUsersProfile(
-                            authedAccount: .implicit(),
+                            authedAccount: .implicit,
                         )
                         try await profileManager.downloadAndDecryptLocalUserAvatarIfNeeded(
-                            authedAccount: .implicit(),
+                            authedAccount: .implicit,
                         )
                     } else {
                         _ = try await profileFetcher.fetchProfileImpl(
                             for: serviceId,
                             context: .init(isOpportunistic: true, userProfileWriter: .backupRestore),
-                            authedAccount: .implicit(),
+                            authedAccount: .implicit,
                         )
                     }
                     return .success
@@ -214,7 +218,7 @@ public class BackupArchiveAvatarFetcher {
                     // If we failed and think we aren't reachable,
                     // stop trying future tasks.
                     if !reachabilityManager.isReachable {
-                        try? await loader.stop()
+                        await loader.stop()
                     }
                     if record.retryDelay() != nil {
                         return .retryableError(error)
@@ -294,7 +298,7 @@ public class BackupArchiveAvatarFetcher {
                     // If we failed and think we aren't reachable,
                     // stop trying future tasks.
                     if !reachabilityManager.isReachable {
-                        try? await loader.stop()
+                        await loader.stop()
                     }
                     if record.retryDelay() != nil {
                         return .retryableError(error)

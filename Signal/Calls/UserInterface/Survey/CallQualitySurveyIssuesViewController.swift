@@ -11,6 +11,7 @@ import SignalUI
 
 final class CallQualitySurveyIssuesViewController: CallQualitySurveySheetViewController {
     private var sizeChangeSubscription: AnyCancellable?
+    private var bottomConstraint: NSLayoutConstraint?
 
     private let headerContainer = UIView()
     private let bottomStackView = UIStackView()
@@ -60,6 +61,7 @@ final class CallQualitySurveyIssuesViewController: CallQualitySurveySheetViewCon
         )
         headerLabel.font = .dynamicTypeSubheadline
         headerLabel.textColor = .Signal.secondaryLabel
+        headerLabel.numberOfLines = 0
         headerLabel.textAlignment = .center
         headerContainer.addSubview(headerLabel)
         headerLabel.autoPinEdgesToSuperviewMargins(with: .init(
@@ -93,7 +95,9 @@ final class CallQualitySurveyIssuesViewController: CallQualitySurveySheetViewCon
         bottomStackView.directionalLayoutMargins = .init(hMargin: 12, vMargin: 0)
         view.addSubview(bottomStackView)
         bottomStackView.autoPinEdge(.top, to: .bottom, of: collectionView)
-        bottomStackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
+        bottomStackView.autoPinWidthToSuperviewMargins()
+        bottomConstraint = bottomStackView.autoPinBottomToSuperviewMargin()
+        updateBottomInset()
 
         bottomStackView.addArrangedSubview(customIssueEntry)
         customIssueEntry.isHiddenInStackView = true
@@ -101,18 +105,12 @@ final class CallQualitySurveyIssuesViewController: CallQualitySurveySheetViewCon
 
         bottomStackView.addArrangedSubview(continueButton)
 
-        if #available(iOS 16.0, *) {
-            sizeChangeSubscription = collectionView
-                .publisher(for: \.contentSize)
-                .removeDuplicates()
-                .sink { [weak self] contentSize in
-                    // idk why, but without the dispatch, expansion happens
-                    // without an animation, but shrinking does
-                    DispatchQueue.main.async {
-                        self?.reloadHeight()
-                    }
-                }
-        }
+        sizeChangeSubscription = collectionView
+            .publisher(for: \.contentSize)
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                self?.reloadSheetHeight()
+            }
 
         let cellRegistration = UICollectionView.CellRegistration<CapsuleCell, Item> { cell, _, item in
             cell.configure(title: item.title, image: item.image)
@@ -126,11 +124,24 @@ final class CallQualitySurveyIssuesViewController: CallQualitySurveySheetViewCon
         updateViewState()
     }
 
-    override func customSheetHeight() -> CGFloat? {
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        updateBottomInset()
+    }
+
+    override func customSheetHeight() -> CGFloat {
         let headerHeight = headerContainer.height
         let collectionViewHeight = collectionView.contentSize.height + collectionView.contentInset.totalHeight
         let bottomStackHeight = bottomStackView.height
-        return headerHeight + collectionViewHeight + bottomStackHeight
+        return headerHeight + collectionViewHeight + bottomStackHeight + additionalBottomInset
+    }
+
+    private var additionalBottomInset: CGFloat {
+        max(0, minimumBottomInsetIncludingSafeArea - view.safeAreaInsets.bottom)
+    }
+
+    private func updateBottomInset() {
+        bottomConstraint?.constant = -additionalBottomInset
     }
 
     private func loadInitialSnapshot() {
@@ -199,9 +210,7 @@ final class CallQualitySurveyIssuesViewController: CallQualitySurveySheetViewCon
         if customIssueEntryShouldBeHidden != customIssueEntry.isHiddenInStackView {
             UIView.animate(withDuration: 0.3) {
                 self.customIssueEntry.isHiddenInStackView = customIssueEntryShouldBeHidden
-                DispatchQueue.main.async {
-                    self.reloadHeight()
-                }
+                self.reloadSheetHeight()
             }
         }
     }

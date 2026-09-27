@@ -617,9 +617,6 @@ class MessageLoader {
         preprocessingContext: MessageLoaderPreprocessingContext,
         todayDate: Date,
     ) -> Bool {
-        guard BuildFlags.collapsingChatEvents else {
-            return false
-        }
         // Interactions at or past the unread indicator aren't collapsed.
         if let oldestUnreadSortId = preprocessingContext.oldestUnreadSortId, oldestUnreadSortId <= newer.sortId {
             return false
@@ -804,11 +801,6 @@ class MessageLoader {
                 )
                 pendingDisplayableInteractions.append(unreadIndicatorInteraction)
                 pastUnreadIndicator = true
-                appendItem(interaction)
-                continue
-            }
-
-            guard BuildFlags.collapsingChatEvents else {
                 appendItem(interaction)
                 continue
             }

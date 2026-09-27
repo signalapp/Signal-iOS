@@ -58,18 +58,22 @@ open class TSContactThread: TSThread {
         uniqueId: String,
         creationDate: Date?,
         editTargetTimestamp: UInt64?,
-        isArchivedObsolete: Bool,
-        isMarkedUnreadObsolete: Bool,
+        isArchived: Bool,
+        isMarkedUnread: Bool,
         lastDraftInteractionRowId: UInt64,
         lastDraftUpdateTimestamp: UInt64,
         lastInteractionRowId: UInt64,
         lastSentStoryTimestamp: UInt64?,
-        shouldNotifyForMentionsWhenMuted: Bool,
+        shouldNotifyForMentionsWhenMutedLegacy: Bool,
+        shouldNotifyForMentionsWhenMuted: Bool?,
+        shouldNotifyForRepliesWhenMuted: Bool?,
+        shouldNotifyForCallsWhenMuted: Bool?,
         messageDraft: String?,
         messageDraftBodyRanges: MessageBodyRanges?,
-        mutedUntilTimestampObsolete: UInt64,
+        mutedUntilTimestamp: UInt64,
         shouldThreadBeVisible: Bool,
         storyViewMode: TSThreadStoryViewMode,
+        audioPlaybackRate: Float,
         contactUUID: String?,
         contactPhoneNumber: String?,
     ) {
@@ -80,18 +84,22 @@ open class TSContactThread: TSThread {
             uniqueId: uniqueId,
             creationDate: creationDate,
             editTargetTimestamp: editTargetTimestamp,
-            isArchivedObsolete: isArchivedObsolete,
-            isMarkedUnreadObsolete: isMarkedUnreadObsolete,
+            isArchived: isArchived,
+            isMarkedUnread: isMarkedUnread,
             lastDraftInteractionRowId: lastDraftInteractionRowId,
             lastDraftUpdateTimestamp: lastDraftUpdateTimestamp,
             lastInteractionRowId: lastInteractionRowId,
             lastSentStoryTimestamp: lastSentStoryTimestamp,
+            shouldNotifyForMentionsWhenMutedLegacy: shouldNotifyForMentionsWhenMutedLegacy,
             shouldNotifyForMentionsWhenMuted: shouldNotifyForMentionsWhenMuted,
+            shouldNotifyForRepliesWhenMuted: shouldNotifyForRepliesWhenMuted,
+            shouldNotifyForCallsWhenMuted: shouldNotifyForCallsWhenMuted,
             messageDraft: messageDraft,
             messageDraftBodyRanges: messageDraftBodyRanges,
-            mutedUntilTimestampObsolete: mutedUntilTimestampObsolete,
+            mutedUntilTimestamp: mutedUntilTimestamp,
             shouldThreadBeVisible: shouldThreadBeVisible,
             storyViewMode: storyViewMode,
+            audioPlaybackRate: audioPlaybackRate,
         )
     }
 
@@ -111,21 +119,29 @@ open class TSContactThread: TSThread {
             uniqueId: self.uniqueId,
             creationDate: self.creationDate,
             editTargetTimestamp: self.editTargetTimestamp,
-            isArchivedObsolete: self.isArchivedObsolete,
-            isMarkedUnreadObsolete: self.isMarkedUnreadObsolete,
+            isArchived: self.isArchived,
+            isMarkedUnread: self.isMarkedUnread,
             lastDraftInteractionRowId: self.lastDraftInteractionRowId,
             lastDraftUpdateTimestamp: self.lastDraftUpdateTimestamp,
             lastInteractionRowId: self.lastInteractionRowId,
             lastSentStoryTimestamp: self.lastSentStoryTimestamp,
+            shouldNotifyForMentionsWhenMutedLegacy: self.shouldNotifyForMentionsWhenMutedLegacy,
             shouldNotifyForMentionsWhenMuted: self.shouldNotifyForMentionsWhenMuted,
+            shouldNotifyForRepliesWhenMuted: self.shouldNotifyForRepliesWhenMuted,
+            shouldNotifyForCallsWhenMuted: self.shouldNotifyForCallsWhenMuted,
             messageDraft: self.messageDraft,
             messageDraftBodyRanges: self.messageDraftBodyRanges,
-            mutedUntilTimestampObsolete: self.mutedUntilTimestampObsolete,
+            mutedUntilTimestamp: self.mutedUntilTimestamp,
             shouldThreadBeVisible: self.shouldThreadBeVisible,
             storyViewMode: self.storyViewMode,
+            audioPlaybackRate: self.audioPlaybackRate,
             contactUUID: self.contactUUID,
             contactPhoneNumber: self.contactPhoneNumber,
         )
+    }
+
+    override func recordPendingUpdates(storageServiceManager: any StorageServiceManager) {
+        storageServiceManager.recordPendingUpdates(updatedAddresses: [self.contactAddress])
     }
 
     class func fetchContactThreadViaCache(uniqueId: String, transaction: DBReadTransaction) -> TSContactThread? {
@@ -165,33 +181,17 @@ open class TSContactThread: TSThread {
         )
     }
 
-    @objc
-    public static func getOrCreateLocalThread(transaction: DBWriteTransaction) -> TSContactThread? {
-        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress else {
-            owsFailDebug("Missing localAddress.")
-            return nil
-        }
-        return TSContactThread.getOrCreateThread(withContactAddress: localAddress, transaction: transaction)
+    public static func getOrCreateLocalThread(localIdentifiers: LocalIdentifiers, tx: DBWriteTransaction) -> TSContactThread {
+        return TSContactThread.getOrCreateThread(withContactAddress: localIdentifiers.aciAddress, transaction: tx)
     }
 
-    @objc
-    public static func getOrCreateLocalThreadWithSneakyTransaction() -> TSContactThread? {
-        assert(!Thread.isMainThread)
-
-        let thread: TSContactThread? = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress else {
-                owsFailDebug("Missing localAddress.")
-                return nil
-            }
-            return TSContactThread.getWithContactAddress(localAddress, transaction: tx)
+    public static func getOrCreateLocalThread(transaction: DBWriteTransaction) -> TSContactThread? {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction) else {
+            owsFailDebug("missing localIdentifiers")
+            return nil
         }
-        if let thread {
-            return thread
-        }
-
-        return SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            return getOrCreateLocalThread(transaction: transaction)
-        }
+        return TSContactThread.getOrCreateLocalThread(localIdentifiers: localIdentifiers, tx: transaction)
     }
 
     @objc

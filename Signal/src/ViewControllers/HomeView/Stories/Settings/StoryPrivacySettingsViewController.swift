@@ -142,7 +142,7 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
                 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON",
                 comment: "Button to turn off stories on the story privacy settings view",
             ),
-            textColor: .ows_accentRed,
+            textColor: .Signal.red,
             accessibilityIdentifier: nil,
             actionBlock: { [weak self] in
                 self?.turnOffStoriesConfirmation()

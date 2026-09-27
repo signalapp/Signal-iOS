@@ -285,10 +285,11 @@ public class Sounds {
 
     // This name is specified in the payload by the Signal Service when requesting fallback push notifications.
     fileprivate static let defaultNotificationSoundFilename = "NewMessage.aifc"
-    fileprivate static let soundsStorageGlobalNotificationKey = "kOWSSoundsStorageGlobalNotificationKey"
 
     private static let cachedSystemSounds = LRUCache<String, SystemSound>(maxSize: 4, nseMaxSize: 0, shouldEvacuateInBackground: false)
 
+    /// Stores per-thread notification sound ids, keyed by thread unique id. The
+    /// global notification sound lives in `NotificationPreferencesManager`.
     private static let keyValueStore = KeyValueStore(collection: "kOWSSoundsStorageNotificationCollection")
 
     private init() { }
@@ -371,9 +372,9 @@ public class Sounds {
 
     // MARK: - Notifications
 
-    public static var defaultNotificationSound: Sound { .standard(.note) }
+    static var defaultNotificationSound: Sound { NotificationPreferencesManager.Defaults.globalNotificationSound }
 
-    private static func soundForId(_ soundId: UInt64) -> Sound {
+    static func soundForId(_ soundId: UInt64) -> Sound {
         if
             let soundId = UInt16(exactly: soundId),
             let standardSound = StandardSound(rawValue: soundId)
@@ -386,27 +387,14 @@ public class Sounds {
         return defaultNotificationSound
     }
 
-    public static var globalNotificationSound: Sound {
-        let soundId = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return keyValueStore.getUInt64(soundsStorageGlobalNotificationKey, transaction: transaction)
-        }
-        guard let soundId else { return defaultNotificationSound }
-        return soundForId(soundId)
-    }
-
-    public static func setGlobalNotificationSound(_ sound: Sound) {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            setGlobalNotificationSound(sound, transaction: transaction)
-        }
-    }
-
-    private static func setGlobalNotificationSound(_ sound: Sound, transaction: DBWriteTransaction) {
-        Logger.info("Setting global notification sound to: \(sound.displayName)")
-
-        // Fallback push notifications play a sound specified by the server, but we don't want to store this configuration
-        // on the server. Instead, we create a file with the same name as the default to be played when receiving
-        // a fallback notification.
-
+    /// Writes `sound`'s data to the fixed filename used by fallback push
+    /// notifications, returning whether or not it succeeded.
+    ///
+    /// Fallback push notifications play a sound specified by the server, but we
+    /// don't want to store this configuration on the server. Instead, we create
+    /// a file with the same name as the default to be played when receiving a
+    /// fallback notification.
+    static func writeFallbackNotificationSoundFile(for sound: Sound) -> Bool {
         let defaultSoundUrl = URL(fileURLWithPath: soundsDirectory, isDirectory: true).appendingPathComponent(defaultNotificationSoundFilename)
 
         let soundUrl = sound.soundUrl(quiet: false)
@@ -427,28 +415,34 @@ public class Sounds {
             try soundData.write(to: defaultSoundUrl, options: .atomic)
         } catch {
             owsFailDebug("Unable to write new default sound data from: \(String(describing: soundUrl)) to \(defaultSoundUrl): \(error)")
-            return
+            return false
         }
 
         // The globally configured sound the user has configured is unprotected, so that we can still play the sound if the
         // user hasn't authenticated after power-cycling their device.
         OWSFileSystem.protectFileOrFolder(atPath: defaultSoundUrl.path, fileProtectionType: .none)
 
-        keyValueStore.setUInt64(sound.id, key: soundsStorageGlobalNotificationKey, transaction: transaction)
+        return true
     }
 
     public static func notificationSoundWithSneakyTransaction(forThreadUniqueId threadUniqueId: String) -> Sound {
-        let soundId = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return keyValueStore.getUInt64(threadUniqueId, transaction: transaction)
+        DependenciesBridge.shared.db.read { tx in
+            let soundId = keyValueStore.getUInt64(threadUniqueId, transaction: tx)
+            guard let soundId else {
+                return DependenciesBridge.shared.notificationPreferencesManager.globalNotificationSound(tx: tx)
+            }
+            return soundForId(soundId)
         }
-        guard let soundId else { return globalNotificationSound }
-        return soundForId(soundId)
     }
 
     public static func setNotificationSound(_ sound: Sound, forThread thread: TSThread) {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             keyValueStore.setUInt64(sound.id, key: thread.uniqueId, transaction: transaction)
         }
+    }
+
+    static func resetThreadNotificationSounds(tx: DBWriteTransaction) {
+        keyValueStore.removeAll(transaction: tx)
     }
 
     // MARK: - Util
@@ -497,9 +491,14 @@ public class Sounds {
         guard !allCustomSounds.isEmpty else { return }
 
         let allInUseSoundIds = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return Set(keyValueStore.allKeys(transaction: transaction).compactMap {
+            var soundIds = Set(keyValueStore.allKeys(transaction: transaction).compactMap {
                 return keyValueStore.getUInt64($0, transaction: transaction)
             })
+            soundIds.insert(
+                DependenciesBridge.shared.notificationPreferencesManager
+                    .globalNotificationSound(tx: transaction).id,
+            )
+            return soundIds
         }
 
         let orphanedSounds = allCustomSounds.filter { !allInUseSoundIds.contains($0.id) }

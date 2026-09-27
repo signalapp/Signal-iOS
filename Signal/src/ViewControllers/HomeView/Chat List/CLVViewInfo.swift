@@ -15,6 +15,8 @@ struct CLVViewInfo: Equatable {
     let hasVisibleReminders: Bool
     let shouldBackupDownloadProgressViewBeVisible: Bool
     let shouldBackupExportProgressViewBeVisible: Bool
+    let shouldLocalFileBackupRestoreProgressViewBeVisible: Bool
+    let shouldLocalFileBackupExportProgressViewBeVisible: Bool
     let lastSelectedThreadId: String?
     let requiredVisibleThreadIds: Set<String>
 
@@ -35,6 +37,8 @@ struct CLVViewInfo: Equatable {
             hasVisibleReminders: false,
             shouldBackupDownloadProgressViewBeVisible: false,
             shouldBackupExportProgressViewBeVisible: false,
+            shouldLocalFileBackupRestoreProgressViewBeVisible: false,
+            shouldLocalFileBackupExportProgressViewBeVisible: false,
             lastSelectedThreadId: nil,
             requiredVisibleThreadIds: [],
         )
@@ -48,33 +52,32 @@ struct CLVViewInfo: Equatable {
         hasVisibleReminders: Bool,
         shouldBackupDownloadProgressViewBeVisible: Bool,
         shouldBackupExportProgressViewBeVisible: Bool,
+        shouldLocalFileBackupRestoreProgressViewBeVisible: Bool,
+        shouldLocalFileBackupExportProgressViewBeVisible: Bool,
         transaction: DBReadTransaction,
     ) -> CLVViewInfo {
-        do {
-            let requiredThreadIds: Set<String> = switch (inboxFilter, lastSelectedThreadId) {
-            case (.unread, .some(let lastSelectedThreadId)):
-                [lastSelectedThreadId]
-            case (.unread, nil), (.unfiltered, _):
-                []
-            }
-            let threadFinder = ThreadFinder()
-            let archiveCount = try threadFinder.visibleThreadCount(isArchived: true, transaction: transaction)
-            let inboxCount = try threadFinder.visibleThreadCount(isArchived: false, transaction: transaction)
-            return CLVViewInfo(
-                chatListMode: chatListMode,
-                archiveCount: archiveCount,
-                inboxCount: inboxCount,
-                inboxFilter: inboxFilter,
-                isMultiselectActive: isMultiselectActive,
-                hasVisibleReminders: hasVisibleReminders,
-                shouldBackupDownloadProgressViewBeVisible: shouldBackupDownloadProgressViewBeVisible,
-                shouldBackupExportProgressViewBeVisible: shouldBackupExportProgressViewBeVisible,
-                lastSelectedThreadId: lastSelectedThreadId,
-                requiredVisibleThreadIds: requiredThreadIds,
-            )
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return .empty
+        let requiredThreadIds: Set<String> = switch (inboxFilter, lastSelectedThreadId) {
+        case (.unread, .some(let lastSelectedThreadId)):
+            [lastSelectedThreadId]
+        case (.unread, nil), (.unfiltered, _):
+            []
         }
+        let threadFinder = ThreadFinder()
+        let archiveCount = threadFinder.visibleThreadCount(isArchived: true, transaction: transaction)
+        let inboxCount = threadFinder.visibleThreadCount(isArchived: false, transaction: transaction)
+        return CLVViewInfo(
+            chatListMode: chatListMode,
+            archiveCount: archiveCount,
+            inboxCount: inboxCount,
+            inboxFilter: inboxFilter,
+            isMultiselectActive: isMultiselectActive,
+            hasVisibleReminders: hasVisibleReminders,
+            shouldBackupDownloadProgressViewBeVisible: shouldBackupDownloadProgressViewBeVisible,
+            shouldBackupExportProgressViewBeVisible: shouldBackupExportProgressViewBeVisible,
+            shouldLocalFileBackupRestoreProgressViewBeVisible: shouldLocalFileBackupRestoreProgressViewBeVisible,
+            shouldLocalFileBackupExportProgressViewBeVisible: shouldLocalFileBackupExportProgressViewBeVisible,
+            lastSelectedThreadId: lastSelectedThreadId,
+            requiredVisibleThreadIds: requiredThreadIds,
+        )
     }
 }

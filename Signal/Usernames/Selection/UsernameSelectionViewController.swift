@@ -228,7 +228,7 @@ class UsernameSelectionViewController: OWSViewController, OWSNavigationChildCont
 
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.textContainerInset = UIEdgeInsets(top: 12, leading: 16, bottom: 0, trailing: 16)
-        textView.textColor = .ows_accentRed
+        textView.textColor = .Signal.red
 
         return textView
     }()

@@ -205,7 +205,7 @@ extension ThreadContextualActionProvider where Self: UIViewController {
     private func deleteContextualAction(threadViewModel: ThreadViewModel) -> ThreadContextualAction {
         return ThreadContextualAction(
             style: .destructive,
-            color: UIColor.Signal.red,
+            color: .Signal.red,
             imageFilled: .trashFill,
             imageStroked: .trash,
             title: CommonStrings.deleteButton,
@@ -283,7 +283,7 @@ extension ThreadContextualActionProvider where Self: UIViewController {
                     tx: transaction,
                 )
             }
-            threadViewModel.associatedData.updateWith(
+            threadViewModel.threadRecord.updateWith(
                 isArchived: isArchived,
                 updateStorageService: true,
                 transaction: transaction,
@@ -356,7 +356,7 @@ extension ThreadContextualActionProvider where Self: UIViewController {
         AssertIsOnMainThread()
 
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            threadViewModel.associatedData.updateWith(isMarkedUnread: true, updateStorageService: true, transaction: transaction)
+            threadViewModel.threadRecord.updateWith(isMarkedUnread: true, updateStorageService: true, transaction: transaction)
         }
     }
 
@@ -364,18 +364,23 @@ extension ThreadContextualActionProvider where Self: UIViewController {
         AssertIsOnMainThread()
 
         let alert = ActionSheetController(title: OWSLocalizedString(
-            "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE",
-            comment: "Title for the 'conversation mute confirmation' alert.",
+            "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE",
+            comment: "Title for the mute action sheet",
         ))
-        for (title, seconds) in [
-            (OWSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1H", comment: "1 hour"), TimeInterval.hour),
-            (OWSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_8H", comment: "8 hours"), 8 * TimeInterval.hour),
-            (OWSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1D", comment: "1 day"), TimeInterval.day),
-            (OWSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1W", comment: "1 week"), TimeInterval.week),
-            (OWSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS", comment: "Always"), -1),
-        ] {
-            alert.addAction(ActionSheetAction(title: title, style: .default) { [weak self] _ in
-                self?.muteThread(threadViewModel: threadViewModel, duration: seconds)
+        let muteManager = ConversationMuteManager()
+        for option in ConversationMuteChoice.Option.all {
+            alert.addAction(ActionSheetAction(title: option.title, style: .default) { [weak self] _ in
+                switch option {
+                case .preset(let preset):
+                    muteManager.mute(threadViewModel, choice: .preset(preset))
+                case .forever:
+                    muteManager.mute(threadViewModel, choice: .forever)
+                case .custom:
+                    let sheet = MuteUntilSheet { endDate in
+                        muteManager.mute(threadViewModel, choice: .custom(endDate: endDate))
+                    }
+                    self?.present(sheet, animated: true)
+                }
             })
         }
         alert.addAction(OWSActionSheets.cancelAction)
@@ -383,23 +388,9 @@ extension ThreadContextualActionProvider where Self: UIViewController {
         presentActionSheet(alert)
     }
 
-    private func muteThread(threadViewModel: ThreadViewModel, duration seconds: TimeInterval) {
-        AssertIsOnMainThread()
-
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            let timestamp = seconds < 0
-                ? ThreadAssociatedData.alwaysMutedTimestamp
-                : (seconds == 0 ? 0 : Date.ows_millisecondTimestamp() + UInt64(seconds * 1000))
-            threadViewModel.associatedData.updateWith(mutedUntilTimestamp: timestamp, updateStorageService: true, transaction: transaction)
-        }
-    }
-
     private func unmuteThread(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
-
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            threadViewModel.associatedData.updateWith(mutedUntilTimestamp: 0, updateStorageService: true, transaction: transaction)
-        }
+        ConversationMuteManager().unmute(threadViewModel)
     }
 
     private func pinThread(threadViewModel: ThreadViewModel) {

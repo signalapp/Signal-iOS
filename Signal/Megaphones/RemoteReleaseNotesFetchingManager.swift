@@ -111,18 +111,16 @@ public class RemoteReleaseNotesFetchingManager {
             Logger.error("megaphone fetch failed: \(error)")
         }
 
-        if BuildFlags.ReleaseNotesChannel.announcementFetch {
-            let filteredManifests = try await filteredAnnouncementManifests(announcementManifests)
-            guard filteredManifests.count > 0 else {
-                return
-            }
+        let filteredManifests = try await filteredAnnouncementManifests(announcementManifests)
+        guard filteredManifests.count > 0 else {
+            return
+        }
 
-            let announcementResult = await Result {
-                try await remoteAnnouncementFetcher.run(manifests: filteredManifests)
-            }
-            if case .failure(let error) = announcementResult {
-                Logger.error("announcement fetch failed: \(error)")
-            }
+        let announcementResult = await Result {
+            try await remoteAnnouncementFetcher.run(manifests: filteredManifests)
+        }
+        if case .failure(let error) = announcementResult {
+            Logger.error("announcement fetch failed: \(error)")
         }
     }
 

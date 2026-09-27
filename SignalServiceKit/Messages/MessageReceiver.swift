@@ -405,7 +405,8 @@ public final class MessageReceiver {
 
                 if dataMessage.hasProfileKey {
                     if let groupId {
-                        SSKEnvironment.shared.profileManagerRef.addGroupId(
+                        let profileManager = SSKEnvironment.shared.profileManagerRef
+                        profileManager.addGroupId(
                             toProfileWhitelist: groupId.serialize(),
                             userProfileWriter: .syncMessage,
                             transaction: tx,
@@ -490,11 +491,6 @@ public final class MessageReceiver {
                         }
                     }
                 } else if let adminDelete = dataMessage.adminDelete {
-                    guard BuildFlags.AdminDelete.receive else {
-                        Logger.warn("Dropping admin delete message because build flag is not enabled")
-                        return
-                    }
-
                     let adminDeleteManager = DependenciesBridge.shared.adminDeleteManager
                     let earlyMessageManager = SSKEnvironment.shared.earlyMessageManagerRef
                     guard let groupThread = transcript.threadForDataMessage as? TSGroupThread else {
@@ -845,8 +841,12 @@ public final class MessageReceiver {
                 /// Opportunistically try and refresh our device list. If this
                 /// fails that's ok – there are other places we'll do this
                 /// refresh as well.
-                try await Retry.performWithBackoff(maxAttempts: 4) {
-                    _ = try await deviceService.refreshDevices()
+                do {
+                    try await Retry.performWithBackoff(maxAttempts: 4) {
+                        _ = try await deviceService.refreshDevices()
+                    }
+                } catch {
+                    Logger.error("Error refreshing devices: \(error)")
                 }
             }
         } else if let attachmentBackfillRequest = syncMessage.attachmentBackfillRequest {
@@ -1038,7 +1038,7 @@ public final class MessageReceiver {
             shouldFetchProfile: true,
             userProfileWriter: .localUser,
             localIdentifiers: localIdentifiers,
-            authedAccount: .implicit(),
+            authedAccount: .implicit,
             tx: tx,
         )
     }
@@ -1187,11 +1187,6 @@ public final class MessageReceiver {
         }
 
         if let adminDelete = dataMessage.adminDelete {
-            guard BuildFlags.AdminDelete.receive else {
-                Logger.warn("Dropping admin delete message because build flag is not enabled")
-                return nil
-            }
-
             let adminDeleteManager = DependenciesBridge.shared.adminDeleteManager
             guard let groupThread = (thread as? TSGroupThread) else {
                 Logger.error("Couldn't process admin delete for non-group thread")
@@ -1545,6 +1540,15 @@ public final class MessageReceiver {
             }
         }
 
+        let validatedMessageBodyAttachments: ValidatedMessageBodyAttachmentProtos
+        do {
+            let attachmentLimits = MessageBodyAttachmentLimits()
+            validatedMessageBodyAttachments = try attachmentLimits.validateMessageBodyProtos(dataMessage.attachments)
+        } catch {
+            owsFailDebug("failed to validate body attachment protos! \(error)")
+            return nil
+        }
+
         // Legit usage of senderTimestamp when creating an incoming group message
         // record.
         let messageBuilder = TSIncomingMessageBuilder(
@@ -1586,7 +1590,7 @@ public final class MessageReceiver {
         }
 
         let hasRenderableContent = messageBuilder.hasRenderableContent(
-            hasBodyAttachments: !dataMessage.attachments.isEmpty,
+            hasBodyAttachments: !validatedMessageBodyAttachments.isEmpty,
             hasLinkPreview: validatedLinkPreview != nil,
             hasQuotedReply: validatedQuotedReply != nil,
             hasContactShare: validatedContactShare != nil,
@@ -1616,7 +1620,11 @@ public final class MessageReceiver {
         do {
             let attachmentManager = DependenciesBridge.shared.attachmentManager
 
-            for (idx, proto) in dataMessage.attachments.enumerated() {
+            if !validatedMessageBodyAttachments.isEmpty {
+                Logger.info("Data message with body attachments: \(validatedMessageBodyAttachments)")
+            }
+
+            for (idx, proto) in validatedMessageBodyAttachments.wrapped.enumerated() {
                 let attachmentID = try attachmentManager.createAttachmentPointer(
                     from: OwnedAttachmentPointerProto(
                         proto: proto,

@@ -123,7 +123,7 @@ enum ContactSupportActionSheet {
         fromViewController: UIViewController,
         completion: (() -> Void)? = nil,
     ) {
-        let retryTitle = OWSLocalizedString("CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN", comment: "button text")
+        let retryTitle = CommonStrings.tryAgainButton
         let retryAction = ActionSheetAction(title: retryTitle, style: .default) { [weak fromViewController] _ in
             guard let fromViewController else { return }
 

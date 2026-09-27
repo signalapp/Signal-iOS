@@ -164,7 +164,7 @@ public final class OWSRecipientIdentity: NSObject, SDSCodableModel, Decodable {
         let stateClause = "\(recipientIdentity_verificationState) \(comparisonOperator) \(verificationState.rawValue)"
 
         let groupMember_phoneNumber = TSGroupMember.columnName(.phoneNumber, fullyQualified: true)
-        let groupMember_groupThreadID = TSGroupMember.columnName(.groupThreadId, fullyQualified: true)
+        let groupMember_groupThreadID = TSGroupMember.columnName(.threadUniqueId, fullyQualified: true)
         let groupMember_serviceIdString = TSGroupMember.columnName(.serviceId, fullyQualified: true)
 
         let recipient_id = "\(signalRecipientColumnFullyQualified: .id)"

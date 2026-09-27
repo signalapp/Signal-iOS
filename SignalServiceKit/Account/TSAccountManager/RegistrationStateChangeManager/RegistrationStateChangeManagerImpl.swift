@@ -88,48 +88,27 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         return tsAccountManager.registrationState(tx: tx)
     }
 
-    public func didRegisterPrimary(
-        e164: E164,
+    public func didRegisterOrProvision(
         aci: Aci,
-        pni: Pni,
-        authToken: String,
-        tx: DBWriteTransaction,
-    ) {
-        tsAccountManager.initializeLocalIdentifiers(
-            e164: e164,
-            aci: aci,
-            pni: pni,
-            deviceId: .primary,
-            serverAuthToken: authToken,
-            tx: tx,
-        )
-
-        didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, deviceId: .primary, shouldUpdateStorageService: true, tx: tx)
-
-        tx.addSyncCompletion {
-            self.postLocalNumberDidChangeNotification()
-            self.postRegistrationStateDidChangeNotification()
-        }
-    }
-
-    public func didProvisionSecondary(
-        e164: E164,
-        aci: Aci,
-        pni: Pni,
+        phoneNumber: LocalIdentifiers.PhoneNumber,
         authToken: String,
         deviceId: DeviceId,
         tx: DBWriteTransaction,
     ) {
         tsAccountManager.initializeLocalIdentifiers(
-            e164: e164,
             aci: aci,
-            pni: pni,
+            phoneNumber: phoneNumber,
             deviceId: deviceId,
             serverAuthToken: authToken,
             tx: tx,
         )
-        didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, deviceId: deviceId, shouldUpdateStorageService: false, tx: tx)
-
+        didUpdateLocalIdentifiers(
+            aci: aci,
+            phoneNumber: phoneNumber,
+            deviceId: deviceId,
+            shouldUpdateStorageService: deviceId == .primary,
+            tx: tx,
+        )
         tx.addSyncCompletion {
             self.postLocalNumberDidChangeNotification()
             self.postRegistrationStateDidChangeNotification()
@@ -137,14 +116,19 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     }
 
     public func didUpdateLocalPhoneNumber(
-        _ e164: E164,
         aci: Aci,
-        pni: Pni,
+        phoneNumber: LocalIdentifiers.PhoneNumber,
         tx: DBWriteTransaction,
     ) {
-        tsAccountManager.changeLocalNumber(newE164: e164, aci: aci, pni: pni, tx: tx)
+        tsAccountManager.changeLocalNumber(aci: aci, phoneNumber: phoneNumber, tx: tx)
 
-        didUpdateLocalIdentifiers(e164: e164, aci: aci, pni: pni, deviceId: .primary, shouldUpdateStorageService: false, tx: tx)
+        didUpdateLocalIdentifiers(
+            aci: aci,
+            phoneNumber: phoneNumber,
+            deviceId: .primary,
+            shouldUpdateStorageService: false,
+            tx: tx,
+        )
 
         // Our local phone E164 has changed, and we should inform LibSignal for
         // KT self-check monitoring.
@@ -161,8 +145,15 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         }
     }
 
-    public func setIsDeregisteredOrDelinked(_ isDeregisteredOrDelinked: Bool, tx: DBWriteTransaction) {
-        let didChange = tsAccountManager.setIsDeregisteredOrDelinked(isDeregisteredOrDelinked, tx: tx)
+    public func setIsDeregisteredOrDelinked(
+        _ isDeregisteredOrDelinked: Bool,
+        notify: Bool,
+        tx: DBWriteTransaction,
+    ) {
+        let didChange = tsAccountManager.setIsDeregisteredOrDelinked(
+            isDeregisteredOrDelinked,
+            tx: tx,
+        )
         let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
         guard didChange else {
             return
@@ -172,7 +163,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         if isDeregisteredOrDelinked {
             if self.isUnregisteringFromService.get() {
                 Logger.warn("Skipping notification because we're unregistering ourselves.")
-            } else {
+            } else if notify {
                 notificationPresenter.notifyUserOfDeregistration(tx: tx)
             }
 
@@ -212,21 +203,21 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
                 break
             }
         }
-        postRegistrationStateDidChangeNotification()
+        tx.addSyncCompletion {
+            self.postRegistrationStateDidChangeNotification()
+        }
     }
 
     public func resetForReregistration(
-        localPhoneNumber: E164,
-        localAci: Aci,
-        discoverability: PhoneNumberDiscoverability?,
-        wasPrimaryDevice: Bool,
+        aci: Aci?,
+        phoneNumber: E164,
+        isPrimaryDevice: Bool,
         tx: DBWriteTransaction,
     ) {
         tsAccountManager.resetForReregistration(
-            localNumber: localPhoneNumber,
-            localAci: localAci,
-            discoverability: discoverability,
-            wasPrimaryDevice: wasPrimaryDevice,
+            aci: aci,
+            phoneNumber: phoneNumber,
+            isPrimaryDevice: isPrimaryDevice,
             tx: tx,
         )
 
@@ -237,7 +228,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         authCredentialStore.removeAllGroupAuthCredentials(tx: tx)
         authCredentialStore.removeAllCallLinkAuthCredentials(tx: tx)
 
-        if wasPrimaryDevice {
+        if isPrimaryDevice {
             // Don't reset payments state at this time.
         } else {
             // PaymentsEvents will dispatch this event to the appropriate singletons.
@@ -337,9 +328,8 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     // MARK: - Helpers
 
     private func didUpdateLocalIdentifiers(
-        e164: E164,
         aci: Aci,
-        pni: Pni,
+        phoneNumber: LocalIdentifiers.PhoneNumber,
         deviceId: DeviceId,
         shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction,
@@ -351,12 +341,12 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         authCredentialStore.removeAllCallLinkAuthCredentials(tx: tx)
         cron.resetMostRecentDates(tx: tx)
 
-        storageServiceManager.setLocalIdentifiers(LocalIdentifiers(aci: aci, pni: pni, e164: e164))
+        storageServiceManager.setLocalIdentifiers(LocalIdentifiers(aci: aci, phoneNumber: phoneNumber))
 
         var recipient = recipientMerger.applyMergeForLocalAccount(
             aci: aci,
-            phoneNumber: e164,
-            pni: pni,
+            phoneNumber: phoneNumber.e164,
+            pni: phoneNumber.pni,
             shouldUpdateStorageService: shouldUpdateStorageService,
             tx: tx,
         )
@@ -403,18 +393,21 @@ extension RegistrationStateChangeManagerImpl {
     ) {
         owsAssertDebug(CurrentAppContext().isRunningTests)
 
-        tsAccountManager.initializeLocalIdentifiers(
+        let phoneNumber = LocalIdentifiers.PhoneNumber(
             e164: E164(localIdentifiers.phoneNumber)!,
-            aci: localIdentifiers.aci,
             pni: localIdentifiers.pni!,
+        )
+
+        tsAccountManager.initializeLocalIdentifiers(
+            aci: localIdentifiers.aci,
+            phoneNumber: phoneNumber,
             deviceId: .primary,
             serverAuthToken: "",
             tx: tx,
         )
         didUpdateLocalIdentifiers(
-            e164: E164(localIdentifiers.phoneNumber)!,
             aci: localIdentifiers.aci,
-            pni: localIdentifiers.pni!,
+            phoneNumber: phoneNumber,
             deviceId: .primary,
             shouldUpdateStorageService: false,
             tx: tx,

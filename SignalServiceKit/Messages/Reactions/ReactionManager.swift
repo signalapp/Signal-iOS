@@ -85,7 +85,6 @@ public class ReactionManager: NSObject {
                 for: localAci,
                 emoji: emoji,
                 sentAtTimestamp: timestamp,
-                receivedAtTimestamp: timestamp,
                 tx: tx,
             )?.newValue
 
@@ -192,7 +191,6 @@ public class ReactionManager: NSObject {
                     for: reactor,
                     emoji: emoji,
                     sentAtTimestamp: timestamp,
-                    receivedAtTimestamp: NSDate.ows_millisecondTimeStamp(),
                     tx: transaction,
                 )
 

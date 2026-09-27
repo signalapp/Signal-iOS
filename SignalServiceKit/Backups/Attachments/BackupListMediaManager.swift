@@ -111,6 +111,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
     private let remoteConfigManager: RemoteConfigManager
     private let serialTaskQueue: SerialTaskQueue
     private let tsAccountManager: TSAccountManager
+    private let localFileBackupStore: LocalFileBackupStore
 
     init(
         accountKeyStore: AccountKeyStore,
@@ -132,6 +133,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
         remoteConfigManager: RemoteConfigManager,
         tsAccountManager: TSAccountManager,
+        localFileBackupStore: LocalFileBackupStore,
     ) {
         self.accountKeyStore = accountKeyStore
         self.attachmentStore = attachmentStore
@@ -155,6 +157,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         self.remoteConfigManager = remoteConfigManager
         self.serialTaskQueue = SerialTaskQueue()
         self.tsAccountManager = tsAccountManager
+        self.localFileBackupStore = localFileBackupStore
 
         NotificationCenter.default.addObserver(
             self,
@@ -704,13 +707,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
             localCdnNumber = attachment.mediaTierInfo?.cdnNumber
         }
 
-        let mediaId: Data
-        do {
-            mediaId = try backupKey.deriveMediaId(mediaName)
-        } catch {
-            owsFailDebug("Failed to derive mediaID for mediaName!")
-            return
-        }
+        let mediaId = backupKey.deriveMediaId(mediaName)
 
         let matchedListedMediasQuery = ListedBackupMediaObject
             .filter(Column(ListedBackupMediaObject.CodingKeys.mediaId) == mediaId)
@@ -926,17 +923,15 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         if shouldMarkDownloadProgressFinished {
             tx.addSyncCompletion {
                 if !isThumbnail {
-                    Task {
-                        await self.backupAttachmentDownloadProgress.didFinishDownloadOfFullsizeAttachment(
-                            withId: attachment.id,
-                            byteCount: UInt64(QueuedBackupAttachmentDownload.estimatedByteCount(
-                                attachment: attachment,
-                                reference: nil,
-                                isThumbnail: isThumbnail,
-                                canDownloadFromMediaTier: true,
-                            )),
-                        )
-                    }
+                    self.backupAttachmentDownloadProgress.didFinishDownloadOfFullsizeAttachment(
+                        withId: attachment.id,
+                        byteCount: UInt64(QueuedBackupAttachmentDownload.estimatedByteCount(
+                            attachment: attachment,
+                            reference: nil,
+                            isThumbnail: isThumbnail,
+                            canDownloadFromMediaTier: true,
+                        )),
+                    )
                 }
             }
         }
@@ -987,13 +982,11 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         {
             logger.info("Marked discovered attachment \(attachment.id) done. fullsize? \(!isThumbnail)")
             if finishedRecord.isFullsize {
-                Task {
-                    await backupAttachmentUploadProgress.didUpdateProgressForFullsizeAttachment(
-                        uploadRecord: finishedRecord,
-                        completedByteCount: UInt64(safeCast: finishedRecord.estimatedByteCount),
-                        totalByteCount: UInt64(safeCast: finishedRecord.estimatedByteCount),
-                    )
-                }
+                backupAttachmentUploadProgress.didUpdateProgressForFullsizeAttachment(
+                    uploadRecord: finishedRecord,
+                    completedByteCount: UInt64(safeCast: finishedRecord.estimatedByteCount),
+                    totalByteCount: UInt64(safeCast: finishedRecord.estimatedByteCount),
+                )
             }
         }
 
@@ -1033,8 +1026,22 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         // We might have this either from a local stream (if we matched against
         // the media name/id we generated locally) or from a restored backup (if
         // we matched against the media name/id we pulled off the backup proto).
-        let fullsizeUnencryptedByteCount = attachment.mediaTierInfo?.unencryptedByteCount
+        var fullsizeUnencryptedByteCount = attachment.mediaTierInfo?.unencryptedByteCount
             ?? attachment.streamInfo?.unencryptedByteCount
+
+        // We also may have unencryptedByteCount from a local file backup metadata
+        // record if this attachment was restored from a local file backup.
+        if
+            fullsizeUnencryptedByteCount == nil,
+            let record = localFileBackupStore.metadataRecord(
+                attachmentId: attachment.id,
+                failIfNotExists: false,
+                tx: tx,
+            )
+        {
+            fullsizeUnencryptedByteCount = record.unencryptedByteCount
+        }
+
         let fullsizePlaintextHash = attachment.mediaTierInfo?.plaintextHash
             ?? attachment.streamInfo?.plaintextHash
             ?? attachment.plaintextHash
@@ -1083,6 +1090,12 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
                 tx: tx,
             )
         else {
+            return
+        }
+
+        // If this attachment has a pending local file backup import, its file
+        // will be restored from the local backup — don't enqueue a download.
+        if localFileBackupStore.hasPendingImportRecord(attachmentId: attachment.id, tx: tx) {
             return
         }
 
@@ -1140,13 +1153,9 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
             state = .ineligible
             fallthrough
         case .ready:
-            // Dequeue any existing download first; this will reset the retry counter
-            backupAttachmentDownloadStore.remove(
-                attachmentId: attachment.id,
-                thumbnail: isThumbnail,
-                tx: tx,
-            )
-
+            // Enqueueing no-ops entirely if the enqueued download already
+            // matches; list media walks every attachment on every run, so
+            // most of these are no-ops.
             backupAttachmentDownloadStore.enqueue(
                 ReferencedAttachment(
                     reference: mostRecentReference,
@@ -1540,7 +1549,7 @@ private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
         // Now check mediaNames we have pending delete, map them to mediaId, and try to match.
         var foundMatch = false
         orphanedBackupAttachmentStore.enumerateMediaNamesPendingDelete(tx: tx) { mediaName, stop in
-            let foundMediaId = try? backupKey.deriveMediaId(mediaName)
+            let foundMediaId = backupKey.deriveMediaId(mediaName)
             if foundMediaId == mediaId {
                 foundMatch = true
                 stop = true

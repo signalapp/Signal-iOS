@@ -38,21 +38,9 @@ class LongTextViewController: OWSViewController {
     private lazy var toolbar: UIToolbar = {
         let toolbar = UIToolbar()
         toolbar.items = [
-            UIBarButtonItem(
-                image: Theme.iconImage(.buttonShare),
-                primaryAction: UIAction { [weak self] _ in
-                    self?.shareButtonPressed()
-                },
-            ),
-
+            .button(icon: .buttonShare) { [weak self] in self?.shareButtonPressed() },
             .flexibleSpace(),
-
-            UIBarButtonItem(
-                image: Theme.iconImage(.buttonForward),
-                primaryAction: UIAction { [weak self] _ in
-                    self?.forwardButtonPressed()
-                },
-            ),
+            .button(icon: .buttonForward) { [weak self] in self?.forwardButtonPressed() },
         ]
         if #unavailable(iOS 26) {
             toolbar.tintColor = Theme.primaryIconColor

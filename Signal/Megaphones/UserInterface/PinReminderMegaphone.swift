@@ -23,7 +23,7 @@ class PinReminderMegaphone: Megaphone {
                 "PIN_REMINDER_MEGAPHONE_ACTION",
                 comment: "Action text for PIN reminder megaphone",
             ),
-        ) { [weak fromViewController] in
+        ) { [weak fromViewController, self] in
             guard let fromViewController else { return }
 
             let vc = PinReminderViewController { [weak self] pinReminderViewController, result in

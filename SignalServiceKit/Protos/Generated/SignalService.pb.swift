@@ -27,12 +27,12 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
 
-struct SignalServiceProtos_Envelope: Sendable {
+nonisolated struct SignalServiceProtos_Envelope: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -194,7 +194,7 @@ struct SignalServiceProtos_Envelope: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
     case unknown = 0
     case ciphertext = 1
     case prekeyBundle = 3
@@ -228,7 +228,7 @@ struct SignalServiceProtos_Envelope: Sendable {
   fileprivate var _updatedPniBinary: Data? = nil
 }
 
-struct SignalServiceProtos_TypingMessage: Sendable {
+nonisolated struct SignalServiceProtos_TypingMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -263,7 +263,7 @@ struct SignalServiceProtos_TypingMessage: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum Action: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum Action: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
     case started = 0
     case stopped = 1
 
@@ -280,7 +280,7 @@ struct SignalServiceProtos_TypingMessage: Sendable {
   fileprivate var _groupID: Data? = nil
 }
 
-struct SignalServiceProtos_StoryMessage: @unchecked Sendable {
+nonisolated struct SignalServiceProtos_StoryMessage: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -344,7 +344,7 @@ struct SignalServiceProtos_StoryMessage: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct SignalServiceProtos_Preview: @unchecked Sendable {
+nonisolated struct SignalServiceProtos_Preview: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -402,7 +402,7 @@ struct SignalServiceProtos_Preview: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct SignalServiceProtos_TextAttachment: Sendable {
+nonisolated struct SignalServiceProtos_TextAttachment: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -475,7 +475,7 @@ struct SignalServiceProtos_TextAttachment: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum Style: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum Style: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
     case `default` = 0
     case regular = 1
     case bold = 2
@@ -489,7 +489,7 @@ struct SignalServiceProtos_TextAttachment: Sendable {
 
   }
 
-  struct Gradient: Sendable {
+  nonisolated struct Gradient: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -549,7 +549,7 @@ struct SignalServiceProtos_TextAttachment: Sendable {
   fileprivate var _color: UInt32? = nil
 }
 
-struct SignalServiceProtos_Content: @unchecked Sendable {
+nonisolated struct SignalServiceProtos_Content: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -662,7 +662,7 @@ struct SignalServiceProtos_Content: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct SignalServiceProtos_CallMessage: Sendable {
+nonisolated struct SignalServiceProtos_CallMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -734,7 +734,7 @@ struct SignalServiceProtos_CallMessage: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  struct Offer: Sendable {
+  nonisolated struct Offer: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -769,7 +769,7 @@ struct SignalServiceProtos_CallMessage: Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    nonisolated enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
       case offerAudioCall = 0
 
       /// next index 3, skip 2 – it was the unused "NEED_PERMISSION" type
@@ -788,7 +788,7 @@ struct SignalServiceProtos_CallMessage: Sendable {
     fileprivate var _opaque: Data? = nil
   }
 
-  struct Answer: Sendable {
+  nonisolated struct Answer: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -820,7 +820,7 @@ struct SignalServiceProtos_CallMessage: Sendable {
     fileprivate var _opaque: Data? = nil
   }
 
-  struct IceUpdate: Sendable {
+  nonisolated struct IceUpdate: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -852,7 +852,7 @@ struct SignalServiceProtos_CallMessage: Sendable {
     fileprivate var _opaque: Data? = nil
   }
 
-  struct Busy: Sendable {
+  nonisolated struct Busy: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -874,7 +874,7 @@ struct SignalServiceProtos_CallMessage: Sendable {
     fileprivate var _id: UInt64? = nil
   }
 
-  struct Hangup: Sendable {
+  nonisolated struct Hangup: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -909,7 +909,7 @@ struct SignalServiceProtos_CallMessage: Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    nonisolated enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
       case hangupNormal = 0
       case hangupAccepted = 1
       case hangupDeclined = 2
@@ -929,7 +929,7 @@ struct SignalServiceProtos_CallMessage: Sendable {
     fileprivate var _deviceID: UInt32? = nil
   }
 
-  struct Opaque: Sendable {
+  nonisolated struct Opaque: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -954,7 +954,7 @@ struct SignalServiceProtos_CallMessage: Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum Urgency: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    nonisolated enum Urgency: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
       case droppable = 0
       case handleImmediately = 1
 
@@ -981,7 +981,7 @@ struct SignalServiceProtos_CallMessage: Sendable {
   fileprivate var _opaque: SignalServiceProtos_CallMessage.Opaque? = nil
 }
 
-struct SignalServiceProtos_DataMessage: @unchecked Sendable {
+nonisolated struct SignalServiceProtos_DataMessage: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1216,7 +1216,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum Flags: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum Flags: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
     case expirationTimerUpdate = 2
     case profileKeyUpdate = 4
 
@@ -1226,7 +1226,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
   }
 
-  enum ProtocolVersion: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum ProtocolVersion: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
     case initial = 0
     case messageTimers = 1
     case viewOnce = 2
@@ -1244,7 +1244,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
   }
 
-  struct Quote: Sendable {
+  nonisolated struct Quote: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1302,7 +1302,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    nonisolated enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
       case normal = 0
       case giftBadge = 1
 
@@ -1312,7 +1312,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
     }
 
-    struct QuotedAttachment: @unchecked Sendable {
+    nonisolated struct QuotedAttachment: @unchecked Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1360,7 +1360,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _authorAciBinary: Data? = nil
   }
 
-  struct Contact: Sendable {
+  nonisolated struct Contact: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1398,9 +1398,19 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     /// Clears the value of `organization`. Subsequent reads from it will return its default value.
     mutating func clearOrganization() {self._organization = nil}
 
+    /// 16-byte UUID
+    var aciBinary: Data {
+      get {_aciBinary ?? Data()}
+      set {_aciBinary = newValue}
+    }
+    /// Returns true if `aciBinary` has been explicitly set.
+    var hasAciBinary: Bool {self._aciBinary != nil}
+    /// Clears the value of `aciBinary`. Subsequent reads from it will return its default value.
+    mutating func clearAciBinary() {self._aciBinary = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    struct Name: Sendable {
+    nonisolated struct Name: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1450,6 +1460,15 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
       /// Clears the value of `middleName`. Subsequent reads from it will return its default value.
       mutating func clearMiddleName() {self._middleName = nil}
 
+      var nickname: String {
+        get {_nickname ?? String()}
+        set {_nickname = newValue}
+      }
+      /// Returns true if `nickname` has been explicitly set.
+      var hasNickname: Bool {self._nickname != nil}
+      /// Clears the value of `nickname`. Subsequent reads from it will return its default value.
+      mutating func clearNickname() {self._nickname = nil}
+
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
       init() {}
@@ -1459,9 +1478,10 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
       fileprivate var _prefix: String? = nil
       fileprivate var _suffix: String? = nil
       fileprivate var _middleName: String? = nil
+      fileprivate var _nickname: String? = nil
     }
 
-    struct Phone: Sendable {
+    nonisolated struct Phone: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1495,7 +1515,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
-      enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      nonisolated enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
         case home = 1
         case mobile = 2
         case work = 3
@@ -1514,7 +1534,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
       fileprivate var _label: String? = nil
     }
 
-    struct Email: Sendable {
+    nonisolated struct Email: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1548,7 +1568,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
-      enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      nonisolated enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
         case home = 1
         case mobile = 2
         case work = 3
@@ -1567,7 +1587,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
       fileprivate var _label: String? = nil
     }
 
-    struct PostalAddress: Sendable {
+    nonisolated struct PostalAddress: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1655,7 +1675,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
-      enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      nonisolated enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
         case home = 1
         case work = 2
         case custom = 3
@@ -1679,7 +1699,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
       fileprivate var _country: String? = nil
     }
 
-    struct Avatar: @unchecked Sendable {
+    nonisolated struct Avatar: @unchecked Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1714,9 +1734,10 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _name: SignalServiceProtos_DataMessage.Contact.Name? = nil
     fileprivate var _avatar: SignalServiceProtos_DataMessage.Contact.Avatar? = nil
     fileprivate var _organization: String? = nil
+    fileprivate var _aciBinary: Data? = nil
   }
 
-  struct Sticker: @unchecked Sendable {
+  nonisolated struct Sticker: @unchecked Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1777,7 +1798,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _storage = _StorageClass.defaultInstance
   }
 
-  struct Reaction: Sendable {
+  nonisolated struct Reaction: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1841,7 +1862,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _targetAuthorAciBinary: Data? = nil
   }
 
-  struct Delete: Sendable {
+  nonisolated struct Delete: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1863,7 +1884,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _targetSentTimestamp: UInt64? = nil
   }
 
-  struct GroupCallUpdate: Sendable {
+  nonisolated struct GroupCallUpdate: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1884,7 +1905,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _eraID: String? = nil
   }
 
-  struct Payment: Sendable {
+  nonisolated struct Payment: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1911,7 +1932,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    struct Amount: Sendable {
+    nonisolated struct Amount: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1929,7 +1950,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
-      struct MobileCoin: Sendable {
+      nonisolated struct MobileCoin: Sendable {
         // SwiftProtobuf.Message conformance is added in an extension below. See the
         // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
         // methods supported on all messages.
@@ -1956,7 +1977,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
       fileprivate var _mobileCoin: SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin? = nil
     }
 
-    struct Notification: Sendable {
+    nonisolated struct Notification: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1983,7 +2004,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
-      struct MobileCoin: Sendable {
+      nonisolated struct MobileCoin: Sendable {
         // SwiftProtobuf.Message conformance is added in an extension below. See the
         // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
         // methods supported on all messages.
@@ -2011,7 +2032,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
       fileprivate var _note: String? = nil
     }
 
-    struct Activation: Sendable {
+    nonisolated struct Activation: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -2027,7 +2048,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
-      enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      nonisolated enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
         case request = 0
         case activated = 1
 
@@ -2048,7 +2069,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _activation: SignalServiceProtos_DataMessage.Payment.Activation? = nil
   }
 
-  struct StoryContext: Sendable {
+  nonisolated struct StoryContext: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2090,7 +2111,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _authorAciBinary: Data? = nil
   }
 
-  struct GiftBadge: Sendable {
+  nonisolated struct GiftBadge: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2111,7 +2132,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _receiptCredentialPresentation: Data? = nil
   }
 
-  struct PollCreate: Sendable {
+  nonisolated struct PollCreate: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2144,7 +2165,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _allowMultiple: Bool? = nil
   }
 
-  struct PollTerminate: Sendable {
+  nonisolated struct PollTerminate: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2165,7 +2186,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _targetSentTimestamp: UInt64? = nil
   }
 
-  struct PollVote: Sendable {
+  nonisolated struct PollVote: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2208,7 +2229,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _voteCount: UInt32? = nil
   }
 
-  struct PinMessage: Sendable {
+  nonisolated struct PinMessage: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2262,7 +2283,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _pinDurationForever: Bool? = nil
   }
 
-  struct UnpinMessage: Sendable {
+  nonisolated struct UnpinMessage: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2294,7 +2315,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
     fileprivate var _targetSentTimestamp: UInt64? = nil
   }
 
-  struct AdminDelete: Sendable {
+  nonisolated struct AdminDelete: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2331,7 +2352,7 @@ struct SignalServiceProtos_DataMessage: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct SignalServiceProtos_NullMessage: Sendable {
+nonisolated struct SignalServiceProtos_NullMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2352,7 +2373,7 @@ struct SignalServiceProtos_NullMessage: Sendable {
   fileprivate var _padding: Data? = nil
 }
 
-struct SignalServiceProtos_ReceiptMessage: Sendable {
+nonisolated struct SignalServiceProtos_ReceiptMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2370,7 +2391,7 @@ struct SignalServiceProtos_ReceiptMessage: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
     case delivery = 0
     case read = 1
     case viewed = 2
@@ -2386,7 +2407,7 @@ struct SignalServiceProtos_ReceiptMessage: Sendable {
   fileprivate var _type: SignalServiceProtos_ReceiptMessage.TypeEnum? = nil
 }
 
-struct SignalServiceProtos_Verified: Sendable {
+nonisolated struct SignalServiceProtos_Verified: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2439,7 +2460,7 @@ struct SignalServiceProtos_Verified: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum State: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum State: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
     case `default` = 0
     case verified = 1
     case unverified = 2
@@ -2459,7 +2480,7 @@ struct SignalServiceProtos_Verified: Sendable {
   fileprivate var _destinationAciBinary: Data? = nil
 }
 
-struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
+nonisolated struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2670,7 +2691,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  struct Sent: Sendable {
+  nonisolated struct Sent: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2763,7 +2784,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    struct UnidentifiedDeliveryStatus: Sendable {
+    nonisolated struct UnidentifiedDeliveryStatus: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -2805,7 +2826,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
       fileprivate var _destinationServiceIDBinary: Data? = nil
     }
 
-    struct StoryMessageRecipient: Sendable {
+    nonisolated struct StoryMessageRecipient: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -2862,7 +2883,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _destinationServiceIDBinary: Data? = nil
   }
 
-  struct Contacts: @unchecked Sendable {
+  nonisolated struct Contacts: @unchecked Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2894,7 +2915,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _storage = _StorageClass.defaultInstance
   }
 
-  struct Blocked: Sendable {
+  nonisolated struct Blocked: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2913,7 +2934,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     init() {}
   }
 
-  struct Request: Sendable {
+  nonisolated struct Request: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2929,7 +2950,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    nonisolated enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
       case unknown = 0
       case contacts = 1
       case blocked = 3
@@ -2947,7 +2968,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _type: SignalServiceProtos_SyncMessage.Request.TypeEnum? = nil
   }
 
-  struct Read: Sendable {
+  nonisolated struct Read: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2990,7 +3011,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _senderAciBinary: Data? = nil
   }
 
-  struct Viewed: Sendable {
+  nonisolated struct Viewed: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3033,7 +3054,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _senderAciBinary: Data? = nil
   }
 
-  struct Configuration: Sendable {
+  nonisolated struct Configuration: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3094,7 +3115,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _linkPreviews: Bool? = nil
   }
 
-  struct StickerPackOperation: Sendable {
+  nonisolated struct StickerPackOperation: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3130,7 +3151,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    nonisolated enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
       case install = 0
       case remove = 1
 
@@ -3147,7 +3168,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _type: SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum? = nil
   }
 
-  struct ViewOnceOpen: Sendable {
+  nonisolated struct ViewOnceOpen: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3190,7 +3211,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _senderAciBinary: Data? = nil
   }
 
-  struct FetchLatest: Sendable {
+  nonisolated struct FetchLatest: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3206,7 +3227,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    nonisolated enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
       case unknown = 0
       case localProfile = 1
       case storageManifest = 2
@@ -3223,7 +3244,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _type: SignalServiceProtos_SyncMessage.FetchLatest.TypeEnum? = nil
   }
 
-  struct Keys: Sendable {
+  nonisolated struct Keys: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3254,7 +3275,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _mediaRootBackupKey: Data? = nil
   }
 
-  struct MessageRequestResponse: Sendable {
+  nonisolated struct MessageRequestResponse: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3298,7 +3319,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    nonisolated enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
       case unknown = 0
       case accept = 1
       case delete = 2
@@ -3321,7 +3342,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _threadAciBinary: Data? = nil
   }
 
-  struct OutgoingPayment: Sendable {
+  nonisolated struct OutgoingPayment: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3356,7 +3377,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    struct MobileCoin: Sendable {
+    nonisolated struct MobileCoin: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -3441,7 +3462,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _mobileCoin: SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin? = nil
   }
 
-  struct PniChangeNumber: Sendable {
+  nonisolated struct PniChangeNumber: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3505,7 +3526,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _newE164: String? = nil
   }
 
-  struct CallEvent: Sendable {
+  nonisolated struct CallEvent: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3571,7 +3592,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    nonisolated enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
       case unknownType = 0
       case audioCall = 1
       case videoCall = 2
@@ -3584,7 +3605,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     }
 
-    enum Direction: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    nonisolated enum Direction: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
       case unknownDirection = 0
       case incoming = 1
       case outgoing = 2
@@ -3595,7 +3616,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     }
 
-    enum Event: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    nonisolated enum Event: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
       case unknownAction = 0
       case accepted = 1
       case notAccepted = 2
@@ -3618,7 +3639,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _event: SignalServiceProtos_SyncMessage.CallEvent.Event? = nil
   }
 
-  struct CallLinkUpdate: Sendable {
+  nonisolated struct CallLinkUpdate: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3653,7 +3674,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    nonisolated enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
       case update = 0
 
       init() {
@@ -3669,7 +3690,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _type: SignalServiceProtos_SyncMessage.CallLinkUpdate.TypeEnum? = nil
   }
 
-  struct CallLogEvent: Sendable {
+  nonisolated struct CallLogEvent: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3717,7 +3738,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    nonisolated enum TypeEnum: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
       case cleared = 0
       case markedAsRead = 1
       case markedAsReadInConversation = 2
@@ -3736,7 +3757,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _callID: UInt64? = nil
   }
 
-  struct DeleteForMe: Sendable {
+  nonisolated struct DeleteForMe: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3751,7 +3772,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    struct MessageDeletes: Sendable {
+    nonisolated struct MessageDeletes: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -3774,7 +3795,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
       fileprivate var _conversation: SignalServiceProtos_ConversationIdentifier? = nil
     }
 
-    struct AttachmentDelete: Sendable {
+    nonisolated struct AttachmentDelete: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -3838,7 +3859,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
       fileprivate var _fallbackPlaintextHash: Data? = nil
     }
 
-    struct ConversationDelete: Sendable {
+    nonisolated struct ConversationDelete: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -3873,7 +3894,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
       fileprivate var _isFullDelete: Bool? = nil
     }
 
-    struct LocalOnlyConversationDelete: Sendable {
+    nonisolated struct LocalOnlyConversationDelete: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -3897,7 +3918,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     init() {}
   }
 
-  struct DeviceNameChange: Sendable {
+  nonisolated struct DeviceNameChange: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3918,7 +3939,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _deviceID: UInt32? = nil
   }
 
-  struct AttachmentBackfillRequest: Sendable {
+  nonisolated struct AttachmentBackfillRequest: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3949,7 +3970,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _targetConversation: SignalServiceProtos_ConversationIdentifier? = nil
   }
 
-  struct AttachmentBackfillResponse: Sendable {
+  nonisolated struct AttachmentBackfillResponse: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3998,7 +4019,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum Error: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+    nonisolated enum Error: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
       case messageNotFound = 0
 
       init() {
@@ -4007,7 +4028,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
     }
 
-    struct AttachmentData: @unchecked Sendable {
+    nonisolated struct AttachmentData: @unchecked Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -4038,7 +4059,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
-      enum Status: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+      nonisolated enum Status: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
         case pending = 0
         case terminalError = 1
 
@@ -4053,7 +4074,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
       fileprivate var _storage = _StorageClass.defaultInstance
     }
 
-    struct AttachmentDataList: Sendable {
+    nonisolated struct AttachmentDataList: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -4073,7 +4094,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     fileprivate var _error: SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.Error? = nil
   }
 
-  struct UsernameChange: Sendable {
+  nonisolated struct UsernameChange: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -4088,7 +4109,7 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct SignalServiceProtos_AttachmentPointer: Sendable {
+nonisolated struct SignalServiceProtos_AttachmentPointer: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4248,7 +4269,7 @@ struct SignalServiceProtos_AttachmentPointer: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum Flags: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum Flags: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
     case voiceMessage = 1
     case borderless = 2
     case gif = 8
@@ -4279,7 +4300,7 @@ struct SignalServiceProtos_AttachmentPointer: Sendable {
   fileprivate var _cdnNumber: UInt32? = nil
 }
 
-struct SignalServiceProtos_GroupContextV2: Sendable {
+nonisolated struct SignalServiceProtos_GroupContextV2: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4320,7 +4341,7 @@ struct SignalServiceProtos_GroupContextV2: Sendable {
   fileprivate var _groupChange: Data? = nil
 }
 
-struct SignalServiceProtos_ContactDetails: Sendable {
+nonisolated struct SignalServiceProtos_ContactDetails: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4400,7 +4421,7 @@ struct SignalServiceProtos_ContactDetails: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  struct Avatar: Sendable {
+  nonisolated struct Avatar: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -4443,7 +4464,7 @@ struct SignalServiceProtos_ContactDetails: Sendable {
   fileprivate var _inboxPosition: UInt32? = nil
 }
 
-struct SignalServiceProtos_Pack: Sendable {
+nonisolated struct SignalServiceProtos_Pack: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4479,7 +4500,7 @@ struct SignalServiceProtos_Pack: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  struct Sticker: Sendable {
+  nonisolated struct Sticker: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -4528,7 +4549,7 @@ struct SignalServiceProtos_Pack: Sendable {
   fileprivate var _cover: SignalServiceProtos_Pack.Sticker? = nil
 }
 
-struct SignalServiceProtos_PaymentAddress: Sendable {
+nonisolated struct SignalServiceProtos_PaymentAddress: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4546,7 +4567,7 @@ struct SignalServiceProtos_PaymentAddress: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  struct MobileCoin: Sendable {
+  nonisolated struct MobileCoin: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -4584,7 +4605,7 @@ struct SignalServiceProtos_PaymentAddress: Sendable {
   fileprivate var _mobileCoin: SignalServiceProtos_PaymentAddress.MobileCoin? = nil
 }
 
-struct SignalServiceProtos_DecryptionErrorMessage: Sendable {
+nonisolated struct SignalServiceProtos_DecryptionErrorMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4625,7 +4646,7 @@ struct SignalServiceProtos_DecryptionErrorMessage: Sendable {
   fileprivate var _deviceID: UInt32? = nil
 }
 
-struct SignalServiceProtos_PniSignatureMessage: Sendable {
+nonisolated struct SignalServiceProtos_PniSignatureMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4657,7 +4678,7 @@ struct SignalServiceProtos_PniSignatureMessage: Sendable {
   fileprivate var _signature: Data? = nil
 }
 
-struct SignalServiceProtos_BodyRange: Sendable {
+nonisolated struct SignalServiceProtos_BodyRange: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4715,7 +4736,7 @@ struct SignalServiceProtos_BodyRange: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum Style: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum Style: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
     case none = 0
     case bold = 1
     case italic = 2
@@ -4738,7 +4759,7 @@ struct SignalServiceProtos_BodyRange: Sendable {
   fileprivate var _mentionAciBinary: Data? = nil
 }
 
-struct SignalServiceProtos_EditMessage: Sendable {
+nonisolated struct SignalServiceProtos_EditMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4769,7 +4790,7 @@ struct SignalServiceProtos_EditMessage: Sendable {
   fileprivate var _dataMessage: SignalServiceProtos_DataMessage? = nil
 }
 
-struct SignalServiceProtos_AddressableMessage: Sendable {
+nonisolated struct SignalServiceProtos_AddressableMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4823,7 +4844,7 @@ struct SignalServiceProtos_AddressableMessage: Sendable {
   fileprivate var _sentTimestamp: UInt64? = nil
 }
 
-struct SignalServiceProtos_ConversationIdentifier: Sendable {
+nonisolated struct SignalServiceProtos_ConversationIdentifier: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4878,9 +4899,9 @@ struct SignalServiceProtos_ConversationIdentifier: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "SignalServiceProtos"
+fileprivate nonisolated let _protobuf_package = "SignalServiceProtos"
 
-extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Envelope"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0\u{2}\u{4}timestamp\0\u{2}\u{2}sourceDevice\0\u{1}content\0\u{1}serverGuid\0\u{1}serverTimestamp\0\u{1}sourceServiceId\0\u{2}\u{2}destinationServiceId\0\u{1}urgent\0\u{1}updatedPni\0\u{1}story\0\u{1}spamReportingToken\0\u{2}\u{2}sourceServiceIdBinary\0\u{1}destinationServiceIdBinary\0\u{1}serverGuidBinary\0\u{1}updatedPniBinary\0\u{c}\u{2}\u{1}\u{c}\u{3}\u{1}\u{c}\u{6}\u{1}\u{c}\u{12}\u{1}")
 
@@ -4989,11 +5010,11 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
   }
 }
 
-extension SignalServiceProtos_Envelope.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_Envelope.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}CIPHERTEXT\0\u{2}\u{2}PREKEY_BUNDLE\0\u{2}\u{2}RECEIPT\0\u{1}UNIDENTIFIED_SENDER\0\u{2}\u{2}PLAINTEXT_CONTENT\0")
 }
 
-extension SignalServiceProtos_TypingMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_TypingMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".TypingMessage"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}timestamp\0\u{1}action\0\u{1}groupId\0")
 
@@ -5037,11 +5058,11 @@ extension SignalServiceProtos_TypingMessage: SwiftProtobuf.Message, SwiftProtobu
   }
 }
 
-extension SignalServiceProtos_TypingMessage.Action: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_TypingMessage.Action: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0STARTED\0\u{1}STOPPED\0")
 }
 
-extension SignalServiceProtos_StoryMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_StoryMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".StoryMessage"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}profileKey\0\u{1}group\0\u{1}fileAttachment\0\u{1}textAttachment\0\u{1}allowsReplies\0\u{1}bodyRanges\0")
 
@@ -5146,7 +5167,7 @@ extension SignalServiceProtos_StoryMessage: SwiftProtobuf.Message, SwiftProtobuf
   }
 }
 
-extension SignalServiceProtos_Preview: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_Preview: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Preview"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}url\0\u{1}title\0\u{1}image\0\u{1}previewDescription\0\u{1}date\0")
 
@@ -5244,7 +5265,7 @@ extension SignalServiceProtos_Preview: SwiftProtobuf.Message, SwiftProtobuf._Mes
   }
 }
 
-extension SignalServiceProtos_TextAttachment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_TextAttachment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".TextAttachment"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}text\0\u{1}textStyle\0\u{1}textForegroundColor\0\u{1}textBackgroundColor\0\u{1}preview\0\u{1}gradient\0\u{1}color\0")
 
@@ -5308,11 +5329,11 @@ extension SignalServiceProtos_TextAttachment: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension SignalServiceProtos_TextAttachment.Style: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_TextAttachment.Style: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0DEFAULT\0\u{1}REGULAR\0\u{1}BOLD\0\u{1}SERIF\0\u{1}SCRIPT\0\u{1}CONDENSED\0")
 }
 
-extension SignalServiceProtos_TextAttachment.Gradient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_TextAttachment.Gradient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_TextAttachment.protoMessageName + ".Gradient"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}startColor\0\u{1}endColor\0\u{1}angle\0\u{1}colors\0\u{1}positions\0")
 
@@ -5366,7 +5387,7 @@ extension SignalServiceProtos_TextAttachment.Gradient: SwiftProtobuf.Message, Sw
   }
 }
 
-extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Content"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}dataMessage\0\u{1}syncMessage\0\u{1}callMessage\0\u{1}nullMessage\0\u{1}receiptMessage\0\u{1}typingMessage\0\u{1}senderKeyDistributionMessage\0\u{1}decryptionErrorMessage\0\u{1}storyMessage\0\u{1}pniSignatureMessage\0\u{1}editMessage\0")
 
@@ -5506,7 +5527,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
   }
 }
 
-extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".CallMessage"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}offer\0\u{1}answer\0\u{1}iceUpdate\0\u{2}\u{2}busy\0\u{1}profileKey\0\u{1}hangup\0\u{2}\u{2}destinationDeviceId\0\u{1}opaque\0\u{c}\u{4}\u{1}\u{c}\u{8}\u{1}")
 
@@ -5575,7 +5596,7 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Offer"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{2}\u{2}type\0\u{1}opaque\0\u{c}\u{2}\u{1}")
 
@@ -5619,11 +5640,11 @@ extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftPro
   }
 }
 
-extension SignalServiceProtos_CallMessage.Offer.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_CallMessage.Offer.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0OFFER_AUDIO_CALL\0\u{1}OFFER_VIDEO_CALL\0")
 }
 
-extension SignalServiceProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Answer"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{2}\u{2}opaque\0\u{c}\u{2}\u{1}")
 
@@ -5662,7 +5683,7 @@ extension SignalServiceProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-extension SignalServiceProtos_CallMessage.IceUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_CallMessage.IceUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".IceUpdate"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{2}\u{4}opaque\0\u{c}\u{2}\u{1}\u{c}\u{3}\u{1}\u{c}\u{4}\u{1}")
 
@@ -5701,7 +5722,7 @@ extension SignalServiceProtos_CallMessage.IceUpdate: SwiftProtobuf.Message, Swif
   }
 }
 
-extension SignalServiceProtos_CallMessage.Busy: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_CallMessage.Busy: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Busy"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0")
 
@@ -5735,7 +5756,7 @@ extension SignalServiceProtos_CallMessage.Busy: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension SignalServiceProtos_CallMessage.Hangup: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_CallMessage.Hangup: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Hangup"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}type\0\u{1}deviceId\0")
 
@@ -5779,11 +5800,11 @@ extension SignalServiceProtos_CallMessage.Hangup: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-extension SignalServiceProtos_CallMessage.Hangup.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_CallMessage.Hangup.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0HANGUP_NORMAL\0\u{1}HANGUP_ACCEPTED\0\u{1}HANGUP_DECLINED\0\u{1}HANGUP_BUSY\0\u{1}HANGUP_NEED_PERMISSION\0")
 }
 
-extension SignalServiceProtos_CallMessage.Opaque: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_CallMessage.Opaque: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Opaque"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}data\0\u{1}urgency\0")
 
@@ -5822,11 +5843,11 @@ extension SignalServiceProtos_CallMessage.Opaque: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-extension SignalServiceProtos_CallMessage.Opaque.Urgency: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_CallMessage.Opaque.Urgency: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0DROPPABLE\0\u{1}HANDLE_IMMEDIATELY\0")
 }
 
-extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DataMessage"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}body\0\u{1}attachments\0\u{2}\u{2}flags\0\u{1}expireTimer\0\u{1}profileKey\0\u{1}timestamp\0\u{1}quote\0\u{1}contact\0\u{1}preview\0\u{1}sticker\0\u{1}requiredProtocolVersion\0\u{2}\u{2}isViewOnce\0\u{1}groupV2\0\u{1}reaction\0\u{1}delete\0\u{1}bodyRanges\0\u{1}groupCallUpdate\0\u{1}payment\0\u{1}storyContext\0\u{1}giftBadge\0\u{1}expireTimerVersion\0\u{1}pollCreate\0\u{1}pollTerminate\0\u{1}pollVote\0\u{1}pinMessage\0\u{1}unpinMessage\0\u{1}adminDelete\0\u{c}\u{3}\u{1}")
 
@@ -6078,15 +6099,15 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension SignalServiceProtos_DataMessage.Flags: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Flags: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}EXPIRATION_TIMER_UPDATE\0\u{2}\u{2}PROFILE_KEY_UPDATE\0")
 }
 
-extension SignalServiceProtos_DataMessage.ProtocolVersion: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.ProtocolVersion: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0INITIAL\0\u{1}MESSAGE_TIMERS\0\u{1}VIEW_ONCE\0\u{1}VIEW_ONCE_VIDEO\0\u{1}REACTIONS\0\u{1}CDN_SELECTOR_ATTACHMENTS\0\u{1}MENTIONS\0\u{1}PAYMENTS\0\u{9}POLLS\0\u{1}CURRENT\0")
 }
 
-extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Quote"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{2}\u{2}text\0\u{1}attachments\0\u{1}authorAci\0\u{1}bodyRanges\0\u{1}type\0\u{1}authorAciBinary\0\u{c}\u{2}\u{1}")
 
@@ -6150,11 +6171,11 @@ extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftPro
   }
 }
 
-extension SignalServiceProtos_DataMessage.Quote.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Quote.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0NORMAL\0\u{1}GIFT_BADGE\0")
 }
 
-extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Quote.protoMessageName + ".QuotedAttachment"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contentType\0\u{1}fileName\0\u{1}thumbnail\0")
 
@@ -6238,9 +6259,9 @@ extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment: SwiftProtobuf.
   }
 }
 
-extension SignalServiceProtos_DataMessage.Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Contact"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{2}\u{2}number\0\u{1}email\0\u{1}address\0\u{1}avatar\0\u{1}organization\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{2}\u{2}number\0\u{1}email\0\u{1}address\0\u{1}avatar\0\u{1}organization\0\u{1}aciBinary\0\u{c}\u{2}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6254,6 +6275,7 @@ extension SignalServiceProtos_DataMessage.Contact: SwiftProtobuf.Message, SwiftP
       case 5: try { try decoder.decodeRepeatedMessageField(value: &self.address) }()
       case 6: try { try decoder.decodeSingularMessageField(value: &self._avatar) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self._organization) }()
+      case 8: try { try decoder.decodeSingularBytesField(value: &self._aciBinary) }()
       default: break
       }
     }
@@ -6282,6 +6304,9 @@ extension SignalServiceProtos_DataMessage.Contact: SwiftProtobuf.Message, SwiftP
     try { if let v = self._organization {
       try visitor.visitSingularStringField(value: v, fieldNumber: 7)
     } }()
+    try { if let v = self._aciBinary {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 8)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -6292,14 +6317,15 @@ extension SignalServiceProtos_DataMessage.Contact: SwiftProtobuf.Message, SwiftP
     if lhs.address != rhs.address {return false}
     if lhs._avatar != rhs._avatar {return false}
     if lhs._organization != rhs._organization {return false}
+    if lhs._aciBinary != rhs._aciBinary {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension SignalServiceProtos_DataMessage.Contact.Name: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Contact.Name: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Contact.protoMessageName + ".Name"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}givenName\0\u{1}familyName\0\u{1}prefix\0\u{1}suffix\0\u{1}middleName\0\u{c}\u{6}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}givenName\0\u{1}familyName\0\u{1}prefix\0\u{1}suffix\0\u{1}middleName\0\u{2}\u{2}nickname\0\u{c}\u{6}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6312,6 +6338,7 @@ extension SignalServiceProtos_DataMessage.Contact.Name: SwiftProtobuf.Message, S
       case 3: try { try decoder.decodeSingularStringField(value: &self._prefix) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self._suffix) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self._middleName) }()
+      case 7: try { try decoder.decodeSingularStringField(value: &self._nickname) }()
       default: break
       }
     }
@@ -6337,6 +6364,9 @@ extension SignalServiceProtos_DataMessage.Contact.Name: SwiftProtobuf.Message, S
     try { if let v = self._middleName {
       try visitor.visitSingularStringField(value: v, fieldNumber: 5)
     } }()
+    try { if let v = self._nickname {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 7)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -6346,12 +6376,13 @@ extension SignalServiceProtos_DataMessage.Contact.Name: SwiftProtobuf.Message, S
     if lhs._prefix != rhs._prefix {return false}
     if lhs._suffix != rhs._suffix {return false}
     if lhs._middleName != rhs._middleName {return false}
+    if lhs._nickname != rhs._nickname {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension SignalServiceProtos_DataMessage.Contact.Phone: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Contact.Phone: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Contact.protoMessageName + ".Phone"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}value\0\u{1}type\0\u{1}label\0")
 
@@ -6395,11 +6426,11 @@ extension SignalServiceProtos_DataMessage.Contact.Phone: SwiftProtobuf.Message, 
   }
 }
 
-extension SignalServiceProtos_DataMessage.Contact.Phone.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Contact.Phone.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}HOME\0\u{1}MOBILE\0\u{1}WORK\0\u{1}CUSTOM\0")
 }
 
-extension SignalServiceProtos_DataMessage.Contact.Email: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Contact.Email: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Contact.protoMessageName + ".Email"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}value\0\u{1}type\0\u{1}label\0")
 
@@ -6443,11 +6474,11 @@ extension SignalServiceProtos_DataMessage.Contact.Email: SwiftProtobuf.Message, 
   }
 }
 
-extension SignalServiceProtos_DataMessage.Contact.Email.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Contact.Email.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}HOME\0\u{1}MOBILE\0\u{1}WORK\0\u{1}CUSTOM\0")
 }
 
-extension SignalServiceProtos_DataMessage.Contact.PostalAddress: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Contact.PostalAddress: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Contact.protoMessageName + ".PostalAddress"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0\u{1}label\0\u{1}street\0\u{1}pobox\0\u{1}neighborhood\0\u{1}city\0\u{1}region\0\u{1}postcode\0\u{1}country\0")
 
@@ -6521,11 +6552,11 @@ extension SignalServiceProtos_DataMessage.Contact.PostalAddress: SwiftProtobuf.M
   }
 }
 
-extension SignalServiceProtos_DataMessage.Contact.PostalAddress.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Contact.PostalAddress.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}HOME\0\u{1}WORK\0\u{1}CUSTOM\0")
 }
 
-extension SignalServiceProtos_DataMessage.Contact.Avatar: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Contact.Avatar: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Contact.protoMessageName + ".Avatar"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}avatar\0\u{1}isProfile\0")
 
@@ -6602,7 +6633,7 @@ extension SignalServiceProtos_DataMessage.Contact.Avatar: SwiftProtobuf.Message,
   }
 }
 
-extension SignalServiceProtos_DataMessage.Sticker: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Sticker: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Sticker"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}packId\0\u{1}packKey\0\u{1}stickerId\0\u{1}data\0\u{1}emoji\0")
 
@@ -6700,7 +6731,7 @@ extension SignalServiceProtos_DataMessage.Sticker: SwiftProtobuf.Message, SwiftP
   }
 }
 
-extension SignalServiceProtos_DataMessage.Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Reaction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}emoji\0\u{1}remove\0\u{2}\u{2}targetAuthorAci\0\u{1}timestamp\0\u{1}targetAuthorAciBinary\0\u{c}\u{3}\u{1}")
 
@@ -6754,7 +6785,7 @@ extension SignalServiceProtos_DataMessage.Reaction: SwiftProtobuf.Message, Swift
   }
 }
 
-extension SignalServiceProtos_DataMessage.Delete: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Delete: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Delete"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetSentTimestamp\0")
 
@@ -6788,7 +6819,7 @@ extension SignalServiceProtos_DataMessage.Delete: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-extension SignalServiceProtos_DataMessage.GroupCallUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.GroupCallUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".GroupCallUpdate"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}eraId\0")
 
@@ -6822,7 +6853,7 @@ extension SignalServiceProtos_DataMessage.GroupCallUpdate: SwiftProtobuf.Message
   }
 }
 
-extension SignalServiceProtos_DataMessage.Payment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Payment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Payment"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}notification\0\u{1}activation\0\u{c}j\u{f}\u{1}\u{c}k\u{f}\u{1}")
 
@@ -6861,7 +6892,7 @@ extension SignalServiceProtos_DataMessage.Payment: SwiftProtobuf.Message, SwiftP
   }
 }
 
-extension SignalServiceProtos_DataMessage.Payment.Amount: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Payment.Amount: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Payment.protoMessageName + ".Amount"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mobileCoin\0")
 
@@ -6895,7 +6926,7 @@ extension SignalServiceProtos_DataMessage.Payment.Amount: SwiftProtobuf.Message,
   }
 }
 
-extension SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Payment.Amount.protoMessageName + ".MobileCoin"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}picoMob\0")
 
@@ -6929,7 +6960,7 @@ extension SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin: SwiftProtob
   }
 }
 
-extension SignalServiceProtos_DataMessage.Payment.Notification: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Payment.Notification: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Payment.protoMessageName + ".Notification"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mobileCoin\0\u{1}note\0\u{c}k\u{f}\u{1}")
 
@@ -6968,7 +6999,7 @@ extension SignalServiceProtos_DataMessage.Payment.Notification: SwiftProtobuf.Me
   }
 }
 
-extension SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Payment.Notification.protoMessageName + ".MobileCoin"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}receipt\0")
 
@@ -7002,7 +7033,7 @@ extension SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin: Swift
   }
 }
 
-extension SignalServiceProtos_DataMessage.Payment.Activation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Payment.Activation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Payment.protoMessageName + ".Activation"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0")
 
@@ -7036,11 +7067,11 @@ extension SignalServiceProtos_DataMessage.Payment.Activation: SwiftProtobuf.Mess
   }
 }
 
-extension SignalServiceProtos_DataMessage.Payment.Activation.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.Payment.Activation.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0REQUEST\0\u{1}ACTIVATED\0")
 }
 
-extension SignalServiceProtos_DataMessage.StoryContext: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.StoryContext: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".StoryContext"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}authorAci\0\u{1}sentTimestamp\0\u{1}authorAciBinary\0")
 
@@ -7084,7 +7115,7 @@ extension SignalServiceProtos_DataMessage.StoryContext: SwiftProtobuf.Message, S
   }
 }
 
-extension SignalServiceProtos_DataMessage.GiftBadge: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.GiftBadge: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".GiftBadge"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}receiptCredentialPresentation\0")
 
@@ -7118,7 +7149,7 @@ extension SignalServiceProtos_DataMessage.GiftBadge: SwiftProtobuf.Message, Swif
   }
 }
 
-extension SignalServiceProtos_DataMessage.PollCreate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.PollCreate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".PollCreate"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}question\0\u{1}allowMultiple\0\u{1}options\0")
 
@@ -7162,7 +7193,7 @@ extension SignalServiceProtos_DataMessage.PollCreate: SwiftProtobuf.Message, Swi
   }
 }
 
-extension SignalServiceProtos_DataMessage.PollTerminate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.PollTerminate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".PollTerminate"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetSentTimestamp\0")
 
@@ -7196,7 +7227,7 @@ extension SignalServiceProtos_DataMessage.PollTerminate: SwiftProtobuf.Message, 
   }
 }
 
-extension SignalServiceProtos_DataMessage.PollVote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.PollVote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".PollVote"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetAuthorAciBinary\0\u{1}targetSentTimestamp\0\u{1}optionIndexes\0\u{1}voteCount\0")
 
@@ -7245,7 +7276,7 @@ extension SignalServiceProtos_DataMessage.PollVote: SwiftProtobuf.Message, Swift
   }
 }
 
-extension SignalServiceProtos_DataMessage.PinMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.PinMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".PinMessage"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetAuthorAciBinary\0\u{1}targetSentTimestamp\0\u{1}pinDurationSeconds\0\u{1}pinDurationForever\0")
 
@@ -7294,7 +7325,7 @@ extension SignalServiceProtos_DataMessage.PinMessage: SwiftProtobuf.Message, Swi
   }
 }
 
-extension SignalServiceProtos_DataMessage.UnpinMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.UnpinMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".UnpinMessage"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetAuthorAciBinary\0\u{1}targetSentTimestamp\0")
 
@@ -7333,7 +7364,7 @@ extension SignalServiceProtos_DataMessage.UnpinMessage: SwiftProtobuf.Message, S
   }
 }
 
-extension SignalServiceProtos_DataMessage.AdminDelete: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DataMessage.AdminDelete: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".AdminDelete"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetAuthorAciBinary\0\u{1}targetSentTimestamp\0")
 
@@ -7372,7 +7403,7 @@ extension SignalServiceProtos_DataMessage.AdminDelete: SwiftProtobuf.Message, Sw
   }
 }
 
-extension SignalServiceProtos_NullMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_NullMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".NullMessage"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}padding\0")
 
@@ -7406,7 +7437,7 @@ extension SignalServiceProtos_NullMessage: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension SignalServiceProtos_ReceiptMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_ReceiptMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ReceiptMessage"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0\u{1}timestamp\0")
 
@@ -7445,11 +7476,11 @@ extension SignalServiceProtos_ReceiptMessage: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension SignalServiceProtos_ReceiptMessage.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_ReceiptMessage.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0DELIVERY\0\u{1}READ\0\u{1}VIEWED\0")
 }
 
-extension SignalServiceProtos_Verified: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_Verified: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Verified"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}identityKey\0\u{1}state\0\u{1}nullMessage\0\u{1}destinationAci\0\u{1}destinationAciBinary\0\u{c}\u{1}\u{1}")
 
@@ -7503,11 +7534,11 @@ extension SignalServiceProtos_Verified: SwiftProtobuf.Message, SwiftProtobuf._Me
   }
 }
 
-extension SignalServiceProtos_Verified.State: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_Verified.State: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0DEFAULT\0\u{1}VERIFIED\0\u{1}UNVERIFIED\0")
 }
 
-extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SyncMessage"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sent\0\u{1}contacts\0\u{2}\u{2}request\0\u{1}read\0\u{1}blocked\0\u{1}verified\0\u{1}padding\0\u{1}configuration\0\u{1}stickerPackOperation\0\u{1}viewOnceOpen\0\u{1}fetchLatest\0\u{1}keys\0\u{1}messageRequestResponse\0\u{1}outgoingPayment\0\u{1}viewed\0\u{2}\u{2}pniChangeNumber\0\u{1}callEvent\0\u{1}callLinkUpdate\0\u{1}callLogEvent\0\u{1}deleteForMe\0\u{1}deviceNameChange\0\u{1}attachmentBackfillRequest\0\u{1}attachmentBackfillResponse\0\u{1}usernameChange\0\u{c}\u{3}\u{1}\u{c}\u{11}\u{1}")
 
@@ -7738,7 +7769,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Sent"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}destinationE164\0\u{1}timestamp\0\u{1}message\0\u{1}expirationStartTimestamp\0\u{1}unidentifiedStatus\0\u{1}isRecipientUpdate\0\u{1}destinationServiceId\0\u{1}storyMessage\0\u{1}storyMessageRecipients\0\u{1}editMessage\0\u{2}\u{2}destinationServiceIdBinary\0")
 
@@ -7822,7 +7853,7 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.Sent.protoMessageName + ".UnidentifiedDeliveryStatus"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}unidentified\0\u{1}destinationServiceId\0\u{2}\u{3}destinationServiceIdBinary\0\u{c}\u{1}\u{1}")
 
@@ -7866,7 +7897,7 @@ extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: Swift
   }
 }
 
-extension SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.Sent.protoMessageName + ".StoryMessageRecipient"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}destinationServiceId\0\u{1}distributionListIds\0\u{1}isAllowedToReply\0\u{2}\u{2}destinationServiceIdBinary\0")
 
@@ -7915,7 +7946,7 @@ extension SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient: SwiftProto
   }
 }
 
-extension SignalServiceProtos_SyncMessage.Contacts: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.Contacts: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Contacts"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}blob\0\u{1}isComplete\0")
 
@@ -7992,7 +8023,7 @@ extension SignalServiceProtos_SyncMessage.Contacts: SwiftProtobuf.Message, Swift
   }
 }
 
-extension SignalServiceProtos_SyncMessage.Blocked: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.Blocked: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Blocked"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}numbers\0\u{1}groupIds\0\u{1}acis\0\u{1}acisBinary\0")
 
@@ -8037,7 +8068,7 @@ extension SignalServiceProtos_SyncMessage.Blocked: SwiftProtobuf.Message, SwiftP
   }
 }
 
-extension SignalServiceProtos_SyncMessage.Request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.Request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Request"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0")
 
@@ -8071,11 +8102,11 @@ extension SignalServiceProtos_SyncMessage.Request: SwiftProtobuf.Message, SwiftP
   }
 }
 
-extension SignalServiceProtos_SyncMessage.Request.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.Request.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}CONTACTS\0\u{2}\u{2}BLOCKED\0\u{1}CONFIGURATION\0\u{1}KEYS\0")
 }
 
-extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Read"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}timestamp\0\u{1}senderAci\0\u{1}senderAciBinary\0\u{c}\u{1}\u{1}")
 
@@ -8119,7 +8150,7 @@ extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension SignalServiceProtos_SyncMessage.Viewed: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.Viewed: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Viewed"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}timestamp\0\u{1}senderAci\0\u{1}senderAciBinary\0\u{c}\u{1}\u{1}")
 
@@ -8163,7 +8194,7 @@ extension SignalServiceProtos_SyncMessage.Viewed: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-extension SignalServiceProtos_SyncMessage.Configuration: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.Configuration: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Configuration"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}readReceipts\0\u{1}unidentifiedDeliveryIndicators\0\u{1}typingIndicators\0\u{2}\u{2}provisioningVersion\0\u{1}linkPreviews\0\u{c}\u{4}\u{1}")
 
@@ -8217,7 +8248,7 @@ extension SignalServiceProtos_SyncMessage.Configuration: SwiftProtobuf.Message, 
   }
 }
 
-extension SignalServiceProtos_SyncMessage.StickerPackOperation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.StickerPackOperation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".StickerPackOperation"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}packId\0\u{1}packKey\0\u{1}type\0")
 
@@ -8261,11 +8292,11 @@ extension SignalServiceProtos_SyncMessage.StickerPackOperation: SwiftProtobuf.Me
   }
 }
 
-extension SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0INSTALL\0\u{1}REMOVE\0")
 }
 
-extension SignalServiceProtos_SyncMessage.ViewOnceOpen: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.ViewOnceOpen: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".ViewOnceOpen"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}timestamp\0\u{1}senderAci\0\u{1}senderAciBinary\0\u{c}\u{1}\u{1}")
 
@@ -8309,7 +8340,7 @@ extension SignalServiceProtos_SyncMessage.ViewOnceOpen: SwiftProtobuf.Message, S
   }
 }
 
-extension SignalServiceProtos_SyncMessage.FetchLatest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.FetchLatest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".FetchLatest"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0")
 
@@ -8343,11 +8374,11 @@ extension SignalServiceProtos_SyncMessage.FetchLatest: SwiftProtobuf.Message, Sw
   }
 }
 
-extension SignalServiceProtos_SyncMessage.FetchLatest.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.FetchLatest.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}LOCAL_PROFILE\0\u{1}STORAGE_MANIFEST\0\u{1}SUBSCRIPTION_STATUS\0")
 }
 
-extension SignalServiceProtos_SyncMessage.Keys: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.Keys: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Keys"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{3}accountEntropyPool\0\u{1}mediaRootBackupKey\0\u{c}\u{1}\u{1}\u{c}\u{2}\u{1}")
 
@@ -8386,7 +8417,7 @@ extension SignalServiceProtos_SyncMessage.Keys: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension SignalServiceProtos_SyncMessage.MessageRequestResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.MessageRequestResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".MessageRequestResponse"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}threadAci\0\u{1}groupId\0\u{1}type\0\u{1}threadAciBinary\0\u{c}\u{1}\u{1}")
 
@@ -8435,11 +8466,11 @@ extension SignalServiceProtos_SyncMessage.MessageRequestResponse: SwiftProtobuf.
   }
 }
 
-extension SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}ACCEPT\0\u{1}DELETE\0\u{1}BLOCK\0\u{1}BLOCK_AND_DELETE\0\u{1}SPAM\0\u{1}BLOCK_AND_SPAM\0")
 }
 
-extension SignalServiceProtos_SyncMessage.OutgoingPayment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.OutgoingPayment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".OutgoingPayment"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipientServiceId\0\u{1}note\0\u{1}mobileCoin\0")
 
@@ -8483,7 +8514,7 @@ extension SignalServiceProtos_SyncMessage.OutgoingPayment: SwiftProtobuf.Message
   }
 }
 
-extension SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.OutgoingPayment.protoMessageName + ".MobileCoin"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipientAddress\0\u{1}amountPicoMob\0\u{1}feePicoMob\0\u{1}receipt\0\u{1}ledgerBlockTimestamp\0\u{1}ledgerBlockIndex\0\u{1}spentKeyImages\0\u{1}outputPublicKeys\0")
 
@@ -8552,7 +8583,7 @@ extension SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin: SwiftProto
   }
 }
 
-extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".PniChangeNumber"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}identityKeyPair\0\u{1}signedPreKey\0\u{1}registrationId\0\u{1}newE164\0\u{1}lastResortKyberPreKey\0")
 
@@ -8606,7 +8637,7 @@ extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message
   }
 }
 
-extension SignalServiceProtos_SyncMessage.CallEvent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.CallEvent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".CallEvent"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}conversationId\0\u{1}callId\0\u{1}timestamp\0\u{1}type\0\u{1}direction\0\u{1}event\0")
 
@@ -8665,19 +8696,19 @@ extension SignalServiceProtos_SyncMessage.CallEvent: SwiftProtobuf.Message, Swif
   }
 }
 
-extension SignalServiceProtos_SyncMessage.CallEvent.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.CallEvent.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_TYPE\0\u{1}AUDIO_CALL\0\u{1}VIDEO_CALL\0\u{1}GROUP_CALL\0\u{1}AD_HOC_CALL\0")
 }
 
-extension SignalServiceProtos_SyncMessage.CallEvent.Direction: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.CallEvent.Direction: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_DIRECTION\0\u{1}INCOMING\0\u{1}OUTGOING\0")
 }
 
-extension SignalServiceProtos_SyncMessage.CallEvent.Event: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.CallEvent.Event: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_ACTION\0\u{1}ACCEPTED\0\u{1}NOT_ACCEPTED\0\u{1}DELETED\0\u{1}OBSERVED\0")
 }
 
-extension SignalServiceProtos_SyncMessage.CallLinkUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.CallLinkUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".CallLinkUpdate"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}rootKey\0\u{1}adminPasskey\0\u{1}type\0\u{c}\u{4}\u{1}")
 
@@ -8721,11 +8752,11 @@ extension SignalServiceProtos_SyncMessage.CallLinkUpdate: SwiftProtobuf.Message,
   }
 }
 
-extension SignalServiceProtos_SyncMessage.CallLinkUpdate.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.CallLinkUpdate.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UPDATE\0")
 }
 
-extension SignalServiceProtos_SyncMessage.CallLogEvent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.CallLogEvent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".CallLogEvent"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0\u{1}timestamp\0\u{1}conversationId\0\u{1}callId\0")
 
@@ -8774,11 +8805,11 @@ extension SignalServiceProtos_SyncMessage.CallLogEvent: SwiftProtobuf.Message, S
   }
 }
 
-extension SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0CLEARED\0\u{1}MARKED_AS_READ\0\u{1}MARKED_AS_READ_IN_CONVERSATION\0")
 }
 
-extension SignalServiceProtos_SyncMessage.DeleteForMe: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.DeleteForMe: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".DeleteForMe"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}messageDeletes\0\u{1}conversationDeletes\0\u{1}localOnlyConversationDeletes\0\u{1}attachmentDeletes\0")
 
@@ -8823,7 +8854,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe: SwiftProtobuf.Message, Sw
   }
 }
 
-extension SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.DeleteForMe.protoMessageName + ".MessageDeletes"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}conversation\0\u{1}messages\0")
 
@@ -8862,7 +8893,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes: SwiftProto
   }
 }
 
-extension SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.DeleteForMe.protoMessageName + ".AttachmentDelete"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}conversation\0\u{1}targetMessage\0\u{1}clientUuid\0\u{1}fallbackDigest\0\u{1}fallbackPlaintextHash\0")
 
@@ -8916,7 +8947,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete: SwiftPro
   }
 }
 
-extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.DeleteForMe.protoMessageName + ".ConversationDelete"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}conversation\0\u{1}mostRecentMessages\0\u{1}isFullDelete\0\u{1}mostRecentNonExpiringMessages\0")
 
@@ -8965,7 +8996,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete: SwiftP
   }
 }
 
-extension SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelete: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelete: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.DeleteForMe.protoMessageName + ".LocalOnlyConversationDelete"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}conversation\0")
 
@@ -8999,7 +9030,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelet
   }
 }
 
-extension SignalServiceProtos_SyncMessage.DeviceNameChange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.DeviceNameChange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".DeviceNameChange"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}deviceId\0\u{c}\u{1}\u{1}")
 
@@ -9033,7 +9064,7 @@ extension SignalServiceProtos_SyncMessage.DeviceNameChange: SwiftProtobuf.Messag
   }
 }
 
-extension SignalServiceProtos_SyncMessage.AttachmentBackfillRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.AttachmentBackfillRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".AttachmentBackfillRequest"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetMessage\0\u{1}targetConversation\0")
 
@@ -9072,7 +9103,7 @@ extension SignalServiceProtos_SyncMessage.AttachmentBackfillRequest: SwiftProtob
   }
 }
 
-extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".AttachmentBackfillResponse"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetMessage\0\u{1}targetConversation\0\u{1}attachments\0\u{1}error\0")
 
@@ -9121,11 +9152,11 @@ extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse: SwiftProto
   }
 }
 
-extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.Error: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.Error: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MESSAGE_NOT_FOUND\0")
 }
 
-extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.protoMessageName + ".AttachmentData"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}attachment\0\u{1}status\0")
 
@@ -9202,11 +9233,11 @@ extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentD
   }
 }
 
-extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData.Status: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentData.Status: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0PENDING\0\u{1}TERMINAL_ERROR\0")
 }
 
-extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentDataList: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentDataList: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.protoMessageName + ".AttachmentDataList"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}attachments\0")
 
@@ -9236,7 +9267,7 @@ extension SignalServiceProtos_SyncMessage.AttachmentBackfillResponse.AttachmentD
   }
 }
 
-extension SignalServiceProtos_SyncMessage.UsernameChange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_SyncMessage.UsernameChange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".UsernameChange"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -9255,7 +9286,7 @@ extension SignalServiceProtos_SyncMessage.UsernameChange: SwiftProtobuf.Message,
   }
 }
 
-extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AttachmentPointer"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}cdnId\0\u{1}contentType\0\u{1}key\0\u{1}size\0\u{1}thumbnail\0\u{1}digest\0\u{1}fileName\0\u{1}flags\0\u{1}width\0\u{1}height\0\u{1}caption\0\u{1}blurHash\0\u{1}uploadTimestamp\0\u{1}cdnNumber\0\u{1}cdnKey\0\u{2}\u{5}clientUuid\0")
 
@@ -9364,11 +9395,11 @@ extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftPro
   }
 }
 
-extension SignalServiceProtos_AttachmentPointer.Flags: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_AttachmentPointer.Flags: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}VOICE_MESSAGE\0\u{1}BORDERLESS\0\u{2}\u{6}GIF\0")
 }
 
-extension SignalServiceProtos_GroupContextV2: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_GroupContextV2: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupContextV2"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}masterKey\0\u{1}revision\0\u{1}groupChange\0")
 
@@ -9412,7 +9443,7 @@ extension SignalServiceProtos_GroupContextV2: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ContactDetails"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contactE164\0\u{1}name\0\u{1}avatar\0\u{2}\u{5}expireTimer\0\u{1}aci\0\u{1}inboxPosition\0\u{2}\u{2}expireTimerVersion\0\u{1}aciBinary\0\u{c}\u{4}\u{1}\u{c}\u{5}\u{1}\u{c}\u{6}\u{1}\u{c}\u{7}\u{1}\u{c}\u{b}\u{1}")
 
@@ -9481,7 +9512,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension SignalServiceProtos_ContactDetails.Avatar: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_ContactDetails.Avatar: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_ContactDetails.protoMessageName + ".Avatar"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contentType\0\u{1}length\0")
 
@@ -9520,7 +9551,7 @@ extension SignalServiceProtos_ContactDetails.Avatar: SwiftProtobuf.Message, Swif
   }
 }
 
-extension SignalServiceProtos_Pack: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_Pack: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Pack"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}title\0\u{1}author\0\u{1}cover\0\u{1}stickers\0")
 
@@ -9569,7 +9600,7 @@ extension SignalServiceProtos_Pack: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension SignalServiceProtos_Pack.Sticker: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_Pack.Sticker: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_Pack.protoMessageName + ".Sticker"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}emoji\0\u{1}contentType\0")
 
@@ -9613,7 +9644,7 @@ extension SignalServiceProtos_Pack.Sticker: SwiftProtobuf.Message, SwiftProtobuf
   }
 }
 
-extension SignalServiceProtos_PaymentAddress: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_PaymentAddress: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PaymentAddress"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mobileCoin\0")
 
@@ -9647,7 +9678,7 @@ extension SignalServiceProtos_PaymentAddress: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension SignalServiceProtos_PaymentAddress.MobileCoin: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_PaymentAddress.MobileCoin: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_PaymentAddress.protoMessageName + ".MobileCoin"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}publicAddress\0\u{1}signature\0")
 
@@ -9686,7 +9717,7 @@ extension SignalServiceProtos_PaymentAddress.MobileCoin: SwiftProtobuf.Message, 
   }
 }
 
-extension SignalServiceProtos_DecryptionErrorMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_DecryptionErrorMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DecryptionErrorMessage"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ratchetKey\0\u{1}timestamp\0\u{1}deviceId\0")
 
@@ -9730,7 +9761,7 @@ extension SignalServiceProtos_DecryptionErrorMessage: SwiftProtobuf.Message, Swi
   }
 }
 
-extension SignalServiceProtos_PniSignatureMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_PniSignatureMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PniSignatureMessage"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}pni\0\u{1}signature\0")
 
@@ -9769,7 +9800,7 @@ extension SignalServiceProtos_PniSignatureMessage: SwiftProtobuf.Message, SwiftP
   }
 }
 
-extension SignalServiceProtos_BodyRange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_BodyRange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".BodyRange"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}start\0\u{1}length\0\u{1}mentionAci\0\u{1}style\0\u{1}mentionAciBinary\0")
 
@@ -9823,11 +9854,11 @@ extension SignalServiceProtos_BodyRange: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
-extension SignalServiceProtos_BodyRange.Style: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_BodyRange.Style: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0NONE\0\u{1}BOLD\0\u{1}ITALIC\0\u{1}SPOILER\0\u{1}STRIKETHROUGH\0\u{1}MONOSPACE\0")
 }
 
-extension SignalServiceProtos_EditMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_EditMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".EditMessage"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetSentTimestamp\0\u{1}dataMessage\0")
 
@@ -9866,7 +9897,7 @@ extension SignalServiceProtos_EditMessage: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension SignalServiceProtos_AddressableMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_AddressableMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AddressableMessage"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}authorServiceId\0\u{1}authorE164\0\u{1}sentTimestamp\0\u{1}authorServiceIdBinary\0")
 
@@ -9915,7 +9946,7 @@ extension SignalServiceProtos_AddressableMessage: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-extension SignalServiceProtos_ConversationIdentifier: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SignalServiceProtos_ConversationIdentifier: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ConversationIdentifier"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}threadServiceId\0\u{1}threadGroupId\0\u{1}threadE164\0\u{1}threadServiceIdBinary\0")
 

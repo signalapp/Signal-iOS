@@ -117,7 +117,8 @@ class SendMediaNavigationController: OWSNavigationController, AttachmentApproval
     private static func phPickerConfiguration(cameraAttachmentCount: Int) -> PHPickerConfiguration {
         var config = PHPickerConfiguration(photoLibrary: .shared())
         config.preferredAssetRepresentationMode = .current
-        config.selectionLimit = SignalAttachment.maxAttachmentsAllowed - cameraAttachmentCount
+        let maxAttachments = MessageBodyAttachmentLimits.maxAllowedVisualMedia
+        config.selectionLimit = maxAttachments - cameraAttachmentCount
         config.selection = .ordered
         return config
     }
@@ -283,7 +284,10 @@ class SendMediaNavigationController: OWSNavigationController, AttachmentApproval
             comment: "Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared.",
         )
 
-        let toastText = String.localizedStringWithFormat(toastFormat, SignalAttachment.maxAttachmentsAllowed)
+        let toastText = String.localizedStringWithFormat(
+            toastFormat,
+            MessageBodyAttachmentLimits.maxAllowedVisualMedia,
+        )
         let toastController = ToastController(text: toastText)
         toastController.presentToastView(from: .bottom, of: view, inset: view.layoutMargins.bottom + 10)
     }
@@ -323,7 +327,7 @@ class SendMediaNavigationController: OWSNavigationController, AttachmentApproval
     }
 
     func photoCaptureViewControllerCanCaptureMoreItems(_ photoCaptureViewController: PhotoCaptureViewController) -> Bool {
-        return self.pendingAttachments.count < SignalAttachment.maxAttachmentsAllowed
+        return self.pendingAttachments.count < MessageBodyAttachmentLimits.maxAllowedVisualMedia
     }
 
     func photoCaptureViewControllerDidRequestPresentPhotoLibrary(_ photoCaptureViewController: PhotoCaptureViewController) {

@@ -112,10 +112,15 @@ public enum Upload {
         /// The length of the encrypted data, consiting of "iv  + encrypted data + hmac"
         public let encryptedDataLength: UInt32
 
-        /// The total size of all backup-able attachments in the backup.
+        /// The total size of all remote backup-able attachments in the backup.
         /// Does NOT take into account current backup plan state; just per-attachment
         /// backup eligibility.
-        public let attachmentByteSize: UInt64
+        public let remoteAttachmentByteSize: UInt64
+
+        /// The total size of all attachments that will be copied into a local file backup.
+        /// This means they are downloaded onto the device, and have a local key stored
+        /// in the proto.
+        public let localAttachmentByteSize: UInt64
 
         /// Metadata related to the SVRB nonce used for forward secrecy that should be persisted
         /// after upload success.

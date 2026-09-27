@@ -50,15 +50,17 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         let stackView = componentView.stackView
 
         switch sticker {
-        case .available(_, let attachmentStream, let isUploading, let imageMetadata):
-            let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.attachment.id)
+        case .available(_, let referencedAttachmentStream, let isUploading, let imageMetadata):
+            let attachmentID = referencedAttachmentStream.attachment.id
+
+            let cacheKey = CVMediaCache.CacheKey.attachment(attachmentID)
             let isAnimated = imageMetadata.isAnimated
             let reusableMediaView: ReusableMediaView
             if let cachedView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
                 reusableMediaView = cachedView
             } else {
                 let mediaViewAdapter = MediaViewAdapterSticker(
-                    attachmentStream: attachmentStream.attachmentStream,
+                    attachmentStream: referencedAttachmentStream.attachmentStream,
                     isAnimated: isAnimated,
                 )
                 reusableMediaView = ReusableMediaView(mediaViewAdapter: mediaViewAdapter, mediaCache: mediaCache)
@@ -78,7 +80,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             )
 
             switch CVAttachmentProgressView.progressType(cvAttachment: .stream(
-                attachmentStream,
+                referencedAttachmentStream,
                 isUploading: isUploading,
                 imageMetadata: imageMetadata,
             )) {
@@ -86,7 +88,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                 break
             case .uploading:
                 let progressView = CVAttachmentProgressView(
-                    direction: .upload(attachmentStream: attachmentStream.attachmentStream),
+                    direction: .upload(attachmentID: attachmentID),
                     configuration: .forMediaOverlay(),
                 )
                 stackView.addSubview(progressView)
@@ -101,17 +103,17 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                 stackView: stackView,
                 cellMeasurement: cellMeasurement,
             )
-        case .downloading(let attachmentPointer):
+        case .downloading(let referencedAttachmentPointer):
             configureForRenderingDownload(
                 downloadState: .enqueuedOrDownloading,
-                attachmentPointer: attachmentPointer,
+                attachmentID: referencedAttachmentPointer.attachment.id,
                 stackView: stackView,
                 cellMeasurement: cellMeasurement,
             )
-        case .skipped(let attachmentPointer, let downloadState):
+        case .skipped(let referencedAttachmentPointer, let downloadState):
             configureForRenderingDownload(
                 downloadState: downloadState,
-                attachmentPointer: attachmentPointer,
+                attachmentID: referencedAttachmentPointer.attachmentPointer.id,
                 stackView: stackView,
                 cellMeasurement: cellMeasurement,
             )
@@ -137,7 +139,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 
     private func configureForRenderingDownload(
         downloadState: AttachmentDownloadState,
-        attachmentPointer: ReferencedAttachmentPointer,
+        attachmentID: Attachment.IDType,
         stackView: ManualStackView,
         cellMeasurement: CVCellMeasurement,
     ) {
@@ -155,7 +157,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 
         let progressView = CVAttachmentProgressView(
             direction: .download(
-                attachmentPointer: attachmentPointer.attachmentPointer,
+                attachmentID: attachmentID,
                 downloadState: downloadState,
             ),
             configuration: .forMediaOverlay(),

@@ -51,9 +51,6 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
             return .rateLimited
         case _ where error.isNetworkFailureOrTimeout || error.is5xxServiceResponse:
             return .networkError
-        case _ where error is BackupKeyMaterialError:
-            // Missing recovery key
-            return .incorrectRecoveryKey
         case BackupAuthCredentialFetchError.noExistingBackupId:
             // Usually because backups haven't been set up yet.
             return .backupNotFound
@@ -88,7 +85,7 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
             }
         case LocalFileBackupError.unableToAccessLocalFile(let reason):
             switch reason {
-            case .missing, .stale:
+            case .missing, .stale, .failedToResolveBookmark, .trashed:
                 return .missingLocalFileBackupLocation
             case .noAccess:
                 Logger.error("No access to local file backup location")
@@ -126,10 +123,7 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
     ) {
         let title: String
         let message: String
-        let tryAgainString = OWSLocalizedString(
-            "REGISTRATION_BACKUP_RESTORE_ERROR_TRY_AGAIN_ACTION",
-            comment: "Try again action label for backup restore error recovery.",
-        )
+        let tryAgainString = CommonStrings.tryAgainButton
         let skipRestoreString = OWSLocalizedString(
             "REGISTRATION_BACKUP_RESTORE_ERROR_SKIP_RESTORE_ACTION",
             comment: "Skip restore action label for backup restore error recovery.",
@@ -356,9 +350,20 @@ public class RegistrationCoordinatorBackupErrorPresenterImpl:
                 }
             })
         case .missingLocalFileBackupLocation:
-            // TODO: [KC] correct copy
-            title = "Local File Backup Error"
-            message = "Choose a new file location"
+            title = OWSLocalizedString(
+                "REGISTRATION_BACKUP_RESTORE_ERROR_LOCAL_BACKUP_LOCATION_TITLE",
+                comment: "Title for a sheet warning users about an invalid local backup location",
+            )
+            message = OWSLocalizedString(
+                "REGISTRATION_BACKUP_RESTORE_ERROR_LOCAL_BACKUP_LOCATION_MESSAGE",
+                comment: "Message for a sheet warning users about an invalid local backup location",
+            )
+            actions.append(ActionSheetAction(title: tryAgainString) { _ in
+                continuation.resume(returning: .tryAgain)
+            })
+            actions.append(ActionSheetAction(title: skipRestoreString) { _ in
+                continuation.resume(returning: .skipRestore)
+            })
         }
 
         let actionSheet = ActionSheetController(title: title, message: message)

@@ -24,12 +24,12 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
 
-struct SessionRecordProtos_SessionStructure: @unchecked Sendable {
+nonisolated struct SessionRecordProtos_SessionStructure: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -141,7 +141,7 @@ struct SessionRecordProtos_SessionStructure: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  struct Chain: Sendable {
+  nonisolated struct Chain: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -177,7 +177,7 @@ struct SessionRecordProtos_SessionStructure: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    struct ChainKey: Sendable {
+    nonisolated struct ChainKey: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -208,7 +208,7 @@ struct SessionRecordProtos_SessionStructure: @unchecked Sendable {
       fileprivate var _key: Data? = nil
     }
 
-    struct MessageKey: Sendable {
+    nonisolated struct MessageKey: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -266,7 +266,7 @@ struct SessionRecordProtos_SessionStructure: @unchecked Sendable {
     fileprivate var _chainKey: SessionRecordProtos_SessionStructure.Chain.ChainKey? = nil
   }
 
-  struct PendingPreKey: Sendable {
+  nonisolated struct PendingPreKey: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -312,7 +312,7 @@ struct SessionRecordProtos_SessionStructure: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct SessionRecordProtos_RecordStructure: Sendable {
+nonisolated struct SessionRecordProtos_RecordStructure: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -338,9 +338,9 @@ struct SessionRecordProtos_RecordStructure: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "SessionRecordProtos"
+fileprivate nonisolated let _protobuf_package = "SessionRecordProtos"
 
-extension SessionRecordProtos_SessionStructure: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SessionRecordProtos_SessionStructure: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SessionStructure"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sessionVersion\0\u{1}localIdentityPublic\0\u{1}remoteIdentityPublic\0\u{1}rootKey\0\u{1}previousCounter\0\u{1}senderChain\0\u{1}receiverChains\0\u{2}\u{2}pendingPreKey\0\u{1}remoteRegistrationId\0\u{1}localRegistrationId\0\u{1}needsRefresh\0\u{1}aliceBaseKey\0")
 
@@ -487,7 +487,7 @@ extension SessionRecordProtos_SessionStructure: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension SessionRecordProtos_SessionStructure.Chain: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SessionRecordProtos_SessionStructure.Chain: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SessionRecordProtos_SessionStructure.protoMessageName + ".Chain"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}senderRatchetKey\0\u{1}senderRatchetKeyPrivate\0\u{1}chainKey\0\u{1}messageKeys\0")
 
@@ -536,7 +536,7 @@ extension SessionRecordProtos_SessionStructure.Chain: SwiftProtobuf.Message, Swi
   }
 }
 
-extension SessionRecordProtos_SessionStructure.Chain.ChainKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SessionRecordProtos_SessionStructure.Chain.ChainKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SessionRecordProtos_SessionStructure.Chain.protoMessageName + ".ChainKey"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}index\0\u{1}key\0")
 
@@ -575,7 +575,7 @@ extension SessionRecordProtos_SessionStructure.Chain.ChainKey: SwiftProtobuf.Mes
   }
 }
 
-extension SessionRecordProtos_SessionStructure.Chain.MessageKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SessionRecordProtos_SessionStructure.Chain.MessageKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SessionRecordProtos_SessionStructure.Chain.protoMessageName + ".MessageKey"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}index\0\u{1}cipherKey\0\u{1}macKey\0\u{1}iv\0")
 
@@ -624,7 +624,7 @@ extension SessionRecordProtos_SessionStructure.Chain.MessageKey: SwiftProtobuf.M
   }
 }
 
-extension SessionRecordProtos_SessionStructure.PendingPreKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SessionRecordProtos_SessionStructure.PendingPreKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SessionRecordProtos_SessionStructure.protoMessageName + ".PendingPreKey"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}preKeyId\0\u{1}baseKey\0\u{1}signedPreKeyId\0")
 
@@ -668,7 +668,7 @@ extension SessionRecordProtos_SessionStructure.PendingPreKey: SwiftProtobuf.Mess
   }
 }
 
-extension SessionRecordProtos_RecordStructure: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension SessionRecordProtos_RecordStructure: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RecordStructure"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}currentSession\0\u{1}previousSessions\0")
 

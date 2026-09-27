@@ -53,18 +53,22 @@ open class TSGroupThread: TSThread {
         uniqueId: String,
         creationDate: Date?,
         editTargetTimestamp: UInt64?,
-        isArchivedObsolete: Bool,
-        isMarkedUnreadObsolete: Bool,
+        isArchived: Bool,
+        isMarkedUnread: Bool,
         lastDraftInteractionRowId: UInt64,
         lastDraftUpdateTimestamp: UInt64,
         lastInteractionRowId: UInt64,
         lastSentStoryTimestamp: UInt64?,
-        shouldNotifyForMentionsWhenMuted: Bool,
+        shouldNotifyForMentionsWhenMutedLegacy: Bool,
+        shouldNotifyForMentionsWhenMuted: Bool?,
+        shouldNotifyForRepliesWhenMuted: Bool?,
+        shouldNotifyForCallsWhenMuted: Bool?,
         messageDraft: String?,
         messageDraftBodyRanges: MessageBodyRanges?,
-        mutedUntilTimestampObsolete: UInt64,
+        mutedUntilTimestamp: UInt64,
         shouldThreadBeVisible: Bool,
         storyViewMode: TSThreadStoryViewMode,
+        audioPlaybackRate: Float,
         groupModel: TSGroupModel,
     ) {
         self.groupModel = groupModel
@@ -73,18 +77,22 @@ open class TSGroupThread: TSThread {
             uniqueId: uniqueId,
             creationDate: creationDate,
             editTargetTimestamp: editTargetTimestamp,
-            isArchivedObsolete: isArchivedObsolete,
-            isMarkedUnreadObsolete: isMarkedUnreadObsolete,
+            isArchived: isArchived,
+            isMarkedUnread: isMarkedUnread,
             lastDraftInteractionRowId: lastDraftInteractionRowId,
             lastDraftUpdateTimestamp: lastDraftUpdateTimestamp,
             lastInteractionRowId: lastInteractionRowId,
             lastSentStoryTimestamp: lastSentStoryTimestamp,
+            shouldNotifyForMentionsWhenMutedLegacy: shouldNotifyForMentionsWhenMutedLegacy,
             shouldNotifyForMentionsWhenMuted: shouldNotifyForMentionsWhenMuted,
+            shouldNotifyForRepliesWhenMuted: shouldNotifyForRepliesWhenMuted,
+            shouldNotifyForCallsWhenMuted: shouldNotifyForCallsWhenMuted,
             messageDraft: messageDraft,
             messageDraftBodyRanges: messageDraftBodyRanges,
-            mutedUntilTimestampObsolete: mutedUntilTimestampObsolete,
+            mutedUntilTimestamp: mutedUntilTimestamp,
             shouldThreadBeVisible: shouldThreadBeVisible,
             storyViewMode: storyViewMode,
+            audioPlaybackRate: audioPlaybackRate,
         )
     }
 
@@ -107,20 +115,28 @@ open class TSGroupThread: TSThread {
             uniqueId: self.uniqueId,
             creationDate: self.creationDate,
             editTargetTimestamp: self.editTargetTimestamp,
-            isArchivedObsolete: self.isArchivedObsolete,
-            isMarkedUnreadObsolete: self.isMarkedUnreadObsolete,
+            isArchived: self.isArchived,
+            isMarkedUnread: self.isMarkedUnread,
             lastDraftInteractionRowId: self.lastDraftInteractionRowId,
             lastDraftUpdateTimestamp: self.lastDraftUpdateTimestamp,
             lastInteractionRowId: self.lastInteractionRowId,
             lastSentStoryTimestamp: self.lastSentStoryTimestamp,
+            shouldNotifyForMentionsWhenMutedLegacy: self.shouldNotifyForMentionsWhenMutedLegacy,
             shouldNotifyForMentionsWhenMuted: self.shouldNotifyForMentionsWhenMuted,
+            shouldNotifyForRepliesWhenMuted: self.shouldNotifyForRepliesWhenMuted,
+            shouldNotifyForCallsWhenMuted: self.shouldNotifyForCallsWhenMuted,
             messageDraft: self.messageDraft,
             messageDraftBodyRanges: self.messageDraftBodyRanges,
-            mutedUntilTimestampObsolete: self.mutedUntilTimestampObsolete,
+            mutedUntilTimestamp: self.mutedUntilTimestamp,
             shouldThreadBeVisible: self.shouldThreadBeVisible,
             storyViewMode: self.storyViewMode,
+            audioPlaybackRate: self.audioPlaybackRate,
             groupModel: self.groupModel,
         )
+    }
+
+    override func recordPendingUpdates(storageServiceManager: any StorageServiceManager) {
+        storageServiceManager.recordPendingUpdates(groupModel: self.groupModel)
     }
 
     public class func fetchGroupThreadViaCache(uniqueId: String, transaction: DBReadTransaction) -> TSGroupThread? {
@@ -140,6 +156,19 @@ open class TSGroupThread: TSThread {
     @objc
     public class var defaultGroupName: String {
         return OWSLocalizedString("NEW_GROUP_DEFAULT_TITLE", comment: "")
+    }
+
+    func canBeDeleted(localIdentifiers: LocalIdentifiers) -> Bool {
+        if self.isGroupV2Thread, !self.isTerminatedGroup {
+            let groupMembership = self.groupModel.groupMembership
+            if groupMembership.isMemberOfAnyKind(localIdentifiers.aci) {
+                return false
+            }
+            if let pni = localIdentifiers.pni, groupMembership.isMemberOfAnyKind(pni) {
+                return false
+            }
+        }
+        return true
     }
 
     override open func anyWillInsert(transaction: DBWriteTransaction) {
@@ -200,11 +229,6 @@ open class TSGroupThread: TSThread {
                 )
             }
         }
-    }
-
-    override public func anyWillRemove(transaction: DBWriteTransaction) {
-        super.anyWillRemove(transaction: transaction)
-        removeGroupMemberRecords(transaction: transaction)
     }
 
     // MARK: -
@@ -357,24 +381,29 @@ open class TSGroupThread: TSThread {
         groupId: Data,
         secretParamsData: Data = Data(count: 1),
         groupMembers: [SignalServiceAddress] = [],
+        isArchived: Bool = false,
     ) -> TSGroupThread {
         let groupThread = TSGroupThread(
             id: 1,
             uniqueId: UUID().uuidString,
             creationDate: nil,
             editTargetTimestamp: nil,
-            isArchivedObsolete: false,
-            isMarkedUnreadObsolete: false,
+            isArchived: isArchived,
+            isMarkedUnread: false,
             lastDraftInteractionRowId: 0,
             lastDraftUpdateTimestamp: 0,
             lastInteractionRowId: 1,
             lastSentStoryTimestamp: nil,
-            shouldNotifyForMentionsWhenMuted: true,
+            shouldNotifyForMentionsWhenMutedLegacy: true,
+            shouldNotifyForMentionsWhenMuted: nil,
+            shouldNotifyForRepliesWhenMuted: nil,
+            shouldNotifyForCallsWhenMuted: nil,
             messageDraft: nil,
             messageDraftBodyRanges: nil,
-            mutedUntilTimestampObsolete: 0,
+            mutedUntilTimestamp: 0,
             shouldThreadBeVisible: true,
             storyViewMode: .default,
+            audioPlaybackRate: 1,
             groupModel: TSGroupModelV2(
                 groupId: groupId,
                 name: "Example Group",

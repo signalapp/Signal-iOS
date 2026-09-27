@@ -99,7 +99,7 @@ public class StoryManager {
                 shouldFetchProfile: true,
                 userProfileWriter: .localUser,
                 localIdentifiers: localIdentifiers,
-                authedAccount: .implicit(),
+                authedAccount: .implicit,
                 tx: transaction,
             )
         }

@@ -39,7 +39,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
         muteIndicatorCircleView.isHidden = true
         muteIndicatorCircleView.backgroundColor = .ows_blackAlpha70
         let muteIndicatorImage = UIImageView()
-        muteIndicatorImage.setTemplateImageName("mic-slash-fill-28", tintColor: .ows_white)
+        muteIndicatorImage.setTemplateImageName("mic-slash-fill-28", tintColor: .white)
         muteIndicatorCircleView.addSubview(muteIndicatorImage)
         addSubview(muteIndicatorCircleView)
         muteIndicatorCircleView.autoSetDimension(.height, toSize: Constants.muteImageCircleDimension)
@@ -205,18 +205,18 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
             let iconBackground = UIView()
             self.addArrangedSubview(iconBackground)
             iconBackground.autoSetDimensions(to: .square(self.circleSize))
-            iconBackground.backgroundColor = .ows_white
+            iconBackground.backgroundColor = .white
             iconBackground.layer.cornerRadius = self.circleSize / 2
 
             let iconView = UIImageView(image: Theme.iconImage(.raiseHand))
             iconBackground.addSubview(iconView)
             iconView.autoSetDimensions(to: .square(self.iconSize))
             iconView.autoCenterInSuperview()
-            iconView.tintColor = .ows_black
+            iconView.tintColor = .black
 
             if !useCompactSize {
                 self.addArrangedSubview(nameLabel)
-                nameLabel.textColor = .ows_white
+                nameLabel.textColor = .white
                 nameLabel.font = .dynamicTypeSubheadline
             }
         }
@@ -260,7 +260,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
     private lazy var flipCameraImageView = {
         let imageView = UIImageView(image: UIImage(named: "switch-camera-28"))
         imageView.isUserInteractionEnabled = false
-        imageView.tintColor = .ows_white
+        imageView.tintColor = .white
         flipCameraImageWidthConstraint = imageView.autoSetDimension(
             .height,
             toSize: Constants.flipCameraImageDimensionWhenPipNormal,

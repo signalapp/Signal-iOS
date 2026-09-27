@@ -15,7 +15,7 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
     private let dateProvider: DateProvider
     private let db: DB
     private let exportJobRunner: () -> BackupExportJobRunner
-    private let kvStore: KeyValueStore
+    private let kvStore: NewKeyValueStore
     private let tsAccountManager: () -> TSAccountManager
 
     init(
@@ -31,7 +31,7 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
         self.dateProvider = dateProvider
         self.db = db
         self.exportJobRunner = exportJobRunner
-        self.kvStore = KeyValueStore(collection: "BackupBGProcessingTaskRunner")
+        self.kvStore = NewKeyValueStore(collection: "BackupBGProcessingTaskRunner")
         self.tsAccountManager = tsAccountManager
     }
 
@@ -63,7 +63,7 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
                 )
 
                 await db.awaitableWrite { tx in
-                    kvStore.setDate(dateProvider(), key: StoreKeys.lastCompletionDate, transaction: tx)
+                    kvStore.writeValue(dateProvider(), forKey: StoreKeys.lastCompletionDate, tx: tx)
                 }
             },
         )
@@ -85,7 +85,7 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
             // We want this task to run to completion nightly, so intentionally
             // use a distinct "last Backup date" than what's saved (and shared)
             // in BackupSettingsStore.
-            let lastBackupDate = kvStore.getDate(StoreKeys.lastCompletionDate, transaction: tx) ?? .distantPast
+            let lastBackupDate = kvStore.fetchValue(Date.self, forKey: StoreKeys.lastCompletionDate, tx: tx) ?? .distantPast
 
             // If a day has passed and we didn't back up, do so right away.
             if Date().timeIntervalSince(lastBackupDate) > (.day * 1.5) {

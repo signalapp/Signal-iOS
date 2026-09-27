@@ -175,8 +175,16 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     }
 
     override var prefersStatusBarHidden: Bool {
-        guard AppEnvironment.shared.callService.callServiceState.currentCall == nil else { return false }
-        return (UIDevice.current.isIPad || UIDevice.current.hasIPhoneXNotch) == false
+        guard AppEnvironment.shared.callService.callServiceState.currentCall == nil else {
+            return super.prefersStatusBarHidden
+        }
+        guard
+            let appWindow = CurrentAppContext().mainWindow,
+            appWindow.shouldHideStatusBarForFullScreenPresentation
+        else {
+            return super.prefersStatusBarHidden
+        }
+        return true
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -1967,12 +1975,6 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
         ])
 
         // Prepare text styling toolbar - attached to keyboard.
-        let toolbarSize = textViewAccessoryToolbar.systemLayoutSizeFitting(
-            CGSize(width: UIScreen.main.bounds.width, height: .greatestFiniteMagnitude),
-            withHorizontalFittingPriority: .required,
-            verticalFittingPriority: .fittingSizeLevel,
-        )
-        textViewAccessoryToolbar.bounds.size = toolbarSize
         textView.inputAccessoryView = textViewAccessoryToolbar
 
         // Text View
@@ -2353,16 +2355,13 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
     }
 
     private lazy var deleteLinkPreviewButton: UIButton = {
-        let button = RoundMediaButton(image: Theme.iconImage(.buttonX), backgroundStyle: .blurLight)
-        button.tintColor = Theme.lightThemePrimaryColor
-        button.ows_contentEdgeInsets = UIEdgeInsets(margin: 8)
-        button.layoutMargins = UIEdgeInsets(margin: 2)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.addAction(
-            UIAction { [weak self] _ in self?.didTapDeleteLinkPreviewButton() },
-            for: .primaryActionTriggered,
+        var buttonConfig = UIButton.Configuration.roundMaterial(image: Theme.iconImage(.buttonX))
+        buttonConfig.contentInsets = .init(margin: 8) // 36 dp circle
+        buttonConfig.background.backgroundInsets = .init(margin: 2)
+        return UIButton(
+            configuration: buttonConfig,
+            primaryAction: UIAction { [weak self] _ in self?.didTapDeleteLinkPreviewButton() },
         )
-        return button
     }()
 
     override func reloadLinkPreviewAppearance() {
@@ -2372,6 +2371,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
 
         if deleteLinkPreviewButton.superview == nil {
             linkPreviewWrapperView.addSubview(deleteLinkPreviewButton)
+            deleteLinkPreviewButton.translatesAutoresizingMaskIntoConstraints = false
         }
         linkPreviewWrapperView.bringSubviewToFront(deleteLinkPreviewButton)
         linkPreviewWrapperView.addConstraints([

@@ -24,12 +24,12 @@ public import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
 
-public struct CallQualitySurveyProtos_SubmitCallQualitySurveyRequest: @unchecked Sendable {
+public nonisolated struct CallQualitySurveyProtos_SubmitCallQualitySurveyRequest: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -250,9 +250,9 @@ public struct CallQualitySurveyProtos_SubmitCallQualitySurveyRequest: @unchecked
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "CallQualitySurveyProtos"
+fileprivate nonisolated let _protobuf_package = "CallQualitySurveyProtos"
 
-extension CallQualitySurveyProtos_SubmitCallQualitySurveyRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CallQualitySurveyProtos_SubmitCallQualitySurveyRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SubmitCallQualitySurveyRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}user_satisfied\0\u{3}call_quality_issues\0\u{3}additional_issues_description\0\u{3}debug_log_url\0\u{3}start_timestamp\0\u{3}end_timestamp\0\u{3}call_type\0\u{1}success\0\u{3}call_end_reason\0\u{3}connection_rtt_median\0\u{3}audio_rtt_median\0\u{3}video_rtt_median\0\u{3}audio_recv_jitter_median\0\u{3}video_recv_jitter_median\0\u{3}audio_send_jitter_median\0\u{3}video_send_jitter_median\0\u{3}audio_recv_packet_loss_fraction\0\u{3}video_recv_packet_loss_fraction\0\u{3}audio_send_packet_loss_fraction\0\u{3}video_send_packet_loss_fraction\0\u{3}call_telemetry\0")
 

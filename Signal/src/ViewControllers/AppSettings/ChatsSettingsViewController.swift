@@ -105,7 +105,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         let clearHistorySection = OWSTableSection()
         clearHistorySection.add(.item(
             name: OWSLocalizedString("SETTINGS_CLEAR_HISTORY", comment: ""),
-            textColor: .ows_accentRed,
+            textColor: .Signal.red,
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "clear_chat_history"),
             actionBlock: { [weak self] in
                 self?.didTapClearHistory()

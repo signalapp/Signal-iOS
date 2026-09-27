@@ -35,7 +35,6 @@ public class BackupArchiveReactionStore {
         emoji: String,
         reactorAci: Aci,
         sentAtTimestamp: UInt64,
-        sortOrder: UInt64,
         context: BackupArchive.RecipientRestoringContext,
     ) {
         let reaction = OWSReaction(
@@ -44,7 +43,6 @@ public class BackupArchiveReactionStore {
             reactorAci: reactorAci,
             reactorPhoneNumber: nil,
             sentAtTimestamp: sentAtTimestamp,
-            sortOrder: sortOrder,
         )
         failIfThrows {
             try reaction.insert(context.tx.database)
@@ -57,7 +55,6 @@ public class BackupArchiveReactionStore {
         emoji: String,
         reactorE164: E164,
         sentAtTimestamp: UInt64,
-        sortOrder: UInt64,
         context: BackupArchive.RecipientRestoringContext,
     ) {
         let reaction = OWSReaction(
@@ -66,7 +63,6 @@ public class BackupArchiveReactionStore {
             reactorAci: nil,
             reactorPhoneNumber: reactorE164.stringValue,
             sentAtTimestamp: sentAtTimestamp,
-            sortOrder: sortOrder,
         )
         failIfThrows {
             try reaction.insert(context.tx.database)

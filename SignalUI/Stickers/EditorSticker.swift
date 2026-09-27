@@ -75,9 +75,9 @@ extension EditorSticker.StorySticker {
         private var foregroundColor: UIColor {
             switch self {
             case .white, .light, .dark:
-                return .ows_white
+                return .white
             case .black:
-                return .ows_black
+                return .black
             case .amber:
                 return .init(rgbHex: 0xFF7629)
             }

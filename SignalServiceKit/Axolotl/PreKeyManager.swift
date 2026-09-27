@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import LibSignalClient
 
 public protocol PreKeyManager {
     func isAppLockedDueToPreKeyUpdateFailures(tx: DBReadTransaction) -> Bool
@@ -15,7 +16,7 @@ public protocol PreKeyManager {
     ///
     /// These keys are persisted before this method returns, but best effort
     /// should be taken to finalize the keys after the server accepts them.
-    func createPreKeysForRegistration() async -> RegistrationPreKeyUploadBundles
+    func createPreKeysForRegistration(forIdentity identity: OWSIdentity) async -> RegistrationPreKeyUploadBundle
 
     /// Creates a new set of prekeys for provisioning (linking a new secondary
     /// device), using the provided identity keys (which are delivered from the
@@ -23,15 +24,15 @@ public protocol PreKeyManager {
     /// returns, but best effort should be taken to finalize the keys after the
     /// server accepts them.
     func createPreKeysForProvisioning(
-        aciIdentityKeyPair: ECKeyPair,
-        pniIdentityKeyPair: ECKeyPair,
-    ) async -> RegistrationPreKeyUploadBundles
+        forIdentity identity: OWSIdentity,
+        keyPair: IdentityKeyPair,
+    ) async -> RegistrationPreKeyUploadBundle
 
     /// Called on a best-effort basis. Consequences of not calling this is that
     /// the keys are still persisted (from prior to uploading) but they aren't
     /// marked current and accepted.
-    func finalizeRegistrationPreKeys(
-        _ bundles: RegistrationPreKeyUploadBundles,
+    func finalizeRegistrationPreKeyBundle(
+        _ bundle: RegistrationPreKeyUploadBundle,
         uploadDidSucceed: Bool,
     ) async
 

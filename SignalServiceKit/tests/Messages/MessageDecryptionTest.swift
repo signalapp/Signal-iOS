@@ -32,10 +32,9 @@ class MessageDecryptionTest: SSKBaseTest {
         identityManager.generateAndPersistNewIdentityKey(for: .pni)
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .init(
-                    aci: .init(fromUUID: localAci),
-                    pni: .init(fromUUID: localPni),
-                    e164: .init(localE164Identifier)!,
+                localIdentifiers: LocalIdentifiers(
+                    aci: Aci(fromUUID: localAci),
+                    phoneNumber: LocalIdentifiers.PhoneNumber(e164: E164(localE164Identifier)!, pni: Pni(fromUUID: localPni)),
                 ),
                 tx: tx,
             )

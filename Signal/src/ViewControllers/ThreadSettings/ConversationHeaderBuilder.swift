@@ -365,6 +365,7 @@ struct ConversationHeaderBuilder {
                     ),
                 menu: ConversationSettingsViewController.muteUnmuteMenu(
                     for: delegate.threadViewModel,
+                    from: delegate,
                     actionExecuted: { [weak delegate] in
                         delegate?.updateTableContents(shouldReload: true)
                     },

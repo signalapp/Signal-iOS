@@ -41,20 +41,28 @@ public struct IncomingAttachmentLimits {
 /// Limits imposed on attachments we send to others.
 public struct OutgoingAttachmentLimits {
     private let remoteConfig: RemoteConfig
-    private let callingCode: Int?
+    private let callingCode: PhoneNumberUtil.LocalCallingCode?
 
     public static func currentLimits(
         remoteConfig: RemoteConfig = .current,
-        callingCode: Int? = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction.flatMap({
-            return SSKEnvironment.shared.phoneNumberUtilRef.localCallingCode(localIdentifiers: $0)
-        }),
+        callingCode: PhoneNumberUtil.LocalCallingCode? = Self.currentLocalCallingCode(),
     ) -> Self {
         return Self(remoteConfig: remoteConfig, callingCode: callingCode)
     }
 
+    public static func currentLocalCallingCode() -> PhoneNumberUtil.LocalCallingCode? {
+        let phoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+        guard let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
+            return nil
+        }
+        return phoneNumberUtil.localCallingCode(localIdentifiers: localIdentifiers)
+    }
+
     init(
         remoteConfig: RemoteConfig,
-        callingCode: Int?,
+        callingCode: PhoneNumberUtil.LocalCallingCode?,
     ) {
         self.remoteConfig = remoteConfig
         self.callingCode = callingCode
@@ -81,5 +89,68 @@ public struct OutgoingAttachmentLimits {
             remoteConfig: remoteConfig,
             callingCode: callingCode,
         )
+    }
+}
+
+// MARK: -
+
+struct ValidatedMessageBodyAttachmentProtos: CustomStringConvertible {
+    let wrapped: [SSKProtoAttachmentPointer]
+
+    fileprivate var oversizeText: [SSKProtoAttachmentPointer] = []
+    fileprivate var visualMedia: [SSKProtoAttachmentPointer] = []
+    fileprivate var nonVisualMedia: [SSKProtoAttachmentPointer] = []
+
+    init(wrapped: [SSKProtoAttachmentPointer]) {
+        self.wrapped = wrapped
+    }
+
+    var isEmpty: Bool { wrapped.isEmpty }
+
+    var description: String {
+        "oversizeText \(oversizeText.count); visualMedia \(visualMedia.count); nonVisualMedia \(nonVisualMedia.count)"
+    }
+}
+
+public struct MessageBodyAttachmentLimits {
+    /// How many visual-media attachments are allowed in a message body.
+    public static let maxAllowedVisualMedia: Int = 32
+
+    /// One more than ``maxAllowedVisualMedia``, to allow for long-text.
+    public static let maxAllowedOverall: Int = maxAllowedVisualMedia + 1
+
+    public init() {}
+
+    func validateMessageBodyProtos(
+        _ messageBodyProtos: [SSKProtoAttachmentPointer],
+    ) throws -> ValidatedMessageBodyAttachmentProtos {
+        guard messageBodyProtos.count <= Self.maxAllowedOverall else {
+            throw OWSGenericError("too many body attachments overall!")
+        }
+
+        var validated = ValidatedMessageBodyAttachmentProtos(wrapped: messageBodyProtos)
+        for proto in validated.wrapped {
+            if proto.isOversizeText {
+                validated.oversizeText.append(proto)
+            } else if proto.isVisualMedia {
+                validated.visualMedia.append(proto)
+            } else {
+                validated.nonVisualMedia.append(proto)
+            }
+        }
+
+        if validated.oversizeText.count > 1 {
+            throw OWSGenericError("too many oversize text protos! \(validated)")
+        }
+        if validated.visualMedia.count > Self.maxAllowedVisualMedia {
+            throw OWSGenericError("too many visual-media protos! \(validated)")
+        }
+        if validated.nonVisualMedia.count > 1 {
+            throw OWSGenericError("too many non-visual-media protos! \(validated)")
+        }
+        if !(validated.visualMedia.isEmpty || validated.nonVisualMedia.isEmpty) {
+            throw OWSGenericError("both visual and non-visual media protos present! \(validated)")
+        }
+        return validated
     }
 }

@@ -8,15 +8,8 @@ import SignalUI
 
 class AppSettingsViewController: OWSTableViewController2 {
 
-    private let appReadiness: AppReadinessSetter
-
-    init(appReadiness: AppReadinessSetter) {
-        self.appReadiness = appReadiness
-        super.init()
-    }
-
-    class func inModalNavigationController(appReadiness: AppReadinessSetter) -> OWSNavigationController {
-        OWSNavigationController(rootViewController: AppSettingsViewController(appReadiness: appReadiness))
+    class func inModalNavigationController() -> OWSNavigationController {
+        OWSNavigationController(rootViewController: AppSettingsViewController())
     }
 
     private var localUsernameState: Usernames.LocalUsernameState!
@@ -25,10 +18,14 @@ class AppSettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        SSKEnvironment.shared.databaseStorageRef.read { tx in
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let localUsernameManager = DependenciesBridge.shared.localUsernameManager
+        let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+        databaseStorage.read { tx in
             updateLocalUserProfile(tx: tx)
-            localUsernameState = DependenciesBridge.shared.localUsernameManager
-                .usernameState(tx: tx)
+            localUsernameState = localUsernameManager.usernameState(tx: tx)
         }
 
         title = OWSLocalizedString("SETTINGS_NAV_BAR_TITLE", comment: "Title for settings activity")
@@ -39,11 +36,12 @@ class AppSettingsViewController: OWSTableViewController2 {
         updateHasExpiredGiftBadge()
         updateTableContents()
 
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        if let localAci = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci {
+        if let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction() {
             Task {
-                let profileFetcher = SSKEnvironment.shared.profileFetcherRef
-                _ = try? await profileFetcher.fetchProfile(for: localAci, context: .init(isOpportunistic: true))
+                _ = try? await profileFetcher.fetchProfile(
+                    for: registeredState.localIdentifiers.aci,
+                    context: .init(isOpportunistic: true),
+                )
             }
         }
 
@@ -157,8 +155,8 @@ class AppSettingsViewController: OWSTableViewController2 {
         section1.add(.disclosureItem(
             icon: .settingsAccount,
             withText: OWSLocalizedString("SETTINGS_ACCOUNT", comment: "Title for the 'account' link in settings."),
-            actionBlock: { [weak self, appReadiness] in
-                let vc = AccountSettingsViewController(appReadiness: appReadiness)
+            actionBlock: { [weak self] in
+                let vc = AccountSettingsViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
             },
         ))
@@ -179,7 +177,7 @@ class AppSettingsViewController: OWSTableViewController2 {
             let accessoryContentView: UIView?
             if self.hasExpiredGiftBadge {
                 let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "info-fill"))
-                imageView.tintColor = Theme.accentBlueColor
+                imageView.tintColor = .Signal.accent
                 imageView.autoSetDimensions(to: CGSize(square: 24))
                 accessoryContentView = imageView
             } else {
@@ -349,10 +347,10 @@ class AppSettingsViewController: OWSTableViewController2 {
                         let unreadLabel = UILabel()
                         unreadLabel.text = OWSFormat.formatUInt(min(9, unreadPaymentsCount))
                         unreadLabel.font = .dynamicTypeSubheadlineClamped
-                        unreadLabel.textColor = .ows_white
+                        unreadLabel.textColor = .white
 
                         let unreadBadge = OWSLayerView.circleView()
-                        unreadBadge.backgroundColor = .ows_accentBlue
+                        unreadBadge.backgroundColor = .Signal.accent
                         unreadBadge.addSubview(unreadLabel)
                         unreadLabel.autoCenterInSuperview()
                         unreadLabel.autoPinEdge(toSuperviewEdge: .top, withInset: 3)
@@ -376,8 +374,8 @@ class AppSettingsViewController: OWSTableViewController2 {
 
                     return cell
                 },
-                actionBlock: { [weak self, appReadiness] in
-                    let vc = PaymentsSettingsViewController(mode: .inAppSettings, appReadiness: appReadiness)
+                actionBlock: { [weak self] in
+                    let vc = PaymentsSettingsViewController(mode: .inAppSettings)
                     self?.navigationController?.pushViewController(vc, animated: true)
                 },
             ))
@@ -484,7 +482,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT",
                 comment: "Text prompting user to edit their profile name.",
             )
-            nameLabel.textColor = Theme.accentBlueColor
+            nameLabel.textColor = .Signal.accent
         }
 
         @discardableResult

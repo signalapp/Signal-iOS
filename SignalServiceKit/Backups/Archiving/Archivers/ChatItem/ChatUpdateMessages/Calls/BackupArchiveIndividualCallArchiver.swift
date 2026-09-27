@@ -168,6 +168,22 @@ final class BackupArchiveIndividualCallArchiver {
             return .messageFailure([.restoreFrameError(.invalidProtoData(.individualCallNotInContactThread))])
         }
 
+        if individualCall.hasCallID {
+            let existingRecord = callRecordStore.fetch(
+                callId: individualCall.callID,
+                conversationId: .thread(threadRowId: chatThread.threadRowId),
+                tx: context.tx,
+            )
+
+            switch existingRecord {
+            case .matchFound:
+                // Desktop backups can contain duplicate CallRecords. Ignore them.
+                return .success(())
+            case .matchDeleted, .matchNotFound:
+                break
+            }
+        }
+
         let callRecordDirection: CallRecord.CallDirection
         switch individualCall.direction {
         case .unknownDirection, .UNRECOGNIZED:

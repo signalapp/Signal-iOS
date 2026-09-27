@@ -187,7 +187,10 @@ public class ColorPickerBar: UIControl {
 
         super.init(frame: .zero)
 
-        colorBarImageView.image = ColorPickerBar.buildPaletteGradientImage()
+        // Ideally we want the image to match bar width, but with all the margins
+        // and different screen sizes it's challenging to make this right.
+        // This estimate is good enough as we don't need designer level precision.
+        colorBarImageView.image = ColorPickerBar.buildPaletteGradientImage(width: 480)
         colorBarImageView.translatesAutoresizingMaskIntoConstraints = false
         colorBarImageView.clipsToBounds = true
 
@@ -373,8 +376,8 @@ public class ColorPickerBar: UIControl {
         sendActions(for: .valueChanged)
     }
 
-    private static func buildPaletteGradientImage() -> UIImage {
-        let gradientSize = CGSize(width: UIScreen.main.bounds.width, height: LayoutMetrics.colorBarHeight)
+    private static func buildPaletteGradientImage(width: CGFloat) -> UIImage {
+        let gradientSize = CGSize(width: width, height: LayoutMetrics.colorBarHeight)
         let gradientView = UIView(frame: CGRect(origin: .zero, size: gradientSize))
         let gradientLayer = CAGradientLayer()
         gradientView.layer.addSublayer(gradientLayer)
@@ -383,7 +386,8 @@ public class ColorPickerBar: UIControl {
         gradientLayer.colors = ColorPickerBarColor.gradientCGColors
         gradientLayer.startPoint = CGPoint.zero
         gradientLayer.endPoint = CGPoint(x: 1, y: 0)
-        return gradientView.renderAsImage(opaque: true, scale: UIScreen.main.scale)
+        let displayScale = UITraitCollection.current.displayScale
+        return gradientView.renderAsImage(opaque: true, scale: displayScale)
     }
 
     private class ThumbView: UIView {

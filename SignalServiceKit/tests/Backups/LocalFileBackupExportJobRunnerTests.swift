@@ -28,6 +28,7 @@ struct LocalFileBackupExportJobRunnerTests {
         let securityScopedBookmark = SecurityScopedBookmarkAccessMock(hasAccess: true, url: backupsURL)
 
         self.localFileBackupManager = LocalFileBackupManager(
+            appReadiness: AppReadinessMock(),
             db: db,
             dateProvider: dateProvider,
             attachmentStore: AttachmentStore(),
@@ -35,6 +36,7 @@ struct LocalFileBackupExportJobRunnerTests {
             orphanedAttachmentCleaner: OrphanedAttachmentCleanerImpl(dateProvider: dateProvider, db: db),
             localFileBackupStore: localFileBackupStore,
             securityScopedBookmarkAccess: securityScopedBookmark,
+            restoreProgress: LocalFileBackupAttachmentRestoreProgress(),
         )
 
         self.localFileBackupExportJobStore = LocalFileBackupExportJobStore()
@@ -43,8 +45,7 @@ struct LocalFileBackupExportJobRunnerTests {
         mockTSAccountManager.localIdentifiersMock = {
             return LocalIdentifiers(
                 aci: Aci.randomForTesting(),
-                pni: Pni.randomForTesting(),
-                e164: E164("+16505550101")!,
+                phoneNumber: LocalIdentifiers.PhoneNumber(e164: E164("+16505550101")!, pni: .randomForTesting()),
             )
         }
 
@@ -98,7 +99,7 @@ struct LocalFileBackupExportJobRunnerTests {
             return (id1, id2)
         }
 
-        await localFileBackupManager.ensureAttachmentMetadataExists()
+        await localFileBackupManager.ensureAttachmentMetadataExists(progressSink: nil)
 
         let localFileBackupAttachmentCollector = LocalFileBackupAttachmentCollector()
         localFileBackupAttachmentCollector.append(id: id1)

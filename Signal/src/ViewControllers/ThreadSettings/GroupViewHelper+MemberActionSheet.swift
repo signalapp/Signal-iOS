@@ -35,7 +35,7 @@ extension GroupViewHelper {
         }
         let secretParams = Result(catching: { try oldGroupModel.secretParams() })
 
-        let actionBlock = { @MainActor in
+        let actionBlock = { @MainActor [self] in
             GroupViewUtils.updateGroupWithActivityIndicator(
                 fromViewController: fromViewController,
                 updateBlock: { try await updateBlock(secretParams.get(), serviceId) },

@@ -109,34 +109,33 @@ public enum LocalDeviceId: CustomStringConvertible {
 }
 
 extension TSAccountManager {
+    public func mustBeRegisteredStateWithMaybeSneakyTransaction() -> RegisteredState {
+        return failIfThrows { try registeredStateWithMaybeSneakyTransaction() }
+    }
+
     public func registeredStateWithMaybeSneakyTransaction() throws(NotRegisteredError) -> RegisteredState {
-        return try RegisteredState(
-            registrationState: self.registrationStateWithMaybeSneakyTransaction,
-            localIdentifiers: self.localIdentifiersWithMaybeSneakyTransaction,
-        )
+        return try self.registrationStateWithMaybeSneakyTransaction.registeredState()
+    }
+
+    public func mustBeRegisteredState(tx: DBReadTransaction) -> RegisteredState {
+        return failIfThrows { try registeredState(tx: tx) }
     }
 
     public func registeredState(tx: DBReadTransaction) throws(NotRegisteredError) -> RegisteredState {
-        return try RegisteredState(
-            registrationState: self.registrationState(tx: tx),
-            localIdentifiers: self.localIdentifiers(tx: tx),
-        )
+        return try self.registrationState(tx: tx).registeredState()
     }
 
-    public func localIdentifiersWithMaybeSneakyTransaction(authedAccount: AuthedAccount) throws -> LocalIdentifiers {
-        switch authedAccount.info {
+    public func localIdentifiersWithMaybeSneakyTransaction(authedAccount: AuthedAccount) throws(NotRegisteredError) -> LocalIdentifiers {
+        switch authedAccount {
         case .explicit(let info):
             return info.localIdentifiers
         case .implicit:
-            guard let localIdentifiers = localIdentifiersWithMaybeSneakyTransaction else {
-                throw OWSAssertionError("Missing localIdentifiers.")
-            }
-            return localIdentifiers
+            return try registeredStateWithMaybeSneakyTransaction().localIdentifiers
         }
     }
 
     public func localIdentifiers(authedAccount: AuthedAccount, tx: DBReadTransaction) throws -> LocalIdentifiers {
-        switch authedAccount.info {
+        switch authedAccount {
         case .explicit(let info):
             return info.localIdentifiers
         case .implicit:
@@ -161,9 +160,8 @@ public protocol LocalIdentifiersSetter {
 
     /// Initialize local identifiers state after registration, linking, reregistration, or relinking.
     func initializeLocalIdentifiers(
-        e164: E164,
         aci: Aci,
-        pni: Pni,
+        phoneNumber: LocalIdentifiers.PhoneNumber,
         deviceId: DeviceId,
         serverAuthToken: String,
         tx: DBWriteTransaction,
@@ -173,9 +171,8 @@ public protocol LocalIdentifiersSetter {
     /// ACI provided for convenience; it should be unchanged.
     /// Server auth token is also assumed to be unchanged.
     func changeLocalNumber(
-        newE164: E164,
         aci: Aci,
-        pni: Pni,
+        phoneNumber: LocalIdentifiers.PhoneNumber,
         tx: DBWriteTransaction,
     )
 
@@ -189,10 +186,9 @@ public protocol LocalIdentifiersSetter {
     func setIsDeregisteredOrDelinked(_ isDeregisteredOrDelinked: Bool, tx: DBWriteTransaction) -> Bool
 
     func resetForReregistration(
-        localNumber: E164,
-        localAci: Aci,
-        discoverability: PhoneNumberDiscoverability?,
-        wasPrimaryDevice: Bool,
+        aci: Aci?,
+        phoneNumber: E164,
+        isPrimaryDevice: Bool,
         tx: DBWriteTransaction,
     )
 

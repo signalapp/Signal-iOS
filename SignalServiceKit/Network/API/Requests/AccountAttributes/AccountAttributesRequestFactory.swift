@@ -29,15 +29,10 @@ public struct AccountAttributesRequestFactory {
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
         let url = urlComponents.url!
 
-        // The request expects the AccountAttributes to be the root object.
-        // Serialize it to JSON then get the key value dict to do that.
-        let data = try! JSONEncoder().encode(attributes)
-        let parameters = try! JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed) as! [String: Any]
-
         var result = TSRequest(
             url: url,
             method: "PUT",
-            parameters: parameters,
+            body: .encodable(attributes),
         )
         result.headers["X-Signal-Agent"] = "OWI"
         result.auth = .identified(auth)
@@ -56,7 +51,7 @@ public struct AccountAttributesRequestFactory {
         var result = TSRequest(
             url: URL(string: "v1/devices/capabilities")!,
             method: "PUT",
-            parameters: capabilities.requestParameters,
+            body: .encodable(capabilities),
         )
         result.auth = .identified(auth)
         return result

@@ -58,23 +58,22 @@ final class ChatListProxyButtonCreator: NSObject {
         guard let proxyState else {
             return nil
         }
-        let proxyStatusImage: UIImage?
+        let proxyStatusImage: UIImage
         let tintColor: UIColor
         switch proxyState {
         case .open:
-            proxyStatusImage = UIImage(named: "safety-number")
-            tintColor = UIColor.ows_accentGreen
+            proxyStatusImage = .safetyNumber
+            tintColor = .Signal.green
         case .closed:
-            proxyStatusImage = UIImage(named: "error-shield")
-            tintColor = UIColor.ows_accentRed
+            proxyStatusImage = .errorShield
+            tintColor = .Signal.red
         case .connecting:
-            proxyStatusImage = UIImage(named: "error-shield")
+            proxyStatusImage = .errorShield
             tintColor = UIColor.ows_middleGray
         }
-        let button = UIBarButtonItem(
-            image: proxyStatusImage,
-            primaryAction: UIAction { [weak self] _ in self?.didTapButton() },
-        )
+        let button = UIBarButtonItem.button(image: proxyStatusImage) { [weak self] in
+            self?.didTapButton()
+        }
         button.tintColor = tintColor
         return button
     }

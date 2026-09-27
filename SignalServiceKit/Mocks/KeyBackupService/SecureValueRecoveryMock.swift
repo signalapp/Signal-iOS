@@ -38,7 +38,7 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public func storeKeys(
         fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
-        authedDevice: AuthedDevice,
+        authedAccount: AuthedAccount,
         tx: DBWriteTransaction,
     ) throws(SVR.KeysError) {
         let aep = syncMessage.accountEntropyPool.flatMap({ try? AccountEntropyPool(key: $0) })
@@ -50,7 +50,7 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public func storeKeys(
         fromProvisioningMessage provisioningMessage: LinkingProvisioningMessage,
-        authedDevice: AuthedDevice,
+        authedAccount: AuthedAccount,
         tx: DBWriteTransaction,
     ) {
         syncedMasterKey = provisioningMessage.aep.getMasterKey()

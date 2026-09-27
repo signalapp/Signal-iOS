@@ -5,44 +5,18 @@
 
 import Foundation
 import LibSignalClient
-public import SignalServiceKit
+import SignalServiceKit
+import SwiftProtobuf
 
-// MARK: - DecryptableProvisioningMessage
+// MARK: -
 
-/// Protocol describing a message that can be sent and received through
-/// the ProvisioningSocket.
-public protocol DecryptableProvisioningMessage {
-
-    /// Alias for the proto type that wraps the message.
-    associatedtype Envelope: ProvisioningEnvelope
-
-    init(plaintext: Data) throws
-}
-
-/// Protocol describing the envelope that contains a `DecryptableProvisioningMessage`
-/// and can be sent and received through the ProvisioningSocket.
-public protocol ProvisioningEnvelope {
-
-    init(serializedData: Data) throws
-
-    /// Encrypted payload containing the `DecryptableProvisioningMessage`
+protocol ProvisioningEnvelope: SwiftProtobuf.Message {
     var body: Data { get }
-
-    /// The public key used to encrypt `bodyData`
     var publicKey: Data { get }
 }
 
-// MARK: - DecryptableProvisioningMessage conformance
-
-extension ProvisioningProtoProvisionEnvelope: ProvisioningEnvelope {}
-extension LinkingProvisioningMessage: DecryptableProvisioningMessage {
-    public typealias Envelope = ProvisioningProtoProvisionEnvelope
-}
-
-extension RegistrationProvisioningEnvelope: ProvisioningEnvelope {}
-extension RegistrationProvisioningMessage: DecryptableProvisioningMessage {
-    public typealias Envelope = RegistrationProvisioningEnvelope
-}
+extension ProvisioningProtos_ProvisionEnvelope: ProvisioningEnvelope {}
+extension RegistrationProtos_RegistrationProvisionEnvelope: ProvisioningEnvelope {}
 
 // MARK: - ProvisioningSocketManager
 
@@ -68,10 +42,9 @@ class ProvisioningSocketManager: ProvisioningConnectionListener {
             self.encryptedEnvelope = data
         }
 
-        func decrypt<ProvisioningMessage: DecryptableProvisioningMessage>() throws -> ProvisioningMessage {
-            let envelope = try ProvisioningMessage.Envelope(serializedData: encryptedEnvelope)
-            let data = try cipher.decrypt(data: envelope.body, theirPublicKey: try PublicKey(envelope.publicKey))
-            return try ProvisioningMessage(plaintext: data)
+        func decrypt<Envelope: ProvisioningEnvelope>(_ envelopeType: Envelope.Type) throws -> Data {
+            let envelope = try Envelope(serializedBytes: encryptedEnvelope)
+            return try cipher.decrypt(data: envelope.body, theirPublicKey: try PublicKey(envelope.publicKey))
         }
     }
 
@@ -219,8 +192,18 @@ class ProvisioningSocketManager: ProvisioningConnectionListener {
         }()
 
         var capabilities = [DeviceProvisioningURL.Capability]()
-        if shouldLinkAndSync {
-            capabilities.append(DeviceProvisioningURL.Capability.linknsync)
+        switch type {
+        case .linkDevice:
+            if shouldLinkAndSync {
+                capabilities.append(.linknsync)
+            }
+        case .quickRestore:
+            if
+                #available(iOS 26.0, *),
+                DeviceTransfer.platformSupportsWifiAware()
+            {
+                capabilities.append(.wifiaware)
+            }
         }
 
         return try DeviceProvisioningURL(
@@ -265,7 +248,7 @@ class ProvisioningSocketManager: ProvisioningConnectionListener {
         )
     }
 
-    func waitForMessage<ProvisioningMessage: DecryptableProvisioningMessage>() async throws -> ProvisioningMessage {
+    func waitForMessageData<Envelope: ProvisioningEnvelope>(_ envelopeType: Envelope.Type) async throws -> Data {
         let decryptableProvisionEnvelope: DecryptableProvisionEnvelope = try await withCheckedThrowingContinuation { newContinuation in
             awaitProvisionEnvelopeContinuation.update { existingContinuation in
                 guard existingContinuation == nil else {
@@ -275,7 +258,7 @@ class ProvisioningSocketManager: ProvisioningConnectionListener {
                 existingContinuation = newContinuation
             }
         }
-        return try decryptableProvisionEnvelope.decrypt()
+        return try decryptableProvisionEnvelope.decrypt(envelopeType)
     }
 
     private var rotationTask: Task<Void, Never>?

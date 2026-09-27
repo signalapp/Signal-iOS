@@ -89,7 +89,8 @@ class CVLinkPreviewView: ManualStackViewWithLayer {
             2.0: 2.0,
             3.0: 2.3333,
         ]
-        let scalingFactor = heroScalingFactors[UIScreen.main.scale] ?? {
+        let scale = UITraitCollection.current.displayScale
+        let scalingFactor = heroScalingFactors[scale] ?? {
             // Oh neat a new device! Might want to add it.
             owsFailDebug("Unrecognized device scale")
             return 2.0

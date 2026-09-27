@@ -87,7 +87,7 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
         navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
             self?.presenter?.exitRegistration()
         }
-        navigationItem.rightBarButtonItem = .button(title: CommonStrings.nextButton, style: .done) { [weak self] in
+        navigationItem.rightBarButtonItem = .nextButton { [weak self] in
             self?.tryToContinue()
         }
 
@@ -145,7 +145,7 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
                 section.add(.init(customCellBlock: {
                     let cell = OWSTableItem.buildCell(
                         itemName: invalidE164Error.warningLabelText(),
-                        textColor: .ows_accentRed,
+                        textColor: .Signal.red,
                     )
                     cell.isUserInteractionEnabled = false
                     return cell

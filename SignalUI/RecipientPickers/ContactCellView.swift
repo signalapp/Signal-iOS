@@ -103,7 +103,7 @@ public class ContactCellView: ManualStackView {
         let backgroundView = UIView.container()
         let symbolView = UIImageView(image: UIImage(named: "stories-fill-compact"))
         backgroundView.addSubview(symbolView)
-        symbolView.tintColor = .ows_white
+        symbolView.tintColor = .white
         symbolView.autoSetDimensions(to: .square(12))
         symbolView.autoCenterInSuperview()
         return backgroundView

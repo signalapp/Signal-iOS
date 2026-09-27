@@ -128,23 +128,9 @@ public extension UIDevice {
         return CurrentAppContext().frame.width < 375
     }
 
-    var isIPhone5OrShorter: Bool {
-        return CurrentAppContext().frame.height <= 568
-    }
-
-    var isShorterThaniPhoneX: Bool {
-        return CurrentAppContext().frame.height < 812
-    }
-
     @objc
     var isIPad: Bool {
         return userInterfaceIdiom == .pad
-    }
-
-    var isFullScreen: Bool {
-        let windowSize = CurrentAppContext().frame.size
-        let screenSize = UIScreen.main.bounds.size
-        return windowSize.largerAxis == screenSize.largerAxis && windowSize.smallerAxis == screenSize.smallerAxis
     }
 
     @objc

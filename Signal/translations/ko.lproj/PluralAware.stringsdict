@@ -428,7 +428,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>대화를 %1$d개 이상 선택할 수 없습니다.</string>
+			<string>대화는 최대 %1$d개까지 선택할 수 있습니다.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>

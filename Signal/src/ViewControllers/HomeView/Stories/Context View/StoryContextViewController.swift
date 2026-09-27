@@ -541,7 +541,7 @@ class StoryContextViewController: OWSViewController, DatabaseChangeDelegate,
 
             let failedIcon = UIImageView()
             failedIcon.contentMode = .scaleAspectFit
-            failedIcon.setTemplateImageName("error-circle-20", tintColor: .ows_accentRed)
+            failedIcon.setTemplateImageName("error-circle-20", tintColor: .Signal.red)
             failedIcon.autoSetDimension(.width, toSize: 20)
             sendingIndicatorStackView.addArrangedSubview(failedIcon)
 

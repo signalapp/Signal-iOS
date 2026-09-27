@@ -209,13 +209,10 @@ public class MessageActionsToolbar: UIView {
     private var actionItems = [MessageAction.MessageActionType: UIBarButtonItem]()
 
     private func barButtonItem(for messageAction: MessageAction) -> UIBarButtonItem {
-        let barButtonItem = UIBarButtonItem(
-            image: messageAction.barButtonImage,
-            primaryAction: UIAction { [weak self] _ in
-                guard let self else { return }
-                self.actionDelegate?.messageActionsToolbar(self, executedAction: messageAction)
-            },
-        )
+        let barButtonItem = UIBarButtonItem.button(image: messageAction.barButtonImage) { [weak self] in
+            guard let self else { return }
+            self.actionDelegate?.messageActionsToolbar(self, executedAction: messageAction)
+        }
         if #unavailable(iOS 26) {
             barButtonItem.tintColor = Theme.primaryIconColor
         }

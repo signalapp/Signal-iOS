@@ -650,7 +650,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             fromViewController: self,
             title: CommonStrings.updatingModal,
             canCancel: false,
-            asyncBlock: { modal in
+            asyncBlock: { [self] modal in
                 do {
                     try await DependenciesBridge.shared.donationSubscriptionManager.cancelSubscription(for: subscriberID)
                     modal.dismiss { [weak self] in
@@ -718,7 +718,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             //
             // Then, we'll show the error.
 
-            navigationController?.popToViewController(self, animated: true) {
+            navigationController?.popToViewController(self, animated: true) { [self] in
                 Task { [weak self] in
                     await self?.loadAndUpdateState()
                     guard let self else { return }
@@ -1131,13 +1131,19 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         var oneTimePresetButtons = [OneTimePresetButton]()
 
+        @available(iOS, deprecated: 16)
+        func fontSize() -> CGFloat {
+            view.width <= 320 ? 16 : 20 // iPhone SE 1st Gen Screen width, last truly small device to support iOS 15
+        }
+        let fontSize: CGFloat = fontSize()
+
         for (rowIndex, amounts) in preset.amounts.chunked(by: 3).enumerated() {
             let row = UIStackView()
             row.axis = .horizontal
             row.distribution = .fillEqually
-            row.spacing = UIDevice.current.isIPhone5OrShorter ? 8 : 14
+            row.spacing = 12
 
-            let font = UIFont.regularFont(ofSize: UIDevice.current.isIPhone5OrShorter ? 18 : 20)
+            let font = UIFont.regularFont(ofSize: fontSize)
             for (colIndex, amount) in amounts.enumerated() {
                 let button = UIButton(configuration: .bordered())
                 button.addAction(
@@ -1160,7 +1166,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                     for: .primaryActionTriggered,
                 )
                 button.configuration?.title = CurrencyFormatter.format(money: amount)
-                button.configuration?.titleTextAttributesTransformer = .defaultFont(font)
+                button.configuration?.attributedTitle?.font = font
                 button.configuration?.baseForegroundColor = .Signal.label
                 button.configuration?.baseBackgroundColor = .Signal.secondaryGroupedBackground
                 button.autoSetDimension(.height, toSize: DonationViewsUtil.amountFieldMinHeight, relation: .greaterThanOrEqual)

@@ -41,12 +41,29 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
         }
 
         public struct ReRegisteringState: Codable, Equatable {
+            public let aci: Aci?
             public let e164: E164
-            @AciUuid public var aci: Aci
 
-            fileprivate init(e164: E164, aci: Aci) {
+            enum CodingKeys: String, CodingKey {
+                case aci
+                case e164
+            }
+
+            fileprivate init(aci: Aci?, e164: E164) {
+                self.aci = aci
                 self.e164 = e164
-                self._aci = aci.codableUuid
+            }
+
+            public init(from decoder: any Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                self.aci = try container.decodeIfPresent(UUID.self, forKey: .aci).map({ Aci(fromUUID: $0) })
+                self.e164 = try container.decode(E164.self, forKey: .e164)
+            }
+
+            public func encode(to encoder: any Encoder) throws {
+                var container = encoder.container(keyedBy: CodingKeys.self)
+                try container.encodeIfPresent(self.aci?.rawUUID, forKey: .aci)
+                try container.encode(self.e164, forKey: .e164)
             }
         }
 
@@ -198,11 +215,14 @@ extension RegistrationMode {
     fileprivate func asInternalMode() -> RegistrationCoordinatorLoaderImpl.Mode {
         switch self {
         case .registering:
-            return .registering(.init())
+            return .registering(RegistrationCoordinatorLoaderImpl.Mode.RegisteringState())
         case .reRegistering(let params):
-            return .reRegistering(.init(e164: params.e164, aci: params.aci))
+            return .reRegistering(RegistrationCoordinatorLoaderImpl.Mode.ReRegisteringState(
+                aci: params.aci,
+                e164: params.e164,
+            ))
         case .changingNumber(let params):
-            return .changingNumber(.init(
+            return .changingNumber(RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState(
                 oldE164: params.oldE164,
                 oldAuthToken: params.oldAuthToken,
                 localAci: params.localAci,
@@ -220,9 +240,9 @@ extension RegistrationCoordinatorLoaderImpl.Mode {
         case .registering:
             return .registering
         case .reRegistering(let state):
-            return .reRegistering(.init(e164: state.e164, aci: state.aci))
+            return .reRegistering(RegistrationMode.ReregistrationParams(aci: state.aci, e164: state.e164))
         case .changingNumber(let state):
-            return .changingNumber(.init(
+            return .changingNumber(RegistrationMode.ChangeNumberParams(
                 oldE164: state.oldE164,
                 oldAuthToken: state.oldAuthToken,
                 localAci: state.localAci,
@@ -236,7 +256,7 @@ extension RegistrationCoordinatorLoaderImpl.Mode {
         case .registering:
             return "initial registration"
         case .reRegistering(let reRegisteringState):
-            return "re-registration aci:\(reRegisteringState.aci) e164:\(reRegisteringState.e164.stringValue)"
+            return "re-registration aci:\(reRegisteringState.aci as Optional) e164:\(reRegisteringState.e164.stringValue)"
         case .changingNumber(let changeNumberState):
             return "changing number: aci:\(changeNumberState.localAci) old e164:\(changeNumberState.oldE164.stringValue)"
         }

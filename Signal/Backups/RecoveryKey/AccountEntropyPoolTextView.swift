@@ -107,7 +107,7 @@ class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
         }
 
         translatesAutoresizingMaskIntoConstraints = false
-        ScreenshotBlocking.blockScreenshots(of: self)
+        ScreenshotBlocking.setBlocksScreenshots(true, of: self)
     }
 
     required init?(coder: NSCoder) {

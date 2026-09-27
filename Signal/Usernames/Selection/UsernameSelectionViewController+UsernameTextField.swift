@@ -35,7 +35,7 @@ extension UsernameSelectionViewController {
         }
 
         func setColorsForCurrentTheme() {
-            backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white
+            backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .white
 
             textField.setColorsForCurrentTheme()
         }

@@ -88,11 +88,10 @@ final class CallKitCallManager {
         return CXHandle(type: type, value: value)
     }
 
-    static func callTargetForHandleWithSneakyTransaction(_ handle: String) -> CallTarget? {
+    static func callTargetForHandleWithSneakyTransaction(_ handle: String, registeredState: RegisteredState) -> CallTarget? {
         owsAssertDebug(!handle.isEmpty)
 
         let phoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         if handle.hasPrefix(kAnonymousCallHandlePrefix) || handle.hasPrefix(kCallLinkCallHandlePrefix) {
             return CallKitIdStore.callTarget(forCallKitId: handle)
@@ -108,9 +107,7 @@ final class CallKitCallManager {
         }
 
         let phoneNumber: String? = {
-            guard let localNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
-                return nil
-            }
+            let localNumber: String = registeredState.localIdentifiers.phoneNumber
             let phoneNumbers = phoneNumberUtil.parsePhoneNumbers(
                 userSpecifiedText: handle,
                 localPhoneNumber: localNumber,

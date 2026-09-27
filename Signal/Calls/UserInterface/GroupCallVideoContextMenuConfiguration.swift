@@ -149,8 +149,7 @@ enum GroupCallVideoContextMenuConfiguration {
         if
             let callLinkCall = groupCall as? CallLinkCall,
             callLinkCall.isAdmin,
-            let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction,
-            !localIdentifiers.contains(serviceId: aci)
+            !tsAccountManager.mustBeRegisteredStateWithMaybeSneakyTransaction().localIdentifiers.contains(serviceId: aci)
         {
             contextMenuActions.append(UIAction(
                 title: OWSLocalizedString(

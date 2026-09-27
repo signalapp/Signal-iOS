@@ -198,6 +198,7 @@ final class IndividualCallService: CallServiceStateObserver {
 
         let callOfferHandler = CallOfferHandlerImpl(
             identityManager: identityManager,
+            notificationPreferencesManager: DependenciesBridge.shared.notificationPreferencesManager,
             notificationPresenter: notificationPresenter,
             profileManager: profileManager,
             tsAccountManager: tsAccountManager,
@@ -229,7 +230,7 @@ final class IndividualCallService: CallServiceStateObserver {
 
         let newCall = SignalCall(individualCall: individualCall)
 
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [newCall] in
             let backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak newCall] status in
                 AssertIsOnMainThread()
 
@@ -442,6 +443,7 @@ final class IndividualCallService: CallServiceStateObserver {
                 if DebugFlags.callingNeverRelay.get() {
                     iceServers = iceServers.filter { !$0.urlStrings.contains { $0.starts(with: "turn:") || $0.starts(with: "turns:") } }
                 }
+                let statsIntervalSecs = DebugFlags.callingStatsIntervalSecs.get()
 
                 // Extract the current config so settings stay in sync.
                 let remoteConfigCurrent = RemoteConfig.current
@@ -457,6 +459,7 @@ final class IndividualCallService: CallServiceStateObserver {
                     enableVp9Encode: RingrtcVp9Config.enableVp9Encode(with: remoteConfigCurrent),
                     enableVp9Decode: RingrtcVp9Config.enableVp9Decode(with: remoteConfigCurrent),
                     dredDuration: remoteConfigCurrent.ringrtcDredDuration,
+                    statsIntervalSecs: statsIntervalSecs > 0 ? UInt16(exactly: statsIntervalSecs) : nil,
                 )
             } catch {
                 owsFailDebug("\(error)")

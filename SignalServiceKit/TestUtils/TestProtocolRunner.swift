@@ -302,14 +302,16 @@ struct LocalSignalClient: TestSignalClient {
     }
 
     var e164Identifier: SignalE164Identifier? {
-        return DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        return try! tsAccountManager.registeredStateWithMaybeSneakyTransaction().localIdentifiers.phoneNumber
     }
 
     var serviceId: ServiceId {
-        let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let registeredState = try! tsAccountManager.registeredStateWithMaybeSneakyTransaction()
         switch identity {
-        case .aci: return localIdentifiers.aci
-        case .pni: return localIdentifiers.pni!
+        case .aci: return registeredState.localIdentifiers.aci
+        case .pni: return registeredState.localIdentifiers.pni!
         }
     }
 

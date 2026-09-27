@@ -129,7 +129,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
 
     private lazy var progressBar: UIProgressView = {
         let bar = UIProgressView()
-        bar.progressTintColor = .ows_accentBlue
+        bar.progressTintColor = .Signal.accent
         return bar
     }()
 

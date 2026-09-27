@@ -24,12 +24,12 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
 
-struct DeviceTransferProtos_File: Sendable {
+nonisolated struct DeviceTransferProtos_File: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -48,7 +48,7 @@ struct DeviceTransferProtos_File: Sendable {
   init() {}
 }
 
-struct DeviceTransferProtos_Default: Sendable {
+nonisolated struct DeviceTransferProtos_Default: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -64,7 +64,7 @@ struct DeviceTransferProtos_Default: Sendable {
   init() {}
 }
 
-struct DeviceTransferProtos_Database: Sendable {
+nonisolated struct DeviceTransferProtos_Database: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -100,7 +100,7 @@ struct DeviceTransferProtos_Database: Sendable {
   fileprivate var _wal: DeviceTransferProtos_File? = nil
 }
 
-struct DeviceTransferProtos_Manifest: Sendable {
+nonisolated struct DeviceTransferProtos_Manifest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -134,9 +134,9 @@ struct DeviceTransferProtos_Manifest: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "DeviceTransferProtos"
+fileprivate nonisolated let _protobuf_package = "DeviceTransferProtos"
 
-extension DeviceTransferProtos_File: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension DeviceTransferProtos_File: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".File"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}identifier\0\u{1}relativePath\0\u{1}estimatedSize\0")
 
@@ -176,7 +176,7 @@ extension DeviceTransferProtos_File: SwiftProtobuf.Message, SwiftProtobuf._Messa
   }
 }
 
-extension DeviceTransferProtos_Default: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension DeviceTransferProtos_Default: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Default"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}key\0\u{1}encodedValue\0")
 
@@ -211,7 +211,7 @@ extension DeviceTransferProtos_Default: SwiftProtobuf.Message, SwiftProtobuf._Me
   }
 }
 
-extension DeviceTransferProtos_Database: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension DeviceTransferProtos_Database: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Database"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}key\0\u{1}database\0\u{1}wal\0")
 
@@ -255,7 +255,7 @@ extension DeviceTransferProtos_Database: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
-extension DeviceTransferProtos_Manifest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension DeviceTransferProtos_Manifest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Manifest"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}grdbSchemaVersion\0\u{1}database\0\u{1}appDefaults\0\u{1}standardDefaults\0\u{1}files\0\u{1}estimatedTotalSize\0")
 

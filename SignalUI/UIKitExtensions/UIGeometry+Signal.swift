@@ -21,15 +21,6 @@ public extension CGSize {
     var isPortrait: Bool {
         !isLandscape
     }
-
-    func roundedForScreenScale() -> CGSize {
-        let screenScale = UIScreen.main.scale
-        guard screenScale > 1 else { return self }
-        return CGSize(
-            width: (width * screenScale).rounded(.up) / screenScale,
-            height: (height * screenScale).rounded(.up) / screenScale,
-        )
-    }
 }
 
 public extension CGPoint {
@@ -43,12 +34,6 @@ public extension CGPoint {
 }
 
 public extension CGFloat {
-
-    static let hairlineWidth: CGFloat = 1 / UIScreen.main.scale
-
-    static func hairlineWidthFraction(_ fraction: CGFloat) -> CGFloat {
-        fraction * .hairlineWidth
-    }
 
     private static let iPhone5ScreenWidth: CGFloat = 320
 

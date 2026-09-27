@@ -13,7 +13,6 @@ public import SignalUI
 public class CVItemModel: NSObject {
     public let interaction: TSInteraction
     public let thread: TSThread
-    public let threadAssociatedData: ThreadAssociatedData
 
     // The item state loaded from the database.
     public let componentState: CVComponentState
@@ -39,7 +38,6 @@ public class CVItemModel: NSObject {
     init(
         interaction: TSInteraction,
         thread: TSThread,
-        threadAssociatedData: ThreadAssociatedData,
         componentState: CVComponentState,
         itemViewState: CVItemViewState,
         coreState: CVCoreState,
@@ -47,7 +45,6 @@ public class CVItemModel: NSObject {
 
         self.interaction = interaction
         self.thread = thread
-        self.threadAssociatedData = threadAssociatedData
         self.componentState = componentState
         self.itemViewState = itemViewState
         self.coreState = coreState

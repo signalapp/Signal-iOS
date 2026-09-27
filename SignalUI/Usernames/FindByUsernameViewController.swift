@@ -51,12 +51,9 @@ public class FindByUsernameViewController: OWSTableViewController2 {
             comment: "Title for the view for finding accounts by their username",
         )
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: CommonStrings.nextButton,
-            style: .done,
-            target: self,
-            action: #selector(didTapNext),
-        )
+        navigationItem.rightBarButtonItem = .nextButton { [weak self] in
+            self?.didTapNext()
+        }
         navigationItem.rightBarButtonItem?.isEnabled = false
 
         shouldAvoidKeyboard = true
@@ -145,7 +142,6 @@ public class FindByUsernameViewController: OWSTableViewController2 {
         }
     }
 
-    @objc
     private func didTapNext() {
         let usernameValue = self.usernameValue
         usernameTextField.resignFirstResponder()

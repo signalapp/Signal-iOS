@@ -143,7 +143,7 @@ private class TextFrameLayer: CAShapeLayer {
 
     private func commonInit() {
         fillColor = UIColor.clear.cgColor
-        lineWidth = .hairlineWidthFraction(3)
+        lineWidth = UITraitCollection.current.hairlineWidthFraction(3)
         strokeColor = UIColor.white.cgColor
 
         addSublayer(leftCircleLayer)
@@ -386,7 +386,7 @@ class ImageEditorCanvasView: UIView, ImageEditorModelObserver {
             ),
             attributes: [
                 .font: UIFont.dynamicTypeBody,
-                .foregroundColor: UIColor.ows_white,
+                .foregroundColor: UIColor.white,
             ],
         )
         label.attributedText = text
@@ -1051,7 +1051,7 @@ class ImageEditorCanvasView: UIView, ImageEditorModelObserver {
         // * The screen scaling (so that text looks sharp on Retina devices.
         // * The item's scaling (so that text doesn't become blurry as you make it larger).
         // * Model transform (so that text doesn't become blurry as you zoom the content).
-        textLayer.contentsScale = UIScreen.main.scale * item.scaling * transform.scaling
+        textLayer.contentsScale = UITraitCollection.current.displayScale * item.scaling * transform.scaling
 
         let maxWidth = imageFrame.size.width * unitWidth
         let textSize = attributedString.boundingRect(
@@ -1161,7 +1161,7 @@ class ImageEditorCanvasView: UIView, ImageEditorModelObserver {
         transform: ImageEditorTransform,
         viewSize: CGSize,
     ) -> CALayer {
-        imageLayer.contentsScale = UIScreen.main.scale * item.scaling * transform.scaling
+        imageLayer.contentsScale = UITraitCollection.current.displayScale * item.scaling * transform.scaling
         let stickerSize = CGSize(square: 175 * imageFrame.size.width / item.referenceImageWidth)
         let centerInCanvas = item.unitCenter.fromUnitCoordinates(viewBounds: imageFrame)
         imageLayer.frame = imageFrame

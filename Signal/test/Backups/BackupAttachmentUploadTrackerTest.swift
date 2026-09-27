@@ -44,7 +44,7 @@ final class BackupAttachmentUploadTrackerTest: BackupAttachmentTrackerTest<
             ExpectedUpdate(
                 update: UploadUpdate(.uploading, uploaded: 4, total: 4),
                 nextSteps: {
-                    uploadQueueStatusManager.currentStatusMock = .empty
+                    await uploadQueueStatusManager.setCurrentStatusMock(.empty)
                 },
             ),
             ExpectedUpdate(
@@ -88,7 +88,7 @@ final class BackupAttachmentUploadTrackerTest: BackupAttachmentTrackerTest<
             ExpectedUpdate(
                 update: UploadUpdate(.uploading, uploaded: 4, total: 4),
                 nextSteps: {
-                    uploadQueueStatusManager.currentStatusMock = .empty
+                    await uploadQueueStatusManager.setCurrentStatusMock(.empty)
                 },
             ),
             ExpectedUpdate(
@@ -121,7 +121,7 @@ final class BackupAttachmentUploadTrackerTest: BackupAttachmentTrackerTest<
             ExpectedUpdate(
                 update: UploadUpdate(.uploading, uploaded: 1, total: 1),
                 nextSteps: {
-                    uploadQueueStatusManager.currentStatusMock = .empty
+                    await uploadQueueStatusManager.setCurrentStatusMock(.empty)
                 },
             ),
             ExpectedUpdate(
@@ -173,25 +173,25 @@ private extension BackupAttachmentUploadTracker.UploadUpdate {
 // MARK: -
 
 private class MockUploadQueueStatusManager: BackupAttachmentUploadQueueStatusManager {
-    var currentStatusMock: BackupAttachmentUploadQueueStatus {
-        didSet {
-            NotificationCenter.default.postOnMainThread(
-                name: .backupAttachmentUploadQueueStatusDidChange(for: .fullsize),
-                object: nil,
-            )
-        }
+    private var _currentStatusMock: BackupAttachmentUploadQueueStatus
+    func setCurrentStatusMock(_ currentMock: BackupAttachmentUploadQueueStatus) {
+        _currentStatusMock = currentMock
+        NotificationCenter.default.postOnMainThread(
+            name: .backupAttachmentUploadQueueStatusDidChange(for: .fullsize),
+            object: nil,
+        )
     }
 
     init(_ initialStatus: BackupAttachmentUploadQueueStatus) {
-        self.currentStatusMock = initialStatus
+        self._currentStatusMock = initialStatus
     }
 
     func currentStatus(for mode: BackupAttachmentUploadQueueMode) -> BackupAttachmentUploadQueueStatus {
-        return currentStatusMock
+        return _currentStatusMock
     }
 
     func beginObservingIfNecessary(for mode: BackupAttachmentUploadQueueMode) -> BackupAttachmentUploadQueueStatus {
-        return currentStatusMock
+        return _currentStatusMock
     }
 
     func didEmptyQueue(for mode: BackupAttachmentUploadQueueMode) {

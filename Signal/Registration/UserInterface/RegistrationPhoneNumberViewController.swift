@@ -150,7 +150,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
 
     private lazy var validationWarningLabel: UILabel = {
         let result = UILabel()
-        result.textColor = .ows_accentRed
+        result.textColor = .Signal.red
         result.numberOfLines = 0
         result.font = .dynamicTypeSubheadlineClamped
         result.accessibilityIdentifier = "registration.phonenumber.validationWarningLabel"
@@ -170,15 +170,9 @@ class RegistrationPhoneNumberViewController: OWSViewController {
 
         view.backgroundColor = .Signal.background
 
-        navigationItem.rightBarButtonItem = {
-            let button = UIBarButtonItem(
-                title: CommonStrings.nextButton,
-                primaryAction: UIAction { [weak self] _ in self?.didTapNext() },
-            )
-            button.style = if #available(iOS 26, *) { .prominent } else { .done }
-            button.accessibilityIdentifier = "registration.phonenumber.nextButton"
-            return button
-        }()
+        navigationItem.rightBarButtonItem = .nextButton { [weak self] in
+            self?.didTapNext()
+        }
 
         let stackView = addStaticContentStackView(
             arrangedSubviews: [
@@ -251,10 +245,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
             Logger.debug("reregistration")
         }
 
-        if
-            canSwitchToLinking,
-            UIDevice.current.isIPad || BuildFlags.linkedPhones
-        {
+        if canSwitchToLinking {
             actions.insert(UIAction(
                 title: OWSLocalizedString(
                     "LINK_DEVICE_MENU_ACTION",

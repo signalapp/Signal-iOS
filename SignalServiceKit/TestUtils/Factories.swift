@@ -1663,9 +1663,10 @@ public class ImageFactory {
 
     public class func buildImage(size: CGSize, backgroundColor: UIColor, textColor: UIColor, text: String) -> UIImage {
         return autoreleasepool {
+            let displayScale = UITraitCollection.current.displayScale
             let imageSize = CGSize(
-                width: size.width / UIScreen.main.scale,
-                height: size.height / UIScreen.main.scale,
+                width: size.width / displayScale,
+                height: size.height / displayScale,
             )
 
             let imageFrame = CGRect(origin: .zero, size: imageSize)
@@ -1683,7 +1684,7 @@ public class ImageFactory {
                 context: nil,
             )
 
-            UIGraphicsBeginImageContextWithOptions(imageFrame.size, false, UIScreen.main.scale)
+            UIGraphicsBeginImageContextWithOptions(imageFrame.size, false, displayScale)
             guard let context = UIGraphicsGetCurrentContext() else {
                 owsFailDebug("context was unexpectedly nil")
                 return UIImage()

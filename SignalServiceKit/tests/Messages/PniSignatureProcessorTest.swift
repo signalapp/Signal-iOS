@@ -9,7 +9,7 @@ import XCTest
 @testable import SignalServiceKit
 
 private class MockRecipientMerger: RecipientMerger {
-    func applyMergeForLocalAccount(aci: Aci, phoneNumber: E164, pni: Pni?, shouldUpdateStorageService: Bool, tx: DBWriteTransaction) -> SignalRecipient {
+    func applyMergeForLocalAccount(aci: Aci, phoneNumber: E164?, pni: Pni?, shouldUpdateStorageService: Bool, tx: DBWriteTransaction) -> SignalRecipient {
         fatalError()
     }
 

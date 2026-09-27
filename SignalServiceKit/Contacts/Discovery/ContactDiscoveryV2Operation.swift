@@ -268,12 +268,12 @@ struct CdsPreviousE164: Codable, FetchableRecord, PersistableRecord {
 }
 
 private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2PersistentState {
-    private static let tokenStore = KeyValueStore(collection: "CdsMetadata")
+    private static let tokenStore = NewKeyValueStore(collection: "CdsMetadata")
     private static let tokenKey = "token"
 
     func load() -> (token: Data, e164s: Set<E164>)? {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            guard let existingToken = Self.tokenStore.getData(Self.tokenKey, transaction: transaction) else {
+            guard let existingToken = Self.tokenStore.fetchValue(Data.self, forKey: Self.tokenKey, tx: transaction) else {
                 return nil
             }
             let validatedE164s: Set<E164>
@@ -300,7 +300,7 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             let database = transaction.database
 
-            Self.tokenStore.setData(newToken, key: Self.tokenKey, transaction: transaction)
+            Self.tokenStore.writeValue(newToken, forKey: Self.tokenKey, tx: transaction)
 
             // If we didn't use an old token, clear any local e164s. On the initial
             // request, this should be a no-op. If we're trying to recover from a
@@ -321,7 +321,7 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
     func reset() async {
         Logger.warn("CDSv2: Resetting token")
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-            Self.tokenStore.removeValue(forKey: Self.tokenKey, transaction: transaction)
+            Self.tokenStore.removeValue(forKey: Self.tokenKey, tx: transaction)
         }
     }
 }

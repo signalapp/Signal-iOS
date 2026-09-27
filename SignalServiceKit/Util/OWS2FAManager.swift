@@ -225,7 +225,7 @@ public class OWS2FAManager {
     public func markDisabled(transaction tx: DBWriteTransaction) {
         keyValueStore.removeValue(forKey: StoreKeys.pinCode, tx: tx)
         keyValueStore.removeValue(forKey: StoreKeys.isRegistrationLockEnabled, tx: tx)
-        accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: .implicit(), tx: tx)
+        accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: .implicit, tx: tx)
     }
 
     public func clearLocalPinCode(transaction: DBWriteTransaction) {
@@ -250,7 +250,7 @@ public class OWS2FAManager {
             setLastCompletedReminderDate(Date(), tx: transaction)
         }
 
-        accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: .implicit(), tx: transaction)
+        accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: .implicit, tx: transaction)
     }
 
     public func restorePinFromBackup(_ pin: String, transaction: DBWriteTransaction) {

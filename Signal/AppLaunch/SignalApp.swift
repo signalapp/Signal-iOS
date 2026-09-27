@@ -23,9 +23,13 @@ public class SignalApp {
         return conversationSplitViewController?.selectedThread != nil
     }
 
-    func showConversationSplitView(appReadiness: AppReadinessSetter) {
-        let splitViewController = ConversationSplitViewController(appReadiness: appReadiness)
-        UIApplication.shared.delegate?.window??.rootViewController = splitViewController
+    func showConversationSplitView(in window: UIWindow? = nil) {
+        guard let window = window ?? CurrentAppContext().mainWindow else {
+            owsFailDebug("Missing window.")
+            return
+        }
+        let splitViewController = ConversationSplitViewController()
+        window.rootViewController = splitViewController
         self.conversationSplitViewController = splitViewController
     }
 
@@ -47,7 +51,12 @@ public class SignalApp {
     }
 
     @MainActor
-    func showLaunchInterface(_ launchInterface: LaunchInterface, appReadiness: AppReadinessSetter, launchStartedAt: TimeInterval) {
+    func showLaunchInterface(
+        _ launchInterface: LaunchInterface,
+        in window: UIWindow,
+        appReadiness: AppReadinessSetter,
+        launchStartedAt: TimeInterval,
+    ) {
         owsPrecondition(appReadiness.isAppReady)
 
         let startupDuration = CACurrentMediaTime() - launchStartedAt
@@ -63,14 +72,13 @@ public class SignalApp {
 
         switch launchInterface {
         case .registration(let registrationLoader, let desiredMode):
-            showRegistration(loader: registrationLoader, desiredMode: desiredMode, appReadiness: appReadiness)
-            appReadiness.setUIIsReady()
+            showRegistration(loader: registrationLoader, desiredMode: desiredMode, in: window)
         case .secondaryProvisioning:
-            showSecondaryProvisioning(skipOnboarding: false, appReadiness: appReadiness)
-            appReadiness.setUIIsReady()
+            showSecondaryProvisioning(skipOnboarding: false)
         case .chatList:
-            showConversationSplitView(appReadiness: appReadiness)
+            showConversationSplitView(in: window)
         }
+        appReadiness.setUIIsReady()
 
         UIViewController.attemptRotationToDeviceOrientation()
     }
@@ -91,8 +99,12 @@ public class SignalApp {
     func showRegistration(
         loader: RegistrationCoordinatorLoader,
         desiredMode: RegistrationMode,
-        appReadiness: AppReadinessSetter,
+        in window: UIWindow? = nil,
     ) {
+        guard let window = window ?? CurrentAppContext().mainWindow else {
+            owsFailDebug("Missing window.")
+            return
+        }
         let logger: PrefixedLogger
         switch desiredMode {
         case .registering:
@@ -108,19 +120,16 @@ public class SignalApp {
         let coordinator = SSKEnvironment.shared.databaseStorageRef.write { tx in
             return loader.coordinator(forDesiredMode: desiredMode, transaction: tx, logger: logger)
         }
-        let navController = RegistrationNavigationController.withCoordinator(coordinator, appReadiness: appReadiness)
+        let navController = RegistrationNavigationController.withCoordinator(coordinator)
 
-        UIApplication.shared.delegate?.window??.rootViewController = navController
+        window.rootViewController = navController
 
         conversationSplitViewController = nil
     }
 
     @MainActor
-    func showSecondaryProvisioning(skipOnboarding: Bool, appReadiness: AppReadinessSetter) {
-        ProvisioningController.presentProvisioningFlow(
-            skipOnboarding: skipOnboarding,
-            appReadiness: appReadiness,
-        )
+    func showSecondaryProvisioning(skipOnboarding: Bool) {
+        ProvisioningController.presentProvisioningFlow(skipOnboarding: skipOnboarding)
         conversationSplitViewController = nil
     }
 
@@ -322,7 +331,7 @@ public class SignalApp {
 
         UserNotificationPresenter().clearAllNotifications()
         UIApplication.shared.applicationIconBadgeNumber = 0
-        AppDelegate.updateApplicationShortcutItems(isRegistered: false)
+        AppLifecycleManager.updateApplicationShortcutItems(isRegistered: false)
 
         DebugLogger.shared.wipeLogsAlways(appContext: CurrentAppContext() as! MainAppContext)
     }

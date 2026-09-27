@@ -787,12 +787,12 @@ private class LinkPreviewTooltipView: TooltipView {
             comment: "Tooltip prompting the user to visit a story link.",
         )
         titleLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
-        titleLabel.textColor = .ows_white
+        titleLabel.textColor = .white
 
         let urlLabel = UILabel()
         urlLabel.text = url.absoluteString
         urlLabel.font = .dynamicTypeCaption1Clamped
-        urlLabel.textColor = .ows_white
+        urlLabel.textColor = .white
 
         let stackView = UIStackView(arrangedSubviews: [titleLabel, urlLabel])
         stackView.axis = .vertical
@@ -804,7 +804,7 @@ private class LinkPreviewTooltipView: TooltipView {
         return stackView
     }
 
-    override var bubbleColor: UIColor { .ows_black }
+    override var bubbleColor: UIColor { .black }
     override var bubbleHSpacing: CGFloat { 16 }
 
     override var tailDirection: TooltipView.TailDirection { .down }

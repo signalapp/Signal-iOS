@@ -185,7 +185,7 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
     }
 
     private func updateProceedButtonState() {
-        footerView.proceedButton.isEnabled = isAtLeastOneFieldSelected()
+        footerView.isAllowedToProceed = isAtLeastOneFieldSelected()
     }
 
     private func toggleSelection(for contactShareField: ContactShareField) {

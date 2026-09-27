@@ -458,7 +458,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     private func buildUsernameErrorIconView() -> UIView {
         let imageView = UIImageView.withTemplateImageName(
             "error-circle",
-            tintColor: .ows_accentRed,
+            tintColor: .Signal.red,
         )
 
         imageView.autoPinToSquareAspectRatio()
@@ -698,7 +698,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             fromViewController: self,
             title: CommonStrings.updatingModal,
             canCancel: false,
-            asyncBlock: { modal in
+            asyncBlock: { [self] modal in
                 let databaseStorage = SSKEnvironment.shared.databaseStorageRef
                 do {
                     let updatePromise = await databaseStorage.awaitableWrite { tx in
@@ -718,7 +718,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                             visibleBadgeIds: profileValues.visibleBadgeIds.changedValue,
                             unsavedRotatedProfileKey: nil,
                             userProfileWriter: .localUser,
-                            authedAccount: .implicit(),
+                            authedAccount: .implicit,
                             tx: tx,
                         )
                     }

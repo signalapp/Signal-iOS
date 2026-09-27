@@ -31,7 +31,7 @@ class RegistrationQuickRestoreQRCodeViewController: BaseQuickRestoreQRCodeViewCo
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        Task {
+        Task { [self] in
             do {
                 let message = try await waitForMessage()
                 presenter?.didReceiveRegistrationMessage(message)

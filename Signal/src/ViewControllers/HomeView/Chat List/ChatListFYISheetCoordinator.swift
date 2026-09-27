@@ -51,6 +51,7 @@ class ChatListFYISheetCoordinator {
         struct BackupArchiveError {}
 
         struct LowDiskSpaceWarning {
+            let bytesRequiredToAvoidWarning: UInt64
             let now: Date
         }
 
@@ -86,6 +87,7 @@ class ChatListFYISheetCoordinator {
     private let profileBadgeManager: ProfileBadgeManager
     private let safetyTipsManager: SafetyTipsManager
     private let localFileBackupManager: LocalFileBackupManager
+    private let localFileBackupStore: LocalFileBackupStore
 
     init(
         backupArchiveErrorStore: BackupArchiveErrorStore,
@@ -102,6 +104,7 @@ class ChatListFYISheetCoordinator {
         profileBadgeManager: ProfileBadgeManager,
         profileManager: ProfileManager,
         localFileBackupManager: LocalFileBackupManager,
+        localFileBackupStore: LocalFileBackupStore,
     ) {
         self.backupArchiveErrorStore = backupArchiveErrorStore
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
@@ -117,6 +120,7 @@ class ChatListFYISheetCoordinator {
         self.profileBadgeManager = profileBadgeManager
         self.safetyTipsManager = SafetyTipsManager()
         self.localFileBackupManager = localFileBackupManager
+        self.localFileBackupStore = localFileBackupStore
     }
 
     func presentIfNecessary(
@@ -179,8 +183,11 @@ class ChatListFYISheetCoordinator {
             return .keyTransparencySelfCheckFailed(FYISheet.KeyTransparencySelfCheckFailed())
         } else if backupArchiveErrorStore.hasError(tx: tx) {
             return .backupArchiveError(FYISheet.BackupArchiveError())
-        } else if lowDiskSpaceManager.getNeedsWarning(now: now, tx: tx) {
-            return .lowDiskSpaceWarning(FYISheet.LowDiskSpaceWarning(now: now))
+        } else if let bytesRequiredToAvoidWarning = lowDiskSpaceManager.getNeedsWarning(now: now, tx: tx) {
+            return .lowDiskSpaceWarning(FYISheet.LowDiskSpaceWarning(
+                bytesRequiredToAvoidWarning: bytesRequiredToAvoidWarning,
+                now: now,
+            ))
         } else if localFileBackupManager.shouldPromptUserToEnableLocalBackups(tx: tx) {
             return .enableLocalBackups(FYISheet.EnableLocalBackups())
         } else if localFileBackupManager.shouldPromptUserToChooseNewLocalBackupLocation(tx: tx) {
@@ -612,7 +619,12 @@ class ChatListFYISheetCoordinator {
         let logger = PrefixedLogger(prefix: "[DiskSpace]")
         logger.warn("Showing LowDiskSpaceWarning FYI sheet.")
 
-        let warningSheet = LowDiskSpaceWarningHeroSheet()
+        let warningSheet = LowDiskSpaceWarningHeroSheet(
+            localizedDeviceModel: UIDevice.current.localizedModel,
+            localizedRequiredBytes: OWSByteCountFormatStyle(zeroPadFractionDigits: false).format(
+                lowDiskSpaceWarning.bytesRequiredToAvoidWarning,
+            ),
+        )
 
         chatListViewController.present(warningSheet, animated: true) { [self] in
             db.write { tx in
@@ -631,7 +643,11 @@ class ChatListFYISheetCoordinator {
         let logger = PrefixedLogger(prefix: "[LocalBackups]")
         logger.warn("Showing EnableLocalBackups FYI sheet.")
 
-        let warningSheet = EnableLocalBackupsHeroSheet()
+        let warningSheet = EnableLocalBackupsHeroSheet(
+            fromViewController: chatListViewController,
+            db: db,
+            localFileBackupStore: localFileBackupStore,
+        )
 
         chatListViewController.present(warningSheet, animated: true) { [self] in
             db.write { tx in
@@ -648,7 +664,19 @@ class ChatListFYISheetCoordinator {
         logger.warn("Showing ChooseNewLocalBackupLocation FYI sheet.")
 
         let warningSheet = ChooseNewLocalBackupLocationHeroSheet(onChooseNewFileLocation: { [self] in
-            localFileBackupManager.promptUserToChooseFileLocationForArchiving(fromViewController: chatListViewController, completion: nil)
+            LocalFileBackupArchiveFolderPicker.present(
+                fromViewController: chatListViewController,
+                manager: localFileBackupManager,
+                onSuccess: {
+                    chatListViewController.presentToast(
+                        text: OWSLocalizedString(
+                            "SETTINGS_LOCAL_FILE_BACKUP_FOLDER_UPDATED",
+                            comment: "Text for a toast confirming the user changed their local file backup location.",
+                        ),
+                        image: .checkCircle,
+                    )
+                },
+            )
         })
 
         chatListViewController.present(warningSheet, animated: true) { [self] in
@@ -880,7 +908,10 @@ private final class BackupArchiveErrorHeroSheet: HeroSheetViewController {
 // MARK: -
 
 private final class LowDiskSpaceWarningHeroSheet: HeroSheetViewController {
-    init() {
+    init(
+        localizedDeviceModel: String,
+        localizedRequiredBytes: String,
+    ) {
         super.init(
             hero: .circleIcon(
                 icon: .errorTriangle,
@@ -892,11 +923,43 @@ private final class LowDiskSpaceWarningHeroSheet: HeroSheetViewController {
                 "LOW_DISK_SPACE_WARNING_SHEET_TITLE",
                 comment: "Title for a sheet warning the user that their device is low on storage space.",
             ),
-            body: OWSLocalizedString(
-                "LOW_DISK_SPACE_WARNING_SHEET_MESSAGE",
-                comment: "Message for a sheet warning the user that their device is low on storage space.",
-            ),
-            primaryButton: .dismissing(title: CommonStrings.acknowledgeButton),
+            body: Body([
+                .text(.plain(String(
+                    format: OWSLocalizedString(
+                        "LOW_DISK_SPACE_WARNING_SHEET_MESSAGE_FORMAT",
+                        comment: "Message for a sheet warning the user that their device is low on storage space. Embeds 1:{{ the localized name of the user's device model, e.g. iPhone }}; 2:{{ an amount of storage space as a file size, e.g. 1 GB }}.",
+                    ),
+                    localizedDeviceModel,
+                    localizedRequiredBytes,
+                ))),
+                .customSpacing(20),
+                .bullets([
+                    Body.BulletPoint(
+                        style: .numberedCircle(1),
+                        text: OWSLocalizedString(
+                            "LOW_DISK_SPACE_WARNING_SHEET_SUGGESTION_REMOVE_APPS",
+                            comment: "A suggestion for freeing up storage space, on a sheet warning the user that their device is low on storage space.",
+                        ),
+                    ),
+                    Body.BulletPoint(
+                        style: .numberedCircle(2),
+                        text: OWSLocalizedString(
+                            "LOW_DISK_SPACE_WARNING_SHEET_SUGGESTION_DELETE_CAMERA_ROLL_MEDIA",
+                            comment: "A suggestion for freeing up storage space, on a sheet warning the user that their device is low on storage space.",
+                        ),
+                    ),
+                    Body.BulletPoint(
+                        style: .numberedCircle(3),
+                        text: OWSLocalizedString(
+                            "LOW_DISK_SPACE_WARNING_SHEET_SUGGESTION_DELETE_DOWNLOADED_MEDIA",
+                            comment: "A suggestion for freeing up storage space, on a sheet warning the user that their device is low on storage space.",
+                        ),
+                    ),
+                ]),
+                .customSpacing(20),
+            ]),
+            primary: .button(.dismissing(title: CommonStrings.acknowledgeButton)),
+            secondary: nil,
         )
     }
 }
@@ -904,26 +967,87 @@ private final class LowDiskSpaceWarningHeroSheet: HeroSheetViewController {
 // MARK: -
 
 private final class EnableLocalBackupsHeroSheet: HeroSheetViewController {
-    init() {
+    private let fromViewController: UIViewController
+    private var didTapEnable = false
+
+    init(
+        fromViewController: UIViewController,
+        db: DB,
+        localFileBackupStore: LocalFileBackupStore,
+    ) {
+        self.fromViewController = fromViewController
         super.init(
-            hero: .image(.backupsOnDevice),
+            hero: .circleIcon(
+                icon: .backup,
+                iconSize: 40,
+                tintColor: UIColor(rgbHex: 0x3B45FD),
+                backgroundColor: UIColor(rgbHex: 0xE0E5FF),
+            ),
             title: OWSLocalizedString(
-                "ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE",
+                "RESTORE_COMPLETE_LOCAL_FILE_BACKUPS_HERO_SHEET_TITLE",
                 comment: "Title for a sheet asking the user if they want to enable local file backups.",
             ),
             body: OWSLocalizedString(
-                "ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE",
+                "RESTORE_COMPLETE_LOCAL_FILE_BACKUPS_HERO_SHEET_MESSAGE",
                 comment: "Message for a sheet asking the user if they want to enable local file backups.",
             ),
             primaryButton: Button(title: OWSLocalizedString(
-                "ENABLE_LOCAL_FILE_BACKUPS_HERO_SHEET_BUTTON",
-                comment: "Button for a sheet asking the user if they want to enable local file backups",
+                "RESTORE_COMPLETE_LOCAL_FILE_BACKUPS_HERO_SHEET_CHOOSE_FOLDER_BUTTON",
+                comment: "Button on a sheet prompting the user to pick a folder on their device where on-device backups will be saved",
             ), action: { heroSheet in
+                (heroSheet as? EnableLocalBackupsHeroSheet)?.didTapEnable = true
                 heroSheet.dismiss(animated: true)
-                // TODO: [KC] go directly to local file backups page
-                SignalApp.shared.showAppSettings(mode: .backups())
+                LocalFileBackupArchiveFolderPicker.present(
+                    fromViewController: fromViewController,
+                    manager: DependenciesBridge.shared.localFileBackupManager,
+                    onSuccess: {
+                        db.write { tx in
+                            localFileBackupStore.setLocalBackupsEnabled(value: true, tx: tx)
+                        }
+                        fromViewController.presentToast(
+                            text: OWSLocalizedString(
+                                "ENABLE_LOCAL_FILE_BACKUPS_TOAST_CONFIRM",
+                                comment: "Label for a toast that confirms that local backups are enabled.",
+                            ),
+                            image: .checkCircle,
+                        )
+                    },
+                    onCancel: {
+                        Self.presentDisabledToast(from: fromViewController)
+                    },
+                )
             }),
-            secondaryButton: .dismissing(title: CommonStrings.notNowButton, style: .secondary),
+            secondaryButton: Button(
+                title: OWSLocalizedString(
+                    "RESTORE_COMPLETE_LOCAL_FILE_BACKUPS_HERO_SHEET_DISABLE_BUTTON",
+                    comment: "Button for a sheet asking the user if they want to disable local backups",
+                ),
+                style: .secondary,
+                action: .custom({ heroSheet in
+                    db.write { tx in
+                        // backups should be disabled right after a restore, but just in case, set it explicitly.
+                        localFileBackupStore.setLocalBackupsEnabled(value: false, tx: tx)
+                    }
+                    heroSheet.dismiss(animated: true)
+                }),
+            ),
+        )
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if !didTapEnable {
+            Self.presentDisabledToast(from: fromViewController)
+        }
+    }
+
+    private static func presentDisabledToast(from viewController: UIViewController) {
+        viewController.presentToast(
+            text: OWSLocalizedString(
+                "DISABLE_LOCAL_FILE_BACKUPS_TOAST_CONFIRM",
+                comment: "Label for a toast that confirms that local backups are disabled.",
+            ),
+            image: .backup,
         )
     }
 }

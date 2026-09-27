@@ -14,51 +14,31 @@ class MockPreKeyManager: PreKeyManager {
     func checkPreKeysIfNecessary() async throws { }
     var attemptedRefreshes: [(OWSIdentity, Bool)] = []
 
-    func createPreKeysForRegistration() async -> RegistrationPreKeyUploadBundles {
-        let identityKeyPair = ECKeyPair.generateKeyPair()
-        return .init(
-            aci: .init(
-                identity: .aci,
-                identityKeyPair: identityKeyPair,
-                signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: identityKeyPair.keyPair.privateKey),
-                lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair.keyPair.privateKey),
-            ),
-            pni: .init(
-                identity: .pni,
-                identityKeyPair: identityKeyPair,
-                signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: identityKeyPair.keyPair.privateKey),
-                lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair.keyPair.privateKey),
-            ),
+    func createPreKeysForRegistration(forIdentity identity: OWSIdentity) async -> RegistrationPreKeyUploadBundle {
+        let identityKeyPair = IdentityKeyPair.generate()
+        return RegistrationPreKeyUploadBundle(
+            identity: identity,
+            identityKeyPair: identityKeyPair,
+            signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: identityKeyPair.privateKey),
+            lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair.privateKey),
         )
     }
 
     func createPreKeysForProvisioning(
-        aciIdentityKeyPair: ECKeyPair,
-        pniIdentityKeyPair: ECKeyPair,
-    ) async -> RegistrationPreKeyUploadBundles {
-        let identityKeyPair = ECKeyPair.generateKeyPair()
-        return .init(
-            aci: .init(
-                identity: .aci,
-                identityKeyPair: identityKeyPair,
-                signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: identityKeyPair.keyPair.privateKey),
-                lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair.keyPair.privateKey),
-            ),
-            pni: .init(
-                identity: .pni,
-                identityKeyPair: identityKeyPair,
-                signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: identityKeyPair.keyPair.privateKey),
-                lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair.keyPair.privateKey),
-            ),
+        forIdentity identity: OWSIdentity,
+        keyPair: IdentityKeyPair,
+    ) async -> RegistrationPreKeyUploadBundle {
+        return RegistrationPreKeyUploadBundle(
+            identity: identity,
+            identityKeyPair: keyPair,
+            signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: keyPair.privateKey),
+            lastResortPreKey: generateLastResortKyberPreKey(signedBy: keyPair.privateKey),
         )
     }
 
     var didFinalizeRegistrationPrekeys = false
 
-    func finalizeRegistrationPreKeys(
-        _ bundles: RegistrationPreKeyUploadBundles,
-        uploadDidSucceed: Bool,
-    ) async {
+    func finalizeRegistrationPreKeyBundle(_ bundle: RegistrationPreKeyUploadBundle, uploadDidSucceed: Bool) async {
         didFinalizeRegistrationPrekeys = true
     }
 

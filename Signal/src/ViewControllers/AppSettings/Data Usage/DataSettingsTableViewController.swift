@@ -92,7 +92,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
         if hasNonDefaultValue {
             autoDownloadSection.add(OWSTableItem.item(
                 name: resetCopy,
-                textColor: Theme.accentBlueColor,
+                textColor: .Signal.accent,
                 accessibilityIdentifier: resetAccessibilityIdentifier,
             ) {
                 SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in

@@ -187,7 +187,7 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
                 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON",
                 comment: "Button to delete the story on the 'private story settings' view",
             ),
-            textColor: .ows_accentRed,
+            textColor: .Signal.red,
             accessibilityIdentifier: nil,
             actionBlock: { [weak self] in
                 self?.deleteStoryWithConfirmation()

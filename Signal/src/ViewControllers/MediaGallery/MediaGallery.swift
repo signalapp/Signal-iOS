@@ -1113,7 +1113,7 @@ class MediaGallery {
     ) -> CVAttachmentProgressView {
         let progressView = CVAttachmentProgressView(
             direction: .download(
-                attachmentPointer: attachmentPointer,
+                attachmentID: attachmentPointer.id,
                 downloadState: .none,
             ),
             configuration: .forMediaOverlay(),

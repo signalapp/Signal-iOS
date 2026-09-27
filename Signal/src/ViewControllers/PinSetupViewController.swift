@@ -116,7 +116,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
 
     private let validationWarningLabel: UILabel = {
         let validationWarningLabel = UILabel()
-        validationWarningLabel.textColor = .ows_accentRed
+        validationWarningLabel.textColor = .Signal.red
         validationWarningLabel.textAlignment = .center
         validationWarningLabel.font = .dynamicTypeFootnoteClamped
         validationWarningLabel.numberOfLines = 0
@@ -254,45 +254,29 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         buttonContainer.axis = .vertical
         buttonContainer.spacing = 16
         buttonContainer.isLayoutMarginsRelativeArrangement = true
-        buttonContainer.directionalLayoutMargins = .init(top: 0, leading: 12, bottom: 16, trailing: 12)
+        buttonContainer.directionalLayoutMargins = .buttonContainerLayoutMargins
 
-        let stackView = UIStackView(arrangedSubviews: [
-            explanationLabel,
-            pinTextField,
-            recommendationLabel,
-            validationWarningLabel,
-            .vStretchingSpacer(),
-            buttonContainer,
-        ])
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.spacing = 16
+        let stackView = addStaticContentStackView(
+            arrangedSubviews: [
+                explanationLabel,
+                pinTextField,
+                recommendationLabel,
+                validationWarningLabel,
+                .vStretchingSpacer(),
+                buttonContainer,
+            ],
+            isScrollable: true,
+            shouldAvoidKeyboard: true,
+        )
         stackView.setCustomSpacing(24, after: explanationLabel)
-        stackView.preservesSuperviewLayoutMargins = true
-        stackView.isLayoutMarginsRelativeArrangement = true
-        view.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
+
         pinTextField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             pinTextField.heightAnchor.constraint(greaterThanOrEqualToConstant: 50),
-
-            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
         ])
 
         updateValidationWarnings()
         updatePinType()
-    }
-
-    override public func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        let topMargin: CGFloat = self.prefersNavigationBarHidden ? 32 : 0
-        let hMargin: CGFloat = UIDevice.current.isIPhone5OrShorter ? 13 : 26
-        view.layoutMargins = UIEdgeInsets(top: topMargin, leading: hMargin, bottom: 0, trailing: hMargin)
-        view.layoutIfNeeded()
     }
 
     override public func viewDidAppear(_ animated: Bool) {

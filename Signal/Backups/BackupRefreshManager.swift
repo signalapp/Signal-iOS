@@ -35,7 +35,7 @@ final class BackupRefreshManager {
 
     private func rootBackupKeys(localIdentifiers: LocalIdentifiers) async throws -> (MessageRootBackupKey, MediaRootBackupKey) {
         try await db.awaitableWrite { tx in
-            guard let messageRootBackupKey = try? accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: tx) else {
+            guard let messageRootBackupKey = accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: tx) else {
                 throw OWSAssertionError("Missing message root backup key! Do we not have an AEP?")
             }
 

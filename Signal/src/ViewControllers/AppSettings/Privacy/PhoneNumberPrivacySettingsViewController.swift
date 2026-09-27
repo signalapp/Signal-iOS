@@ -162,7 +162,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
                 phoneNumberDiscoverability,
                 updateAccountAttributes: true,
                 updateStorageService: true,
-                authedAccount: .implicit(),
+                authedAccount: .implicit,
                 tx: transaction,
             )
         }) { [weak self] in
@@ -185,7 +185,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
                     .everybody,
                     updateAccountAttributes: true,
                     updateStorageService: true,
-                    authedAccount: .implicit(),
+                    authedAccount: .implicit,
                     tx: transaction,
                 )
             }

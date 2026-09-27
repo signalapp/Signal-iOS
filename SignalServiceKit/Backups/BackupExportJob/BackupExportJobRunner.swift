@@ -187,8 +187,8 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
                     return currentExportJobTask
                 }
 
-                let newExportJobTask = Task { () async throws -> Void in
-                    let result = await Result(catching: {
+                let newExportJobTask = Task { [self] () async throws -> Void in
+                    let result = await Result(catching: { [self] in
                         let progressSink = OWSSequentialProgress<BackupExportJobStage>
                             .createSink { [weak self] exportJobProgress in
                                 self?.exportJobDidUpdateProgress(exportJobProgress)

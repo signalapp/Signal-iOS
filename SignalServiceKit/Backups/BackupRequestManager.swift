@@ -183,7 +183,6 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
     private let chatConnectionManager: ChatConnectionManager
     private let dateProvider: DateProvider
     private let db: any DB
-    private let kvStore: KeyValueStore
     private let networkManager: NetworkManager
 
     init(
@@ -201,7 +200,6 @@ public struct BackupRequestManagerImpl: BackupRequestManager {
         self.chatConnectionManager = chatConnectionManager
         self.dateProvider = dateProvider
         self.db = db
-        self.kvStore = KeyValueStore(collection: "BackupRequestManager")
         self.networkManager = networkManager
     }
 

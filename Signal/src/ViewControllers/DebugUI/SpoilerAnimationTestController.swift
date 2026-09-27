@@ -16,17 +16,26 @@ public class SpoilerAnimationTestController: UIViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
 
-        self.view.backgroundColor = .black
+        view.backgroundColor = .black
+    }
 
+    override public func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        view.removeAllSubviews()
+
+        guard let window = view.window else { return }
+
+        let windowSize = window.bounds.size
         let rowHeight: CGFloat = 40
         var totalHeight: CGFloat = 0
-        while totalHeight < UIScreen.main.bounds.height {
-            let view = TestSpoilerableView()
-            view.tintColor = .white
-            view.frame = CGRect(x: 0, y: totalHeight, width: UIScreen.main.bounds.width, height: rowHeight)
+        while totalHeight < windowSize.height {
+            let spoilerView = TestSpoilerableView()
+            spoilerView.tintColor = .white
+            spoilerView.frame = CGRect(x: 0, y: totalHeight, width: windowSize.width, height: rowHeight)
             totalHeight += rowHeight
-            self.view.addSubview(view)
-            spoilerAnimationManager.addViewAnimator(view)
+            view.addSubview(spoilerView)
+            spoilerAnimationManager.addViewAnimator(spoilerView)
         }
     }
 

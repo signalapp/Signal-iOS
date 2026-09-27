@@ -53,6 +53,15 @@ class TestingViewController: OWSTableViewController2 {
         }
         contents.add(messagingSection)
 
+        let voiceMessageSection = OWSTableSection(title: "Voice Messages")
+        for voiceMessageFlag in DebugFlags.voiceMessageTestableFlags {
+            addTestableFlag(
+                voiceMessageFlag,
+                toSection: voiceMessageSection,
+            )
+        }
+        contents.add(voiceMessageSection)
+
         self.contents = contents
     }
 
@@ -81,6 +90,11 @@ class TestingViewController: OWSTableViewController2 {
 
                     intFlag.set(intValue)
                 },
+            )
+        case let menuFlag as any AnyMenuTestableFlag:
+            addMenuItem(
+                toSection: section,
+                menuFlag: menuFlag,
             )
         default:
             owsFail("Unexpected TestableFlag! \(testableFlag)")
@@ -142,6 +156,35 @@ class TestingViewController: OWSTableViewController2 {
                 ))
 
                 self.present(alert, animated: true)
+            },
+        ))
+    }
+
+    private func addMenuItem(
+        toSection section: OWSTableSection,
+        menuFlag: any AnyMenuTestableFlag,
+    ) {
+        let options = menuFlag.menuOptions
+
+        section.add(OWSTableItem.disclosureItem(
+            withText: menuFlag.title,
+            subtitle: menuFlag.details,
+            accessoryText: options.first(where: \.isSelected)?.title,
+            actionBlock: { [weak self] in
+                guard let self else { return }
+
+                let actionSheet = ActionSheetController(
+                    title: "Set flag \"\(menuFlag.title)\":",
+                )
+                for option in options {
+                    actionSheet.addAction(ActionSheetAction(title: option.title) { [weak self] _ in
+                        option.select()
+                        self?.updateTableContents()
+                    })
+                }
+                actionSheet.addAction(OWSActionSheets.cancelAction)
+
+                self.presentActionSheet(actionSheet)
             },
         ))
     }

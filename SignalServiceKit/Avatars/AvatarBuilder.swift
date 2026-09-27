@@ -1027,10 +1027,11 @@ public class AvatarBuilder {
             owsFailDebug("Missing or invalid image.")
             return nil
         }
-        if image.scale == UIScreen.main.scale {
+        let displayScale = UITraitCollection.current.displayScale
+        if image.scale == displayScale {
             return image
         } else {
-            return UIImage(cgImage: cgImage, scale: UIScreen.main.scale, orientation: image.imageOrientation)
+            return UIImage(cgImage: cgImage, scale: displayScale, orientation: image.imageOrientation)
         }
     }
 

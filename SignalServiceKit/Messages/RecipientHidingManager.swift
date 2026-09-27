@@ -64,7 +64,7 @@ public protocol RecipientHidingManager {
         inKnownMessageRequestState: Bool,
         wasLocallyInitiated: Bool,
         tx: DBWriteTransaction,
-    ) throws
+    )
 
     /// Removes a recipient from the hidden recipient table.
     ///
@@ -256,7 +256,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         inKnownMessageRequestState: Bool,
         wasLocallyInitiated: Bool,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         Logger.info("Hiding recipient")
         guard !isHiddenRecipient(recipientId: recipient.id, tx: tx) else {
             // This is a perhaps extraneous safeguard against
@@ -265,8 +265,8 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
             // hide an already-hidden recipient. However, we return here,
             // just in case, in order to avoid the side-effects of
             // `didSetAsHidden`.
-            Logger.warn("Cannot hide already-hidden recipient.")
-            throw RecipientHidingError.recipientAlreadyHidden
+            Logger.warn("can't hide already-hidden recipient")
+            return
         }
 
         let record = HiddenRecipient(
@@ -331,7 +331,7 @@ private extension RecipientHidingManagerImpl {
 
         if wasLocallyInitiated {
             Logger.info("[Recipient hiding][side effects] Remove from whitelist.")
-            profileManager.removeRecipientFromProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: tx)
+            _ = profileManager.removeRecipientFromProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: tx)
             Logger.info("[Recipient hiding][side effects] Remove from story distribution lists.")
             let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
             storyRecipientManager.removeRecipientIdFromAllPrivateStoryThreads(
@@ -351,26 +351,19 @@ private extension RecipientHidingManagerImpl {
         }
 
         if
-            tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
             let recipientServiceId = recipient.address.serviceId,
             let localAci = self.tsAccountManager.localIdentifiers(tx: tx)?.aci,
-            !GroupManager.hasMutualGroupThread(
-                with: recipientServiceId,
+            !GroupManager.hasGroupThreadWithProfileKey(
+                otherMember: recipientServiceId,
                 localAci: localAci,
                 tx: tx,
             )
         {
-            // Profile key rotations should only be initiated by the primary device
-            // when we have no common groups with the hidee (because mutual group
-            // members are authorized to have profile keys of all group members).
+            // Profile key rotations should only be initiated when we have no common
+            // groups with the hidee (because mutual group members are authorized to
+            // have profile keys of all group members).
             Logger.info("[Recipient hiding][side effects] Rotate profile key.")
-            self.profileManager.rotateProfileKeyUponRecipientHide(
-                withTx: tx,
-            )
-            // A nice-to-have was to throw out the other user's profile key if we're
-            // not in a group with them. Product said this was not strictly necessary.
-            // Note that this _is_ something that is done on Android, so there is a
-            // slight lack of parity here.
+            self.profileManager.setNeedsProfileKeyRotation(tx: tx)
         }
     }
 

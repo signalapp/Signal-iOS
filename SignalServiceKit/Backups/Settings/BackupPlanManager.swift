@@ -155,12 +155,12 @@ class BackupPlanManagerImpl: BackupPlanManager {
                 NotificationCenter.default.post(name: .backupPlanChanged, object: nil)
                 NotificationCenter.default.postOnMainThread(name: .megaphoneStateDidChange, object: nil)
 
-                Task {
+                Task { @concurrent in
                     // This is run after the write transaction that updates the backup plan
                     // completes.  This allows the download progress observer to recalculate
                     // the new state of pending downloads and allow progress to be displayed,
                     // even if the queue may not be started yet.
-                    try? await self.backupAttachmentDownloadProgress.beginObserving()
+                    self.backupAttachmentDownloadProgress.beginObserving()
                 }
             }
         }

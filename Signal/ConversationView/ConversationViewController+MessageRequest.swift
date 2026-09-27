@@ -177,6 +177,7 @@ private extension ConversationViewController {
         }
 
         let blockingManager = SSKEnvironment.shared.blockingManagerRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         let hidingManager = DependenciesBridge.shared.recipientHidingManager
         let profileManager = SSKEnvironment.shared.profileManagerRef
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
@@ -214,7 +215,7 @@ private extension ConversationViewController {
             }
         }
 
-        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+        await databaseStorage.awaitableWrite { transaction in
             switch thread {
             case let thread as TSGroupThread:
                 unblockThreadIfNeeded(transaction: transaction)

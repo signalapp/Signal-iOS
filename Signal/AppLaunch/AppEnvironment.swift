@@ -48,6 +48,8 @@ public class AppEnvironment: NSObject {
     private(set) var provisioningManager: ProvisioningManager!
     private(set) var quickRestoreManager: QuickRestoreManager!
     private var registrationIdMismatchManager: RegistrationIdMismatchManager!
+    private(set) var screenshotBlockingManager: ScreenshotBlockingManager!
+    private(set) var senderKeyExpirationJob: SenderKeyExpirationJob!
 
     init(appReadiness: AppReadiness, deviceTransferRestore: DeviceTransferRestore) {
         self.cvAudioPlayerRef = CVAudioPlayer()
@@ -175,7 +177,9 @@ public class AppEnvironment: NSObject {
             monitoringInterval: 5 * .second,
         )
 
-        self.passwordManagerManager = PasswordManagerManager()
+        self.passwordManagerManager = PasswordManagerManager(
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+        )
 
         self.provisioningManager = ProvisioningManager(
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
@@ -205,6 +209,8 @@ public class AppEnvironment: NSObject {
             db: DependenciesBridge.shared.db,
             backupSettingsStore: BackupSettingsStore(),
             deviceSleepManager: DependenciesBridge.shared.deviceSleepManager,
+            messagePipelineSupervisor: SSKEnvironment.shared.messagePipelineSupervisorRef,
+            messageProcessor: SSKEnvironment.shared.messageProcessorRef,
             quickRestoreManager: quickRestoreManager,
             registrationStateChangeManager: DependenciesBridge.shared.registrationStateChangeManager,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
@@ -214,6 +220,19 @@ public class AppEnvironment: NSObject {
             db: DependenciesBridge.shared.db,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             udManager: SSKEnvironment.shared.udManagerRef,
+        )
+
+        self.screenshotBlockingManager = ScreenshotBlockingManager(
+            db: DependenciesBridge.shared.db,
+            windowManager: windowManagerRef,
+        )
+
+        self.senderKeyExpirationJob = SenderKeyExpirationJob(
+            dateProvider: Date.provider,
+            db: DependenciesBridge.shared.db,
+            deletionType: .thisDevice,
+            remoteConfigProvider: SSKEnvironment.shared.remoteConfigManagerRef,
+            senderKeyStore: DependenciesBridge.shared.senderKeyStore,
         )
 
         // MARK: Set up Cron jobs
@@ -340,6 +359,7 @@ public class AppEnvironment: NSObject {
             self.appIconBadgeUpdater.startObserving()
             self.clockSkewMonitoringManager.start()
             self.lowDiskSpaceMonitoringManager.start()
+            self.screenshotBlockingManager.start()
         }
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {

@@ -14,17 +14,16 @@ public class ThreadViewModel: Equatable {
     public let contactAddress: SignalServiceAddress?
     public let name: String
     public let shortName: String?
-    public let associatedData: ThreadAssociatedData
     public let hasPendingMessageRequest: Bool
     public let disappearingMessagesConfiguration: DisappearingMessagesConfigurationRecord
     public let isBlocked: Bool
     public let isPinned: Bool
 
-    public var isArchived: Bool { associatedData.isArchived }
-    public var isMuted: Bool { associatedData.isMuted }
-    public var mutedUntilTimestamp: UInt64 { associatedData.mutedUntilTimestamp }
-    public var mutedUntilDate: Date? { associatedData.mutedUntilDate }
-    public var isMarkedUnread: Bool { associatedData.isMarkedUnread }
+    public var isArchived: Bool { threadRecord.isArchived }
+    public var isMuted: Bool { threadRecord.isMuted }
+    public var mutedUntilTimestamp: UInt64 { threadRecord.mutedUntilTimestamp }
+    public var mutedUntilDate: Date? { threadRecord.mutedUntilDate }
+    public var isMarkedUnread: Bool { threadRecord.isMarkedUnread }
 
     public let pinnedMessages: [TSMessage]
 
@@ -78,9 +77,6 @@ public class ThreadViewModel: Equatable {
             self.shortName = nil
         }
 
-        let associatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
-        self.associatedData = associatedData
-
         if let contactThread = thread as? TSContactThread {
             self.contactAddress = contactThread.contactAddress
         } else {
@@ -89,7 +85,7 @@ public class ThreadViewModel: Equatable {
 
         let unreadCount = InteractionFinder(threadUniqueId: thread.uniqueId).unreadCount(transaction: transaction)
         self.unreadCount = unreadCount
-        self.hasUnreadMessages = associatedData.isMarkedUnread || unreadCount > 0
+        self.hasUnreadMessages = thread.isMarkedUnread || unreadCount > 0
         self.hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction)
 
         self.lastMessageForInbox = thread.lastInteractionForInbox(forChatListSorting: false, transaction: transaction)

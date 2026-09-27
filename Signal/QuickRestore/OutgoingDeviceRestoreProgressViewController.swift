@@ -9,9 +9,9 @@ import SignalServiceKit
 import SignalUI
 import SwiftUI
 
-class OutgoingDeviceRestoreProgressViewController: HostingController<TransferStatusView> {
+class OutgoingDeviceRestoreProgressViewController: HostingController<TransferWrapperView> {
     init(viewModel: TransferStatusViewModel) {
-        super.init(wrappedView: TransferStatusView(viewModel: viewModel, isNewDevice: false))
+        super.init(wrappedView: TransferWrapperView(viewModel: viewModel, isNewDevice: false))
         view.backgroundColor = UIColor.Signal.background
         modalPresentationStyle = .overFullScreen
     }

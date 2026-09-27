@@ -10,12 +10,11 @@ import SignalUI
 final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
     private var sizeChangeSubscription: AnyCancellable?
 
-    private let headerContainer = UIView()
-    private let bottomStackView = UIStackView()
+    override var stackViewInsets: UIEdgeInsets { .init(hMargin: 16, vMargin: 0) }
 
     private let tableViewController = OWSTableViewController2()
 
-    private var shouldSubmitDebugLogs = false
+    private var shouldSubmitDebugLogs = true
     private var logs: DebugLogs
 
     private let rating: CallQualitySurvey.Rating
@@ -23,7 +22,7 @@ final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
     init(rating: CallQualitySurvey.Rating) {
         self.logs = DebugLogs(dumper: .fromGlobals())
         self.rating = rating
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
 
     @MainActor
@@ -40,24 +39,18 @@ final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
         )
 
         let headerLabel = createHeaderView()
+        let headerContainer = UIView()
         headerContainer.addSubview(headerLabel)
-        headerLabel.autoPinEdgesToSuperviewMargins(with: .init(
-            top: 0,
-            leading: 36,
-            bottom: 0,
-            trailing: 36,
-        ))
-        view.addSubview(headerContainer)
-        headerContainer.autoPinEdges(toSuperviewEdgesExcludingEdge: .bottom)
-        headerContainer.layoutMargins = .zero
-        headerContainer.preservesSuperviewLayoutMargins = true
+        headerLabel.autoPinEdgesToSuperviewEdges(with: .init(hMargin: 36, vMargin: 0))
+        stackView.addArrangedSubview(headerContainer)
 
+        // The table view is sized to its content and scrolls with the rest of
+        // the sheet's stack view.
         tableViewController.backgroundStyle = .none
+        tableViewController.tableView.isScrollEnabled = false
         addChild(tableViewController)
-        view.addSubview(tableViewController.view)
-        tableViewController.tableView.alwaysBounceVertical = false
-        tableViewController.view.autoPinWidthToSuperview()
-        tableViewController.view.autoPinEdge(.top, to: .bottom, of: headerContainer)
+        let tableViewHeight = tableViewController.view.autoSetDimension(.height, toSize: 0)
+        stackView.addArrangedSubview(tableViewController.view)
         tableViewController.didMove(toParent: self)
 
         let section = OWSTableSection(
@@ -81,14 +74,6 @@ final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
 
         tableViewController.setContents(OWSTableContents(sections: [section]))
 
-        bottomStackView.axis = .vertical
-        bottomStackView.spacing = 24
-        bottomStackView.isLayoutMarginsRelativeArrangement = true
-        bottomStackView.directionalLayoutMargins = .init(hMargin: 12, vMargin: 0)
-        view.addSubview(bottomStackView)
-        bottomStackView.autoPinEdge(.top, to: .bottom, of: tableViewController.view)
-        bottomStackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
-
         let continueButton = UIButton(primaryAction: .init { [weak self] _ in
             self?.submit()
         })
@@ -96,18 +81,19 @@ final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
             "CALL_QUALITY_SURVEY_SUBMIT_BUTTON",
             comment: "Button text to submit the call quality survey",
         ))
-        bottomStackView.addArrangedSubview(continueButton)
+        let buttonContainer = UIView()
+        buttonContainer.addSubview(continueButton)
+        continueButton.autoPinEdgesToSuperviewEdges(with: .init(hMargin: 12, vMargin: 0))
+        stackView.addArrangedSubview(buttonContainer)
 
-        if #available(iOS 16.0, *) {
-            sizeChangeSubscription = tableViewController.tableView
-                .publisher(for: \.contentSize)
-                .removeDuplicates()
-                .sink { [weak self] contentSize in
-                    DispatchQueue.main.async {
-                        self?.reloadHeight()
-                    }
-                }
-        }
+        let tableView = tableViewController.tableView
+        sizeChangeSubscription = tableView
+            .publisher(for: \.contentSize)
+            .removeDuplicates()
+            .sink { [weak tableView] contentSize in
+                guard let tableView else { return }
+                tableViewHeight.constant = contentSize.height + tableView.contentInset.totalHeight
+            }
     }
 
     private func createHeaderView() -> UIView {
@@ -194,13 +180,6 @@ final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
         vc.navigationItem.rightBarButtonItem = .cancelButton(dismissingFrom: vc)
         let nav = OWSNavigationController(rootViewController: vc)
         present(nav, animated: true)
-    }
-
-    override func customSheetHeight() -> CGFloat? {
-        let headerHeight = headerContainer.height
-        let collectionViewHeight = tableViewController.tableView.contentSize.height + tableViewController.tableView.contentInset.totalHeight
-        let bottomStackHeight = bottomStackView.height
-        return headerHeight + collectionViewHeight + bottomStackHeight
     }
 
     private func submit() {

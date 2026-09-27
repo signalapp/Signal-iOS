@@ -8,7 +8,7 @@ import Foundation
 public import SignalServiceKit
 
 // Represents a _playable_ audio attachment.
-public class AudioAttachment {
+public class AudioAttachment: Equatable {
     public enum State: Equatable {
         case attachmentStream(
             attachmentStream: ReferencedAttachmentStream,
@@ -45,17 +45,8 @@ public class AudioAttachment {
 
     public let state: State
 
-    public var sourceFilename: String? {
-        switch state {
-        case .attachmentStream(let attachmentStream, _):
-            return attachmentStream.reference.sourceFilename
-        case .attachmentPointer(let attachmentPointer, _):
-            return attachmentPointer.reference.sourceFilename
-        }
-    }
-
     public let receivedAtDate: Date
-    public let owningMessage: TSMessage?
+    public let owningMessage: TSMessage
 
     // Set at time of init. Value doesn't change even after download completes
     // to ensure that conversation view diffing catches the need to redraw the cell
@@ -63,7 +54,7 @@ public class AudioAttachment {
 
     public init?(
         attachmentStream referencedAttachmentStream: ReferencedAttachmentStream,
-        owningMessage: TSMessage?,
+        owningMessage: TSMessage,
         metadata: MediaMetadata?,
         receivedAtDate: Date,
     ) {
@@ -90,7 +81,7 @@ public class AudioAttachment {
 
     public init(
         attachmentPointer: ReferencedAttachmentPointer,
-        owningMessage: TSMessage?,
+        owningMessage: TSMessage,
         metadata: MediaMetadata?,
         receivedAtDate: Date,
         downloadState: AttachmentDownloadState,
@@ -109,10 +100,6 @@ public class AudioAttachment {
         self.receivedAtDate = receivedAtDate
         self.owningMessage = owningMessage
     }
-}
-
-extension AudioAttachment {
-    var isDownloaded: Bool { attachmentStream != nil }
 
     public var attachment: Attachment {
         switch state {
@@ -151,14 +138,23 @@ extension AudioAttachment {
     }
 
     public var isVoiceMessage: Bool {
-        { () -> AttachmentReference.RenderingFlag in
-            switch state {
-            case .attachmentStream(let attachmentStream, _):
-                return attachmentStream.reference.renderingFlag
-            case .attachmentPointer(let attachmentPointer, _):
-                return attachmentPointer.reference.renderingFlag
-            }
-        }() == .voiceMessage
+        let renderingFlag: AttachmentReference.RenderingFlag = switch state {
+        case .attachmentStream(let attachmentStream, _):
+            attachmentStream.reference.renderingFlag
+        case .attachmentPointer(let attachmentPointer, _):
+            attachmentPointer.reference.renderingFlag
+        }
+
+        return renderingFlag == .voiceMessage
+    }
+
+    public var sourceFilename: String? {
+        switch state {
+        case .attachmentStream(let attachmentStream, _):
+            return attachmentStream.reference.sourceFilename
+        case .attachmentPointer(let attachmentPointer, _):
+            return attachmentPointer.reference.sourceFilename
+        }
     }
 
     public func markOwningMessageAsViewed() -> Bool {
@@ -186,9 +182,9 @@ extension AudioAttachment {
         }
         return true
     }
-}
 
-extension AudioAttachment: Equatable {
+    // MARK: - Equatable
+
     public static func ==(lhs: AudioAttachment, rhs: AudioAttachment) -> Bool {
         lhs.state == rhs.state &&
             lhs.owningMessage == rhs.owningMessage &&

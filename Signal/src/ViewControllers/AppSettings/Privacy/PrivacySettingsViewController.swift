@@ -288,8 +288,50 @@ class PrivacySettingsViewController: OWSTableViewController2 {
     }
 
     private func didToggleScreenLock(_ sender: UISwitch) {
-        ScreenLock.shared.setIsScreenLockEnabled(sender.isOn)
-        updateTableContents()
+        if sender.isOn {
+            // Enabling screen lock only strengthens it; no authentication needed.
+            ScreenLock.shared.setIsScreenLockEnabled(true)
+            updateTableContents()
+        } else {
+            // Require unlock to disable screen lock.
+            authenticateToWeakenScreenLock { [weak self] in
+                ScreenLock.shared.setIsScreenLockEnabled(false)
+                self?.updateTableContents()
+            }
+        }
+    }
+
+    /// Requires device owner authentication before weakening screen lock.
+    private func authenticateToWeakenScreenLock(success: @escaping () -> Void) {
+        // If there's no passcode, there's nothing to authenticate against.
+        if case .failure(.notRequired) = LocalDeviceAuthentication().checkCanAttempt() {
+            success()
+            return
+        }
+
+        ScreenLock.shared.tryToUnlockScreenLockSettings(
+            success: success,
+            failure: { [weak self] error in
+                self?.updateTableContents()
+                self?.showScreenLockAuthFailureAlert(message: error.userErrorDescription)
+            },
+            unexpectedFailure: { [weak self] error in
+                self?.updateTableContents()
+                self?.showScreenLockAuthFailureAlert(message: error.userErrorDescription)
+            },
+            cancel: { [weak self] in
+                // The user backed out; there's no error to report.
+                self?.updateTableContents()
+            },
+        )
+    }
+
+    private func showScreenLockAuthFailureAlert(message: String) {
+        OWSActionSheets.showActionSheet(
+            title: DeviceAuthenticationErrorMessage.errorSheetTitle,
+            message: message,
+            fromViewController: self,
+        )
     }
 
     private func didTogglePaymentsLock(_ sender: UISwitch) {
@@ -325,8 +367,13 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             actionSheet.addAction(.init(
                 title: formatScreenLockTimeout(timeout, useShortFormat: false),
                 handler: { [weak self] _ in
-                    ScreenLock.shared.setScreenLockTimeout(timeout)
-                    self?.updateTableContents()
+                    guard let self else { return }
+                    // Lengthening the timeout weakens screen lock just as
+                    // disabling it does, so require unlock for any change.
+                    self.authenticateToWeakenScreenLock { [weak self] in
+                        ScreenLock.shared.setScreenLockTimeout(timeout)
+                        self?.updateTableContents()
+                    }
                 },
             ))
         }

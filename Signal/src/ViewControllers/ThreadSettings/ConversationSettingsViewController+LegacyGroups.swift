@@ -28,7 +28,7 @@ class LegacyGroupView: UIView {
 
         let attributedString = NSMutableAttributedString(string: text)
         attributedString.setAttributes(
-            [.foregroundColor: Theme.accentBlueColor],
+            [.foregroundColor: UIColor.Signal.accent],
             forSubstring: highlightedSubstring,
         )
 

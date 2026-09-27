@@ -59,6 +59,7 @@ extension ChatListViewController {
         viewState.multiSelectState.setIsActive(false, tableView: tableView)
         title = viewState.multiSelectState.title
         hideToolbar()
+        viewState.multiSelectState.toolbarButtons = nil
         loadCoordinator.loadIfNecessary(shouldForceLoad: true)
 
         if let lastViewedThreadUniqueId, isConversationActive(threadUniqueId: lastViewedThreadUniqueId) {
@@ -70,6 +71,7 @@ extension ChatListViewController {
         AssertIsOnMainThread()
 
         if #available(iOS 26, *) {
+            self.setToolbarItems(toolbarButtons.items, animated: false)
             self.updateCaptions()
             self.navigationController?.setToolbarHidden(false, animated: true)
             (self.tabBarController as? HomeTabBarController)?.setTabBarHidden(true)
@@ -83,14 +85,14 @@ extension ChatListViewController {
             tbc.autoPinWidthToSuperview()
             tbc.autoPinEdge(toSuperviewEdge: .bottom)
             viewState.multiSelectState.toolbar = tbc
-            let animateToolbar = {
+            let animateToolbar = { [self] in
                 // Hack to get the toolbar to update its safe area correctly after any
                 // tab bar hidden state changes. Unclear why this is needed or why it needs
                 // to be async, but without it the toolbar inherits stale safe area insets from
                 // its parent, and its own safe area doesn't line up.
                 DispatchQueue.main.async {
                     self.viewState.multiSelectState.toolbar?.toolbar.setItems(
-                        self.makeToolbarButtons(),
+                        self.toolbarButtons.items,
                         animated: false,
                     )
                 }
@@ -142,67 +144,119 @@ extension ChatListViewController {
         }
     }
 
-    private func makeToolbarButtons() -> [UIBarButtonItem] {
-        let hasSelectedEntries = !(tableView.indexPathsForSelectedRows ?? []).isEmpty
-
-        let archiveBtn = UIBarButtonItem(
-            title: viewState.chatListMode == .archive ? CommonStrings.unarchiveAction : CommonStrings.archiveAction,
-            primaryAction: UIAction { [weak self] _ in self?.performArchive() },
-        )
-        if #available(iOS 26, *) {
-            archiveBtn.image = UIImage(resource: .archive)
+    private var toolbarButtons: ChatListToolbarButtons {
+        if let buttons = viewState.multiSelectState.toolbarButtons {
+            return buttons
         }
-        archiveBtn.isEnabled = hasSelectedEntries
+        let buttons = makeToolbarButtons()
+        viewState.multiSelectState.toolbarButtons = buttons
+        return buttons
+    }
 
-        let readButton: UIBarButtonItem
-        if hasSelectedEntries {
-            readButton = UIBarButtonItem(
-                title: CommonStrings.readAction,
-                primaryAction: UIAction { [weak self] _ in self?.performRead() },
-            )
-            readButton.isEnabled = false
-            for path in tableView.indexPathsForSelectedRows ?? [] {
-                if let thread = tableDataSource.threadViewModel(forIndexPath: path), thread.hasUnreadMessages {
-                    readButton.isEnabled = true
-                    break
+    private func makeToolbarButtons() -> ChatListToolbarButtons {
+        let muteButton = UIBarButtonItem(title: CommonStrings.muteButton)
+
+        // Menu in bottom bar has options grow bottom-up,
+        // so reverse to make the list look the same.
+        let muteMenuActions = ConversationMuteChoice.Option.all.reversed().map { option in
+            UIAction(title: option.title) { [weak self] _ in
+                switch option {
+                case .preset(let preset):
+                    self?.performMute(choice: .preset(preset))
+                case .forever:
+                    self?.performMute(choice: .forever)
+                case .custom:
+                    guard let self else { return }
+                    let sheet = MuteUntilSheet { [weak self] endDate in
+                        self?.performMute(choice: .custom(endDate: endDate))
+                    }
+                    present(sheet, animated: true)
                 }
+            }
+        }
+        let muteMenu = UIMenu(
+            title: OWSLocalizedString(
+                "HOME_VIEW_TOOLBAR_MUTE_MENU_TITLE",
+                comment: "Title for the mute duration menu in the toolbar of the chat list if multi-select is active.",
+            ),
+            children: muteMenuActions,
+        )
+
+        let archiveButton = UIBarButtonItem.button(
+            title: viewState.chatListMode == .archive ? CommonStrings.unarchiveAction : CommonStrings.archiveAction,
+        ) { [weak self] in self?.performArchive() }
+        if #available(iOS 26, *) {
+            archiveButton.image = UIImage(resource: .archive)
+        }
+
+        let readButton = UIBarButtonItem.button(title: CommonStrings.readAction) { [weak self] in
+            guard let self else { return }
+            if tableView.indexPathsForSelectedRows?.isEmpty ?? true {
+                performReadAll()
+            } else {
+                performRead()
+            }
+        }
+
+        let deleteButton = UIBarButtonItem.button(title: CommonStrings.deleteButton) { [weak self] in
+            self?.performDelete()
+        }
+        if #available(iOS 26, *) {
+            deleteButton.image = UIImage(resource: .trash)
+        }
+
+        return ChatListToolbarButtons(
+            mute: muteButton,
+            muteMenu: muteMenu,
+            archive: archiveButton,
+            delete: deleteButton,
+            read: readButton,
+        )
+    }
+
+    private func updateToolbarButtons() {
+        let hasSelectedEntries = tableView.indexPathsForSelectedRows?.nilIfEmpty != nil
+        toolbarButtons.archive.isEnabled = hasSelectedEntries
+        toolbarButtons.delete.isEnabled = hasSelectedEntries
+
+        toolbarButtons.mute.isEnabled = hasSelectedEntries
+        let selectedThreadViewModels = (tableView.indexPathsForSelectedRows ?? [])
+            .compactMap(tableDataSource.threadViewModel(forIndexPath:))
+        if hasSelectedEntries, selectedThreadViewModels.allSatisfy(\.isMuted) {
+            toolbarButtons.mute.menu = nil
+            toolbarButtons.mute.primaryAction = UIAction(
+                title: CommonStrings.unmuteButton,
+            ) { [weak self] _ in
+                self?.performUnmute()
+            }
+            toolbarButtons.mute.title = CommonStrings.unmuteButton
+            if #available(iOS 26, *) {
+                toolbarButtons.mute.image = UIImage(resource: .bell)
             }
         } else {
-            func hasUnreadEntry(threadUniqueIds: [String]) -> Bool {
-                return threadUniqueIds.contains {
-                    tableDataSource.threadViewModel(threadUniqueId: $0).hasUnreadMessages
-                }
+            toolbarButtons.mute.primaryAction = nil
+            toolbarButtons.mute.menu = toolbarButtons.muteMenu
+            toolbarButtons.mute.title = CommonStrings.muteButton
+            if #available(iOS 26, *) {
+                toolbarButtons.mute.image = UIImage(resource: .bellSlash)
             }
+        }
 
-            readButton = UIBarButtonItem(
-                title: OWSLocalizedString(
-                    "HOME_VIEW_TOOLBAR_READ_ALL",
-                    comment: "Title 'Read All' button in the toolbar of the ChatList if multi-section is active.",
-                ),
-                primaryAction: UIAction { [weak self] _ in self?.performReadAll() },
+        if hasSelectedEntries {
+            toolbarButtons.read.title = CommonStrings.readAction
+            toolbarButtons.read.isEnabled = tableView.indexPathsForSelectedRows?.contains { indexPath in
+                tableDataSource.threadViewModel(forIndexPath: indexPath)?.hasUnreadMessages == true
+            } ?? false
+        } else {
+            toolbarButtons.read.title = OWSLocalizedString(
+                "HOME_VIEW_TOOLBAR_READ_ALL",
+                comment: "Title 'Read All' button in the toolbar of the ChatList if multi-section is active.",
             )
-            readButton.isEnabled = false
-            readButton.isEnabled = readButton.isEnabled || hasUnreadEntry(threadUniqueIds: renderState.pinnedThreadUniqueIds)
-            readButton.isEnabled = readButton.isEnabled || hasUnreadEntry(threadUniqueIds: renderState.unpinnedThreadUniqueIds)
-        }
-
-        let deleteBtn = UIBarButtonItem(
-            title: CommonStrings.deleteButton,
-            primaryAction: UIAction { [weak self] _ in self?.performDelete() },
-        )
-        if #available(iOS 26, *) {
-            deleteBtn.image = UIImage(resource: .trash)
-        }
-        deleteBtn.isEnabled = hasSelectedEntries
-
-        var entries: [UIBarButtonItem] = []
-        for button in [archiveBtn, readButton, deleteBtn] {
-            if !entries.isEmpty {
-                entries.append(.flexibleSpace())
+            let allThreadUniqueIds = renderState.pinnedThreadUniqueIds + renderState.unpinnedThreadUniqueIds
+            toolbarButtons.read.isEnabled = allThreadUniqueIds.contains { threadUniqueId in
+                tableDataSource.threadViewModel(threadUniqueId: threadUniqueId).hasUnreadMessages
             }
-            entries.append(button)
         }
-        return entries
     }
 
     private func hideToolbar() {
@@ -249,14 +303,7 @@ extension ChatListViewController {
             title = String.localizedStringWithFormat(format, count)
         }
 
-        if #available(iOS 26, *) {
-            toolbarItems = makeToolbarButtons()
-        } else {
-            viewState.multiSelectState.toolbar?.toolbar.setItems(
-                makeToolbarButtons(),
-                animated: false,
-            )
-        }
+        updateToolbarButtons()
     }
 
     // MARK: toolbar button actions
@@ -291,6 +338,20 @@ extension ChatListViewController {
             for threadViewModel in threadViewModels {
                 markThreadAsRead(threadViewModel: threadViewModel)
             }
+        }
+        done()
+    }
+
+    func performMute(choice: ConversationMuteChoice) {
+        performOn(indexPaths: tableView.indexPathsForSelectedRows ?? []) { threadViewModels in
+            ConversationMuteManager().mute(threadViewModels, choice: choice)
+        }
+        done()
+    }
+
+    func performUnmute() {
+        performOn(indexPaths: tableView.indexPathsForSelectedRows ?? []) { threadViewModels in
+            ConversationMuteManager().unmute(threadViewModels)
         }
         done()
     }
@@ -379,6 +440,20 @@ extension ChatListViewController {
     }
 }
 
+// MARK: - ChatListToolbarButtons
+
+private struct ChatListToolbarButtons {
+    let mute: UIBarButtonItem
+    let muteMenu: UIMenu
+    let archive: UIBarButtonItem
+    let delete: UIBarButtonItem
+    let read: UIBarButtonItem
+
+    var items: [UIBarButtonItem] {
+        [mute, archive, delete, .flexibleSpace(), read]
+    }
+}
+
 // MARK: - object encapsulating the complete state of the MultiSelect process
 
 public class MultiSelectState {
@@ -387,6 +462,7 @@ public class MultiSelectState {
 
     fileprivate var title: String?
     fileprivate var toolbar: BlurredToolbarContainer?
+    fileprivate var toolbarButtons: ChatListToolbarButtons?
     private var _isActive = false
     var actionPerformed = false
     var locked = false

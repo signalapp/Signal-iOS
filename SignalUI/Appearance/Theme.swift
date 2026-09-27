@@ -35,12 +35,13 @@ public final class Theme {
         }
     }
 
-    public class func setupSignalAppearance() {
+    @available(iOS, deprecated: 26)
+    public class func setupLegacyAppearance() {
+        guard #unavailable(iOS 26) else { return }
+
         let primaryIconColor = UIColor(
-            light: .ows_gray75,
-            lightHighContrast: .ows_gray75,
-            dark: .ows_gray15,
-            darkHighContrast: .ows_gray15,
+            light: lightThemeLegacyPrimaryIconColor,
+            dark: darkThemeLegacyPrimaryIconColor,
         )
         UINavigationBar.appearance().barTintColor = UIColor.Signal.background
         UINavigationBar.appearance().tintColor = primaryIconColor
@@ -60,7 +61,7 @@ public final class Theme {
         // so we don't do it.
 
         UITableViewCell.appearance().tintColor = primaryIconColor
-        UIToolbar.appearance().tintColor = .ows_accentBlue
+        UIToolbar.appearance().tintColor = .Signal.accent
 
         // If we set NSShadowAttributeName, the NSForegroundColorAttributeName value is ignored.
         UINavigationBar.appearance().titleTextAttributes = [
@@ -69,9 +70,7 @@ public final class Theme {
 
         let cursorColor = UIColor(
             light: .Signal.accent,
-            lightHighContrast: .Signal.accent,
             dark: .white,
-            darkHighContrast: .white,
         )
         UITextView.appearance(whenContainedInInstancesOf: [OWSNavigationController.self]).tintColor = cursorColor
         UITextField.appearance(whenContainedInInstancesOf: [OWSNavigationController.self]).tintColor = cursorColor
@@ -242,7 +241,6 @@ public final class Theme {
     }
 
     private func themeDidChange() {
-        Theme.setupSignalAppearance()
         NotificationCenter.default.post(name: .themeDidChange, object: self)
     }
 
@@ -287,7 +285,7 @@ public final class Theme {
     }
 
     public static var actionSheetBackgroundColor: UIColor {
-        isDarkThemeEnabled ? .ows_gray75 : .ows_white
+        isDarkThemeEnabled ? .ows_gray75 : .white
     }
 
     public class var washColor: UIColor {
@@ -314,15 +312,6 @@ public final class Theme {
     }
 
     public class var toolbarBackgroundColor: UIColor { navbarBackgroundColor }
-
-    // For accessibility:
-    //
-    // * Flat areas (e.g. button backgrounds) should use UIColor.ows_accentBlue.
-    // * Fine detail (e.g., text, non-filled icons) should use Theme.accentBlueColor.
-    //   It is brighter in dark mode, improving legibility.
-    public class var accentBlueColor: UIColor {
-        UIColor.Signal.accent.resolvedColor(with: currentThemeTraitCollection)
-    }
 
     public class var launchScreenBackgroundColor: UIColor {
         backgroundColor

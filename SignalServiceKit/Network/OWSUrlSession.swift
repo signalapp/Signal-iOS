@@ -422,6 +422,9 @@ public class OWSURLSession: OWSURLSessionProtocol {
         switch rawRequest.body {
         case .data(let bodyData):
             requestBody = bodyData
+        case .encodable(let bodyValue):
+            requestBody = try JSONEncoder().encode(bodyValue)
+            httpHeaders.addHeader("Content-Type", value: "application/json", overwriteOnConflict: true)
         case .parameters(let bodyParameters) where !bodyParameters.isEmpty:
             requestBody = try TSRequest.Body.encodedParameters(bodyParameters)
             // If we're going to use the json serialized parameters as our body, we should overwrite

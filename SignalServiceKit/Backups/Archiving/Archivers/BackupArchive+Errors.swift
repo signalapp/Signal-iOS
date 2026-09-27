@@ -670,6 +670,9 @@ extension BackupArchive {
                 case invalidGV2MasterKey
                 /// A `BackupProto_Group` was missing its group snapshot.
                 case missingGV2GroupSnapshot
+                /// A `BackupProto_Group`'s snapshot was present but functionally considered missing
+                /// (version 0 with no members), indicating the exporting client had no state for the group.
+                case invalidGroupSnapshot
                 /// A ``BackupProtoGroup/BackupProtoMemberPendingProfileKey`` was
                 /// missing its member details.
                 case invitedGV2MemberMissingMemberDetails
@@ -680,9 +683,6 @@ extension BackupArchive {
                 case groupUpdateMessageInNonGroupChat
                 /// A `BackupProto_GroupChangeChatUpdate` ChatItem without any updates!
                 case emptyGroupUpdates
-                /// A `BackupProto_GroupSequenceOfRequestsAndCancelsUpdate` where
-                /// the requester is the local user, which isn't allowed.
-                case sequenceOfRequestsAndCancelsWithLocalAci
 
                 /// A profile key for the local user that could not be parsed into a valid aes256 key
                 case invalidLocalProfileKey
@@ -928,11 +928,11 @@ extension BackupArchive {
                     .contactAttachmentEmptyAddress,
                     .invalidGV2MasterKey,
                     .missingGV2GroupSnapshot,
+                    .invalidGroupSnapshot,
                     .invitedGV2MemberMissingMemberDetails,
                     .failedToBuildGV2GroupModel,
                     .groupUpdateMessageInNonGroupChat,
                     .emptyGroupUpdates,
-                    .sequenceOfRequestsAndCancelsWithLocalAci,
                     .invalidLocalProfileKey,
                     .invalidLocalUsernameLink,
                     .individualCallNotInContactThread,
@@ -1043,11 +1043,11 @@ extension BackupArchive {
                     .contactAttachmentEmptyAddress,
                     .invalidGV2MasterKey,
                     .missingGV2GroupSnapshot,
+                    .invalidGroupSnapshot,
                     .invitedGV2MemberMissingMemberDetails,
                     .failedToBuildGV2GroupModel,
                     .groupUpdateMessageInNonGroupChat,
                     .emptyGroupUpdates,
-                    .sequenceOfRequestsAndCancelsWithLocalAci,
                     .invalidLocalProfileKey,
                     .invalidLocalUsernameLink,
                     .individualCallNotInContactThread,

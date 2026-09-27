@@ -135,14 +135,14 @@ public struct TypedItemProvider {
 
     // MARK: Creating typed item providers
 
-    /// For some data types, the OS is just awful and apparently
-    /// says they conform to something else but then returns
-    /// useless versions of the information
+    /// For some data types, force them to transfer as `data`.
     ///
     /// - `com.topografix.gpx`
     ///     conforms to `public.text`, but when asking the OS for text,
     ///     it returns a file URL instead
-    private static let forcedDataTypeIdentifiers: [String] = ["com.topografix.gpx"]
+    /// - `com.apple.ips`
+    ///     conforms to `public.text`, but we have experienced issues trying to transfer it as text.
+    private static let forcedDataTypeIdentifiers: [String] = ["com.topografix.gpx", "com.apple.ips"]
 
     /// Due to UT conformance fallbacks, the order these
     /// are checked is important; more specific types need

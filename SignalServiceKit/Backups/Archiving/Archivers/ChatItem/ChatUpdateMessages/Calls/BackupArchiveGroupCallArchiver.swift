@@ -162,6 +162,22 @@ final class BackupArchiveGroupCallArchiver {
             return .messageFailure([.restoreFrameError(.invalidProtoData(.groupCallNotInGroupThread))])
         }
 
+        if groupCall.hasCallID {
+            let existingRecord = callRecordStore.fetch(
+                callId: groupCall.callID,
+                conversationId: .thread(threadRowId: chatThread.threadRowId),
+                tx: context.tx,
+            )
+
+            switch existingRecord {
+            case .matchFound:
+                // Desktop backups can contain duplicate CallRecords. Ignore them.
+                return .success(())
+            case .matchDeleted, .matchNotFound:
+                break
+            }
+        }
+
         let startedCallAci: Aci?
         if groupCall.hasStartedCallRecipientID {
             switch context.recipientContext.getAci(

@@ -89,17 +89,13 @@ public extension ChatListViewController {
 
         guard let selectedThread = conversationSplitViewController?.selectedThread else { return }
 
-        let threadAssociatedData = databaseStorage.read { transaction in
-            ThreadAssociatedData.fetchOrDefault(for: selectedThread, transaction: transaction)
-        }
-
-        guard !threadAssociatedData.isArchived else { return }
+        guard !selectedThread.isArchived else { return }
 
         conversationSplitViewController?.closeSelectedConversation(animated: true)
 
         databaseStorage.write { transaction in
             pinnedThreadManager.unpinThread(selectedThread, updateStorageService: true, tx: transaction)
-            threadAssociatedData.updateWith(isArchived: true, updateStorageService: true, transaction: transaction)
+            selectedThread.updateWith(isArchived: true, updateStorageService: true, transaction: transaction)
         }
 
         updateViewState()
@@ -114,16 +110,12 @@ public extension ChatListViewController {
 
         guard let selectedThread = conversationSplitViewController?.selectedThread else { return }
 
-        let threadAssociatedData = databaseStorage.read { transaction in
-            ThreadAssociatedData.fetchOrDefault(for: selectedThread, transaction: transaction)
-        }
-
-        guard threadAssociatedData.isArchived else { return }
+        guard selectedThread.isArchived else { return }
 
         conversationSplitViewController?.closeSelectedConversation(animated: true)
 
         databaseStorage.write { transaction in
-            threadAssociatedData.updateWith(isArchived: false, updateStorageService: true, transaction: transaction)
+            selectedThread.updateWith(isArchived: false, updateStorageService: true, transaction: transaction)
         }
 
         updateViewState()
@@ -139,14 +131,15 @@ public extension ChatListViewController {
         applyArchiveBackButton()
 
         // Push a separate instance of this view using "archive" mode.
-        let chatList = ChatListViewController(chatListMode: .archive, appReadiness: appReadiness)
+        let chatList = ChatListViewController(chatListMode: .archive)
         chatList.hidesBottomBarWhenPushed = true
 
         if offerMultiSelectMode {
-            chatList.navigationItem.rightBarButtonItem = UIBarButtonItem(
+            chatList.navigationItem.rightBarButtonItem = .button(
                 title: CommonStrings.selectButton,
-                primaryAction: UIAction { [unowned chatList] _ in chatList.switchMultiSelectState() },
-            )
+            ) { [unowned chatList] in
+                chatList.switchMultiSelectState()
+            }
         }
         show(chatList, sender: self)
     }
@@ -156,13 +149,7 @@ public extension ChatListViewController {
 
         if #available(iOS 26, *) { return }
 
-        navigationItem.backBarButtonItem = UIBarButtonItem(
-            title: CommonStrings.backButton,
-            style: .plain,
-            target: nil,
-            action: nil,
-            accessibilityIdentifier: "back",
-        )
+        navigationItem.backBarButtonItem = .button(title: CommonStrings.backButton) { }
     }
 }
 
@@ -194,7 +181,6 @@ extension ChatListViewController {
         }
         let vc = SSKEnvironment.shared.databaseStorageRef.read { tx in
             ConversationViewController.load(
-                appReadiness: appReadiness,
                 threadViewModel: threadViewModel,
                 action: .none,
                 focusMessageId: nil,

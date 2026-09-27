@@ -263,7 +263,7 @@ class ToastView: UIView {
 
         imageView.tintColor = .white
 
-        label.textColor = .ows_white
+        label.textColor = .white
         label.numberOfLines = 0
 
         stackView.axis = .horizontal

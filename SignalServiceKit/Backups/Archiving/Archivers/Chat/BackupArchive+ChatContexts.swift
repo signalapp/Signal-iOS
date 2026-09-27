@@ -130,9 +130,11 @@ extension BackupArchive {
             if let contactThread = thread as? TSContactThread {
                 let contactAddress = contactThread.contactAddress
                 if
-                    contactAddress.serviceId == recipientContext.localIdentifiers.aci
-                    || contactAddress.serviceId == recipientContext.localIdentifiers.pni
-                    || contactAddress.phoneNumber == recipientContext.localIdentifiers.phoneNumber
+                    recipientContext.localIdentifiers.containsAnyOf(
+                        aci: contactAddress.serviceId as? Aci,
+                        phoneNumber: contactAddress.phoneNumber,
+                        pni: contactAddress.serviceId as? Pni,
+                    )
                 {
                     threadCache[currentChatId] = .noteToSelfThread
                 } else {

@@ -58,7 +58,7 @@ extension GroupManager {
         changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void,
     ) async throws -> [Promise<Void>] {
         let groupId = try secretParams.getPublicParams().getGroupIdentifier()
-        return try await groupUpdateQueues.run(forKey: groupId) {
+        return try await groupUpdateQueues.runWithThrowingTask(forKey: groupId) {
             return try await GenericGroupUpdateOperation.run(
                 secretParams: secretParams,
                 updateDescription: description,

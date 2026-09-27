@@ -6,11 +6,7 @@
 public protocol BackupAttachmentDownloadScheduler {
     /// "Enqueue" an attachment from a backup for download, if needed and eligible, otherwise do nothing.
     ///
-    /// If the same attachment pointed to by the reference is already enqueued, updates it to the greater
-    /// of the existing and new reference's timestamp.
-    ///
-    /// Doesn't actually trigger a download; callers must later call ``BackupAttachmentDownloadQueueRunner/restoreAttachmentsIfNeeded``
-    /// to insert rows into the normal AttachmentDownloadQueue and download.
+    /// See `BackupAttachmentDownloadStore/enqueue(...)` for more details.
     func enqueueFromBackupIfNeeded(
         _ referencedAttachment: ReferencedAttachment,
         restoreStartTimestampMs: UInt64,

@@ -237,9 +237,9 @@ class MediaPageViewController: UIPageViewController {
             {
                 topInset = statusBarHeight
                 if #available(iOS 18, *) {
-                    topInset += (2 + .hairlineWidth)
+                    topInset += (2 + hairlineWidth)
                 } else if #available(iOS 16, *) {
-                    topInset -= .hairlineWidth
+                    topInset -= hairlineWidth
                 }
             }
             // On iOS 26 in landscape the navigation bar is offset 24 dp from the screen top edge.
@@ -362,7 +362,7 @@ class MediaPageViewController: UIPageViewController {
     }
 
     private var shouldHideStatusBar: Bool {
-        guard !UIDevice.current.isIPad else { return shouldHideToolbars }
+        guard traitCollection.userInterfaceIdiom == .phone else { return shouldHideToolbars }
         return shouldHideToolbars || traitCollection.verticalSizeClass == .compact
     }
 
@@ -381,73 +381,59 @@ class MediaPageViewController: UIPageViewController {
     // MARK: Context Menu
 
     private func buildContextMenuBarButton() -> UIBarButtonItem {
-        let buttonImageName: String = if #available(iOS 26, *) { "more" } else { "more-circle" }
-        let contextMenuBarButton = UIBarButtonItem(
-            image: UIImage(named: buttonImageName),
-            landscapeImagePhone: UIImage(named: buttonImageName + "-20"),
-            style: .plain,
-            target: nil,
-            action: nil,
-        )
-        contextMenuBarButton.menu = UIMenu(
-            title: "",
-            children: [
-                // TODO: Video Playback Speed
-                // TODO: Edit
-                UIAction(
-                    title: OWSLocalizedString(
-                        "MEDIA_VIEWER_SAVE_MEDIA_ACTION",
-                        comment: "Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app.",
-                    ),
-                    image: Theme.iconImage(.contextMenuSave),
-                    attributes:
-                    currentItem.referencedAttachment.asReferencedStream == nil ? .disabled : [],
-                    handler: { [weak self] _ in
-                        self?.saveCurrentMediaToPhotos()
-                    },
+        .contextMenuButton(actions: [
+            // TODO: Video Playback Speed
+            // TODO: Edit
+            UIAction(
+                title: OWSLocalizedString(
+                    "MEDIA_VIEWER_SAVE_MEDIA_ACTION",
+                    comment: "Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app.",
                 ),
-                UIAction(
-                    title: OWSLocalizedString(
-                        "MEDIA_VIEWER_GO_TO_MESSAGE_ACTION",
-                        comment: "Context menu item in media viewer. Refers to scrolling the conversation to the currently displayed photo/video.",
-                    ),
-                    image: Theme.iconImage(.buttonMessage),
-                    handler: { [weak self] _ in
-                        self?.presentConversationForCurrentMedia()
-                    },
+                image: Theme.iconImage(.contextMenuSave),
+                attributes:
+                currentItem.referencedAttachment.asReferencedStream == nil ? .disabled : [],
+                handler: { [weak self] _ in
+                    self?.saveCurrentMediaToPhotos()
+                },
+            ),
+            UIAction(
+                title: OWSLocalizedString(
+                    "MEDIA_VIEWER_GO_TO_MESSAGE_ACTION",
+                    comment: "Context menu item in media viewer. Refers to scrolling the conversation to the currently displayed photo/video.",
                 ),
-                UIAction(
-                    title: OWSLocalizedString(
-                        "MEDIA_VIEWER_DELETE_MEDIA_ACTION",
-                        comment: "Context menu item in media viewer. Refers to deleting currently displayed photo/video.",
-                    ),
-                    image: Theme.iconImage(.contextMenuDelete),
-                    attributes: .destructive,
-                    handler: { [weak self] _ in
-                        self?.deleteCurrentMedia()
-                    },
+                image: Theme.iconImage(.buttonMessage),
+                handler: { [weak self] _ in
+                    self?.presentConversationForCurrentMedia()
+                },
+            ),
+            UIAction(
+                title: OWSLocalizedString(
+                    "MEDIA_VIEWER_DELETE_MEDIA_ACTION",
+                    comment: "Context menu item in media viewer. Refers to deleting currently displayed photo/video.",
                 ),
-            ],
-        )
-        return contextMenuBarButton
+                image: Theme.iconImage(.contextMenuDelete),
+                attributes: .destructive,
+                handler: { [weak self] _ in
+                    self?.deleteCurrentMedia()
+                },
+            ),
+        ])
     }
 
     // MARK: Bar Buttons
 
     private lazy var barButtonShareMedia: UIBarButtonItem = {
-        let button = UIBarButtonItem(
-            image: Theme.iconImage(.buttonShare),
-            primaryAction: UIAction { [weak self] _ in self?.didPressShare() },
-        )
+        let button = UIBarButtonItem.button(icon: .buttonShare) { [weak self] in
+            self?.didPressShare()
+        }
         button.landscapeImagePhone = UIImage(imageLiteralResourceName: "share-20")
         return button
     }()
 
     private lazy var barButtonForwardMedia: UIBarButtonItem = {
-        let button = UIBarButtonItem(
-            image: Theme.iconImage(.buttonForward),
-            primaryAction: UIAction { [weak self] _ in self?.didPressForward() },
-        )
+        let button = UIBarButtonItem.button(icon: .buttonForward) { [weak self] in
+            self?.didPressForward()
+        }
         button.landscapeImagePhone = UIImage(imageLiteralResourceName: "forward-20")
         return button
     }()

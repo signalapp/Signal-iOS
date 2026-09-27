@@ -16,7 +16,7 @@ class IncomingCallControls: UIView {
         return createButton(
             iconName: "phone-down-fill-28",
             label: OWSLocalizedString("CALL_CONTROLS_INCOMING_DECLINE", comment: "label for button shown when an incoming call rings"),
-            unselectedBackgroundColor: .ows_accentRed,
+            unselectedBackgroundColor: .Signal.red,
             accessibilityLabel: accessibilityLabel,
             action: self.didDeclineCall,
         )
@@ -30,7 +30,7 @@ class IncomingCallControls: UIView {
         return createButton(
             iconName: "phone-fill-28",
             label: OWSLocalizedString("CALL_CONTROLS_INCOMING_ANSWER", comment: "label for button shown when an incoming call rings"),
-            unselectedBackgroundColor: .ows_accentGreen,
+            unselectedBackgroundColor: .Signal.green,
             accessibilityLabel: accessibilityLabel,
             action: { self.didAcceptCall(false) },
         )
@@ -44,7 +44,7 @@ class IncomingCallControls: UIView {
         return createButton(
             iconName: "video-fill-28",
             label: OWSLocalizedString("CALL_CONTROLS_INCOMING_ANSWER", comment: "label for button shown when an incoming call rings"),
-            unselectedBackgroundColor: .ows_accentGreen,
+            unselectedBackgroundColor: .Signal.green,
             accessibilityLabel: accessibilityLabel,
             action: { self.didAcceptCall(true) },
         )

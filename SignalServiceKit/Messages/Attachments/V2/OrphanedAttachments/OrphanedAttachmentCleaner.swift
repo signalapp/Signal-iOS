@@ -170,7 +170,7 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
         }
 
         func runNextCleanupJob() async throws(CancellationError) {
-            try await taskQueue.run { () throws(CancellationError) -> Void in
+            try await taskQueue.run { () async throws(CancellationError) -> Void in
                 try await self._runNextCleanupJob()
             }
         }
@@ -362,6 +362,12 @@ public class _OrphanedAttachmentCleanerImpl_TaskSchedulerWrapper: _OrphanedAttac
     public init() {}
 
     public func task(_ block: @Sendable @escaping () async throws -> Void) {
-        Task(operation: block)
+        Task {
+            do {
+                try await block()
+            } catch {
+                Logger.error("Error running orphaned attachment cleaner: \(error)")
+            }
+        }
     }
 }

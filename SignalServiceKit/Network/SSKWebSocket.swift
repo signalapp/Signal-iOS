@@ -228,7 +228,7 @@ public class SSKWebSocketNative: SSKWebSocket {
     }
 
     private func listenForNextMessage() {
-        DispatchQueue.global().async {
+        DispatchQueue.global().async { [self] in
             self.lock.withLock { self.webSocketTask }?.receive { [weak self] result in
                 self?.receivedMessage(result)
             }

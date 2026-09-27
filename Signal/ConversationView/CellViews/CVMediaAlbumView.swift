@@ -138,9 +138,9 @@ class CVMediaAlbumView: ManualStackViewWithLayer {
                 )
                 let moreLabel = CVLabel()
                 moreLabel.text = moreText
-                moreLabel.textColor = UIColor.ows_white
+                moreLabel.textColor = .white
                 // We don't want to use dynamic text here.
-                moreLabel.font = UIFont.systemFont(ofSize: 24)
+                moreLabel.font = .systemFont(ofSize: 24)
                 lastView.addSubview(moreLabel)
                 subStack2.addLayoutBlock { _ in
                     let labelSize = moreLabel.sizeThatFitsMaxSize

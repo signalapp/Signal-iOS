@@ -754,9 +754,13 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         navigationController?.pushViewController(view, animated: true)
     }
 
-    class func muteUnmuteMenu(for threadViewModel: ThreadViewModel, actionExecuted: @escaping () -> Void) -> UIMenu {
+    class func muteUnmuteMenu(
+        for threadViewModel: ThreadViewModel,
+        from viewController: UIViewController,
+        actionExecuted: @escaping () -> Void,
+    ) -> UIMenu {
         let menuTitle = muteUnmuteMenuTitle(for: threadViewModel)
-        let actions = muteUnmuteActions(for: threadViewModel, actionExecuted: actionExecuted)
+        let actions = muteUnmuteActions(for: threadViewModel, from: viewController, actionExecuted: actionExecuted)
         return UIMenu(title: menuTitle ?? "", children: actions)
     }
 
@@ -768,7 +772,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             )
         }
 
-        guard threadViewModel.mutedUntilTimestamp != ThreadAssociatedData.alwaysMutedTimestamp else {
+        guard threadViewModel.mutedUntilTimestamp != TSThread.alwaysMutedTimestamp else {
             return OWSLocalizedString(
                 "CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE",
                 comment: "Indicates that this thread is muted forever.",
@@ -806,92 +810,38 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     private class func muteUnmuteActions(
         for threadViewModel: ThreadViewModel,
+        from viewController: UIViewController,
         actionExecuted: @escaping () -> Void,
     ) -> [UIAction] {
+        let muteManager = ConversationMuteManager()
 
         guard !threadViewModel.isMuted else {
             return [UIAction(title: OWSLocalizedString(
                 "CONVERSATION_SETTINGS_UNMUTE_ACTION",
                 comment: "Label for button to unmute a thread.",
             )) { _ in
-                setThreadMutedUntilTimestamp(0, threadViewModel: threadViewModel)
+                muteManager.unmute(threadViewModel)
                 actionExecuted()
             }]
         }
 
-        var actions = [UIAction]()
-        actions.append(UIAction(title: OWSLocalizedString(
-            "CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION",
-            comment: "Label for button to mute a thread for a hour.",
-        )) { _ in
-            setThreadMuted(threadViewModel: threadViewModel) {
-                var dateComponents = DateComponents()
-                dateComponents.hour = 1
-                return dateComponents
+        return ConversationMuteChoice.Option.all.map { option in
+            UIAction(title: option.title) { [weak viewController] _ in
+                switch option {
+                case .preset(let preset):
+                    muteManager.mute(threadViewModel, choice: .preset(preset))
+                    actionExecuted()
+                case .forever:
+                    muteManager.mute(threadViewModel, choice: .forever)
+                    actionExecuted()
+                case .custom:
+                    let sheet = MuteUntilSheet { endDate in
+                        muteManager.mute(threadViewModel, choice: .custom(endDate: endDate))
+                        actionExecuted()
+                    }
+                    viewController?.present(sheet, animated: true)
+                }
             }
-            actionExecuted()
-        })
-        actions.append(UIAction(title: OWSLocalizedString(
-            "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION",
-            comment: "Label for button to mute a thread for eight hours.",
-        )) { _ in
-            setThreadMuted(threadViewModel: threadViewModel) {
-                var dateComponents = DateComponents()
-                dateComponents.hour = 8
-                return dateComponents
-            }
-            actionExecuted()
-        })
-        actions.append(UIAction(title: OWSLocalizedString(
-            "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION",
-            comment: "Label for button to mute a thread for a day.",
-        )) { _ in
-            setThreadMuted(threadViewModel: threadViewModel) {
-                var dateComponents = DateComponents()
-                dateComponents.day = 1
-                return dateComponents
-            }
-            actionExecuted()
-        })
-        actions.append(UIAction(title: OWSLocalizedString(
-            "CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION",
-            comment: "Label for button to mute a thread for a week.",
-        )) { _ in
-            setThreadMuted(threadViewModel: threadViewModel) {
-                var dateComponents = DateComponents()
-                dateComponents.day = 7
-                return dateComponents
-            }
-            actionExecuted()
-        })
-        actions.append(UIAction(title: OWSLocalizedString(
-            "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION",
-            comment: "Label for button to mute a thread forever.",
-        )) { _ in
-            setThreadMutedUntilTimestamp(ThreadAssociatedData.alwaysMutedTimestamp, threadViewModel: threadViewModel)
-            actionExecuted()
-        })
-        return actions
-    }
-
-    private class func setThreadMuted(threadViewModel: ThreadViewModel, dateBlock: () -> DateComponents) {
-        guard let timeZone = TimeZone(identifier: "UTC") else {
-            owsFailDebug("Invalid timezone.")
-            return
-        }
-        var calendar = Calendar.current
-        calendar.timeZone = timeZone
-        let dateComponents = dateBlock()
-        guard let mutedUntilDate = calendar.date(byAdding: dateComponents, to: Date()) else {
-            owsFailDebug("Couldn't modify date.")
-            return
-        }
-        self.setThreadMutedUntilTimestamp(mutedUntilDate.ows_millisecondsSince1970, threadViewModel: threadViewModel)
-    }
-
-    private class func setThreadMutedUntilTimestamp(_ value: UInt64, threadViewModel: ThreadViewModel) {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            threadViewModel.associatedData.updateWith(mutedUntilTimestamp: value, updateStorageService: true, transaction: transaction)
         }
     }
 
@@ -923,11 +873,29 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     let maximumRecentMedia = 4
-    private(set) var recentMedia = OrderedDictionary<
-        AttachmentReferenceId,
-        (attachment: ReferencedAttachment, imageView: UIImageView),
-    >() {
+    private(set) var recentMedia = [ReferencedAttachment]() {
         didSet { AssertIsOnMainThread() }
+    }
+
+    // Populated lazily as thumbnails are displayed. Used for zoom transition.
+    private(set) var recentMediaThumbnailViews = [AttachmentReferenceId: UIImageView]()
+
+    func createThumbnailView(for referencedAttachment: ReferencedAttachment) -> UIImageView {
+        let imageView = UIImageView()
+        imageView.clipsToBounds = true
+        if #available(iOS 26, *) {
+            imageView.layer.cornerCurve = .continuous
+            imageView.layer.cornerRadius = 11
+        } else {
+            imageView.layer.cornerRadius = 4
+        }
+        imageView.contentMode = .scaleAspectFill
+        imageView.backgroundColor = .Signal.backdrop
+        imageView.image = referencedAttachment.getThumbnailImageSync(quality: .small)
+
+        recentMediaThumbnailViews[referencedAttachment.reference.referenceId] = imageView
+
+        return imageView
     }
 
     private lazy var mediaGalleryFinder = MediaGalleryAttachmentFinder(
@@ -936,25 +904,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     )
 
     func updateRecentAttachments(tx: DBReadTransaction) {
-        let recentAttachments = mediaGalleryFinder.recentMediaAttachments(limit: maximumRecentMedia, tx: tx)
-        recentMedia = recentAttachments.reduce(into: OrderedDictionary()) { result, attachment in
-            let imageView = UIImageView()
-            imageView.clipsToBounds = true
-            if #available(iOS 26, *) {
-                imageView.layer.cornerCurve = .continuous
-                imageView.layer.cornerRadius = 11
-            } else {
-                imageView.layer.cornerRadius = 4
-            }
-            imageView.contentMode = .scaleAspectFill
-            imageView.backgroundColor = .Signal.backdrop
-            imageView.image = attachment.getThumbnailImageSync(quality: .small)
-
-            result.append(
-                key: attachment.reference.referenceId,
-                value: (attachment, imageView),
-            )
-        }
+        recentMedia = mediaGalleryFinder.recentMediaAttachments(limit: maximumRecentMedia, tx: tx)
         shouldRefreshAttachmentsOnReappear = false
     }
 
@@ -969,10 +919,10 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     func updateMutualGroupThreads(tx: DBReadTransaction) {
         guard let contactThread = thread as? TSContactThread else { return }
         self.hasGroupThreads = ThreadFinder().existsGroupThread(transaction: tx)
-        self.mutualGroupThreads = TSGroupThread.groupThreads(
-            with: contactThread.contactAddress,
-            transaction: tx,
-        ).filter { $0.groupModel.groupMembership.isLocalUserFullMember && $0.shouldThreadBeVisible && !$0.isTerminatedGroup }
+        self.mutualGroupThreads = TSGroupThread.mutualVisibleGroupThreads(
+            withFullMember: contactThread.contactAddress,
+            tx: tx,
+        )
     }
 
     func tappedConversationSearch() {
@@ -1147,7 +1097,7 @@ extension ConversationSettingsViewController: MediaPresentationContextProvider {
         let mediaViewShape: MediaViewShape
         switch item {
         case .gallery(let galleryItem):
-            guard let imageView = recentMedia[galleryItem.referencedAttachment.reference.referenceId]?.imageView else { return nil }
+            guard let imageView = recentMediaThumbnailViews[galleryItem.referencedAttachment.reference.referenceId] else { return nil }
             mediaView = imageView
             mediaViewShape = .rectangle(imageView.layer.cornerRadius)
         case .image:

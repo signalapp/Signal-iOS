@@ -150,13 +150,9 @@ final class ContactSupportViewController: OWSTableViewController2, TextViewWithP
         navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
             self?.didTapCancel()
         }
-        navigationItem.rightBarButtonItem = .button(
-            title: CommonStrings.nextButton,
-            style: .done,
-            action: { [weak self] in
-                self?.didTapNext()
-            },
-        )
+        navigationItem.rightBarButtonItem = .nextButton { [weak self] in
+            self?.didTapNext()
+        }
         navigationItem.rightBarButtonItem?.isEnabled = false
     }
 

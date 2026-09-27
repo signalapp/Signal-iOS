@@ -23,9 +23,9 @@ class CVReactionCountsView: ManualStackView {
     }
 
     struct State: Equatable {
-        let pill1: PillState?
-        let pill2: PillState?
-        let pill3: PillState?
+        var pill1: PillState
+        var pill2: PillState?
+        var pill3: PillState?
     }
 
     static let height: CGFloat = 24
@@ -50,62 +50,45 @@ class CVReactionCountsView: ManualStackView {
     static func buildState(with reactionState: InteractionReactionState) -> State {
         func buildPillState(emojiCount: InteractionReactionState.EmojiCount) -> PillState {
             .emoji(
-                emoji: emojiCount.emoji,
+                emoji: emojiCount.emojiVariant,
                 count: emojiCount.count,
-                fromLocalUser: emojiCount.emoji == reactionState.localUserEmoji,
+                fromLocalUser: emojiCount.emojiVariant == reactionState.localUserEmojiVariant,
             )
         }
 
-        // We display up to 3 reaction bubbles per message in order
-        // of popularity (`emojiCounts` comes pre-sorted to reflect
-        // this ordering).
+        // We display up to 3 reaction bubbles per message in order of popularity
+        // (`emojiCounts` comes pre-sorted to reflect this ordering).
 
-        var pill1: PillState?
-        var pill2: PillState?
-        var pill3: PillState?
-        let build = {
-            State(pill1: pill1, pill2: pill2, pill3: pill3)
+        var emojiCounts = reactionState.emojiCounts[...]
+
+        // We always have at least one pill.
+        let emojiCount1 = emojiCounts.removeFirst()
+        let pill1 = buildPillState(emojiCount: emojiCount1)
+
+        guard !emojiCounts.isEmpty else {
+            return State(pill1: pill1)
         }
 
-        guard !reactionState.emojiCounts.isEmpty else {
-            return build()
+        let emojiCount2 = emojiCounts.removeFirst()
+        let pill2 = buildPillState(emojiCount: emojiCount2)
+
+        guard !emojiCounts.isEmpty else {
+            return State(pill1: pill1, pill2: pill2)
         }
 
-        pill1 = buildPillState(emojiCount: reactionState.emojiCounts[0])
-
-        guard reactionState.emojiCounts.count >= 2 else {
-            return build()
-        }
-
-        pill2 = buildPillState(emojiCount: reactionState.emojiCounts[1])
-
-        guard reactionState.emojiCounts.count >= 3 else {
-            return build()
-        }
-
-        // If there are more than 3 unique reactions, the third bubble
-        // will represent the count of remaining unique reactors *not*
-        // the count of remaining unique emoji.
-        if reactionState.emojiCounts.count > 3 {
-            let renderedEmoji = reactionState.emojiCounts[0...1].map { $0.emoji }
-            let remainingReactorCount = reactionState.emojiCounts
-                .lazy
-                .filter { !renderedEmoji.contains($0.emoji) }
-                .map { $0.count }
-                .reduce(0, +)
-            let remainingReactionsIncludesLocalUserReaction: Bool = {
-                guard let localEmoji = reactionState.localUserEmoji else { return false }
-                return !renderedEmoji.contains(localEmoji)
-            }()
-            pill3 = .moreCount(
-                count: remainingReactorCount,
-                fromLocalUser: remainingReactionsIncludesLocalUserReaction,
-            )
+        let pill3: PillState
+        if emojiCounts.count == 1 {
+            let emojiCount3 = emojiCounts.removeFirst()
+            pill3 = buildPillState(emojiCount: emojiCount3)
         } else {
-            pill3 = buildPillState(emojiCount: reactionState.emojiCounts[2])
+            // If there are more than 3 unique reactions, the third bubble will
+            // represent the count of remaining unique reactors *not* the count of
+            // remaining unique emoji.
+            let remainingReactionsCount = emojiCounts.lazy.map(\.count).reduce(0, +)
+            let remainingReactionsIncludeLocalUser = emojiCounts.contains(where: { $0.emojiVariant == reactionState.localUserEmojiVariant })
+            pill3 = .moreCount(count: remainingReactionsCount, fromLocalUser: remainingReactionsIncludeLocalUser)
         }
-
-        return build()
+        return State(pill1: pill1, pill2: pill2, pill3: pill3)
     }
 
     private static let measurementKey = "CVReactionCountsView"

@@ -632,7 +632,7 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
                         ).cgPath
                     }
                     quotedImageView.layer.mask = maskLayer
-                    wrapper.backgroundColor = .ows_white
+                    wrapper.backgroundColor = .white
                 }
                 return wrapper
 
@@ -649,12 +649,12 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
 
                     if configurator.isVideoAttachment {
                         let overlayView = ManualLayoutViewWithLayer(name: "video_overlay")
-                        overlayView.backgroundColor = .ows_black.withAlphaComponent(0.20)
+                        overlayView.backgroundColor = .black.withAlphaComponent(0.20)
                         wrapper.addSubviewToFillSuperviewEdges(overlayView)
 
                         let contentImageView = CVImageView()
-                        contentImageView.setTemplateImageName("play-fill", tintColor: .ows_white)
-                        contentImageView.setShadow(radius: 6, opacity: 0.24, offset: .zero, color: .ows_black)
+                        contentImageView.setTemplateImageName("play-fill", tintColor: .white)
+                        contentImageView.setShadow(radius: 6, opacity: 0.24, offset: .zero, color: .black)
                         wrapper.addSubviewToCenterOnSuperviewWithDesiredSize(contentImageView)
                     }
                     return wrapper

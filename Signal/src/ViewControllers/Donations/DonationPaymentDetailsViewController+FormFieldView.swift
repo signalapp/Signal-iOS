@@ -74,7 +74,7 @@ extension DonationPaymentDetailsViewController {
         private lazy var errorLabel: UILabel = {
             let result = UILabel()
             result.font = .dynamicTypeCaption1
-            result.textColor = .ows_accentRed
+            result.textColor = .Signal.red
             result.numberOfLines = 1
             return result
         }()

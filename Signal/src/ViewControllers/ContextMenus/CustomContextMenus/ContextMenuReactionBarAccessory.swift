@@ -23,7 +23,7 @@ public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessor
         self.itemViewModel = itemViewModel
 
         reactionPicker = MessageReactionPicker(
-            selectedEmoji: itemViewModel?.reactionState?.localUserEmoji,
+            selectedEmoji: itemViewModel?.reactionState?.localUserEmojiVariant,
             delegate: nil,
             style: .contextMenu(allowGlass: true),
         )
@@ -95,7 +95,7 @@ public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessor
             case .more:
                 didSelectShowFullEmojiPicker()
             case .emoji(let emoji):
-                let isRemoving = emoji == self.itemViewModel?.reactionState?.localUserEmoji
+                let isRemoving = emoji == self.itemViewModel?.reactionState?.localUserEmojiVariant
                 if let index = reactionPicker.currentEmojiSet().firstIndex(of: emoji) {
                     didSelectReaction(reaction: emoji, isRemoving: isRemoving, inPosition: index)
                 }
@@ -134,7 +134,7 @@ public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessor
         reactionPicker.playDismissalAnimation(duration: 0.2) { }
 
         self.delegate?.contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(for: message, accessory: self) { emojiString in
-            let isRemoving = emojiString == self.itemViewModel?.reactionState?.localUserEmoji
+            let isRemoving = emojiString == self.itemViewModel?.reactionState?.localUserEmojiVariant
             self.didSelectReactionHandler?(message, emojiString, isRemoving)
             self.delegate?.contextMenuTargetedPreviewAccessoryRequestsDismissal(self, completion: { })
         }

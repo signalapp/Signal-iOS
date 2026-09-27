@@ -156,12 +156,12 @@ class CVMediaView: ManualLayoutViewWithLayer {
             removeProgressView()
             return false
 
-        case .uploading(let attachmentStream):
-            direction = .upload(attachmentStream: attachmentStream)
+        case .uploading:
+            direction = .upload(attachmentID: attachment.attachmentID)
 
-        case .downloading(let attachmentPointer, let downloadState):
+        case .downloading(let downloadState):
             direction = .download(
-                attachmentPointer: attachmentPointer,
+                attachmentID: attachment.attachmentID,
                 downloadState: downloadState,
             )
         }

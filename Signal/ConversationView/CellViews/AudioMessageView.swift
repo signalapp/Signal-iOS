@@ -7,7 +7,7 @@ import Lottie
 import SignalServiceKit
 import SignalUI
 
-class AudioMessageView: ManualStackView {
+class AudioMessageView: ManualStackView, CVAudioPlayerListener {
     private enum Constants {
         static let animationSize: CGFloat = 40
         static let waveformHeight: CGFloat = 32
@@ -16,6 +16,10 @@ class AudioMessageView: ManualStackView {
     }
 
     // MARK: - State
+
+    private var playbackID: CVAudioPlaybackID {
+        CVAudioPlaybackID(audioAttachment: presentation.audioAttachment)
+    }
 
     private var attachment: Attachment { presentation.audioAttachment.attachment }
     private var attachmentStream: AttachmentStream? { presentation.audioAttachment.attachmentStream?.attachmentStream }
@@ -29,14 +33,14 @@ class AudioMessageView: ManualStackView {
     private let mediaCache: CVMediaCache
 
     private var audioPlaybackState: AudioPlaybackState {
-        AppEnvironment.shared.cvAudioPlayerRef.audioPlaybackState(forAttachmentId: attachment.id)
+        AppEnvironment.shared.cvAudioPlayerRef.audioPlaybackState(playbackID: playbackID)
     }
 
     private var elapsedSeconds: TimeInterval {
-        guard let attachmentStream = self.attachmentStream else {
+        guard attachmentStream != nil else {
             return 0
         }
-        return AppEnvironment.shared.cvAudioPlayerRef.playbackProgress(forAttachmentStream: attachmentStream)
+        return AppEnvironment.shared.cvAudioPlayerRef.playbackProgress(playbackID: playbackID)
     }
 
     private var isViewed = false
@@ -93,7 +97,7 @@ class AudioMessageView: ManualStackView {
         progressSlider.setThumbImage(UIImage(named: "audio_message_thumb")?.withTintColor(presentation.thumbColor(isIncoming: isIncoming), renderingMode: .alwaysTemplate), for: .normal)
         progressSlider.setMinimumTrackImage(trackImage(color: presentation.playedColor(isIncoming: isIncoming)), for: .normal)
         progressSlider.setMaximumTrackImage(trackImage(color: presentation.unplayedColor(isIncoming: isIncoming)), for: .normal)
-        progressSlider.isEnabled = presentation.audioAttachment.isDownloaded
+        progressSlider.isEnabled = presentation.audioAttachment.attachmentStream != nil
         progressSlider.isUserInteractionEnabled = false
 
         waveformContainer.addSubview(progressSlider) { [progressSlider] view in
@@ -108,8 +112,6 @@ class AudioMessageView: ManualStackView {
         let leftView: UIView
         switch presentation.audioAttachment.state {
         case .attachmentStream:
-            fallthrough
-        case .attachmentPointer where presentation.audioAttachment.isDownloaded:
             let playPauseAnimation = self.playPauseAnimation
             let playedDotAnimation = self.playedDotAnimation
 
@@ -154,10 +156,10 @@ class AudioMessageView: ManualStackView {
             presentation.playedDotContainer.addSubviewToCenterOnSuperview(playedDotAnimation, size: CGSize(square: 16))
 
             leftView = playPauseContainer
-        case .attachmentPointer(let attachmentPointer, let downloadState):
+        case .attachmentPointer(_, let downloadState):
             leftView = CVAttachmentProgressView(
                 direction: .download(
-                    attachmentPointer: attachmentPointer.attachmentPointer,
+                    attachmentID: attachment.id,
                     downloadState: downloadState,
                 ),
                 configuration: .init(conversationStyle: conversationStyle, isIncoming: isIncoming),
@@ -476,57 +478,38 @@ class AudioMessageView: ManualStackView {
 
     private func updatePlaybackRate(animated: Bool) {
         let isPlaying: Bool = {
-            guard let attachmentStream else {
+            guard attachmentStream != nil else {
                 return false
             }
-            return AppEnvironment.shared.cvAudioPlayerRef.audioPlaybackState(forAttachmentId: attachmentStream.id) == .playing
+            let cvAudioPlayer = AppEnvironment.shared.cvAudioPlayerRef
+            return cvAudioPlayer.audioPlaybackState(playbackID: playbackID) == .playing
         }()
         presentation.playbackRateView.setVisibility(isPlaying, animated: animated)
     }
-}
 
-// MARK: - CVAudioPlayerListener
+    // MARK: - CVAudioPlayerListener
 
-extension AudioMessageView: CVAudioPlayerListener {
-    func audioPlayerStateDidChange(attachmentId: Attachment.IDType) {
+    func audioPlayerStateDidChange(playbackID: CVAudioPlaybackID) {
         AssertIsOnMainThread()
 
-        guard attachmentId == attachment.id else { return }
+        guard playbackID == self.playbackID else { return }
 
         updateContents(animated: true)
     }
 
-    func audioPlayerDidFinish(attachmentId: Attachment.IDType) {
+    func audioPlayerDidFinish(playbackID: CVAudioPlaybackID) {
         AssertIsOnMainThread()
 
-        guard attachmentId == attachment.id else { return }
+        guard playbackID == self.playbackID else { return }
 
         updateContents(animated: true)
     }
 
-    func audioPlayerDidMarkViewed(attachmentId: Attachment.IDType) {
+    func audioPlayerDidMarkViewed(playbackID: CVAudioPlaybackID) {
         AssertIsOnMainThread()
 
-        guard !isViewed, attachmentId == attachment.id else { return }
+        guard playbackID == self.playbackID else { return }
 
         setViewed(true, animated: true)
-    }
-}
-
-extension AudioAttachment {
-    var sizeString: String {
-        switch state {
-        case .attachmentStream(let stream, _):
-            return ByteCountFormatter().string(for: stream.attachmentStream.unencryptedByteCount) ?? ""
-        case .attachmentPointer:
-            // TODO: [Media Gallery]: Source byte information for undownloaded attachment
-            return ""
-        }
-    }
-
-    var dateString: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.setLocalizedDateFormatFromTemplate("Mdyy")
-        return dateFormatter.string(from: receivedAtDate)
     }
 }

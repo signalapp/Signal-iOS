@@ -99,7 +99,6 @@ extension CVItemBuilding {
     // Convenience Accessors
     var threadViewModel: ThreadViewModel { itemBuildingContext.threadViewModel }
     var thread: TSThread { itemBuildingContext.thread }
-    var threadAssociatedData: ThreadAssociatedData { threadViewModel.associatedData }
     var viewStateSnapshot: CVViewStateSnapshot { itemBuildingContext.viewStateSnapshot }
     var conversationStyle: ConversationStyle { itemBuildingContext.conversationStyle }
     var mediaCache: CVMediaCache { itemBuildingContext.mediaCache }

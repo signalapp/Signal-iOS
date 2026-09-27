@@ -6,6 +6,7 @@
 import CryptoKit
 import Foundation
 import SignalServiceKit
+import WiFiAware
 
 ///
 /// The following service is used to facilitate users in transferring their account from
@@ -58,6 +59,20 @@ import SignalServiceKit
 ///          v. Hot-swap the new database into place and present the conversation list
 enum DeviceTransfer {
 
+    static func platformSupportsWifiAware() -> Bool {
+        if #available(iOS 26.0, *) {
+            if WACapabilities.supportedFeatures.contains(.wifiAware) {
+                return true
+            } else {
+                Logger.info("[DeviceTransfer][WiFiAware] WiFiAware not a supported feature on this device.")
+                return false
+            }
+        } else {
+            Logger.info("[DeviceTransfer][WiFiAware] OS version too low to support WifiAware")
+            return false
+        }
+    }
+
     enum Error: Swift.Error {
         case assertion
         case backgroundedDevice
@@ -65,7 +80,7 @@ enum DeviceTransfer {
         case modeMismatch
         case notEnoughSpace
         case unsupportedVersion
-        case cancel
+        case otherDeviceTerminated
     }
 
     enum Mode: String {
@@ -76,11 +91,13 @@ enum DeviceTransfer {
     enum Message {
         case done
         case backgroundApp
+        case transferFailed
 
         var data: Data {
             switch self {
             case .done: return Data("Transfer Complete".utf8)
             case .backgroundApp: return Data("App backgrounded".utf8)
+            case .transferFailed: return Data("Transfer Failed".utf8)
             }
         }
     }
@@ -108,6 +125,7 @@ enum DeviceTransfer {
         static let peerIdKey = "peerId"
         static let certificateHashKey = "certificateHash"
         static let transferModeKey = "transferMode"
+        static let supportsWifiAware = "wifiAware"
 
         static let transferHost = "transfer"
     }
@@ -135,6 +153,43 @@ enum DeviceTransfer {
                 OWSFileSystem.ensureDirectoryExists(DeviceTransfer.Constants.pendingTransferDirectory.path)
             }
         }
+
+        static func bindPeerDiscoveryStream(
+            discoveredPeerStream: AsyncThrowingStream<[any Peer], Swift.Error>,
+            logger: PrefixedLogger,
+        ) -> (
+            pairedPeerStream: AsyncThrowingStream<any Peer, Swift.Error>,
+            updatedPeerListStream: AsyncThrowingStream<[any Peer], Swift.Error>,
+            boundListenerTask: Task<Void, Swift.Error>,
+        ) {
+            let (pairedPeerStream, pairedPeerSink) = AsyncThrowingStream<any Peer, Swift.Error>.makeStream(
+                bufferingPolicy: .bufferingNewest(1),
+            )
+            let (updatedPeerListStream, updatedPeerListSink) = AsyncThrowingStream<[any Peer], Swift.Error>.makeStream(
+                bufferingPolicy: .bufferingNewest(1),
+            )
+            let task = Task {
+                var knownPeerList: [Int: any Peer]?
+                for try await peers in discoveredPeerStream {
+                    let peerDictionary = Dictionary(uniqueKeysWithValues: zip(peers.map(\.id), peers))
+                    if let knownPeerList {
+                        for newPeerID in Set(peerDictionary.keys).subtracting(Set(knownPeerList.keys)) {
+                            if let newPeer = peerDictionary[newPeerID] {
+                                logger.debug("Found new peer: \(newPeer)")
+                                pairedPeerSink.yield(newPeer)
+                            }
+                        }
+                    } else {
+                        // The 'newly paired peer' is determined by recording the first list of peered devices
+                        // and checking this against any future list to find the first new device.
+                        logger.debug("Setting first known peers \(peerDictionary)")
+                        knownPeerList = peerDictionary
+                    }
+                    updatedPeerListSink.yield(Array(peerDictionary.values))
+                }
+            }
+            return (pairedPeerStream, updatedPeerListStream, task)
+        }
     }
 
     enum SessionMessage {
@@ -143,12 +198,15 @@ enum DeviceTransfer {
         case finishResource(String, URL)
     }
 
-    protocol PeerID: Equatable { }
+    protocol Peer: Identifiable, Hashable {
+        var id: Int { get }
+        var displayName: String { get }
+    }
 
     @MainActor
     protocol Session {
         func waitForConnection() async throws
-        func disconnect(error: Swift.Error?)
+        func disconnect(error: Swift.Error?) async
 
         var messages: AsyncThrowingStream<SessionMessage, Swift.Error> { get }
 
@@ -158,23 +216,27 @@ enum DeviceTransfer {
 
     protocol ConnectionFactory {
         @MainActor
-        func buildOutgoingConnection(tsAccountManager: TSAccountManager) -> OutgoingConnection
+        func buildOutgoingConnection(tsAccountManager: TSAccountManager, deviceTransferURL: URL) throws -> OutgoingConnection
         @MainActor
-        func buildIncomingConnection(tsAccountManager: TSAccountManager) -> IncomingConnection
+        func buildIncomingConnection(tsAccountManager: TSAccountManager) throws -> IncomingConnection
     }
 
     @MainActor
-    protocol OutgoingConnection {
-        func connect(deviceTransferUrl: URL) async throws -> Session
-        func stop(error: Swift.Error?)
+    protocol PeerDiscovery {
+        var discoveredPeerStream: AsyncThrowingStream<[any Peer], Swift.Error> { get }
     }
 
     @MainActor
-    protocol IncomingConnection {
+    protocol OutgoingConnection: PeerDiscovery {
+        var selectedPeer: (any Peer)? { get }
+        func connect(peer: any Peer) async throws -> Session
+        func stop(error: Swift.Error?) async
+    }
+
+    @MainActor
+    protocol IncomingConnection: PeerDiscovery {
         func start(mode: DeviceTransfer.Mode) throws -> URL
-        func waitForConnection() async throws -> Session
-        func stop(error: Swift.Error?)
+        func waitForConnection(peer: (any Peer)?) async throws -> Session
+        func stop(error: Swift.Error?) async
     }
-
-    static let defaultFactory: DeviceTransfer.ConnectionFactory = MPCDeviceTransferConnectionFactory()
 }

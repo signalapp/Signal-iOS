@@ -7,12 +7,12 @@ import SignalServiceKit
 
 struct MPCDeviceTransferConnectionFactory: DeviceTransfer.ConnectionFactory {
     @MainActor
-    func buildOutgoingConnection(tsAccountManager: TSAccountManager) -> any DeviceTransfer.OutgoingConnection {
-        MPCDeviceTransferBrowser(tsAccountManager: tsAccountManager)
+    func buildOutgoingConnection(tsAccountManager: TSAccountManager, deviceTransferURL: URL) throws -> any DeviceTransfer.OutgoingConnection {
+        try MPCDeviceTransferBrowser(tsAccountManager: tsAccountManager, deviceTransferURL: deviceTransferURL)
     }
 
     @MainActor
-    func buildIncomingConnection(tsAccountManager: TSAccountManager) -> any DeviceTransfer.IncomingConnection {
-        MPCDeviceTransferAdvertiser(tsAccountManager: tsAccountManager)
+    func buildIncomingConnection(tsAccountManager: TSAccountManager) throws -> any DeviceTransfer.IncomingConnection {
+        try MPCDeviceTransferAdvertiser(tsAccountManager: tsAccountManager)
     }
 }

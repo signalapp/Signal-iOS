@@ -17,13 +17,13 @@ class CallButton: UIButton {
         return iconName
     }
 
-    var iconColor: UIColor = .ows_white { didSet { updateAppearance() } }
-    var selectedIconColor: UIColor = .ows_black { didSet { updateAppearance() } }
+    var iconColor: UIColor = .white { didSet { updateAppearance() } }
+    var selectedIconColor: UIColor = .black { didSet { updateAppearance() } }
     var currentIconColor: UIColor { isSelected ? selectedIconColor : iconColor }
 
     static let unselectedBackgroundColor = UIColor(rgbHex: 0x4A4A4A).withAlphaComponent(0.63)
     var unselectedBackgroundColor: UIColor = CallButton.unselectedBackgroundColor { didSet { updateAppearance() } }
-    var selectedBackgroundColor: UIColor = .ows_white { didSet { updateAppearance() } }
+    var selectedBackgroundColor: UIColor = .white { didSet { updateAppearance() } }
 
     var currentBackgroundColor: UIColor {
         return isSelected ? selectedBackgroundColor : unselectedBackgroundColor

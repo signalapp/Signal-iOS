@@ -25,8 +25,6 @@ class ProvisioningNavigationController: OWSNavigationController {
 
 class ProvisioningController: NSObject {
 
-    private let appReadiness: AppReadinessSetter
-
     private lazy var registrationWebSocketManager = RegistrationWebSocketManagerImpl(
         chatConnectionManager: DependenciesBridge.shared.chatConnectionManager,
         messagePipelineSupervisor: SSKEnvironment.shared.messagePipelineSupervisorRef,
@@ -61,25 +59,17 @@ class ProvisioningController: NSObject {
     private let provisioningSocketManager: ProvisioningSocketManager
 
     private init(
-        appReadiness: AppReadinessSetter,
         provisioningSocketManager: ProvisioningSocketManager,
     ) {
-        self.appReadiness = appReadiness
         self.provisioningSocketManager = provisioningSocketManager
 
         super.init()
     }
 
     @MainActor
-    static func presentProvisioningFlow(
-        skipOnboarding: Bool,
-        appReadiness: AppReadinessSetter,
-    ) {
+    static func presentProvisioningFlow(skipOnboarding: Bool) {
         let provisioningSocketManager = ProvisioningSocketManager(linkType: .linkDevice)
-        let provisioningController = ProvisioningController(
-            appReadiness: appReadiness,
-            provisioningSocketManager: provisioningSocketManager,
-        )
+        let provisioningController = ProvisioningController(provisioningSocketManager: provisioningSocketManager)
         let navController = ProvisioningNavigationController(provisioningController: provisioningController)
         provisioningController.setUpDebugLogsGesture(on: navController)
 
@@ -124,12 +114,9 @@ class ProvisioningController: NSObject {
         }
     }
 
-    static func presentRelinkingFlow(appReadiness: AppReadinessSetter) {
+    static func presentRelinkingFlow() {
         let provisioningSocketManager = ProvisioningSocketManager(linkType: .linkDevice)
-        let provisioningController = ProvisioningController(
-            appReadiness: appReadiness,
-            provisioningSocketManager: provisioningSocketManager,
-        )
+        let provisioningController = ProvisioningController(provisioningSocketManager: provisioningSocketManager)
         let navController = ProvisioningNavigationController(provisioningController: provisioningController)
         provisioningController.setUpDebugLogsGesture(on: navController)
 
@@ -150,7 +137,7 @@ class ProvisioningController: NSObject {
 
 #if DEBUG
     static func preview() -> ProvisioningController {
-        ProvisioningController(appReadiness: AppReadinessMock(), provisioningSocketManager: ProvisioningSocketManager(linkType: .linkDevice))
+        ProvisioningController(provisioningSocketManager: ProvisioningSocketManager(linkType: .linkDevice))
     }
 #endif
 
@@ -189,7 +176,7 @@ class ProvisioningController: NSObject {
 
         Logger.info("")
         let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
-        SignalApp.shared.showRegistration(loader: loader, desiredMode: .registering, appReadiness: appReadiness)
+        SignalApp.shared.showRegistration(loader: loader, desiredMode: .registering)
     }
 
     @MainActor
@@ -197,7 +184,7 @@ class ProvisioningController: NSObject {
         Logger.info("")
 
         if UIDevice.current.isIPad {
-            SignalApp.shared.showSecondaryProvisioning(skipOnboarding: false, appReadiness: appReadiness)
+            SignalApp.shared.showSecondaryProvisioning(skipOnboarding: false)
         } else {
             switchToPrimaryRegistration(viewController: viewController)
         }
@@ -270,7 +257,17 @@ class ProvisioningController: NSObject {
                 throw OWSAssertionError("Missing restore token")
             }
 
-            let transferState = DeviceTransferCoordinator(
+            let useWifiAware = {
+                if
+                    DeviceTransfer.platformSupportsWifiAware(),
+                    Set(message.capabilites).contains(.wifiaware)
+                {
+                    return true
+                }
+                return false
+            }()
+
+            let transferState = try DeviceTransferCoordinator(
                 db: DependenciesBridge.shared.db,
                 deviceSleepManager: DependenciesBridge.shared.deviceSleepManager,
                 deviceTransferRestore: AppEnvironment.shared.deviceTransferRestore,
@@ -279,6 +276,7 @@ class ProvisioningController: NSObject {
                 restoreMethodToken: restoreToken,
                 restoreMode: .linked,
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+                supportsWifiAware: useWifiAware,
             )
 
             transferState.cancelTransferBlock = { [weak self] in
@@ -373,9 +371,10 @@ class ProvisioningController: NSObject {
         navigationController: UINavigationController,
     ) async -> LinkingProvisioningMessage? {
         do {
-            return try await provisioningSocketManager.waitForMessage()
+            let messageData = try await provisioningSocketManager.waitForMessageData(ProvisioningProtos_ProvisionEnvelope.self)
+            return try LinkingProvisioningMessage(ProvisioningProtos_ProvisionMessage(serializedBytes: messageData))
         } catch let error {
-            Logger.error("Failed to decrypt provision envelope: \(error)")
+            Logger.warn("couldn't decrypt/decode provisioning envelope: \(error)")
             let alert = ActionSheetController(
                 title: OWSLocalizedString(
                     "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN",
@@ -403,7 +402,7 @@ class ProvisioningController: NSObject {
             }
             return
         }
-        SignalApp.shared.showConversationSplitView(appReadiness: appReadiness)
+        SignalApp.shared.showConversationSplitView()
     }
 
     @MainActor
@@ -483,6 +482,8 @@ class ProvisioningController: NSObject {
                                     return
                                 } catch let innerError as CompleteProvisioningError {
                                     error = innerError
+                                } catch {
+                                    Logger.error("Encountered unexpected error: \(error)")
                                 }
                             } else {
                                 // Crash if this fails; things have gone horribly wrong.
@@ -501,6 +502,8 @@ class ProvisioningController: NSObject {
                                 return
                             } catch let innerError as CompleteProvisioningError {
                                 error = innerError
+                            } catch {
+                                Logger.error("Encountered unexpected error: \(error)")
                             }
                         default:
                             break
@@ -515,6 +518,8 @@ class ProvisioningController: NSObject {
                     if progressViewController.presentedViewController == nil {
                         progressViewController.presentActionSheet(errorActionSheet)
                     }
+                } catch {
+                    Logger.error("Encountered unexpected error: \(error)")
                 }
             }
         } else {

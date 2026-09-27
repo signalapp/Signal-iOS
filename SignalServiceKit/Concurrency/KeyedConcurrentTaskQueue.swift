@@ -32,14 +32,14 @@ public actor KeyedConcurrentTaskQueue<KeyType: Hashable> {
     }
 
     /// See the corresponding ConcurrentTaskQueue method.
-    public func run<T>(forKey key: KeyType, _ block: () async throws -> T) async throws -> T {
+    public func runWithThrowingTask<T>(forKey key: KeyType, _ block: () async throws -> T) async throws -> T {
         return try await withTaskQueue(forKey: key) { taskQueue async throws in
-            return try await taskQueue.run(block)
+            return try await taskQueue.runWithThrowingTask(block)
         }
     }
 
     /// See the corresponding ConcurrentTaskQueue method.
-    public func run<T>(forKey key: KeyType, _ block: () async -> T) async throws(CancellationError) -> T {
+    public func run<T>(forKey key: KeyType, _ block: () async throws(CancellationError) -> T) async throws(CancellationError) -> T {
         return try await withTaskQueue(forKey: key) { taskQueue async throws(CancellationError) in
             return try await taskQueue.run(block)
         }

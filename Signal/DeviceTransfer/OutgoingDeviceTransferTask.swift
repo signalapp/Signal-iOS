@@ -10,6 +10,7 @@ import SignalServiceKit
 
 @MainActor
 class OutgoingDeviceTransferTask {
+    private let logger = PrefixedLogger(prefix: "[DeviceTransfer][Outgoing]")
 
     private let db: DB
     private let registrationStateChangeManager: RegistrationStateChangeManager
@@ -30,41 +31,67 @@ class OutgoingDeviceTransferTask {
     private let waitTask = AtomicValue<Task<Void, Error>?>(nil, lock: .init())
     private let sendTask = AtomicValue<Task<Void, Error>?>(nil, lock: .init())
 
+    let pairedPeerStream: AsyncThrowingStream<any DeviceTransfer.Peer, Error>
+    let discoveredPeerStream: AsyncThrowingStream<[any DeviceTransfer.Peer], Error>
+    private var pairedPeerListenTask: Task<Void, Error>?
+
+    var selectedPeer: (any DeviceTransfer.Peer)? {
+        newDeviceServiceBrowser.selectedPeer
+    }
+
     init(
+        deviceTransferURL: URL,
         db: DB,
         deviceSleepManager: DeviceSleepManager?,
         deviceTransferConnectionFactory: DeviceTransfer.ConnectionFactory,
         registrationStateChangeManager: RegistrationStateChangeManager,
         tsAccountManager: TSAccountManager,
-    ) {
+    ) throws {
         self.db = db
         self.registrationStateChangeManager = registrationStateChangeManager
         self.deviceSleepManager = deviceSleepManager
-        self.newDeviceServiceBrowser = deviceTransferConnectionFactory.buildOutgoingConnection(
+        self.newDeviceServiceBrowser = try deviceTransferConnectionFactory.buildOutgoingConnection(
             tsAccountManager: tsAccountManager,
+            deviceTransferURL: deviceTransferURL,
+        )
+
+        (
+            self.pairedPeerStream,
+            self.discoveredPeerStream,
+            self.pairedPeerListenTask,
+        ) = DeviceTransfer.Utils.bindPeerDiscoveryStream(
+            discoveredPeerStream: self.newDeviceServiceBrowser.discoveredPeerStream,
+            logger: logger,
         )
     }
 
-    func connectToNewDevice(deviceTransferUrl: URL) async throws {
-        stop(error: nil)
+    func connectToNewDevice(peer: any DeviceTransfer.Peer) async throws {
+        logger.info("Connecting to new device")
+        await stop(error: nil)
         deviceSleepManager?.addBlock(blockObject: sleepBlockObject)
-        if let task = waitTask.get() {
-            try await task.value
-        } else {
-            let task = waitTask.update {
-                let task = Task {
-                    self.session = try await newDeviceServiceBrowser.connect(deviceTransferUrl: deviceTransferUrl)
+        do {
+            if let task = waitTask.get() {
+                try await task.value
+            } else {
+                let task = waitTask.update {
+                    let task = Task {
+                        self.session = try await newDeviceServiceBrowser.connect(peer: peer)
+                    }
+                    $0 = task
+                    return task
                 }
-                $0 = task
-                return task
+                try await task.value
+                _ = waitTask.swap(nil)
             }
-            try await task.value
-            _ = waitTask.swap(nil)
+        } catch {
+            logger.error("Failed to connect \(error)")
+            throw error
         }
     }
 
     @MainActor
     func transferAccountToNewDevice(initializeProgressBlock: ((Progress) -> Void)? = nil) async throws {
+        logger.info("Begin transfer to new device")
         if let task = sendTask.get() {
             // Another task has already started the transfer, wait for it to complete
             try await task.value
@@ -84,12 +111,13 @@ class OutgoingDeviceTransferTask {
 
         try await session.waitForConnection()
 
+        logger.info("Begin receiving messages from new device")
         messagesReceiverTask = Task {
             do {
                 for try await message in session.messages {
                     switch message {
                     case .message(let message):
-                        try processMessage(message: message, session: session)
+                        try await processMessage(message: message, session: session)
                     case .startResource(_, let size, let progress):
                         guard let progress, let size else { return }
                         self.throughputMonitor?.progress.addChild(
@@ -124,7 +152,6 @@ class OutgoingDeviceTransferTask {
                     )
                 }
             }
-            transferInProgress = false
             notificationObservers.forEach {
                 NotificationCenter.default.removeObserver($0)
             }
@@ -140,6 +167,7 @@ class OutgoingDeviceTransferTask {
         // Only send the files if we haven't yet sent the manifest.
         guard !transferredFileIds.get().contains(DeviceTransfer.Constants.manifestIdentifier) else { return }
 
+        logger.info("Start sending files to new device")
         let task = sendTask.update {
             let task = Task {
                 do {
@@ -151,9 +179,10 @@ class OutgoingDeviceTransferTask {
                     if Task.isCancelled {
                         throw CancellationError()
                     }
-                    self.failTransfer(.assertion, "Failed to send manifest to new device \(error)")
+                    await self.failTransfer(.assertion, "Failed to send manifest to new device \(error)")
+                    throw error
                 }
-                Logger.debug("finished transfer task")
+                logger.debug("finished transfer task")
             }
             $0 = task
             return task
@@ -161,14 +190,28 @@ class OutgoingDeviceTransferTask {
         try await task.value
         _ = sendTask.swap(nil)
 
+        // Now that everything has been transferred to the new device, mark this device as deregistered.
+        // This helps with the rare case that the transfer is interrupted on the new device before completion,
+        // and allows the user to re-register on the old device and try the transfer again before anything
+        // destructive happens on the old device.
+        await db.awaitableWrite { tx in
+            self.registrationStateChangeManager.setIsDeregisteredOrDelinked(
+                true,
+                notify: false,
+                tx: tx,
+            )
+        }
+
+        logger.info("Finished sending files to new device")
+
         // wait for message back from caller
         try await withCheckedThrowingContinuation { continuation in
             self.transferFinishedContinuation = continuation
         }
     }
 
-    func stop(error: Error?) {
-        stopTransfer(error: error)
+    func stop(error: Error?) async {
+        await stopTransfer(error: error)
     }
 
     private func didEnterBackground(_ notification: Notification) {
@@ -176,7 +219,9 @@ class OutgoingDeviceTransferTask {
         // Send an explicit message to the peer (if connected) telling them
         // that's what happened.
         try? session?.send(message: .backgroundApp)
-        stopTransfer(error: CancellationError())
+        Task {
+            await stopTransfer(error: CancellationError())
+        }
     }
 
     // MARK: - Sending
@@ -198,7 +243,7 @@ class OutgoingDeviceTransferTask {
             taskGroup.addTask { @MainActor in
                 // Make a copy of the database files within a write transaction so we can be confident
                 // they aren't mutated during the copy. We then transfer these copies.
-                let dbCopy = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                let dbCopy = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { [weak self] tx in
                     // The MultipeerConnectivity framework stalls if we try to send an empty
                     // file. The receiver requires a non-empty file. We can't send garbage
                     // (because that would corrupt the database), so mutate the database, force
@@ -212,7 +257,7 @@ class OutgoingDeviceTransferTask {
                         let walCopy = try Self.makeLocalCopy(databaseFile: database.wal)
                         return DatabaseCopy(db: dbCopy, wal: walCopy)
                     } catch {
-                        Logger.error("Failed to copy database files!")
+                        self?.logger.error("Failed to copy database files!")
                         throw error
                     }
                 }
@@ -246,17 +291,13 @@ class OutgoingDeviceTransferTask {
             try await taskGroup.waitForAll()
         }
 
-        await db.awaitableWrite { tx in
-            self.registrationStateChangeManager.setWasTransferred(tx: tx)
-        }
-
         try session.send(message: .done)
     }
 
     private func send(session: DeviceTransfer.Session, file: DeviceTransferProtoFile) async throws {
         try Task.checkCancellation()
         if transferredFileIds.get().contains(file.identifier) {
-            Logger.info("File was already transferred, skipping")
+            logger.info("File was already transferred, skipping")
             return
         }
 
@@ -275,7 +316,7 @@ class OutgoingDeviceTransferTask {
                 throw OWSAssertionError("Mandatory database file is missing for transfer")
             }
 
-            Logger.warn("Missing file for transfer, it probably disappeared or was otherwise deleted. Sending missing file placeholder.")
+            logger.warn("Missing file for transfer, it probably disappeared or was otherwise deleted. Sending missing file placeholder.")
 
             url = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: false)
             guard
@@ -304,14 +345,25 @@ class OutgoingDeviceTransferTask {
         } catch {
             throw OWSGenericError("Transferring file \(file.identifier) failed \(error)")
         }
-        Logger.info("Transferring file \(file.identifier) complete")
         transferredFileIds.update { $0.append(file.identifier) }
     }
 
-    private func stopTransfer(error: Error? = nil, notifyRegState: Bool = true) {
-        waitTask.swap(nil)?.cancel()
+    private func stopTransfer(error: Error? = nil, notifyRegState: Bool = true) async {
+        if let error {
+            switch error {
+            case DeviceTransfer.Error.otherDeviceTerminated:
+                break
+            default:
+                try? session?.send(message: .transferFailed)
+            }
+        }
         sendTask.swap(nil)?.cancel()
-        newDeviceServiceBrowser.stop(error: error)
+        try? await withCooperativeTimeout(seconds: 2) { [weak self] in
+            await self?.session.take()?.disconnect(error: error)
+        }
+        waitTask.swap(nil)?.cancel()
+        pairedPeerListenTask.take()?.cancel()
+        await newDeviceServiceBrowser.stop(error: error)
         throughputMonitor?.stop()
         deviceSleepManager?.removeBlock(blockObject: sleepBlockObject)
 
@@ -321,7 +373,7 @@ class OutgoingDeviceTransferTask {
         // simply return in the .idle case above since none of the values being
         // reset should have values if we are idle, but I am scared of it.
         if transferInProgress {
-            db.write { tx in
+            await db.awaitableWrite { tx in
                 self.registrationStateChangeManager.setIsTransferComplete(
                     sendStateUpdateNotification: notifyRegState,
                     tx: tx,
@@ -331,20 +383,27 @@ class OutgoingDeviceTransferTask {
         transferInProgress = false
     }
 
-    private func failTransfer(_ error: DeviceTransfer.Error, _ reason: String) {
-        Logger.error("Failed transfer \(reason)")
-        stopTransfer(error: error)
+    private func failTransfer(_ error: DeviceTransfer.Error, _ reason: String) async {
+        logger.error("Failed transfer \(reason)")
+        await stopTransfer(error: error)
     }
 
-    private func processMessage(message: DeviceTransfer.Message, session: DeviceTransfer.Session) throws {
+    private func processMessage(message: DeviceTransfer.Message, session: DeviceTransfer.Session) async throws {
         switch message {
         case DeviceTransfer.Message.backgroundApp:
-            return failTransfer(DeviceTransfer.Error.backgroundedDevice, "Received terminate message")
+            return await failTransfer(DeviceTransfer.Error.backgroundedDevice, "Received terminate message")
+        case DeviceTransfer.Message.transferFailed:
+            return await failTransfer(DeviceTransfer.Error.otherDeviceTerminated, "Received terminate message")
         case DeviceTransfer.Message.done:
             break
         }
 
-        stopTransfer()
+        await stopTransfer()
+
+        // Everything done and acknowledged, mark the local device as transferred
+        await db.awaitableWrite { tx in
+            self.registrationStateChangeManager.setWasTransferred(tx: tx)
+        }
 
         // When the old device receives the done message from the new device,
         // it can be confident that the transfer has completed successfully and
@@ -497,7 +556,7 @@ class OutgoingDeviceTransferTask {
 
     @MainActor
     private func sendManifest(manifest: DeviceTransferProtoManifest, session: DeviceTransfer.Session) async throws {
-        Logger.info("Sending manifest to new device.")
+        logger.info("Sending manifest to new device.")
 
         DeviceTransfer.Utils.resetTransferDirectory(createNewTransferDirectory: true)
 
@@ -520,7 +579,7 @@ class OutgoingDeviceTransferTask {
             size: UInt64(clamping: manifestData.count),
         )
 
-        Logger.info("Successfully sent manifest to new device.")
+        logger.info("Successfully sent manifest to new device.")
 
         transferredFileIds.update {
             $0.append(DeviceTransfer.Constants.manifestIdentifier)

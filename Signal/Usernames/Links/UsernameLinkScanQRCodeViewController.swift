@@ -55,7 +55,7 @@ class UsernameLinkScanQRCodeViewController: OWSViewController, OWSNavigationChil
         )
 
         // Always use dark theme since it sits over the scan mask.
-        label.textColor = .ows_white
+        label.textColor = .white
 
         return label
     }()

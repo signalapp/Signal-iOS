@@ -4,12 +4,12 @@
 //
 
 import Foundation
-import GRDB
+public import GRDB
 import LibSignalClient
 
 /// A Sender Key, either for ourselves or somebody else.
-struct SenderKeyRecord: Codable, FetchableRecord, PersistableRecord {
-    static let databaseTableName: String = "SenderKey"
+public struct SenderKeyRecord: Codable, FetchableRecord, PersistableRecord {
+    public static let databaseTableName: String = "SenderKey"
     typealias RowId = Int64
 
     let id: RowId
@@ -20,12 +20,12 @@ struct SenderKeyRecord: Codable, FetchableRecord, PersistableRecord {
     var insertedAt: Int64
     var serializedRecord: Data
 
-    var insertedAtDate: Date {
+    public var insertedAtDate: Date {
         set { self.insertedAt = Int64(newValue.timeIntervalSince1970) }
         get { Date(timeIntervalSince1970: TimeInterval(self.insertedAt)) }
     }
 
-    enum DeletionType: Int64, Codable {
+    public enum DeletionType: Int64, Codable {
         /// A Sender Key for the current user/device, used for sending. Because we
         /// own this key, we can delete it whenever we want.
         case thisDevice = 0
@@ -145,7 +145,7 @@ struct SenderKeySentToDeviceRecord: Codable, FetchableRecord, PersistableRecord 
 
 // MARK: -
 
-struct SenderKeyStore {
+public struct SenderKeyStore {
     func resetDeliveryRecord(
         senderKeyId: SenderKeyRecord.RowId,
         recipientId: SignalRecipient.RowId,
@@ -180,6 +180,16 @@ struct SenderKeyStore {
         let fetchQuery = SenderKeySentToDeviceRecord
             .filter(SenderKeySentToDeviceRecord.Columns.senderKeyId == senderKeyId)
         return failIfThrows { try fetchQuery.fetchAll(tx.database) }
+    }
+
+    public func fetchOldestSenderKeyRecord(
+        deletionType: SenderKeyRecord.DeletionType,
+        tx: DBReadTransaction,
+    ) -> SenderKeyRecord? {
+        let fetchQuery = SenderKeyRecord
+            .filter(SenderKeyRecord.Columns.deletionType == deletionType.rawValue)
+            .order(SenderKeyRecord.Columns.insertedAt.asc)
+        return failIfThrows { try fetchQuery.fetchOne(tx.database) }
     }
 
     func fetchSenderKeyRecord(

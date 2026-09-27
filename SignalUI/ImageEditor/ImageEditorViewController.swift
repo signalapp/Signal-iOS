@@ -61,13 +61,12 @@ class ImageEditorViewController: OWSViewController, UIGestureRecognizerDelegate,
      * iPad: value from iPhone 13 Max (428 - 2x20)
      */
     static let preferredToolbarContentWidth: CGFloat = {
-        if UIDevice.current.isIPad {
+        guard let window = CurrentAppContext().mainWindow, UIDevice.current.isIPad == false else {
             return 388
-        } else {
-            let screenWidth = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
-            let inset: CGFloat = UIDevice.current.isPlusSizePhone ? 20 : 16
-            return screenWidth - 2 * inset
         }
+        let screenWidth = window.bounds.size.smallerAxis
+        let inset = OWSTableViewController2.defaultHOuterMargin
+        return screenWidth - 2 * inset
     }()
 
     static var toolbarSpacing: CGFloat = 24
@@ -450,8 +449,16 @@ class ImageEditorViewController: OWSViewController, UIGestureRecognizerDelegate,
     }
 
     override var prefersStatusBarHidden: Bool {
-        guard DependenciesBridge.shared.currentCallProvider.hasCurrentCall == false else { return false }
-        return (UIDevice.current.hasIPhoneXNotch == false) && (UIDevice.current.isIPad == false)
+        guard DependenciesBridge.shared.currentCallProvider.hasCurrentCall == false else {
+            return super.prefersStatusBarHidden
+        }
+        guard
+            let appWindow = CurrentAppContext().mainWindow,
+            appWindow.shouldHideStatusBarForFullScreenPresentation
+        else {
+            return super.prefersStatusBarHidden
+        }
+        return true
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {

@@ -459,10 +459,7 @@ public class GroupsV2Protos {
             memberLabels: GroupV2Access.access(forProtoAccess: accessControlForMemberLabels),
         )
 
-        var isTerminated = false
-        if RemoteConfig.current.groupTerminateReceiveEnabled {
-            isTerminated = groupProto.terminated
-        }
+        let isTerminated = groupProto.terminated
 
         let revision = groupProto.revision
         let groupSecretParams = groupV2Params.groupSecretParams

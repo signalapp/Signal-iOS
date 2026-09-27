@@ -129,7 +129,7 @@ class DonateChoosePaymentMethodSheet: StackSheetViewController {
 
     private func buttonsStack() -> UIView {
         let paymentMethods: [DonationPaymentMethod]
-        let applePayFirstRegions = PhoneNumberRegions(arrayLiteral: "1")
+        let applePayFirstRegions = PhoneNumberRegions(["1"])
 
         if
             let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,

@@ -30,9 +30,7 @@ public class OWSSyncManager {
                 if TSAccountManagerObjcBridge.isPrimaryDeviceWithMaybeTransaction {
                     // syncAllContactsIfNecessary will skip if nothing has changed,
                     // so this won't yield redundant traffic.
-                    Task {
-                        try await self.syncAllContactsIfNecessary()
-                    }
+                    self.syncAllContactsIfNecessaryTask(fullSyncRequested: false)
                 } else {
                     self.sendAllSyncRequestMessagesIfNecessary().catch { (_ error: Error) in
                         Logger.error("Error: \(error).")
@@ -48,30 +46,35 @@ public class OWSSyncManager {
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground(_:)), name: .OWSApplicationWillEnterForeground, object: nil)
     }
 
+    private func syncAllContactsIfNecessaryTask(fullSyncRequested: Bool) {
+        Task { @MainActor in
+            do {
+                if fullSyncRequested {
+                    try await self.syncAllContactsIfFullSyncRequested()
+                } else {
+                    try await self.syncAllContactsIfNecessary()
+                }
+            } catch {
+                Logger.debug("Failed to sync contacts: \(error)")
+            }
+        }
+    }
+
     // MARK: - Notifications
 
     @objc
     private func signalAccountsDidChange(_ notification: AnyObject) {
-        AssertIsOnMainThread()
-        Task {
-            try await self.syncAllContactsIfNecessary()
-        }
+        syncAllContactsIfNecessaryTask(fullSyncRequested: false)
     }
 
     @objc
     private func registrationStateDidChange(_ notification: AnyObject) {
-        AssertIsOnMainThread()
-        Task {
-            try await self.syncAllContactsIfNecessary()
-        }
+        syncAllContactsIfNecessaryTask(fullSyncRequested: false)
     }
 
     @objc
     private func willEnterForeground(_ notification: AnyObject) {
-        AssertIsOnMainThread()
-        Task {
-            try await self.syncAllContactsIfFullSyncRequested()
-        }
+        syncAllContactsIfNecessaryTask(fullSyncRequested: true)
     }
 }
 
@@ -197,15 +200,15 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
     }
 
     public func sendKeysSyncMessage(tx: DBWriteTransaction) {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         Logger.info("")
 
-        guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice else {
-            return owsFailDebug("Keys sync should only be initiated from the registered primary device")
+        guard let registeredState = try? tsAccountManager.registeredState(tx: tx), registeredState.isPrimary else {
+            owsFailDebug("can't sync keys from unregistered or non-primary device")
+            return
         }
 
-        guard let thread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
-            return owsFailDebug("Missing thread")
-        }
+        let thread = TSContactThread.getOrCreateLocalThread(localIdentifiers: registeredState.localIdentifiers, tx: tx)
 
         let accountKeyStore = DependenciesBridge.shared.accountKeyStore
         guard let accountEntropyPool = accountKeyStore.getAccountEntropyPool(tx: tx) else {
@@ -235,7 +238,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         do {
             try DependenciesBridge.shared.svr.storeKeys(
                 fromKeysSyncMessage: syncMessage,
-                authedDevice: .implicit,
+                authedAccount: .implicit,
                 tx: transaction,
             )
         } catch {
@@ -267,11 +270,15 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             let pendingTask = MessageReceiver.buildPendingTask()
             Task {
                 defer { pendingTask.complete() }
-                _ = try await SSKEnvironment.shared.profileManagerRef.fetchLocalUsersProfile(authedAccount: .implicit())
+                do {
+                    _ = try await SSKEnvironment.shared.profileManagerRef.fetchLocalUsersProfile(authedAccount: .implicit)
+                } catch {
+                    Logger.error("Failed to fetch local user profile: \(error)")
+                }
             }
         case .storageManifest:
             SSKEnvironment.shared.storageServiceManagerRef.restoreOrCreateManifestIfNecessary(
-                authedDevice: .implicit,
+                authedAccount: .implicit,
                 masterKeySource: .implicit,
             )
         case .subscriptionStatus:
@@ -284,25 +291,32 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         localIdentifiers: LocalIdentifiers,
         transaction: DBWriteTransaction,
     ) {
-        guard
-            let thread = { () -> TSThread? in
-                if
-                    let groupIdData = syncMessage.groupID,
-                    let groupId = try? GroupIdentifier(contents: groupIdData)
-                {
-                    return TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction)
-                }
-                if
-                    let threadAci = Aci.parseFrom(
-                        serviceIdBinary: syncMessage.threadAciBinary,
-                        serviceIdString: syncMessage.threadAci,
-                    )
-                {
-                    return TSContactThread.getWithContactAddress(SignalServiceAddress(threadAci), transaction: transaction)
-                }
-                return nil
-            }()
-        else {
+        enum MessageRequestResponseThread {
+            case groupThread(TSGroupThread)
+            case contactThread(TSContactThread)
+        }
+        let thread = { () -> MessageRequestResponseThread? in
+            if
+                let groupIdData = syncMessage.groupID,
+                let groupId = try? GroupIdentifier(contents: groupIdData)
+            {
+                return TSGroupThread
+                    .fetchThread(forGroupId: groupId, tx: transaction)
+                    .map({ .groupThread($0) })
+            }
+            if
+                let threadAci = Aci.parseFrom(
+                    serviceIdBinary: syncMessage.threadAciBinary,
+                    serviceIdString: syncMessage.threadAci,
+                )
+            {
+                return TSContactThread
+                    .getWithContactAddress(SignalServiceAddress(threadAci), transaction: transaction)
+                    .map({ .contactThread($0) })
+            }
+            return nil
+        }()
+        guard let thread else {
             return owsFailDebug("message request response couldn't find thread")
         }
 
@@ -310,58 +324,87 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         let hidingManager = DependenciesBridge.shared.recipientHidingManager
         let profileManager = SSKEnvironment.shared.profileManagerRef
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+        let threadDeletionManager = DependenciesBridge.shared.threadDeletionManager
 
+        var shouldAccept = false
+        var shouldDelete = false
+        var shouldBlock = false
+        var shouldSpam = false
         switch syncMessage.type {
         case .accept:
-            blockingManager.removeBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
-            switch thread {
-            case let thread as TSGroupThread:
+            shouldAccept = true
+        case .delete:
+            shouldDelete = true
+        case .block:
+            shouldBlock = true
+        case .blockAndDelete:
+            shouldDelete = true
+            shouldBlock = true
+        case .spam:
+            shouldSpam = true
+        case .blockAndSpam:
+            shouldBlock = true
+            shouldSpam = true
+        case .unknown, .none:
+            owsFailDebug("unexpected message request response type")
+        }
+
+        switch thread {
+        case .groupThread(let thread):
+            if shouldAccept {
+                blockingManager.removeBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
                 profileManager.addGroupId(
                     toProfileWhitelist: thread.groupModel.groupId,
                     userProfileWriter: .syncMessage,
                     transaction: transaction,
                 )
-
-            case let thread as TSContactThread:
+            }
+            if shouldBlock {
+                blockingManager.addBlockedThread(thread, blockMode: .syncMessage, transaction: transaction)
+            }
+            if shouldSpam {
+                TSInfoMessage(thread: thread, messageType: .reportedSpam).anyInsert(transaction: transaction)
+            }
+            if shouldDelete {
+                threadDeletionManager.deleteThreads(
+                    [thread],
+                    sendDeleteForMeSyncMessage: false,
+                    updateStorageService: false,
+                    localIdentifiers: localIdentifiers,
+                    tx: transaction,
+                )
+            }
+        case .contactThread(let thread):
+            let recipient = recipientFetcher.fetchOrCreate(address: thread.contactAddress, tx: transaction)
+            guard var recipient else {
+                owsFailDebug("can't create SignalRecipient for malformed address")
+                break
+            }
+            if shouldAccept {
+                blockingManager.removeBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
                 /// When we accept a message request on a linked device, we unhide the
                 /// message sender. We will eventually also learn about the unhide via a
                 /// StorageService contact sync, since the linked device should mark
                 /// unhidden in StorageService. But it doesn't hurt to get ahead of the game
                 /// and unhide here.
-                if var recipient = recipientFetcher.fetchOrCreate(address: thread.contactAddress, tx: transaction) {
-                    hidingManager.removeHiddenRecipient(&recipient, wasLocallyInitiated: false, tx: transaction)
-                    profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .syncMessage, tx: transaction)
-                }
-
-            default:
-                owsFailDebug("can't accept messages request for \(type(of: thread))")
+                hidingManager.removeHiddenRecipient(&recipient, wasLocallyInitiated: false, tx: transaction)
+                profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .syncMessage, tx: transaction)
             }
-        case .delete:
-            DependenciesBridge.shared.threadDeletionManager.deleteThreads(
-                [thread],
-                sendDeleteForMeSyncMessage: false,
-                updateStorageService: false,
-                localIdentifiers: localIdentifiers,
-                tx: transaction,
-            )
-        case .block:
-            SSKEnvironment.shared.blockingManagerRef.addBlockedThread(thread, blockMode: .remote, transaction: transaction)
-        case .blockAndDelete:
-            DependenciesBridge.shared.threadDeletionManager.deleteThreads(
-                [thread],
-                sendDeleteForMeSyncMessage: false,
-                updateStorageService: false,
-                localIdentifiers: localIdentifiers,
-                tx: transaction,
-            )
-            SSKEnvironment.shared.blockingManagerRef.addBlockedThread(thread, blockMode: .remote, transaction: transaction)
-        case .spam:
-            TSInfoMessage(thread: thread, messageType: .reportedSpam).anyInsert(transaction: transaction)
-        case .blockAndSpam:
-            SSKEnvironment.shared.blockingManagerRef.addBlockedThread(thread, blockMode: .remote, transaction: transaction)
-            TSInfoMessage(thread: thread, messageType: .reportedSpam).anyInsert(transaction: transaction)
-        case .unknown, .none:
-            owsFailDebug("unexpected message request response type")
+            if shouldBlock {
+                blockingManager.addBlockedThread(thread, blockMode: .syncMessage, transaction: transaction)
+            }
+            if shouldSpam {
+                TSInfoMessage(thread: thread, messageType: .reportedSpam).anyInsert(transaction: transaction)
+            }
+            if shouldDelete {
+                threadDeletionManager.deleteThreads(
+                    [thread],
+                    sendDeleteForMeSyncMessage: false,
+                    updateStorageService: false,
+                    localIdentifiers: localIdentifiers,
+                    tx: transaction,
+                )
+            }
         }
     }
 
@@ -434,7 +477,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             throw OWSGenericError("Not ready to sync contacts.")
         }
 
-        try await contactSyncQueue.run {
+        try await contactSyncQueue.runWithThrowingTask {
             try await self._syncContacts(mode: mode)
         }
     }

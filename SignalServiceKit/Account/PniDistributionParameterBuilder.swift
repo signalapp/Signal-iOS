@@ -9,9 +9,9 @@ public enum PniDistribution {
     /// Parameters for distributing PNI information to linked devices.
     public struct Parameters {
         let pniIdentityKey: IdentityKey
-        private(set) var devicePniSignedPreKeys: [String: LibSignalClient.SignedPreKeyRecord] = [:]
-        private(set) var devicePniPqLastResortPreKeys: [String: LibSignalClient.KyberPreKeyRecord] = [:]
-        private(set) var pniRegistrationIds: [String: UInt32] = [:]
+        private(set) var devicePniSignedPreKeys: [DeviceId: LibSignalClient.SignedPreKeyRecord] = [:]
+        private(set) var devicePniPqLastResortPreKeys: [DeviceId: LibSignalClient.KyberPreKeyRecord] = [:]
+        private(set) var pniRegistrationIds: [DeviceId: UInt32] = [:]
         private(set) var deviceMessages: [DeviceMessage] = []
 
         fileprivate init(pniIdentityKey: IdentityKey) {
@@ -45,9 +45,9 @@ public enum PniDistribution {
             pqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
             registrationId: UInt32,
         ) {
-            devicePniSignedPreKeys["\(localDeviceId)"] = signedPreKey
-            devicePniPqLastResortPreKeys["\(localDeviceId)"] = pqLastResortPreKey
-            pniRegistrationIds["\(localDeviceId)"] = registrationId
+            devicePniSignedPreKeys[localDeviceId] = signedPreKey
+            devicePniPqLastResortPreKeys[localDeviceId] = pqLastResortPreKey
+            pniRegistrationIds[localDeviceId] = registrationId
         }
 
         fileprivate mutating func addLinkedDevice(
@@ -59,20 +59,10 @@ public enum PniDistribution {
         ) {
             owsPrecondition(deviceId == deviceMessage.deviceId)
 
-            devicePniSignedPreKeys["\(deviceId)"] = signedPreKey
-            devicePniPqLastResortPreKeys["\(deviceId)"] = pqLastResortPreKey
-            pniRegistrationIds["\(deviceId)"] = registrationId
+            devicePniSignedPreKeys[deviceId] = signedPreKey
+            devicePniPqLastResortPreKeys[deviceId] = pqLastResortPreKey
+            pniRegistrationIds[deviceId] = registrationId
             deviceMessages.append(deviceMessage)
-        }
-
-        func requestParameters() -> [String: Any] {
-            [
-                "pniIdentityKey": pniIdentityKey.serialize().base64EncodedString(),
-                "devicePniSignedPrekeys": devicePniSignedPreKeys.mapValues { OWSRequestFactory.signedPreKeyRequestParameters($0) },
-                "devicePniPqLastResortPrekeys": devicePniPqLastResortPreKeys.mapValues { OWSRequestFactory.pqPreKeyRequestParameters($0) },
-                "deviceMessages": deviceMessages.map { $0.requestParameters() },
-                "pniRegistrationIds": pniRegistrationIds,
-            ]
         }
     }
 }

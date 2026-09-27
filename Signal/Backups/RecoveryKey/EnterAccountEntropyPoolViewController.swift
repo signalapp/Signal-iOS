@@ -55,14 +55,9 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
         screenLockUI.sensitiveContentDidLoad(inViewController: self)
 
         view.backgroundColor = colorConfig.background
-        navigationItem.rightBarButtonItem = {
-            let button = UIBarButtonItem(
-                title: CommonStrings.nextButton,
-                primaryAction: UIAction { [weak self] _ in self?.didTapNext() },
-            )
-            button.style = if #available(iOS 26, *) { .prominent } else { .done }
-            return button
-        }()
+        navigationItem.rightBarButtonItem = .nextButton { [weak self] in
+            self?.didTapNext()
+        }
 
         let scrollView = UIScrollView()
         view.addSubview(scrollView)
@@ -129,7 +124,7 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
     private lazy var aepIssueLabel: UILabel = {
         let label = UILabel()
         label.text = "This is never visible!" // Set in `onTextViewUpdated()`
-        label.textColor = .ows_accentRed
+        label.textColor = .Signal.red
         label.textAlignment = .center
         label.font = .dynamicTypeBody
         label.numberOfLines = 0

@@ -518,7 +518,7 @@ extension ConversationViewController: MessageActionsDelegate {
             return
         }
 
-        Task {
+        Task { [self] in
             await queuePinMessageChangeWithModal(
                 message: message,
                 pinMessage: unpinMessage,

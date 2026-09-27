@@ -8,10 +8,6 @@ public import LibSignalClient
 
 public class GroupV2UpdatesImpl: GroupV2Updates {
 
-    // This tracks the last time that groups were updated to the current
-    // revision.
-    private static let groupRefreshStore = NewKeyValueStore(collection: "groupRefreshStore")
-
     private var lastSuccessfulRefreshMap = LRUCache<GroupIdentifier, Date>(maxSize: 256)
 
     private let operationQueue = ConcurrentTaskQueue(concurrentLimit: 1)
@@ -20,106 +16,196 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
 
     // MARK: -
 
-    // On launch, we refresh a randomly-selected group.
-    public func autoRefreshGroup() async throws(CancellationError) {
+    /// Periodically refresh stale groups.
+    public func autoRefreshGroups() async throws {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let messageProcessor = SSKEnvironment.shared.messageProcessorRef
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-            return
+
+        var refreshedGroupCount = 0
+        while true {
+            try await messageProcessor.waitForFetchingAndProcessing()
+            let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+            let localIdentifiers = registeredState.localIdentifiers
+
+            let groupToRefresh = databaseStorage.read(block: { tx in GroupStore().fetchMostStaleGroup(tx: tx) })
+            guard let groupToRefresh else {
+                break
+            }
+
+            let formattedDays = String(format: "%.1f", -groupToRefresh.refreshedAtDate.timeIntervalSinceNow / TimeInterval.day)
+            Logger.info("group \(groupToRefresh.groupId.hexadecimalString) refreshing after \(formattedDays) days")
+
+            try await self.autoRefreshGroup(groupIdData: groupToRefresh.groupId, localIdentifiers: localIdentifiers)
+
+            // If there's lots of groups to refresh, space out the network requests.
+            refreshedGroupCount += 1
+            let refreshDelay = OWSOperation.retryIntervalForExponentialBackoff(
+                failureCount: refreshedGroupCount,
+                minAverageBackoff: 0.01,
+                maxAverageBackoff: .minute,
+            )
+            try await Task.sleep(nanoseconds: refreshDelay.clampedNanoseconds)
+        }
+    }
+
+    private func autoRefreshGroup(groupIdData: Data, localIdentifiers: LocalIdentifiers) async throws {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+
+        enum RefreshBehavior {
+            case skip(reason: String)
+            case refresh(GroupSecretParams)
         }
 
-        try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
+        let refreshBehavior = await databaseStorage.awaitableWrite { tx -> RefreshBehavior in
+            guard var groupRecord = GroupStore().fetchGroup(forGroupIdData: groupIdData, tx: tx) else {
+                return .skip(reason: "the group has disappeared")
+            }
 
-        guard let groupInfoToRefresh = Self.findGroupToAutoRefresh() else {
-            // We didn't find a group to refresh; abort.
-            return
+            var groupThread = groupRecord.threadId.map {
+                // If we have a FOREIGN KEY to a TSThread, that thread must exist.
+                return TSGroupThread.threadUniqueId(forThreadId: $0, tx: tx).owsFailUnwrap("must exist")
+            }.flatMap {
+                // However, that thread might not be a TSGroupThread, so this may fail.
+                return TSGroupThread.fetchViaCache(uniqueId: $0, transaction: tx)
+            }
+
+            // If there's a thread that can be deleted, delete it.
+            if deleteThreadIfNecessary(groupThread: groupThread, localIdentifiers: localIdentifiers, tx: tx) {
+                groupThread = nil
+                groupRecord.clearThreadId()
+                Logger.info("deleted thread for group \(groupIdData.hexadecimalString)")
+            }
+
+            // If there's a group that can be deleted, delete it.
+            if deleteGroupIfNecessary(groupRecord: groupRecord, localIdentifiers: localIdentifiers, tx: tx) {
+                return .skip(reason: "the group is obsolete")
+            }
+
+            guard let secretParams = groupRecord.deriveSecretParams() else {
+                markAsRefreshed(groupRecord: &groupRecord, tx: tx)
+                return .skip(reason: "the group has no secret params")
+            }
+
+            // If we're a member of a non-terminated group, refresh it.
+            if
+                let groupThread,
+                let groupModel = groupThread.groupModel as? TSGroupModelV2,
+                groupModel.groupMembership.isLocalUserFullOrInvitedMember,
+                !groupModel.isTerminated
+            {
+                return .refresh(secretParams)
+            }
+
+            markAsRefreshed(groupRecord: &groupRecord, tx: tx)
+            return .skip(reason: "the group isn't active")
         }
 
-        let groupId = groupInfoToRefresh.groupId
-        let groupSecretParams = groupInfoToRefresh.groupSecretParams
-        if let lastRefreshDate = groupInfoToRefresh.lastRefreshDate {
-            let formattedDays = String(format: "%.1f", -lastRefreshDate.timeIntervalSinceNow / TimeInterval.day)
-            Logger.info("auto-refreshing group: \(groupId) which hasn't been refreshed in \(formattedDays) days")
-        } else {
-            Logger.info("auto-refreshing group: \(groupId) which has never been refreshed")
+        let secretParamsToRefresh: GroupSecretParams
+        switch refreshBehavior {
+        case .skip(let reason):
+            Logger.warn("group \(groupIdData.hexadecimalString) refresh skipped: \(reason)")
+            return
+        case .refresh(let secretParams):
+            secretParamsToRefresh = secretParams
         }
 
         do {
-            try await self.refreshGroup(secretParams: groupSecretParams)
-        } catch GroupsV2Error.localUserNotInGroup {
-            Logger.warn("can't auto-refresh group unless we're a member")
+            try await refreshGroup(secretParams: secretParamsToRefresh)
+            Logger.warn("group \(groupIdData.hexadecimalString) refreshed")
+        } catch where error.isCancellation || error.isNetworkFailureOrTimeout {
+            Logger.warn("group \(groupIdData.hexadecimalString) refresh interrupted: \(error)")
+            throw error
         } catch {
-            owsFailDebugUnlessNetworkFailure(error)
+            Logger.warn("group \(groupIdData.hexadecimalString) refresh rescheduled due to error: \(error)")
         }
-    }
 
-    private struct GroupInfo {
-        let groupId: GroupIdentifier
-        let groupSecretParams: GroupSecretParams
-        let lastRefreshDate: Date?
-    }
-
-    private static func findGroupToAutoRefresh() -> GroupInfo? {
-        // Enumerate the all v2 groups, trying to find the "best" one to refresh.
-        // The "best" is the group that hasn't been refreshed in the longest time.
-        SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            var groupInfoToRefresh: GroupInfo?
-            TSThread.anyEnumerate(transaction: transaction, batchingPreference: .batched(Batching.kDefaultBatchSize)) { thread, stop in
-                guard
-                    let groupThread = thread as? TSGroupThread,
-                    let groupModel = groupThread.groupModel as? TSGroupModelV2,
-                    groupModel.groupMembership.isLocalUserFullOrInvitedMember,
-                    !groupModel.isTerminated,
-                    let groupSecretParams = try? groupModel.secretParams(),
-                    let groupId = try? groupSecretParams.getPublicParams().getGroupIdentifier(),
-                    !SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupId, transaction: transaction)
-                else {
-                    // Refreshing a group we're not a member of will throw errors
-                    return
-                }
-
-                let storeKey = groupId.serialize().toHex()
-                guard
-                    let lastRefreshDate: Date = Self.groupRefreshStore.fetchValue(
-                        Date.self,
-                        forKey: storeKey,
-                        tx: transaction,
-                    )
-                else {
-                    // If we find a group that we have no record of refreshing,
-                    // pick that one immediately.
-                    groupInfoToRefresh = GroupInfo(
-                        groupId: groupId,
-                        groupSecretParams: groupSecretParams,
-                        lastRefreshDate: nil,
-                    )
-                    stop = true
-                    return
-                }
-
-                // Don't auto-refresh groups more than once a week.
-                let maxRefreshFrequencyInternal: TimeInterval = .week
-                guard abs(lastRefreshDate.timeIntervalSinceNow) > maxRefreshFrequencyInternal else {
-                    return
-                }
-
-                if
-                    let otherGroupInfo = groupInfoToRefresh,
-                    let otherLastRefreshDate = otherGroupInfo.lastRefreshDate,
-                    otherLastRefreshDate < lastRefreshDate
-                {
-                    // We already found another group with an older refresh
-                    // date, so prefer that one.
-                    return
-                }
-
-                groupInfoToRefresh = GroupInfo(
-                    groupId: groupId,
-                    groupSecretParams: groupSecretParams,
-                    lastRefreshDate: lastRefreshDate,
-                )
+        await databaseStorage.awaitableWrite { tx in
+            guard var groupToReschedule = GroupStore().fetchGroup(forGroupIdData: groupIdData, tx: tx) else {
+                return
             }
-            return groupInfoToRefresh
+            markAsRefreshed(groupRecord: &groupToReschedule, tx: tx)
         }
+    }
+
+    private func deleteThreadIfNecessary(
+        groupThread: TSGroupThread?,
+        localIdentifiers: LocalIdentifiers,
+        tx: DBWriteTransaction,
+    ) -> Bool {
+        let threadDeletionManager = DependenciesBridge.shared.threadDeletionManager
+
+        guard let groupThread else {
+            return false
+        }
+        if groupThread.shouldThreadBeVisible {
+            // Groups that are visible should keep their thread.
+            return false
+        }
+        if !groupThread.canBeDeleted(localIdentifiers: localIdentifiers) {
+            // Groups that can't be deleted should keep their thread.
+            return false
+        }
+        guard BuildFlags.hardDeleteGroupThreadsDuringRefresh else {
+            Logger.warn("group thread \(groupThread.logString) would be deleted")
+            return false
+        }
+        threadDeletionManager.deleteThreads(
+            [groupThread],
+            sendDeleteForMeSyncMessage: false,
+            updateStorageService: true,
+            localIdentifiers: localIdentifiers,
+            tx: tx,
+        )
+        return true
+    }
+
+    private func deleteGroupIfNecessary(
+        groupRecord: GroupRecord,
+        localIdentifiers: LocalIdentifiers,
+        tx: DBWriteTransaction,
+    ) -> Bool {
+        let blockingManager = SSKEnvironment.shared.blockingManagerRef
+        let recipientStore = DependenciesBridge.shared.recipientDatabaseTable
+        let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
+
+        // Keep the record...
+
+        // if we have a thread
+        if groupRecord.threadId != nil {
+            return false
+        }
+        // if the group is blocked
+        if blockingManager.isGroupIdBlocked_deprecated(groupRecord.groupId, tx: tx) {
+            return false
+        }
+        // if we have any linked devices
+        let localRecipient = recipientStore.fetchRecipient(serviceId: localIdentifiers.aci, transaction: tx)
+        let localDeviceIds = localRecipient?.deviceIds ?? []
+        if localDeviceIds.contains(where: { $0 != .primary }) {
+            return false
+        }
+        // if the group is being restored
+        if
+            let masterKey = groupRecord.masterKey,
+            GroupsV2Impl.isGroupEnqueuedForRestore(masterKey: masterKey, tx: tx)
+        {
+            return false
+        }
+
+        // Delete the record
+        failIfThrows {
+            try groupRecord.delete(tx.database)
+        }
+        // and queue up a deletion in storage service as well
+        if let masterKey = groupRecord.masterKey {
+            storageServiceManager.recordPendingUpdates(updatedGroupV2MasterKeys: [masterKey])
+        }
+        return true
+    }
+
+    private func markAsRefreshed(groupRecord: inout GroupRecord, tx: DBWriteTransaction) {
+        groupRecord.setRefreshedAt(GroupRecord.addingRefreshJitter(toDate: Date()), tx: tx)
     }
 
     public func updateGroupWithChangeActions(
@@ -130,12 +216,15 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
         downloadedAvatars: GroupAvatarStateMap,
         transaction: DBWriteTransaction,
     ) throws -> TSGroupThread {
-
-        guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction) else {
-            throw OWSAssertionError("Missing groupThread.")
-        }
-        guard let groupRowId = GroupStore().fetchRowId(forGroupId: groupId, tx: transaction) else {
+        guard var groupRecord = GroupStore().fetchGroup(forGroupId: groupId, tx: transaction) else {
             throw OWSAssertionError("missing GroupRecord")
+        }
+        guard
+            let threadId = groupRecord.threadId,
+            let threadUniqueId = TSGroupThread.threadUniqueId(forThreadId: threadId, tx: transaction),
+            let groupThread = TSGroupThread.fetchViaCache(uniqueId: threadUniqueId, transaction: transaction)
+        else {
+            throw OWSAssertionError("missing TSGroupThread")
         }
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction) else {
@@ -156,9 +245,10 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
 
         var updatedLastVerifiedGroupNameHash: Data?
         if changedGroupModel.shouldUpdateLastVerifiedGroupNameHash {
-            updatedLastVerifiedGroupNameHash = ThreadAssociatedData.groupNameVerificationHash(groupName: changedGroupModel.newGroupModel.groupName)
+            updatedLastVerifiedGroupNameHash = changedGroupModel.newGroupModel.groupName.map(GroupRecord.groupNameVerificationHash(groupName:))
         }
         GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+            groupRecord: &groupRecord,
             groupThread: groupThread,
             newGroupModel: changedGroupModel.newGroupModel,
             newDisappearingMessageToken: changedGroupModel.newDisappearingMessageToken,
@@ -186,7 +276,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
         if let groupSendEndorsementsResponse {
             SSKEnvironment.shared.groupsV2Ref.handleGroupSendEndorsementsResponse(
                 groupSendEndorsementsResponse,
-                groupRowId: groupRowId,
+                groupRowId: groupRecord.rowId,
                 secretParams: try changedGroupModel.newGroupModel.secretParams(),
                 membership: groupThread.groupMembership,
                 localAci: localIdentifiers.aci,
@@ -216,7 +306,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
             taskQueue = self.operationQueue
         }
 
-        try await taskQueue.run {
+        try await taskQueue.runWithThrowingTask {
             let isThrottled = { () -> Bool in
                 guard options.contains(.throttle) else {
                     return false
@@ -267,9 +357,6 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
 
     private func didUpdateGroupToLatestRevision(groupId: GroupIdentifier) async {
         lastSuccessfulRefreshMap[groupId] = Date()
-        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            Self.groupRefreshStore.writeValue(Date(), forKey: groupId.serialize().hexadecimalString, tx: tx)
-        }
     }
 
     private func runUpdateOperation(
@@ -437,8 +524,8 @@ public extension GroupV2UpdatesImpl {
             let author = try firstChangeAction.author(groupV2Params: groupV2Params, localIdentifiers: localIdentifiers)
             switch author {
             case .localUser:
-                if let verificationHash = ThreadAssociatedData.groupNameVerificationHash(groupName: firstChangeAction.snapshot?.title) {
-                    lastVerifiedHash = verificationHash
+                if let title = firstChangeAction.snapshot?.title {
+                    lastVerifiedHash = GroupRecord.groupNameVerificationHash(groupName: title)
                 }
             default:
                 break
@@ -491,14 +578,20 @@ public extension GroupV2UpdatesImpl {
                 throw OWSAssertionError("Missing localDeviceId.")
             }
 
-            var localUserWasAddedBy: GroupUpdateSource?
+            var groupRecord = GroupStore().fetchGroupOrInsert(secretParams: secretParams, tx: transaction)
             let groupThread: TSGroupThread
-            if let existingThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction) {
+            var localUserWasAddedBy: GroupUpdateSource?
+            if
+                let threadId = groupRecord.threadId,
+                let threadUniqueId = TSGroupThread.threadUniqueId(forThreadId: threadId, tx: transaction),
+                let existingThread = TSGroupThread.fetchViaCache(uniqueId: threadUniqueId, transaction: transaction)
+            {
                 groupThread = existingThread
                 localUserWasAddedBy = nil
             } else {
                 (groupThread, localUserWasAddedBy) = try self.insertThreadForGroupChanges(
                     groupId: groupId,
+                    groupRecord: &groupRecord,
                     spamReportingMetadata: spamReportingMetadata,
                     groupV2Params: groupV2Params,
                     groupChanges: groupChanges,
@@ -509,15 +602,13 @@ public extension GroupV2UpdatesImpl {
                     transaction: transaction,
                 )
             }
-            guard let groupRowId = GroupStore().fetchRowId(forGroupId: groupId, tx: transaction) else {
-                throw OWSAssertionError("missing GroupRecord")
-            }
 
             var profileKeysByAci = [Aci: Data]()
             var authoritativeProfileKeysByAci = [Aci: Data]()
             for groupChange in groupChanges {
                 let applyResult = try autoreleasepool {
                     try self.tryToApplySingleChangeFromService(
+                        groupRecord: &groupRecord,
                         groupThread: groupThread,
                         groupV2Params: groupV2Params,
                         options: options,
@@ -592,7 +683,7 @@ public extension GroupV2UpdatesImpl {
             if let groupSendEndorsementsResponse {
                 SSKEnvironment.shared.groupsV2Ref.handleGroupSendEndorsementsResponse(
                     groupSendEndorsementsResponse,
-                    groupRowId: groupRowId,
+                    groupRowId: groupRecord.rowId,
                     secretParams: secretParams,
                     membership: groupThread.groupMembership,
                     localAci: localIdentifiers.aci,
@@ -612,6 +703,7 @@ public extension GroupV2UpdatesImpl {
     // actions going forward to keep the group up-to-date.
     private func insertThreadForGroupChanges(
         groupId: GroupIdentifier,
+        groupRecord: inout GroupRecord,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupV2Params: GroupV2Params,
         groupChanges: [GroupV2Change],
@@ -654,6 +746,7 @@ public extension GroupV2UpdatesImpl {
 
         let groupThread = GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
             secretParams: groupV2Params.groupSecretParams,
+            groupRecord: &groupRecord,
             newGroupModel: newGroupModel,
             newDisappearingMessageToken: newDisappearingMessageToken,
             newlyLearnedPniToAciAssociations: [:],
@@ -683,6 +776,7 @@ public extension GroupV2UpdatesImpl {
     }
 
     private func tryToApplySingleChangeFromService(
+        groupRecord: inout GroupRecord,
         groupThread: TSGroupThread,
         groupV2Params: GroupV2Params,
         options: TSGroupModelOptions,
@@ -756,6 +850,7 @@ public extension GroupV2UpdatesImpl {
             throw GroupsV2Error.groupChangeProtoForIncompatibleRevision
         }
         GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+            groupRecord: &groupRecord,
             groupThread: groupThread,
             newGroupModel: newGroupModel,
             newDisappearingMessageToken: newDisappearingMessageToken,
@@ -844,8 +939,10 @@ public extension GroupV2UpdatesImpl {
             // groupUpdateSource is unknown because we don't know the
             // author(s) of changes reflected in the snapshot.
             let groupUpdateSource: GroupUpdateSource = .unknown
+            var groupRecord = GroupStore().fetchGroupOrInsert(secretParams: secretParams, tx: transaction)
             _ = GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
                 secretParams: secretParams,
+                groupRecord: &groupRecord,
                 newGroupModel: newGroupModel,
                 newDisappearingMessageToken: newDisappearingMessageToken,
                 newlyLearnedPniToAciAssociations: [:], // Not available from snapshots
@@ -858,9 +955,6 @@ public extension GroupV2UpdatesImpl {
                 updatedLastVerifiedGroupNameHash: nil,
                 transaction: transaction,
             )
-            guard let groupRowId = GroupStore().fetchRowId(forGroupId: groupId, tx: transaction) else {
-                throw OWSAssertionError("missing GroupRecord")
-            }
 
             GroupManager.storeProfileKeysFromGroupProtos(
                 allProfileKeysByAci: groupV2Snapshot.profileKeys,
@@ -877,7 +971,7 @@ public extension GroupV2UpdatesImpl {
             if let groupSendEndorsementsResponse = snapshotResponse.groupSendEndorsementsResponse {
                 groupsV2.handleGroupSendEndorsementsResponse(
                     groupSendEndorsementsResponse,
-                    groupRowId: groupRowId,
+                    groupRowId: groupRecord.rowId,
                     secretParams: secretParams,
                     membership: groupV2Snapshot.groupMembership,
                     localAci: localAci,

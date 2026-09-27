@@ -210,6 +210,7 @@ public class OWSTableItem {
 
     public static func `switch`(
         withText text: String,
+        image: UIImage? = nil,
         subtitle: String? = nil,
         textColor: UIColor? = nil,
         accessibilityIdentifier: String? = nil,
@@ -218,7 +219,8 @@ public class OWSTableItem {
         actionBlock: @escaping ((UISwitch) -> Void) = { _ in },
     ) -> OWSTableItem {
         return OWSTableItem(customCellBlock: {
-            let cell = OWSTableItem.buildCell(
+            let cell = OWSTableItem.buildImageCell(
+                image: image,
                 itemName: text,
                 subtitle: subtitle,
                 textColor: textColor,
@@ -380,9 +382,11 @@ public extension OWSTableItem {
 
     static func buildImageCell(
         image: UIImage? = nil,
+        tintColor: UIColor? = nil,
         itemName: String,
         subtitle: String? = nil,
         maxItemNameLines: Int? = nil,
+        textColor: UIColor? = nil,
         accessoryText: String? = nil,
         accessoryTextColor: UIColor? = nil,
         accessoryType: UITableViewCell.AccessoryType = .none,
@@ -398,9 +402,11 @@ public extension OWSTableItem {
 
         return buildImageViewCell(
             imageView: imageView,
+            tintColor: tintColor,
             itemName: itemName,
             subtitle: subtitle,
             maxItemNameLines: maxItemNameLines,
+            textColor: textColor,
             accessoryText: accessoryText,
             accessoryTextColor: accessoryTextColor,
             accessoryType: accessoryType,
@@ -427,6 +433,9 @@ public extension OWSTableItem {
         let cell = OWSTableItem.newCell()
         cell.preservesSuperviewLayoutMargins = true
         cell.contentView.preservesSuperviewLayoutMargins = true
+        if let tintColor {
+            cell.tintColor = tintColor
+        }
 
         var subviews = [UIView]()
 

@@ -72,10 +72,10 @@ final class BackupSubscriptionRedemptionContext: Codable {
         static let context = "context"
     }
 
-    private static let kvStore = KeyValueStore(collection: "BackupSubscriptionRedemptionContext")
+    private static let kvStore = NewKeyValueStore(collection: "BackupSubscriptionRedemptionContext")
 
     static func fetch(tx: DBReadTransaction) -> BackupSubscriptionRedemptionContext? {
-        guard let jsonData = kvStore.getData(StoreKeys.context, transaction: tx) else {
+        guard let jsonData = kvStore.fetchValue(Data.self, forKey: StoreKeys.context, tx: tx) else {
             return nil
         }
 
@@ -96,11 +96,11 @@ final class BackupSubscriptionRedemptionContext: Codable {
             return
         }
 
-        Self.kvStore.setData(jsonData, key: StoreKeys.context, transaction: tx)
+        Self.kvStore.writeValue(jsonData, forKey: StoreKeys.context, tx: tx)
     }
 
     func delete(tx: DBWriteTransaction) {
-        Self.kvStore.removeValue(forKey: StoreKeys.context, transaction: tx)
+        Self.kvStore.removeValue(forKey: StoreKeys.context, tx: tx)
     }
 
     // MARK: - Codable

@@ -205,7 +205,7 @@ class IncomingReactionsView: UIView, ReactionReceiver {
 
         private lazy var nameLabel: UILabel = {
             let label = UILabel()
-            label.textColor = .ows_white
+            label.textColor = .white
             label.translatesAutoresizingMaskIntoConstraints = false
             label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
             NSLayoutConstraint.activate([

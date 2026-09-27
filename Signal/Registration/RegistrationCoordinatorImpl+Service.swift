@@ -64,24 +64,24 @@ extension RegistrationCoordinatorImpl {
         }
 
         static func makeCreateAccountRequest(
-            _ method: RegistrationRequestFactory.VerificationMethod,
-            e164: E164,
+            _ verificationMethod: RegistrationRequestFactory.VerificationMethod,
             authPassword: String,
             accountAttributes: AccountAttributes,
             skipDeviceTransfer: Bool,
             apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
-            prekeyBundles: RegistrationPreKeyUploadBundles,
+            aciPreKeyBundle: RegistrationPreKeyUploadBundle,
+            pniPreKeyBundle: RegistrationPreKeyUploadBundle,
             signalService: OWSSignalServiceProtocol,
             logger: PrefixedLogger,
         ) async -> AccountResponse {
             let request = RegistrationRequestFactory.createAccountRequest(
-                verificationMethod: method,
-                e164: e164,
+                verificationMethod: verificationMethod,
                 authPassword: authPassword,
                 accountAttributes: accountAttributes,
                 skipDeviceTransfer: skipDeviceTransfer,
                 apnRegistrationId: apnRegistrationId,
-                prekeyBundles: prekeyBundles,
+                aciPreKeyBundle: aciPreKeyBundle,
+                pniPreKeyBundle: pniPreKeyBundle,
                 logger: logger,
             )
             return await makeRequest(
@@ -171,8 +171,7 @@ extension RegistrationCoordinatorImpl {
         }
 
         static func makeChangeNumberRequest(
-            _ method: RegistrationRequestFactory.VerificationMethod,
-            e164: E164,
+            _ verificationMethod: RegistrationRequestFactory.VerificationMethod,
             reglockToken: RegistrationLock?,
             authPassword: String,
             pniChangeNumberParameters: PniDistribution.Parameters,
@@ -180,8 +179,7 @@ extension RegistrationCoordinatorImpl {
             logger: PrefixedLogger,
         ) async -> AccountResponse {
             let request = RegistrationRequestFactory.changeNumberRequest(
-                verificationMethod: method,
-                e164: e164,
+                verificationMethod: verificationMethod,
                 reglockToken: reglockToken,
                 pniChangeNumberParameters: pniChangeNumberParameters,
                 logger: logger,

@@ -279,7 +279,7 @@ public struct ConversationStyle {
     }
 
     public static var bubbleTextColorOutgoingThemed: ThemedColor {
-        ThemedColor(light: UIColor.ows_white, dark: UIColor.ows_gray05)
+        ThemedColor(light: UIColor.white, dark: UIColor.ows_gray05)
     }
 
     public static var bubbleTextColorIncoming: UIColor {
@@ -373,7 +373,7 @@ public struct ConversationStyle {
 
     public func bubbleReadMoreTextColor(message: TSMessage) -> UIColor {
         if message is TSIncomingMessage {
-            return isDarkThemeEnabled ? .ows_whiteAlpha90 : .ows_accentBlue
+            return isDarkThemeEnabled ? .ows_whiteAlpha90 : .Signal.accent
         } else if message is TSOutgoingMessage {
             return isDarkThemeEnabled ? .ows_whiteAlpha90 : .white
         } else if message is TSReleaseNotesMessage {
@@ -389,7 +389,8 @@ public struct ConversationStyle {
     /// The purpose of this method is to provide stroke configuration to be used with non-message bubbles (eg date headers).
     public static func bubbleStroke(isDarkThemeEnabled: Bool) -> BubbleConfiguration.Stroke {
         let strokeColor = isDarkThemeEnabled ? UIColor(white: 1, alpha: 0.25) : UIColor(white: 0, alpha: 0.35)
-        return BubbleConfiguration.Stroke(color: strokeColor, width: 2 * CGFloat.hairlineWidth)
+        let strokeWidth = UITraitCollection.current.hairlineWidthFraction(2)
+        return BubbleConfiguration.Stroke(color: strokeColor, width: strokeWidth)
     }
 
     /// - Returns: Stroke configuration to use for incoming or outgoing message bubbles in chat.

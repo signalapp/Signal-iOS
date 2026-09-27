@@ -32,15 +32,12 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
             comment: "Title for the 'new private story' confirmation view",
         )
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: OWSLocalizedString(
-                "NEW_PRIVATE_STORY_CREATE_BUTTON",
-                comment: "Button to create a new private story",
-            ),
-            style: .plain,
-            target: self,
-            action: #selector(didTapCreate),
-        )
+        navigationItem.rightBarButtonItem = .prominentButton(title: OWSLocalizedString(
+            "NEW_PRIVATE_STORY_CREATE_BUTTON",
+            comment: "Button to create a new private story",
+        )) { [weak self] in
+            self?.didTapCreate()
+        }
 
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
@@ -157,10 +154,7 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
 
     // MARK: - Actions
 
-    @objc
     private func didTapCreate() {
-        AssertIsOnMainThread()
-
         guard let name = nameTextField.text?.filterForDisplay.nilIfEmpty else {
             return showMissingNameAlert()
         }

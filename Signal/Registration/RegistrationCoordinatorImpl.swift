@@ -344,7 +344,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         deps.db.write { tx in
             updatePersistedState(tx) {
-                $0.e164 = message.phoneNumber
+                $0.e164 = message.phoneNumberState.phoneNumber
             }
             updateMasterKeyAndLocalState(masterKey: message.accountEntropyPool.getMasterKey(), tx: tx)
         }
@@ -599,7 +599,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 unitCount: 100,
             )
 
-            let backupKey = try MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: identity.aci)
+            let backupKey = MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: identity.aci)
             let fileUrl: URL
             switch type {
             case .local:
@@ -658,6 +658,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
                 fileUrl = chosenBackup.appendingPathComponent(LocalFileBackupManager.FileStructure.backupFile.rawValue)
 
+                downloadProgress?.addSource(withLabel: "", unitCount: 1).complete()
                 // The recovery key has been derived, the backup file has been sourced,
                 // so this is the last possible point before we commit to importing the backup.
                 // At this point, persist the recovery key so if the app restarts after this point
@@ -673,7 +674,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     localIdentifiers: identity.localIdentifiers,
                     isPrimaryDevice: true,
                     source: .local(key: backupKey),
-                    progress: nil,
+                    progress: importProgress,
                     logger: self.logger,
                 )
 
@@ -1105,7 +1106,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// operations.  This key persisted in case the app quits in between a successful backup restore and the
         /// finalization of the restore (and registration).  The goal here is to prevent the possibility of a different
         /// AEP being entered by the user after a backup restore has already succeeded.
-        var backupKeyAccountEntropyPool: SignalServiceKit.AccountEntropyPool?
+        var backupKeyAccountEntropyPool: SignalServiceKit.AccountEntropyPool? {
+            set { deprecatedBackupKeyAccountEntropyPool = newValue.map(DeprecatedAccountEntropyPool.init(wrappedValue:)) }
+            get { deprecatedBackupKeyAccountEntropyPool?.wrappedValue }
+        }
+
+        var deprecatedBackupKeyAccountEntropyPool: DeprecatedAccountEntropyPool?
 
         struct SessionState: Codable {
             let sessionId: String
@@ -1276,7 +1282,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case restoreMethod
             case restoreMode
             case deprecatedRecoveredSVRMasterKey = "recoveredSVRMasterKey"
-            case backupKeyAccountEntropyPool
+            case deprecatedBackupKeyAccountEntropyPool = "backupKeyAccountEntropyPool"
             case localFileBackupURLBookmarkData
         }
     }
@@ -1518,11 +1524,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // may have stored something, and we want to ensure we delete or update it.
             deps.svr.invalidateBackupAttemptForEveryEnclave(tx: tx)
 
-            deps.registrationStateChangeManager.didRegisterPrimary(
-                e164: accountIdentity.e164,
+            deps.registrationStateChangeManager.didRegisterOrProvision(
                 aci: accountIdentity.aci,
-                pni: accountIdentity.pni,
+                phoneNumber: LocalIdentifiers.PhoneNumber(e164: accountIdentity.e164, pni: accountIdentity.pni),
                 authToken: accountIdentity.authPassword,
+                deviceId: .primary,
                 tx: tx,
             )
             deps.tsAccountManager.setIsManualMessageFetchEnabled(inMemoryState.isManualMessageFetchEnabled, tx: tx)
@@ -1542,7 +1548,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         try? await deps.storageServiceManager.rotateManifest(
             mode: .preservingRecordsIfPossible,
-            authedDevice: accountIdentity.authedDevice,
+            authedAccount: accountIdentity.authedAccount,
         )
 
         await finish(accountIdentity: accountIdentity)
@@ -1598,7 +1604,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 availableBackups = dates.suffix(2).map { .local($0) }
             } else {
                 // For manual restore, fetch the backup info
-                let backupKey = try MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: accountIdentity.aci)
+                let backupKey = MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: accountIdentity.aci)
                 let backupServiceAuth = try await self.fetchBackupServiceAuth(
                     accountEntropyPool: accountEntropyPool,
                     accountIdentity: accountIdentity,
@@ -1652,7 +1658,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         accountEntropyPool: SignalServiceKit.AccountEntropyPool,
         accountIdentity: AccountIdentity,
     ) async throws -> BackupServiceAuth {
-        let backupKey = try MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: accountIdentity.aci)
+        let backupKey = MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: accountIdentity.aci)
         logger.info("Fetching backup auth [\(accountEntropyPool.getLoggingKey())]")
 
         func fetchBackupServiceAuth() async throws -> BackupServiceAuth {
@@ -1686,7 +1692,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
         // Do any storage service backups we have pending.
         self.deps.storageServiceManager.backupPendingChanges(
-            authedDevice: accountIdentity.authedDevice,
+            authedAccount: accountIdentity.authedAccount,
         )
     }
 
@@ -1906,20 +1912,27 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .android: .android
         }
 
+        let useWifiAware = DeviceTransfer.platformSupportsWifiAware() && registrationMessage.capabilites.contains(.wifiaware)
+
         switch persistedState.restoreMethod {
         case .deviceTransfer:
             if let restoreToken = registrationMessage.restoreMethodToken {
-                let deviceTransferCoordinator = DeviceTransferCoordinator(
-                    db: deps.db,
-                    deviceSleepManager: deps.deviceSleepManager,
-                    deviceTransferRestore: deps.deviceTransferRestore,
-                    quickRestoreManager: deps.quickRestoreManager,
-                    registrationStateChangeManager: deps.registrationStateChangeManager,
-                    restoreMethodToken: restoreToken,
-                    restoreMode: .primary,
-                    tsAccountManager: deps.tsAccountManager,
-                )
-                return .deviceTransfer(deviceTransferCoordinator)
+                do {
+                    let deviceTransferCoordinator = try DeviceTransferCoordinator(
+                        db: deps.db,
+                        deviceSleepManager: deps.deviceSleepManager,
+                        deviceTransferRestore: deps.deviceTransferRestore,
+                        quickRestoreManager: deps.quickRestoreManager,
+                        registrationStateChangeManager: deps.registrationStateChangeManager,
+                        restoreMethodToken: restoreToken,
+                        restoreMode: .primary,
+                        tsAccountManager: deps.tsAccountManager,
+                        supportsWifiAware: useWifiAware,
+                    )
+                    return .deviceTransfer(deviceTransferCoordinator)
+                } catch {
+                    return .showErrorSheet(.genericError)
+                }
             } else {
                 return .scanQuickRegistrationQrCode
             }
@@ -2070,8 +2083,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) async -> RegistrationStep {
         let reglockToken = self.reglockToken(for: e164)
         return await makeRegisterOrChangeNumberRequest(
-            .recoveryPassword(regRecoveryPw),
-            e164: e164,
+            .recoveryPassword(.phoneNumber(e164), regRecoveryPw),
             reglockToken: reglockToken,
             responseHandler: { accountResponse in
                 return await self.handleCreateAccountResponseFromRegRecoveryPassword(
@@ -2793,8 +2805,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
         let reglockToken = reglockToken(for: session.e164)
         return await makeRegisterOrChangeNumberRequest(
-            .sessionId(session.id),
-            e164: session.e164,
+            .sessionId(session.e164, session.id),
             reglockToken: reglockToken,
             responseHandler: { accountResponse in
                 return await self.handleCreateAccountResponseFromSession(
@@ -4133,7 +4144,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         do {
             try await withUncooperativeTimeout(seconds: 120) {
                 try await self.deps.storageServiceManager.restoreOrCreateManifestIfNecessary(
-                    authedDevice: accountIdentity.authedDevice,
+                    authedAccount: accountIdentity.authedAccount,
                     masterKeySource: masterKeySource,
                 ).awaitable()
             }
@@ -4330,9 +4341,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // We do these here, and not in export state, so that we don't risk
             // syncing out-of-date state to storage service.
             self.deps.registrationStateChangeManager.didUpdateLocalPhoneNumber(
-                accountIdentity.e164,
                 aci: accountIdentity.aci,
-                pni: accountIdentity.pni,
+                phoneNumber: LocalIdentifiers.PhoneNumber(e164: accountIdentity.e164, pni: accountIdentity.pni),
                 tx: tx,
             )
             // Make sure we update our local account.
@@ -4365,7 +4375,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     @MainActor
     private func makeRegisterOrChangeNumberRequest(
         _ method: RegistrationRequestFactory.VerificationMethod,
-        e164: E164,
         reglockToken: RegistrationLock?,
         responseHandler: @escaping @MainActor (AccountResponse) async -> RegistrationStep,
     ) async -> RegistrationStep {
@@ -4375,13 +4384,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .reRegistering(let state):
             if !persistedState.hasResetForReRegistration {
                 db.write { tx in
-                    let isPrimaryDevice = deps.tsAccountManager.registrationState(tx: tx).isPrimaryDevice ?? true
-                    let discoverability = deps.phoneNumberDiscoverabilityManager.phoneNumberDiscoverability(tx: tx)
                     deps.registrationStateChangeManager.resetForReregistration(
-                        localPhoneNumber: state.e164,
-                        localAci: state.aci,
-                        discoverability: discoverability,
-                        wasPrimaryDevice: isPrimaryDevice,
+                        aci: state.aci,
+                        phoneNumber: state.e164,
+                        isPrimaryDevice: true,
                         tx: tx,
                     )
                     updatePersistedState(tx) {
@@ -4432,8 +4438,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             do {
                 try await sendRestoreMethodIfNecessary()
                 return await makeCreateAccountRequestAndFinalizePreKeys(
-                    method: method,
-                    e164: e164,
+                    verificationMethod: method,
                     authPassword: authToken,
                     accountAttributes: accountAttributes,
                     skipDeviceTransfer: shouldSkipDeviceTransfer(),
@@ -4453,7 +4458,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 )
             }
             let changeNumberResult = await generatePniStateAndMakeChangeNumberRequest(
-                e164: e164,
                 verificationMethod: method,
                 reglockToken: reglockToken,
                 changeNumberState: changeNumberState,
@@ -4522,7 +4526,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 tx: tx,
             )
             deps.identityManager.setIdentityKeyPair(
-                registrationMessage.pniIdentityKeyPair.asECKeyPair,
+                registrationMessage.phoneNumberState.pniIdentityKeyPair.asECKeyPair,
                 for: .pni,
                 tx: tx,
             )
@@ -4535,8 +4539,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     @MainActor
     private func makeCreateAccountRequestAndFinalizePreKeys(
-        method: RegistrationRequestFactory.VerificationMethod,
-        e164: E164,
+        verificationMethod: RegistrationRequestFactory.VerificationMethod,
         authPassword: String,
         accountAttributes: AccountAttributes,
         skipDeviceTransfer: Bool,
@@ -4548,18 +4551,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             persistRegistrationMessage(registrationMessage)
         }
 
-        let prekeyBundles = await deps.preKeyManager.createPreKeysForRegistration()
+        let aciPreKeyBundle = await deps.preKeyManager.createPreKeysForRegistration(forIdentity: .aci)
+        let pniPreKeyBundle = await deps.preKeyManager.createPreKeysForRegistration(forIdentity: .pni)
 
         let shouldSkipDeviceTransfer = self.shouldSkipDeviceTransfer()
         let signalService = self.deps.signalService
         let accountResponse = await Service.makeCreateAccountRequest(
-            method,
-            e164: e164,
+            verificationMethod,
             authPassword: authPassword,
             accountAttributes: accountAttributes,
             skipDeviceTransfer: shouldSkipDeviceTransfer,
             apnRegistrationId: apnRegistrationId,
-            prekeyBundles: prekeyBundles,
+            aciPreKeyBundle: aciPreKeyBundle,
+            pniPreKeyBundle: pniPreKeyBundle,
             signalService: signalService,
             logger: logger,
         )
@@ -4573,8 +4577,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             .genericError,
             .deviceTransferPossible: false
         }
-        await deps.preKeyManager.finalizeRegistrationPreKeys(
-            prekeyBundles,
+        await deps.preKeyManager.finalizeRegistrationPreKeyBundle(
+            aciPreKeyBundle,
+            uploadDidSucceed: isPrekeyUploadSuccess,
+        )
+        await deps.preKeyManager.finalizeRegistrationPreKeyBundle(
+            pniPreKeyBundle,
             uploadDidSucceed: isPrekeyUploadSuccess,
         )
         return await responseHandler(accountResponse)
@@ -4586,15 +4594,22 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func generatePniStateAndMakeChangeNumberRequest(
-        e164: E164,
         verificationMethod: RegistrationRequestFactory.VerificationMethod,
         reglockToken: RegistrationLock?,
         changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState,
     ) async -> ChangeNumberResult {
         logger.info("")
 
+        let newPhoneNumber: E164
+        switch verificationMethod {
+        case .sessionId(let _newPhoneNumber, _):
+            newPhoneNumber = _newPhoneNumber
+        case .recoveryPassword(.phoneNumber(let _newPhoneNumber), _):
+            newPhoneNumber = _newPhoneNumber
+        }
+
         let pniResult = await deps.changeNumberPniManager.generatePniIdentity(
-            forNewE164: e164,
+            forNewE164: newPhoneNumber,
             localAci: changeNumberState.localAci,
             localDeviceId: changeNumberState.localDeviceId,
         )
@@ -4604,7 +4619,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .pniStateError
         case .success(let pniParams, let pniPendingState):
             return .serviceResponse(await makeChangeNumberRequest(
-                e164: e164,
                 verificationMethod: verificationMethod,
                 reglockToken: reglockToken,
                 changeNumberState: changeNumberState,
@@ -4616,7 +4630,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     @MainActor
     private func makeChangeNumberRequest(
-        e164: E164,
         verificationMethod: RegistrationRequestFactory.VerificationMethod,
         reglockToken: RegistrationLock?,
         changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState,
@@ -4640,7 +4653,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         return await Service.makeChangeNumberRequest(
             verificationMethod,
-            e164: e164,
             reglockToken: reglockToken,
             authPassword: changeNumberState.oldAuthToken,
             pniChangeNumberParameters: pniParams,
@@ -4743,8 +4755,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         inMemoryState.hasOpenedConnection = false
 
         return .showErrorSheet(.becameDeregistered(reregParams: .init(
-            e164: accountIdentity.e164,
             aci: accountIdentity.aci,
+            e164: accountIdentity.e164,
         )))
     }
 
@@ -4807,41 +4819,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         var authedAccount: AuthedAccount {
-            return AuthedAccount.explicit(
+            return .explicit(AuthedAccount.Explicit(
                 aci: aci,
-                pni: pni,
-                e164: e164,
-                deviceId: .primary,
-                authPassword: authPassword,
-            )
-        }
-
-        var authedDevice: AuthedDevice {
-            return .explicit(AuthedDevice.Explicit(
-                aci: aci,
-                phoneNumber: e164,
-                pni: pni,
+                phoneNumber: LocalIdentifiers.PhoneNumber(e164: e164, pni: pni),
                 deviceId: .primary,
                 authPassword: authPassword,
             ))
         }
 
         var chatServiceAuth: ChatServiceAuth {
-            return ChatServiceAuth.explicit(
-                aci: aci,
-                deviceId: .primary,
-                password: authPassword,
-            )
+            return authedAccount.chatServiceAuth
         }
 
         var localIdentifiers: LocalIdentifiers {
-            return AuthedDevice.Explicit(
-                aci: aci,
-                phoneNumber: e164,
-                pni: pni,
-                deviceId: .primary,
-                authPassword: authPassword,
-            ).localIdentifiers
+            return LocalIdentifiers(aci: aci, phoneNumber: LocalIdentifiers.PhoneNumber(e164: e164, pni: pni))
         }
     }
 

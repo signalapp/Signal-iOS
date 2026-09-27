@@ -60,8 +60,6 @@ class RecentPhotosCollectionView: UICollectionView {
         didSet {
             guard oldValue != cellSize else { return }
 
-            thumbnailSize = cellSize * UIScreen.main.scale
-
             // Replacing the collection view layout is the only reliable way
             // to change cell size when `collectionView(_:layout:sizeForItemAt:)` is implemented.
             // That delegate method is necessary to allow custom size for "manage access" helper UI.
@@ -92,8 +90,6 @@ class RecentPhotosCollectionView: UICollectionView {
             cellSize = CGSize(square: lastKnownHeight)
         }
     }
-
-    private var thumbnailSize = initialCellSize * UIScreen.main.scale
 
     private static func collectionViewLayout(itemSize: CGSize) -> UICollectionViewFlowLayout {
         let layout = RTLEnabledCollectionViewFlowLayout()
@@ -309,6 +305,7 @@ extension RecentPhotosCollectionView: UICollectionViewDataSource {
             owsFail("cell was unexpectedly nil")
         }
 
+        let thumbnailSize = cellSize * traitCollection.displayScale
         let assetItem = collectionContents.assetItem(at: indexPath.item, thumbnailSize: thumbnailSize)
         cell.configure(item: assetItem, isLoading: fetchingAttachmentIndex == indexPath)
 #if DEBUG

@@ -128,25 +128,17 @@ public class ThreadFinder {
     public func visibleThreadCount(
         isArchived: Bool,
         transaction: DBReadTransaction,
-    ) throws -> UInt {
+    ) -> UInt {
         let sql = """
         SELECT COUNT(*)
         FROM \(TSThread.databaseTableName)
-        \(threadAssociatedDataJoinClause(isArchived: isArchived))
         WHERE \(threadColumn: .shouldThreadBeVisible) = 1
+        AND \(threadColumn: .isArchived) = ?
         """
 
-        guard
-            let count = try UInt.fetchOne(
-                transaction.database,
-                sql: sql,
-            )
-        else {
-            owsFailDebug("count was unexpectedly nil")
-            return 0
-        }
-
-        return count
+        return failIfThrows {
+            return try UInt.fetchOne(transaction.database, sql: sql, arguments: [isArchived])
+        }.owsFailUnwrap("must exist")
     }
 
     public func enumerateVisibleThreads(
@@ -157,8 +149,8 @@ public class ThreadFinder {
         let sql = """
         SELECT *
         FROM \(TSThread.databaseTableName)
-        \(threadAssociatedDataJoinClause(isArchived: isArchived))
         WHERE \(threadColumn: .shouldThreadBeVisible) = 1
+        AND \(threadColumn: .isArchived) = ?
         ORDER BY \(threadColumn: .lastInteractionRowId) DESC
         """
 
@@ -166,6 +158,7 @@ public class ThreadFinder {
             try TSThread.fetchCursor(
                 transaction.database,
                 sql: sql,
+                arguments: [isArchived],
             ).forEach { thread in
                 block(thread)
             }
@@ -395,78 +388,57 @@ public class ThreadFinder {
         return threads
     }
 
-    private func threadAssociatedDataJoinClause(isArchived: Bool) -> String {
-        """
-        INNER JOIN \(ThreadAssociatedData.databaseTableName)
-            ON \(ThreadAssociatedData.databaseTableName).threadUniqueId = \(threadColumnFullyQualified: .uniqueId)
-            AND \(ThreadAssociatedData.databaseTableName).isArchived = \(isArchived ? "1" : "0")
-        """
-    }
-
     // MARK: -
 
     public func visibleInboxThreadUniqueIds(
         filteredBy inboxFilter: InboxFilter? = nil,
         requiredVisibleThreadIds: Set<String> = [],
         transaction: DBReadTransaction,
-    ) throws -> [String] {
-        switch inboxFilter {
+    ) -> [String] {
+        let inboxFilterClause: String = switch inboxFilter {
         case .unread:
-            let sql = """
-            SELECT
-                \(threadColumnFullyQualified: .uniqueId) AS thread_uniqueId,
-                \(ThreadAssociatedData.databaseTableName).isMarkedUnread AS thread_isMarkedUnread,
-                COUNT(i.\(interactionColumn: .uniqueId)) AS interactions_unreadCount
-            FROM \(TSThread.databaseTableName)
-            INNER JOIN \(ThreadAssociatedData.databaseTableName)
-                ON \(ThreadAssociatedData.databaseTableName).threadUniqueId = \(threadColumnFullyQualified: .uniqueId)
-                AND \(ThreadAssociatedData.databaseTableName).isArchived = 0
-            LEFT OUTER JOIN \(InteractionRecord.databaseTableName) AS i
-                \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
-                ON i.\(interactionColumn: .threadUniqueId) = thread_uniqueId
-                AND \(InteractionFinder.sqlClauseForUnreadInteractionCounts(interactionsAlias: "i"))
-            WHERE \(threadColumnFullyQualified: .shouldThreadBeVisible) = 1
-            GROUP BY thread_uniqueId
-            HAVING (
-                thread_isMarkedUnread = 1
-                OR interactions_unreadCount > 0
+            """
+            AND (
+                \(threadColumn: .isMarkedUnread) = 1
+                OR EXISTS (
+                    SELECT 1
+                    FROM \(InteractionRecord.databaseTableName)
+                    \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
+                    WHERE \(interactionColumn: .threadUniqueId) = \(threadColumnFullyQualified: .uniqueId)
+                    AND \(InteractionFinder.sqlClauseForUnreadInteractionCounts())
+                )
                 \(requiredVisibleThreadsClause(forThreadIds: requiredVisibleThreadIds))
             )
-            ORDER BY
-                CASE WHEN \(threadColumn: .lastDraftInteractionRowId) > \(threadColumn: .lastInteractionRowId)
-                    THEN \(threadColumn: .lastDraftInteractionRowId) ELSE \(threadColumn: .lastInteractionRowId)
-                END DESC,
-                \(threadColumn: .lastDraftUpdateTimestamp) DESC
             """
-
-            return try String.fetchAll(transaction.database, sql: sql, adapter: RangeRowAdapter(0..<1))
-
         case .unfiltered, nil:
-            let sql = """
-            SELECT \(threadColumn: .uniqueId)
-            FROM \(TSThread.databaseTableName)
-            INNER JOIN \(ThreadAssociatedData.databaseTableName)
-                ON \(ThreadAssociatedData.databaseTableName).threadUniqueId = \(threadColumnFullyQualified: .uniqueId)
-                AND \(ThreadAssociatedData.databaseTableName).isArchived = 0
-            WHERE \(threadColumn: .shouldThreadBeVisible) = 1
-            ORDER BY
-                CASE WHEN \(threadColumn: .lastDraftInteractionRowId) > \(threadColumn: .lastInteractionRowId)
-                    THEN \(threadColumn: .lastDraftInteractionRowId) ELSE \(threadColumn: .lastInteractionRowId)
-                END DESC,
-                \(threadColumn: .lastDraftUpdateTimestamp) DESC
-            """
+            ""
+        }
+
+        let sql = """
+        SELECT \(threadColumn: .uniqueId)
+        FROM \(TSThread.databaseTableName)
+        WHERE \(threadColumn: .shouldThreadBeVisible) = 1
+        AND \(threadColumn: .isArchived) = 0
+        \(inboxFilterClause)
+        ORDER BY
+            CASE WHEN \(threadColumn: .lastDraftInteractionRowId) > \(threadColumn: .lastInteractionRowId)
+                THEN \(threadColumn: .lastDraftInteractionRowId) ELSE \(threadColumn: .lastInteractionRowId)
+            END DESC,
+            \(threadColumn: .lastDraftUpdateTimestamp) DESC
+        """
+        return failIfThrows {
             return try String.fetchAll(transaction.database, sql: sql)
         }
     }
 
     public func visibleArchivedThreadUniqueIds(
         transaction: DBReadTransaction,
-    ) throws -> [String] {
+    ) -> [String] {
         let sql = """
         SELECT \(threadColumn: .uniqueId)
         FROM \(TSThread.databaseTableName)
-        \(threadAssociatedDataJoinClause(isArchived: true))
         WHERE \(threadColumn: .shouldThreadBeVisible) = 1
+        AND \(threadColumn: .isArchived) = 1
         ORDER BY
             CASE WHEN \(threadColumn: .lastDraftInteractionRowId) > \(threadColumn: .lastInteractionRowId)
                 THEN \(threadColumn: .lastDraftInteractionRowId) ELSE \(threadColumn: .lastInteractionRowId)
@@ -474,6 +446,8 @@ public class ThreadFinder {
             \(threadColumn: .lastDraftUpdateTimestamp) DESC
         """
 
-        return try String.fetchAll(transaction.database, sql: sql)
+        return failIfThrows {
+            return try String.fetchAll(transaction.database, sql: sql)
+        }
     }
 }

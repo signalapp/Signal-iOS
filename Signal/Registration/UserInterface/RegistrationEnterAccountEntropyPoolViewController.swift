@@ -64,12 +64,9 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
 
         navigationItem.hidesBackButton = true
         if state.canShowBackButton {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(
-                image: UIImage(named: "chevron-left-bold-28"),
-                primaryAction: UIAction { [weak presenter] _ in
-                    presenter?.cancelKeyEntry()
-                },
-            )
+            navigationItem.leftBarButtonItem = UIBarButtonItem.button(image: .chevronLeftBold28) { [weak presenter] in
+                presenter?.cancelKeyEntry()
+            }
         }
     }
 
@@ -102,7 +99,7 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
             primaryButton: .init(title: OWSLocalizedString(
                 "REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE",
                 comment: "Title for button on sheet for when you don't have a recovery key",
-            )) { [weak self] _ in
+            )) { [weak self, presenter] _ in
                 self?.dismiss(animated: true) { [weak presenter] in
                     presenter?.forgotKeyAction()
                 }

@@ -395,7 +395,7 @@ final class PreKeyTaskTests: SSKBaseTest {
     //
 
     func test422WhileSettingKeysReportsSuspectedPniIdentityKeyIssue() async {
-        mockTSAccountManager.registrationStateMock = { .provisioned }
+        mockTSAccountManager.registrationStateMock = { .provisioned(.forUnitTests) }
         mockIdentityManager.identityKeyPairs[.pni] = ECKeyPair.generateKeyPair()
         mockAPIClient.setPreKeysResult = .error(OWSHTTPError.serviceResponse(.init(
             requestUrl: URL(string: "https://example.com")!,

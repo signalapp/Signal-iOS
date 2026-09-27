@@ -36,7 +36,6 @@ extension ExpiringCallInteraction {
     }
 
     func startExpirationIfNecessary(transaction tx: DBWriteTransaction) {
-        guard RemoteConfig.current.disappearingCalls else { return }
         guard
             shouldStartExpireTimer(),
             !hasExpirationStarted
@@ -49,7 +48,6 @@ extension ExpiringCallInteraction {
     }
 
     func startOrUpdateExpiration(readTimestamp: UInt64, tx: DBWriteTransaction) {
-        guard RemoteConfig.current.disappearingCalls else { return }
         DependenciesBridge.shared.disappearingMessagesExpirationJob.startExpiration(
             for: self,
             expirationStartedAt: readTimestamp,

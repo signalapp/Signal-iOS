@@ -602,6 +602,22 @@ public class OWSReceiptManager: NSObject {
         concurrentLimitPerKey: 1,
     )
 
+    /// Tallies one write transaction's worth of work in `markAsReadLocally`.
+    private struct MarkAsReadBatch {
+        /// Records taken from the cursor, including ones we skipped.
+        var recordCount = 0
+        /// Records we actually marked as read.
+        var markedCount = 0
+
+        /// Whether or not we can read more records in this batch.
+        /// - Important
+        /// Considers the number of records, not the number marked read, to
+        /// avoid unbounded fetching in pathological cases.
+        var canReadMoreRecords: Bool {
+            return recordCount < 500
+        }
+    }
+
     public func markAsReadLocally(
         beforeSortId sortId: UInt64,
         thread: TSThread,
@@ -623,8 +639,20 @@ public class OWSReceiptManager: NSObject {
     ) async {
         let db = DependenciesBridge.shared.db
         let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
-        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+        let hasSomethingToMarkRead = db.read { tx in
+            if interactionFinder.hasUnreadMessage(beforeSortId: beforeSortId, tx: tx) {
+                return true
+            }
+            if interactionFinder.hasMessageWithUnreadReactions(beforeSortId: beforeSortId, tx: tx) {
+                return true
+            }
+            return false
+        }
+        guard hasSomethingToMarkRead else {
+            // If we have nothing to mark as read, avoid opening a write.
+            return
+        }
 
         let circumstance: OWSReceiptCircumstance
         if hasPendingMessageRequest {
@@ -639,35 +667,92 @@ public class OWSReceiptManager: NSObject {
         logger.info("readTimestamp: \(readTimestamp)")
 
         // First, do all unread messages.
-        struct TxContextUnreadMessages {
-            var cursor: FailIfThrowsRecordCursor<InteractionRecord>
+        while true {
+            let batch = await markUnreadMessagesBatch(
+                beforeSortId: beforeSortId,
+                thread: thread,
+                circumstance: circumstance,
+                readTimestamp: readTimestamp,
+                logger: logger,
+            )
+
+            guard shouldProcessAnotherBatch(batch, of: "unread messages", logger: logger) else {
+                break
+            }
         }
-        await TimeGatedBatch.processAll(
-            db: db,
-            buildTxContext: { tx -> TxContextUnreadMessages in
-                return TxContextUnreadMessages(
-                    cursor: interactionFinder.fetchUnreadMessages(
-                        beforeSortId: beforeSortId,
-                        tx: tx,
-                    ),
-                )
-            },
-            processBatch: { tx, txContext -> TimeGatedBatch.ProcessBatchResult<Void> in
-                guard let nextInteractionRecord = txContext.cursor.next() else {
-                    return .done(())
-                }
+
+        // Next, outgoing messages with unread reactions.
+        while true {
+            let batch = await markUnreadReactionsBatch(
+                beforeSortId: beforeSortId,
+                thread: thread,
+                readTimestamp: readTimestamp,
+                logger: logger,
+            )
+
+            guard shouldProcessAnotherBatch(batch, of: "unread reactions", logger: logger) else {
+                break
+            }
+        }
+    }
+
+    /// Whether another batch is worth running after the given one.
+    private func shouldProcessAnotherBatch(
+        _ batch: MarkAsReadBatch,
+        of description: String,
+        logger: PrefixedLogger,
+    ) -> Bool {
+        // A partial batch means the cursor was exhausted.
+        if batch.canReadMoreRecords {
+            return false
+        }
+
+        // If we made it through an entire batch without making any forward
+        // progress, stop. This should never happen, but enough consecutive
+        // invalid interaction rows could, for example, produce this.
+        if batch.markedCount == 0 {
+            owsFailDebug("Marked nothing in a full batch of \(description)!", logger: logger)
+            return false
+        }
+
+        return true
+    }
+
+    /// Mark at most one batch of unread messages as read.
+    private func markUnreadMessagesBatch(
+        beforeSortId: UInt64,
+        thread: TSThread,
+        circumstance: OWSReceiptCircumstance,
+        readTimestamp: UInt64,
+        logger: PrefixedLogger,
+    ) async -> MarkAsReadBatch {
+        let db = DependenciesBridge.shared.db
+        let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
+
+        return await db.awaitableWrite { tx -> MarkAsReadBatch in
+            var batch = MarkAsReadBatch()
+            var cursor = interactionFinder.fetchUnreadMessages(
+                beforeSortId: beforeSortId,
+                tx: tx,
+            )
+
+            while
+                batch.canReadMoreRecords,
+                let record = cursor.next()
+            {
+                batch.recordCount += 1
 
                 let nextInteraction: TSInteraction
                 do {
-                    nextInteraction = try TSInteraction.fromRecord(nextInteractionRecord)
+                    nextInteraction = try TSInteraction.fromRecord(record)
                 } catch {
                     owsFailDebug("Failed to instantiate unread TSInteraction! \(error)", logger: logger)
-                    return .more
+                    continue
                 }
 
                 guard let readTracking = nextInteraction as? OWSReadTracking else {
                     owsFailDebug("Unread TSInteraction was not OWSReadTracking?", logger: logger)
-                    return .more
+                    continue
                 }
 
                 readTracking.markAsRead(
@@ -677,76 +762,72 @@ public class OWSReceiptManager: NSObject {
                     shouldClearNotifications: true,
                     transaction: tx,
                 )
+                batch.markedCount += 1
+            }
 
-                return .more
-            },
-            concludeTx: { tx, _ in
-                // Nothing to conclude
-            },
-        )
-
-        // Next, outgoing messages with unread reactions.
-        struct TxContextUnreadReactions {
-            let localIdentifiers: LocalIdentifiers?
-            let localThread: TSContactThread?
-            var cursor: FailIfThrowsRecordCursor<InteractionRecord>
-            var receiptsForMessage: [LinkedDeviceReadReceipt]
+            return batch
         }
-        await TimeGatedBatch.processAll(
-            db: db,
-            buildTxContext: { tx -> TxContextUnreadReactions in
-                return TxContextUnreadReactions(
-                    localIdentifiers: tsAccountManager.localIdentifiers(tx: tx),
-                    localThread: TSContactThread.getOrCreateLocalThread(transaction: tx),
-                    cursor: interactionFinder.fetchMessagesWithUnreadReactions(
-                        beforeSortId: beforeSortId,
-                        tx: tx,
-                    ),
-                    receiptsForMessage: [],
-                )
-            },
-            processBatch: { tx, txContext -> TimeGatedBatch.ProcessBatchResult<Void> in
-                guard let nextInteractionRecord = txContext.cursor.next() else {
-                    return .done(())
-                }
+    }
+
+    /// Mark at most one batch of "unread reactions on outgoing messages" as
+    /// read, enqueuing sync messages for the resulting receipts.
+    private func markUnreadReactionsBatch(
+        beforeSortId: UInt64,
+        thread: TSThread,
+        readTimestamp: UInt64,
+        logger: PrefixedLogger,
+    ) async -> MarkAsReadBatch {
+        let db = DependenciesBridge.shared.db
+        let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
+        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+        return await db.awaitableWrite { tx -> MarkAsReadBatch in
+            var batch = MarkAsReadBatch()
+            let localAci = tsAccountManager.localIdentifiers(tx: tx)?.aci
+            var receiptsForMessage = [LinkedDeviceReadReceipt]()
+            var cursor = interactionFinder.fetchMessagesWithUnreadReactions(
+                beforeSortId: beforeSortId,
+                tx: tx,
+            )
+
+            while
+                batch.canReadMoreRecords,
+                let record = cursor.next()
+            {
+                batch.recordCount += 1
 
                 let nextInteraction: TSInteraction
                 do {
-                    nextInteraction = try TSInteraction.fromRecord(nextInteractionRecord)
+                    nextInteraction = try TSInteraction.fromRecord(record)
                 } catch {
                     owsFailDebug("Failed to instantiate TSInteraction with unread reactions! \(error)", logger: logger)
-                    return .more
+                    continue
                 }
 
                 guard let outgoingMessage = nextInteraction as? TSOutgoingMessage else {
                     owsFailDebug("TSInteraction with unread reactions was not TSOutgoingMessage?", logger: logger)
-                    return .more
+                    continue
                 }
 
                 outgoingMessage.markUnreadReactionsAsRead(transaction: tx)
+                batch.markedCount += 1
 
-                if let localAci = txContext.localIdentifiers?.aci {
-                    txContext.receiptsForMessage.append(LinkedDeviceReadReceipt(
+                if let localAci {
+                    receiptsForMessage.append(LinkedDeviceReadReceipt(
                         senderAci: localAci,
                         messageUniqueId: outgoingMessage.uniqueId,
                         messageIdTimestamp: outgoingMessage.timestamp,
                         readTimestamp: readTimestamp,
                     ))
                 }
+            }
 
-                return .more
-            },
-            concludeTx: { tx, txContext in
-                guard
-                    let localThread = txContext.localThread,
-                    !txContext.receiptsForMessage.isEmpty
-                else {
-                    return
-                }
-
-                let receiptChunks = txContext.receiptsForMessage.chunked(by: 500)
-
-                for receiptChunk in receiptChunks {
+            if
+                !receiptsForMessage.isEmpty,
+                let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx)
+            {
+                for receiptChunk in receiptsForMessage.chunked(by: 500) {
                     let syncMessage = OutgoingReadReceiptsSyncMessage(
                         localThread: localThread,
                         readReceipts: Array(receiptChunk),
@@ -759,8 +840,10 @@ public class OWSReceiptManager: NSObject {
                         transaction: tx,
                     )
                 }
-            },
-        )
+            }
+
+            return batch
+        }
     }
 
     private func markAsRead(

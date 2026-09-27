@@ -14,40 +14,47 @@ public protocol ThreadRemover {
     func remove(_ thread: TSThread, tx: DBWriteTransaction)
 }
 
+public protocol ThreadRemoverObserver {
+    func didRemoveThread(_ thread: TSThread, tx: DBWriteTransaction)
+}
+
 class ThreadRemoverImpl: ThreadRemover {
     private let chatColorSettingStore: ChatColorSettingStore
     private let databaseStorage: Shims.DatabaseStorage
     private let deletedCallRecordStore: any DeletedCallRecordStore
     private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
+    private let groupMemberUpdater: any GroupMemberUpdater
     private let lastVisibleInteractionStore: LastVisibleInteractionStore
-    private let threadAssociatedDataStore: ThreadAssociatedDataStore
     private let threadReadCache: Shims.ThreadReadCache
     private let threadReplyInfoStore: ThreadReplyInfoStore
     private let threadStore: ThreadStore
     private let wallpaperStore: WallpaperStore
+    private let observers: [any ThreadRemoverObserver]
 
     init(
         chatColorSettingStore: ChatColorSettingStore,
         databaseStorage: Shims.DatabaseStorage,
         deletedCallRecordStore: any DeletedCallRecordStore,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
+        groupMemberUpdater: any GroupMemberUpdater,
         lastVisibleInteractionStore: LastVisibleInteractionStore,
-        threadAssociatedDataStore: ThreadAssociatedDataStore,
         threadReadCache: Shims.ThreadReadCache,
         threadReplyInfoStore: ThreadReplyInfoStore,
         threadStore: ThreadStore,
         wallpaperStore: WallpaperStore,
+        observers: [any ThreadRemoverObserver],
     ) {
         self.chatColorSettingStore = chatColorSettingStore
         self.databaseStorage = databaseStorage
         self.deletedCallRecordStore = deletedCallRecordStore
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
+        self.groupMemberUpdater = groupMemberUpdater
         self.lastVisibleInteractionStore = lastVisibleInteractionStore
-        self.threadAssociatedDataStore = threadAssociatedDataStore
         self.threadReadCache = threadReadCache
         self.threadReplyInfoStore = threadReplyInfoStore
         self.threadStore = threadStore
         self.wallpaperStore = wallpaperStore
+        self.observers = observers
     }
 
     func remove(_ thread: TSThread, tx: DBWriteTransaction) {
@@ -56,12 +63,21 @@ class ThreadRemoverImpl: ThreadRemover {
         databaseStorage.updateIdMapping(thread: thread, tx: tx)
         deletedCallRecordStore.deleteRecords(forThreadId: threadId, tx: tx)
         disappearingMessagesConfigurationStore.remove(for: thread, tx: tx)
-        threadAssociatedDataStore.remove(for: thread.uniqueId, tx: tx)
         threadReplyInfoStore.remove(for: thread.uniqueId, tx: tx)
+        if thread is TSGroupThread {
+            groupMemberUpdater.updateRecords(
+                groupThreadUniqueId: thread.uniqueId,
+                groupMembership: .empty,
+                transaction: tx,
+            )
+        }
         threadStore.removeThread(thread, tx: tx)
         threadReadCache.didRemove(thread: thread, tx: tx)
         wallpaperStore.reset(for: thread, tx: tx)
         lastVisibleInteractionStore.clearLastVisibleInteraction(for: thread, tx: tx)
+        for observer in observers {
+            observer.didRemoveThread(thread, tx: tx)
+        }
     }
 }
 

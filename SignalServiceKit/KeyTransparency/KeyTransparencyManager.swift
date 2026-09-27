@@ -58,10 +58,6 @@ public final class KeyTransparencyManager {
     // MARK: Opt-out
 
     public func isEnabled(tx: DBReadTransaction) -> Bool {
-        guard BuildFlags.KeyTransparency.enabled else {
-            return false
-        }
-
         return keyTransparencyStore.isEnabled(tx: tx)
     }
 
@@ -163,7 +159,7 @@ public final class KeyTransparencyManager {
     /// Errors are retried internally. Throwing indicates a non-transient
     /// failure.
     public func performCheck(params: CheckParams) async throws {
-        try await taskQueue.run(forKey: params.aciInfo.aci) {
+        try await taskQueue.runWithThrowingTask(forKey: params.aciInfo.aci) {
             let logger = logger.suffixed(with: "[\(params.aciInfo.aci)]")
 
             do {
@@ -288,12 +284,9 @@ public final class KeyTransparencyManager {
     /// Perform a one-off self-check on demand, e.g. when triggered manually
     /// from Internal Settings rather than by the scheduled `Cron` job.
     public func performSelfCheckOnDemand() async throws {
-        guard let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
-            throw OWSAssertionError("Missing local identifiers!")
-        }
-
+        let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
         logger.info("Running KT self-check on-demand!")
-        try await prepareAndPerformSelfCheck(localIdentifiers: localIdentifiers)
+        try await prepareAndPerformSelfCheck(localIdentifiers: registeredState.localIdentifiers)
     }
 
     private enum PrepareSelfCheckResult {
@@ -447,7 +440,7 @@ public final class KeyTransparencyManager {
             // we're up to date before our next attempt.
             tx.addSyncCompletion { [self] in
                 storageServiceManager.restoreOrCreateManifestIfNecessary(
-                    authedDevice: .implicit,
+                    authedAccount: .implicit,
                     masterKeySource: .implicit,
                 )
             }
@@ -560,10 +553,6 @@ public struct KeyTransparencyStore {
     // MARK: - Opt-out
 
     fileprivate func isEnabled(tx: DBReadTransaction) -> Bool {
-        guard BuildFlags.KeyTransparency.enabled else {
-            return false
-        }
-
         return kvStore.fetchValue(Bool.self, forKey: KVStoreKeys.isEnabled, tx: tx) ?? true
     }
 
@@ -595,10 +584,6 @@ public struct KeyTransparencyStore {
     // MARK: - First-time education
 
     public func shouldShowFirstTimeEducation(tx: DBReadTransaction) -> Bool {
-        guard BuildFlags.KeyTransparency.enabled else {
-            return false
-        }
-
         return kvStore.fetchValue(Bool.self, forKey: KVStoreKeys.shouldShowFirstTimeEducation, tx: tx) ?? true
     }
 

@@ -230,7 +230,7 @@ class BackupSaveKeyViewController: OWSViewController, OWSNavigationChildControll
                     "BACKUP_RECORD_KEY_COPY_WARNING_SHEET_PRIMARY_BUTTON_TITLE",
                     comment: "Title for the primary button in a warning sheet shown before copying the user's 'Recovery Key' to the clipboard, which acknowledges the warning and proceeds with the copy.",
                 ),
-                action: { sheet in
+                action: { [self] sheet in
                     sheet.dismiss(animated: true) { [weak self] in
                         guard let self else { return }
                         copyToClipboard()

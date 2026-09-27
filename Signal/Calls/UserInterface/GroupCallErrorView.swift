@@ -16,8 +16,8 @@ class GroupCallErrorView: UIView {
     var iconImage: UIImage? {
         didSet {
             if let iconImage {
-                iconView.setTemplateImage(iconImage, tintColor: .ows_white)
-                miniBlockIndicator.setTemplateImage(iconImage, tintColor: .ows_white)
+                iconView.setTemplateImage(iconImage, tintColor: .white)
+                miniBlockIndicator.setTemplateImage(iconImage, tintColor: .white)
             } else {
                 iconView.image = nil
                 miniBlockIndicator.image = nil
@@ -43,7 +43,7 @@ class GroupCallErrorView: UIView {
         label.font = UIFont.dynamicTypeSubheadline
         label.adjustsFontForContentSizeCategory = true
         label.textAlignment = .center
-        label.textColor = .ows_white
+        label.textColor = .white
         label.numberOfLines = 0
         return label
     }()

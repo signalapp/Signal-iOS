@@ -29,8 +29,11 @@ public class ReturnToCallViewController: UIViewController {
         let fourByThree = CGSize(width: 272, height: 204)
         let threeByFour = CGSize(width: 204, height: 272)
 
-        if UIDevice.current.isIPad, UIDevice.current.isFullScreen {
-            if CurrentAppContext().frame.size.width > CurrentAppContext().frame.size.height {
+        guard let window = CurrentAppContext().mainWindow else { return nineBySixteen }
+
+        let isFullScreen = window.bounds.size == window.screen.bounds.size
+        if UIDevice.current.isIPad, isFullScreen {
+            if window.bounds.size.width > window.bounds.size.height {
                 return fourByThree
             } else {
                 return threeByFour

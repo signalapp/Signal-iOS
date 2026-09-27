@@ -127,6 +127,7 @@ public class RegistrationCoordinatorTest {
         }
 
         let localFileBackupManager = LocalFileBackupManager(
+            appReadiness: AppReadinessMock(),
             db: db,
             dateProvider: { Date() },
             attachmentStore: AttachmentStore(),
@@ -134,6 +135,7 @@ public class RegistrationCoordinatorTest {
             orphanedAttachmentCleaner: OrphanedAttachmentCleanerImpl(dateProvider: { Date() }, db: db),
             localFileBackupStore: LocalFileBackupStore(),
             securityScopedBookmarkAccess: SecurityScopedBookmarkAccessMock(hasAccess: true, url: nil),
+            restoreProgress: LocalFileBackupAttachmentRestoreProgress(),
         )
 
         let dependencies = RegistrationCoordinatorDependencies(
@@ -187,7 +189,7 @@ public class RegistrationCoordinatorTest {
 
     static let testModes: [RegistrationMode] = [
         RegistrationMode.registering,
-        RegistrationMode.reRegistering(.init(e164: Stubs.e164, aci: Stubs.aci)),
+        RegistrationMode.reRegistering(RegistrationMode.ReregistrationParams(aci: Stubs.aci, e164: Stubs.e164)),
     ]
 
     struct TestCase {
@@ -195,7 +197,9 @@ public class RegistrationCoordinatorTest {
     }
 
     static func onlyReRegisteringTestCases() -> [TestCase] {
-        return buildTestCases(for: [RegistrationMode.reRegistering(.init(e164: Stubs.e164, aci: Stubs.aci))])
+        return buildTestCases(for: [
+            RegistrationMode.reRegistering(RegistrationMode.ReregistrationParams(aci: Stubs.aci, e164: Stubs.e164)),
+        ])
     }
 
     static func testCases() -> [TestCase] {
@@ -340,9 +344,13 @@ public class RegistrationCoordinatorTest {
         // It needs an apns token to register.
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
         // It needs prekeys as well.
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
         // And will finalize prekeys after success.
-        preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
+            #expect(didSucceed)
+        }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
             #expect(didSucceed)
         }
 
@@ -371,13 +379,12 @@ public class RegistrationCoordinatorTest {
         ))
 
         func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(
+            return .explicit(AuthedAccount.Explicit(
                 aci: identityResponse.aci,
-                pni: identityResponse.pni,
-                e164: Stubs.e164,
+                phoneNumber: LocalIdentifiers.PhoneNumber(e164: Stubs.e164, pni: identityResponse.pni),
                 deviceId: .primary,
                 authPassword: authPassword,
-            )
+            ))
         }
 
         // When registered, we should create pre-keys.
@@ -397,7 +404,7 @@ public class RegistrationCoordinatorTest {
 
         // Once we sync push tokens, we should restore from storage service.
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.authedAccount == expectedAuthedAccount())
+            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(initialMasterKey.rawData == explicitMasterKey.rawData)
@@ -479,9 +486,13 @@ public class RegistrationCoordinatorTest {
         // It needs an apns token to register.
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
         // Every time we register we also ask for prekeys.
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
         // And we finalize them after.
-        preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
+            #expect(didSucceed)
+        }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
             #expect(didSucceed)
         }
 
@@ -503,13 +514,12 @@ public class RegistrationCoordinatorTest {
         ))
 
         func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(
+            return .explicit(AuthedAccount.Explicit(
                 aci: identityResponse.aci,
-                pni: identityResponse.pni,
-                e164: Stubs.e164,
+                phoneNumber: LocalIdentifiers.PhoneNumber(e164: Stubs.e164, pni: identityResponse.pni),
                 deviceId: .primary,
                 authPassword: authPassword,
-            )
+            ))
         }
 
         // When registered, we should create pre-keys.
@@ -526,7 +536,7 @@ public class RegistrationCoordinatorTest {
 
         // Once we sync push tokens, we should restore from storage service.
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.authedAccount == expectedAuthedAccount())
+            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(initialMasterKey.rawData == explicitMasterKey.rawData)
@@ -606,15 +616,23 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
         // Every time we register we also ask for prekeys.
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
 
         // And we finalize them after.
         // Set up a list of mocks that should be returned in order
-        preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
             #expect(!didSucceed)
         }
-        preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
+            #expect(!didSucceed)
+        }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
+            #expect(didSucceed)
+        }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
             #expect(didSucceed)
         }
 
@@ -709,14 +727,23 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
 
-        preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
             #expect(!didSucceed)
         }
-        preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
+            #expect(!didSucceed)
+        }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
+            #expect(!didSucceed)
+        }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
             #expect(!didSucceed)
         }
 
@@ -804,14 +831,22 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
         // Every time we register we also ask for prekeys.
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
 
         // And we finalize them after.
-        preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
             #expect(!didSucceed)
         }
-        preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
+            #expect(!didSucceed)
+        }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
+            #expect(didSucceed)
+        }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
             #expect(didSucceed)
         }
 
@@ -850,13 +885,12 @@ public class RegistrationCoordinatorTest {
         )
 
         func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(
+            return .explicit(AuthedAccount.Explicit(
                 aci: identityResponse.aci,
-                pni: identityResponse.pni,
-                e164: Stubs.e164,
+                phoneNumber: LocalIdentifiers.PhoneNumber(e164: Stubs.e164, pni: identityResponse.pni),
                 deviceId: .primary,
                 authPassword: authPassword,
-            )
+            ))
         }
 
         // When registered, it should try and sync pre-keys.
@@ -872,7 +906,7 @@ public class RegistrationCoordinatorTest {
 
         // Once we back up to svr, we should restore from storage service.
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.authedAccount == expectedAuthedAccount())
+            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(initialMasterKey.rawData == explicitMasterKey.rawData)
@@ -883,7 +917,7 @@ public class RegistrationCoordinatorTest {
         })
 
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.authedAccount == expectedAuthedAccount())
+            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(finalMasterKey.rawData == explicitMasterKey.rawData)
@@ -930,11 +964,15 @@ public class RegistrationCoordinatorTest {
         let expectedSteps: [TestStep] = [
             .requestPushToken,
             .createPreKeys,
+            .createPreKeys,
             .failedRequest,
+            .finalizePreKeys,
             .finalizePreKeys,
             .requestPushToken,
             .createPreKeys,
+            .createPreKeys,
             .createAccount,
+            .finalizePreKeys,
             .finalizePreKeys,
             .rotateOneTimePreKeys,
             .markPinEnabled,
@@ -993,11 +1031,15 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
 
-        preKeyManagerMock.addFinalizePreKeyMock({ _ in })
-        preKeyManagerMock.addFinalizePreKeyMock({ _ in })
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, _ in }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, _ in }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, _ in }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, _ in }
 
         // Fail the first request;
         let expectedRecoveryPwRequest = createAccountWithRecoveryPw(aep.getMasterKey().deriveRegistrationRecoveryPassword())
@@ -1122,7 +1164,10 @@ public class RegistrationCoordinatorTest {
         // a previously registered device, and we can skip intros.
         svr.restoreKeysMock = { pin, authMethod in
             #expect(pin == Stubs.pinCode)
-            #expect(authMethod == .svrAuth(Stubs.svr2AuthCredential, backup: nil))
+            if case .svrAuth(Stubs.svr2AuthCredential, backup: nil) = authMethod {
+            } else {
+                Issue.record("wrong authMethod: \(authMethod)")
+            }
             return .value(.success(remoteMasterKey))
         }
 
@@ -1138,13 +1183,21 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
 
-        preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
             #expect(!didSucceed)
         }
-        preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
+            #expect(!didSucceed)
+        }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
+            #expect(didSucceed)
+        }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
             #expect(didSucceed)
         }
 
@@ -1177,13 +1230,12 @@ public class RegistrationCoordinatorTest {
         ))
 
         func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(
+            return .explicit(AuthedAccount.Explicit(
                 aci: accountIdentityResponse.aci,
-                pni: accountIdentityResponse.pni,
-                e164: Stubs.e164,
+                phoneNumber: LocalIdentifiers.PhoneNumber(e164: Stubs.e164, pni: accountIdentityResponse.pni),
                 deviceId: .primary,
                 authPassword: authPassword,
-            )
+            ))
         }
 
         // When registered, we should create pre-keys.
@@ -1203,7 +1255,7 @@ public class RegistrationCoordinatorTest {
 
         // Once we sync push tokens, we should restore from storage service.
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.authedAccount == expectedAuthedAccount())
+            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(remoteMasterKey.rawData == explicitMasterKey.rawData)
@@ -1316,7 +1368,10 @@ public class RegistrationCoordinatorTest {
 
         svr.restoreKeysMock = { pin, authMethod in
             #expect(pin == Stubs.pinCode)
-            #expect(authMethod == .svrAuth(Stubs.svr2AuthCredential, backup: nil))
+            if case .svrAuth(Stubs.svr2AuthCredential, backup: nil) = authMethod {
+            } else {
+                Issue.record("wrong authMethod: \(authMethod)")
+            }
             return .value(.success(remoteMasterKey))
         }
 
@@ -1330,13 +1385,19 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
 
-        preKeyManagerMock.addFinalizePreKeyMock({ _ in })
-        preKeyManagerMock.addFinalizePreKeyMock({ _ in })
-        preKeyManagerMock.addFinalizePreKeyMock({ _ in })
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, _ in }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, _ in }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, _ in }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, _ in }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, _ in }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, _ in }
 
         // Fail the first request; the local key is invalid.
         let expectedRecoveryPwRequest = createAccountWithRecoveryPw(masterKey.deriveRegistrationRecoveryPassword())
@@ -1454,7 +1515,10 @@ public class RegistrationCoordinatorTest {
         svr.restoreKeysMock = { pin, authMethod in
             self.testRun.addObservedStep(.restoreKeys)
             #expect(pin == Stubs.pinCode)
-            #expect(authMethod == .svrAuth(Stubs.svr2AuthCredential, backup: nil))
+            if case .svrAuth(Stubs.svr2AuthCredential, backup: nil) = authMethod {
+            } else {
+                Issue.record("wrong authMethod: \(authMethod)")
+            }
             return .value(.success(initialMasterKey))
         }
 
@@ -1462,10 +1526,14 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
         // Every time we register we also ask for prekeys.
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
 
         // And we finalize them after.
-        preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
+            #expect(didSucceed)
+        }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
             #expect(didSucceed)
         }
 
@@ -1486,13 +1554,12 @@ public class RegistrationCoordinatorTest {
         )
 
         func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(
+            return .explicit(AuthedAccount.Explicit(
                 aci: accountIdentityResponse.aci,
-                pni: accountIdentityResponse.pni,
-                e164: Stubs.e164,
+                phoneNumber: LocalIdentifiers.PhoneNumber(e164: Stubs.e164, pni: accountIdentityResponse.pni),
                 deviceId: .primary,
                 authPassword: authPassword,
-            )
+            ))
         }
 
         // When registered, it should try and create pre-keys.
@@ -1508,7 +1575,7 @@ public class RegistrationCoordinatorTest {
 
         // Once we back up to svr, we should restore from storage service.
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.authedAccount == expectedAuthedAccount())
+            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(initialMasterKey.rawData == explicitMasterKey.rawData)
@@ -1563,7 +1630,9 @@ public class RegistrationCoordinatorTest {
             .restoreKeys,
             .requestPushToken,
             .createPreKeys,
+            .createPreKeys,
             .createAccount,
+            .finalizePreKeys,
             .finalizePreKeys,
             .rotateOneTimePreKeys,
             .restoreStorageService,
@@ -1738,7 +1807,8 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
         // It should also fetch the prekeys for account creation
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
 
         let expectedRequest = createAccountWithSession(recoveryPassword: newMasterKey.deriveRegistrationRecoveryPassword())
         mockURLSession.addResponse(
@@ -1753,17 +1823,19 @@ public class RegistrationCoordinatorTest {
         )
 
         func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(
+            return .explicit(AuthedAccount.Explicit(
                 aci: accountIdentityResponse.aci,
-                pni: accountIdentityResponse.pni,
-                e164: Stubs.e164,
+                phoneNumber: LocalIdentifiers.PhoneNumber(e164: Stubs.e164, pni: accountIdentityResponse.pni),
                 deviceId: .primary,
                 authPassword: authPassword,
-            )
+            ))
         }
 
         // Once we are registered, we should finalize prekeys.
-        preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
+            #expect(didSucceed)
+        }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
             #expect(didSucceed)
         }
 
@@ -1782,7 +1854,7 @@ public class RegistrationCoordinatorTest {
 
         // Once we sync push tokens, we should restore from storage service.
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.authedAccount == expectedAuthedAccount())
+            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(newMasterKey.rawData == explicitMasterKey.rawData)
@@ -2756,7 +2828,8 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
         // It should also fetch the prekeys for account creation
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
 
         let expectedRequest = createAccountWithSession(recoveryPassword: newMasterKey.deriveRegistrationRecoveryPassword())
         mockURLSession.addResponse(
@@ -2775,17 +2848,19 @@ public class RegistrationCoordinatorTest {
         )
 
         func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(
+            return .explicit(AuthedAccount.Explicit(
                 aci: accountIdentityResponse.aci,
-                pni: accountIdentityResponse.pni,
-                e164: Stubs.e164,
+                phoneNumber: LocalIdentifiers.PhoneNumber(e164: Stubs.e164, pni: accountIdentityResponse.pni),
                 deviceId: .primary,
                 authPassword: authPassword,
-            )
+            ))
         }
 
         // Once we are registered, we should finalize prekeys.
-        preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
+            #expect(didSucceed)
+        }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
             #expect(didSucceed)
         }
 
@@ -2809,7 +2884,7 @@ public class RegistrationCoordinatorTest {
 
         // Once we sync push tokens, we should restore from storage service.
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.authedAccount == expectedAuthedAccount())
+            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(newMasterKey.rawData == explicitMasterKey.rawData)
@@ -2877,7 +2952,8 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
         // It should also fetch the prekeys for account creation
-        preKeyManagerMock.addCreatePreKeysMock({ Stubs.prekeyBundles() })
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
+        preKeyManagerMock.addCreatePreKeysMock(Stubs.preKeyBundle(identity:))
 
         let expectedRequest = createAccountWithSession(recoveryPassword: newMasterKey.deriveRegistrationRecoveryPassword())
         mockURLSession.addResponse(
@@ -2892,17 +2968,19 @@ public class RegistrationCoordinatorTest {
         )
 
         func expectedAuthedAccount() -> AuthedAccount {
-            return .explicit(
+            return .explicit(AuthedAccount.Explicit(
                 aci: accountIdentityResponse.aci,
-                pni: accountIdentityResponse.pni,
-                e164: Stubs.e164,
+                phoneNumber: LocalIdentifiers.PhoneNumber(e164: Stubs.e164, pni: accountIdentityResponse.pni),
                 deviceId: .primary,
                 authPassword: authPassword,
-            )
+            ))
         }
 
         // Once we are registered, we should finalize prekeys.
-        preKeyManagerMock.addFinalizePreKeyMock { didSucceed in
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
+            #expect(didSucceed)
+        }
+        preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
             #expect(didSucceed)
         }
 
@@ -2918,7 +2996,7 @@ public class RegistrationCoordinatorTest {
         }
 
         storageServiceManagerMock.addRestoreOrCreateManifestIfNecessaryMock({ auth, masterKeySource in
-            #expect(auth.authedAccount == expectedAuthedAccount())
+            #expect(auth.chatServiceAuth == expectedAuthedAccount().chatServiceAuth)
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
                 #expect(newMasterKey.rawData == explicitMasterKey.rawData)
@@ -3020,13 +3098,13 @@ public class RegistrationCoordinatorTest {
         recoveryPassword: RegistrationRecoveryPassword,
     ) -> TSRequest {
         return RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .sessionId(Stubs.sessionId),
-            e164: Stubs.e164,
+            verificationMethod: .sessionId(Stubs.e164, Stubs.sessionId),
             authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(registrationRecoveryPassword: recoveryPassword),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
-            prekeyBundles: Stubs.prekeyBundles(),
+            aciPreKeyBundle: Stubs.preKeyBundle(identity: .aci),
+            pniPreKeyBundle: Stubs.preKeyBundle(identity: .pni),
             logger: .empty(),
         )
     }
@@ -3035,13 +3113,13 @@ public class RegistrationCoordinatorTest {
         _ recoveryPassword: RegistrationRecoveryPassword,
     ) -> TSRequest {
         return RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .recoveryPassword(recoveryPassword),
-            e164: Stubs.e164,
+            verificationMethod: .recoveryPassword(.phoneNumber(Stubs.e164), recoveryPassword),
             authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(registrationRecoveryPassword: recoveryPassword),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
-            prekeyBundles: Stubs.prekeyBundles(),
+            aciPreKeyBundle: Stubs.preKeyBundle(identity: .aci),
+            pniPreKeyBundle: Stubs.preKeyBundle(identity: .pni),
             logger: .empty(),
         )
     }
@@ -3272,20 +3350,13 @@ public class RegistrationCoordinatorTest {
             )
         }
 
-        static func prekeyBundles() -> RegistrationPreKeyUploadBundles {
-            return RegistrationPreKeyUploadBundles(
-                aci: preKeyBundle(identity: .aci),
-                pni: preKeyBundle(identity: .pni),
-            )
-        }
-
         static func preKeyBundle(identity: OWSIdentity) -> RegistrationPreKeyUploadBundle {
-            let identityKeyPair = ECKeyPair.generateKeyPair()
+            let identityKeyPair = IdentityKeyPair.generate()
             return RegistrationPreKeyUploadBundle(
                 identity: identity,
                 identityKeyPair: identityKeyPair,
-                signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: identityKeyPair.keyPair.privateKey),
-                lastResortPreKey: KyberPreKeyStoreImpl.generatePreKeyRecord(keyId: 0, now: Date(), signedBy: identityKeyPair.keyPair.privateKey),
+                signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: identityKeyPair.privateKey),
+                lastResortPreKey: KyberPreKeyStoreImpl.generatePreKeyRecord(keyId: 0, now: Date(), signedBy: identityKeyPair.privateKey),
             )
         }
 
@@ -3375,7 +3446,7 @@ public class RegistrationCoordinatorTest {
                     canExitRegistration: true,
                 )))
             case .reRegistering(let params):
-                return .registration(.reregistration(.init(
+                return .registration(.reregistration(RegistrationPhoneNumberViewState.Reregistration(
                     e164: params.e164,
                     validationError: validationError,
                     canExitRegistration: true,

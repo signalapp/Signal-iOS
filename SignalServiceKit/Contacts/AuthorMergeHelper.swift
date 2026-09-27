@@ -47,14 +47,14 @@ import GRDB
 public struct AuthorMergeHelper {
     private let metadataStore: KeyValueStore
     public let nextRowIdStore: KeyValueStore
-    private let phoneNumberMissingAciStore: KeyValueStore
-    private let phoneNumberJustLearnedAciStore: KeyValueStore
+    private let phoneNumberMissingAciStore: NewKeyValueStore
+    private let phoneNumberJustLearnedAciStore: NewKeyValueStore
 
     public init() {
         self.metadataStore = KeyValueStore(collection: "AuthorMergeMetadata")
         self.nextRowIdStore = KeyValueStore(collection: "AuthorMergeNextRowId")
-        self.phoneNumberMissingAciStore = KeyValueStore(collection: "AuthorMergeMissingAci")
-        self.phoneNumberJustLearnedAciStore = KeyValueStore(collection: "AuthorMergeJustLearnedAci")
+        self.phoneNumberMissingAciStore = NewKeyValueStore(collection: "AuthorMergeMissingAci")
+        self.phoneNumberJustLearnedAciStore = NewKeyValueStore(collection: "AuthorMergeJustLearnedAci")
     }
 
     /// If true, then we need to run a slow migration for `phoneNumber`.
@@ -69,7 +69,7 @@ public struct AuthorMergeHelper {
             // values, we can still trust the existing values since they're a superset.
             return true
         }
-        return phoneNumberMissingAciStore.hasValue(phoneNumber, transaction: tx)
+        return phoneNumberMissingAciStore.fetchValue(Data.self, forKey: phoneNumber, tx: tx) != nil
     }
 
     /// We just performed a blocking migration for `phoneNumber`.
@@ -77,8 +77,8 @@ public struct AuthorMergeHelper {
     /// This blocking migration will remove all references to `phoneNumber`, so
     /// we don't need to do a slow migration in the future for `phoneNumber`.
     func didCleanUp(phoneNumber: String, tx: DBWriteTransaction) {
-        phoneNumberJustLearnedAciStore.removeValue(forKey: phoneNumber, transaction: tx)
-        phoneNumberMissingAciStore.removeValue(forKey: phoneNumber, transaction: tx)
+        phoneNumberJustLearnedAciStore.removeValue(forKey: phoneNumber, tx: tx)
+        phoneNumberMissingAciStore.removeValue(forKey: phoneNumber, tx: tx)
     }
 
     /// We learned a `phoneNumber` for an ACI; start a background migration.
@@ -87,10 +87,10 @@ public struct AuthorMergeHelper {
         // we're still building the first version of the helper and haven't yet
         // encountered this phone number, then the code here is still correct --
         // we'll simply never add it since we learn it just in time.
-        guard phoneNumberMissingAciStore.hasValue(phoneNumber, transaction: tx) else {
+        guard phoneNumberMissingAciStore.fetchValue(Data.self, forKey: phoneNumber, tx: tx) != nil else {
             return
         }
-        phoneNumberJustLearnedAciStore.setData(Data(), key: phoneNumber, transaction: tx)
+        phoneNumberJustLearnedAciStore.writeValue(Data(), forKey: phoneNumber, tx: tx)
         // We increment the next version, thereby invalidating the current version
         // (if it matches) and any in-progress operation (which must be restarted).
         metadataStore.setInt(nextVersion(tx: tx) + 1, key: Constants.nextVersionKey, transaction: tx)
@@ -101,7 +101,7 @@ public struct AuthorMergeHelper {
 
     /// We found a `phoneNumber` without an ACI, so add it to the lookup table.
     public func foundMissingAci(for phoneNumber: String, tx: DBWriteTransaction) {
-        phoneNumberMissingAciStore.setData(Data(), key: phoneNumber, transaction: tx)
+        phoneNumberMissingAciStore.writeValue(Data(), forKey: phoneNumber, tx: tx)
     }
 
     private enum Constants {
@@ -130,7 +130,9 @@ public struct AuthorMergeHelper {
     public func setCurrentVersion(nextVersion: Int, tx: DBWriteTransaction) throws {
         try checkNextVersion(nextVersion, tx: tx)
         metadataStore.setInt(nextVersion, key: Constants.currentVersionKey, transaction: tx)
-        phoneNumberMissingAciStore.removeValues(forKeys: phoneNumberJustLearnedAciStore.allKeys(transaction: tx), transaction: tx)
+        for key in phoneNumberJustLearnedAciStore.fetchKeys(tx: tx) {
+            phoneNumberMissingAciStore.removeValue(forKey: key, tx: tx)
+        }
     }
 
     public func nextVersion(tx: DBReadTransaction) -> Int {

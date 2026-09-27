@@ -218,7 +218,7 @@ class RegistrationProfileViewController: OWSViewController {
             stackView.addSubview(strokeView)
             strokeView.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
-                strokeView.heightAnchor.constraint(equalToConstant: .hairlineWidth),
+                strokeView.heightAnchor.constraint(equalToConstant: hairlineWidth),
                 strokeView.bottomAnchor.constraint(equalTo: textField.bottomAnchor),
                 strokeView.leadingAnchor.constraint(equalTo: textField.leadingAnchor),
                 strokeView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor),
@@ -230,8 +230,8 @@ class RegistrationProfileViewController: OWSViewController {
             stackView.isLayoutMarginsRelativeArrangement = true
             stackView.cornerConfiguration = .uniformCorners(radius: 26)
         } else {
-            firstTextField.addBottomStroke(color: .Signal.opaqueSeparator, strokeWidth: .hairlineWidth)
-            secondTextField.addBottomStroke(color: .Signal.opaqueSeparator, strokeWidth: .hairlineWidth)
+            firstTextField.addBottomStroke(color: .Signal.opaqueSeparator, strokeWidth: hairlineWidth)
+            secondTextField.addBottomStroke(color: .Signal.opaqueSeparator, strokeWidth: hairlineWidth)
         }
         return stackView
     }()
@@ -260,15 +260,9 @@ class RegistrationProfileViewController: OWSViewController {
 
         view.backgroundColor = .Signal.background
 
-        navigationItem.rightBarButtonItem = {
-            let button = UIBarButtonItem(
-                title: CommonStrings.nextButton,
-                primaryAction: UIAction { [weak self] _ in self?.didTapNext() },
-            )
-            button.style = if #available(iOS 26, *) { .prominent } else { .done }
-            button.accessibilityIdentifier = "registration.profile.nextButton"
-            return button
-        }()
+        navigationItem.rightBarButtonItem = .nextButton { [weak self] in
+            self?.didTapNext()
+        }
 
         let avatarContainerView = UIView.container()
         avatarContainerView.addSubview(avatarView)
@@ -310,9 +304,10 @@ class RegistrationProfileViewController: OWSViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if !UIDevice.current.isIPhone5OrShorter {
-            // Small devices may obscure parts of the UI behind the keyboard, especially with larger
-            // font sizes.
+        // Small devices may obscure parts of the UI behind the keyboard, especially with larger font sizes.
+        // Check against iPhone SE 1st Gen's screen height as it is the smallest device that supports iOS 15.
+        let isTallEnoughScreen = if #available(iOS 16, *) { true } else { view.frame.height > 568 }
+        if isTallEnoughScreen {
             firstTextField.becomeFirstResponder()
         }
     }

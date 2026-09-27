@@ -12,48 +12,68 @@ class MPCDeviceTransferBrowser:
     DeviceTransfer.OutgoingConnection,
     MCNearbyServiceBrowserDelegate
 {
+    var selectedPeer: (any DeviceTransfer.Peer)? {
+        expectedConnectionData.peerId
+    }
+
     private struct ConnectionData {
-        let peerId: MPCDeviceTransferPeerId
+        let peerId: MPCDeviceTransferPeer
         let certificateHash: Data
     }
 
-    let identity: SecIdentity?
+    let identity: SecIdentity
     let browser: MCNearbyServiceBrowser
-    let peerId: MPCDeviceTransferPeerId
+    let peerId: MPCDeviceTransferPeer
 
     private let lock = UnfairLock()
     private var session: DeviceTransfer.Session?
     private var inviteContinuation: CheckedContinuation<DeviceTransfer.Session, Error>?
     private var browseTask: Task<DeviceTransfer.Session, Error>?
 
-    private var expectedConnectionData: ConnectionData?
-    let tsAccountManager: TSAccountManager
+    private let tsAccountManager: TSAccountManager
+    private let expectedConnectionData: ConnectionData
+
+    // This is here to satisfy the PeerDiscovery, but we don't currently notify when
+    // peers are discovered, since the peer selection is handled differently in MPC
+    let discoveredPeerStream: AsyncThrowingStream<[any DeviceTransfer.Peer], Error>
 
     @MainActor
-    init(tsAccountManager: TSAccountManager) {
+    init(
+        tsAccountManager: TSAccountManager,
+        deviceTransferURL: URL,
+    ) throws {
         self.tsAccountManager = tsAccountManager
-        self.peerId = MPCDeviceTransferPeerId(displayName: UUID().uuidString)
-        self.identity = try? SelfSignedIdentity.create(name: "OutgoingDeviceTransfer", validForDays: 1)
+        self.expectedConnectionData = try Self.parseTransferURL(
+            deviceTransferURL,
+            tsAccountManager: tsAccountManager,
+        )
+
+        self.peerId = MPCDeviceTransferPeer(displayName: UUID().uuidString)
+        self.identity = try SelfSignedIdentity.create(name: "OutgoingDeviceTransfer", validForDays: 1)
         browser = MCNearbyServiceBrowser(
             peer: peerId.mcPeerID,
             serviceType: DeviceTransfer.Constants.newDeviceServiceIdentifier,
         )
+        (self.discoveredPeerStream, _) = AsyncThrowingStream.makeStream()
         super.init()
         browser.delegate = self
     }
 
     @MainActor
     func connect(
-        deviceTransferUrl: URL,
+        peer: any DeviceTransfer.Peer,
     ) async throws -> DeviceTransfer.Session {
+        guard
+            let targetPeer = peer as? MPCDeviceTransferPeer,
+            targetPeer == expectedConnectionData.peerId
+        else {
+            throw OWSAssertionError("Misconfigured")
+        }
+
         if let session {
             return session
         }
-        self.expectedConnectionData = try parseTransferURL(
-            deviceTransferUrl,
-            tsAccountManager: tsAccountManager,
-        )
-        browser.startBrowsingForPeers()
+
         let task = lock.withLock {
             if let browseTask {
                 return browseTask
@@ -74,17 +94,18 @@ class MPCDeviceTransferBrowser:
     }
 
     @MainActor
-    func stop(error: Error?) {
+    func stop(error: Error?) async {
         browser.stopBrowsingForPeers()
+        let session = session
+        await session?.disconnect(error: error)
         lock.withLock {
-            session?.disconnect(error: error)
-            session = nil
+            self.session = nil
             inviteContinuation.take()?.resume(throwing: error ?? CancellationError())
         }
     }
 
     @MainActor
-    private func parseTransferURL(
+    private static func parseTransferURL(
         _ url: URL,
         tsAccountManager: TSAccountManager,
     ) throws -> ConnectionData {
@@ -126,7 +147,7 @@ class MPCDeviceTransferBrowser:
             let base64PeerId = queryItemsDictionary[DeviceTransfer.UrlConstants.peerIdKey],
             let uriDecodedPeerId = base64PeerId.removingPercentEncoding,
             let peerIdData = Data(base64Encoded: uriDecodedPeerId),
-            let peerId = MPCDeviceTransferPeerId(with: peerIdData)
+            let peerId = MPCDeviceTransferPeer(with: peerIdData)
         else {
             throw OWSAssertionError("failed to decode MCPeerId")
         }
@@ -136,20 +157,6 @@ class MPCDeviceTransferBrowser:
 
     @MainActor
     func invitePeer(peerID newDevicePeerID: MCPeerID) {
-        guard let identity else {
-            lock.withLock {
-                inviteContinuation.take()?.resume(
-                    throwing: OWSAssertionError("Could not create identity for browser"),
-                )
-            }
-            return
-        }
-
-        guard let expectedConnectionData else {
-            inviteContinuation.take()?.resume(throwing: OWSAssertionError("Missing connection data"))
-            return
-        }
-
         let session = MPCDeviceTransferSession(
             identity: identity,
             peerID: peerId.mcPeerID,
@@ -170,14 +177,15 @@ class MPCDeviceTransferBrowser:
     }
 
     @MainActor
-    private func connectionError(_ error: Error) {
+    private func connectionError(_ error: Error) async {
         Logger.warn("Connection error: \(error)")
+        let session = session
+        await session?.disconnect(error: error)
         lock.withLock {
             if let continuation = inviteContinuation.take() {
                 continuation.resume(throwing: error)
-            } else if let session {
-                session.disconnect(error: error)
             }
+            self.session = nil
         }
     }
 
@@ -188,6 +196,10 @@ class MPCDeviceTransferBrowser:
         foundPeer newDevicePeerID: MCPeerID,
         withDiscoveryInfo info: [String: String]?,
     ) {
+        guard newDevicePeerID == expectedConnectionData.peerId.mcPeerID else {
+            return
+        }
+
         Task { @MainActor in
             self.invitePeer(peerID: newDevicePeerID)
         }
@@ -195,16 +207,16 @@ class MPCDeviceTransferBrowser:
 
     func browser(
         _ browser: MCNearbyServiceBrowser,
-        didNotStartBrowsingForPeers error: Swift.Error,
+        didNotStartBrowsingForPeers error: Error,
     ) {
         Task { @MainActor in
-            self.connectionError(error)
+            await self.connectionError(error)
         }
     }
 
     func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerId: MCPeerID) {
         Task { @MainActor in
-            self.connectionError(CancellationError())
+            await self.connectionError(CancellationError())
         }
     }
 }

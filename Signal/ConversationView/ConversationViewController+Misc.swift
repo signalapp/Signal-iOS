@@ -35,7 +35,7 @@ extension ConversationViewController {
         //
         // Unblocking is a rare interaction, so it's okay to leave the keyboard
         // hidden.
-        dismissKeyBoard()
+        dismissKeyboard()
 
         BlockListUIUtils.showUnblockThreadActionSheet(
             thread,
@@ -241,7 +241,7 @@ extension ConversationViewController {
             ))
         }
 
-        dismissKeyBoard()
+        dismissKeyboard()
         navigationController?.setViewControllers(viewControllers, animated: true)
     }
 

@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 
 final class CallQualitySurveyRatingViewController: CallQualitySurveySheetViewController {
-    private let stackView = UIStackView()
+    override var stackViewInsets: UIEdgeInsets { .zero }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,13 +17,6 @@ final class CallQualitySurveyRatingViewController: CallQualitySurveySheetViewCon
             comment: "Title for the initial rating screen in the call quality survey",
         )
 
-        view.addSubview(stackView)
-        // Don't pin the bottom edge because we need to use this view to
-        // calculate the height to pass to the sheet presentation controller
-        // via customSheetHeight(context:)
-        stackView.autoPinEdges(toSuperviewEdgesExcludingEdge: .bottom)
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.axis = .vertical
         stackView.spacing = 32
 
         let headerLabel = UILabel()
@@ -113,10 +106,5 @@ final class CallQualitySurveyRatingViewController: CallQualitySurveySheetViewCon
         stackView.spacing = 12
         stackView.alignment = .center
         return stackView
-    }
-
-    @available(iOS 16.0, *)
-    override func customSheetHeight() -> CGFloat? {
-        stackView.bounds.height
     }
 }

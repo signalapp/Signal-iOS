@@ -50,3 +50,12 @@ final class BackupSubscriptionAlreadyRedeemedSheet: HeroSheetViewController {
         )
     }
 }
+
+#if DEBUG
+
+@available(iOS 17, *)
+#Preview {
+    BackupSubscriptionAlreadyRedeemedSheet()
+}
+
+#endif

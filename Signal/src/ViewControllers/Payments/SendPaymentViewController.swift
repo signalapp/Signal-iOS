@@ -826,25 +826,25 @@ class SendPaymentViewController: OWSViewController, SendPaymentMemoViewDelegate,
 
     // MARK: -
 
-    private static let keyValueStore = KeyValueStore(collection: "SendPaymentView")
+    private static let keyValueStore = NewKeyValueStore(collection: "SendPaymentView")
     private static let wasLastPaymentInFiatKey = "wasLastPaymentInFiat"
 
     private static var wasLastPaymentInFiat: Bool {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            Self.keyValueStore.getBool(
-                Self.wasLastPaymentInFiatKey,
-                defaultValue: false,
-                transaction: transaction,
-            )
+            Self.keyValueStore.fetchValue(
+                Bool.self,
+                forKey: Self.wasLastPaymentInFiatKey,
+                tx: transaction,
+            ) ?? false
         }
     }
 
     private func setWasLastPaymentInFiat(_ value: Bool) {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            Self.keyValueStore.setBool(
+            Self.keyValueStore.writeValue(
                 value,
-                key: Self.wasLastPaymentInFiatKey,
-                transaction: transaction,
+                forKey: Self.wasLastPaymentInFiatKey,
+                tx: transaction,
             )
         }
     }

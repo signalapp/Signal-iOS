@@ -67,8 +67,6 @@ NSUInteger const TSGroupModelSchemaVersion = 2;
         }
     }
 
-    OWSAssertDebug([GroupManager isValidGroupId:groupId groupsVersion:self.groupsVersion]);
-
     return self;
 }
 
@@ -125,8 +123,6 @@ NSUInteger const TSGroupModelSchemaVersion = 2;
                                          forKey:@"groupModelSchemaVersion"] unsignedIntegerValue];
     self->_groupName = [coder decodeObjectOfClass:[NSString class] forKey:@"groupName"];
     self->_legacyAvatarData = [coder decodeObjectOfClass:[NSData class] forKey:@"legacyAvatarData"];
-
-    OWSAssertDebug([GroupManager isValidGroupId:self.groupId groupsVersion:self.groupsVersion]);
 
     if (_groupModelSchemaVersion < 1) {
         NSArray<NSString *> *_Nullable memberE164s =

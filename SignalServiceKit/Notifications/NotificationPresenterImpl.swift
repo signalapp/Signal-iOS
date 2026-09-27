@@ -277,16 +277,17 @@ let kAudioNotificationsThrottleInterval: TimeInterval = 5
 public class NotificationPresenterImpl: NotificationPresenter {
     private let presenter = UserNotificationPresenter()
 
+    private var db: any DB { DependenciesBridge.shared.db }
     private var contactManager: any ContactManager { SSKEnvironment.shared.contactManagerRef }
     private var databaseStorage: SDSDatabaseStorage { SSKEnvironment.shared.databaseStorageRef }
     private var identityManager: any OWSIdentityManager { DependenciesBridge.shared.identityManager }
-    private var preferences: Preferences { SSKEnvironment.shared.preferencesRef }
+    private var notificationPreferencesManager: NotificationPreferencesManager { DependenciesBridge.shared.notificationPreferencesManager }
     private var tsAccountManager: any TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
     public init() {}
 
     func previewType(tx: DBReadTransaction) -> NotificationType {
-        return preferences.notificationPreviewType(tx: tx)
+        return notificationPreferencesManager.previewType(tx: tx)
     }
 
     private static func shouldShowActions(for previewType: NotificationType, tx: DBReadTransaction) -> Bool {
@@ -392,6 +393,15 @@ public class NotificationPresenterImpl: NotificationPresenter {
         tx: DBReadTransaction,
     ) {
         let thread = notificationInfo.thread
+
+        if
+            BuildFlags.improvedNotifications,
+            thread.isMuted,
+            !notificationPreferencesManager.notifyForCallsWhenMuted(thread: thread, tx: tx)
+        {
+            return
+        }
+
         let callPreview = fetchCallPreview(thread: .individualThread(thread), tx: tx)
 
         let timestampClassification = TimestampClassification(timestamp)
@@ -548,16 +558,12 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     // MARK: - Notify
 
-    public func isThreadMuted(_ thread: TSThread, transaction: DBReadTransaction) -> Bool {
-        ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction).isMuted
-    }
-
     public func canNotify(
         for incomingMessage: TSIncomingMessage,
         thread: TSThread,
         transaction: DBReadTransaction,
     ) -> Bool {
-        if isThreadMuted(thread, transaction: transaction) {
+        if thread.isMuted {
             guard thread.isGroupThread else { return false }
 
             guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction) else {
@@ -566,12 +572,28 @@ public class NotificationPresenterImpl: NotificationPresenter {
             }
 
             let mentionedAcis = MentionFinder.mentionedAcis(for: incomingMessage, tx: transaction)
+            let localUserIsMentioned = mentionedAcis.contains(localIdentifiers.aci)
             let localUserIsQuoted = incomingMessage.quotedMessage?.authorAddress.isEqualToAddress(localIdentifiers.aciAddress) ?? false
-            guard mentionedAcis.contains(localIdentifiers.aci) || localUserIsQuoted else {
-                return false
+
+            let notifyForMentions = if BuildFlags.improvedNotifications {
+                notificationPreferencesManager.notifyForMentionsWhenMuted(thread: thread, tx: transaction)
+            } else {
+                thread.shouldNotifyForMentionsWhenMutedLegacy
             }
 
-            return thread.shouldNotifyForMentionsWhenMuted
+            if localUserIsMentioned, notifyForMentions {
+                return true
+            }
+
+            if localUserIsQuoted {
+                if BuildFlags.improvedNotifications {
+                    return notificationPreferencesManager.notifyForRepliesWhenMuted(thread: thread, tx: transaction)
+                } else {
+                    return thread.shouldNotifyForMentionsWhenMutedLegacy
+                }
+            }
+
+            return false
         } else if incomingMessage.isGroupStoryReply {
             guard
                 let storyTimestamp = incomingMessage.storyTimestamp?.uint64Value,
@@ -653,7 +675,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             return
         }
 
-        guard !isThreadMuted(thread, transaction: transaction) else { return }
+        guard !thread.isMuted else { return }
 
         // Poll terminate notifications only get displayed if we can include the poll details.
         let previewType = self.previewType(tx: transaction)
@@ -716,7 +738,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             return
         }
 
-        guard !isThreadMuted(thread, transaction: transaction) else { return }
+        guard !thread.isMuted else { return }
 
         // Poll vote notifications only get displayed if we can include the poll details.
         let previewType = self.previewType(tx: transaction)
@@ -981,7 +1003,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             return
         }
 
-        guard !isThreadMuted(thread, transaction: transaction) else { return }
+        guard !thread.isMuted else { return }
 
         let rawMessageText = releaseNotesMessage.notificationPreviewText(transaction)
         let messageText = rawMessageText.filterStringForDisplay()
@@ -1038,12 +1060,14 @@ public class NotificationPresenterImpl: NotificationPresenter {
         thread: TSThread,
         transaction: DBWriteTransaction,
     ) {
+        guard notificationPreferencesManager.areReactionNotificationsEnabled(tx: transaction) else { return }
+
         guard let notifiableThread = NotifiableThread(thread) else {
             owsFailDebug("Can't notify for \(type(of: thread))")
             return
         }
 
-        guard !isThreadMuted(thread, transaction: transaction) else { return }
+        guard !thread.isMuted else { return }
 
         // Reaction notifications only get displayed if we can include the reaction
         // details, otherwise we don't disturb the user for a non-message
@@ -1453,7 +1477,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             return
         }
 
-        guard !isThreadMuted(thread, transaction: transaction) else { return }
+        guard !thread.isMuted else { return }
 
         let previewType = self.previewType(tx: transaction)
 
@@ -1630,7 +1654,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 userInfo: userInfo,
                 // Use a default sound so we don't read from
                 // the db (which doesn't work until we relaunch)
-                soundQuery: .constant(.standard(.note)),
+                soundQuery: .constant(NotificationPreferencesManager.Defaults.globalNotificationSound),
                 forceBeforeRegistered: true,
             )
             completion()
@@ -1812,7 +1836,10 @@ public class NotificationPresenterImpl: NotificationPresenter {
     }
 
     private func requestGlobalSound(isMainAppAndActive: Bool) -> Sound? {
-        return checkIfShouldPlaySound(isMainAppAndActive: isMainAppAndActive) ? Sounds.globalNotificationSound : nil
+        guard checkIfShouldPlaySound(isMainAppAndActive: isMainAppAndActive) else { return nil }
+        return db.read { tx in
+            notificationPreferencesManager.globalNotificationSound(tx: tx)
+        }
     }
 
     private func checkIfShouldPlaySound(isMainAppAndActive: Bool) -> Bool {
@@ -1820,7 +1847,10 @@ public class NotificationPresenterImpl: NotificationPresenter {
             return true
         }
 
-        guard preferences.soundInForeground else {
+        let playSoundInForeground = db.read { tx in
+            notificationPreferencesManager.playSoundInForeground(tx: tx)
+        }
+        guard playSoundInForeground else {
             return false
         }
 

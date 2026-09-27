@@ -125,7 +125,8 @@ public extension UIImage {
         newSize.height += spacing + titleSize.height
         newSize.width = max(titleSize.width, size.width)
 
-        UIGraphicsBeginImageContextWithOptions(newSize, false, max(scale, UIScreen.main.scale))
+        let displayScale = UITraitCollection.current.displayScale
+        UIGraphicsBeginImageContextWithOptions(newSize, false, max(scale, displayScale))
 
         // Draw the image into the new image
         draw(in: CGRect(origin: CGPoint(x: additionalWidth / 2, y: 0), size: size))
@@ -173,7 +174,7 @@ public extension UIImage {
 public extension UIView {
 
     func renderAsImage() -> UIImage {
-        renderAsImage(opaque: false, scale: UIScreen.main.scale)
+        renderAsImage(opaque: false, scale: traitCollection.displayScale)
     }
 
     func renderAsImage(opaque: Bool, scale: CGFloat) -> UIImage {

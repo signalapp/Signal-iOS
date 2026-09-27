@@ -146,14 +146,12 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
     }
 
-    public var hasValidPhoneNumberForPayments: Bool { SSKEnvironment.shared.paymentsHelperRef.hasValidPhoneNumberForPayments }
-
-    public var isKillSwitchActive: Bool { SSKEnvironment.shared.paymentsHelperRef.isKillSwitchActive }
-
-    public var canEnablePayments: Bool { SSKEnvironment.shared.paymentsHelperRef.canEnablePayments }
+    public func canUsePayments() -> Bool {
+        return SSKEnvironment.shared.paymentsHelperRef.canUsePayments()
+    }
 
     public var shouldShowPaymentsUI: Bool {
-        arePaymentsEnabled || canEnablePayments
+        arePaymentsEnabled || canUsePayments()
     }
 
     // MARK: - PaymentsState
@@ -247,10 +245,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         NotificationCenter.default.postOnMainThread(name: Self.currentPaymentBalanceDidChange, object: nil)
     }
 
-    private var canUsePayments: Bool {
-        arePaymentsEnabled && !CurrentAppContext().isNSE
-    }
-
     // We need to update our balance:
     //
     // * On launch.
@@ -258,11 +252,9 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     // * After making or receiving payments.
     // * When user navigates into a view that displays the balance.
     public func updateCurrentPaymentBalance() {
-        guard canUsePayments else {
-            return
-        }
         guard
             appReadiness.isAppReady,
+            arePaymentsEnabled,
             CurrentAppContext().isMainAppAndActive,
             DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
         else {
@@ -362,7 +354,7 @@ public extension PaymentsImpl {
         receipt: MobileCoin.Receipt,
         isOutgoingTransfer: Bool,
     ) async throws -> TSPaymentModel {
-        guard !isKillSwitchActive else {
+        guard canUsePayments() else {
             throw PaymentsError.killSwitch
         }
         let recipientPublicAddressData = recipientPublicAddress.serializedData
@@ -531,7 +523,7 @@ public extension PaymentsImpl {
         isOutgoingTransfer: Bool,
         canDefragment: Bool,
     ) async throws -> PreparedPayment {
-        guard !isKillSwitchActive else {
+        guard canUsePayments() else {
             throw PaymentsError.killSwitch
         }
         guard let recipient = recipient as? SendPaymentRecipientImpl else {
@@ -541,7 +533,7 @@ public extension PaymentsImpl {
         switch recipient {
         case .address(let recipientAddress):
             // Cannot send "user-to-user" payment if kill switch is active.
-            guard !SUIEnvironment.shared.paymentsRef.isKillSwitchActive else {
+            guard canUsePayments() else {
                 throw PaymentsError.killSwitch
             }
 
@@ -578,13 +570,15 @@ public extension PaymentsImpl {
         isOutgoingTransfer: Bool,
         canDefragment: Bool,
     ) async throws -> PreparedPayment {
-        guard !isKillSwitchActive else {
+        guard canUsePayments() else {
             throw PaymentsError.killSwitch
         }
         guard paymentAmount.currency == .mobileCoin else {
             throw OWSAssertionError("Invalid currency.")
         }
-        guard recipientAci != DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+        guard recipientAci != registeredState.localIdentifiers.aci else {
             throw OWSAssertionError("Can't make payment to yourself.")
         }
 
@@ -690,7 +684,7 @@ public extension PaymentsImpl {
     }
 
     func initiateOutgoingPayment(preparedPayment: PreparedPayment) async throws -> TSPaymentModel {
-        guard !isKillSwitchActive else {
+        guard canUsePayments() else {
             throw PaymentsError.killSwitch
         }
         guard let preparedPayment = preparedPayment as? PreparedPaymentImpl else {

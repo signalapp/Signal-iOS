@@ -19,7 +19,6 @@ extension DonationViewsUtil {
         donationSubscriptionManager: DonationSubscriptionManager,
         idealStore: PendingIDEALDonationStore,
         profileBadgeManager: ProfileBadgeManager,
-        appReadiness: AppReadinessSetter,
     ) async throws {
         let idealStore = DependenciesBridge.shared.pendingIDEALDonationStore
         let (success, intent, localIntent) = databaseStorage.read { tx in
@@ -42,7 +41,7 @@ extension DonationViewsUtil {
         }
 
         // Build up the Donation UI
-        let appSettings = AppSettingsViewController.inModalNavigationController(appReadiness: appReadiness)
+        let appSettings = AppSettingsViewController.inModalNavigationController()
         let donationsVC = DonationSettingsViewController()
         donationsVC.showExpirationSheet = false
         appSettings.viewControllers += [donationsVC]
@@ -224,10 +223,7 @@ extension DonationViewsUtil {
         }))
         actionSheet.addAction(
             .init(
-                title: OWSLocalizedString(
-                    "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE",
-                    comment: "Title for a button asking the user to try their donation again, because something went wrong.",
-                ),
+                title: CommonStrings.tryAgainButton,
                 style: .default,
                 handler: { _ in
                     clearPendingDonation()

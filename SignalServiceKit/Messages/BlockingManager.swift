@@ -7,16 +7,26 @@ import Foundation
 public import LibSignalClient
 
 public enum BlockMode {
-    case remote
-    case restoreFromBackup
-    case local
+    case localUser
+    case storageService
+    case syncMessage
+    case backupRestore
 
     var isLocallyInitiated: Bool {
         switch self {
-        case .remote, .restoreFromBackup:
+        case .syncMessage, .storageService, .backupRestore:
             return false
-        case .local:
+        case .localUser:
             return true
+        }
+    }
+
+    var asUserProfileWriter: UserProfileWriter {
+        switch self {
+        case .localUser: return .localUser
+        case .storageService: return .storageService
+        case .syncMessage: return .syncMessage
+        case .backupRestore: return .backupRestore
         }
     }
 }
@@ -131,19 +141,21 @@ public class BlockingManager {
         blockMode: BlockMode,
         transaction tx: DBWriteTransaction,
     ) {
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+
         guard !address.isLocalAddress else {
-            owsFailDebug("Cannot block the local address")
+            owsFailDebug("can't block local address")
             return
         }
 
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-        let recipient: SignalRecipient
+        var recipient: SignalRecipient
         if let serviceId = address.serviceId {
             recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
         } else if let phoneNumber = E164(address.phoneNumber) {
             recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx)
         } else {
-            owsFailDebug("Invalid address: \(address).")
+            owsFailDebug("can't block invalid address: \(address)")
             return
         }
 
@@ -151,7 +163,15 @@ public class BlockingManager {
         guard !isBlocked else {
             return
         }
+        let wasRemoved = profileManager.removeRecipientFromProfileWhitelist(
+            &recipient,
+            userProfileWriter: blockMode.asUserProfileWriter,
+            tx: tx,
+        )
         blockedRecipientStore.setBlocked(true, recipientId: recipient.id, tx: tx)
+        if wasRemoved {
+            profileManager.setNeedsProfileKeyRotation(tx: tx)
+        }
 
         Logger.info("Added blocked address: \(address)")
 
@@ -172,11 +192,11 @@ public class BlockingManager {
         )
 
         switch blockMode {
-        case .restoreFromBackup:
+        case .backupRestore:
             // If we're restoring from a Backup, avoid the side effect of
             // inserting a message. One either existed in the backup or not.
             break
-        case .remote, .local:
+        case .storageService, .syncMessage, .localUser:
             // Insert an info message that we blocked this user.
             let threadStore = DependenciesBridge.shared.threadStore
             let interactionStore = DependenciesBridge.shared.interactionStore
@@ -234,9 +254,10 @@ public class BlockingManager {
 
     public func addBlockedGroupId(_ groupId: Data, blockMode: BlockMode, transaction: DBWriteTransaction) {
         let interactionStore = DependenciesBridge.shared.interactionStore
+        let profileManager = SSKEnvironment.shared.profileManagerRef
         let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
 
-        guard GroupManager.isValidGroupIdOfAnyKind(groupId) else {
+        guard (try? AnyGroupIdentifier.parseFrom(groupId)) != nil else {
             owsFailDebug("Can't block invalid groupId: \(groupId.toHex())")
             return
         }
@@ -245,7 +266,15 @@ public class BlockingManager {
         guard !isBlocked else {
             return
         }
+        let didRemove = profileManager.removeGroupId(
+            fromProfileWhitelist: groupId,
+            userProfileWriter: blockMode.asUserProfileWriter,
+            transaction: transaction,
+        )
         blockedGroupStore.setBlocked(true, groupId: groupId, tx: transaction)
+        if didRemove {
+            profileManager.setNeedsProfileKeyRotation(tx: transaction)
+        }
 
         Logger.info("Added blocked groupId: \(groupId.toHex())")
 
@@ -258,11 +287,11 @@ public class BlockingManager {
         }
 
         switch blockMode {
-        case .restoreFromBackup:
+        case .backupRestore:
             // If we're restoring from a Backup, avoid the side effect of
             // inserting a message. One either existed in the backup or not.
             break
-        case .remote, .local:
+        case .storageService, .syncMessage, .localUser:
             let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction)
             owsAssertDebug(groupThread != nil, "Must have TSGroupThread in order to insert an event.")
             if let groupThread {
@@ -286,24 +315,23 @@ public class BlockingManager {
 
         Logger.info("Removed blocked groupId: \(groupId.toHex())")
 
-        let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction)
-
         if wasLocallyInitiated {
             let masterKey = { () -> GroupMasterKey? in
-                if let groupThread {
-                    return try? (groupThread.groupModel as? TSGroupModelV2)?.masterKey()
+                guard let groupId = try? GroupIdentifier(contents: groupId) else {
+                    // Not a V2 group.
+                    return nil
                 }
-                if GroupManager.isV2GroupId(groupId) {
-                    // TODO: Check groups we're still trying to restore from Storage Service.
-                }
-                return nil
+                let groupRecord = GroupStore().fetchGroup(forGroupId: groupId, tx: transaction)
+                let masterKey = groupRecord?.masterKey
+                owsAssertDebug(masterKey != nil, "should have MasterKey when unblocking V2 group")
+                return masterKey
             }()
             if let masterKey {
                 SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedGroupV2MasterKeys: [masterKey])
             }
         }
 
-        if let groupThread {
+        if let groupThread = TSGroupThread.fetchThread(forGroupIdData: groupId, tx: transaction) {
             // Insert an info message that we unblocked.
             DependenciesBridge.shared.interactionStore.insertInteraction(
                 TSInfoMessage(thread: groupThread, messageType: .unblockedGroup),
@@ -420,12 +448,16 @@ public class BlockingManager {
         blockedGroupIds: Set<Data>,
         tx transaction: DBWriteTransaction,
     ) {
+        let blockMode = BlockMode.syncMessage
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+
         Logger.info("")
         transaction.addSyncCompletion {
             NotificationCenter.default.postOnMainThread(name: Self.blockedSyncDidComplete, object: nil)
         }
 
         var didChange = false
+        var shouldRotateProfileKey = false
 
         let oldBlockedGroupIds = Set(blockedGroupStore.blockedGroupIds(tx: transaction))
         let newBlockedGroupIds = blockedGroupIds
@@ -435,27 +467,52 @@ public class BlockingManager {
         }
         newBlockedGroupIds.subtracting(oldBlockedGroupIds).forEach {
             didChange = true
+            let didRemove = profileManager.removeGroupId(
+                fromProfileWhitelist: $0,
+                userProfileWriter: blockMode.asUserProfileWriter,
+                transaction: transaction,
+            )
             blockedGroupStore.setBlocked(true, groupId: $0, tx: transaction)
+            if didRemove {
+                shouldRotateProfileKey = true
+            }
         }
 
-        var blockedRecipientIds = Set<SignalRecipient.RowId>()
+        var blockedRecipients = [SignalRecipient.RowId: SignalRecipient]()
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         for blockedAci in blockedAcis {
-            blockedRecipientIds.insert(recipientFetcher.fetchOrCreate(serviceId: blockedAci, tx: transaction).id)
+            let blockedRecipient = recipientFetcher.fetchOrCreate(serviceId: blockedAci, tx: transaction)
+            blockedRecipients[blockedRecipient.id] = blockedRecipient
         }
         for blockedPhoneNumber in blockedPhoneNumbers.compactMap(E164.init) {
-            blockedRecipientIds.insert(recipientFetcher.fetchOrCreate(phoneNumber: blockedPhoneNumber, tx: transaction).id)
+            let blockedRecipient = recipientFetcher.fetchOrCreate(phoneNumber: blockedPhoneNumber, tx: transaction)
+            blockedRecipients[blockedRecipient.id] = blockedRecipient
         }
 
         let oldBlockedRecipientIds = Set(blockedRecipientStore.blockedRecipientIds(tx: transaction))
-        let newBlockedRecipientIds = blockedRecipientIds
-        oldBlockedRecipientIds.subtracting(newBlockedRecipientIds).forEach {
+        oldBlockedRecipientIds.subtracting(blockedRecipients.keys).forEach {
             didChange = true
             blockedRecipientStore.setBlocked(false, recipientId: $0, tx: transaction)
         }
-        newBlockedRecipientIds.subtracting(oldBlockedRecipientIds).forEach {
+        blockedRecipients.forEach {
+            if oldBlockedRecipientIds.contains($0.key) {
+                return
+            }
             didChange = true
-            blockedRecipientStore.setBlocked(true, recipientId: $0, tx: transaction)
+            var mutableRecipient = $0.value
+            let didRemove = profileManager.removeRecipientFromProfileWhitelist(
+                &mutableRecipient,
+                userProfileWriter: blockMode.asUserProfileWriter,
+                tx: transaction,
+            )
+            blockedRecipientStore.setBlocked(true, recipientId: $0.key, tx: transaction)
+            if didRemove {
+                shouldRotateProfileKey = true
+            }
+        }
+
+        if shouldRotateProfileKey {
+            profileManager.setNeedsProfileKeyRotation(tx: transaction)
         }
 
         if didChange {

@@ -1,1 +1,1 @@
-• 我们添加了一个便捷的快捷方式，方便您在 Signal 群组通话中开始说话后快速把举起的手放下来。
+• This update introduces a new custom mute option so you can easily specify the exact date and time when you would like to end your moment of silence for notifications in a specific chat.

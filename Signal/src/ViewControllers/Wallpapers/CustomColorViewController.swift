@@ -113,13 +113,9 @@ class CustomColorViewController: OWSTableViewController2 {
             comment: "Title for the custom chat color settings view.",
         )
 
-        navigationItem.rightBarButtonItem = .button(
-            title: CommonStrings.setButton,
-            style: .done,
-            action: { [weak self] in
-                self?.didTapSet()
-            },
-        )
+        navigationItem.rightBarButtonItem = .setButton { [weak self] in
+            self?.didTapSet()
+        }
 
         view.backgroundColor = .Signal.groupedBackground
 
@@ -207,13 +203,9 @@ class CustomColorViewController: OWSTableViewController2 {
         }
 
         if hasUnsavedChanges {
-            navigationItem.rightBarButtonItem = .button(
-                title: CommonStrings.setButton,
-                style: .done,
-                action: { [weak self] in
-                    self?.didTapDone()
-                },
-            )
+            navigationItem.rightBarButtonItem = .setButton { [weak self] in
+                self?.didTapDone()
+            }
         } else {
             navigationItem.rightBarButtonItem = nil
         }
@@ -591,8 +583,8 @@ private class SpectrumSlider: ManualLayoutView {
 
         let knobView = self.knobView
         knobView.addPillBlock()
-        knobView.backgroundColor = .ows_white
-        knobView.layer.shadowColor = UIColor.ows_black.cgColor
+        knobView.backgroundColor = .white
+        knobView.layer.shadowColor = UIColor.black.cgColor
         knobView.layer.shadowOffset = CGSize(width: 0, height: 2)
         knobView.layer.shadowOpacity = 0.3
         knobView.layer.shadowRadius = Self.knobShadowRadius
@@ -636,7 +628,7 @@ private class SpectrumSlider: ManualLayoutView {
     }
 
     private func ensureSpectrumImage() {
-        let scale = UIScreen.main.scale
+        let scale = traitCollection.displayScale
         let spectrumImageSizePoints = spectrumImageView.bounds.size
         let spectrumImageSizePixels = spectrumImageSizePoints * scale
         guard spectrumImageSizePixels.isNonEmpty else {
@@ -1086,8 +1078,8 @@ private class CustomColorPreviewView: UIView {
             self.translatesAutoresizingMaskIntoConstraints = false
             self.autoSetDimensions(to: .square(Self.knobSize))
 
-            swatchView.layer.borderColor = UIColor.ows_white.cgColor
-            swatchView.layer.shadowColor = UIColor.ows_black.cgColor
+            swatchView.layer.borderColor = UIColor.white.cgColor
+            swatchView.layer.shadowColor = UIColor.black.cgColor
             swatchView.layer.shadowOffset = CGSize(width: 0, height: 2)
             swatchView.layer.shadowOpacity = 0.3
             swatchView.layer.shadowRadius = 4
@@ -1097,7 +1089,7 @@ private class CustomColorPreviewView: UIView {
 
             let selectedColor = (
                 Theme.isDarkThemeEnabled
-                    ? UIColor.ows_white
+                    ? UIColor.white
                     : UIColor(white: 0, alpha: 0.6),
             )
             selectedBorder.layer.borderColor = selectedColor.cgColor
@@ -1350,7 +1342,7 @@ private class CustomColorPreviewView: UIView {
         knobView2ConstraintY.constant = vector2.y
 
         axisShapeLayer.frame = self.bounds
-        axisShapeLayer.fillColor = UIColor.ows_white.cgColor
+        axisShapeLayer.fillColor = UIColor.white.cgColor
         axisShapeLayer.strokeColor = UIColor(white: 0, alpha: 0.1).cgColor
         let axisPath = UIBezierPath()
         let knobCenter1 = self.bounds.center + vector1
@@ -1414,14 +1406,14 @@ private class CustomColorPreviewView: UIView {
 
     // MARK: - Tooltip
 
-    private static let keyValueStore = KeyValueStore(collection: "CustomColorPreviewView")
+    private static let keyValueStore = NewKeyValueStore(collection: "CustomColorPreviewView")
     private static let tooltipWasDismissedKey = "tooltipWasDismissed"
 
     private var customColorTooltip: CustomColorTooltip?
 
     fileprivate func dismissTooltip() {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            Self.keyValueStore.setBool(true, key: Self.tooltipWasDismissedKey, transaction: transaction)
+            Self.keyValueStore.writeValue(true, forKey: Self.tooltipWasDismissedKey, tx: transaction)
         }
         hideTooltip()
     }
@@ -1433,7 +1425,7 @@ private class CustomColorPreviewView: UIView {
 
     private func ensureTooltip() {
         let shouldShowTooltip = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            !Self.keyValueStore.getBool(Self.tooltipWasDismissedKey, defaultValue: false, transaction: transaction)
+            !(Self.keyValueStore.fetchValue(Bool.self, forKey: Self.tooltipWasDismissedKey, tx: transaction) ?? false)
         }
         let isShowingTooltip = customColorTooltip != nil
         guard shouldShowTooltip != isShowingTooltip else {
@@ -1580,14 +1572,14 @@ private class CustomColorTooltip: TooltipView {
             comment: "Tooltip highlighting the custom chat color controls.",
         )
         label.font = .dynamicTypeSubheadline
-        label.textColor = .ows_white
+        label.textColor = .white
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         return horizontalStack(forSubviews: [label])
     }
 
     override var bubbleColor: UIColor {
-        .ows_accentBlue
+        .Signal.accent
     }
 
     override var tailDirection: TooltipView.TailDirection {

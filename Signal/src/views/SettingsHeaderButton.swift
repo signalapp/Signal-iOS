@@ -9,7 +9,8 @@ import UIKit
 
 class SettingsHeaderButton: UIView {
 
-    private let button = UIButton(configuration: .gray())
+    private static let buttonConfiguration: UIButton.Configuration = if #available(iOS 26, *) { .glass() } else { .gray() }
+    private let button = UIButton(configuration: SettingsHeaderButton.buttonConfiguration)
     private let titleLabel = UILabel()
     private let stackView = UIStackView()
 

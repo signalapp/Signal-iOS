@@ -99,7 +99,7 @@ class EmojiMoodPickerView: UIView {
     @objc
     private func applyTheme() {
         let defaultButtonBackground = Theme.isDarkThemeEnabled ? UIColor.ows_gray80 : UIColor.ows_gray05
-        let selectedButtonBackground = Theme.accentBlueColor
+        let selectedButtonBackground = UIColor.Signal.accent
 
         moodButtons.values.forEach { button in
             button.setBackgroundImage(UIImage.image(color: defaultButtonBackground), for: .normal)

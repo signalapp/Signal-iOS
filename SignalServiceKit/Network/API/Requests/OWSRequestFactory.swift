@@ -43,7 +43,7 @@ public enum OWSRequestFactory {
         owsAssertDebug(fromRedemptionSeconds > 0)
         owsAssertDebug(toRedemptionSeconds > 0)
 
-        let path = "v1/certificate/auth/group?redemptionStartSeconds=\(fromRedemptionSeconds)&redemptionEndSeconds=\(toRedemptionSeconds)"
+        let path = "v1/certificate/auth/group?redemptionStartSeconds=\(fromRedemptionSeconds)&redemptionEndSeconds=\(toRedemptionSeconds)&v101=true"
         return TSRequest(url: URL(string: path)!, method: "GET", parameters: [:])
     }
 
@@ -97,7 +97,33 @@ public enum OWSRequestFactory {
 
     // MARK: - Registration
 
-    static func enableRegistrationLockV2Request(token: RegistrationLock, logger: PrefixedLogger) -> TSRequest {
+    struct RegistrationRecoveryPassword: Encodable {
+        let wrappedValue: SignalServiceKit.RegistrationRecoveryPassword
+
+        init(_ wrappedValue: SignalServiceKit.RegistrationRecoveryPassword) {
+            self.wrappedValue = wrappedValue
+        }
+
+        func encode(to encoder: any Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try container.encode(self.wrappedValue.canonicalStringRepresentation)
+        }
+    }
+
+    struct RegistrationLock: Encodable {
+        let wrappedValue: SignalServiceKit.RegistrationLock
+
+        init(_ wrappedValue: SignalServiceKit.RegistrationLock) {
+            self.wrappedValue = wrappedValue
+        }
+
+        func encode(to encoder: any Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try container.encode(self.wrappedValue.canonicalStringRepresentation)
+        }
+    }
+
+    static func enableRegistrationLockV2Request(token: SignalServiceKit.RegistrationLock, logger: PrefixedLogger) -> TSRequest {
         let url = URL(string: textSecureRegistrationLockV2API)!
         return TSRequest(
             url: url,
@@ -340,27 +366,78 @@ public enum OWSRequestFactory {
 
     // MARK: - Keys
 
-    static func preKeyRequestParameters(_ preKeyRecord: LibSignalClient.PreKeyRecord) -> [String: Any] {
-        [
-            "keyId": preKeyRecord.id,
-            "publicKey": try! preKeyRecord.publicKey().serialize().base64EncodedStringWithoutPadding(),
-        ]
+    struct IdentityKey: Encodable {
+        let wrappedValue: LibSignalClient.IdentityKey
+
+        init(_ wrappedValue: LibSignalClient.IdentityKey) {
+            self.wrappedValue = wrappedValue
+        }
+
+        func encode(to encoder: any Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try container.encode(self.wrappedValue.publicKey.serialize().base64EncodedString())
+        }
     }
 
-    static func signedPreKeyRequestParameters(_ signedPreKeyRecord: LibSignalClient.SignedPreKeyRecord) -> [String: Any] {
-        [
-            "keyId": signedPreKeyRecord.id,
-            "publicKey": try! signedPreKeyRecord.publicKey().serialize().base64EncodedStringWithoutPadding(),
-            "signature": signedPreKeyRecord.signature.base64EncodedStringWithoutPadding(),
-        ]
+    struct PreKey: Encodable {
+        let wrappedValue: LibSignalClient.PreKeyRecord
+
+        init(_ wrappedValue: LibSignalClient.PreKeyRecord) {
+            self.wrappedValue = wrappedValue
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case keyId
+            case publicKey
+        }
+
+        func encode(to encoder: any Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(self.wrappedValue.id, forKey: .keyId)
+            try container.encode(self.wrappedValue.publicKey().serialize().base64EncodedStringWithoutPadding(), forKey: .publicKey)
+        }
     }
 
-    static func pqPreKeyRequestParameters(_ pqPreKeyRecord: LibSignalClient.KyberPreKeyRecord) -> [String: Any] {
-        [
-            "keyId": pqPreKeyRecord.id,
-            "publicKey": try! pqPreKeyRecord.publicKey().serialize().base64EncodedStringWithoutPadding(),
-            "signature": pqPreKeyRecord.signature.base64EncodedStringWithoutPadding(),
-        ]
+    struct SignedPreKey: Encodable {
+        let wrappedValue: LibSignalClient.SignedPreKeyRecord
+
+        init(_ wrappedValue: LibSignalClient.SignedPreKeyRecord) {
+            self.wrappedValue = wrappedValue
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case keyId
+            case publicKey
+            case signature
+        }
+
+        func encode(to encoder: any Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(self.wrappedValue.id, forKey: .keyId)
+            try container.encode(self.wrappedValue.publicKey().serialize().base64EncodedStringWithoutPadding(), forKey: .publicKey)
+            try container.encode(self.wrappedValue.signature.base64EncodedStringWithoutPadding(), forKey: .signature)
+        }
+    }
+
+    struct KyberPreKey: Encodable {
+        let wrappedValue: LibSignalClient.KyberPreKeyRecord
+
+        init(_ wrappedValue: LibSignalClient.KyberPreKeyRecord) {
+            self.wrappedValue = wrappedValue
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case keyId
+            case publicKey
+            case signature
+        }
+
+        func encode(to encoder: any Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(self.wrappedValue.id, forKey: .keyId)
+            try container.encode(self.wrappedValue.publicKey().serialize().base64EncodedStringWithoutPadding(), forKey: .publicKey)
+            try container.encode(self.wrappedValue.signature.base64EncodedStringWithoutPadding(), forKey: .signature)
+        }
     }
 
     static func availablePreKeysCountRequest(for identity: OWSIdentity) -> TSRequest {
@@ -397,29 +474,35 @@ public enum OWSRequestFactory {
             path = path.appending("?\(queryParam)")
         }
 
-        var parameters = [String: Any]()
-
+        var request = SetKeysRequest()
         if let signedPreKeyRecord {
-            parameters["signedPreKey"] = signedPreKeyRequestParameters(signedPreKeyRecord)
+            request.signedPreKey = OWSRequestFactory.SignedPreKey(signedPreKeyRecord)
         }
         if let prekeyRecords {
-            parameters["preKeys"] = prekeyRecords.map { self.preKeyRequestParameters($0) }
+            request.preKeys = prekeyRecords.map { OWSRequestFactory.PreKey($0) }
         }
         if let pqLastResortPreKeyRecord {
-            parameters["pqLastResortPreKey"] = pqPreKeyRequestParameters(pqLastResortPreKeyRecord)
+            request.pqLastResortPreKey = OWSRequestFactory.KyberPreKey(pqLastResortPreKeyRecord)
         }
         if let pqPreKeyRecords {
-            parameters["pqPreKeys"] = pqPreKeyRecords.map { self.pqPreKeyRequestParameters($0) }
+            request.pqPreKeys = pqPreKeyRecords.map { OWSRequestFactory.KyberPreKey($0) }
         }
 
-        var request = TSRequest(
+        var result = TSRequest(
             url: URL(string: path)!,
             method: "PUT",
-            parameters: parameters,
+            body: .encodable(request),
         )
-        request.auth = .identified(auth)
-        request.timeoutInterval = 45
-        return request
+        result.auth = .identified(auth)
+        result.timeoutInterval = 45
+        return result
+    }
+
+    private struct SetKeysRequest: Encodable {
+        var signedPreKey: OWSRequestFactory.SignedPreKey?
+        var preKeys: [OWSRequestFactory.PreKey]?
+        var pqLastResortPreKey: OWSRequestFactory.KyberPreKey?
+        var pqPreKeys: [OWSRequestFactory.KyberPreKey]?
     }
 
     static func queryParam(for identity: OWSIdentity) -> String? {
@@ -496,23 +579,5 @@ public enum OWSRequestFactory {
         var request = TSRequest(url: URL(string: "v1/profile/")!, method: "PUT", parameters: parameters)
         request.auth = .identified(auth)
         return request
-    }
-}
-
-// MARK: -
-
-extension DeviceMessage {
-    /// Returns the per-device-message parameters when sending a message.
-    ///
-    /// Note: This API is (currently) used only when changing your number.
-    ///
-    /// See <https://github.com/signalapp/Signal-Server/blob/ab26a65/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessage.java>.
-    func requestParameters() -> NSDictionary {
-        return [
-            "type": self.type.rawValue,
-            "destinationDeviceId": self.deviceId.uint32Value,
-            "destinationRegistrationId": Int32(bitPattern: self.registrationId),
-            "content": self.content.base64EncodedString(),
-        ]
     }
 }

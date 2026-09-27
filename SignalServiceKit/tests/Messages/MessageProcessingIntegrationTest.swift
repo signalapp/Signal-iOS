@@ -35,10 +35,9 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         identityManager.generateAndPersistNewIdentityKey(for: .pni)
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .init(
+                localIdentifiers: LocalIdentifiers(
                     aci: localAci,
-                    pni: Pni.randomForTesting(),
-                    e164: .init(localE164Identifier)!,
+                    phoneNumber: LocalIdentifiers.PhoneNumber(e164: E164(localE164Identifier)!, pni: .randomForTesting()),
                 ),
                 tx: tx,
             )
@@ -166,7 +165,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         envelopeBuilder.setSourceDevice(1)
         envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
         envelopeBuilder.setServerGuidBinary(UUID().data)
-        envelopeBuilder.setDestinationServiceIDBinary(DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.pni!.serviceIdBinary)
+        envelopeBuilder.setDestinationServiceIDBinary(try! DependenciesBridge.shared.tsAccountManager.registeredStateWithMaybeSneakyTransaction().localIdentifiers.pni!.serviceIdBinary)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         SSKEnvironment.shared.messageProcessorRef.enqueueReceivedEnvelopeData(
             envelopeData,

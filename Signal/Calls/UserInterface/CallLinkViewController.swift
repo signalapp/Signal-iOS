@@ -198,12 +198,12 @@ final class CallLinkViewController: OWSTableViewController2, DatabaseChangeDeleg
             let rootKey = self.callLink.rootKey
             let deleteItem: OWSTableItem = .item(
                 icon: .buttonDelete,
-                tintColor: .ows_accentRed,
+                tintColor: .Signal.red,
                 name: OWSLocalizedString(
                     "CALL_LINK_DELETE_ACTION",
                     comment: "A button to delete a call link that's shown after tapping the (i) info button on an item in the calls tab.",
                 ),
-                textColor: .ows_accentRed,
+                textColor: .Signal.red,
                 actionBlock: { [unowned self] in
                     CallLinkDeleter.promptToDelete(fromViewController: self) { [weak self] in
                         do {
@@ -260,20 +260,29 @@ final class CallLinkViewController: OWSTableViewController2, DatabaseChangeDeleg
     }
 
     private func createCallLinkRecord() -> Int64 {
-        let rowId = SSKEnvironment.shared.databaseStorageRef.write { tx in
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
+        let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let rowId = databaseStorage.write { tx in
             var callLinkRecord: CallLinkRecord
             (callLinkRecord, _) = callLinkStore.fetchOrInsert(rootKey: callLink.rootKey, tx: tx)
-            callLinkRecord.adminPasskey = adminPasskey!
-            callLinkRecord.updateState(callLinkState!)
+            callLinkRecord.adminPasskey = adminPasskey.owsFailUnwrap("must have passkey")
+            callLinkRecord.updateState(callLinkState.owsFailUnwrap("must have state"))
             callLinkStore.update(callLinkRecord, tx: tx)
 
             CallLinkUpdateMessageSender(
-                messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef,
-            ).sendCallLinkUpdateMessage(rootKey: callLink.rootKey, adminPasskey: adminPasskey, tx: tx)
+                messageSenderJobQueue: messageSenderJobQueue,
+            ).sendCallLinkUpdateMessage(
+                rootKey: callLink.rootKey,
+                adminPasskey: adminPasskey,
+                localIdentifiers: tsAccountManager.mustBeRegisteredState(tx: tx).localIdentifiers,
+                tx: tx,
+            )
 
             return callLinkRecord.id
         }
-        SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(callLinkRootKeys: [callLink.rootKey])
+        storageServiceManager.recordPendingUpdates(callLinkRootKeys: [callLink.rootKey])
         return rowId
     }
 

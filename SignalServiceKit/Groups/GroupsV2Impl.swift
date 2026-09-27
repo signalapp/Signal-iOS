@@ -24,7 +24,7 @@ public class GroupsV2Impl: GroupsV2 {
         self.authCredentialStore = authCredentialStore
         self.authCredentialManager = authCredentialManager
         self.groupSendEndorsementStore = groupSendEndorsementStore
-        self.profileKeyUpdater = GroupsV2ProfileKeyUpdater(appReadiness: appReadiness)
+        self.profileKeyUpdater = GroupsV2ProfileKeyUpdater()
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
@@ -153,7 +153,7 @@ public class GroupsV2Impl: GroupsV2 {
 
         let response = try await performServiceRequest(
             requestBuilder: requestBuilder,
-            groupId: nil,
+            groupId: newGroup.secretParams.getPublicParams().getGroupIdentifier(),
             behavior400: isRetryingAfterRecoverable400 ? .fail : .reportForRecovery,
             behavior403: .fail,
         )
@@ -1048,7 +1048,7 @@ public class GroupsV2Impl: GroupsV2 {
         avatarUrlPath: String,
         groupV2Params: GroupV2Params,
     ) async throws -> Data {
-        return try await avatarDownloadQueue.run {
+        return try await avatarDownloadQueue.runWithThrowingTask {
             // We throw away decrypted avatars larger than `kMaxEncryptedAvatarSize`.
             return try await GroupsV2AvatarDownloadOperation.run(
                 urlPath: avatarUrlPath,
@@ -1077,8 +1077,8 @@ public class GroupsV2Impl: GroupsV2 {
         profileKeyUpdater.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: transaction)
     }
 
-    public func processProfileKeyUpdates() {
-        profileKeyUpdater.processProfileKeyUpdates()
+    public func processProfileKeyUpdates() async throws {
+        try await profileKeyUpdater.updateIfNeeded()
     }
 
     public func updateLocalProfileKeyInGroup(groupId: GroupIdentifier, tx: DBWriteTransaction) {
@@ -1110,22 +1110,20 @@ public class GroupsV2Impl: GroupsV2 {
     /// certain errors.
     private func performServiceRequest(
         requestBuilder: RequestBuilder,
-        groupId: GroupIdentifier?,
+        groupId: GroupIdentifier,
         behavior400: Behavior400,
         behavior403: Behavior403,
     ) async throws -> HTTPResponse {
-        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
-            throw OWSAssertionError("Missing localIdentifiers.")
-        }
-
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         return try await Retry.performWithBackoff(
             maxAttempts: 3,
             isRetryable: { $0.isNetworkFailureOrTimeout || $0.httpStatusCode == 401 },
             block: {
-                let authCredential = try await authCredentialManager.fetchGroupAuthCredential(localIdentifiers: localIdentifiers)
+                let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+                let authCredential = try await authCredentialManager.fetchGroupAuthCredential(localIdentifiers: registeredState.localIdentifiers)
                 let request = try await requestBuilder(authCredential)
                 do {
-                    return try await performServiceRequestAttempt(request: request)
+                    return try await performServiceRequestAttempt(request: request, groupId: groupId)
                 } catch {
                     try await self.tryRecoveryFromServiceRequestFailure(
                         error: error,
@@ -1142,7 +1140,7 @@ public class GroupsV2Impl: GroupsV2 {
     /// on the error and our 4XX behaviors.
     private func tryRecoveryFromServiceRequestFailure(
         error: Error,
-        groupId: GroupIdentifier?,
+        groupId: GroupIdentifier,
         behavior400: Behavior400,
         behavior403: Behavior403,
     ) async throws -> Never {
@@ -1191,23 +1189,15 @@ public class GroupsV2Impl: GroupsV2 {
                     // We may get a 403 when fetching change actions if
                     // they are not yet a member - for example, if they are
                     // joining via an invite link.
-                    owsAssertDebug(groupId != nil, "Expecting a groupId for this path")
+                    break
 
                 case .removeFromGroup:
-                    guard let groupId else {
-                        owsFailDebug("GroupId must be set to remove from group")
-                        break
-                    }
                     // If we receive 403 when trying to fetch group state, we have left the
                     // group, been removed from the group, or had our invite revoked, and we
                     // should make sure group state in the database reflects that.
                     await GroupManager.handleNotInGroup(groupId: groupId)
 
                 case .fetchGroupUpdates:
-                    guard let groupId else {
-                        owsFailDebug("GroupId must be set to fetch group updates")
-                        break
-                    }
                     // Service returns 403 if client tries to perform an
                     // update for which it is not authorized (e.g. add a
                     // new member if membership access is admin-only).
@@ -1218,8 +1208,6 @@ public class GroupsV2Impl: GroupsV2 {
                     self.tryToUpdateGroupToLatest(groupId: groupId)
 
                 case .reportInvalidOrBlockedGroupLink:
-                    owsAssertDebug(groupId == nil, "groupId should not be set in this code path.")
-
                     if error.httpResponseHeaders?.containsBan == true {
                         throw GroupsV2Error.localUserBlockedFromJoining
                     } else {
@@ -1227,7 +1215,6 @@ public class GroupsV2Impl: GroupsV2 {
                     }
 
                 case .localUserIsNotARequestingMember:
-                    owsAssertDebug(groupId == nil, "groupId should not be set in this code path.")
                     throw GroupsV2Error.localUserIsNotARequestingMember
                 }
 
@@ -1249,11 +1236,14 @@ public class GroupsV2Impl: GroupsV2 {
         }
     }
 
-    private func performServiceRequestAttempt(request: GroupsV2Request) async throws -> HTTPResponse {
+    private func performServiceRequestAttempt(
+        request: GroupsV2Request,
+        groupId: GroupIdentifier,
+    ) async throws -> HTTPResponse {
 
         let urlSession = self.urlSession
 
-        let requestDescription = "G2 \(request.method) \(request.urlString)"
+        let requestDescription = "G2 \(request.method) \(request.urlString) [\(groupId.serialize().hexadecimalString)]"
         Logger.info("Sending… -> \(requestDescription)")
 
         do {
@@ -1452,13 +1442,6 @@ public class GroupsV2Impl: GroupsV2 {
 
     // MARK: - Restore Groups
 
-    public func isGroupKnownToStorageService(
-        groupModel: TSGroupModelV2,
-        transaction: DBReadTransaction,
-    ) -> Bool {
-        GroupsV2Impl.isGroupKnownToStorageService(groupModel: groupModel, transaction: transaction)
-    }
-
     public func groupRecordPendingStorageServiceRestore(
         masterKeyData: Data,
         transaction: DBReadTransaction,
@@ -1513,7 +1496,7 @@ public class GroupsV2Impl: GroupsV2 {
         )
         let response = try await performServiceRequest(
             requestBuilder: requestBuilder,
-            groupId: nil,
+            groupId: groupSecretParams.getPublicParams().getGroupIdentifier(),
             behavior400: .fail,
             behavior403: behavior403,
         )
@@ -1643,10 +1626,7 @@ public class GroupsV2Impl: GroupsV2 {
         inviteLinkPassword: Data,
         downloadedAvatar: (avatarUrlPath: String, avatarData: Data?)?,
     ) async throws {
-        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
-            throw OWSAssertionError("Missing localAci.")
-        }
-
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         try await Retry.performWithBackoff(
             maxAttempts: 5,
             isRetryable: {
@@ -1665,9 +1645,10 @@ public class GroupsV2Impl: GroupsV2 {
                 return false
             },
             block: {
+                let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
                 try await _joinGroupViaInviteLink(
                     secretParams: secretParams,
-                    localIdentifiers: localIdentifiers,
+                    localIdentifiers: registeredState.localIdentifiers,
                     inviteLinkPassword: inviteLinkPassword,
                     downloadedAvatar: downloadedAvatar,
                 )

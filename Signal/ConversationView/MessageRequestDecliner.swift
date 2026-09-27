@@ -34,7 +34,7 @@ enum MessageRequestDecliner {
             if responseType.shouldBlockThread {
                 blockingManager.addBlockedThread(
                     thread,
-                    blockMode: .local,
+                    blockMode: .localUser,
                     transaction: tx,
                 )
             }

@@ -84,8 +84,6 @@ public class SignalAttachment: CustomDebugStringConvertible {
 
     public var isVoiceMessage = false
 
-    public static let maxAttachmentsAllowed: Int = 32
-
     // MARK: Constructor
 
     // This method should not be called directly; use the factory
@@ -140,7 +138,8 @@ public class SignalAttachment: CustomDebugStringConvertible {
             // ensures crisp thumbnails when we center crop in a
             // 60x60 or smaller container.
             let pixelSize = image.pixelSize
-            let maxDimensionPixels = ((60 * UIScreen.main.scale) / pixelSize.smallerAxis).clamp01() * pixelSize.largerAxis
+            let screenScale = UITraitCollection.current.displayScale
+            let maxDimensionPixels = ((60 * screenScale) / pixelSize.smallerAxis).clamp01() * pixelSize.largerAxis
 
             let thumbnail = image.resized(maxDimensionPixels: maxDimensionPixels)
             cachedThumbnail = thumbnail

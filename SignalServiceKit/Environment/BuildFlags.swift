@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+public import AVFoundation
 import Foundation
 import LibSignalClient
 
@@ -27,17 +28,11 @@ public enum BuildFlags {
 
     public static let failDebug = build <= .internal
 
-    public static let linkedPhones = true
-
     public static let isPrerelease = build <= .beta
 
     public static let shouldUseTestIntervals = build <= .beta
 
     public enum Backups {
-        /// This is also controlled via remote-config.
-        /// - SeeAlso ``RemoteConfig/backupsMegaphone``.
-        public static let showMegaphones = build <= .beta
-
         public static let showOptimizeMedia = build <= .dev
 
         public static let restoreFailOnAnyError = build <= .beta
@@ -54,11 +49,6 @@ public enum BuildFlags {
     static let netBuildVariant: Net.BuildVariant = build <= .beta ? .beta : .production
 
     // Turn this off after all still-registered clients have run this
-    // migration. That should happen by 2026-08-04. Then, delete all the code
-    // that's now dead because this is false.
-    public static let migrateDeprecatedSessions = true
-
-    // Turn this off after all still-registered clients have run this
     // migration. That should happen about 210 days after the last release
     // without this change is built. Then, delete all the code that's now dead
     // because this is false.
@@ -68,37 +58,33 @@ public enum BuildFlags {
     // expires. Then, delete all the code that's now dead.
     public static let decodeOldSenderKeys = true
 
+    // Turn this off 7 days after the last release without this change expires.
+    // Then, delete all the code that's now dead.
+    public static let migrateGroupRefreshedAt = true
+
     public enum KeyTransparency {
-        public static let enabled = true
         public static let conservativeSelfCheck = build <= .internal
     }
 
-    public static let pollOneOnOneSend = true
-
-    public enum AdminDelete {
-        public static let receive = true
-        public static let send = true
-    }
-
-    public enum GroupTerminate {
-        public static let receive = true
-        public static let send = true
-    }
-
-    public static let collapsingChatEvents = true
+    public static let wifiAwareDeviceTransfer = true
 
     public enum ReleaseNotesChannel {
-        public static let announcementFetch = true
         public static let ignoreFetchDelay = build <= .internal
     }
 
     public enum LocalFileBackups {
-        public static let archive = build <= .dev
-        public static let restore = build <= .dev
-        public static let settingsUI = build <= .dev
+        public static let archive = true
+        public static let restore = true
+        public static let settingsUI = true
     }
 
-    static let hardDeleteGroupThreads = true
+    static let hardDeleteGroupThreadsDuringRefresh = true
+
+    /// New notification settings. Don't enable until Storage Service is integrated
+    public static let improvedNotifications = build <= .dev
+
+    /// The ability to share account identifiers when sharing contacts.
+    public static let accountIdentifierSharing = false
 }
 
 // MARK: -
@@ -168,10 +154,18 @@ public enum DebugFlags {
 
     public static let extraDebugLogs = build <= .internal
 
-    public static let callingBitRate = TestableFlag<Int>(
-        10,
-        title: LocalizationNotNeeded("Bitrate"),
-        details: LocalizationNotNeeded("The bitrate to use for new calls."),
+    // MARK: - TestableFlag: Calling
+
+    public static let callingSvcMaxBitrateBps = TestableFlag<Int>(
+        0,
+        title: LocalizationNotNeeded("SVC Maximum Bitrate (bps)"),
+        details: LocalizationNotNeeded("The bitrate to use for new calls (overrides remote config). 0 = use default bitrate."),
+    )
+
+    public static let callingStatsIntervalSecs = TestableFlag<Int>(
+        0,
+        title: LocalizationNotNeeded("Stats Interval (secs)"),
+        details: LocalizationNotNeeded("The interval in seconds between logging call stats. 0 = use default interval."),
     )
 
     public static let callingUseTestSFU = TestableFlag<Bool>(
@@ -186,17 +180,42 @@ public enum DebugFlags {
         details: LocalizationNotNeeded("1:1 calls will not connect to a TURN server (remote party may still use TURN)."),
     )
 
-    public static let callingForceVp9Off = TestableFlag<Bool>(
+    public static let callingOverrideCodecs = TestableFlag<Bool>(
         false,
-        title: LocalizationNotNeeded("Never use VP9"),
-        details: LocalizationNotNeeded("1:1 calls will never use VP9 (overrides remote config)."),
+        title: LocalizationNotNeeded("Use codec overrides below"),
+        details: LocalizationNotNeeded("Must be enabled to use the codec overrides below."),
     )
 
-    public static let callingForceVp9On = TestableFlag<Bool>(
+    public static let callingEnableVp9Encode = TestableFlag<Bool>(
         false,
-        title: LocalizationNotNeeded("Always offer VP9"),
-        details: LocalizationNotNeeded("1:1 calls will always offer VP9 (overrides remote config and \"Never use VP9\")."),
+        title: LocalizationNotNeeded("Enable VP9 Encode"),
+        details: LocalizationNotNeeded("Calls will offer VP9 encode (overrides remote config)."),
     )
+
+    public static let callingEnableVp9Decode = TestableFlag<Bool>(
+        false,
+        title: LocalizationNotNeeded("Enable VP9 Decode"),
+        details: LocalizationNotNeeded("Calls will offer VP9 decode (overrides remote config)."),
+    )
+
+    public static let callingEnableSvc = TestableFlag(
+        false,
+        title: LocalizationNotNeeded("Enable SVC"),
+        details: LocalizationNotNeeded("Group calls will always use SVC (overrides remote config)"),
+    )
+
+    public static let callingTestableFlags: [AnyTestableFlag] = [
+        callingUseTestSFU,
+        callingStatsIntervalSecs,
+        callingNeverRelay,
+        callingOverrideCodecs,
+        callingEnableVp9Encode,
+        callingEnableVp9Decode,
+        callingEnableSvc,
+        callingSvcMaxBitrateBps,
+    ]
+
+    // MARK: - TestableFlag: Messaging
 
     public static let delayedMessageResend = TestableFlag<Bool>(
         false,
@@ -219,18 +238,54 @@ public enum DebugFlags {
         details: LocalizationNotNeeded("All outgoing message sends will fail."),
     )
 
-    public static let callingTestableFlags: [AnyTestableFlag] = [
-        callingBitRate,
-        callingUseTestSFU,
-        callingNeverRelay,
-        callingForceVp9Off,
-        callingForceVp9On,
-    ]
-
     public static let messagingTestableFlags: [AnyTestableFlag] = [
         delayedMessageResend,
         fastPlaceholderExpiration,
         messageSendsFail,
+    ]
+
+    // MARK: - TestableFlag: Voice Messages
+
+    public static let voiceMessageBitRate = TestableFlag<Int>(
+        32000,
+        title: LocalizationNotNeeded("Bitrate"),
+        details: LocalizationNotNeeded("The bitrate to use for new voice message recordings."),
+    )
+
+    public static let voiceMessageSampleRate = TestableFlag<Int>(
+        44100,
+        title: LocalizationNotNeeded("Sample Rate"),
+        details: LocalizationNotNeeded("The sample rate to use for new voice message recordings."),
+    )
+
+    public enum VoiceMessageAudioQuality: CaseIterable {
+        case min
+        case low
+        case medium
+        case high
+        case max
+
+        public var avAudioQuality: AVAudioQuality {
+            switch self {
+            case .min: .min
+            case .low: .low
+            case .medium: .medium
+            case .high: .high
+            case .max: .max
+            }
+        }
+    }
+
+    public static let voiceMessageAudioQuality = MenuTestableFlag<VoiceMessageAudioQuality>(
+        nil,
+        title: LocalizationNotNeeded("Audio Quality"),
+        details: LocalizationNotNeeded("The encoder audio quality to use for new voice message recordings."),
+    )
+
+    public static let voiceMessageTestableFlags: [AnyTestableFlag] = [
+        voiceMessageBitRate,
+        voiceMessageSampleRate,
+        voiceMessageAudioQuality,
     ]
 }
 
@@ -240,7 +295,9 @@ extension Notification.Name {
     public static let resetAllTestableFlags = Notification.Name("ResetAllTestableFlags")
 }
 
+/// A type-erased `TestableFlag`, for heterogenous collections.
 public protocol AnyTestableFlag {
+    var title: String { get }
     var details: String { get }
 }
 
@@ -288,6 +345,47 @@ public class TestableFlag<Value>: AnyTestableFlag {
         flag.update {
             $0 = value
             onSet(value)
+        }
+    }
+}
+
+// MARK: -
+
+public struct MenuTestableFlagOption {
+    public let title: String
+    public let isSelected: Bool
+    public let select: () -> Void
+}
+
+/// See `AnyTestableFlag`.
+public protocol AnyMenuTestableFlag: AnyTestableFlag {
+    var menuOptions: [MenuTestableFlagOption] { get }
+}
+
+/// A `TestableFlag` whose discrete options are presented in a menu.
+public class MenuTestableFlag<Value: CaseIterable & Equatable>:
+    TestableFlag<Value?>,
+    AnyMenuTestableFlag
+{
+    public var menuOptions: [MenuTestableFlagOption] {
+        let selectedValue = get()
+
+        let nilOption = MenuTestableFlagOption(
+            title: "unset",
+            isSelected: selectedValue == nil,
+            select: { [weak self] in
+                self?.set(nil)
+            },
+        )
+
+        return [nilOption] + Value.allCases.map { value in
+            MenuTestableFlagOption(
+                title: String(describing: value),
+                isSelected: selectedValue == value,
+                select: { [weak self] in
+                    self?.set(value)
+                },
+            )
         }
     }
 }

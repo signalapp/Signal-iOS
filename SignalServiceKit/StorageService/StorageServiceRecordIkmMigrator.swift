@@ -75,7 +75,7 @@ struct StorageServiceRecordIkmMigratorImpl: StorageServiceRecordIkmMigrator {
         do {
             try await storageServiceManager.rotateManifest(
                 mode: .alsoRotatingRecords,
-                authedDevice: .implicit,
+                authedAccount: .implicit,
             )
 
             logger.info("Successfully rotated Storage Service manifest.")

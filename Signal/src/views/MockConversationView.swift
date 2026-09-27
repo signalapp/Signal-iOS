@@ -154,7 +154,6 @@ class MockConversationView: UIView {
                 shouldDimWallpaperInDarkMode: shouldDimWallpaperInDarkMode,
                 chatColor: chatColor,
             )
-            let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
             for (item, text) in modelItems {
                 let interaction: TSInteraction
                 switch item {
@@ -172,7 +171,6 @@ class MockConversationView: UIView {
                     let renderItem = CVLoader.buildStandaloneRenderItem(
                         interaction: interaction,
                         thread: self.thread,
-                        threadAssociatedData: threadAssociatedData,
                         conversationStyle: conversationStyle,
                         spoilerState: SpoilerRenderState(),
                         groupNameColors: groupNameColors,

@@ -11,7 +11,7 @@ class GroupCallSwipeToastView: UIView {
 
     private let imageView: UIImageView = {
         let view = UIImageView()
-        view.setTemplateImageName("arrow-up-20", tintColor: .ows_white)
+        view.setTemplateImageName("arrow-up-20", tintColor: .white)
         view.autoSetDimensions(to: .square(20))
         return view
     }()

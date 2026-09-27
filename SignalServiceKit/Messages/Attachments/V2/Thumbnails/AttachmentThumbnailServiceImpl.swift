@@ -29,7 +29,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
         case .originalFits(let image):
             return image
         case .requiresGeneration:
-            return try? await taskQueue.run { [weak self] in
+            return try? await taskQueue.run { [weak self] () async throws(CancellationError) -> UIImage? in
                 return self?.thumbnailImageSync(for: attachmentStream, quality: quality)
             }
         }

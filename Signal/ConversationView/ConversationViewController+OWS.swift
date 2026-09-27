@@ -42,7 +42,7 @@ extension ConversationViewController {
     func clearThreadUnreadFlagIfNecessary() {
         if threadViewModel.isMarkedUnread {
             SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                self.threadViewModel.associatedData.updateWith(
+                self.threadViewModel.threadRecord.updateWith(
                     isMarkedUnread: false,
                     updateStorageService: true,
                     transaction: transaction,
@@ -523,7 +523,7 @@ extension ConversationViewController: SendPaymentViewDelegate {
     public func didSendPayment(success: Bool) {
 
         func paymentSettingsNavigationController() -> OWSNavigationController {
-            let paymentSettingsView = PaymentsSettingsViewController(mode: .standalone, appReadiness: appReadiness)
+            let paymentSettingsView = PaymentsSettingsViewController(mode: .standalone)
             return OWSNavigationController(rootViewController: paymentSettingsView)
         }
 

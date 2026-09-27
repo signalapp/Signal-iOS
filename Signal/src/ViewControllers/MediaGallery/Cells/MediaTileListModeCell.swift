@@ -26,7 +26,6 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
     let separator: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(dynamicProvider: { _ in Theme.tableView2SeparatorColor })
-        view.autoSetDimension(.height, toSize: .hairlineWidth)
         return view
     }()
 
@@ -44,6 +43,7 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
         contentView.addSubview(selectedMaskView)
         contentView.addSubview(selectionButton)
         contentView.addSubview(separator)
+        separator.autoSetDimension(.height, toSize: hairlineWidth)
 
         selectionButton.translatesAutoresizingMaskIntoConstraints = false
     }

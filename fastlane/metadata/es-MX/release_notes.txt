@@ -1,1 +1,1 @@
-• Hemos añadido un atajo de lo más práctico: ahora, en las llamadas grupales de Signal, puedes bajar rápidamente la mano en cuanto empieces a hablar. Con la mano en el corazón, es nuestra función favorita de esta versión.
+• This update introduces a new custom mute option so you can easily specify the exact date and time when you would like to end your moment of silence for notifications in a specific chat.

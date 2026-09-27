@@ -14,8 +14,13 @@ final class CallLinkUpdateMessageSender {
         self.messageSenderJobQueue = messageSenderJobQueue
     }
 
-    func sendCallLinkUpdateMessage(rootKey: CallLinkRootKey, adminPasskey: Data?, tx: DBWriteTransaction) {
-        let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx)!
+    func sendCallLinkUpdateMessage(
+        rootKey: CallLinkRootKey,
+        adminPasskey: Data?,
+        localIdentifiers: LocalIdentifiers,
+        tx: DBWriteTransaction,
+    ) {
+        let localThread = TSContactThread.getOrCreateLocalThread(localIdentifiers: localIdentifiers, tx: tx)
         let callLinkUpdate = OutgoingCallLinkUpdateMessage(
             localThread: localThread,
             rootKey: rootKey,

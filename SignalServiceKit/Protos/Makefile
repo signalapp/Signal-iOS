@@ -15,8 +15,7 @@ signal_service_protos: Specifications/SignalService.proto
 	$(WRAPPER_SCRIPT) --dst-dir=Generated --wrapper-prefix=SSKProto --proto-prefix=SignalServiceProtos --proto-file=SignalService.proto
 
 provisioning_protos: Specifications/Provisioning.proto
-	$(PROTOC) --swift_out=Generated Provisioning.proto
-	$(WRAPPER_SCRIPT) --dst-dir=Generated --wrapper-prefix=ProvisioningProto --proto-prefix=ProvisioningProtos --proto-file=Provisioning.proto
+	$(PROTOC) --swift_out=Generated --swift_opt=Visibility=public --swift_opt=UseAccessLevelOnImports=true Provisioning.proto
 
 fingerprint_protos: Specifications/FingerprintProtocol.proto
 	$(PROTOC) --swift_out=Generated --swift_opt=Visibility=public --swift_opt=UseAccessLevelOnImports=true FingerprintProtocol.proto
@@ -47,7 +46,7 @@ mobilecoin_protos: Specifications/MobileCoinExternal.proto
 	$(PROTOC) --swift_out=Generated MobileCoinExternal.proto
 
 registration_protos: Specifications/Registration.proto
-	$(PROTOC) --swift_out=Generated Registration.proto
+	$(PROTOC) --swift_out=Generated --swift_opt=Visibility=public --swift_opt=UseAccessLevelOnImports=true Registration.proto
 
 backup_protos: Backups/Backup.proto
 	$(PROTOC) --swift_out=Backups --proto_path=Backups --swift_opt=Visibility=public --swift_opt=UseAccessLevelOnImports=true Backup.proto

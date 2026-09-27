@@ -299,7 +299,7 @@ public protocol OWSProgressSource {
 }
 
 extension OWSProgressSource {
-    func complete() {
+    public func complete() {
         incrementCompletedUnitCount(by: totalUnitCount)
     }
 

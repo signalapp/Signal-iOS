@@ -42,7 +42,7 @@ final class BackupAttachmentDownloadTrackerTest: BackupAttachmentTrackerTest<
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 4, total: 4),
                 nextSteps: {
-                    downloadQueueStatusManager.currentStatusMock = .empty
+                    await downloadQueueStatusManager.setCurrentStatusMock(.empty)
                 },
             ),
             ExpectedUpdate(
@@ -70,7 +70,7 @@ final class BackupAttachmentDownloadTrackerTest: BackupAttachmentTrackerTest<
             ExpectedUpdate(
                 update: DownloadUpdate(.suspended, downloaded: 0, total: 4),
                 nextSteps: {
-                    downloadQueueStatusManager.currentStatusMock = .running
+                    await downloadQueueStatusManager.setCurrentStatusMock(.running)
                 },
             ),
             ExpectedUpdate(
@@ -88,7 +88,7 @@ final class BackupAttachmentDownloadTrackerTest: BackupAttachmentTrackerTest<
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 4, total: 4),
                 nextSteps: {
-                    downloadQueueStatusManager.currentStatusMock = .empty
+                    await downloadQueueStatusManager.setCurrentStatusMock(.empty)
                 },
             ),
             ExpectedUpdate(
@@ -118,7 +118,7 @@ final class BackupAttachmentDownloadTrackerTest: BackupAttachmentTrackerTest<
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 50, total: 100),
                 nextSteps: {
-                    downloadQueueStatusManager.currentStatusMock = .lowDiskSpace
+                    await downloadQueueStatusManager.setCurrentStatusMock(.lowDiskSpace)
                 },
             ),
             ExpectedUpdate(
@@ -148,7 +148,7 @@ final class BackupAttachmentDownloadTrackerTest: BackupAttachmentTrackerTest<
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 4, total: 12),
                 nextSteps: {
-                    downloadQueueStatusManager.currentStatusMock = .lowDiskSpace
+                    await downloadQueueStatusManager.setCurrentStatusMock(.lowDiskSpace)
                 },
             ),
             ExpectedUpdate(
@@ -176,7 +176,7 @@ final class BackupAttachmentDownloadTrackerTest: BackupAttachmentTrackerTest<
             ExpectedUpdate(
                 update: DownloadUpdate(.empty, downloaded: 0, total: 4),
                 nextSteps: {
-                    downloadQueueStatusManager.currentStatusMock = .running
+                    await downloadQueueStatusManager.setCurrentStatusMock(.running)
                 },
             ),
             ExpectedUpdate(
@@ -196,7 +196,7 @@ final class BackupAttachmentDownloadTrackerTest: BackupAttachmentTrackerTest<
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 1, total: 1),
                 nextSteps: {
-                    downloadQueueStatusManager.currentStatusMock = .empty
+                    await downloadQueueStatusManager.setCurrentStatusMock(.empty)
                 },
             ),
             ExpectedUpdate(
@@ -221,7 +221,7 @@ final class BackupAttachmentDownloadTrackerTest: BackupAttachmentTrackerTest<
             ExpectedUpdate(
                 update: DownloadUpdate(.empty, downloaded: 0, total: 1),
                 nextSteps: {
-                    downloadQueueStatusManager.currentStatusMock = .running
+                    await downloadQueueStatusManager.setCurrentStatusMock(.running)
                 },
             ),
             ExpectedUpdate(
@@ -233,7 +233,7 @@ final class BackupAttachmentDownloadTrackerTest: BackupAttachmentTrackerTest<
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 1, total: 1),
                 nextSteps: {
-                    downloadQueueStatusManager.currentStatusMock = .empty
+                    await downloadQueueStatusManager.setCurrentStatusMock(.empty)
                 },
             ),
             ExpectedUpdate(
@@ -273,10 +273,10 @@ private class MockAttachmentDownloadProgress: BackupAttachmentDownloadProgressMo
         self.progressMock = OWSProgress(completedUnitCount: precompleted, totalUnitCount: total)
     }
 
-    override func addObserver(_ block: @escaping (OWSProgress) -> Void) async -> BackupAttachmentDownloadProgressObserver {
+    override func addObserver(_ block: @escaping (OWSProgress) -> Void) -> BackupAttachmentDownloadProgressObserver {
         block(progressMock)
         mockObserverBlocks.update { $0.append(block) }
-        return await super.addObserver(block)
+        return super.addObserver(block)
     }
 }
 
@@ -287,17 +287,17 @@ private class MockDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatu
         _ initialStatus: BackupAttachmentDownloadQueueStatus,
         minimumRequiredDiskSpace: UInt64 = 0,
     ) {
-        self.currentStatusMock = initialStatus
+        self._currentStatusMock = initialStatus
         self.minimumRequiredDiskSpaceMock = minimumRequiredDiskSpace
     }
 
-    var currentStatusMock: BackupAttachmentDownloadQueueStatus {
-        didSet {
-            NotificationCenter.default.postOnMainThread(
-                name: .backupAttachmentDownloadQueueStatusDidChange(mode: .fullsize),
-                object: nil,
-            )
-        }
+    private var _currentStatusMock: BackupAttachmentDownloadQueueStatus
+    func setCurrentStatusMock(_ currentStatusMock: BackupAttachmentDownloadQueueStatus) {
+        _currentStatusMock = currentStatusMock
+        NotificationCenter.default.postOnMainThread(
+            name: .backupAttachmentDownloadQueueStatusDidChange(mode: .fullsize),
+            object: nil,
+        )
     }
 
     func currentStatus(for mode: BackupAttachmentDownloadQueueMode) -> BackupAttachmentDownloadQueueStatus {
@@ -307,7 +307,7 @@ private class MockDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatu
         case .thumbnail:
             fatalError("Only fullsize in this test")
         }
-        return currentStatusMock
+        return _currentStatusMock
     }
 
     func currentStatusAndToken(for mode: BackupAttachmentDownloadQueueMode) -> (BackupAttachmentDownloadQueueStatus, BackupAttachmentDownloadQueueStatusToken) {
@@ -317,11 +317,11 @@ private class MockDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatu
         case .thumbnail:
             fatalError("Only fullsize in this test")
         }
-        return (currentStatusMock, MockBackupAttachmentDownloadQueueStatusManager.BackupAttachmentDownloadQueueStatusTokenMock())
+        return (_currentStatusMock, MockBackupAttachmentDownloadQueueStatusManager.BackupAttachmentDownloadQueueStatusTokenMock())
     }
 
     func beginObservingIfNecessary(for mode: BackupAttachmentDownloadQueueMode) -> BackupAttachmentDownloadQueueStatus {
-        return currentStatusMock
+        return _currentStatusMock
     }
 
     func jobDidExperienceError(_ error: any Error, token: any BackupAttachmentDownloadQueueStatusToken, mode: BackupAttachmentDownloadQueueMode) async -> BackupAttachmentDownloadQueueStatus? {

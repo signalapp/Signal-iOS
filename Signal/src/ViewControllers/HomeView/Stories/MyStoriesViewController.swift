@@ -65,10 +65,12 @@ class MyStoriesViewController: OWSViewController, FailedStorySendDisplayControll
 
         reloadStories()
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: OWSLocalizedString("STORY_PRIVACY_SETTINGS", comment: "Button to access the story privacy settings menu"),
-            primaryAction: UIAction { [weak self] _ in self?.showPrivacySettings() },
-        )
+        navigationItem.rightBarButtonItem = .button(title: OWSLocalizedString(
+            "STORY_PRIVACY_SETTINGS",
+            comment: "Button to access the story privacy settings menu",
+        )) { [weak self] in
+            self?.showPrivacySettings()
+        }
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

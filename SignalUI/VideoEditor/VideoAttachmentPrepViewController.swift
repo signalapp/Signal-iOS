@@ -130,7 +130,7 @@ class VideoAttachmentPrepViewController: AttachmentPrepViewController, VideoEdit
         let videoAspectRatio = videoAspectRatio
         let untrimmedDurationSeconds = self.untrimmedDurationSeconds
         let contextSize = CurrentAppContext().frame.size
-        let screenScale = UIScreen.main.scale
+        let displayScale = traitCollection.displayScale
 
         Task { [weak self] in
             do {
@@ -139,7 +139,7 @@ class VideoAttachmentPrepViewController: AttachmentPrepViewController, VideoEdit
                     aspectRatio: videoAspectRatio,
                     thumbnailHeight: VideoTimelineView.thumbnailStripHeight,
                     contextSize: contextSize,
-                    screenScale: screenScale,
+                    screenScale: displayScale,
                     untrimmedDurationSeconds: untrimmedDurationSeconds,
                 )
                 self?.videoThumbnails = thumbnails

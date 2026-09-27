@@ -81,7 +81,7 @@ extension UsernameSelectionViewController {
         func setColorsForCurrentTheme() {
             iconImageView.tintColor = Theme.isDarkThemeEnabled ? .ows_gray02 : .ows_gray90
 
-            iconView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white
+            iconView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .white
 
             usernameDisplayLabel.textColor = Theme.secondaryTextAndIconColor
         }

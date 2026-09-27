@@ -165,24 +165,6 @@ public extension TSMessage {
         for reactor: Aci,
         emoji: String,
         sentAtTimestamp: UInt64,
-        receivedAtTimestamp: UInt64,
-        tx: DBWriteTransaction,
-    ) -> (oldValue: OWSReaction?, newValue: OWSReaction)? {
-        return self.recordReaction(
-            for: reactor,
-            emoji: emoji,
-            sentAtTimestamp: sentAtTimestamp,
-            sortOrder: receivedAtTimestamp,
-            tx: tx,
-        )
-    }
-
-    @discardableResult
-    func recordReaction(
-        for reactor: Aci,
-        emoji: String,
-        sentAtTimestamp: UInt64,
-        sortOrder: UInt64,
         tx: DBWriteTransaction,
     ) -> (oldValue: OWSReaction?, newValue: OWSReaction)? {
         guard !wasRemotelyDeleted else {
@@ -201,7 +183,6 @@ public extension TSMessage {
             reactorAci: reactor,
             reactorPhoneNumber: nil,
             sentAtTimestamp: sentAtTimestamp,
-            sortOrder: receivedAtTimestamp,
         )
 
         newReaction.anyInsert(transaction: tx)

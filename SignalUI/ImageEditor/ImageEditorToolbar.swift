@@ -137,6 +137,11 @@ class ImageEditorToolbar: UIView {
         button.addAction(action, for: .primaryActionTriggered)
     }
 
+    private let contentLayoutGuide = UILayoutGuide()
+    private var contentLayoutGuideLeading: NSLayoutConstraint?
+    private var contentLayoutGuideTrailing: NSLayoutConstraint?
+    private var contentLayoutGuideBottom: NSLayoutConstraint?
+
     private let stackView = UIStackView()
 
     private var areControlsHidden = false
@@ -154,15 +159,21 @@ class ImageEditorToolbar: UIView {
 
         preservesSuperviewLayoutMargins = true
 
-        // We don't want an extra 8dp added to the bottom safe area margin.
-        if UIDevice.current.hasIPhoneXNotch {
-            directionalLayoutMargins.bottom = 0
-        }
-
-        toolButtons.forEach { $0.button.setContentHuggingVerticalHigh() }
+        addLayoutGuide(contentLayoutGuide)
+        let leading = contentLayoutGuide.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor)
+        let trailing = contentLayoutGuide.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor)
+        let bottom = contentLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor)
+        NSLayoutConstraint.activate([
+            contentLayoutGuide.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
+            leading,
+            trailing,
+            bottom,
+        ])
+        contentLayoutGuideLeading = leading
+        contentLayoutGuideTrailing = trailing
+        contentLayoutGuideBottom = bottom
 
         let toolButtonsStack = UIStackView(arrangedSubviews: toolButtons.map { $0.button })
-        toolButtonsStack.isLayoutMarginsRelativeArrangement = true
         toolButtonsStack.spacing = 8
         if #available(iOS 26, *) {
             toolButtonsStack.translatesAutoresizingMaskIntoConstraints = false
@@ -185,26 +196,89 @@ class ImageEditorToolbar: UIView {
         }
         stackView.distribution = .equalSpacing
         stackView.translatesAutoresizingMaskIntoConstraints = false
+
+        // Height of the stack view doesn't change. Calculate it now and use it to define
+        // height of the ImageEditorToolbar via it's `layoutMarginsGuide`.
+        let stackViewHeight = stackView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+
         addSubview(stackView)
         NSLayoutConstraint.activate([
-            stackView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
-            stackView.heightAnchor.constraint(equalTo: layoutMarginsGuide.heightAnchor),
+            stackView.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+
+            stackView.heightAnchor.constraint(equalToConstant: stackViewHeight),
+            contentLayoutGuide.heightAnchor.constraint(equalToConstant: stackViewHeight),
         ])
+
+        updateContentLayoutGuideMargins()
 
         setControlsHidden(false)
     }
 
-    @available(*, unavailable, message: "Use init(buttonProvider:)")
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func safeAreaInsetsDidChange() {
+        super.safeAreaInsetsDidChange()
+
+        updateContentLayoutGuideMargins()
+    }
+
+    override func layoutMarginsDidChange() {
+        super.layoutMarginsDidChange()
+
+        updateContentLayoutGuideMargins()
+    }
+
+    private func updateContentLayoutGuideMargins() {
+        guard let contentLayoutGuideLeading, let contentLayoutGuideTrailing, let contentLayoutGuideBottom else {
+            owsFailBeta("Invalid configuration")
+            return
+        }
+
+        // Bottom margin:
+        //  • 16 dp if there's no bottom safe area inset (home button iPhones)
+        // or
+        //  • amount of bottom safe area inset, capped at  28 dp (notch iPhones, iPads)
+        // Horizontal margins:
+        //  `0` if there's leading / trailing safe area inset (happens on modern iPhones in landscape layout)
+        // or
+        //  if there is a bottom safe area inset - make it same as bottom inset (concentric radius look)
+        // or
+        //  standard inset in all other cases.
+        let bottomMargin: CGFloat
+        var leadingMargin: CGFloat = 0
+        var trailingMargin: CGFloat = 0
+
+        if safeAreaInsets.bottom.isZero {
+            bottomMargin = directionalLayoutMargins.bottom
+            if safeAreaInsets.leading.isZero {
+                leadingMargin = directionalLayoutMargins.leading
+            }
+            if safeAreaInsets.trailing.isZero {
+                trailingMargin = directionalLayoutMargins.trailing
+            }
+        } else {
+            bottomMargin = min(28, safeAreaInsets.bottom)
+            if safeAreaInsets.leading.isZero {
+                leadingMargin = bottomMargin
+            }
+            if safeAreaInsets.trailing.isZero {
+                trailingMargin = bottomMargin
+            }
+        }
+
+        contentLayoutGuideLeading.constant = leadingMargin
+        contentLayoutGuideTrailing.constant = -trailingMargin
+        contentLayoutGuideBottom.constant = -bottomMargin
     }
 
     func setControlsHidden(_ hidden: Bool) {
         guard hidden != areControlsHidden || stackViewPositionConstraint == nil else { return }
 
         if let stackViewPositionConstraint {
-            removeConstraint(stackViewPositionConstraint)
+            NSLayoutConstraint.deactivate([stackViewPositionConstraint])
             self.stackViewPositionConstraint = nil
         }
 
@@ -212,9 +286,9 @@ class ImageEditorToolbar: UIView {
         if hidden {
             stackViewPositionConstraint = stackView.topAnchor.constraint(equalTo: bottomAnchor)
         } else {
-            stackViewPositionConstraint = stackView.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor)
+            stackViewPositionConstraint = stackView.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor)
         }
-        addConstraint(stackViewPositionConstraint)
+        NSLayoutConstraint.activate([stackViewPositionConstraint])
         self.stackViewPositionConstraint = stackViewPositionConstraint
 
         areControlsHidden = hidden

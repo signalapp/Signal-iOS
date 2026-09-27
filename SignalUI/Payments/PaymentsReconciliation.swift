@@ -14,7 +14,7 @@ public class PaymentsReconciliation {
 
     public init(appReadiness: AppReadiness) {
         self.appReadiness = appReadiness
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [self] in
             // Note: this isn't how often we perform reconciliation, it's how often we
             // check whether we should perform reconciliation.
             //

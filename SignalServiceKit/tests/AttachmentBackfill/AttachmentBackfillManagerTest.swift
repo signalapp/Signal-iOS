@@ -70,10 +70,7 @@ class AttachmentBackfillManagerTest: SSKBaseTest {
     // MARK: - handleAttachmentBackfillInboundRequest
 
     func testEnqueue_dropsRequestIfNotPrimary() {
-        let registeredState = try! RegisteredState(
-            registrationState: .provisioned,
-            localIdentifiers: localIdentifiers,
-        )
+        let registeredState = try! RegisteredState(registrationState: .provisioned(localIdentifiers))
 
         let requestProto = buildBackfillRequestProto(
             authorAci: otherAci,
@@ -96,10 +93,7 @@ class AttachmentBackfillManagerTest: SSKBaseTest {
     }
 
     func testEnqueue_sendsMessageNotFoundWhenTargetMissing() {
-        let registeredState = try! RegisteredState(
-            registrationState: .registered,
-            localIdentifiers: localIdentifiers,
-        )
+        let registeredState = try! RegisteredState(registrationState: .registered(localIdentifiers))
 
         let requestProto = buildBackfillRequestProto(
             authorAci: otherAci,

@@ -9,12 +9,12 @@ import SignalUI
 final class DebugLogPreviewViewController: OWSViewController {
 
     private let textView = UITextView()
-    private let logFilePaths: [String]
+    private let spinner = UIActivityIndicatorView(style: .large)
+    private var submitButton: UIButton?
     private let onSubmit: (() -> Void)?
     private let onCancel: (() -> Void)?
 
-    init(logFilePaths: [String], onSubmit: (() -> Void)? = nil, onCancel: (() -> Void)? = nil) {
-        self.logFilePaths = logFilePaths
+    init(onSubmit: (() -> Void)? = nil, onCancel: (() -> Void)? = nil) {
         self.onSubmit = onSubmit
         self.onCancel = onCancel
         super.init()
@@ -22,8 +22,6 @@ final class DebugLogPreviewViewController: OWSViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        loadLogs()
 
         title = OWSLocalizedString(
             "DEBUG_LOG_PREVIEW_TITLE",
@@ -75,6 +73,10 @@ final class DebugLogPreviewViewController: OWSViewController {
         textView.textContainer.lineFragmentPadding = 0
         textView.verticalScrollIndicatorInsets = .init(hMargin: 0, vMargin: OWSTableViewController2.cellRounding / 2)
 
+        cellContainer.addSubview(spinner)
+        spinner.autoCenterInSuperview()
+        spinner.startAnimating()
+
         if let onSubmit {
             cellContainer.setContentHuggingPriority(.defaultLow, for: .vertical)
 
@@ -87,6 +89,8 @@ final class DebugLogPreviewViewController: OWSViewController {
                     onSubmit()
                 },
             )
+            submitButton.isEnabled = false
+            self.submitButton = submitButton
             stackView.addArrangedSubview(submitButton)
             submitButton.autoPinWidthToSuperviewMargins()
         }
@@ -97,8 +101,19 @@ final class DebugLogPreviewViewController: OWSViewController {
         navigationController?.presentationController?.delegate = self
     }
 
-    private func loadLogs() {
-        self.textView.text = self.logFilePaths.reduce(
+    func loadLogs(logFilePaths: [String]) {
+        Task { @MainActor in
+            let logText = await Self.readLogText(logFilePaths: logFilePaths)
+            self.spinner.stopAnimating()
+            self.spinner.removeFromSuperview()
+            self.textView.text = logText
+            self.submitButton?.isEnabled = true
+        }
+    }
+
+    @concurrent
+    private static func readLogText(logFilePaths: [String]) async -> String {
+        return logFilePaths.reduce(
             into: "",
         ) { partialResult, logFilePath in
             do {

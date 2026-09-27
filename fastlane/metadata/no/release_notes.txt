@@ -1,1 +1,1 @@
-• Vi har lagt til en snarvei for å ta ned hånden raskt når du tar ordet i gruppesamtaler på Signal.
+• This update introduces a new custom mute option so you can easily specify the exact date and time when you would like to end your moment of silence for notifications in a specific chat.

@@ -89,7 +89,7 @@ class ZkParamsMigrator {
                     profileManager.reuploadLocalProfile(
                         unsavedRotatedProfileKey: nil,
                         mustReuploadAvatar: false,
-                        authedAccount: .implicit(),
+                        authedAccount: .implicit,
                         tx: tx,
                     )
                 }

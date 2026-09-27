@@ -30,29 +30,23 @@ public struct MediaRootBackupKey: BackupKeyMaterial {
         self.backupKey = backupKey
     }
 
-    public func deriveMediaId(_ mediaName: String) throws(BackupKeyMaterialError) -> Data {
-        do {
+    public func deriveMediaId(_ mediaName: String) -> Data {
+        return failIfThrows {
             return try backupKey.deriveMediaId(mediaName)
-        } catch {
-            throw BackupKeyMaterialError.derivationError(error)
         }
     }
 
     public func mediaEncryptionMetadata(
         mediaName: String,
         type: MediaTierEncryptionType,
-    ) throws(BackupKeyMaterialError) -> MediaTierEncryptionMetadata {
-        let mediaId = try self.deriveMediaId(mediaName)
+    ) -> MediaTierEncryptionMetadata {
+        let mediaId = self.deriveMediaId(mediaName)
         let keyBytes: Data
-        do {
-            switch type {
-            case .outerLayerFullsizeOrThumbnail:
-                keyBytes = try backupKey.deriveMediaEncryptionKey(mediaId)
-            case .transitTierThumbnail:
-                keyBytes = try backupKey.deriveThumbnailTransitEncryptionKey(mediaId)
-            }
-        } catch {
-            throw BackupKeyMaterialError.derivationError(error)
+        switch type {
+        case .outerLayerFullsizeOrThumbnail:
+            keyBytes = failIfThrows { try backupKey.deriveMediaEncryptionKey(mediaId) }
+        case .transitTierThumbnail:
+            keyBytes = failIfThrows { try backupKey.deriveThumbnailTransitEncryptionKey(mediaId) }
         }
         owsPrecondition(keyBytes.count >= 64)
         return MediaTierEncryptionMetadata(

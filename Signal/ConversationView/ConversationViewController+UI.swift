@@ -73,6 +73,83 @@ extension ConversationViewController {
 
     public var unreadCountViewDiameter: CGFloat { 16 }
 
+    private class JoinGroupCallButton: UIButton {
+
+        private var verticalMarginConstraint: NSLayoutConstraint?
+        private let iconImageView = UIImageView()
+
+        init(title: String, primaryAction: UIAction) {
+            super.init(frame: .zero)
+
+            addAction(primaryAction, for: .primaryActionTriggered)
+
+            iconImageView.image = if #available(iOS 26, *) { .videoFill } else { .videoFill20 }
+            iconImageView.tintColor = .white
+
+            let titleLabel = UILabel()
+            titleLabel.text = title
+            titleLabel.font = .dynamicTypeSubheadlineClamped.semibold()
+            titleLabel.textColor = .white
+
+            let stackView = UIStackView(arrangedSubviews: [iconImageView, titleLabel])
+            stackView.spacing = 4
+            stackView.alignment = .center
+            stackView.translatesAutoresizingMaskIntoConstraints = false
+
+            let buttonContentView: UIView
+            if #available(iOS 26, *) {
+                buttonContentView = UIView()
+            } else {
+                buttonContentView = PillView()
+                buttonContentView.backgroundColor = .Signal.green
+            }
+
+            buttonContentView.isUserInteractionEnabled = false
+            buttonContentView.translatesAutoresizingMaskIntoConstraints = false
+            buttonContentView.addSubview(stackView)
+            // We're keeping the reference to this constraint to update it for compact vertical size classes.
+            verticalMarginConstraint = stackView.topAnchor.constraint(equalTo: buttonContentView.topAnchor)
+            NSLayoutConstraint.activate([
+                verticalMarginConstraint!,
+                stackView.centerYAnchor.constraint(equalTo: buttonContentView.centerYAnchor),
+
+                // Can't use layout margins here because UIKit will mess those up during portrait-landscape rotation.
+                stackView.leadingAnchor.constraint(equalTo: buttonContentView.leadingAnchor, constant: 12),
+                stackView.centerXAnchor.constraint(equalTo: buttonContentView.centerXAnchor),
+            ])
+
+            addSubview(buttonContentView)
+            NSLayoutConstraint.activate([
+                buttonContentView.topAnchor.constraint(equalTo: topAnchor, constant: 2),
+                buttonContentView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                buttonContentView.trailingAnchor.constraint(equalTo: trailingAnchor),
+                buttonContentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2),
+            ])
+
+            updateLayoutForCurrentTraitCollection()
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+            super.traitCollectionDidChange(previousTraitCollection)
+            if traitCollection.verticalSizeClass != previousTraitCollection?.verticalSizeClass {
+                updateLayoutForCurrentTraitCollection()
+            }
+        }
+
+        private func updateLayoutForCurrentTraitCollection() {
+            // iOS 26 doesn't shrink navigation bar vertically.
+            guard #unavailable(iOS 26), let verticalMarginConstraint else { return }
+
+            let isVerticallyCompact = traitCollection.verticalSizeClass == .compact
+            iconImageView.image = isVerticallyCompact ? .videoFillCompact : .videoFill20
+            verticalMarginConstraint.constant = isVerticallyCompact ? 4 : 8
+        }
+    }
+
     public func updateBarButtonItems() {
         AssertIsOnMainThread()
 
@@ -83,12 +160,7 @@ extension ConversationViewController {
         if #unavailable(iOS 26) {
             // Don't include "Back" text on view controllers pushed above us, just use the arrow.
             // iOS 26 already doesn't show back button text
-            navigationItem.backBarButtonItem = UIBarButtonItem(
-                title: "",
-                style: .plain,
-                target: nil,
-                action: nil,
-            )
+            navigationItem.backBarButtonItem = .button(title: "") {}
         }
 
         navigationItem.hidesBackButton = false
@@ -121,25 +193,25 @@ extension ConversationViewController {
                     let videoCallButton = UIBarButtonItem()
 
                     if conversationViewModel.groupCallInProgress {
-                        let pill = JoinGroupCallPill()
-                        pill.addAction(
-                            UIAction { [weak self] _ in self?.showGroupLobbyOrActiveCall() },
-                            for: .primaryActionTriggered,
+                        let buttonTitle = isCurrentCallForThread
+                            ? OWSLocalizedString(
+                                "RETURN_CALL_PILL_BUTTON",
+                                comment: "Button to return to current group call",
+                            )
+                            : CallStrings.joinCallPillButtonTitle
+                        videoCallButton.customView = JoinGroupCallButton(
+                            title: buttonTitle,
+                            primaryAction: UIAction { [weak self] _ in self?.showGroupLobbyOrActiveCall() },
                         )
-                        let returnString = OWSLocalizedString(
-                            "RETURN_CALL_PILL_BUTTON",
-                            comment: "Button to return to current group call",
-                        )
-                        pill.buttonText = self.isCurrentCallForThread ? returnString : CallStrings.joinCallPillButtonTitle
-                        videoCallButton.customView = pill
 
                         if #available(iOS 26, *) {
                             videoCallButton.tintColor = UIColor.Signal.green
                             videoCallButton.style = .prominent
                         }
                     } else {
-                        videoCallButton.image = Theme.iconImage(.buttonVideoCall)
-                        videoCallButton.primaryAction = UIAction { [weak self] _ in self?.showGroupLobbyOrActiveCall() }
+                        videoCallButton.primaryAction = UIAction(
+                            image: Theme.iconImage(.buttonVideoCall),
+                        ) { [weak self] _ in self?.showGroupLobbyOrActiveCall() }
                     }
 
                     videoCallButton.isEnabled = (
@@ -153,10 +225,9 @@ extension ConversationViewController {
                     groupCallBarButtonItem = videoCallButton
                     barButtons.append(videoCallButton)
                 } else {
-                    let audioCallButton = UIBarButtonItem(
-                        image: Theme.iconImage(.buttonVoiceCall),
-                        primaryAction: UIAction { [weak self] _ in self?.startIndividualAudioCall() },
-                    )
+                    let audioCallButton = UIBarButtonItem.button(icon: .buttonVoiceCall) { [weak self] in
+                        self?.startIndividualAudioCall()
+                    }
                     audioCallButton.isEnabled = AppEnvironment.shared.callService.callServiceState.currentCall == nil
                     audioCallButton.accessibilityLabel = OWSLocalizedString(
                         "VOICE_CALL_LABEL",
@@ -164,10 +235,9 @@ extension ConversationViewController {
                     )
                     barButtons.append(audioCallButton)
 
-                    let videoCallButton = UIBarButtonItem(
-                        image: Theme.iconImage(.buttonVideoCall),
-                        primaryAction: UIAction { [weak self] _ in self?.startIndividualVideoCall() },
-                    )
+                    let videoCallButton = UIBarButtonItem.button(icon: .buttonVideoCall) { [weak self] in
+                        self?.startIndividualVideoCall()
+                    }
                     videoCallButton.isEnabled = AppEnvironment.shared.callService.callServiceState.currentCall == nil
                     videoCallButton.accessibilityLabel = OWSLocalizedString(
                         "VIDEO_CALL_LABEL",
@@ -188,6 +258,7 @@ extension ConversationViewController {
             image: icon,
             menu: ConversationSettingsViewController.muteUnmuteMenu(
                 for: threadViewModel,
+                from: self,
                 actionExecuted: {},
             ),
         )
@@ -199,14 +270,6 @@ extension ConversationViewController {
     }
 
     public func updateNavigationBarSubtitleLabel() {
-        AssertIsOnMainThread()
-
-        // Shorter, more vertically compact navigation bar doesn't have second line of text.
-        if #unavailable(iOS 26), !UIDevice.current.isPlusSizePhone, traitCollection.verticalSizeClass == .compact {
-            headerView.subtitleLabel.text = nil
-            return
-        }
-
         let subtitleText = NSMutableAttributedString()
         let subtitleFont = headerView.subtitleLabel.font!
         // To ensure a single source of text color do not set `color` attributes unless you really need to.

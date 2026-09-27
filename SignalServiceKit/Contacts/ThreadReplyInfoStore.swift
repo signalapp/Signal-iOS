@@ -6,13 +6,13 @@
 import Foundation
 
 public class ThreadReplyInfoStore {
-    private let keyValueStore: KeyValueStore
+    private let keyValueStore: NewKeyValueStore
     init() {
-        self.keyValueStore = KeyValueStore(collection: "TSThreadReplyInfo")
+        self.keyValueStore = NewKeyValueStore(collection: "TSThreadReplyInfo")
     }
 
     public func fetch(for threadUniqueId: String, tx: DBReadTransaction) -> ThreadReplyInfo? {
-        guard let dataValue = keyValueStore.getData(threadUniqueId, transaction: tx) else {
+        guard let dataValue = keyValueStore.fetchValue(Data.self, forKey: threadUniqueId, tx: tx) else {
             return nil
         }
         return try? JSONDecoder().decode(ThreadReplyInfo.self, from: dataValue)
@@ -26,10 +26,10 @@ public class ThreadReplyInfoStore {
             owsFailDebug("Can't encode ThreadReplyInfo")
             return
         }
-        keyValueStore.setData(dataValue, key: threadUniqueId, transaction: tx)
+        keyValueStore.writeValue(dataValue, forKey: threadUniqueId, tx: tx)
     }
 
     public func remove(for threadUniqueId: String, tx: DBWriteTransaction) {
-        keyValueStore.removeValue(forKey: threadUniqueId, transaction: tx)
+        keyValueStore.removeValue(forKey: threadUniqueId, tx: tx)
     }
 }

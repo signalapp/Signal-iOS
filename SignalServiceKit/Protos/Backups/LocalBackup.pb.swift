@@ -24,12 +24,12 @@ public import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
 
-public struct LocalBackupProto_Metadata: Sendable {
+public nonisolated struct LocalBackupProto_Metadata: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -48,7 +48,7 @@ public struct LocalBackupProto_Metadata: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public struct EncryptedBackupId: Sendable {
+  public nonisolated struct EncryptedBackupId: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -69,7 +69,7 @@ public struct LocalBackupProto_Metadata: Sendable {
   fileprivate var _backupID: LocalBackupProto_Metadata.EncryptedBackupId? = nil
 }
 
-public struct LocalBackupProto_FilesFrame: Sendable {
+public nonisolated struct LocalBackupProto_FilesFrame: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -86,7 +86,7 @@ public struct LocalBackupProto_FilesFrame: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public enum OneOf_Item: Equatable, Sendable {
+  public nonisolated enum OneOf_Item: Equatable, Sendable {
     case mediaName(String)
 
   }
@@ -96,9 +96,9 @@ public struct LocalBackupProto_FilesFrame: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "signal.backup.local"
+fileprivate nonisolated let _protobuf_package = "signal.backup.local"
 
-extension LocalBackupProto_Metadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension LocalBackupProto_Metadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Metadata"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}version\0\u{1}backupId\0")
 
@@ -137,7 +137,7 @@ extension LocalBackupProto_Metadata: SwiftProtobuf.Message, SwiftProtobuf._Messa
   }
 }
 
-extension LocalBackupProto_Metadata.EncryptedBackupId: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension LocalBackupProto_Metadata.EncryptedBackupId: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = LocalBackupProto_Metadata.protoMessageName + ".EncryptedBackupId"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}iv\0\u{1}encryptedId\0")
 
@@ -172,7 +172,7 @@ extension LocalBackupProto_Metadata.EncryptedBackupId: SwiftProtobuf.Message, Sw
   }
 }
 
-extension LocalBackupProto_FilesFrame: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension LocalBackupProto_FilesFrame: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FilesFrame"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}mediaName\0")
 

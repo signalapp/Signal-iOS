@@ -374,6 +374,13 @@ public enum CommonStrings {
             comment: "Displayed in a full screen modal when joining a group via an invite link",
         )
     }
+
+    public static var tryAgainButton: String {
+        OWSLocalizedString(
+            "TRY_AGAIN_BUTTON_TITLE",
+            comment: "Label for a button that says 'Try Again'.",
+        )
+    }
 }
 
 // MARK: -

@@ -360,7 +360,8 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
     // MARK: - Call Links
 
     private func fetchName(forCallLink callLink: CallLink) async throws -> String? {
-        let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
+        let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+        let localIdentifiers = registeredState.localIdentifiers
         let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
         let callLinkState = try await CallLinkFetcherImpl().readCallLink(callLink.rootKey, authCredential: authCredential)
         return callLinkState.name

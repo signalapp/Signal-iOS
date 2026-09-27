@@ -541,7 +541,7 @@ public class TaskQueueLoaderTest: XCTestCase {
                     await withCheckedContinuation { continuation in
                         cancelContinuation = continuation
                     }
-                    try await loader.stop(reason: MockError())
+                    await loader.stop(reason: MockError())
                 }
                 try await taskGroup.waitForAll()
             }
@@ -568,7 +568,7 @@ public class TaskQueueLoaderTest: XCTestCase {
         var mainTask: Task<Void, Error>!
         runner.taskRunner = { [weak loader] id in
             if id == 1 {
-                try! await loader?.stop(reason: MockError())
+                await loader?.stop(reason: MockError())
                 return .success
             } else {
                 while true {

@@ -328,7 +328,6 @@ public class GRDBSchemaMigrator {
         case dropAttachmentContentTypeAUTrigger
         case addOrphanedAttachmentTimestamp
         case migrateSecureValueRecovery
-        case wipeCachedSVRBAuthCredentials
         case addMimeTypeToMessageAttachmentReference
         case purgeMyStoryDeletedAtTimestamp
         case addRecoverablePlaceholderExpirationIndex
@@ -352,6 +351,20 @@ public class GRDBSchemaMigrator {
         case addGroup
         case removeInteractionAttachmentIdsIndex
         case rebuildInteractionTimestampIndex
+        case addGroupRefreshedAt
+        case rebuildInteractionUnendedGroupCallIndex
+        case migrateNotificationPreferences
+        case addGroupsPendingRestore
+        case deleteObsoleteGroupMembers
+        case rebuildInteractionGroupCallEraIdIndex
+        case moveFromThreadAssociatedData
+        case rebuildInteractionStoryReplyIndex
+        case addShouldNotifyWhenMutedColumns
+        case preserveCallsWhenMutedForExistingUsers
+        case migrateSomeKeyValueStores
+        case removeInteractionConversationLoadCountIndex
+        case removeObsoleteThreadReferences
+        case removeInteractionConversationLoadDistanceIndex
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -384,17 +397,13 @@ public class GRDBSchemaMigrator {
         case dataMigration_removeOversizedGroupAvatars
         case dataMigration_populateGroupMember
         case dataMigration_cullInvalidIdentityKeySendingErrors
-        case dataMigration_moveToThreadAssociatedData
         case dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarDataFixed
         case dataMigration_repairAvatar
-        case dataMigration_dropEmojiAvailabilityStore
         case dataMigration_dropSentStories
-        case dataMigration_deleteOldGroupCapabilities
         case dataMigration_removeGroupStoryRepliesFromSearchIndex
         case dataMigration_populateStoryContextAssociatedDataLastReadTimestamp
         case dataMigration_ensureLocalDeviceId
         case dataMigration_indexSearchableNames
-        case dataMigration_removeSystemContacts
         case dataMigration_clearLaunchScreenCache2
         case dataMigration_resetLinkedDeviceAuthorMergeBuilder
 
@@ -412,7 +421,9 @@ public class GRDBSchemaMigrator {
         case addPaymentModels37
         case addPaymentModels39
         case dataMigration_clearLaunchScreenCache
+        case dataMigration_deleteOldGroupCapabilities
         case dataMigration_disableLinkPreviewForExistingUsers
+        case dataMigration_dropEmojiAvailabilityStore
         case dataMigration_fixThreeSixteenDowngraders
         case dataMigration_kbsStateCleanup
         case dataMigration_markAvatarBuilderMegaphoneCompleteIfNecessary
@@ -422,6 +433,7 @@ public class GRDBSchemaMigrator {
         case dataMigration_populateLastReceivedStoryTimestamp
         case dataMigration_recordMessageRequestInteractionIdEpoch
         case dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarData
+        case dataMigration_removeSystemContacts
         case dataMigration_rotateStorageServiceKeyAndResetLocalData
         case dataMigration_rotateStorageServiceKeyAndResetLocalDataV2
         case dataMigration_rotateStorageServiceKeyAndResetLocalDataV3
@@ -443,6 +455,7 @@ public class GRDBSchemaMigrator {
         case signalAccount_add_contactAvatar
         case signalAccount_add_contactAvatarData
         case signalAccount_add_contactAvatarPngData
+        case wipeCachedSVRBAuthCredentials
 
         // This used to insert `media_gallery_record` rows for every message
         // attachment. This table is now obsolete.
@@ -474,11 +487,14 @@ public class GRDBSchemaMigrator {
         // Obsoleted by addGroup.
         case dataMigration_groupIdMapping
         case removeDeadEndGroupThreadIdMappings
+
+        // Obsoleted by moveFromThreadAssociatedData
+        case dataMigration_moveToThreadAssociatedData
 #endif
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 156
+    public static let grdbSchemaVersionLatest: UInt = 160
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -1591,7 +1607,6 @@ public class GRDBSchemaMigrator {
         migrator.registerMigration(.removeEarlyReceiptTables) { transaction in
             try transaction.database.drop(table: "model_TSRecipientReadReceipt")
             try transaction.database.drop(table: "model_OWSLinkedDeviceReadReceipt")
-            try transaction.database.execute(sql: "DELETE FROM keyvalue WHERE collection = ?", arguments: ["viewOnceMessages"])
             return .success(())
         }
 
@@ -4877,7 +4892,6 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.addPreKey) { tx in
             try createPreKey(tx: tx)
-            try dropOldPreKeys(tx: tx)
             return .success(())
         }
 
@@ -5011,10 +5025,6 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.addSession) { tx in
             try createSession(tx: tx)
-            if BuildFlags.migrateDeprecatedSessions {
-                try migrateSessions(tx: tx)
-            }
-            try dropOldSessions(tx: tx)
             return .success(())
         }
 
@@ -5189,14 +5199,6 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
-        migrator.registerMigration(.wipeCachedSVRBAuthCredentials) { tx in
-            try tx.database.execute(sql: """
-            DELETE FROM keyvalue
-            WHERE collection = 'SVR🐝AuthCredential'
-            """)
-            return .success(())
-        }
-
         migrator.registerMigration(.addMimeTypeToMessageAttachmentReference) { tx in
             try Self.addMimeTypeToMessageAttachmentReference(tx: tx)
             return .success(())
@@ -5279,8 +5281,6 @@ public class GRDBSchemaMigrator {
             try renamer.renameKey("kOWS2FAManager_LastSuccessfulReminderDateKey", toKey: "LastSuccessfulReminderDate", tx: tx)
             try renamer.renameKey("kOWS2FAManager_PinCode", toKey: "PinCode", tx: tx)
             try renamer.renameKey("kOWS2FAManager_RepetitionInterval", toKey: "RepetitionInterval", tx: tx)
-            // Delete anything that might be orphaned.
-            try tx.database.execute(sql: "DELETE FROM keyvalue WHERE collection = 'kOWS2FAManager_Collection'")
             try setHasEverHadPin(tx: tx)
             return .success(())
         }
@@ -5474,7 +5474,6 @@ public class GRDBSchemaMigrator {
         migrator.registerMigration(.addPinnedThread) { tx in
             try addPinnedThread(tx: tx)
             try migratePinnedThreads(tx: tx)
-            try removeOldPinnedThreads(tx: tx)
             return .success(())
         }
 
@@ -5492,6 +5491,164 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.rebuildInteractionTimestampIndex) { tx in
             try rebuildInteractionTimestampIndex(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addGroupRefreshedAt) { tx in
+            try addGroupRefreshedAt(tx: tx)
+            try migrateGroupRefreshedAt(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.rebuildInteractionUnendedGroupCallIndex) { tx in
+            try rebuildInteractionUnendedGroupCallIndex(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.migrateNotificationPreferences) { tx in
+            try migrateNotificationPreferences(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addGroupsPendingRestore) { tx in
+            try addGroupsPendingRestore(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.deleteObsoleteGroupMembers) { tx in
+            try tx.database.execute(sql: """
+            DELETE FROM "model_TSGroupMember" WHERE "groupThreadId" NOT IN (SELECT "uniqueId" FROM model_TSThread)
+            """)
+            return .success(())
+        }
+
+        migrator.registerMigration(.rebuildInteractionGroupCallEraIdIndex) { tx in
+            try rebuildInteractionGroupCallEraIdIndex(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.moveFromThreadAssociatedData) { tx in
+            try moveFromThreadAssociatedData(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.rebuildInteractionStoryReplyIndex) { tx in
+            try rebuildInteractionStoryReplyIndex(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addShouldNotifyWhenMutedColumns) { tx in
+            try addShouldNotifyWhenMutedColumns(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.preserveCallsWhenMutedForExistingUsers) { tx in
+            try preserveCallsWhenMutedForExistingUsers(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.migrateSomeKeyValueStores) { tx in
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "BackupBGProcessingTaskRunner")
+                try migrator.migrateDate("lastCompletionDate", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "BackupDisablingManager")
+                try migrator.migrateString("aepBeingRotated", tx: tx)
+                try migrator.migrateBool("remoteDisablingFailed", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "FlipCameraButton")
+                try migrator.migrateBool("tooltipWasSeen", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "GroupCallViewController")
+                try migrator.migrateBool("didUserSwipeToSpeakerView", tx: tx)
+                try migrator.migrateBool("didUserSwipeToScreenShare", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "DoubleTapToEdit")
+                try migrator.migrateBool("hasSeenOnboarding", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "AttachmentSaving")
+                try migrator.migrateBool("shouldShowSaveMediaActionSheet", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "ComposeSupportEmailOperation")
+                try migrator.migrateDate("lastChallengeDateKey", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "PaymentSettings")
+                try migrator.migrateBool("PaymentsSavePassphraseShown", tx: tx)
+                try migrator.migrateBool("PaymentsSavePassphraseHelpCardEnabled", tx: tx)
+                try migrator.migrateBool("hasReviewedPassphrase", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "paymentsHelpCardStore")
+                try migrator.fetchKeys(tx: tx).forEach { try migrator.migrateString($0, tx: tx) }
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "ChatListFilterStore")
+                try migrator.migrateInt64("inboxFilter", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "FailedNSELaunches")
+                try migrator.migrateInt64("promptCount", tx: tx)
+                try migrator.migrateDate("mostRecentPromptDate", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "SendPaymentView")
+                try migrator.migrateBool("wasLastPaymentInFiat", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "ChatColorPicker")
+                try migrator.migrateBool("tooltipWasDismissed", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "CustomColorPreviewView")
+                try migrator.migrateBool("tooltipWasDismissed", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "GetStartedBannerViewController")
+                try migrator.fetchKeys(tx: tx).forEach { try migrator.migrateBool($0, tx: tx) }
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "FullTextSearchOptimizer")
+                try migrator.migrateInt64("version", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "RecipientPicker.contactAccess")
+                try migrator.migrateBool("shouldShowNotAllowedReminder", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "AccountEntropyPool")
+                try migrator.migrateString("aep", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "RegistrationIdMismatchManagerImpl")
+                try migrator.migrateBool("haveRegistrationIdsBeenChecked", tx: tx)
+                try migrator.migrateBool("hasRecordedSuspectedIssue", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "BackupOversizeTextCacheStore")
+                try migrator.migrateInt64("lastRestoredRowIdKey", tx: tx)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.removeInteractionConversationLoadCountIndex) { tx in
+            try removeInteractionConversationLoadCountIndex(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.removeObsoleteThreadReferences) { tx in
+            try removeObsoleteThreadReferences(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.removeInteractionConversationLoadDistanceIndex) { tx in
+            try removeInteractionConversationLoadDistanceIndex(tx: tx)
             return .success(())
         }
 
@@ -5621,7 +5778,7 @@ public class GRDBSchemaMigrator {
                     )
                     let memberRecord = TSGroupMember(
                         address: newAddress,
-                        groupThreadId: groupThread.uniqueId,
+                        threadUniqueId: groupThread.uniqueId,
                         lastInteractionTimestamp: latestInteraction?.timestamp ?? 0,
                     )
                     memberRecord.anyInsert(transaction: transaction)
@@ -5640,28 +5797,6 @@ public class GRDBSchemaMigrator {
                 arguments: [SDSRecordType.invalidIdentityKeySendingErrorMessage.rawValue],
             )
             return .success(())
-        }
-
-        migrator.registerMigration(.dataMigration_moveToThreadAssociatedData) { transaction in
-            var thrownError: Error?
-            TSThread.anyEnumerate(transaction: transaction) { thread, stop in
-                do {
-                    try ThreadAssociatedData(
-                        threadUniqueId: thread.uniqueId,
-                        isArchived: thread.isArchivedObsolete,
-                        isMarkedUnread: thread.isMarkedUnreadObsolete,
-                        mutedUntilTimestamp: thread.mutedUntilTimestampObsolete,
-                        // audioPlaybackRate and lastVerifiedGroupNameHash didn't exist pre-migration,
-                        // just write the default
-                        audioPlaybackRate: 1,
-                        lastVerifiedGroupNameHash: nil,
-                    ).insert(transaction.database)
-                } catch {
-                    thrownError = error
-                    stop = true
-                }
-            }
-            return thrownError.map { .failure($0) } ?? .success(())
         }
 
         migrator.registerMigration(.dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarDataFixed) { transaction in
@@ -5712,29 +5847,10 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_dropEmojiAvailabilityStore) { transaction in
-            // This is a bit of a layering violation, since these tables were previously managed in the app layer.
-            // In the long run we'll have a general "unused KeyValueStore cleaner" migration,
-            // but for now this should drop 2000 or so rows for free.
-            KeyValueStore(collection: "Emoji+availableStore").removeAll(transaction: transaction)
-            KeyValueStore(collection: "Emoji+metadataStore").removeAll(transaction: transaction)
-            return .success(())
-        }
-
         migrator.registerMigration(.dataMigration_dropSentStories) { transaction in
             let sql = """
                 DELETE FROM \(StoryMessage.databaseTableName)
                 WHERE \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.outgoing.rawValue)
-            """
-            try transaction.database.execute(sql: sql)
-            return .success(())
-        }
-
-        migrator.registerMigration(.dataMigration_deleteOldGroupCapabilities) { transaction in
-            let sql = """
-                DELETE FROM \(KeyValueStore.tableName)
-                WHERE \(KeyValueStore.collectionColumnName)
-                IN ("GroupManager.senderKeyCapability", "GroupManager.announcementOnlyGroupsCapability", "GroupManager.groupsV2MigrationCapability")
             """
             try transaction.database.execute(sql: sql)
             return .success(())
@@ -5791,20 +5907,6 @@ public class GRDBSchemaMigrator {
             """)
             let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
             searchableNameIndexer.indexEverything(tx: tx)
-            return .success(())
-        }
-
-        migrator.registerMigration(.dataMigration_removeSystemContacts) { transaction in
-            let keyValueCollections = [
-                "ContactsManagerCache.uniqueIdStore",
-                "ContactsManagerCache.phoneNumberStore",
-                "ContactsManagerCache.allContacts",
-            ]
-
-            for collection in keyValueCollections {
-                KeyValueStore(collection: collection).removeAll(transaction: transaction)
-            }
-
             return .success(())
         }
 
@@ -7241,7 +7343,7 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    public static func removeInteractionThreadUniqueIdUniqueIdIndex(tx: DBWriteTransaction) throws {
+    private static func removeInteractionThreadUniqueIdUniqueIdIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(
             sql: """
             DROP INDEX IF EXISTS "index_interactions_on_uniqueId_and_threadUniqueId"
@@ -7249,7 +7351,7 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    public static func rebuildDisappearingMessagesIndex(tx: DBWriteTransaction) throws {
+    private static func rebuildDisappearingMessagesIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(
             sql: """
             DROP INDEX IF EXISTS "index_interactions_on_expiresInSeconds_and_expiresAt"
@@ -7264,7 +7366,7 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    public static func removeInteractionAttachmentIdsIndex(tx: DBWriteTransaction) throws {
+    private static func removeInteractionAttachmentIdsIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(
             sql: """
             DROP INDEX IF EXISTS "index_model_TSInteraction_on_uniqueThreadId_and_attachmentIds"
@@ -7272,7 +7374,7 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    public static func rebuildInteractionTimestampIndex(tx: DBWriteTransaction) throws {
+    private static func rebuildInteractionTimestampIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(
             sql: """
             DROP INDEX IF EXISTS "index_interactions_on_timestamp_sourceDeviceId_and_authorUUID"
@@ -7291,7 +7393,7 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    public static func rebuildInteractionUnendedGroupCallIndex(tx: DBWriteTransaction) throws {
+    private static func rebuildInteractionUnendedGroupCallIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(
             sql: """
             DROP INDEX IF EXISTS "index_model_TSInteraction_on_uniqueThreadId_and_hasEnded_and_recordType"
@@ -7308,7 +7410,7 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    public static func rebuildInteractionGroupCallEraIdIndex(tx: DBWriteTransaction) throws {
+    private static func rebuildInteractionGroupCallEraIdIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(
             sql: """
             DROP INDEX IF EXISTS "index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType"
@@ -7323,7 +7425,7 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    public static func rebuildInteractionStoryReplyIndex(tx: DBWriteTransaction) throws {
+    private static func rebuildInteractionStoryReplyIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(
             sql: """
             DROP INDEX IF EXISTS "index_model_TSInteraction_on_StoryContext"
@@ -7338,7 +7440,7 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    public static func removeInteractionConversationLoadCountIndex(tx: DBWriteTransaction) throws {
+    private static func removeInteractionConversationLoadCountIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(
             sql: """
             DROP INDEX IF EXISTS "index_model_TSInteraction_ConversationLoadInteractionCount"
@@ -7346,7 +7448,7 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    public static func removeInteractionConversationLoadDistanceIndex(tx: DBWriteTransaction) throws {
+    private static func removeInteractionConversationLoadDistanceIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(
             sql: """
             DROP INDEX IF EXISTS "index_model_TSInteraction_ConversationLoadInteractionDistance"
@@ -7661,20 +7763,6 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    static func dropOldPreKeys(tx: DBWriteTransaction) throws {
-        let collections = [
-            "TSStorageManagerPreKeyStoreCollection",
-            "TSStorageManagerPNIPreKeyStoreCollection",
-            "TSStorageManagerSignedPreKeyStoreCollection",
-            "TSStorageManagerPNISignedPreKeyStoreCollection",
-            "SSKKyberPreKeyStoreACIKeyStore",
-            "SSKKyberPreKeyStorePNIKeyStore",
-        ]
-        for collection in collections {
-            try tx.database.execute(sql: "DELETE FROM keyvalue WHERE collection = ?", arguments: [collection])
-        }
-    }
-
     static func uniquifyUsernameLookupRecord(
         caseInsensitive: Bool,
         tx: DBWriteTransaction,
@@ -7786,86 +7874,6 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    static func migrateSessions(tx: DBWriteTransaction) throws {
-        // If these ever change, you'll need to add a new migration to update the
-        // Session table and replace the old constants with the new constants.
-        assert(OWSIdentity.aci.rawValue == 0)
-        assert(OWSIdentity.pni.rawValue == 1)
-
-        try migrateSessions(in: "TSStorageManagerSessionStoreCollection", identity: 0, tx: tx)
-        try migrateSessions(in: "TSStorageManagerPNISessionStoreCollection", identity: 1, tx: tx)
-    }
-
-    static func migrateSessions(
-        in collection: String,
-        identity: Int64,
-        tx: DBWriteTransaction,
-    ) throws {
-        let keys = try String.fetchAll(
-            tx.database,
-            sql: "SELECT key FROM keyvalue WHERE collection = ?",
-            arguments: [collection],
-        )
-        for key in keys { try autoreleasepool {
-            let dataValue = try Data.fetchOne(
-                tx.database,
-                sql: "SELECT value FROM keyvalue WHERE collection = ? AND key = ?",
-                arguments: [collection, key],
-            )!
-            let sessionDictionary: [Int32: Data?]
-            let decodedValue = try? NSKeyedUnarchiver.unarchivedObject(
-                ofClasses: [NSDictionary.self, NSNumber.self, NSData.self],
-                from: dataValue,
-            ) as? [Int32: Data]
-            if let decodedValue {
-                sessionDictionary = decodedValue
-            } else {
-                // We expect some failures (for legacy data), and if there are failures, we
-                // want to remember that there was a session, even though we can't do
-                // anything with that session. (See also `hasSessionRecords`).
-                Logger.warn("Storing nil for \(key) in \(collection) that couldn't be decoded")
-                sessionDictionary = [1: nil]
-            }
-            let recipientId = try Int64.fetchOne(
-                tx.database,
-                sql: "SELECT id FROM model_SignalRecipient WHERE uniqueId = ?",
-                arguments: [key],
-            )
-            guard let recipientId else {
-                // If we can't find the SignalRecipient, these sessions aren't reachable,
-                // so we don't need to keep them. (Foreign key constraints will enforce
-                // this moving forward.)
-                Logger.warn("Skipping \(key) in \(collection) that's been orphaned")
-                return
-            }
-            for (deviceId, serializedRecord) in sessionDictionary {
-                guard deviceId >= 1, deviceId <= 127 else {
-                    Logger.warn("Skipping \(deviceId) for \(key) in \(collection) that's not valid")
-                    continue
-                }
-                try tx.database.execute(
-                    sql: "INSERT INTO Session (recipientId, localIdentity, deviceId, serializedRecord) VALUES (?, ?, ?, ?)",
-                    arguments: [
-                        recipientId,
-                        identity,
-                        deviceId,
-                        serializedRecord,
-                    ],
-                )
-            }
-        }}
-    }
-
-    static func dropOldSessions(tx: DBWriteTransaction) throws {
-        let collections = [
-            "TSStorageManagerSessionStoreCollection",
-            "TSStorageManagerPNISessionStoreCollection",
-        ]
-        for collection in collections {
-            try tx.database.execute(sql: "DELETE FROM keyvalue WHERE collection = ?", arguments: [collection])
-        }
-    }
-
     static func addRecipientStatus(tx: DBWriteTransaction) throws {
         try tx.database.alter(table: "model_SignalRecipient") {
             $0.add(column: "status", .integer).notNull().defaults(to: 0)
@@ -7915,10 +7923,6 @@ public class GRDBSchemaMigrator {
 
         for recipientId in recipientIds {
             try tx.database.execute(sql: "UPDATE model_SignalRecipient SET status = 1 WHERE id = ?", arguments: [recipientId])
-        }
-
-        for collection in [serviceIdCollection, phoneNumberCollection] {
-            try tx.database.execute(sql: "DELETE FROM keyvalue WHERE collection = ?", arguments: [collection])
         }
     }
 
@@ -8017,10 +8021,6 @@ public class GRDBSchemaMigrator {
                 }
             }
         }
-
-        try tx.database.execute(sql: """
-        DELETE FROM keyvalue WHERE collection IN ('SecureValueRecovery2Impl', 'kOWSKeyBackupService_Keys')
-        """)
     }
 
     static func setHasEverHadPin(tx: DBWriteTransaction) throws {
@@ -8060,7 +8060,6 @@ public class GRDBSchemaMigrator {
                 )
             }
         }
-        try tx.database.execute(sql: "DELETE FROM keyvalue WHERE collection IS ?", arguments: ["arePaymentsEnabledForUserStore"])
     }
 
     static func addPinnedThread(tx: DBWriteTransaction) throws {
@@ -8216,11 +8215,6 @@ public class GRDBSchemaMigrator {
                 Logger.warn("skipping duplicate pinned thread; constantId? \(constantId != nil), groupId? \(groupId != nil), recipientId? \(recipientId != nil)")
             }
         }
-    }
-
-    static func removeOldPinnedThreads(tx: DBWriteTransaction) throws {
-        let collection = "PinnedConversationManager"
-        try tx.database.execute(sql: "DELETE FROM keyvalue WHERE collection IS ?", arguments: [collection])
     }
 
     static func addGroup(tx: DBWriteTransaction) throws {
@@ -8383,6 +8377,160 @@ public class GRDBSchemaMigrator {
             on: "CombinedGroupSendEndorsement",
             columns: ["expiration"],
         )
+    }
+
+    static func addGroupRefreshedAt(tx: DBWriteTransaction) throws {
+        try tx.database.alter(table: "GroupRecord") {
+            $0.add(column: "refreshedAt", .integer).notNull().defaults(to: Int64(Date.distantPast.timeIntervalSince1970))
+        }
+        try tx.database.create(
+            index: "GroupRecord_refreshedAt",
+            on: "GroupRecord",
+            columns: ["refreshedAt"],
+        )
+    }
+
+    static func migrateGroupRefreshedAt(tx: DBWriteTransaction) throws {
+        let collection = "groupRefreshStore"
+        if BuildFlags.migrateGroupRefreshedAt {
+            try tx.database.execute(
+                sql: """
+                UPDATE "GroupRecord"
+                SET "refreshedAt" = CAST("keyvalue"."value" AS INTEGER)
+                FROM (SELECT "key", "value" FROM "keyvalue" WHERE "collection" = ?) "keyvalue"
+                WHERE lower(hex("GroupRecord"."groupId")) = "keyvalue"."key"
+                """,
+                arguments: [collection],
+            )
+        }
+    }
+
+    static func migrateNotificationPreferences(tx: DBWriteTransaction) throws {
+        // Move preferences related to notifications to a central store in
+        // NotificationPreferencesManager using NewKeyValueStore.
+        let newCollection = "NotificationPreferences"
+
+        // Move to new collection
+        let preferencesRenamer = KeyValueStoreRenamer(oldCollection: "SignalPreferences", newCollection: newCollection)
+        try preferencesRenamer.renameKey("Notification Preview Type Key", toKey: "PreviewType", tx: tx)
+        try preferencesRenamer.renameKey("NotificationSoundInForeground", toKey: "PlaySoundInForeground", tx: tx)
+        try preferencesRenamer.renameKey("MessageSentSound", toKey: "MessageSentSound", tx: tx)
+        try preferencesRenamer.renameKey("OWSPreferencesKeyShouldNotifyOfNewAccountKey", toKey: "NotifyOfNewAccounts", tx: tx)
+
+        let sskPreferencesRenamer = KeyValueStoreRenamer(oldCollection: "SSKPreferences", newCollection: newCollection)
+        try sskPreferencesRenamer.renameKey("includeMutedThreadsInBadgeCount", toKey: "IncludeMutedThreadsInBadgeCount", tx: tx)
+
+        let soundsRenamer = KeyValueStoreRenamer(
+            oldCollection: "kOWSSoundsStorageNotificationCollection",
+            newCollection: newCollection,
+        )
+        try soundsRenamer.renameKey("kOWSSoundsStorageGlobalNotificationKey", toKey: "GlobalNotificationSound", tx: tx)
+
+        // Migrate to NewKeyValueStore
+        let migrator = KeyValueStoreMigrator(collection: newCollection)
+        try migrator.migrateUInt("PreviewType", tx: tx)
+        try migrator.migrateBool("PlaySoundInForeground", tx: tx)
+        try migrator.migrateBool("MessageSentSound", tx: tx)
+        try migrator.migrateBool("NotifyOfNewAccounts", tx: tx)
+        try migrator.migrateBool("IncludeMutedThreadsInBadgeCount", tx: tx)
+        try migrator.migrateUInt64("GlobalNotificationSound", tx: tx)
+    }
+
+    static func addGroupsPendingRestore(tx: DBWriteTransaction) throws {
+        let collections = [
+            "GroupsV2Impl.groupsFromStorageService_EnqueuedRecordForRestore",
+            "GroupsV2Impl.groupsFromStorageService_EnqueuedForRestore",
+        ]
+        let masterKeys = try collections.flatMap {
+            return try Data?.fetchAll(
+                tx.database,
+                sql: "SELECT unhex(key) FROM keyvalue WHERE collection = ?",
+                arguments: [$0],
+            )
+        }
+        for masterKeyData in masterKeys {
+            let masterKey: GroupMasterKey
+            do {
+                masterKey = try GroupMasterKey(contents: masterKeyData ?? Data())
+            } catch {
+                Logger.warn("ignoring group pending restore: \(error)")
+                continue
+            }
+            let secretParams = try GroupSecretParams.deriveFromMasterKey(groupMasterKey: masterKey)
+            let groupId = try secretParams.getPublicParams().getGroupIdentifier()
+            try tx.database.execute(
+                sql: "INSERT OR IGNORE INTO GroupRecord (groupId, masterKey) VALUES (?, ?)",
+                arguments: [groupId.serialize(), masterKey.serialize()],
+            )
+        }
+    }
+
+    static func moveFromThreadAssociatedData(tx: DBWriteTransaction) throws {
+        try tx.database.alter(table: "model_TSThread") {
+            $0.add(column: "audioPlaybackRate", .double).notNull().defaults(to: 1.0)
+        }
+        try tx.database.alter(table: "GroupRecord") {
+            $0.add(column: "lastVerifiedGroupNameHash", .blob)
+        }
+        try tx.database.execute(sql: """
+        UPDATE "model_TSThread"
+        SET "isArchived" = "TAD"."isArchived" IS 1,
+            "isMarkedUnread" = "TAD"."isMarkedUnread" IS 1,
+            "mutedUntilTimestamp" = CAST("TAD"."mutedUntilTimestamp" AS INTEGER),
+            "audioPlaybackRate" = CAST("TAD"."audioPlaybackRate" AS REAL)
+        FROM (SELECT * FROM "thread_associated_data") "TAD"
+        WHERE "model_TSThread"."uniqueId" = "TAD"."threadUniqueId"
+        """)
+        try tx.database.execute(sql: """
+        UPDATE "GroupRecord"
+        SET "lastVerifiedGroupNameHash" = CAST("TAD"."lastVerifiedGroupNameHash" AS BLOB)
+        FROM (
+            SELECT
+                "model_TSThread"."id" "threadId",
+                "thread_associated_data"."lastVerifiedGroupNameHash" "lastVerifiedGroupNameHash"
+            FROM "thread_associated_data", "model_TSThread"
+            WHERE "model_TSThread"."uniqueId" = "thread_associated_data"."threadUniqueId"
+        ) "TAD"
+        WHERE "GroupRecord"."threadId" = "TAD"."threadId"
+        AND "TAD"."lastVerifiedGroupNameHash" IS NOT NULL
+        """)
+        try tx.database.drop(table: "thread_associated_data")
+    }
+
+    static func addShouldNotifyWhenMutedColumns(tx: DBWriteTransaction) throws {
+        try tx.database.alter(table: "model_TSThread") {
+            $0.add(column: "shouldNotifyForRepliesWhenMuted", .boolean)
+            $0.add(column: "shouldNotifyForMentionsWhenMuted", .boolean)
+            $0.add(column: "shouldNotifyForCallsWhenMuted", .boolean)
+        }
+    }
+
+    // The product-preferred behavior is to have muted chats mute calls, but
+    // that wasn't how it worked before the preference was added, so preserve
+    // behavior for existing users so as to not change it under their feet
+    static func preserveCallsWhenMutedForExistingUsers(tx: DBWriteTransaction) throws {
+        guard try hasAnyAccountManagerState(tx: tx) else { return }
+
+        try tx.database.execute(sql: """
+        INSERT INTO keyvalue (key, collection, value)
+        VALUES ('NotifyForCallsWhenMuted', 'NotificationPreferences', 1)
+        """)
+    }
+
+    static func removeObsoleteThreadReferences(tx: DBWriteTransaction) throws {
+        try tx.database.execute(sql: """
+        DELETE FROM "keyvalue" WHERE "collection" = 'DraftVoiceMessage' AND "key" NOT IN (SELECT "uniqueId" FROM model_TSThread);
+        DELETE FROM "keyvalue" WHERE "collection" = 'GroupThreadCollisionFinder' AND "key" NOT IN (SELECT "uniqueId" FROM model_TSThread);
+        DELETE FROM "keyvalue" WHERE "collection" = 'SenderKeyStore_SendingDistributionId' AND "key" NOT IN (SELECT "uniqueId" FROM model_TSThread);
+        DELETE FROM "keyvalue" WHERE "collection" = 'OWSContactsManager.skipGroupAvatarBlurByGroupIdStore' AND unhex("key") NOT IN (SELECT "groupId" FROM GroupRecord WHERE "threadId" IS NOT NULL);
+        DELETE FROM "keyvalue" WHERE "collection" = 'BannerHiding_pendingMemberRequests' AND (
+            (substr("key", 1, length('hiddenState_')) = 'hiddenState_' AND substr("key", length('hiddenState_') + 1) NOT IN (SELECT "uniqueId" FROM model_TSThread))
+            OR (substr("key", 1, length('requestingMembersState_')) = 'requestingMembersState_' AND substr("key", length('requestingMembersState_') + 1) NOT IN (SELECT "uniqueId" FROM model_TSThread))
+        );
+        DELETE FROM "keyvalue" WHERE "collection" = 'BannerHiding_messageRequestNameCollision' AND (
+            (substr("key", 1, length('hiddenState_')) = 'hiddenState_' AND substr("key", length('hiddenState_') + 1) NOT IN (SELECT "uniqueId" FROM model_TSThread))
+        );
+        """)
     }
 
     static func dedupeSignalRecipients(tx: DBWriteTransaction) throws {

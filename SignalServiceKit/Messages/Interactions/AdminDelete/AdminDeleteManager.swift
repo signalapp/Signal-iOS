@@ -122,10 +122,6 @@ public class AdminDeleteManager {
     }
 
     public func adminDeleteAuthor(interactionId: Int64, tx: DBReadTransaction) -> Aci? {
-        guard BuildFlags.AdminDelete.receive else {
-            return nil
-        }
-
         return failIfThrows {
             guard
                 let adminDeleteRecord = try AdminDeleteRecord
@@ -148,10 +144,6 @@ public class AdminDeleteManager {
         thread: TSThread,
         tx: DBReadTransaction,
     ) -> Bool {
-        guard BuildFlags.AdminDelete.send else {
-            return false
-        }
-
         guard let groupThread = thread as? TSGroupThread else {
             return false
         }

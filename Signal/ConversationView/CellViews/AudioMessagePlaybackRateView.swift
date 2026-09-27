@@ -206,10 +206,9 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
         itemModel: CVItemModel,
         audioMessageViewDelegate: AudioMessageViewDelegate?,
     ) -> Bool {
-        guard
-            let attachmentId = audioAttachment.attachmentStream?.attachmentStream.id,
-            AppEnvironment.shared.cvAudioPlayerRef.audioPlaybackState(forAttachmentId: attachmentId) == .playing
-        else {
+        let cvAudioPlayer = AppEnvironment.shared.cvAudioPlayerRef
+        let playbackID = CVAudioPlaybackID(audioAttachment: audioAttachment)
+        guard cvAudioPlayer.audioPlaybackState(playbackID: playbackID) == .playing else {
             return false
         }
         // Check that the tap is within the bounding box, but
@@ -237,7 +236,7 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
         reloadGroup.enter()
         SSKEnvironment.shared.databaseStorageRef.asyncWrite(
             block: {
-                itemModel.threadAssociatedData.updateWith(
+                itemModel.thread.updateWith(
                     audioPlaybackRate: newPlaybackRate.rawValue,
                     updateStorageService: true,
                     transaction: $0,
@@ -323,7 +322,7 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
 
     open func makeBackgroundColor() -> UIColor {
         isIncoming
-            ? (Theme.isDarkThemeEnabled ? UIColor.ows_white : .ows_black).withAlphaComponent(0.08)
+            ? (Theme.isDarkThemeEnabled ? UIColor.white : .black).withAlphaComponent(0.08)
             : UIColor.ows_whiteAlpha20
     }
 
@@ -332,7 +331,7 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
     open func makeTextColor() -> UIColor {
         return isIncoming
             ? (Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_gray60)
-            : .ows_white
+            : .white
     }
 
     private lazy var textColor: UIColor = { makeTextColor() }()

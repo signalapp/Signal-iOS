@@ -34,6 +34,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         SSKEnvironment.shared.setContactManagerForUnitTests(OWSContactsManager(
             appReadiness: AppReadinessMock(),
             nicknameManager: DependenciesBridge.shared.nicknameManager,
+            notificationPreferencesManager: DependenciesBridge.shared.notificationPreferencesManager,
             recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
             usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
         ))

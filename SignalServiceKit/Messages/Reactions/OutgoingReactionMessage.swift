@@ -192,7 +192,6 @@ final class OutgoingReactionMessage: TransientOutgoingMessage {
                 for: localAci,
                 emoji: previousReaction.emoji,
                 sentAtTimestamp: previousReaction.sentAtTimestamp,
-                sortOrder: previousReaction.sortOrder,
                 tx: tx,
             )
         } else {

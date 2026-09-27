@@ -56,7 +56,7 @@ public enum ImageQualityLevel: UInt, Comparable {
     // uses quality level two.
     public static func standardQualityLevel(
         remoteConfig: RemoteConfig,
-        callingCode: Int?,
+        callingCode: PhoneNumberUtil.LocalCallingCode?,
     ) -> ImageQualityLevel {
         return remoteConfig.standardMediaQualityLevel(callingCode: callingCode) ?? .two
     }

@@ -62,9 +62,7 @@ public class RemoteAnnouncementFetcher: RemoteReleaseNotesFetcher<RemoteAnnounce
     override func updatePersistedData(
         withFetchedData fetchedTranslations: [(RemoteAnnouncementModel.Manifest, RemoteAnnouncementModel.Translation)],
     ) async throws {
-        guard let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
-            return
-        }
+        let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
 
         // Sort by lowest to highest min version. We will show the first eligible release note we haven't already shown.
         let sortedFetchedTranslations = fetchedTranslations.sorted(by: { $0.0.minAppVersion < $1.0.minAppVersion })
@@ -76,7 +74,7 @@ public class RemoteAnnouncementFetcher: RemoteReleaseNotesFetcher<RemoteAnnounce
                     RemoteConfig.isCountryCodeBucketEnabled(
                         csvString: countries,
                         key: manifest.id,
-                        localIdentifiers: localIdentifiers,
+                        localIdentifiers: registeredState.localIdentifiers,
                     )
                 else {
                     continue

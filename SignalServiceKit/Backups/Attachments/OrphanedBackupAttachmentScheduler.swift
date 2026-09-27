@@ -60,23 +60,17 @@ public class OrphanedBackupAttachmentSchedulerImpl: OrphanedBackupAttachmentSche
         }
         let mediaKey = accountKeyStore.getOrGenerateMediaRootBackupKey(tx: tx)
         for type in OrphanedBackupAttachment.SizeType.allCases {
-            let mediaId: Data
-            do {
-                mediaId = try mediaKey.deriveMediaId(
-                    {
-                        switch type {
-                        case .fullsize:
-                            mediaName
-                        case .thumbnail:
-                            AttachmentBackupThumbnail
-                                .thumbnailMediaName(fullsizeMediaName: mediaName)
-                        }
-                    }(),
-                )
-            } catch {
-                owsFailDebug("Unexpected encryption material error")
-                continue
-            }
+            let mediaId = mediaKey.deriveMediaId(
+                {
+                    switch type {
+                    case .fullsize:
+                        mediaName
+                    case .thumbnail:
+                        AttachmentBackupThumbnail
+                            .thumbnailMediaName(fullsizeMediaName: mediaName)
+                    }
+                }(),
+            )
             failIfThrows {
                 try OrphanedBackupAttachment
                     .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaId) == mediaId)

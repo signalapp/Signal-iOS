@@ -593,10 +593,16 @@ final class BackupArchiveGroupUpdateProtoToSwiftConverter {
             return .success([.otherUsersDroppedAfterMigration(count: UInt(proto.droppedMembersCount))])
         case .groupSequenceOfRequestsAndCancelsUpdate(let proto):
             switch unwrapRequiredAci(proto, \.requestorAci) {
+            // iOS does not archive groupSequenceOfRequestsAndCancelsUpdate for the local user, but
+            // Desktop does, so we need to be able to handle this case and convert those updates into
+            // something iOS can display properly.
             case .localUser:
-                return .messageFailure([.restoreFrameError(
-                    .invalidProtoData(.sequenceOfRequestsAndCancelsWithLocalAci),
-                )])
+                var items: [PersistableGroupUpdateItem] = []
+                for _ in 0..<proto.count {
+                    items.append(.localUserRequestedToJoin)
+                    items.append(.localUserRequestCanceledByLocalUser)
+                }
+                return .success(items)
             // We assume it is the tail to start out with; if we see a subsequent join request
             // from the same invite then we will mark it as not the tail.
             case .otherUser(let aci):

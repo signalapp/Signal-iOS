@@ -66,9 +66,8 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
         let contactManager = SSKEnvironment.shared.contactManagerRef
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
-            return []
-        }
+        let registeredState = tsAccountManager.mustBeRegisteredState(tx: tx)
+        let localIdentifiers = registeredState.localIdentifiers
 
         func avatarImage(aci: Aci) -> UIImage? {
             return avatarBuilder.avatarImage(
@@ -263,6 +262,8 @@ class IndividualCallSheetDataSource: CallDrawerSheetDataSource {
         let contactManager = SSKEnvironment.shared.contactManagerRef
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
+        let registeredState = tsAccountManager.mustBeRegisteredState(tx: tx)
+
         func avatarImage(aci: Aci) -> UIImage? {
             return avatarBuilder.avatarImage(
                 forAddress: SignalServiceAddress(aci),
@@ -298,21 +299,19 @@ class IndividualCallSheetDataSource: CallDrawerSheetDataSource {
         // Add yourself
         let displayName = CommonStrings.you
         let comparableName: DisplayName.ComparableValue = .nameValue(displayName)
-        if let localAci = tsAccountManager.localIdentifiers(tx: tx)?.aci {
-            members.append(JoinedMember(
-                id: .aci(localAci),
-                aci: localAci,
-                displayName: displayName,
-                comparableName: comparableName,
-                avatarImage: avatarImage(aci: localAci),
-                demuxID: nil,
-                isLocalUser: true,
-                isUnknown: false,
-                isAudioMuted: self.call.isOutgoingAudioMuted,
-                isVideoMuted: self.call.isOutgoingVideoMuted,
-                isPresenting: false,
-            ))
-        }
+        members.append(JoinedMember(
+            id: .aci(registeredState.localIdentifiers.aci),
+            aci: registeredState.localIdentifiers.aci,
+            displayName: displayName,
+            comparableName: comparableName,
+            avatarImage: avatarImage(aci: registeredState.localIdentifiers.aci),
+            demuxID: nil,
+            isLocalUser: true,
+            isUnknown: false,
+            isAudioMuted: self.call.isOutgoingAudioMuted,
+            isVideoMuted: self.call.isOutgoingVideoMuted,
+            isPresenting: false,
+        ))
         return members
     }
 

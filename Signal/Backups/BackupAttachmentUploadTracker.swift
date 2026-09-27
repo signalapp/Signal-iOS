@@ -139,7 +139,7 @@ private class Tracker {
             }
 
             if let uploadProgressObserver = _state.uploadProgressObserver {
-                await backupAttachmentUploadProgress.removeObserver(uploadProgressObserver)
+                backupAttachmentUploadProgress.removeObserver(uploadProgressObserver)
             }
 
             _state.streamContinuation.finish()
@@ -196,10 +196,10 @@ private class Tracker {
                 // The observer we attach will yield an update, so we don't need
                 // to here.
                 if let existingObserver = _state.uploadProgressObserver {
-                    await backupAttachmentUploadProgress.removeObserver(existingObserver)
+                    backupAttachmentUploadProgress.removeObserver(existingObserver)
                 }
 
-                _state.uploadProgressObserver = try? await backupAttachmentUploadProgress
+                _state.uploadProgressObserver = backupAttachmentUploadProgress
                     .addObserver { [weak self] progressUpdate in
                         guard let self else { return }
                         handleUploadProgressUpdate(progressUpdate)

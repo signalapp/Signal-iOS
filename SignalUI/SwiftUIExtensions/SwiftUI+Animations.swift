@@ -18,7 +18,7 @@ public extension Animation {
         var body: some View {
             VStack {
                 Rectangle()
-                    .fill(Color(UIColor.ows_signalBlue))
+                    .fill(Color.Signal.ultramarine)
                     .frame(width: 100, height: 100)
                     .offset(x: isOn ? 100 : -100)
                 Button(String("Quick spring")) {

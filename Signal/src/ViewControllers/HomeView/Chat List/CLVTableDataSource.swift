@@ -15,6 +15,8 @@ public enum ChatListSectionType: String, CaseIterable {
     case reminders
     case backupDownloadProgressView
     case backupExportProgressView
+    case localFileBackupRestoreProgressView
+    case localFileBackupExportProgressView
     case pinned
     case unpinned
     case archiveButton
@@ -189,6 +191,8 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
             case .reminders,
                  .backupDownloadProgressView,
                  .backupExportProgressView,
+                 .localFileBackupRestoreProgressView,
+                 .localFileBackupExportProgressView,
                  .archiveButton,
                  .inboxFilterFooter:
                 return nil
@@ -329,7 +333,7 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
         case .reminders, .inboxFilterFooter:
             return nil
 
-        case .backupDownloadProgressView, .backupExportProgressView, .archiveButton:
+        case .backupDownloadProgressView, .backupExportProgressView, .localFileBackupRestoreProgressView, .localFileBackupExportProgressView, .archiveButton:
             return indexPath
 
         case .pinned, .unpinned:
@@ -383,6 +387,14 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
         case .backupExportProgressView:
             tableView.deselectRow(at: indexPath, animated: false)
             viewController.handleBackupExportProgressViewTapped()
+
+        case .localFileBackupRestoreProgressView:
+            tableView.deselectRow(at: indexPath, animated: false)
+            viewController.handleLocalBackupProgressViewTapped()
+
+        case .localFileBackupExportProgressView:
+            tableView.deselectRow(at: indexPath, animated: false)
+            viewController.handleLocalBackupProgressViewTapped()
 
         case .pinned, .unpinned:
             guard let threadUniqueId = renderState.threadUniqueId(forIndexPath: indexPath) else {
@@ -441,8 +453,17 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
                     return UIMenu(children: actions)
                 },
             )
+        case .localFileBackupExportProgressView:
+            return UIContextMenuConfiguration(
+                actionProvider: { [weak self] _ in
+                    guard let self else { return nil }
+                    let actions = viewState.localFileBackupExportProgressView.contextMenuActions()
+                    return UIMenu(children: actions)
+                },
+            )
         case .reminders,
              .backupDownloadProgressView,
+             .localFileBackupRestoreProgressView,
              .archiveButton,
              .inboxFilterFooter:
             return nil
@@ -553,7 +574,7 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch renderState.sections[indexPath.section].type {
-        case .reminders, .archiveButton, .inboxFilterFooter, .backupExportProgressView, .backupDownloadProgressView:
+        case .reminders, .archiveButton, .inboxFilterFooter, .backupExportProgressView, .backupDownloadProgressView, .localFileBackupRestoreProgressView, .localFileBackupExportProgressView:
             return UITableView.automaticDimension
         case .pinned, .unpinned:
             return measureConversationCell(tableView: tableView, indexPath: indexPath)
@@ -576,6 +597,10 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
             cell = viewController.viewState.backupDownloadProgressView.backupDownloadProgressViewCell
         case .backupExportProgressView:
             cell = viewController.viewState.backupExportProgressView.backupExportProgressViewCell
+        case .localFileBackupRestoreProgressView:
+            cell = viewController.viewState.localFileBackupRestoreProgressView.localFileBackupRestoreProgressViewCell
+        case .localFileBackupExportProgressView:
+            cell = viewController.viewState.localFileBackupExportProgressView.localFileBackupExportProgressViewCell
         case .pinned, .unpinned:
             cell = buildConversationCell(tableView: tableView, indexPath: indexPath)
         case .archiveButton:
@@ -593,7 +618,7 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
             filterFooterCell.message = inboxFilterSection.message
         }
 
-        cell.tintColor = .ows_accentBlue
+        cell.tintColor = .Signal.accent
         return cell
     }
 
@@ -660,6 +685,8 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
         case .reminders,
              .backupDownloadProgressView,
              .backupExportProgressView,
+             .localFileBackupRestoreProgressView,
+             .localFileBackupExportProgressView,
              .archiveButton,
              .inboxFilterFooter:
             return nil
@@ -683,6 +710,8 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
         case .reminders,
              .backupDownloadProgressView,
              .backupExportProgressView,
+             .localFileBackupRestoreProgressView,
+             .localFileBackupExportProgressView,
              .archiveButton,
              .inboxFilterFooter:
             return false
@@ -696,6 +725,8 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
         case .reminders,
              .backupDownloadProgressView,
              .backupExportProgressView,
+             .localFileBackupRestoreProgressView,
+             .localFileBackupExportProgressView,
              .archiveButton,
              .inboxFilterFooter:
             return nil
@@ -956,5 +987,11 @@ public class CLVTableView: UITableView {
         if footerView.frame.height != finalHeight {
             footerView.frame.height = finalHeight
         }
+    }
+}
+
+extension ChatListViewController {
+    func handleLocalBackupProgressViewTapped() {
+        SignalApp.shared.showAppSettings(mode: .backups(page: .local))
     }
 }

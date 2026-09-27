@@ -240,7 +240,10 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
         lock.withLock {
             if let cachedResults = recentProfileUpdateMessages { return cachedResults }
 
-            let sortId = recentProfileUpdateSearchStartId(transaction: transaction) ?? 0
+            let sortId = GroupMembershipNameCollisionFinderStore().recentProfileUpdateSearchStartId(
+                forThreadUniqueId: groupThread.uniqueId,
+                tx: transaction,
+            ) ?? 0
             let finder = InteractionFinder(threadUniqueId: thread.uniqueId)
 
             // Build a map from (SignalServiceAddress) -> (List of recent profile update messages)
@@ -261,23 +264,16 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
             let allRecentMessages = recentProfileUpdateMessages?.values.flatMap({ $0 })
             guard let newMaxSortId = allRecentMessages?.max(by: { $0.sortId < $1.sortId })?.sortId else { return }
 
-            setRecentProfileUpdateSearchStartId(newValue: newMaxSortId, transaction: transaction)
+            GroupMembershipNameCollisionFinderStore().setRecentProfileUpdateSearchStartId(
+                newMaxSortId,
+                forThreadUniqueId: groupThread.uniqueId,
+                tx: transaction,
+            )
             recentProfileUpdateMessages?.removeAll()
         }
     }
 
     // MARK: Storage
-
-    private static let keyValueStore = NewKeyValueStore(collection: "GroupThreadCollisionFinder")
-
-    private func recentProfileUpdateSearchStartId(transaction: DBReadTransaction) -> UInt64? {
-        Self.keyValueStore.fetchValue(UInt64.self, forKey: groupThread.uniqueId, tx: transaction)
-    }
-
-    private func setRecentProfileUpdateSearchStartId(newValue: UInt64, transaction: DBWriteTransaction) {
-        let existingValue = recentProfileUpdateSearchStartId(transaction: transaction) ?? 0
-        Self.keyValueStore.writeValue(max(newValue, existingValue), forKey: groupThread.uniqueId, tx: transaction)
-    }
 
     private func setRecentProfileUpdateSearchStartIdToMax() {
         // This is a perf optimization to proactively reduce our search space, so it doesn't need to be exact.
@@ -292,8 +288,12 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
         // - In our searchStartId cache, we always set the max(currentValue, newValue). So even if maxInteractionId
         // is unset or invalid, we'll never mistakenly grow our search space by setting the startId to a smaller value.
         let maxInteractionId = thread.lastInteractionRowId
-        SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
-            self.setRecentProfileUpdateSearchStartId(newValue: maxInteractionId, transaction: writeTx)
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { [groupThread] writeTx in
+            GroupMembershipNameCollisionFinderStore().setRecentProfileUpdateSearchStartId(
+                maxInteractionId,
+                forThreadUniqueId: groupThread.uniqueId,
+                tx: writeTx,
+            )
         }
     }
 }

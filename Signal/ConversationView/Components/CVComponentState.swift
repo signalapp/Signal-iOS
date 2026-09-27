@@ -20,6 +20,10 @@ public enum CVAttachment: Equatable {
         return attachment.attachment.contentType
     }
 
+    public var attachmentID: Attachment.IDType {
+        return attachment.attachment.id
+    }
+
     public var attachment: ReferencedAttachment {
         switch self {
         case .stream(let stream, _, _):
@@ -1127,13 +1131,7 @@ private extension CVComponentState.Builder {
 
     mutating func populateAndBuild() throws -> CVComponentState {
 
-        if
-            let reactionState = InteractionReactionState(
-                interaction: interaction,
-                transaction: transaction,
-            ),
-            reactionState.hasReactions
-        {
+        if let reactionState = InteractionReactionState(interaction: interaction, tx: transaction) {
             self.reactions = Reactions(
                 reactionState: reactionState,
                 viewState: CVReactionCountsView.buildState(with: reactionState),
@@ -1302,7 +1300,7 @@ private extension CVComponentState.Builder {
 
             switch messageStatus {
             case .failed:
-                sendFailureBadge = SendFailureBadge(color: .ows_accentRed)
+                sendFailureBadge = SendFailureBadge(color: .Signal.red)
             case .pending:
                 sendFailureBadge = SendFailureBadge(color: .ows_gray60)
             default:
@@ -1459,7 +1457,6 @@ private extension CVComponentState.Builder {
 
         return CVComponentThreadDetails.buildComponentState(
             thread: thread,
-            threadAssociatedData: threadAssociatedData,
             transaction: transaction,
             avatarBuilder: avatarBuilder,
         )
@@ -1897,7 +1894,7 @@ private extension CVComponentState.Builder {
             let attachmentStream = referencedAttachment.asReferencedStream,
             let audioAttachment = AudioAttachment(
                 attachmentStream: attachmentStream,
-                owningMessage: interaction as? TSMessage,
+                owningMessage: message,
                 metadata: nil,
                 receivedAtDate: interaction.receivedAtDate,
             )
@@ -1906,7 +1903,7 @@ private extension CVComponentState.Builder {
         } else if let referencedAttachmentPointer = referencedAttachment.asReferencedAnyPointer {
             self.audioAttachment = AudioAttachment(
                 attachmentPointer: referencedAttachmentPointer,
-                owningMessage: interaction as? TSMessage,
+                owningMessage: message,
                 metadata: nil,
                 receivedAtDate: interaction.receivedAtDate,
                 downloadState: referencedAttachmentPointer.attachmentPointer.downloadState(tx: transaction),

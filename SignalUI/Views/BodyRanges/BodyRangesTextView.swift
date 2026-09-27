@@ -480,7 +480,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
     // MARK: - Text Container Insets
 
     open var defaultTextContainerInset: UIEdgeInsets {
-        UIEdgeInsets(hMargin: 7, vMargin: 7 - .hairlineWidth)
+        UIEdgeInsets(hMargin: 7, vMargin: 7 - hairlineWidth)
     }
 
     public func updateTextContainerInset() {

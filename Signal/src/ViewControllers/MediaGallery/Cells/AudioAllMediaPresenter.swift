@@ -364,12 +364,34 @@ class AudioAllMediaPresenter: AudioPresenter {
     }
 }
 
+// MARK: -
+
 class AllMediaAudioMessagePlaybackRateView: AudioMessagePlaybackRateView {
     override func makeBackgroundColor() -> UIColor {
-        return (Theme.isDarkThemeEnabled ? UIColor.ows_white : .ows_black).withAlphaComponent(0.08)
+        (Theme.isDarkThemeEnabled ? UIColor.white : .black).withAlphaComponent(0.08)
     }
 
     override func makeTextColor() -> UIColor {
         return Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_gray60
+    }
+}
+
+// MARK: -
+
+extension AudioAttachment {
+    var sizeString: String {
+        switch state {
+        case .attachmentStream(let stream, _):
+            return ByteCountFormatter().string(for: stream.attachmentStream.unencryptedByteCount) ?? ""
+        case .attachmentPointer:
+            // TODO: [Media Gallery]: Source byte information for undownloaded attachment
+            return ""
+        }
+    }
+
+    var dateString: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.setLocalizedDateFormatFromTemplate("Mdyy")
+        return dateFormatter.string(from: receivedAtDate)
     }
 }

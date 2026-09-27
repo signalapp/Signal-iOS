@@ -77,7 +77,7 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
 
         let presentedFrame = mediaFrame(in: transitionContext.finalFrame(for: toVC), containerView: containerView)
 
-        backgroundView.backgroundColor = .ows_black
+        backgroundView.backgroundColor = .black
         backgroundView.frame = transitionContext.finalFrame(for: toVC)
 
         toVC.view.frame = transitionContext.finalFrame(for: toVC)

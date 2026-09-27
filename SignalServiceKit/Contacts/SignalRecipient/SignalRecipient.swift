@@ -180,6 +180,15 @@ public struct SignalRecipient: FetchableRecord, PersistableRecord, Codable {
         SignalServiceAddress.addressComponentsDescription(uuidString: aciString, phoneNumber: phoneNumber?.stringValue)
     }
 
+    public var isWhitelisted: Bool {
+        switch self.status {
+        case .whitelisted:
+            return true
+        case .unspecified:
+            return false
+        }
+    }
+
     // MARK: - System Contacts
 
     /// Whether or not this recipient can be discovered by their phone number.

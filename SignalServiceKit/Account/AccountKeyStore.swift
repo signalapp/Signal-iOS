@@ -16,7 +16,7 @@ public class AccountKeyStore {
         static let mediaRootBackupKeyLength: UInt = 32 /* bytes */
     }
 
-    private let aepKvStore: KeyValueStore
+    private let aepKvStore: NewKeyValueStore
     private let mrbkKvStore: NewKeyValueStore
     private let syncStore: NewKeyValueStore
 
@@ -26,7 +26,7 @@ public class AccountKeyStore {
         backupSettingsStore: BackupSettingsStore,
     ) {
         self.mrbkKvStore = NewKeyValueStore(collection: "MediaRootBackupKey")
-        self.aepKvStore = KeyValueStore(collection: "AccountEntropyPool")
+        self.aepKvStore = NewKeyValueStore(collection: "AccountEntropyPool")
         self.syncStore = NewKeyValueStore(collection: "AccountKey.Sync")
         self.backupSettingsStore = backupSettingsStore
     }
@@ -80,15 +80,15 @@ public class AccountKeyStore {
     public func getMessageRootBackupKey(
         aci: Aci,
         tx: DBReadTransaction,
-    ) throws -> MessageRootBackupKey? {
+    ) -> MessageRootBackupKey? {
         guard let aep = getAccountEntropyPool(tx: tx) else { return nil }
-        return try MessageRootBackupKey(accountEntropyPool: aep, aci: aci)
+        return MessageRootBackupKey(accountEntropyPool: aep, aci: aci)
     }
 
     // MARK: -
 
     public func getAccountEntropyPool(tx: DBReadTransaction) -> SignalServiceKit.AccountEntropyPool? {
-        guard let accountEntropyPool = aepKvStore.getString(Keys.aepKeyName, transaction: tx) else {
+        guard let accountEntropyPool = aepKvStore.fetchValue(String.self, forKey: Keys.aepKeyName, tx: tx) else {
             return nil
         }
         do {
@@ -111,7 +111,7 @@ public class AccountKeyStore {
         // Setting the AEP means we need to set our Backup-ID again.
         backupSettingsStore.setHaveSetBackupID(haveSetBackupID: false, tx: tx)
 
-        aepKvStore.setString(accountEntropyPool.rawString, key: Keys.aepKeyName, transaction: tx)
+        aepKvStore.writeValue(accountEntropyPool.rawString, forKey: Keys.aepKeyName, tx: tx)
 
         // When we rotate the AEP, our LoggingKey (downstream of the Master Key)
         // also rotates and we need to keep that in sync.

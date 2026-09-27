@@ -687,12 +687,12 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         case .unreadWithoutCount:
             text = ""
         case .unreadWithCount(let unreadCount):
-            text = unreadCount > 0 ? OWSFormat.formatUInt(unreadCount) : ""
+            text = unreadCount > 0 ? unreadCount.formatted() : ""
         }
         return CVLabelConfig.unstyledText(
             text,
             font: unreadFont,
-            textColor: .ows_white,
+            textColor: .white,
             numberOfLines: 1,
             lineBreakMode: .byTruncatingTail,
             textAlignment: .center,

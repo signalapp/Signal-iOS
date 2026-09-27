@@ -154,7 +154,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
     @MainActor
     private func endCallOnceReported(_ call: SignalCall, reason: CXCallEndedReason) {
         Logger.info("CallKit: CXCallEndedReason reason: \(reason)")
-        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
+        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync { [call] in
             switch call.commonState.systemState {
             case .notReported:
                 // Do nothing. This call was never reported to CallKit, so we don't need to report it ending.
@@ -550,6 +550,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
 
         Logger.info("CallKit: didActivate AVAudioSession")
 
+        SUIEnvironment.shared.audioSessionRef.rtcAudioSessionDidActivate()
+
         _ = SUIEnvironment.shared.audioSessionRef.startAudioActivity(self.audioActivity)
 
         guard let call = self.callService.callServiceState.currentCall else {
@@ -566,6 +568,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
         }
     }
 
+    @MainActor
     func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
         AssertIsOnMainThread()
 
@@ -573,6 +576,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
 
         SUIEnvironment.shared.audioSessionRef.isRTCAudioEnabled = false
         SUIEnvironment.shared.audioSessionRef.endAudioActivity(self.audioActivity)
+        SUIEnvironment.shared.audioSessionRef.rtcAudioSessionDidDeactivate()
     }
 
     // MARK: - Util

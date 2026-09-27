@@ -3,13 +3,28 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+/// Restrictions that prevent a user from rotating their AEP.
+/// e.g. a user can't rotate their AEP if local or remote backups are enabled.
+public struct RotateAEPRestrictions: OptionSet {
+    public let rawValue: Int
+
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
+
+    public static let localFileBackupsEnabled = Self(rawValue: 1 << 0)
+    public static let remoteBackupsEnabled = Self(rawValue: 1 << 1)
+}
+
 public protocol AccountEntropyPoolManager {
     func generateIfMissing() async
 
     func setAccountEntropyPool(
         newAccountEntropyPool: AccountEntropyPool,
         tx: DBWriteTransaction,
-    )
+    ) throws
+
+    func verifyRequirementsForSettingAccountEntropyPool(tx: DBReadTransaction) -> RotateAEPRestrictions
 }
 
 // MARK: -
@@ -25,6 +40,7 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
     private let svr: SecureValueRecovery
     private let syncManager: SyncManagerProtocol
     private let tsAccountManager: TSAccountManager
+    private let localFileBackupStore: LocalFileBackupStore
 
     init(
         accountAttributesUpdater: AccountAttributesUpdater,
@@ -36,6 +52,7 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
         svr: SecureValueRecovery,
         syncManager: SyncManagerProtocol,
         tsAccountManager: TSAccountManager,
+        localFileBackupStore: LocalFileBackupStore,
     ) {
         self.accountAttributesUpdater = accountAttributesUpdater
         self.accountKeyStore = accountKeyStore
@@ -47,6 +64,7 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
         self.svr = svr
         self.syncManager = syncManager
         self.tsAccountManager = tsAccountManager
+        self.localFileBackupStore = localFileBackupStore
     }
 
     // MARK: -
@@ -72,10 +90,29 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
 
         logger.info("Generating new AEP for registered primary missing one.")
 
-        setAccountEntropyPool(
-            newAccountEntropyPool: AccountEntropyPool(),
-            tx: tx,
-        )
+        do {
+            try setAccountEntropyPool(
+                newAccountEntropyPool: AccountEntropyPool(),
+                tx: tx,
+            )
+        } catch {
+            owsFailDebug("Should never fail to set AEP if it's missing!")
+        }
+    }
+
+    func verifyRequirementsForSettingAccountEntropyPool(tx: DBReadTransaction) -> RotateAEPRestrictions {
+        var options = RotateAEPRestrictions()
+        if localFileBackupStore.localBackupsEnabled(tx: tx) {
+            options.insert(.localFileBackupsEnabled)
+        }
+        let backupPlan = backupSettingsStore.backupPlan(tx: tx)
+        switch backupPlan {
+        case .disabled:
+            break
+        case .disabling, .free, .paid, .paidAsTester, .paidExpiringSoon:
+            options.insert(.remoteBackupsEnabled)
+        }
+        return options
     }
 
     // MARK: -
@@ -83,7 +120,12 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
     func setAccountEntropyPool(
         newAccountEntropyPool: AccountEntropyPool,
         tx: DBWriteTransaction,
-    ) {
+    ) throws {
+        let rotateAEPRestrictions = verifyRequirementsForSettingAccountEntropyPool(tx: tx)
+        guard rotateAEPRestrictions.isEmpty else {
+            throw OWSAssertionError("Failing to rotate AEP because some requirement was not met. Restrictions: \(rotateAEPRestrictions)")
+        }
+
         logger.warn("Setting new AEP!")
 
         // Eventually, we may support rotating the AEP without rotating related-
@@ -134,7 +176,7 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
         // reglock and reg recovery password downstream of the master key
         // changing.
         accountAttributesUpdater.scheduleAccountAttributesUpdate(
-            authedAccount: .implicit(),
+            authedAccount: .implicit,
             tx: tx,
         )
 
@@ -148,7 +190,7 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
         Task {
             try? await storageServiceManager.rotateManifest(
                 mode: rotateRelatedNonDerivedKeys ? .alsoRotatingRecords : .preservingRecordsIfPossible,
-                authedDevice: .implicit,
+                authedAccount: .implicit,
             )
 
             // Sync our new keys with linked devices, but wait until the storage
@@ -168,6 +210,10 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
 #if TESTABLE_BUILD
 
 class MockAccountEntropyPoolManager: AccountEntropyPoolManager {
+    func verifyRequirementsForSettingAccountEntropyPool(tx: DBReadTransaction) -> RotateAEPRestrictions {
+        return RotateAEPRestrictions()
+    }
+
     func generateIfMissing() async {}
 
     var setAccountEntropyPoolMock: (() -> Void)?

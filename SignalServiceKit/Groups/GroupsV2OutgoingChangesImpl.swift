@@ -221,16 +221,15 @@ public class GroupsV2OutgoingChanges {
         guard groupId.serialize() == currentGroupModel.groupId else {
             throw OWSAssertionError("Mismatched groupId.")
         }
-        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
-            throw OWSAssertionError("Missing localIdentifiers.")
-        }
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
 
         // Note that we're calculating the set of users for whom we MIGHT WANT
         // profile key credentials based on the "original intent". We always
         // include our own ACI because non-add operations (e.g., updating our
         // profile key) will require our own profile key credential.
         var newUserAcis: Set<Aci> = Set(membersToAdd.compactMap { $0 as? Aci })
-        newUserAcis.insert(localIdentifiers.aci)
+        newUserAcis.insert(registeredState.localIdentifiers.aci)
 
         let profileKeyCredentials = try await SSKEnvironment.shared.groupsV2Ref.loadProfileKeyCredentials(
             for: Array(newUserAcis),
@@ -240,7 +239,7 @@ public class GroupsV2OutgoingChanges {
         return try self.buildGroupChangeProto(
             currentGroupModel: currentGroupModel,
             currentDisappearingMessageToken: currentDisappearingMessageToken,
-            localIdentifiers: localIdentifiers,
+            localIdentifiers: registeredState.localIdentifiers,
             profileKeyCredentials: profileKeyCredentials,
         )
     }
@@ -762,11 +761,9 @@ public class GroupsV2OutgoingChanges {
             didChange = true
         }
 
-        if BuildFlags.GroupTerminate.send {
-            if shouldTerminateGroup {
-                actionsBuilder.setTerminateGroup(GroupsProtoGroupChangeActionsTerminateGroupAction.builder().buildInfallibly())
-                didChange = true
-            }
+        if shouldTerminateGroup {
+            actionsBuilder.setTerminateGroup(GroupsProtoGroupChangeActionsTerminateGroupAction.builder().buildInfallibly())
+            didChange = true
         }
 
         // MARK: - Change action insertion point

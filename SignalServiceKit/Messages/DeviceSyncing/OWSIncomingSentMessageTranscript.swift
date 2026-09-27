@@ -221,6 +221,15 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             )
         }
 
+        let validatedBodyAttachmentProtos: ValidatedMessageBodyAttachmentProtos
+        do {
+            let attachmentLimits = MessageBodyAttachmentLimits()
+            validatedBodyAttachmentProtos = try attachmentLimits.validateMessageBodyProtos(dataMessage.attachments)
+        } catch {
+            owsFailDebug("failed to validate body attachment protos! \(error)")
+            return nil
+        }
+
         let validatedContactShare: ValidatedContactShareProto?
         if let contactShareProto = dataMessage.contact.first {
             let contactShareManager = DependenciesBridge.shared.contactShareManager
@@ -324,7 +333,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         return SentMessageTranscriptType.Message(
             target: target,
             body: body,
-            attachmentPointerProtos: dataMessage.attachments,
+            attachmentPointerProtos: validatedBodyAttachmentProtos.wrapped,
             validatedContactShare: validatedContactShare,
             validatedQuotedReply: validatedQuotedReply,
             validatedLinkPreview: validatedLinkPreview,

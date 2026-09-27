@@ -168,7 +168,7 @@ class RequestAccountDataReportViewController: OWSTableViewController2 {
             fromViewController: self,
             title: CommonStrings.preparingModal,
             canCancel: true,
-            asyncBlock: { modal in
+            asyncBlock: { [self] modal in
                 do {
                     let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
                     guard response.responseStatusCode == 200 else {

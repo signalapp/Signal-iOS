@@ -271,7 +271,11 @@ class OWSMessageDecrypter {
             let identityKeyMismatchManager = DependenciesBridge.shared.identityKeyMismatchManager
             identityKeyMismatchManager.recordSuspectedIssueWithPniIdentityKey(tx: transaction)
             Task {
-                try await identityKeyMismatchManager.validateLocalPniIdentityKeyIfNecessary()
+                do {
+                    try await identityKeyMismatchManager.validateLocalPniIdentityKeyIfNecessary()
+                } catch {
+                    Logger.error("Failed to valide local PNI identity key: \(error)")
+                }
             }
 
             errorMessage = .failedDecryption(

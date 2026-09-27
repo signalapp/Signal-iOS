@@ -148,7 +148,7 @@ class RegistrationPinViewController: OWSViewController {
         let result = UIButton()
         result.setTemplateImage(
             UIImage(imageLiteralResourceName: "NavBarBack"),
-            tintColor: Theme.accentBlueColor,
+            tintColor: .Signal.accent,
         )
         result.autoSetDimensions(to: CGSize(square: 40))
         result.addAction(
@@ -158,10 +158,7 @@ class RegistrationPinViewController: OWSViewController {
         return result
     }()
 
-    private lazy var backBarButton = UIBarButtonItem(
-        customView: backButton,
-        accessibilityIdentifier: "registration.pin.backButton",
-    )
+    private lazy var backBarButton = UIBarButtonItem(customView: backButton)
 
     private var stackView: UIStackView!
 
@@ -314,15 +311,9 @@ class RegistrationPinViewController: OWSViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .Signal.background
-        navigationItem.rightBarButtonItem = {
-            let button = UIBarButtonItem(
-                title: CommonStrings.nextButton,
-                primaryAction: UIAction { [weak self] _ in self?.didTapNext() },
-            )
-            button.style = if #available(iOS 26, *) { .prominent } else { .done }
-            button.accessibilityIdentifier = "registration.pin.nextButton"
-            return button
-        }()
+        navigationItem.rightBarButtonItem = .nextButton { [weak self] in
+            self?.didTapNext()
+        }
 
         stackView = addStaticContentStackView(
             arrangedSubviews: [titleLabel, explanationView, pinTextField],
@@ -339,24 +330,10 @@ class RegistrationPinViewController: OWSViewController {
         configureUI()
     }
 
-    private var isViewAppeared = false
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if !UIDevice.current.isIPhone5OrShorter {
-            // Small devices may obscure parts of the UI behind the keyboard, especially with larger
-            // font sizes.
-            pinTextField.becomeFirstResponder()
-        }
-
-        isViewAppeared = true
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        isViewAppeared = false
+        pinTextField.becomeFirstResponder()
     }
 
     private func configureUI() {
@@ -430,7 +407,7 @@ class RegistrationPinViewController: OWSViewController {
 
         replaceViewsAfterTextField(with: [
             pinValidationLabel,
-            UIView.vStretchingSpacer(minHeight: 24),
+            UIView.vStretchingSpacer(),
             togglePinCharacterSetButtonContainer,
         ])
     }
@@ -496,7 +473,7 @@ class RegistrationPinViewController: OWSViewController {
             )
             newViewsAtTheBottom.append(pinValidationLabel)
         }
-        pinValidationLabel.textColor = .ows_accentRed
+        pinValidationLabel.textColor = .Signal.red
 
         switch pinCharacterSet {
         case .digitsOnly:
@@ -525,7 +502,7 @@ class RegistrationPinViewController: OWSViewController {
         canSkip: Bool,
     ) {
         guard
-            isViewAppeared,
+            lifecycle == .appeared,
             let remainingAttempts,
             warnAt.contains(remainingAttempts),
             remainingAttempts < (previouslyWarnedAboutAttemptCount ?? UInt.max)

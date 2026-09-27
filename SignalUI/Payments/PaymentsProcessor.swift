@@ -615,7 +615,7 @@ private class PaymentProcessingOperation {
     private func submitOutgoingPayment(paymentModel: TSPaymentModel) async throws {
         owsAssertDebug(paymentModel.paymentState == .outgoingUnsubmitted)
 
-        if SUIEnvironment.shared.paymentsRef.isKillSwitchActive {
+        guard SUIEnvironment.shared.paymentsRef.canUsePayments() else {
             do {
                 try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                     try paymentModel.updatePaymentModelState(fromState: .outgoingUnsubmitted, toState: .outgoingUnverified, transaction: transaction)

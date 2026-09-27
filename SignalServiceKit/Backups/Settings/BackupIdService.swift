@@ -63,7 +63,7 @@ final class BackupIdServiceImpl: BackupIdService {
         localAci: Aci,
         tx: DBWriteTransaction,
     ) throws -> (MessageRootBackupKey, MediaRootBackupKey) {
-        guard let messageRootBackupKey = try? accountKeyStore.getMessageRootBackupKey(aci: localAci, tx: tx) else {
+        guard let messageRootBackupKey = accountKeyStore.getMessageRootBackupKey(aci: localAci, tx: tx) else {
             throw OWSAssertionError("Missing message root backup key! Do we not have an AEP?")
         }
 

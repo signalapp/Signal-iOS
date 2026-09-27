@@ -187,18 +187,18 @@ enum AttachmentSaving {
             case shouldShowSaveMediaActionSheet
         }
 
-        private let kvStore: KeyValueStore
+        private let kvStore: NewKeyValueStore
 
         init() {
-            kvStore = KeyValueStore(collection: "AttachmentSaving")
+            self.kvStore = NewKeyValueStore(collection: "AttachmentSaving")
         }
 
         func shouldShowSaveMediaActionSheet(tx: DBReadTransaction) -> Bool {
-            return kvStore.getBool(Keys.shouldShowSaveMediaActionSheet.rawValue, transaction: tx) ?? true
+            return kvStore.fetchValue(Bool.self, forKey: Keys.shouldShowSaveMediaActionSheet.rawValue, tx: tx) ?? true
         }
 
         func disableShowingSaveMediaActionSheet(tx: DBWriteTransaction) {
-            kvStore.setBool(false, key: Keys.shouldShowSaveMediaActionSheet.rawValue, transaction: tx)
+            kvStore.writeValue(false, forKey: Keys.shouldShowSaveMediaActionSheet.rawValue, tx: tx)
         }
     }
 }

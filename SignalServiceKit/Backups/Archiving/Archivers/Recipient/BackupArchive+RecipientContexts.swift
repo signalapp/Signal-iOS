@@ -279,6 +279,11 @@ extension BackupArchive {
         /// We cache the TSGroupThread here to avoid fetching later when we do restore the Chat.
         private var groupThreadCache = [GroupId: TSGroupThread]()
         private var callLinkRecordCache = [CallLinkRecordId: CallLinkRecord]()
+        /// GroupIds whose group Recipient was discarded because its snapshot was
+        /// invalid (version 0 with no members).
+        /// Chat frames referencing these groups are skipped rather than causing
+        /// a restore failure.
+        private var discardedGroupIdsWithInvalidSnapshot = Set<GroupId>()
 
         subscript(_ id: RecipientId) -> Address? {
             get { map[id] }
@@ -293,6 +298,14 @@ extension BackupArchive {
         subscript(_ id: CallLinkRecordId) -> CallLinkRecord? {
             get { callLinkRecordCache[id] }
             set(newValue) { callLinkRecordCache[id] = newValue }
+        }
+
+        func markGroupDiscardedDueToInvalidSnapshot(_ id: GroupId) {
+            discardedGroupIdsWithInvalidSnapshot.insert(id)
+        }
+
+        func isGroupDiscardedDueToInvalidSnapshot(_ id: GroupId) -> Bool {
+            discardedGroupIdsWithInvalidSnapshot.contains(id)
         }
 
         func allRecipientIds() -> Dictionary<RecipientId, Address>.Keys {

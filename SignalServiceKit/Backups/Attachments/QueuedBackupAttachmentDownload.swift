@@ -74,7 +74,7 @@ public struct QueuedBackupAttachmentDownload: Codable, FetchableRecord, MutableP
     /// Estimated byte count for the download.
     /// Should NOT be considered definitively accurate, but okay to use
     /// for estimation in UI and such.
-    public let estimatedByteCount: UInt32
+    public var estimatedByteCount: UInt32
 
     // MARK: - API
 

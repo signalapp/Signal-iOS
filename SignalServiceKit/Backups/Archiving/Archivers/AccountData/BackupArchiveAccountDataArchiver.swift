@@ -12,6 +12,7 @@ extension BackupArchive {
 
 /// Archives the ``BackupProto_AccountData`` frame.
 public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
+    private let adminDeleteManager: AdminDeleteManager
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
@@ -42,6 +43,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
     private let usernameEducationManager: UsernameEducationManager
 
     public init(
+        adminDeleteManager: AdminDeleteManager,
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
@@ -70,6 +72,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         udManager: BackupArchive.Shims.UDManager,
         usernameEducationManager: UsernameEducationManager,
     ) {
+        self.adminDeleteManager = adminDeleteManager
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
@@ -290,6 +293,9 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
 
         accountSettings.allowSealedSenderFromAnyone = udManager.shouldAllowUnrestrictedAccessLocal(tx: context.tx)
         accountSettings.allowAutomaticKeyVerification = keyTransparencyManager.isEnabled(tx: context.tx)
+        accountSettings.hasSeenAdminDeleteEducationDialog_p = adminDeleteManager.adminDeleteEducationReadStatus(
+            tx: context.tx,
+        )
         accountSettings.defaultSentMediaQuality = imageQuality.fetchValue(tx: context.tx) == .high ? .high : .standard
 
         var downloadSettings = BackupProto_AccountData.AutoDownloadSettings()
@@ -453,7 +459,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
                 settings.notDiscoverableByPhoneNumber ? .nobody : .everybody,
                 updateAccountAttributes: false, // This should be updated later, similar to storage service
                 updateStorageService: false,
-                authedAccount: .implicit(),
+                authedAccount: .implicit,
                 tx: context.tx,
             )
             sskPreferences.setPreferContactAvatars(value: settings.preferContactAvatars, tx: context.tx)
@@ -537,6 +543,13 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
                 updateStorageService: false,
                 tx: context.tx,
             )
+
+            if settings.hasSeenAdminDeleteEducationDialog_p {
+                adminDeleteManager.setAdminDeleteEducationRead(
+                    tx: context.tx,
+                    updateStorageService: false,
+                )
+            }
 
             switch settings.defaultSentMediaQuality {
             case .high:

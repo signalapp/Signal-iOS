@@ -152,19 +152,6 @@ final class RotationControl: UIControl, UIScrollViewDelegate {
         scrollView.isTracking
     }
 
-    private static let preferredWidth: CGFloat = {
-        if UIDevice.current.isIPad {
-            return 428 // screen width on iPhone 13 max
-        } else {
-            return min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
-        }
-    }()
-
-    override var intrinsicContentSize: CGSize {
-        // Define preferred width for when width is not constrained externally (iPad).
-        CGSize(width: RotationControl.preferredWidth, height: UIView.noIntrinsicMetric)
-    }
-
     private lazy var hapticFeedbackGenerator = SelectionHapticFeedback()
 
     // MARK: - Layout
@@ -184,7 +171,7 @@ final class RotationControl: UIControl, UIScrollViewDelegate {
         static let stepRange = -45...45 // 45 degrees each direction
         static let stepValue: CGFloat = 3 // 1 mark = 3 degrees
         static let stepWidth: CGFloat = 12 // distance between markings
-        static let markingWidth: CGFloat = .hairlineWidthFraction(2)
+        static let markingWidth: CGFloat = UITraitCollection.current.hairlineWidthFraction(2)
         static let bandHeight: CGFloat = 32
         static let markingHeight: CGFloat = 12
     }

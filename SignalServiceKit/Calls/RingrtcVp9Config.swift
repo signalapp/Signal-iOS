@@ -8,11 +8,8 @@ import Foundation
 /// Utility for deciding whether to offer VP9
 public enum RingrtcVp9Config {
     public static func enableVp9Encode(with remoteConfig: RemoteConfig) -> Bool {
-        if DebugFlags.callingForceVp9On.get() {
-            return true
-        }
-        if DebugFlags.callingForceVp9Off.get() {
-            return false
+        if DebugFlags.callingOverrideCodecs.get() {
+            return DebugFlags.callingEnableVp9Encode.get()
         }
 
         guard let hwIdentifier = String(sysctlKey: "hw.machine") else {
@@ -24,11 +21,8 @@ public enum RingrtcVp9Config {
     }
 
     public static func enableVp9Decode(with remoteConfig: RemoteConfig) -> Bool {
-        if DebugFlags.callingForceVp9On.get() {
-            return true
-        }
-        if DebugFlags.callingForceVp9Off.get() {
-            return false
+        if DebugFlags.callingOverrideCodecs.get() {
+            return DebugFlags.callingEnableVp9Decode.get()
         }
 
         guard let hwIdentifier = String(sysctlKey: "hw.machine") else {

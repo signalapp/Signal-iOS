@@ -32,9 +32,13 @@ public struct E164: Equatable, Hashable, Codable, CustomDebugStringConvertible {
         return result
     }
 
-    public var uint64Value: UInt64 {
+    public func withoutPrefix() -> String {
         owsPrecondition(stringValue.first == "+")
-        return UInt64(stringValue.dropFirst())!
+        return String(self.stringValue.dropFirst())
+    }
+
+    public var uint64Value: UInt64 {
+        return UInt64(withoutPrefix()).owsFailUnwrap("validity enforced by initializer")
     }
 
     public func encode(to encoder: Encoder) throws {

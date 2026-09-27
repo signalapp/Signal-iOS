@@ -126,7 +126,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             " ",
             CommonStrings.learnMore.styled(with: .link(URL.Support.proxies)),
         ])
-        .styled(with: defaultFooterTextStyle)
+        .styled(with: Self.defaultFooterTextStyle)
 
         proxySection.add(.disclosureItem(
             withText: OWSLocalizedString(
@@ -158,44 +158,40 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
         ))
         contents.add(relayCallsSection)
 
-        if BuildFlags.KeyTransparency.enabled {
-            let keyTransparencySection = OWSTableSection()
-
-            keyTransparencySection.add(.switch(
-                withText: OWSLocalizedString(
-                    "SETTINGS_KEY_TRANSPARENCY_OPT_OUT_SWITCH_TITLE",
-                    comment: "Title for for a settings option describing that Key Transparency is enabled.",
-                ),
-                isOn: {
-                    let db = DependenciesBridge.shared.db
-                    let keyTransparencyManager = DependenciesBridge.shared.keyTransparencyManager
-                    return db.read { tx in
-                        keyTransparencyManager.isEnabled(tx: tx)
-                    }
-                },
-                actionBlock: { uiSwitch in
-                    let db = DependenciesBridge.shared.db
-                    let keyTransparencyManager = DependenciesBridge.shared.keyTransparencyManager
-                    db.write { tx in
-                        keyTransparencyManager.setIsEnabled(
-                            uiSwitch.isOn,
-                            updateStorageService: true,
-                            tx: tx,
-                        )
-                    }
-                },
-            ))
-            keyTransparencySection.footerAttributedTitle = NSAttributedString.composed(of: [
-                OWSLocalizedString(
-                    "SETTINGS_KEY_TRANSPARENCY_OPT_OUT_FOOTER",
-                    comment: "Footer for settings section describing Key Transparency.",
-                ),
-                " ",
-                CommonStrings.learnMore.styled(with: .link(URL.Support.keyTransparency)),
-            ]).styled(with: defaultFooterTextStyle)
-
-            contents.add(keyTransparencySection)
-        }
+        let keyTransparencySection = OWSTableSection()
+        keyTransparencySection.add(.switch(
+            withText: OWSLocalizedString(
+                "SETTINGS_KEY_TRANSPARENCY_OPT_OUT_SWITCH_TITLE",
+                comment: "Title for for a settings option describing that Key Transparency is enabled.",
+            ),
+            isOn: {
+                let db = DependenciesBridge.shared.db
+                let keyTransparencyManager = DependenciesBridge.shared.keyTransparencyManager
+                return db.read { tx in
+                    keyTransparencyManager.isEnabled(tx: tx)
+                }
+            },
+            actionBlock: { uiSwitch in
+                let db = DependenciesBridge.shared.db
+                let keyTransparencyManager = DependenciesBridge.shared.keyTransparencyManager
+                db.write { tx in
+                    keyTransparencyManager.setIsEnabled(
+                        uiSwitch.isOn,
+                        updateStorageService: true,
+                        tx: tx,
+                    )
+                }
+            },
+        ))
+        keyTransparencySection.footerAttributedTitle = NSAttributedString.composed(of: [
+            OWSLocalizedString(
+                "SETTINGS_KEY_TRANSPARENCY_OPT_OUT_FOOTER",
+                comment: "Footer for settings section describing Key Transparency.",
+            ),
+            " ",
+            CommonStrings.learnMore.styled(with: .link(URL.Support.keyTransparency)),
+        ]).styled(with: Self.defaultFooterTextStyle)
+        contents.add(keyTransparencySection)
 
         let sealedSenderSection = OWSTableSection()
         sealedSenderSection.headerTitle = OWSLocalizedString(
@@ -253,7 +249,6 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
 
             },
         ))
-
         if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice {
             sealedSenderSection.add(.switch(
                 withText: OWSLocalizedString(
@@ -275,10 +270,9 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                     with: .link(URL(string: "https://signal.org/blog/sealed-sender/")!),
                 ),
             ])
-            .styled(with: defaultFooterTextStyle)
+            .styled(with: Self.defaultFooterTextStyle)
 
         }
-
         contents.add(sealedSenderSection)
 
         self.contents = contents

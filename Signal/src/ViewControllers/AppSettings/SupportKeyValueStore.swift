@@ -11,20 +11,20 @@ public class SupportKeyValueStore {
         static let lastChallengeDateKey: String = "lastChallengeDateKey"
     }
 
-    private let kvStore: KeyValueStore
+    private let kvStore: NewKeyValueStore
 
     public init() {
-        self.kvStore = KeyValueStore(collection: "ComposeSupportEmailOperation")
+        self.kvStore = NewKeyValueStore(collection: "ComposeSupportEmailOperation")
     }
 
     public func setLastChallengeDate(
         value: Date,
         transaction: DBWriteTransaction,
     ) {
-        kvStore.setDate(
+        kvStore.writeValue(
             value,
-            key: StoreKeys.lastChallengeDateKey,
-            transaction: transaction,
+            forKey: StoreKeys.lastChallengeDateKey,
+            tx: transaction,
         )
     }
 
@@ -32,6 +32,6 @@ public class SupportKeyValueStore {
         transaction: DBReadTransaction,
         lastChallengeFloor: Date,
     ) -> Bool {
-        return kvStore.getDate(StoreKeys.lastChallengeDateKey, transaction: transaction) ?? Date.distantPast > lastChallengeFloor
+        return kvStore.fetchValue(Date.self, forKey: StoreKeys.lastChallengeDateKey, tx: transaction) ?? Date.distantPast > lastChallengeFloor
     }
 }

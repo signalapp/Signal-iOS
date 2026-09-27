@@ -21,6 +21,8 @@ class BackupOnboardingCoordinator {
     private let localFileBackupManager: LocalFileBackupManager
     private let db: DB
     private let backupType: BackupType
+    private let localFileBackupExportJobStore: LocalFileBackupExportJobStore
+    private let backupFailureStateManager: BackupFailureStateManager
 
     private weak var onboardingNavController: UINavigationController?
 
@@ -34,6 +36,8 @@ class BackupOnboardingCoordinator {
             db: DependenciesBridge.shared.db,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             backupType: backupType,
+            localFileBackupExportJobStore: LocalFileBackupExportJobStore(),
+            backupFailureStateManager: DependenciesBridge.shared.backupFailureStateManager,
         )
     }
 
@@ -46,11 +50,15 @@ class BackupOnboardingCoordinator {
         db: DB,
         tsAccountManager: TSAccountManager,
         backupType: BackupType,
+        localFileBackupExportJobStore: LocalFileBackupExportJobStore,
+        backupFailureStateManager: BackupFailureStateManager,
     ) {
-        owsPrecondition(
-            db.read { tsAccountManager.registrationState(tx: $0).isPrimaryDevice == true },
-            "Unsafe to let a linked device do Backups Onboarding!",
-        )
+        if backupType == .remote {
+            owsPrecondition(
+                db.read { tsAccountManager.registrationState(tx: $0).isPrimaryDevice == true },
+                "Unsafe to let a linked device do Remote Backups Onboarding!",
+            )
+        }
 
         self.accountKeyStore = accountKeyStore
         self.backupEnablingManager = backupEnablingManager
@@ -59,6 +67,8 @@ class BackupOnboardingCoordinator {
         self.localFileBackupManager = localFileBackupManager
         self.db = db
         self.backupType = backupType
+        self.localFileBackupExportJobStore = localFileBackupExportJobStore
+        self.backupFailureStateManager = backupFailureStateManager
     }
 
     deinit {
@@ -83,7 +93,13 @@ class BackupOnboardingCoordinator {
                     db: db,
                     accountKeyStore: accountKeyStore,
                     localFileBackupManager: localFileBackupManager,
-                    localFileBackupExportJobStore: LocalFileBackupExportJobStore(),
+                    localFileBackupExportJobStore: localFileBackupExportJobStore,
+                    backupFailureStateManager: backupFailureStateManager,
+                    localFileBackupAttachmentRestoreProgress: DependenciesBridge.shared.localFileBackupAttachmentRestoreProgress,
+                    presentWelcomeSheet: false,
+                    clvLocalFileBackupExportProgressViewStore: CLVLocalFileBackupExportProgressView.Store(),
+                    accountEntropyPoolManager: DependenciesBridge.shared.accountEntropyPoolManager,
+                    tsAccountManager: DependenciesBridge.shared.tsAccountManager,
                 )
             }
         } else {
@@ -116,14 +132,19 @@ class BackupOnboardingCoordinator {
                 )
             case .local:
                 let optimizeStorageEnabled = isOptimizeLocalStorageEnabled()
-                introViewController = LocalFileBackupOnboardingIntroViewController(onContinue: { fromViewController in
+                introViewController = LocalFileBackupOnboardingIntroViewController(onContinue: { [self] fromViewController in
                     let presentChooseFile: () -> Void = { [self] in
                         fromViewController.present(
                             LocalFileBackupSelectFolderHeroSheetViewController(
-                                onContinue: { [self] in
-                                    localFileBackupManager.promptUserToChooseFileLocationForArchiving(fromViewController: fromViewController, completion: { [self] in
-                                        showRecoveryKeyIntro()
-                                    })
+                                onContinue: { [weak self] in
+                                    guard let self else { return }
+                                    LocalFileBackupArchiveFolderPicker.present(
+                                        fromViewController: fromViewController,
+                                        manager: localFileBackupManager,
+                                        onSuccess: { [weak self] in
+                                            self?.showRecoveryKeyIntro()
+                                        },
+                                    )
                                 },
                             ),
                             animated: true,
@@ -250,6 +271,12 @@ class BackupOnboardingCoordinator {
                                     accountKeyStore: accountKeyStore,
                                     localFileBackupManager: localFileBackupManager,
                                     localFileBackupExportJobStore: LocalFileBackupExportJobStore(),
+                                    backupFailureStateManager: DependenciesBridge.shared.backupFailureStateManager,
+                                    localFileBackupAttachmentRestoreProgress: DependenciesBridge.shared.localFileBackupAttachmentRestoreProgress,
+                                    presentWelcomeSheet: true,
+                                    clvLocalFileBackupExportProgressViewStore: CLVLocalFileBackupExportProgressView.Store(),
+                                    accountEntropyPoolManager: DependenciesBridge.shared.accountEntropyPoolManager,
+                                    tsAccountManager: DependenciesBridge.shared.tsAccountManager,
                                 ),
                             ],
                             animated: true,

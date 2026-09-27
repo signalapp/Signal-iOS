@@ -403,7 +403,7 @@ extension ChatListViewController {
                     comment: "Button for a sheet allowing users to cancel an in-progress media restore.",
                 ),
                 style: .secondaryDestructive,
-                action: .custom({ sheet in
+                action: .custom({ [self] sheet in
                     sheet.dismiss(animated: true) { [weak self] in
                         self?.showCancelBackupDownloadsConfirmationActionSheet()
                     }

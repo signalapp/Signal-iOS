@@ -83,7 +83,7 @@ class CallControlsOverflowView: UIView {
                 withBackgroundColor: .ows_gray75,
                 cornerRadius: Constants.stackViewCornerRadius,
             )
-            backgroundView.layer.shadowColor = UIColor.ows_black.cgColor
+            backgroundView.layer.shadowColor = UIColor.black.cgColor
             backgroundView.layer.shadowRadius = Constants.stackViewBackgroundViewShadowRadius
             backgroundView.layer.shadowOpacity = Constants.stackViewBackgroundViewShadowOpacity
             backgroundView.layer.shadowOffset = .zero
@@ -91,7 +91,7 @@ class CallControlsOverflowView: UIView {
             let shadowView = UIView()
             shadowView.backgroundColor = .ows_gray75
             shadowView.layer.cornerRadius = Constants.stackViewCornerRadius
-            shadowView.layer.shadowColor = UIColor.ows_black.cgColor
+            shadowView.layer.shadowColor = UIColor.black.cgColor
             shadowView.layer.shadowRadius = Constants.stackViewShadowRadius
             shadowView.layer.shadowOpacity = Constants.stackViewShadowOpacity
             shadowView.layer.shadowOffset = Constants.stackViewShadowOffset
@@ -259,15 +259,10 @@ extension CallControlsOverflowView: MessageReactionPickerDelegate {
     }
 
     private func react(with reaction: String) {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         self.callControlsOverflowPresenter?.willSendReaction()
         self.reactionSender.react(value: reaction)
-        let localAci = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci
-        }
-        guard let localAci else {
-            owsFailDebug("Local user is in call but doesn't have ACI!")
-            return
-        }
+        let localAci = tsAccountManager.mustBeRegisteredStateWithMaybeSneakyTransaction().localIdentifiers.aci
         // Locally-sent reactions do not come in via the API, so we add them here.
         self.reactionsSink.addReactions(
             reactions: [

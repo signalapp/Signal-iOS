@@ -66,7 +66,7 @@ open class InteractiveSheetViewController: OWSViewController {
     /// Allows taps above the sheet to pass through to the parent.
     open var canInteractWithParent: Bool { false }
 
-    open var sheetBackgroundColor: UIColor { Theme.actionSheetBackgroundColor }
+    open var sheetBackgroundColor: UIColor { UIColor.Signal.background }
     open var handleBackgroundColor: UIColor { UIColor.Signal.primaryFill }
 
     /// Override to `true` to make the content appear on a glass background on
@@ -645,7 +645,7 @@ open class InteractiveSheetViewController: OWSViewController {
                 }
 
                 self.backdropView?.alpha = completionState == .dismissing ? 0 : 1
-            } completion: {
+            } completion: { [self] in
                 self.sheetPanDelegate?.sheetPanDecelerationDidEnd()
                 self.heightDidChange(to: .height(finalHeight))
                 if completionState == .dismissing, self.canBeDismissed {
@@ -802,17 +802,23 @@ extension InteractiveSheetViewController: UIGestureRecognizerDelegate {
 
 private class InteractiveSheetAnimationController: UIPresentationController {
 
+    private weak var sheetViewController: InteractiveSheetViewController?
+
     var backdropView: UIView? {
-        guard let vc = presentedViewController as? InteractiveSheetViewController else { return nil }
-        return vc.backdropView
+        sheetViewController?.backdropView
     }
 
     var isUsingExternalBackdropView: Bool {
-        guard let vc = presentedViewController as? InteractiveSheetViewController else { return false }
-        return vc.externalBackdropView != nil
+        sheetViewController?.externalBackdropView != nil
     }
 
-    init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?, backdropColor: UIColor? = .Signal.backdrop) {
+    init(
+        presentedViewController: UIViewController,
+        presenting presentingViewController: UIViewController?,
+        sheetViewController: InteractiveSheetViewController,
+        backdropColor: UIColor? = .Signal.backdrop,
+    ) {
+        self.sheetViewController = sheetViewController
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
         backdropView?.backgroundColor = backdropColor
     }
@@ -850,7 +856,12 @@ private class InteractiveSheetAnimationController: UIPresentationController {
 
 extension InteractiveSheetViewController: UIViewControllerTransitioningDelegate {
     open func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        let controller = InteractiveSheetAnimationController(presentedViewController: presented, presenting: presenting, backdropColor: self.backdropColor)
+        let controller = InteractiveSheetAnimationController(
+            presentedViewController: presented,
+            presenting: presenting,
+            sheetViewController: self,
+            backdropColor: self.backdropColor,
+        )
         return controller
     }
 }

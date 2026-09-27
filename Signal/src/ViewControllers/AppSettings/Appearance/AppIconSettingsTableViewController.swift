@@ -10,14 +10,23 @@ protocol AppIconSettingsTableViewControllerDelegate: AnyObject {
     func didChangeIcon()
 }
 
-final class AppIconSettingsTableViewController: OWSTableViewController2 {
+final class AppIconSettingsTableViewController: OWSViewController, UITextViewDelegate, UICollectionViewDelegate {
 
     // MARK: Static properties
 
-    private static let customIcons: [[AppIcon]] = [
-        [.default, .white, .color, .night],
-        [.nightVariant, .chat, .bubbles, .yellow],
-        [.news, .notes, .weather, .waves],
+    private static let appIcons: [AppIcon] = [
+        .default,
+        .white,
+        .color,
+        .night,
+        .nightVariant,
+        .chat,
+        .bubbles,
+        .yellow,
+        .news,
+        .notes,
+        .weather,
+        .waves,
     ]
 
     /// This URL itself is not used. The action is overridden in the text view delegate function.
@@ -26,7 +35,6 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
     // MARK: Properties
 
     weak var iconDelegate: AppIconSettingsTableViewControllerDelegate?
-    private var stackView: UIStackView?
 
     // MARK: View lifecycle
 
@@ -36,81 +44,67 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
             "SETTINGS_APP_ICON_TITLE",
             comment: "The title for the app icon selection settings page.",
         )
-        updateTableContents()
-    }
+        view.backgroundColor = .Signal.groupedBackground
 
-    override func themeDidChange() {
-        super.themeDidChange()
-        updateTableContents()
-    }
-
-    // MARK: Table setup
-
-    private func updateTableContents() {
-        let contents = OWSTableContents()
-
-        let section = OWSTableSection()
-        section.add(.init(customCellBlock: { [weak self] in
-            guard let self else { return UITableViewCell() }
-            return self.buildIconSelectionCell()
-        }))
-        section.footerAttributedTitle = NSAttributedString.composed(of: [
-            OWSLocalizedString(
-                "SETTINGS_APP_ICON_FOOTER",
-                comment: "The footer for the app icon selection settings page.",
-            ),
-            "\n",
-            CommonStrings.learnMore.styled(with: .link(Self.learnMoreURL)),
+        // Collection view.
+        let collectionView = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: appIconCollectionViewGridLayout(),
+        )
+        collectionView.delegate = self
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.backgroundColor = .clear
+        collectionView.contentInset.top = 18 // add some padding below the navigation bar
+        view.addSubview(collectionView)
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.readableContentGuide.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.readableContentGuide.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
-        .styled(with: defaultFooterTextStyle)
-        section.footerTextViewDelegate = self
-        section.shouldDisableCellSelection = true
+        self.collectionView = collectionView
 
-        contents.add(section)
-        self.contents = contents
-    }
-
-    private func buildIconSelectionCell() -> UITableViewCell {
-        let isiOS26 = if #available(iOS 26.0, *) { true } else { false }
-        let iconSize: CGFloat = switch (
-            UIDevice.current.isNarrowerThanIPhone6,
-            UIDevice.current.isPlusSizePhone,
-            isiOS26,
-        ) {
-        case (true, _, false): 56
-        case (true, _, true): 61.5
-        case (_, true, false): 64
-        case (_, true, true): 68
-        case (_, _, false): 60
-        case (_, _, true): 64
-        }
-
-        let rows = Self.customIcons.map { row in
-            let icons = row.map { icon in
-                IconButton(icon: icon, iconSize: iconSize) { [weak self] in
-                    self?.didTapIcon(icon)
-                }
+        // Cells.
+        let cellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, AppIcon> { cell, indexPath, item in
+            cell.configurationUpdateHandler = { cell, state in
+                cell.contentConfiguration = AppIconCellContentConfiguration(appIcon: item).updated(for: state)
             }
-            let stackView = UIStackView(arrangedSubviews: [SpacerView(preferredWidth: 0)] + icons + [SpacerView(preferredWidth: 0)])
-            stackView.axis = .horizontal
-            stackView.distribution = .equalSpacing
-            stackView.alignment = .center
-            return stackView
+        }
+        dataSource = UICollectionViewDiffableDataSource<Section, AppIcon>(
+            collectionView: collectionView,
+        ) { collectionView, indexPath, itemIdentifier in
+            collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: itemIdentifier)
         }
 
-        let stackView = UIStackView(arrangedSubviews: rows)
-        stackView.axis = .vertical
-        stackView.spacing = 32
-        stackView.distribution = .fillEqually
-        stackView.alignment = .fill
+        // Footer: added to an empty section so that it's displayed outside of first section's background.
+        let footerRegistration = UICollectionView.SupplementaryRegistration<SectionFooterView>(elementKind: UICollectionView.elementKindSectionFooter) {
+            [unowned self] supplementaryView, _, _ in
+            let text = NSAttributedString.composed(of: [
+                OWSLocalizedString(
+                    "SETTINGS_APP_ICON_FOOTER",
+                    comment: "The footer for the app icon selection settings page.",
+                ),
+                "\n",
+                CommonStrings.learnMore.styled(with: .link(Self.learnMoreURL)),
+            ])
+            supplementaryView.configure(text: text, textViewDelegate: self)
+        }
+        dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
+            guard kind == UICollectionView.elementKindSectionFooter, indexPath.section > 0 else { return nil }
+            return collectionView.dequeueConfiguredReusableSupplementary(
+                using: footerRegistration,
+                for: indexPath,
+            )
+        }
 
-        self.stackView = stackView
-        let cell = OWSTableItem.newCell()
-        cell.contentView.addSubview(stackView)
-        // Subtract off the cell inner margins in favor of
-        // the stack views' spacer views with equal spacing.
-        stackView.autoPinEdgesToSuperviewMargins(with: .init(hMargin: -Self.cellHInnerMargin, vMargin: 24))
-        return cell
+        // Data.
+        var snapshot = NSDiffableDataSourceSnapshot<Section, AppIcon>()
+        snapshot.appendSections([.main, .empty])
+        snapshot.appendItems(Self.appIcons, toSection: .main)
+        dataSource.apply(snapshot, animatingDifferences: false)
+
+        // Select current icon.
+        updateSelection(animated: false)
     }
 
     private func didTapLearnMore() {
@@ -119,86 +113,253 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
         presentFormSheet(navigationController, animated: true)
     }
 
-    private func didTapIcon(_ icon: AppIcon) {
-        guard UIApplication.shared.currentAppIcon != icon else { return }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let appIcon = dataSource.itemIdentifier(for: indexPath) else {
+            owsFailDebug("Could not find app icon.")
+            return
+        }
 
-        UIApplication.shared.setAlternateIconName(icon.alternateIconName) { error in
+        guard UIApplication.shared.currentAppIcon != appIcon else { return }
+
+        UIApplication.shared.setAlternateIconName(appIcon.alternateIconName) { error in
             if let error {
                 owsFailDebug("Failed to update app icon: \(error)")
+                // Restore previous icon.
+                self.updateSelection(animated: true)
             }
         }
-        updateIconSelection()
         iconDelegate?.didChangeIcon()
     }
 
-    private func updateIconSelection() {
-        let animator = UIViewPropertyAnimator(duration: 0.15, springDamping: 1, springResponse: 0.15)
-        animator.addAnimations {
-            self.stackView?.arrangedSubviews
-                .compactMap { $0 as? UIStackView }
-                .flatMap(\.arrangedSubviews)
-                .forEach { view in
-                    guard let iconButton = view as? IconButton else { return }
-                    iconButton.updateSelectedState()
-                }
-        }
-        animator.startAnimation()
+    private func updateSelection(animated: Bool) {
+        guard let collectionView else { return }
+
+        let snapshot = dataSource.snapshot()
+        guard
+            let sectionIndex = snapshot.indexOfSection(.main),
+            let itemIndex = snapshot.indexOfItem(UIApplication.shared.currentAppIcon) else { return }
+
+        collectionView.selectItem(
+            at: IndexPath(item: itemIndex, section: sectionIndex),
+            animated: animated,
+            scrollPosition: .centeredVertically,
+        )
     }
 
-    private class IconButton: UIView {
-        private let icon: AppIcon?
-        private let button: UIButton
+    private enum Section {
+        case main
+        case empty
+    }
 
-        init(icon: AppIcon, iconSize: CGFloat, action: @escaping () -> Void) {
-            self.icon = icon
+    private var collectionView: UICollectionView?
 
-            var buttonConfig = UIButton.Configuration.plain()
-            buttonConfig.contentInsets = .zero
-            // This image fully defines intrinsic content size of IconButton (via constraints).
-            buttonConfig.image = UIImage(resource: icon.previewImageResource).resized(maxDimensionPoints: iconSize)
-            button = UIButton(
-                configuration: buttonConfig,
-                primaryAction: UIAction { _ in action() },
+    private var dataSource: UICollectionViewDiffableDataSource<Section, AppIcon>!
+
+    private func appIconCollectionViewGridLayout() -> UICollectionViewLayout {
+        let spacing: CGFloat = 20
+        let minColumns: Int = 4
+        let approxIconSize: CGFloat = 68
+        let sectionInsets = NSDirectionalEdgeInsets(hMargin: 20, vMargin: 20)
+
+        let collectionViewLayout = UICollectionViewCompositionalLayout { sectionIndex, environment in
+            // Empty section with a footer only.
+            if sectionIndex > 0 {
+                // Configuration doesn't really matter because there would be no items in these sections.
+                let itemSize = NSCollectionLayoutSize(
+                    widthDimension: .fractionalWidth(1),
+                    heightDimension: .estimated(44),
+                )
+                let item = NSCollectionLayoutItem(layoutSize: itemSize)
+                let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize, subitems: [item])
+                let section = NSCollectionLayoutSection(group: group)
+
+                // This section would only have a footer.
+                let footerSize = NSCollectionLayoutSize(
+                    widthDimension: .fractionalWidth(1),
+                    heightDimension: .estimated(36),
+                )
+                let footer = NSCollectionLayoutBoundarySupplementaryItem(
+                    layoutSize: footerSize,
+                    elementKind: UICollectionView.elementKindSectionFooter,
+                    alignment: .bottomLeading,
+                )
+                section.boundarySupplementaryItems = [footer]
+
+                return section
+            }
+
+            // Calculate item size given that it's going to be approx. 68 pts and there would be at least 4 columns.
+            let containerWidth = environment.container.effectiveContentSize.width - sectionInsets.totalWidth
+
+            let rawColumns = ((containerWidth + spacing) / (approxIconSize + spacing)).rounded(.toNearestOrAwayFromZero)
+            let columns = max(minColumns, Int(rawColumns))
+
+            let totalSpacing = spacing * CGFloat(columns - 1)
+            let itemWidth = (containerWidth - totalSpacing) / CGFloat(columns)
+
+            let itemSize = NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1 / CGFloat(columns)),
+                heightDimension: .fractionalHeight(1),
             )
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+            let groupSize = NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .absolute(itemWidth),
+            )
+            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+            group.interItemSpacing = .fixed(spacing)
+
+            let section = NSCollectionLayoutSection(group: group)
+            section.interGroupSpacing = spacing
+            section.contentInsets = sectionInsets
+
+            // Background
+            let backgroundItem = NSCollectionLayoutDecorationItem.background(
+                elementKind: SectionBackgroundView.elementKind,
+            )
+            section.decorationItems = [backgroundItem]
+
+            return section
+        }
+        collectionViewLayout.register(SectionBackgroundView.self, forDecorationViewOfKind: SectionBackgroundView.elementKind)
+        return collectionViewLayout
+    }
+
+    private struct AppIconCellContentConfiguration: UIContentConfiguration {
+        let appIcon: AppIcon
+        var showBorder: Bool = false
+
+        func makeContentView() -> any UIView & UIContentView {
+            AppIconCellContentView(configuration: self)
+        }
+
+        func updated(for state: any UIConfigurationState) -> AppIconCellContentConfiguration {
+            guard let cellState = state as? UICellConfigurationState else {
+                return self
+            }
+            var configuration = self
+            configuration.showBorder = cellState.isSelected
+            return configuration
+        }
+    }
+
+    private class AppIconCellContentView: UIView, UIContentView {
+        var configuration: UIContentConfiguration {
+            didSet {
+                configure()
+            }
+        }
+
+        private let backgroundView = UIView()
+        private let imageView = UIImageView()
+        private static let imageSize: CGFloat = 22
+        static let viewSize: CGFloat = 40
+
+        init(configuration: AppIconCellContentConfiguration) {
+            self.configuration = configuration
 
             super.init(frame: .zero)
 
-            layer.cornerRadius = iconSize * 0.24 * (4 / 3)
+            directionalLayoutMargins = .zero
+            clipsToBounds = true
             layer.cornerCurve = .continuous
-            let borderColor: UIColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_black
-            layer.borderColor = borderColor.cgColor
 
-            button.translatesAutoresizingMaskIntoConstraints = false
-            addSubview(button)
+            addSubview(imageView)
+            imageView.clipsToBounds = true
+            imageView.contentMode = .scaleAspectFill
+            imageView.layer.cornerCurve = .continuous
+            imageView.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
-                button.topAnchor.constraint(equalTo: topAnchor),
-                button.leadingAnchor.constraint(equalTo: leadingAnchor),
-                button.trailingAnchor.constraint(equalTo: trailingAnchor),
-                button.bottomAnchor.constraint(equalTo: bottomAnchor),
+                imageView.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
+                imageView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+                imageView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+                imageView.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
             ])
 
-            updateSelectedState()
+            configure()
         }
 
         required init?(coder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
         }
 
-        func updateSelectedState() {
-            if UIApplication.shared.currentAppIcon == icon {
-                button.transform = .scale(0.8)
-                layer.borderWidth = 3
-            } else {
-                button.transform = .identity
-                layer.borderWidth = 0
+        override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+            super.traitCollectionDidChange(previousTraitCollection)
+
+            if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+                configure()
             }
         }
+
+        override func layoutSubviews() {
+            super.layoutSubviews()
+
+            layer.cornerRadius = bounds.size.smallerAxis * 0.24 * (4 / 3)
+            imageView.layer.cornerRadius = imageView.frame.size.smallerAxis * 0.24 * (4 / 3)
+        }
+
+        private func configure() {
+            guard let configuration = configuration as? AppIconCellContentConfiguration else { return }
+
+            imageView.image = UIImage(resource: configuration.appIcon.previewImageResource)
+            directionalLayoutMargins = .init(margin: configuration.showBorder ? 4 : 0) // offset image from edges
+            layer.borderWidth = configuration.showBorder ? 3 : 0
+            layer.borderColor = UIColor(light: .black, dark: .ows_gray05).cgColor
+        }
     }
-}
 
-// MARK: UITextViewDelegate
+    private class SectionBackgroundView: UICollectionReusableView {
+        static let elementKind = "SectionBackgroundView"
 
-extension AppIconSettingsTableViewController: UITextViewDelegate {
+        override init(frame: CGRect) {
+            super.init(frame: frame)
+
+            backgroundColor = .Signal.secondaryGroupedBackground
+            layer.cornerRadius = OWSTableViewController2.cellRounding
+            layer.masksToBounds = true
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+    }
+
+    private class SectionFooterView: UICollectionReusableView {
+        private let textView = LinkingTextView()
+
+        override init(frame: CGRect) {
+            super.init(frame: frame)
+
+            textView.textColor = OWSTableViewController2.defaultFooterTextColor
+            textView.font = OWSTableViewController2.defaultFooterFont
+            textView.linkTextAttributes = [.foregroundColor: UIColor.Signal.label]
+            textView.textContainerInset = UIEdgeInsets(
+                hMargin: OWSTableViewController2.cellHInnerMargin,
+                vMargin: 12,
+            )
+            textView.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(textView)
+            NSLayoutConstraint.activate([
+                textView.topAnchor.constraint(equalTo: topAnchor),
+                textView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                textView.trailingAnchor.constraint(equalTo: trailingAnchor),
+                textView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            ])
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        func configure(text: NSAttributedString, textViewDelegate: UITextViewDelegate) {
+            textView.delegate = textViewDelegate
+            textView.attributedText = text.styled(with: OWSTableViewController2.defaultFooterTextStyle)
+        }
+    }
+
+    // MARK: UITextViewDelegate
+
     func textView(_ textView: UITextView, shouldInteractWith url: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         if url == Self.learnMoreURL {
             didTapLearnMore()

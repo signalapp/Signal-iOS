@@ -172,50 +172,100 @@ public class InteractionFinder: NSObject {
         return result
     }
 
-    public class func unreadCountInAllThreads(transaction: DBReadTransaction) -> UInt {
-        do {
-            let includeMutedThreads = SSKPreferences.includeMutedThreadsInBadgeCount(transaction: transaction)
+    public class func unreadCountInAllThreads(transaction tx: DBReadTransaction) -> UInt {
+        let notificationPreferencesManager = DependenciesBridge.shared.notificationPreferencesManager
 
-            var unreadInteractionQuery = """
-            SELECT COUNT(interaction.\(interactionColumn: .id))
-            FROM \(InteractionRecord.databaseTableName) AS interaction
-            \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
-            INNER JOIN \(ThreadAssociatedData.databaseTableName) AS associatedData
-            \(DEBUG_INDEXED_BY("index_thread_associated_data_on_threadUniqueId_and_isArchived"))
-                ON associatedData.threadUniqueId = \(interactionColumn: .threadUniqueId)
-            WHERE associatedData.isArchived = "0"
-            """
+        var unreadCounts = [TSThread.UniqueId: Int64]()
 
-            if !includeMutedThreads {
-                unreadInteractionQuery += " \(sqlClauseForIgnoringInteractionsWithMutedThread(threadAssociatedDataAlias: "associatedData")) "
+        let threadMarkedUnreadQuery = """
+        SELECT \(threadColumn: .uniqueId)
+        FROM \(TSThread.databaseTableName)
+        WHERE \(threadColumn: .isMarkedUnread) = 1
+        AND \(threadColumn: .shouldThreadBeVisible) = 1
+        """
+        let markedUnreadThreadUniqueIds = failIfThrows {
+            return try String.fetchAll(tx.database, sql: threadMarkedUnreadQuery)
+        }
+        for threadUniqueId in markedUnreadThreadUniqueIds {
+            unreadCounts[threadUniqueId] = 1
+        }
+
+        // Fetch the number of unread messages per thread, without resolving the
+        // threadUniqueId indirection (that happens in the next step). Due to the
+        // shape of the UnreadMessages index (where threadUniqueId is at the
+        // beginning), SQLite is able to fulfill this query without allocating a
+        // temporary table to store the results.
+        let threadUnreadCountQuery = """
+        SELECT \(interactionColumn: .threadUniqueId) threadUniqueId, COUNT(*) unreadCount
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
+        WHERE \(sqlClauseForUnreadInteractionCounts())
+        GROUP BY threadUniqueId
+        """
+        let threadUnreadCounts = failIfThrows {
+            return try Row.fetchAll(tx.database, sql: threadUnreadCountQuery)
+        }
+        for row in threadUnreadCounts {
+            let threadUniqueId: String = row["threadUniqueId"]
+            let unreadCount: Int64 = row["unreadCount"]
+            // Takes precedence over "isMarkedUnread".
+            unreadCounts[threadUniqueId] = unreadCount
+        }
+
+        var threadQuery = """
+        SELECT 1 FROM \(TSThread.databaseTableName)
+        WHERE \(threadColumn: .uniqueId) = ?
+        AND \(threadColumn: .isArchived) = 0
+        """
+        if !notificationPreferencesManager.includeMutedThreadsInBadgeCount(tx: tx) {
+            threadQuery += " \(sqlClauseForIgnoringInteractionsWithMutedThread())"
+        }
+        var result: Int64 = 0
+        for (threadUniqueId, unreadCount) in unreadCounts {
+            let shouldCountThread = failIfThrows {
+                // The `?? false` is necessary because no row is returned when the thread
+                // doesn't match the criteria.
+                return try Bool.fetchOne(tx.database, sql: threadQuery, arguments: [threadUniqueId]) ?? false
             }
+            if shouldCountThread {
+                result += unreadCount
+            }
+        }
+        return UInt(result)
+    }
 
-            unreadInteractionQuery += " AND \(sqlClauseForUnreadInteractionCounts(interactionsAlias: "interaction")) "
+    public class func unreadThreadCountInAllThreads(transaction: DBReadTransaction) -> UInt {
+        failIfThrows {
+            let includeMutedThreads = DependenciesBridge.shared.notificationPreferencesManager
+                .includeMutedThreadsInBadgeCount(tx: transaction)
 
-            let unreadInteractionCount = try UInt.fetchOne(transaction.database, sql: unreadInteractionQuery)
-            owsAssertDebug(unreadInteractionCount != nil, "unreadInteractionCount was unexpectedly nil")
-
-            var markedUnreadThreadQuery = """
+            var unreadThreadQuery = """
             SELECT COUNT(*)
             FROM \(TSThread.databaseTableName)
-            INNER JOIN \(ThreadAssociatedData.databaseTableName) AS associatedData
-                ON associatedData.threadUniqueId = \(threadColumn: .uniqueId)
-            WHERE associatedData.isMarkedUnread = 1
-            AND associatedData.isArchived = "0"
+            WHERE \(threadColumn: .isArchived) = 0
             AND \(threadColumn: .shouldThreadBeVisible) = 1
             """
 
             if !includeMutedThreads {
-                markedUnreadThreadQuery += " \(sqlClauseForIgnoringInteractionsWithMutedThread(threadAssociatedDataAlias: "associatedData")) "
+                unreadThreadQuery += " \(sqlClauseForIgnoringInteractionsWithMutedThread()) "
             }
 
-            let markedUnreadCount = try UInt.fetchOne(transaction.database, sql: markedUnreadThreadQuery)
-            owsAssertDebug(markedUnreadCount != nil, "markedUnreadCount was unexpectedly nil")
+            unreadThreadQuery += """
+             AND (
+                \(threadColumn: .isMarkedUnread) = 1
+                OR EXISTS (
+                    SELECT 1
+                    FROM \(InteractionRecord.databaseTableName) AS interaction
+                    \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
+                    WHERE interaction.\(interactionColumn: .threadUniqueId) = \(threadColumnFullyQualified: .uniqueId)
+                    AND \(sqlClauseForUnreadInteractionCounts())
+                )
+            )
+            """
 
-            return (unreadInteractionCount ?? 0) + (markedUnreadCount ?? 0)
-        } catch {
-            owsFailDebug("error: \(error.grdbErrorForLogging)")
-            return 0
+            let unreadThreadCount = try UInt.fetchOne(transaction.database, sql: unreadThreadQuery)
+
+            return unreadThreadCount.owsFailUnwrap("SELECT COUNT(*) should always return a value")
         }
     }
 
@@ -287,7 +337,7 @@ public class InteractionFinder: NSObject {
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
-        \(DEBUG_INDEXED_BY("Interaction_storyReply_partial", or: "index_model_TSInteraction_on_StoryContext"))
+        \(DEBUG_INDEXED_BY("Interaction_storyReply_partial"))
         WHERE \(interactionColumn: .storyTimestamp) = ?
         AND \(interactionColumn: .storyAuthorUuidString) = ?
         AND \(interactionColumn: .isGroupStoryReply) = 1
@@ -322,7 +372,7 @@ public class InteractionFinder: NSObject {
         let sql = """
         SELECT 1
         FROM \(InteractionRecord.databaseTableName)
-        \(DEBUG_INDEXED_BY("Interaction_storyReply_partial", or: "index_model_TSInteraction_on_StoryContext"))
+        \(DEBUG_INDEXED_BY("Interaction_storyReply_partial"))
         WHERE \(interactionColumn: .storyTimestamp) = ?
         AND \(interactionColumn: .storyAuthorUuidString) = ?
         AND \(interactionColumn: .recordType) = \(SDSRecordType.outgoingMessage.rawValue)
@@ -356,7 +406,7 @@ public class InteractionFinder: NSObject {
             let sql: String = """
             SELECT \(interactionColumn: .uniqueId), \(interactionColumn: .id)
             FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("Interaction_storyReply_partial", or: "index_model_TSInteraction_on_StoryContext"))
+            \(DEBUG_INDEXED_BY("Interaction_storyReply_partial"))
             WHERE \(interactionColumn: .storyTimestamp) = ?
             AND \(interactionColumn: .storyAuthorUuidString) = ?
             AND \(interactionColumn: .isGroupStoryReply) = 1
@@ -636,6 +686,8 @@ public class InteractionFinder: NSObject {
         }
     }
 
+    // MARK: -
+
     public func unreadCount(transaction: DBReadTransaction) -> UInt {
         do {
             let sql = """
@@ -695,6 +747,15 @@ public class InteractionFinder: NSObject {
         }
     }
 
+    /// Whether ``fetchUnreadMessages(beforeSortId:tx:)`` will return any values.
+    public func hasUnreadMessage(
+        beforeSortId: UInt64,
+        tx: DBReadTransaction,
+    ) -> Bool {
+        var unreadCursor = fetchUnreadMessages(beforeSortId: beforeSortId, tx: tx)
+        return unreadCursor.next() != nil
+    }
+
     /// Enumerates all the unread interactions in this thread before a given sort id,
     /// sorted by sort id.
     public func fetchUnreadMessages(
@@ -718,6 +779,15 @@ public class InteractionFinder: NSObject {
                 arguments: [threadUniqueId, beforeSortId],
             )
         }
+    }
+
+    /// Whether ``fetchMessagesWithUnreadReactions(beforeSortId:tx:)`` will return any values.
+    public func hasMessageWithUnreadReactions(
+        beforeSortId: UInt64,
+        tx: DBReadTransaction,
+    ) -> Bool {
+        var unreadCursor = fetchMessagesWithUnreadReactions(beforeSortId: beforeSortId, tx: tx)
+        return unreadCursor.next() != nil
     }
 
     /// Returns all the messages with unread reactions in this thread before a given sort id,
@@ -765,6 +835,8 @@ public class InteractionFinder: NSObject {
         )
         return try cursor.next()
     }
+
+    // MARK: -
 
     @objc
     public func firstInteraction(
@@ -951,7 +1023,7 @@ public class InteractionFinder: NSObject {
         let sql = """
         SELECT 1
         FROM \(InteractionRecord.databaseTableName)
-        \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType", or: "index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType"))
+        \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
         WHERE \(interactionColumn: .threadUniqueId) = ?
         AND (
             (
@@ -1394,37 +1466,28 @@ extension InteractionFinder {
         """
     }
 
-    static func sqlClauseForUnreadInteractionCounts(
-        interactionsAlias: String? = nil,
-    ) -> String {
-        let columnPrefix: String
-        if let interactionsAlias {
-            columnPrefix = interactionsAlias + "."
-        } else {
-            columnPrefix = ""
-        }
-
+    static func sqlClauseForUnreadInteractionCounts() -> String {
         return """
-        \(columnPrefix)\(interactionColumn: .read) IS 0
-        \(Self.filterGroupStoryRepliesClause(interactionsAlias: interactionsAlias))
-        \(Self.filterEditHistoryClause(mode: .excludeReadEdits, interactionsAlias: interactionsAlias))
+        \(interactionColumn: .read) IS 0
+        \(Self.filterGroupStoryRepliesClause())
+        \(Self.filterEditHistoryClause(mode: .excludeReadEdits))
         AND (
-            \(columnPrefix)\(interactionColumn: .recordType) IS \(SDSRecordType.incomingMessage.rawValue)
+            \(interactionColumn: .recordType) IS \(SDSRecordType.incomingMessage.rawValue)
             OR (
-                \(columnPrefix)\(interactionColumn: .recordType) IS \(SDSRecordType.infoMessage.rawValue)
-                AND \(columnPrefix)\(interactionColumn: .messageType) IS \(TSInfoMessageType.userJoinedSignal.rawValue)
+                \(interactionColumn: .recordType) IS \(SDSRecordType.infoMessage.rawValue)
+                AND \(interactionColumn: .messageType) IS \(TSInfoMessageType.userJoinedSignal.rawValue)
             )
             OR
-            \(columnPrefix)\(interactionColumn: .recordType) IS \(SDSRecordType.releaseNotesMessage.rawValue)
+            \(interactionColumn: .recordType) IS \(SDSRecordType.releaseNotesMessage.rawValue)
         )
         """
     }
 
-    private static func sqlClauseForIgnoringInteractionsWithMutedThread(threadAssociatedDataAlias: String) -> String {
-        """
+    private static func sqlClauseForIgnoringInteractionsWithMutedThread() -> String {
+        return """
         AND (
-            \(threadAssociatedDataAlias).mutedUntilTimestamp <= strftime('%s','now') * 1000
-            OR \(threadAssociatedDataAlias).mutedUntilTimestamp = 0
+            \(threadColumn: .mutedUntilTimestamp) <= strftime('%s','now') * 1000
+            OR \(threadColumn: .mutedUntilTimestamp) = 0
         )
         """
     }
@@ -1434,29 +1497,12 @@ extension InteractionFinder {
     // If you need to adjust this clause, you should probably update the index as well. This is a perf sensitive code path.
     static let filterPlaceholdersClause = "AND \(interactionColumn: .recordType) IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)"
 
-    static func filterGroupStoryRepliesClause(interactionsAlias: String? = nil) -> String {
-        let columnPrefix: String
-        if let interactionsAlias {
-            columnPrefix = interactionsAlias + "."
-        } else {
-            columnPrefix = ""
-        }
-
+    static func filterGroupStoryRepliesClause() -> String {
         // Treat NULL and 0 as equivalent.
-        return "AND \(columnPrefix)\(interactionColumn: .isGroupStoryReply) IS NOT 1"
+        return "AND \(interactionColumn: .isGroupStoryReply) IS NOT 1"
     }
 
-    static func filterEditHistoryClause(
-        mode: EditMessageQueryMode = .includeAllEdits,
-        interactionsAlias: String? = nil,
-    ) -> String {
-        let columnPrefix: String
-        if let interactionsAlias {
-            columnPrefix = interactionsAlias + "."
-        } else {
-            columnPrefix = ""
-        }
-
+    static func filterEditHistoryClause(mode: EditMessageQueryMode = .includeAllEdits) -> String {
         /// We need to ensure that whatever clauses we return here appropriately
         /// handle `NULL` values for `editState.
         ///
@@ -1467,16 +1513,16 @@ extension InteractionFinder {
         switch mode {
         case .includeAllEdits:
             /// Using `IS NOT` includes `NULL`.
-            return "AND \(columnPrefix)\(interactionColumn: .editState) IS NOT \(TSEditState.pastRevision.rawValue)"
+            return "AND \(interactionColumn: .editState) IS NOT \(TSEditState.pastRevision.rawValue)"
         case .excludeReadEdits:
             return """
             AND (
-                \(columnPrefix)\(interactionColumn: .editState) IN (\(TSEditState.none.rawValue), \(TSEditState.latestRevisionUnread.rawValue))
-                OR \(columnPrefix)\(interactionColumn: .editState) IS NULL
+                \(interactionColumn: .editState) IN (\(TSEditState.none.rawValue), \(TSEditState.latestRevisionUnread.rawValue))
+                OR \(interactionColumn: .editState) IS NULL
             )
             """
         case .excludeAllEdits:
-            return "AND \(columnPrefix)\(interactionColumn: .editState) IS \(TSEditState.none.rawValue)"
+            return "AND \(interactionColumn: .editState) IS \(TSEditState.none.rawValue)"
         }
     }
 

@@ -21,7 +21,7 @@ class StoryReplyPreviewView: UIView {
         hStack.autoPinEdgesToSuperviewEdges()
 
         let lineView = UIView()
-        lineView.backgroundColor = .ows_white
+        lineView.backgroundColor = .white
         lineView.autoSetDimension(.width, toSize: 4)
         hStack.addArrangedSubview(lineView)
 

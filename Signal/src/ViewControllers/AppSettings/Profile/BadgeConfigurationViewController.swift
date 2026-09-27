@@ -99,13 +99,9 @@ final class BadgeConfigurationViewController: OWSTableViewController2, BadgeColl
             spinner.startAnimating()
             navigationItem.rightBarButtonItem = UIBarButtonItem(customView: spinner)
         } else if hasUnsavedChanges, !showDismissalActivity {
-            navigationItem.rightBarButtonItem = .button(
-                title: CommonStrings.setButton,
-                style: .done,
-                action: { [weak self] in
-                    self?.didTapDone()
-                },
-            )
+            navigationItem.rightBarButtonItem = .setButton { [weak self] in
+                self?.didTapDone()
+            }
         } else {
             navigationItem.rightBarButtonItem = nil
         }

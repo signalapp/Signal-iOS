@@ -32,7 +32,7 @@ final class BackupDisablingManager {
     private let backupSettingsStore: BackupSettingsStore
     private let clvBackupExportProgressViewStore: CLVBackupExportProgressView.Store
     private let db: DB
-    private let kvStore: KeyValueStore
+    private let kvStore: NewKeyValueStore
     private let logger: PrefixedLogger
     private let taskQueue: ConcurrentTaskQueue
     private let tsAccountManager: TSAccountManager
@@ -66,7 +66,7 @@ final class BackupDisablingManager {
         self.backupSettingsStore = backupSettingsStore
         self.clvBackupExportProgressViewStore = clvBackupExportProgressViewStore
         self.db = db
-        self.kvStore = KeyValueStore(collection: "BackupDisablingManager")
+        self.kvStore = NewKeyValueStore(collection: "BackupDisablingManager")
         self.logger = PrefixedLogger(prefix: "[Backups]")
         self.taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
         self.tsAccountManager = tsAccountManager
@@ -109,7 +109,7 @@ final class BackupDisablingManager {
             case .rotate(let newAEP):
                 // Persist the new AEP in this class' KVStore temporarily.
                 // Once we're done disabling, we'll save it officially.
-                kvStore.setString(newAEP.rawString, key: StoreKeys.aepBeingRotated, transaction: tx)
+                kvStore.writeValue(newAEP.rawString, forKey: StoreKeys.aepBeingRotated, tx: tx)
             }
         }
 
@@ -140,7 +140,7 @@ final class BackupDisablingManager {
     func disableRemotelyFailed(tx: DBReadTransaction) -> Bool {
         switch backupPlanManager.backupPlan(tx: tx) {
         case .disabled:
-            return kvStore.hasValue(StoreKeys.remoteDisablingFailed, transaction: tx)
+            return kvStore.fetchValue(Bool.self, forKey: StoreKeys.remoteDisablingFailed, tx: tx) != nil
         case .disabling, .free, .paid, .paidExpiringSoon, .paidAsTester:
             return false
         }
@@ -168,18 +168,13 @@ final class BackupDisablingManager {
 
         let successfullyDisabledRemotely: Bool
         do {
-            let (localIdentifiers, isRegisteredPrimaryDevice) = db.read { tx in
-                return (
-                    tsAccountManager.localIdentifiers(tx: tx),
-                    tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
-                )
-            }
+            let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction()
 
-            if let localIdentifiers, isRegisteredPrimaryDevice {
+            if let registeredState, registeredState.isPrimary {
                 logger.info("Disabling Backups remotely...")
                 try await Retry.performWithIndefiniteNetworkRetries {
                     try await backupKeyService.deleteBackupKey(
-                        localIdentifiers: localIdentifiers,
+                        localIdentifiers: registeredState.localIdentifiers,
                         auth: .implicit(),
                         logger: logger,
                     )
@@ -198,9 +193,9 @@ final class BackupDisablingManager {
 
         await db.awaitableWrite { tx in
             if successfullyDisabledRemotely {
-                kvStore.removeValue(forKey: StoreKeys.remoteDisablingFailed, transaction: tx)
+                kvStore.removeValue(forKey: StoreKeys.remoteDisablingFailed, tx: tx)
             } else {
-                kvStore.setBool(true, key: StoreKeys.remoteDisablingFailed, transaction: tx)
+                kvStore.writeValue(true, forKey: StoreKeys.remoteDisablingFailed, tx: tx)
             }
 
             backupPlanManager.setBackupPlan(.disabled, tx: tx)
@@ -220,13 +215,18 @@ final class BackupDisablingManager {
             authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
             backupCDNCredentialStore.wipe(tx: tx)
 
-            if let aepBeingRotatedString = kvStore.getString(StoreKeys.aepBeingRotated, transaction: tx) {
+            if let aepBeingRotatedString = kvStore.fetchValue(String.self, forKey: StoreKeys.aepBeingRotated, tx: tx) {
                 logger.warn("Rotating AEP after disabling Backups!")
 
-                accountEntropyPoolManager.setAccountEntropyPool(
-                    newAccountEntropyPool: try! AccountEntropyPool(key: aepBeingRotatedString),
-                    tx: tx,
-                )
+                do {
+                    try accountEntropyPoolManager.setAccountEntropyPool(
+                        newAccountEntropyPool: try! AccountEntropyPool(key: aepBeingRotatedString),
+                        tx: tx,
+                    )
+                } catch {
+                    owsFailDebug("Failed to set AEP after disabling Backups: \(error)")
+                    return
+                }
             }
         }
 

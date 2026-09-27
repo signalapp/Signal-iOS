@@ -89,8 +89,12 @@ class PaymentModelCell: UITableViewCell {
             let avatarWrapper = UIView.container()
             avatarWrapper.addSubview(avatarView)
             avatarView.autoPinEdgesToSuperviewEdges()
+            avatarWrapper.addCircleBadge(
+                color: .Signal.accent,
+                onCircleView: avatarView,
+                circleDiameter: CGFloat(Self.avatarSizeClass.diameter),
+            )
             avatarView = avatarWrapper
-            avatarView.addCircleBadge(color: .Signal.accent)
         }
         hStack.addArrangedSubview(avatarView)
 

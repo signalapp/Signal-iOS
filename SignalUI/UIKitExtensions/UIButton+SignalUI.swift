@@ -255,134 +255,143 @@ public extension UIButton.Configuration {
         configuration.cornerStyle = .capsule
         return configuration
     }
+
+    static func roundMedia(
+        image: UIImage,
+        size: CGFloat,
+        withBackground: Bool = true,
+    ) -> Self {
+        var configuration: UIButton.Configuration
+        if #available(iOS 26, *), withBackground {
+            configuration = .glass()
+        } else {
+            configuration = .plain()
+            if withBackground {
+                var background = UIBackgroundConfiguration.clear()
+                background.customView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+                configuration.background = background
+            }
+        }
+        configuration.image = image
+        configuration.baseForegroundColor = .Signal.label
+        configuration.cornerStyle = .capsule
+        configuration.contentInsets = .init(
+            hMargin: 0.5 * (size - image.size.width),
+            vMargin: 0.5 * (size - image.size.height),
+        )
+
+        return configuration
+    }
+
+    static func tintedRoundMedia(
+        image: UIImage,
+        tintColor: UIColor = .Signal.accent,
+        foregroundColor: UIColor = .white,
+        size: CGFloat? = nil,
+    ) -> Self {
+        var configuration: UIButton.Configuration
+        if #available(iOS 26, *) {
+            configuration = .prominentGlass()
+        } else {
+            configuration = .bordered()
+        }
+        configuration.image = image
+        configuration.baseForegroundColor = foregroundColor
+        configuration.baseBackgroundColor = tintColor
+        configuration.cornerStyle = .capsule
+        if let size {
+            configuration.contentInsets = .init(
+                hMargin: 0.5 * (size - image.size.width),
+                vMargin: 0.5 * (size - image.size.height),
+            )
+        }
+        return configuration
+    }
+
+    static func capsuleMedia(
+        title: String,
+        buttonHeight: CGFloat,
+        withBackground: Bool = true,
+    ) -> Self {
+        var configuration: UIButton.Configuration
+        if #available(iOS 26, *), withBackground {
+            configuration = .glass()
+        } else {
+            configuration = .plain()
+            if withBackground {
+                var background = UIBackgroundConfiguration.clear()
+                background.customView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+                configuration.background = background
+            }
+        }
+        configuration.title = title
+        configuration.baseForegroundColor = .Signal.label
+        configuration.cornerStyle = .capsule
+
+        // Adjustable vertical content insets to ensure fixed button height.
+        let font = UIFont.dynamicTypeFont(ofStandardSize: 17, weight: .medium)
+        configuration.attributedTitle?.font = font
+        configuration.contentInsets = .init(
+            hMargin: 13,
+            vMargin: 0.5 * (buttonHeight - font.lineHeight).rounded(.up),
+        )
+
+        return configuration
+    }
 }
 
 // MARK: - UIBarButtonItem
 
 public extension UIBarButtonItem {
 
-    convenience init(
-        image: UIImage?,
-        style: UIBarButtonItem.Style,
-        target: Any?,
-        action: Selector?,
-        accessibilityIdentifier: String,
-    ) {
-        self.init(image: image, style: style, target: target, action: action)
-        self.accessibilityIdentifier = accessibilityIdentifier
-    }
-
-    convenience init(
-        image: UIImage?,
-        landscapeImagePhone: UIImage?,
-        style: UIBarButtonItem.Style,
-        target: Any?,
-        action: Selector?,
-        accessibilityIdentifier: String,
-    ) {
-        self.init(image: image, landscapeImagePhone: landscapeImagePhone, style: style, target: target, action: action)
-        self.accessibilityIdentifier = accessibilityIdentifier
-    }
-
-    convenience init(
-        title: String?,
-        style: UIBarButtonItem.Style,
-        target: Any?,
-        action: Selector?,
-        accessibilityIdentifier: String,
-    ) {
-        self.init(title: title, style: style, target: target, action: action)
-        self.accessibilityIdentifier = accessibilityIdentifier
-    }
-
-    convenience init(
-        barButtonSystemItem systemItem: UIBarButtonItem.SystemItem,
-        target: Any?,
-        action: Selector?,
-        accessibilityIdentifier: String,
-    ) {
-        self.init(barButtonSystemItem: systemItem, target: target, action: action)
-        self.accessibilityIdentifier = accessibilityIdentifier
-    }
-
-    convenience init(customView: UIView, accessibilityIdentifier: String) {
-        self.init(customView: customView)
-        self.accessibilityIdentifier = accessibilityIdentifier
-    }
-
-    private class ClosureBarButtonItem: UIBarButtonItem {
-        private class Handler {
-            var actionClosure: () -> Void
-            init(actionClosure: @escaping () -> Void) {
-                self.actionClosure = actionClosure
-            }
-
-            @objc
-            func action() {
-                actionClosure()
-            }
-        }
-
-        private var handler: Handler?
-
-        convenience init(
-            systemItem: UIBarButtonItem.SystemItem,
-            action: @escaping () -> Void,
-        ) {
-            let handler = Handler(actionClosure: action)
-            // The `Handler` type exists because we can't
-            // reference `self` in its own initializer call.
-            self.init(barButtonSystemItem: systemItem, target: handler, action: #selector(handler.action))
-            // Keep a strong reference to the Handler
-            self.handler = handler
-        }
-
-        convenience init(
-            title: String,
-            style: UIBarButtonItem.Style,
-            action: @escaping () -> Void,
-        ) {
-            let handler = Handler(actionClosure: action)
-            self.init(title: title, style: style, target: handler, action: #selector(handler.action))
-            self.handler = handler
-        }
-
-        convenience init(
-            image: UIImage,
-            style: UIBarButtonItem.Style,
-            action: @escaping () -> Void,
-        ) {
-            let handler = Handler(actionClosure: action)
-            self.init(image: image, style: style, target: handler, action: #selector(handler.action))
-            self.handler = handler
-        }
+    private static var prominentBarButtonItemStyle: UIBarButtonItem.Style {
+        if #available(iOS 26, *) { .prominent } else { .done }
     }
 
     /// Creates a bar button with the given title that performs the action in the provided closure.
     static func button(
         title: String,
-        style: UIBarButtonItem.Style,
         action: @escaping () -> Void,
     ) -> UIBarButtonItem {
-        ClosureBarButtonItem(title: title, style: style, action: action)
+        UIBarButtonItem(primaryAction: UIAction(title: title) { _ in action() })
+    }
+
+    /// Creates a prominent bar button with the given title that performs the action in the provided closure.
+    static func prominentButton(
+        title: String,
+        action: @escaping () -> Void,
+    ) -> UIBarButtonItem {
+        let item = button(title: title, action: action)
+        item.style = prominentBarButtonItemStyle
+        if #available(iOS 26, *) {
+            item.tintColor = .Signal.accent
+        }
+        return item
     }
 
     /// Creates a bar button with the given icon that performs the action in the provided closure.
     static func button(
         icon: ThemeIcon,
-        style: UIBarButtonItem.Style,
+        isProminent: Bool = false,
         action: @escaping () -> Void,
     ) -> UIBarButtonItem {
-        ClosureBarButtonItem(image: Theme.iconImage(icon), style: style, action: action)
+        .button(image: Theme.iconImage(icon), isProminent: isProminent, action: action)
     }
 
     /// Creates a bar button with the given image that performs the action in the provided closure.
     static func button(
         image: UIImage,
-        style: UIBarButtonItem.Style,
+        isProminent: Bool = false,
         action: @escaping () -> Void,
     ) -> UIBarButtonItem {
-        ClosureBarButtonItem(image: image, style: style, action: action)
+        let item = UIBarButtonItem(primaryAction: UIAction(image: image) { _ in action() })
+        if isProminent {
+            item.style = prominentBarButtonItemStyle
+            if #available(iOS 26, *) {
+                item.tintColor = .Signal.accent
+            }
+        }
+        return item
     }
 
     // Keep this static function public instead of exposing ClosureBarButtonItem
@@ -398,12 +407,16 @@ public extension UIBarButtonItem {
         _ systemItem: UIBarButtonItem.SystemItem,
         action: @escaping () -> Void,
     ) -> UIBarButtonItem {
-        ClosureBarButtonItem(systemItem: systemItem, action: action)
+        let item = UIBarButtonItem(systemItem: systemItem, primaryAction: UIAction { _ in action() })
+        if #available(iOS 26, *), item.style == .prominent {
+            item.tintColor = .Signal.accent
+        }
+        return item
     }
 
     /// Creates a "Cancel" bar button which performs the action in the provided closure.
     static func cancelButton(action: @escaping () -> Void) -> UIBarButtonItem {
-        Self.systemItem(.cancel, action: action)
+        .systemItem(.cancel, action: action)
     }
 
     /// Creates a "Cancel" bar button which dismisses the view using the provided view controller.
@@ -417,7 +430,7 @@ public extension UIBarButtonItem {
         animated: Bool = true,
         completion: (() -> Void)? = nil,
     ) -> UIBarButtonItem {
-        Self.cancelButton { [weak viewController] in
+        .cancelButton { [weak viewController] in
             viewController?.dismiss(animated: animated, completion: completion)
         }
     }
@@ -437,7 +450,7 @@ public extension UIBarButtonItem {
         animated: Bool = true,
         completion: (() -> Void)? = nil,
     ) -> UIBarButtonItem {
-        Self.cancelButton { [weak viewController] in
+        .cancelButton { [weak viewController] in
             if hasUnsavedChanges() == true {
                 OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak viewController] in
                     viewController?.dismiss(animated: animated, completion: completion)
@@ -457,14 +470,14 @@ public extension UIBarButtonItem {
         poppingFrom navigationController: UINavigationController?,
         animated: Bool = true,
     ) -> UIBarButtonItem {
-        Self.cancelButton { [weak navigationController] in
+        .cancelButton { [weak navigationController] in
             navigationController?.popViewController(animated: animated)
         }
     }
 
     /// Creates a "Done" bar button which performs the action in the provided closure.
     static func doneButton(action: @escaping () -> Void) -> UIBarButtonItem {
-        Self.systemItem(.done, action: action)
+        .systemItem(.done, action: action)
     }
 
     /// Creates a "X" (Close) bar button which performs the action in the provided closure.
@@ -473,7 +486,7 @@ public extension UIBarButtonItem {
             .systemItem(.close, action: action)
         } else {
             // This looks better without the circular background that system item has.
-            .button(icon: .buttonX, style: .plain, action: action)
+            .button(icon: .buttonX, action: action)
         }
     }
 
@@ -488,36 +501,37 @@ public extension UIBarButtonItem {
         animated: Bool = true,
         completion: (() -> Void)? = nil,
     ) -> UIBarButtonItem {
-        let systemItem: SystemItem = if #available(iOS 26, *) {
-            .close
-        } else {
-            .done
-        }
-        return Self.systemItem(systemItem) { [weak viewController] in
+        let systemItem: SystemItem = if #available(iOS 26, *) { .close } else { .done }
+        return .systemItem(systemItem) { [weak viewController] in
             viewController?.dismiss(animated: animated, completion: completion)
         }
     }
 
     /// Creates ••• bar button that presents a popup menu with the provided actions.
     static func contextMenuButton(actions: [UIAction]) -> UIBarButtonItem {
-        UIBarButtonItem(
-            image: Theme.iconImage(.buttonMore),
+        let buttonImageName: String = if #available(iOS 26, *) { "more" } else { "more-circle" }
+        let barButtonItem = UIBarButtonItem(
+            image: UIImage(named: buttonImageName),
             menu: UIMenu(children: actions),
         )
+        barButtonItem.landscapeImagePhone = UIImage(named: buttonImageName + "-20")
+        return barButtonItem
     }
 
+    /// Creates a prominent button that uses "Set" as the title on iOS 15-18 and a system checkmark on iOS 26 and later.
     static func setButton(action: @escaping () -> Void) -> UIBarButtonItem {
         if #available(iOS 26, *) {
             // iOS 26 done buttons appear as a big blue checkmark
-            return .systemItem(.done, action: action)
+            .systemItem(.done, action: action)
         } else {
             // For iOS 18 and older, we want to use the text "Set"
-            return .button(
-                title: CommonStrings.setButton,
-                style: .done,
-                action: action,
-            )
+            .prominentButton(title: CommonStrings.setButton, action: action)
         }
+    }
+
+    /// Creates a prominent "Next" button.
+    static func nextButton(action: @escaping () -> Void) -> UIBarButtonItem {
+        .prominentButton(title: CommonStrings.nextButton, action: action)
     }
 
     // Feel free to add more system item functions as the need arises

@@ -242,8 +242,12 @@ public class PhoneNumberUtil: NSObject {
         return Locale.current.localizedString(forRegionCode: countryCode)?.nilIfEmpty ?? unknownValue
     }
 
-    public func localCallingCode(localIdentifiers: LocalIdentifiers) -> Int? {
-        return parseE164(localIdentifiers.phoneNumber)?.getCallingCode()
+    public enum LocalCallingCode {
+        case phoneNumberfull(Int?)
+    }
+
+    public func localCallingCode(localIdentifiers: LocalIdentifiers) -> LocalCallingCode {
+        return .phoneNumberfull(parseE164(localIdentifiers.phoneNumber)?.getCallingCode())
     }
 
     private func _parsePhoneNumber(filteredValue: String, countryCode: String = defaultCountryCode()) -> PhoneNumber? {
@@ -301,7 +305,7 @@ public class PhoneNumberUtil: NSObject {
             localPhoneNumber
                 .flatMap { parseE164($0)?.getCallingCode() }
                 .flatMap { getFilteredRegionCodeForCallingCode($0) },
-        ].compacted().removingDuplicates(uniquingElementsBy: { $0 })
+        ].compacted().removingDuplicates()
 
         for countryCode in countryCodes {
             guard let transformRule = nationalPrefixTransformRule(countryCode: countryCode) else {

@@ -9,6 +9,7 @@ import SignalServiceKit
 /// DeviceTransferCoordinator manages high-level orchestration of the device transfer flow,
 /// using a TransferStatusViewModel passed to the UI that drives progress and success/cancel behavior.
 public class DeviceTransferCoordinator: Equatable {
+    private let logger = PrefixedLogger(prefix: "[DeviceTransfer][Incoming]")
 
     let transferStatusViewModel = TransferStatusViewModel()
 
@@ -16,6 +17,16 @@ public class DeviceTransferCoordinator: Equatable {
     private let quickRestoreManager: QuickRestoreManager
     private let restoreMethodToken: String
     private let restoreMode: DeviceTransfer.Mode
+    public let supportsWifiAware: Bool
+
+    private var discoveredPeersListenerTask: Task<Void, Error>?
+
+    var onTransferStart: (() -> Void) = { }
+
+    @MainActor
+    var pairedPeerStream: AsyncThrowingStream<any DeviceTransfer.Peer, Error> {
+        incomingDeviceTransferTask.pairedPeerStream
+    }
 
     public var confirmCancellation: () async -> Bool {
         get { transferStatusViewModel.confirmCancellation }
@@ -52,7 +63,9 @@ public class DeviceTransferCoordinator: Equatable {
 
     @MainActor
     private func _onSuccess() {
-        stopAcceptingTransfers()
+        Task {
+            await stopAcceptingTransfers()
+        }
     }
 
     @MainActor
@@ -67,7 +80,9 @@ public class DeviceTransferCoordinator: Equatable {
 
     @MainActor
     private func _onFailure(_ error: Error) {
-        stopAcceptingTransfers()
+        Task {
+            await stopAcceptingTransfers()
+        }
     }
 
     @MainActor
@@ -80,16 +95,29 @@ public class DeviceTransferCoordinator: Equatable {
         restoreMethodToken: String,
         restoreMode: DeviceTransfer.Mode,
         tsAccountManager: TSAccountManager,
-    ) {
+        supportsWifiAware: Bool,
+    ) throws {
         self.quickRestoreManager = quickRestoreManager
         self.restoreMethodToken = restoreMethodToken
         self.restoreMode = restoreMode
 
-        self.incomingDeviceTransferTask = IncomingDeviceTransferTask(
+        self.supportsWifiAware = supportsWifiAware
+        self.transferStatusViewModel.supportsWifiAware = supportsWifiAware
+        let factory: DeviceTransfer.ConnectionFactory
+        if
+            #available(iOS 26.0, *),
+            supportsWifiAware
+        {
+            factory = WADeviceTransferConnectionFactory()
+        } else {
+            factory = MPCDeviceTransferConnectionFactory()
+        }
+
+        self.incomingDeviceTransferTask = try IncomingDeviceTransferTask(
             db: db,
             deviceSleepManager: deviceSleepManager,
             deviceTransferRestore: deviceTransferRestore,
-            deviceTransferConnectionFactory: DeviceTransfer.defaultFactory,
+            deviceTransferConnectionFactory: factory,
             registrationStateChangeManager: registrationStateChangeManager,
             tsAccountManager: tsAccountManager,
         )
@@ -97,10 +125,16 @@ public class DeviceTransferCoordinator: Equatable {
         self.cancelTransferBlock = _onCancelTransfer
         self.onSuccess = _onSuccess
         self.onFailure = _onFailure
+
+        self.discoveredPeersListenerTask = Task {
+            for try await peers in incomingDeviceTransferTask.discoveredPeerStream {
+                transferStatusViewModel.discoveredPeers = peers
+            }
+        }
     }
 
     @MainActor
-    public func start() async throws {
+    public func reportTransferMethodChoice() async throws {
         transferStatusViewModel.state = .starting
 
         let url = try await incomingDeviceTransferTask.start(mode: restoreMode)
@@ -108,17 +142,25 @@ public class DeviceTransferCoordinator: Equatable {
             method: .deviceTransfer(url),
             restoreMethodToken: restoreMethodToken,
         )
+    }
 
+    /// Start listening for the old device to connect and begin the transfer.
+    ///
+    /// - Parameter peer: An optional peer that the new device prefers to connect to.  This allows connection layers like WiFiAware to listen
+    /// specifically for this peer and ignore any others.
+    @MainActor
+    func waitForTransferFromPeer(peer: (any DeviceTransfer.Peer)?) async throws {
         do {
-            try await incomingDeviceTransferTask.waitForTransferFromOldDevice { [weak self] progress in
+            try await incomingDeviceTransferTask.waitForTransferFromOldDevice(peer: peer) { [weak self] progress in
                 self?.initializeProgressTracking(progress: progress)
             }
+            logger.error("Transfer complete")
 
             transferStatusViewModel.state = .done
             transferStatusViewModel.onSuccess()
         } catch {
+            logger.error("Error during device transfer: \(error)")
             transferStatusViewModel.state = .error(error)
-            throw error
         }
     }
 
@@ -132,18 +174,28 @@ public class DeviceTransferCoordinator: Equatable {
         }
     }
 
+    private let hasTransferStarted = AtomicValue(false, lock: .init())
     private func updateStatus(value: Double) {
-        transferStatusViewModel.state = .transferring(value)
+        if !hasTransferStarted.swap(true) {
+            onTransferStart()
+        }
+        // A fuzzy check that the file transfer has completed and the transfer is finializing
+        if value >= 1.0 {
+            transferStatusViewModel.state = .finishing
+        } else {
+            transferStatusViewModel.state = .transferring(value)
+        }
     }
 
     @MainActor
     private func cancelTransfer() async {
-        incomingDeviceTransferTask.cancelTransferFromOldDevice()
+        await incomingDeviceTransferTask.cancelTransferFromOldDevice()
     }
 
     @MainActor
-    public func stopAcceptingTransfers() {
-        incomingDeviceTransferTask.stopAcceptingTransfersFromOldDevices()
+    public func stopAcceptingTransfers() async {
+        await incomingDeviceTransferTask.stopAcceptingTransfersFromOldDevices()
+        discoveredPeersListenerTask.take()?.cancel()
     }
 
     public static func ==(lhs: DeviceTransferCoordinator, rhs: DeviceTransferCoordinator) -> Bool {

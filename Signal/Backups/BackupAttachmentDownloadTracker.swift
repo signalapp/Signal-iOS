@@ -118,7 +118,7 @@ private class Tracker {
     func start() {
         state.enqueueUpdate { @MainActor [self] _state in
             let (downloadQueueStatusObserver, downloadQueueStatus) = observeDownloadQueueStatus()
-            let downloadProgressObserver = await observeDownloadProgress()
+            let downloadProgressObserver = observeDownloadProgress()
 
             _state.downloadQueueStatusObserver = downloadQueueStatusObserver
             _state.lastReportedDownloadQueueStatus = downloadQueueStatus
@@ -138,7 +138,7 @@ private class Tracker {
             }
 
             if let downloadProgressObserver = _state.downloadProgressObserver {
-                await backupAttachmentDownloadProgress.removeObserver(downloadProgressObserver)
+                backupAttachmentDownloadProgress.removeObserver(downloadProgressObserver)
             }
 
             _state.streamContinuation.finish()
@@ -178,8 +178,8 @@ private class Tracker {
 
     // MARK: -
 
-    private func observeDownloadProgress() async -> BackupAttachmentDownloadProgressObserver {
-        return await backupAttachmentDownloadProgress.addObserver { [weak self] progressUpdate in
+    private func observeDownloadProgress() -> BackupAttachmentDownloadProgressObserver {
+        return backupAttachmentDownloadProgress.addObserver { [weak self] progressUpdate in
             guard let self else { return }
 
             handleDownloadProgressUpdate(progressUpdate)
@@ -212,6 +212,12 @@ private class Tracker {
         case .empty:
             downloadUpdateState = .empty
         case .running:
+            if lastReportedDownloadProgress == .zero {
+                // Don't emit an update for the running queue with no progress.
+                // We'll emit an update when we have something more meaningful.
+                return
+            }
+
             downloadUpdateState = .running
         case .suspended:
             downloadUpdateState = .suspended

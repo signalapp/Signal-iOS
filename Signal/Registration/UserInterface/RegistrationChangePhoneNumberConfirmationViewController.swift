@@ -80,7 +80,7 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
 
     private lazy var warningLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .ows_accentRed
+        label.textColor = .Signal.red
         label.numberOfLines = 0
         label.font = .dynamicTypeSubheadlineClamped
         label.accessibilityIdentifier = "registration.phonenumber.validationWarningLabel"

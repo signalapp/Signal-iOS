@@ -40,6 +40,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         return OWSContactsManager(
             appReadiness: AppReadinessMock(),
             nicknameManager: mockNicknameManager,
+            notificationPreferencesManager: NotificationPreferencesManager(),
             recipientDatabaseTable: mockRecipientDatabaseTable,
             usernameLookupManager: mockUsernameLookupMananger,
         )

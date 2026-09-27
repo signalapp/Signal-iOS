@@ -385,7 +385,7 @@ private struct MockMessageProcessor: KeyTransparencyManager.Shims.MessageProcess
 private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingLocalAccountUpdates() {}
     func restoreOrCreateManifestIfNecessary(
-        authedDevice: AuthedDevice,
+        authedAccount: AuthedAccount,
         masterKeySource: StorageService.MasterKeySource,
     ) -> Promise<Void> {
         return .value(())
@@ -400,10 +400,11 @@ private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingUpdates(updatedRecipientUniqueIds: [RecipientUniqueId]) { owsFail("Not implemented!") }
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) { owsFail("Not implemented!") }
     func recordPendingUpdates(updatedGroupV2MasterKeys: [GroupMasterKey]) { owsFail("Not implemented!") }
+    func recordPendingInsertions(forGroupMasterKeys groupMasterKeys: [GroupMasterKey]) {}
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) { owsFail("Not implemented!") }
     func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey]) { owsFail("Not implemented!") }
-    func backupPendingChanges(authedDevice: AuthedDevice) { owsFail("Not implemented!") }
+    func backupPendingChanges(authedAccount: AuthedAccount) { owsFail("Not implemented!") }
     func resetLocalData(transaction: DBWriteTransaction) { owsFail("Not implemented!") }
-    func rotateManifest(mode: ManifestRotationMode, authedDevice: AuthedDevice) async throws { owsFail("Not implemented!") }
+    func rotateManifest(mode: ManifestRotationMode, authedAccount: AuthedAccount) async throws { owsFail("Not implemented!") }
     func waitForSteadyState() async throws(CancellationError) { owsFail("Not implemented!") }
 }

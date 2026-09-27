@@ -88,7 +88,7 @@ public enum StoryUtil {
         return .asset(
             avatar: UIImage(named: "signal-logo-128")?
                 .withTintColor(.white, renderingMode: .alwaysTemplate)
-                .withBackgroundColor(.ows_accentBlue, insets: UIEdgeInsets(margin: 24)),
+                .withBackgroundColor(.Signal.accent, insets: UIEdgeInsets(margin: 24)),
             badge: nil,
         )
     }

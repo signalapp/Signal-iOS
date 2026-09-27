@@ -155,20 +155,19 @@ public class ProfileBadge:
         }
 
         static var devicePreferred: BadgeVariant {
-            // TODO: Badges — Is this safe from an app extension? I'm pretty sure it isn't, but I'm
-            // not seeing anything in the docs that indicates this is this case. Should double check this.
-            switch UIScreen.main.scale {
+            let displayScale = UITraitCollection.current.displayScale
+            switch displayScale {
             case 0..<1.5:
-                owsAssertDebug(UIScreen.main.scale == 1.0, "Unrecognized scale: \(UIScreen.main.scale)")
+                owsAssertDebug(displayScale == 1.0, "Unrecognized scale: \(displayScale)")
                 return .mdpi
             case 1.5..<2.5:
-                owsAssertDebug(UIScreen.main.scale == 2.0, "Unrecognized scale: \(UIScreen.main.scale)")
+                owsAssertDebug(displayScale == 2.0, "Unrecognized scale: \(displayScale)")
                 return .xhdpi
             case 2.5...:
-                owsAssertDebug(UIScreen.main.scale == 3.0, "Unrecognized scale: \(UIScreen.main.scale)")
+                owsAssertDebug(displayScale == 3.0, "Unrecognized scale: \(displayScale)")
                 return .xxhdpi
             default:
-                owsFailDebug("Unrecognized scale: \(UIScreen.main.scale)")
+                owsFailDebug("Unrecognized scale: \(displayScale)")
                 return .xhdpi
             }
         }
@@ -230,7 +229,7 @@ public class ProfileBadgeManager {
     // MARK: -
 
     public func fetchAssetsIfNecessary(forBadge badge: ProfileBadge) async throws {
-        try await taskQueue.run(forKey: badge.resourcePath) {
+        try await taskQueue.runWithThrowingTask(forKey: badge.resourcePath) {
             try await BadgeAssetsFetcher(badgeAssets: badge.assets)
                 .fetchAssetsIfNecessary()
         }

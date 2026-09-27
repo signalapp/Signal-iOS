@@ -211,20 +211,14 @@ public class SearchResultsBar: UIView {
             leftInteriorChevronMargin = 8
         }
 
-        showLessRecentButton = UIBarButtonItem(
-            image: Theme.iconImage(.chevronUp),
-            primaryAction: UIAction { [weak self] _ in
-                self?.didTapShowLessRecent()
-            },
-        )
+        showLessRecentButton = UIBarButtonItem.button(icon: .chevronUp) { [weak self] in
+            self?.didTapShowLessRecent()
+        }
         showLessRecentButton.imageInsets = UIEdgeInsets(top: 2, left: leftExteriorChevronMargin, bottom: 2, right: leftInteriorChevronMargin)
 
-        showMoreRecentButton = UIBarButtonItem(
-            image: Theme.iconImage(.chevronDown),
-            primaryAction: UIAction { [weak self] _ in
-                self?.didTapShowMoreRecent()
-            },
-        )
+        showMoreRecentButton = UIBarButtonItem.button(icon: .chevronDown) { [weak self] in
+            self?.didTapShowMoreRecent()
+        }
         showMoreRecentButton.imageInsets = UIEdgeInsets(top: 2, left: leftInteriorChevronMargin, bottom: 2, right: leftExteriorChevronMargin)
 
         if isLegacyLayout {

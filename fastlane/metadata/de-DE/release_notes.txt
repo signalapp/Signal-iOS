@@ -1,1 +1,1 @@
-• Wir haben einen praktischen Shortcut für Signal-Gruppenanrufe hinzugefügt, mit dem du deine Hand nach dem Sprechen schnell wieder senken kannst. Hand aufs Herz: Das ist ganz klar unsere Lieblingsfunktion in dieser Version.
+• This update introduces a new custom mute option so you can easily specify the exact date and time when you would like to end your moment of silence for notifications in a specific chat.

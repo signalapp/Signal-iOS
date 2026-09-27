@@ -151,7 +151,8 @@ public class BackupArchiveEncryptedProtoStreamProvider {
                         fileUrl: fileUrl,
                         digest: try outputTrackingTransform.digest(),
                         encryptedDataLength: UInt32(clamping: outputTrackingTransform.count),
-                        attachmentByteSize: attachmentByteCounter.attachmentByteSize(),
+                        remoteAttachmentByteSize: attachmentByteCounter.remoteAttachmentByteSize(),
+                        localAttachmentByteSize: attachmentByteCounter.localAttachmentByteSize(),
                         nonceMetadata: encryptionMetadata.nonceMetadata,
                     )
                 },

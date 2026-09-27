@@ -69,7 +69,7 @@ public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearch
         )
         if let maxInteractionRowId {
             setMaxInteractionRowIdInclusive(maxInteractionRowId, tx: tx)
-            tx.addSyncCompletion {
+            tx.addSyncCompletion { [self] in
                 self.taskQueue.enqueue { [weak self] in
                     try await self?.runMessagesJobIfNeeded()
                 }

@@ -77,57 +77,38 @@ struct PreKeyTaskManager {
     /// When we register, we create a new identity key and other keys. So this variant:
     /// CAN create a new identity key (or uses any existing one)
     /// ALWAYS changes the targeted keys (regardless of current key state)
-    func createForRegistration() async -> RegistrationPreKeyUploadBundles {
-        logger.info("Create for registration")
-        let (aciBundle, pniBundle) = await db.awaitableWrite { tx in
-            let aciBundle = self.generateKeysForRegistration(identity: .aci, tx: tx)
-            let pniBundle = self.generateKeysForRegistration(identity: .pni, tx: tx)
-            self.persistKeysPriorToUpload(bundle: aciBundle, tx: tx)
-            self.persistKeysPriorToUpload(bundle: pniBundle, tx: tx)
-            return (aciBundle, pniBundle)
+    func createForRegistration(forIdentity identity: OWSIdentity) async -> RegistrationPreKeyUploadBundle {
+        logger.info("create for registration")
+        return await db.awaitableWrite { tx in
+            let bundle = self.generateKeysForRegistration(forIdentity: identity, tx: tx)
+            self.persistKeysPriorToUpload(bundle: bundle, tx: tx)
+            return bundle
         }
-        return .init(aci: aciBundle, pni: pniBundle)
     }
 
     /// When we provision, we use the primary's identity key to create other keys. So this variant:
     /// NEVER creates an identity key
     /// ALWAYS changes the targeted keys (regardless of current key state)
-    func createForProvisioning(
-        aciIdentityKeyPair: ECKeyPair,
-        pniIdentityKeyPair: ECKeyPair,
-    ) async -> RegistrationPreKeyUploadBundles {
-        logger.info("Create for provisioning")
-        let (aciBundle, pniBundle) = await db.awaitableWrite { tx in
-            let aciBundle = self.generateKeysForProvisioning(
-                identity: .aci,
-                identityKeyPair: aciIdentityKeyPair,
-                tx: tx,
-            )
-            let pniBundle = self.generateKeysForProvisioning(
-                identity: .pni,
-                identityKeyPair: pniIdentityKeyPair,
-                tx: tx,
-            )
-            self.persistKeysPriorToUpload(bundle: aciBundle, tx: tx)
-            self.persistKeysPriorToUpload(bundle: pniBundle, tx: tx)
-            return (aciBundle, pniBundle)
+    func createForProvisioning(forIdentity identity: OWSIdentity, keyPair: IdentityKeyPair) async -> RegistrationPreKeyUploadBundle {
+        logger.info("create for provisioning")
+        return await db.awaitableWrite { tx in
+            let bundle = self.generateKeysForProvisioning(forIdentity: identity, keyPair: keyPair, tx: tx)
+            self.persistKeysPriorToUpload(bundle: bundle, tx: tx)
+            return bundle
         }
-        return .init(aci: aciBundle, pni: pniBundle)
     }
 
-    func persistAfterRegistration(
-        bundles: RegistrationPreKeyUploadBundles,
+    func persistRegistrationBundle(
+        _ bundle: RegistrationPreKeyUploadBundle,
         uploadDidSucceed: Bool,
     ) async {
         logger.info("Persist after provisioning")
         await db.awaitableWrite { tx in
             if uploadDidSucceed {
-                self.persistStateAfterUpload(bundle: bundles.aci, tx: tx)
-                self.persistStateAfterUpload(bundle: bundles.pni, tx: tx)
+                self.persistStateAfterUpload(bundle: bundle, tx: tx)
             } else {
                 // Wipe the keys.
-                self.wipeKeysAfterFailedRegistration(bundle: bundles.aci, tx: tx)
-                self.wipeKeysAfterFailedRegistration(bundle: bundles.pni, tx: tx)
+                self.wipeKeysAfterFailedRegistration(bundle: bundle, tx: tx)
             }
         }
     }
@@ -215,22 +196,22 @@ struct PreKeyTaskManager {
     // MARK: Per-identity registration generators
 
     private func generateKeysForRegistration(
-        identity: OWSIdentity,
+        forIdentity identity: OWSIdentity,
         tx: DBWriteTransaction,
     ) -> RegistrationPreKeyUploadBundle {
         return generateKeysForProvisioning(
-            identity: identity,
-            identityKeyPair: getOrCreateIdentityKeyPair(identity: identity, tx: tx),
+            forIdentity: identity,
+            keyPair: getOrCreateIdentityKeyPair(identity: identity, tx: tx).identityKeyPair,
             tx: tx,
         )
     }
 
     private func generateKeysForProvisioning(
-        identity: OWSIdentity,
-        identityKeyPair: ECKeyPair,
+        forIdentity identity: OWSIdentity,
+        keyPair: IdentityKeyPair,
         tx: DBWriteTransaction,
     ) -> RegistrationPreKeyUploadBundle {
-        let identityKey = identityKeyPair.keyPair.privateKey
+        let identityKey = keyPair.privateKey
         let protocolStore = self.protocolStoreManager.signalProtocolStore(for: identity)
 
         let signedPreKeyStore = protocolStore.signedPreKeyStore
@@ -247,7 +228,7 @@ struct PreKeyTaskManager {
 
         return RegistrationPreKeyUploadBundle(
             identity: identity,
-            identityKeyPair: identityKeyPair,
+            identityKeyPair: keyPair,
             signedPreKey: signedPreKey,
             lastResortPreKey: lastResortPreKey,
         )
@@ -498,7 +479,11 @@ struct PreKeyTaskManager {
                 self.persistStateAfterUpload(bundle: bundle, tx: tx)
             }
             Task {
-                try await self.messageProcessor.waitForFetchingAndProcessing()
+                do throws(CancellationError) {
+                    try await self.messageProcessor.waitForFetchingAndProcessing()
+                } catch {
+                    return
+                }
                 await self.db.awaitableWrite { tx in self.cullStateAfterMessageProcessing(tx: tx) }
             }
         case let .failure(error) where error.httpStatusCode == 422:

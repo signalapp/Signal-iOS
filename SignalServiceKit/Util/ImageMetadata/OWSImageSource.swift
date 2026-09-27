@@ -70,13 +70,14 @@ extension OWSImageSource {
 
         // These are the brands of HEIF formatted files that are renderable by CoreGraphics
         let heifBrandHeaderHeic = Data("ftypheic\0".utf8)
+        let heifBrandHeaderHeix = Data("ftypheix\0".utf8)
         let heifBrandHeaderHeif = Data("ftypmif1\0".utf8)
         let heifBrandHeaderHeifStream = Data("ftypmsf1\0".utf8)
 
         // Pull the string from the header and compare it with the supported formats
         let header = try? readData(byteOffset: heifHeaderStartsAt, byteLength: totalHeaderLength)
 
-        if header == heifBrandHeaderHeic {
+        if header == heifBrandHeaderHeic || header == heifBrandHeaderHeix {
             return .heic
         } else if header == heifBrandHeaderHeif || header == heifBrandHeaderHeifStream {
             return .heif

@@ -31,14 +31,9 @@ public class NewPrivateStoryRecipientsViewController: BaseMemberViewController {
         navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
             self?.dismissPressed()
         }
-
-        navigationItem.rightBarButtonItem = .button(
-            title: CommonStrings.nextButton,
-            style: .plain,
-            action: { [weak self] in
-                self?.nextPressed()
-            },
-        )
+        navigationItem.rightBarButtonItem = .nextButton { [weak self] in
+            self?.nextPressed()
+        }
         navigationItem.rightBarButtonItem?.isEnabled = hasUnsavedChanges
 
         if recipientSet.isEmpty {

@@ -98,14 +98,6 @@ public extension UIStackView {
         return borderView
     }
 
-    @discardableResult
-    func addPillBackgroundView(backgroundColor: UIColor) -> UIView {
-        let backgroundView = OWSLayerView.pillView()
-        backgroundView.backgroundColor = backgroundColor
-        self.addBackgroundView(backgroundView)
-        return backgroundView
-    }
-
     class func verticalButtonStack(buttons: [UIButton], isFullWidthButtons: Bool = true) -> UIStackView {
         let stackView = UIStackView(arrangedSubviews: buttons)
         stackView.axis = .vertical
@@ -114,6 +106,37 @@ public extension UIStackView {
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.directionalLayoutMargins = .buttonContainerLayoutMargins
         return stackView
+    }
+
+    class func bulletPointsStack(content: [(image: UIImage, text: String)]) -> UIStackView {
+
+        func buildBulletView(image: UIImage, text: String) -> UIView {
+            let imageView = UIImageView(image: image)
+            imageView.tintColor = .Signal.label
+            imageView.setCompressionResistanceHigh()
+
+            let label = UILabel()
+            label.text = text
+            label.font = .dynamicTypeBodyClamped
+            label.textColor = .Signal.label
+            label.numberOfLines = 0
+
+            let row = UIStackView(arrangedSubviews: [imageView, label])
+            row.axis = .horizontal
+            row.spacing = 12
+            row.alignment = .top
+
+            return row
+        }
+
+        let bulletsStack = UIStackView(arrangedSubviews: content.map {
+            buildBulletView(image: $0.image, text: $0.text)
+        })
+        bulletsStack.isLayoutMarginsRelativeArrangement = true
+        bulletsStack.directionalLayoutMargins = .init(hMargin: 20, vMargin: 0)
+        bulletsStack.axis = .vertical
+        bulletsStack.spacing = 24
+        return bulletsStack
     }
 }
 

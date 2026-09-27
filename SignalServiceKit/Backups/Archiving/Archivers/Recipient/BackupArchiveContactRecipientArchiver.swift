@@ -74,8 +74,6 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
         stream: BackupArchiveProtoOutputStream,
         context: BackupArchive.RecipientArchivingContext,
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
-        let whitelistedAddresses = Set(profileManager.allWhitelistedAddresses(tx: context.tx))
-
         let blockedRecipientIds = blockingManager.blockedRecipientIds(tx: context.tx)
 
         var errors = [ArchiveFrameError]()
@@ -143,7 +141,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
             guard
                 !context.localIdentifiers.containsAnyOf(
                     aci: contactAddress.aci,
-                    phoneNumber: contactAddress.e164,
+                    phoneNumber: contactAddress.e164?.stringValue,
                     pni: contactAddress.pni,
                 )
             else {
@@ -207,7 +205,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                     tx: context.tx,
                 ),
                 isBlocked: blockedRecipientIds.contains(recipient.id),
-                isWhitelisted: whitelistedAddresses.contains(recipient.address),
+                isWhitelisted: recipient.isWhitelisted,
                 isStoryHidden: isStoryHidden,
                 visibility: { () -> BackupProto_Contact.Visibility in
                     guard
@@ -330,15 +328,14 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                     return true
                 }
 
-                let signalServiceAddress: BackupArchive.InteropAddress
                 switch userProfile.internalAddress {
                 case .localUser:
                     /// Skip the local user. We need to check `internalAddress`
                     /// here, since the "local user profile" has historically been
                     /// persisted with a special, magic phone number.
                     return true
-                case .otherUser(let _signalServiceAddress):
-                    signalServiceAddress = _signalServiceAddress
+                case .otherUser:
+                    break
                 }
 
                 let contact = self.buildContactRecipient(
@@ -348,7 +345,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                     username: nil, // If we have a user profile, we have no username.
                     nicknameRecord: nil, // Only contacts with SignalRecipients can have nicknames.
                     isBlocked: false, // Only contacts with SignalRecipients can be blocked.
-                    isWhitelisted: whitelistedAddresses.contains(signalServiceAddress),
+                    isWhitelisted: false, // Only contacts with SignalRecipients can be whitelisted.
                     isStoryHidden: false, // Can't have a story if there's no recipient.
                     visibility: .visible, // Can't have hidden if there's no recipient.
                     registration: {
@@ -424,8 +421,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
             username: nil,
             nicknameRecord: nil, // Only contacts with SignalRecipients can have nicknames.
             isBlocked: false, // only contacts with SignalRecipients can be blocked.
-            isWhitelisted: profileManager.allWhitelistedAddresses(tx: context.tx)
-                .contains(address.asInteropAddress()),
+            isWhitelisted: false, // only contacts with SignalRecipients can be whitelisted.
             // If there's no recipient, neither can be hidden
             isStoryHidden: false,
             visibility: .visible,
@@ -764,30 +760,26 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
             blockingManager.addBlockedAddress(recipient.address, tx: context.tx)
         }
 
-        do {
-            func addHiddenRecipient(isHiddenInKnownMessageRequestState: Bool) throws {
-                try recipientHidingManager.addHiddenRecipient(
-                    &recipient,
-                    inKnownMessageRequestState: isHiddenInKnownMessageRequestState,
-                    wasLocallyInitiated: false,
-                    tx: context.tx,
-                )
+        func addHiddenRecipient(isHiddenInKnownMessageRequestState: Bool) {
+            recipientHidingManager.addHiddenRecipient(
+                &recipient,
+                inKnownMessageRequestState: isHiddenInKnownMessageRequestState,
+                wasLocallyInitiated: false,
+                tx: context.tx,
+            )
 
-                context.setNeedsPostRestoreContactHiddenInfoMessage(
-                    recipientId: recipientProto.recipientId,
-                )
-            }
+            context.setNeedsPostRestoreContactHiddenInfoMessage(
+                recipientId: recipientProto.recipientId,
+            )
+        }
 
-            switch contactProto.visibility {
-            case .hidden:
-                try addHiddenRecipient(isHiddenInKnownMessageRequestState: false)
-            case .hiddenMessageRequest:
-                try addHiddenRecipient(isHiddenInKnownMessageRequestState: true)
-            case .visible, .UNRECOGNIZED:
-                break
-            }
-        } catch let error {
-            return restoreFrameError(.databaseInsertionFailed(error))
+        switch contactProto.visibility {
+        case .hidden:
+            addHiddenRecipient(isHiddenInKnownMessageRequestState: false)
+        case .hiddenMessageRequest:
+            addHiddenRecipient(isHiddenInKnownMessageRequestState: true)
+        case .visible, .UNRECOGNIZED:
+            break
         }
 
         var partialErrors = [BackupArchive.RestoreFrameError]()

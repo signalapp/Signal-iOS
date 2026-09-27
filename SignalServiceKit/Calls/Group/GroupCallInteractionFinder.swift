@@ -12,9 +12,8 @@ public final class GroupCallInteractionFinder {
     /// callers for more info.
     ///
     /// This query is powered by a one-off index:
-    /// `index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType`.
-    /// Consequently, if we decide in the future that we can drop this query, we
-    /// can also drop the index.
+    /// `Interaction_groupCallEraId_partial`. Consequently, if we decide in the
+    /// future that we can drop this query, we can also drop the index.
     public func existsGroupCallMessageForEraId(
         _ eraId: String,
         thread: TSThread,
@@ -23,7 +22,7 @@ public final class GroupCallInteractionFinder {
         let sql = """
         SELECT 1
         FROM \(InteractionRecord.databaseTableName)
-        \(DEBUG_INDEXED_BY("Interaction_groupCallEraId_partial", or: "index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType"))
+        \(DEBUG_INDEXED_BY("Interaction_groupCallEraId_partial"))
         WHERE \(interactionColumn: .recordType) IS \(SDSRecordType.groupCallMessage.rawValue)
         AND \(interactionColumn: .threadUniqueId) = ?
         AND \(interactionColumn: .eraId) = ?
@@ -47,7 +46,7 @@ public final class GroupCallInteractionFinder {
         let sql: String = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
-        \(DEBUG_INDEXED_BY("Interaction_unendedGroupCall_partial", or: "index_model_TSInteraction_on_uniqueThreadId_and_hasEnded_and_recordType"))
+        \(DEBUG_INDEXED_BY("Interaction_unendedGroupCall_partial"))
         WHERE \(interactionColumn: .recordType) = \(SDSRecordType.groupCallMessage.rawValue)
         AND \(interactionColumn: .hasEnded) = 0
         AND \(interactionColumn: .threadUniqueId) = ?

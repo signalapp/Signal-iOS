@@ -17,7 +17,7 @@ class IntroducingPinsMegaphone: Megaphone {
 
         let primaryButtonTitle = OWSLocalizedString("PINS_MEGAPHONE_ACTION", comment: "Action text for PIN megaphone when user doesn't have a PIN")
 
-        let primaryButton = Button(title: primaryButtonTitle) { [weak self] in
+        let primaryButton = Button(title: primaryButtonTitle) { [weak self, fromViewController] in
             let viewController = PinSetupViewController(
                 mode: .creating,
                 showCancelButton: true,

@@ -425,6 +425,10 @@ public enum OWSFileSystem {
     }
 }
 
+public enum OWSFileCoordinatorError: Error {
+    case fileNotFound
+}
+
 extension NSFileCoordinator {
     func coordinateThrows(
         writingItemAt url: URL,
@@ -443,11 +447,17 @@ extension NSFileCoordinator {
         }
 
         if let blockError {
+            let nsError = blockError as NSError
             if DebugFlags.internalLogging {
                 Logger.error("NSFileCoordinator blockError: \(blockError)")
             } else {
-                let nsError = blockError as NSError
-                Logger.error("NSFileCoordinator blockError \(nsError.domain):\(nsError.code)")
+                Logger.error("NSFileCoordinator blockError \(nsError.shortDescription)")
+            }
+            if
+                nsError.domain == NSCocoaErrorDomain,
+                nsError.code == NSFileNoSuchFileError
+            {
+                throw OWSFileCoordinatorError.fileNotFound
             }
             throw OWSGenericError("NSFileCoordinator blockError")
         }
@@ -456,7 +466,7 @@ extension NSFileCoordinator {
             if DebugFlags.internalLogging {
                 Logger.error("NSFileCoordinator coordinatorError: \(coordinatorError)")
             } else {
-                Logger.error("NSFileCoordinator coordinatorError: \(coordinatorError.domain):\(coordinatorError.code)")
+                Logger.error("NSFileCoordinator coordinatorError: \(coordinatorError.shortDescription)")
             }
             throw OWSGenericError("NSFileCoordinator coordinatorError")
         }

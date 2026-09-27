@@ -71,7 +71,7 @@ class LocalFileBackupBGProcessingTaskRunner: BGProcessingTaskRunner {
 
     func startCondition() -> BGProcessingTaskStartCondition {
         return db.read { tx -> BGProcessingTaskStartCondition in
-            guard tsAccountManager().registrationState(tx: tx).isRegisteredPrimaryDevice else {
+            guard tsAccountManager().registrationState(tx: tx).isRegistered else {
                 return .never
             }
 

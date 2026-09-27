@@ -8,10 +8,10 @@ import SignalServiceKit
 import SignalUI
 import UniformTypeIdentifiers
 
-class AvatarSettingsViewController: OWSTableViewController2 {
+class AvatarSettingsViewController: OWSTableViewController2, UIImagePickerControllerDelegate, UINavigationControllerDelegate,
+    OptionViewDelegate
+{
     let context: AvatarHistoryManager.Context
-
-    static let headerAvatarSize: CGFloat = UIDevice.current.isIPhone5OrShorter ? 120 : 160
 
     enum State: Equatable {
         case original(UIImage?)
@@ -45,12 +45,12 @@ class AvatarSettingsViewController: OWSTableViewController2 {
             case .groupId(let groupId):
                 return avatarBuilder.defaultAvatarImage(
                     forGroupId: groupId,
-                    diameterPoints: UInt(Self.headerAvatarSize),
+                    diameterPoints: UInt(avatarImageViewSize),
                     transaction: tx,
                 )
             case .profile:
                 return avatarBuilder.defaultAvatarImageForLocalUser(
-                    diameterPoints: UInt(Self.headerAvatarSize),
+                    diameterPoints: UInt(avatarImageViewSize),
                     transaction: tx,
                 )
             }
@@ -100,14 +100,6 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         updateHeaderView()
     }
 
-    override func themeDidChange() {
-        super.themeDidChange()
-
-        updateHeaderViewLayout(forceUpdate: true)
-        optionViews.removeAll()
-        updateTableContents()
-    }
-
     private func didTapDone() {
         defer { dismiss(animated: true) }
 
@@ -135,9 +127,30 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    override func topHeader() -> UIView? { topHeaderStack }
+    override func topHeader() -> UIView? {
+        if avatarImageViewSizeConstraint == nil {
+            avatarImageView.translatesAutoresizingMaskIntoConstraints = false
+            let avatarImageViewSizeConstraint = avatarImageView.widthAnchor.constraint(
+                equalToConstant: avatarImageViewSize,
+            )
+            NSLayoutConstraint.activate([
+                avatarImageViewSizeConstraint,
+                avatarImageView.widthAnchor.constraint(equalTo: avatarImageView.heightAnchor),
+            ])
+            self.avatarImageViewSizeConstraint = avatarImageViewSizeConstraint
+
+            topHeaderStack.layoutMargins = .init(top: 24, left: 0, bottom: 13, right: 0)
+        }
+        return topHeaderStack
+    }
 
     private let avatarImageView = AvatarImageView()
+
+    private var avatarImageViewSize: CGFloat {
+        min(160, CGFloat(view.width * 0.4).rounded(.up))
+    }
+
+    private var avatarImageViewSizeConstraint: NSLayoutConstraint?
 
     private lazy var topHeaderStack: UIView = {
         let topHeaderStack = UIStackView(arrangedSubviews: [avatarImageView, headerButtonStack])
@@ -145,50 +158,26 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         topHeaderStack.axis = .vertical
         topHeaderStack.alignment = .center
         topHeaderStack.spacing = 24
-
-        avatarImageView.autoSetDimensions(to: CGSize(square: Self.headerAvatarSize))
-
         topHeaderStack.addSubview(clearButton)
-        clearButton.autoPinEdge(.trailing, to: .trailing, of: avatarImageView, withOffset: -8)
-        clearButton.autoPinEdge(.top, to: .top, of: avatarImageView, withOffset: 8)
+
+        clearButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            clearButton.trailingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: -8),
+            clearButton.topAnchor.constraint(equalTo: avatarImageView.topAnchor, constant: 8),
+        ])
 
         return topHeaderStack
     }()
 
-    private lazy var clearButton: UIView = {
-        let clearButton = UIView()
-        clearButton.backgroundColor = UIColor(light: UIColor(rgbHex: 0xf8f9f9), dark: .ows_gray15)
-        clearButton.autoSetDimensions(to: CGSize.square(32))
-
-        clearButton.layer.cornerRadius = 16
-        clearButton.layer.shadowColor = UIColor.black.cgColor
-        clearButton.layer.shadowOpacity = 0.2
-        clearButton.layer.shadowRadius = 4
-        clearButton.layer.shadowOffset = CGSize(width: 0, height: 2)
-
-        let secondaryShadowView = UIView()
-        secondaryShadowView.layer.shadowColor = UIColor.black.cgColor
-        secondaryShadowView.layer.shadowOpacity = 0.12
-        secondaryShadowView.layer.shadowRadius = 16
-        secondaryShadowView.layer.shadowOffset = CGSize(width: 0, height: 4)
-
-        clearButton.addSubview(secondaryShadowView)
-        secondaryShadowView.autoPinEdgesToSuperviewEdges()
-
-        let xImageView = UIImageView(image: UIImage(resource: .x20))
-        xImageView.tintColor = UIColor(light: .black, dark: .ows_gray80)
-        xImageView.autoSetDimensions(to: CGSize.square(20))
-        xImageView.contentMode = .scaleAspectFit
-
-        clearButton.addSubview(xImageView)
-        xImageView.autoCenterInSuperview()
-
-        clearButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapClear)))
-
-        return clearButton
+    private lazy var clearButton: UIButton = {
+        var buttonConfiguration = UIButton.Configuration.roundMaterial(image: .x20)
+        buttonConfiguration.contentInsets = .init(margin: 6) // 32 x 32 button
+        return UIButton(
+            configuration: buttonConfiguration,
+            primaryAction: UIAction { [weak self] _ in self?.didTapClear() },
+        )
     }()
 
-    @objc
     private func didTapClear() {
         state = .new(nil)
         updateTableContents()
@@ -313,7 +302,10 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         case .new(let model):
             if let model {
                 clearButton.isHidden = false
-                avatarImageView.image = SSKEnvironment.shared.avatarBuilderRef.avatarImage(model: model, diameterPoints: UInt(Self.headerAvatarSize))
+                avatarImageView.image = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
+                    model: model,
+                    diameterPoints: UInt(avatarImageViewSize),
+                )
             } else {
                 clearButton.isHidden = true
                 avatarImageView.image = defaultAvatarImage
@@ -338,12 +330,13 @@ class AvatarSettingsViewController: OWSTableViewController2 {
     }
 
     private var previousSizeReference: CGFloat?
+
     private func updateHeaderViewLayout(forceUpdate: Bool = false) {
         // Update button layout only when the view size changes.
         guard view.width != previousSizeReference || forceUpdate else { return }
         previousSizeReference = view.width
 
-        topHeaderStack.layoutMargins = .init(top: 24, left: 0, bottom: 13, right: 0)
+        avatarImageViewSizeConstraint?.constant = avatarImageViewSize
 
         updateHeaderButtons()
     }
@@ -450,10 +443,10 @@ class AvatarSettingsViewController: OWSTableViewController2 {
     }
 
     private var maxIconButtonWidth: CGFloat = 0
+
     private func buildHeaderButton(icon: ThemeIcon, title: String, isEnabled: Bool = true, action: @escaping () -> Void) -> UIView {
         let button = SettingsHeaderButton(title: title.capitalized, icon: icon, actionHandler: action)
-        button.buttonBackgroundColor = Self.cellBackgroundColor(isUsingPresentedStyle: true)
-        button.selectedButtonBackgroundColor = Self.cellSelectedBackgroundColor()
+        button.buttonBackgroundColor = .Signal.secondaryGroupedBackground
         button.isEnabled = isEnabled
 
         if maxIconButtonWidth < button.minimumWidth {
@@ -462,9 +455,9 @@ class AvatarSettingsViewController: OWSTableViewController2 {
 
         return button
     }
-}
 
-extension AvatarSettingsViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    // MARK: - UIImagePickerControllerDelegate
+
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
     }
@@ -492,9 +485,9 @@ extension AvatarSettingsViewController: UIImagePickerControllerDelegate, UINavig
             self?.present(vc, animated: true)
         }
     }
-}
 
-extension AvatarSettingsViewController: OptionViewDelegate {
+    // MARK: - OptionViewDelegate
+
     fileprivate func didSelectOptionView(_ optionView: OptionView, model: AvatarModel) {
         optionViews.forEach { $0.isSelected = $0 == optionView }
         state = .new(model)
@@ -543,9 +536,10 @@ private protocol OptionViewDelegate: AnyObject {
 }
 
 private class OptionView: UIView {
-    private let imageView = AvatarImageView()
-    private var imageViewInsetConstraints: [NSLayoutConstraint]?
-    private let editOverlayView = AvatarImageView()
+
+    private let imageView = UIImageView()
+
+    private let editOverlayView = UIImageView(image: UIImage(imageLiteralResourceName: "edit-fill"))
 
     private weak var delegate: (OptionViewDelegate & UIViewController)?
 
@@ -561,32 +555,44 @@ private class OptionView: UIView {
 
         super.init(frame: .zero)
 
-        addSubview(imageView)
-        imageView.autoPinEdgesToSuperviewEdges()
-        updateSelectionState()
+        clipsToBounds = true
 
-        editOverlayView.image = UIImage(imageLiteralResourceName: "edit-fill")
+        addSubview(imageView)
+
         editOverlayView.backgroundColor = .ows_blackAlpha20
         editOverlayView.tintColor = .white
         editOverlayView.contentMode = .center
-        imageView.addSubview(editOverlayView)
-        editOverlayView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(margin: 2.5))
         editOverlayView.layer.borderWidth = 1.5
-        editOverlayView.isHidden = true
+        editOverlayView.clipsToBounds = true
+        addSubview(editOverlayView)
 
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
         addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress)))
+
+        updateSelectionState()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            updateSelectionState()
+        }
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        layer.cornerRadius = width / 2
-        layer.masksToBounds = true
+        layer.cornerRadius = bounds.size.smallerAxis / 2
+
+        imageView.frame = bounds
+
+        editOverlayView.frame = imageView.frame.inset(by: .init(margin: 2.5))
+        editOverlayView.layer.cornerRadius = editOverlayView.bounds.size.smallerAxis / 2
     }
 
     @objc
@@ -626,22 +632,21 @@ private class OptionView: UIView {
         delegate?.presentActionSheet(actionSheet)
     }
 
-    func updateSelectionState() {
+    private func updateSelectionState() {
         if isSelected {
-            layer.borderColor = Theme.primaryTextColor.cgColor
+            layer.borderColor = UIColor.Signal.label.cgColor
             layer.borderWidth = 2.5
         } else {
             layer.borderColor = nil
             layer.borderWidth = 0
         }
 
-        editOverlayView.isHidden = true
-        editOverlayView.layer.borderColor = OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: true).cgColor
+        editOverlayView.layer.borderColor = UIColor.Signal.secondaryGroupedBackground.cgColor
 
-        guard let model else { return }
-
-        if model.type.isEditable {
+        if let model, model.type.isEditable {
             editOverlayView.isHidden = !isSelected
+        } else {
+            editOverlayView.isHidden = true
         }
     }
 

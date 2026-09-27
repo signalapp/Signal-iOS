@@ -17,6 +17,7 @@ public class PollMessageManager {
 
     private let pollStore: PollStore
     private let recipientDatabaseTable: RecipientDatabaseTable
+    private let remoteConfigProvider: RemoteConfigProvider
     private let interactionStore: InteractionStore
     private let db: DB
     private let messageSenderJobQueue: MessageSenderJobQueue
@@ -27,6 +28,7 @@ public class PollMessageManager {
     init(
         pollStore: PollStore,
         recipientDatabaseTable: RecipientDatabaseTable,
+        remoteConfigProvider: RemoteConfigProvider,
         interactionStore: InteractionStore,
         accountManager: TSAccountManager,
         messageSenderJobQueue: MessageSenderJobQueue,
@@ -36,6 +38,7 @@ public class PollMessageManager {
     ) {
         self.pollStore = pollStore
         self.recipientDatabaseTable = recipientDatabaseTable
+        self.remoteConfigProvider = remoteConfigProvider
         self.interactionStore = interactionStore
         self.accountManager = accountManager
         self.messageSenderJobQueue = messageSenderJobQueue
@@ -64,6 +67,11 @@ public class PollMessageManager {
 
         guard pollCreate.options.count >= 2 else {
             throw OWSAssertionError("Poll does not have enough options")
+        }
+
+        let maxOptionCount = remoteConfigProvider.currentConfig().maxPollOptionReceiveCount
+        guard pollCreate.options.count <= maxOptionCount else {
+            throw OWSAssertionError("Poll has too many options")
         }
 
         for option in pollCreate.options {

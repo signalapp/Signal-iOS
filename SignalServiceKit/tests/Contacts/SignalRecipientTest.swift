@@ -329,7 +329,7 @@ class SignalRecipientTest: SSKBaseTest {
                         phoneNumber: address.phoneNumber?.stringValue,
                         pni: nil,
                     )!,
-                    groupThreadId: groupThread.uniqueId,
+                    threadUniqueId: groupThread.uniqueId,
                     lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp(),
                 )
                 groupMember.anyInsert(transaction: tx)

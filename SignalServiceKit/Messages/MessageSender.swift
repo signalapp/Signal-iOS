@@ -145,7 +145,7 @@ public class MessageSenderImpl: MessageSender, DeviceMessageBuilder {
             canUseStoryAuth: false,
             accessKey: sealedSenderParameters?.unidentifiedAccess?.value,
             endorsement: sealedSenderParameters?.endorsement,
-            authedAccount: .implicit(),
+            authedAccount: .implicit,
             options: requestOptions,
         )
 
@@ -402,7 +402,7 @@ public class MessageSenderImpl: MessageSender, DeviceMessageBuilder {
             }
             for uploadOperation in uploadOperations {
                 taskGroup.addTask {
-                    try await Upload.uploadQueue.run(uploadOperation)
+                    try await Upload.uploadQueue.runWithThrowingTask(uploadOperation)
                 }
             }
             try await taskGroup.waitForAll()
@@ -1337,7 +1337,7 @@ public class MessageSenderImpl: MessageSender, DeviceMessageBuilder {
         _ messageSend: OWSMessageSend,
         sealedSenderParameters: SealedSenderParameters?,
     ) async throws -> [SentDeviceMessage] {
-        return try await sendQueues.run(forKey: messageSend.serviceId) {
+        return try await sendQueues.runWithThrowingTask(forKey: messageSend.serviceId) {
             return try await performMessageSendAttempt(
                 messageSend,
                 recoveryState: InnerRecoveryState(),

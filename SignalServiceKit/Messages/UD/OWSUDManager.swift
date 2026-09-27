@@ -238,7 +238,7 @@ public class OWSUDManagerImpl: OWSUDManager {
 
         do {
             let senderCertificate = try SenderCertificate(dataValue)
-            try validateCertificate(senderCertificate)
+            try validateCertificate(senderCertificate, aciOnly: aciOnly)
             return senderCertificate
         } catch {
             Logger.warn("Ignoring invalid cached sender certificate: \(error)")
@@ -277,7 +277,7 @@ public class OWSUDManagerImpl: OWSUDManager {
     }
 
     private func fetchSenderCertificates(forceRefresh: Bool) async throws -> SenderCertificates {
-        return try await fetchQueue.run {
+        return try await fetchQueue.runWithThrowingTask {
             return try await _fetchSenderCertificates(forceRefresh: forceRefresh)
         }
     }
@@ -328,11 +328,11 @@ public class OWSUDManagerImpl: OWSUDManager {
         }()
 
         let senderCertificate = try SenderCertificate(certificateData)
-        try validateCertificate(senderCertificate)
+        try validateCertificate(senderCertificate, aciOnly: aciOnly)
         return senderCertificate
     }
 
-    private func validateCertificate(_ certificate: SenderCertificate) throws {
+    private func validateCertificate(_ certificate: SenderCertificate, aciOnly: Bool) throws {
         guard
             let deviceId = DeviceId(validating: certificate.deviceId),
             self.tsAccountManager.storedDeviceIdWithMaybeTransaction.equals(deviceId)
@@ -340,14 +340,15 @@ public class OWSUDManagerImpl: OWSUDManager {
             throw OWSUDError.invalidData(description: "Sender certificate has incorrect device ID")
         }
 
-        let localIdentifiers = self.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction
+        let registeredState = try self.tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+        let localIdentifiers = registeredState.localIdentifiers
 
         let sender = certificate.sender
-        guard sender.e164 == nil || sender.e164 == localIdentifiers?.phoneNumber else {
+        guard sender.e164 == (aciOnly ? nil : localIdentifiers.phoneNumber) else {
             throw OWSUDError.invalidData(description: "Sender certificate has incorrect phone number")
         }
 
-        guard sender.senderAci == localIdentifiers!.aci else {
+        guard sender.senderAci == localIdentifiers.aci else {
             throw OWSUDError.invalidData(description: "Sender certificate has incorrect ACI")
         }
 
@@ -401,7 +402,7 @@ public class OWSUDManagerImpl: OWSUDManager {
         self.keyValueStore.setBool(value, key: self.kUDUnrestrictedAccessKey, transaction: tx)
 
         let accountAttributesUpdater = DependenciesBridge.shared.accountAttributesUpdater
-        accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: .implicit(), tx: tx)
+        accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: .implicit, tx: tx)
     }
 
     // MARK: - Phone Number Sharing
@@ -429,7 +430,7 @@ public class OWSUDManagerImpl: OWSUDManager {
             _ = SSKEnvironment.shared.profileManagerRef.reuploadLocalProfile(
                 unsavedRotatedProfileKey: nil,
                 mustReuploadAvatar: false,
-                authedAccount: .implicit(),
+                authedAccount: .implicit,
                 tx: tx,
             )
         }

@@ -13,6 +13,7 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
     private var mockDB: DB!
     private var mockDeviceStore: OWSDeviceStore!
     private var mockDevicesService: MockDevicesService!
+    private var mockLocalIdentifiers: LocalIdentifiers = .forUnitTests
     private var mockTSAccountManager: MockTSAccountManager!
 
     private var inactiveLinkedDeviceFinder: InactiveLinkedDeviceFinderImpl!
@@ -41,6 +42,7 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         mockDeviceStore = OWSDeviceStore()
         mockDevicesService = MockDevicesService()
         mockTSAccountManager = MockTSAccountManager()
+        mockTSAccountManager.localIdentifiersMock = { [mockLocalIdentifiers] in mockLocalIdentifiers }
 
         inactiveLinkedDeviceFinder = InactiveLinkedDeviceFinderImpl(
             dateProvider: { self.mockDateProvider() },
@@ -54,18 +56,18 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
 
     func testRefreshing() async throws {
         // Skip if linked device.
-        mockTSAccountManager.registrationStateMock = { .provisioned }
+        mockTSAccountManager.registrationStateMock = { [mockLocalIdentifiers] in .provisioned(mockLocalIdentifiers) }
         try await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
         XCTAssertEqual(mockDevicesService.refreshCount, 0)
 
         // Make a first attempt, failing to refresh.
-        mockTSAccountManager.registrationStateMock = { .registered }
+        mockTSAccountManager.registrationStateMock = { [mockLocalIdentifiers] in .registered(mockLocalIdentifiers) }
         mockDevicesService.shouldFail = true
         try? await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
         XCTAssertEqual(mockDevicesService.refreshCount, 1)
 
         // Make a second attempt, succeeding.
-        mockTSAccountManager.registrationStateMock = { .registered }
+        mockTSAccountManager.registrationStateMock = { [mockLocalIdentifiers] in .registered(mockLocalIdentifiers) }
         mockDevicesService.shouldFail = false
         try await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
         XCTAssertEqual(mockDevicesService.refreshCount, 2)
@@ -77,12 +79,12 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         }
 
         // Do a refresh...
-        mockTSAccountManager.registrationStateMock = { .registered }
+        mockTSAccountManager.registrationStateMock = { [mockLocalIdentifiers] in .registered(mockLocalIdentifiers) }
         try await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
         XCTAssertEqual(mockDevicesService.refreshCount, 1)
 
         // Only include inactive devices.
-        mockTSAccountManager.registrationStateMock = { .registered }
+        mockTSAccountManager.registrationStateMock = { [mockLocalIdentifiers] in .registered(mockLocalIdentifiers) }
         setMockDevices([
             .primary(),
             .fixture(name: "eye pad", deviceId: 2, lastSeenAt: inactiveLastSeenAt),
@@ -94,7 +96,7 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         )
 
         // If multiple inactive devices, pick the "least active" one.
-        mockTSAccountManager.registrationStateMock = { .registered }
+        mockTSAccountManager.registrationStateMock = { [mockLocalIdentifiers] in .registered(mockLocalIdentifiers) }
         setMockDevices([
             .primary(),
             .fixture(name: "🏖️", deviceId: 4, lastSeenAt: inactiveLastSeenAt.addingTimeInterval(-.second)),
@@ -106,12 +108,12 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         )
 
         // Nothing if no linked devices.
-        mockTSAccountManager.registrationStateMock = { .registered }
+        mockTSAccountManager.registrationStateMock = { [mockLocalIdentifiers] in .registered(mockLocalIdentifiers) }
         setMockDevices([.primary()])
         XCTAssertNil(findLeastActive())
 
         // Nothing if not a primary.
-        mockTSAccountManager.registrationStateMock = { .provisioned }
+        mockTSAccountManager.registrationStateMock = { [mockLocalIdentifiers] in .provisioned(mockLocalIdentifiers) }
         setMockDevices([
             .primary(),
             .fixture(name: "eye pad", deviceId: 6, lastSeenAt: inactiveLastSeenAt),
@@ -120,7 +122,7 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
     }
 
     func testPermanentlyDisabling() async throws {
-        mockTSAccountManager.registrationStateMock = { .registered }
+        mockTSAccountManager.registrationStateMock = { [mockLocalIdentifiers] in .registered(mockLocalIdentifiers) }
         setMockDevices([
             .primary(),
             .fixture(name: "a sedentary device", deviceId: 7, lastSeenAt: inactiveLastSeenAt),

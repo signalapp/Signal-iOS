@@ -156,6 +156,19 @@ public class BackupArchiveAdHocCallArchiver: BackupArchiveProtoStreamWriter {
         default:
             return .failure([.restoreFrameError(.invalidProtoData(.recipientOfAdHocCallWasNotCallLink))])
         }
+
+        switch callRecordStore.fetch(
+            callId: callId.value,
+            conversationId: .callLink(callLinkRowId: callLinkRecordId.rowId),
+            tx: context.tx,
+        ) {
+        case .matchFound:
+            // Desktop backups can contain duplicate CallRecords. Ignore them.
+            return .success
+        case .matchDeleted, .matchNotFound:
+            break
+        }
+
         let adHocCallRecord = CallRecord(
             callId: callId.value,
             callLinkRowId: callLinkRecordId.rowId,

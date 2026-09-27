@@ -11,7 +11,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
     private let cronStore: CronStore
     private let dateProvider: DateProvider
     private let db: any DB
-    private let kvStore: KeyValueStore
+    private let kvStore: NewKeyValueStore
     private let networkManager: NetworkManager
     private let profileManager: ProfileManager
     private let syncManager: SyncManagerProtocol
@@ -42,7 +42,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         self.cronStore = CronStore(uniqueKey: .updateAttributes)
         self.dateProvider = dateProvider
         self.db = db
-        self.kvStore = KeyValueStore(collection: "AccountAttributesUpdater")
+        self.kvStore = NewKeyValueStore(collection: "AccountAttributesUpdater")
         self.networkManager = networkManager
         self.profileManager = profileManager
         self.syncManager = syncManager
@@ -56,7 +56,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             mustBeRegistered: true,
             mustBeConnected: true,
             operation: { () throws -> Bool in
-                return try await self.updateAccountAttributesIfNeeded(authedAccount: .implicit())
+                return try await self.updateAccountAttributesIfNeeded(authedAccount: .implicit)
             },
             handleResult: { result in
                 switch result {
@@ -76,7 +76,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
     private let updateQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
     private func updateAccountAttributesIfNeeded(authedAccount: AuthedAccount) async throws -> Bool {
-        return try await updateQueue.run {
+        return try await updateQueue.runWithThrowingTask {
             return try await _updateAccountAttributesIfNeeded(authedAccount: authedAccount)
         }
     }
@@ -92,7 +92,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             let shouldUpdate: Bool = (
                 updateConfig.updateRequestToken != nil
                     || Date() >= self.cronStore.mostRecentDate(tx: tx).addingTimeInterval(Constants.periodicRefreshInterval)
-                    || updateConfig.capabilities.requestParameters != self.oldCapabilities(tx: tx),
+                    || updateConfig.capabilities != self.oldCapabilities(tx: tx),
             )
             return shouldUpdate ? updateConfig : nil
         }
@@ -109,10 +109,10 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
 
     @discardableResult
     public func scheduleAccountAttributesUpdate(authedAccount: AuthedAccount, tx: DBWriteTransaction) -> Task<Void, any Error> {
-        self.kvStore.setData(
+        self.kvStore.writeValue(
             Randomness.generateRandomBytes(16),
-            key: Keys.latestUpdateRequestToken,
-            transaction: tx,
+            forKey: Keys.latestUpdateRequestToken,
+            tx: tx,
         )
         let txCompletion = CancellableContinuation<Void>()
         tx.addSyncCompletion { txCompletion.resume(with: .success(())) }
@@ -137,7 +137,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         // has non-nil value if isRegistered is true.
         let hasBackedUpMasterKey = self.twoFactorManager.shouldMasterKeyBeBackedUp(tx: tx)
         let capabilities = AccountAttributes.Capabilities(hasSVRBackups: hasBackedUpMasterKey)
-        let lastAttributeRequestToken = self.kvStore.getData(Keys.latestUpdateRequestToken, transaction: tx)
+        let lastAttributeRequestToken = self.kvStore.fetchValue(Data.self, forKey: Keys.latestUpdateRequestToken, tx: tx)
 
         return UpdateConfig(
             registrationState: registrationState,
@@ -146,13 +146,22 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         )
     }
 
-    private func oldCapabilities(tx: DBReadTransaction) -> [String: NSNumber]? {
-        return self.kvStore.getDictionary(
-            Keys.lastUpdateDeviceCapabilities,
-            keyClass: NSString.self,
-            objectClass: NSNumber.self,
-            transaction: tx,
-        ) as [String: NSNumber]?
+    private func oldCapabilities(tx: DBReadTransaction) -> AccountAttributes.Capabilities? {
+        let encodedCapabilities = self.kvStore.fetchValue(
+            Data.self,
+            forKey: Keys.lastUpdateDeviceCapabilities,
+            tx: tx,
+        )
+        guard let encodedCapabilities else {
+            return nil
+        }
+        do {
+            return try JSONDecoder().decode(AccountAttributes.Capabilities.self, from: encodedCapabilities)
+        } catch {
+            // Expected when upgrading or downgrading... (we want to refresh because
+            // they're definitely different if we can't decode them)
+            return nil
+        }
     }
 
     /// Performs a single attempt to update the account attributes.
@@ -176,18 +185,18 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
 
         await db.awaitableWrite { tx in
             self.updateMostRecentDate(tx: tx)
-            self.kvStore.setObject(
-                updateConfig.capabilities.requestParameters as [NSString: NSNumber] as NSDictionary,
-                key: Keys.lastUpdateDeviceCapabilities,
-                transaction: tx,
+            self.kvStore.writeValue(
+                failIfThrows { try JSONEncoder().encode(updateConfig.capabilities) },
+                forKey: Keys.lastUpdateDeviceCapabilities,
+                tx: tx,
             )
             // Clear the update request unless a new update has been requested
             // while this update was in flight.
             if
                 let updateRequestToken = updateConfig.updateRequestToken,
-                updateRequestToken == self.kvStore.getData(Keys.latestUpdateRequestToken, transaction: tx)
+                updateRequestToken == self.kvStore.fetchValue(Data.self, forKey: Keys.latestUpdateRequestToken, tx: tx)
             {
-                self.kvStore.removeValue(forKey: Keys.latestUpdateRequestToken, transaction: tx)
+                self.kvStore.removeValue(forKey: Keys.latestUpdateRequestToken, tx: tx)
             }
         }
 

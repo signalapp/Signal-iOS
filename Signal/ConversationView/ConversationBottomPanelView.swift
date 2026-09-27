@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalServiceKit
 import SignalUI
 
-class ConversationBottomPanelView: UIView {
+class ConversationBottomPanelView: UIView, ConversationBottomBar {
 
     /// Subclasses must add content here.
     var contentView: UIView {
@@ -20,6 +21,9 @@ class ConversationBottomPanelView: UIView {
 
     /// Subclasses must constrain their content to this layout guide.
     let contentLayoutGuide = UILayoutGuide()
+
+    // Adjusts bottom margin for non-glass UI to compensate for bottom safe area inset or lack thereof.
+    private var contentLayoutGuideBottom: NSLayoutConstraint?
 
     private var backgroundViewEffect: UIVisualEffect {
         if UIAccessibility.isReduceTransparencyEnabled {
@@ -111,8 +115,10 @@ class ConversationBottomPanelView: UIView {
 
             // Make sure to call this in `init` to establish decent insets
             // if safe area insets won't ever change (eg home button iPhones).
-            updateBackgroundPanelConstraints()
+            updateGlassBackgroundPanelConstraints()
         } else {
+            contentLayoutGuideBottom = contentLayoutGuide.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor)
+
             addConstraints([
                 backgroundView.topAnchor.constraint(equalTo: topAnchor),
                 backgroundView.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -122,11 +128,10 @@ class ConversationBottomPanelView: UIView {
                 contentLayoutGuide.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
                 contentLayoutGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
                 contentLayoutGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
-                contentLayoutGuide.bottomAnchor.constraint(
-                    equalTo: safeAreaLayoutGuide.bottomAnchor,
-                    constant: UIDevice.current.hasIPhoneXNotch ? 0 : -12,
-                ),
+                contentLayoutGuideBottom!,
             ])
+
+            updateContentLayoutGuideBottomMargin()
 
             // Alter the visual effect view's tint to match our background color
             // so the bottom panel, when over a solid color background matching UIColor.Signal.background,
@@ -146,11 +151,19 @@ class ConversationBottomPanelView: UIView {
     override func safeAreaInsetsDidChange() {
         super.safeAreaInsetsDidChange()
 
-        updateBackgroundPanelConstraints()
+        if #available(iOS 26, *), useGlassPanel {
+            updateGlassBackgroundPanelConstraints()
+        } else {
+            updateContentLayoutGuideBottomMargin()
+        }
     }
 
-    private func updateBackgroundPanelConstraints() {
-        guard let backgroundViewLeading, let backgroundViewTrailing, let backgroundViewBottom else { return }
+    @available(iOS 26, *)
+    private func updateGlassBackgroundPanelConstraints() {
+        guard let backgroundViewLeading, let backgroundViewTrailing, let backgroundViewBottom else {
+            owsFailBeta("Invalid configuration")
+            return
+        }
 
         var margin = safeAreaInsets.bottom
 
@@ -165,11 +178,23 @@ class ConversationBottomPanelView: UIView {
         backgroundViewBottom.constant = safeAreaInsets.bottom > 0 ? 0 : -margin
     }
 
+    private func updateContentLayoutGuideBottomMargin() {
+        guard let contentLayoutGuideBottom else {
+            owsFailBeta("Invalid configuration")
+            return
+        }
+
+        // If there's a bottom safe area margin, we want to align content to it.
+        // Otherwise we want 12 dp padding.
+        let bottomSafeAreaInset = safeAreaInsets.bottom
+        contentLayoutGuideBottom.constant = bottomSafeAreaInset > 0 ? 0 : -16
+    }
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-}
 
-extension ConversationBottomPanelView: ConversationBottomBar {
+    // MARK: - ConversationBottomBar
+
     var shouldAttachToKeyboardLayoutGuide: Bool { false }
 }

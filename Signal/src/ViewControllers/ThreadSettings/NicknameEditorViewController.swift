@@ -192,7 +192,7 @@ class NicknameEditorViewController: OWSTableViewController2 {
             if remainingCharacters > 5 {
                 noteCharacterLimitLabel.textColor = Theme.secondaryTextAndIconColor
             } else {
-                noteCharacterLimitLabel.textColor = .ows_accentRed
+                noteCharacterLimitLabel.textColor = .Signal.red
             }
         }
     }
@@ -283,7 +283,7 @@ class NicknameEditorViewController: OWSTableViewController2 {
             contents.add(.init(items: [
                 .item(
                     name: CommonStrings.deleteButton,
-                    textColor: .ows_accentRed,
+                    textColor: .Signal.red,
                     actionBlock: { [weak self] in
                         self?.showDeleteNicknameConfirmation()
                     },

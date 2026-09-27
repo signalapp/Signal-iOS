@@ -37,39 +37,6 @@ public class GroupManager: NSObject {
 
     public static let maxEmbeddedChangeProtoLength: UInt = UInt(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes)
 
-    // MARK: - Group IDs
-
-    static func groupIdLength(for groupsVersion: GroupsVersion) -> UInt {
-        switch groupsVersion {
-        case .V1:
-            return kGroupIdLengthV1
-        case .V2:
-            return kGroupIdLengthV2
-        }
-    }
-
-    public static func isV1GroupId(_ groupId: Data) -> Bool {
-        groupId.count == groupIdLength(for: .V1)
-    }
-
-    public static func isV2GroupId(_ groupId: Data) -> Bool {
-        groupId.count == groupIdLength(for: .V2)
-    }
-
-    @objc
-    public static func isValidGroupId(_ groupId: Data, groupsVersion: GroupsVersion) -> Bool {
-        let expectedLength = groupIdLength(for: groupsVersion)
-        guard groupId.count == expectedLength else {
-            owsFailDebug("Invalid groupId: \(groupId.count) != \(expectedLength)")
-            return false
-        }
-        return true
-    }
-
-    public static func isValidGroupIdOfAnyKind(_ groupId: Data) -> Bool {
-        return isV1GroupId(groupId) || isV2GroupId(groupId)
-    }
-
     // MARK: - Group Models
 
     /// Confirms that a given address supports V2 groups.
@@ -105,9 +72,9 @@ public class GroupManager: NSObject {
         avatarData: Data?,
         disappearingMessageToken: DisappearingMessageToken,
     ) async throws -> TSGroupThread {
-        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
-            throw OWSAssertionError("Missing localIdentifiers.")
-        }
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+        let localIdentifiers = registeredState.localIdentifiers
 
         var otherMembers = membersParam.compactMap(\.serviceId)
         otherMembers.removeAll(where: { $0 == localIdentifiers.aci })
@@ -147,15 +114,17 @@ public class GroupManager: NSObject {
                 transaction: tx,
             )
 
-            // Since local user created the group, it's name is verified.
-            let lastVerifiedGroupNameHash = ThreadAssociatedData.groupNameVerificationHash(
+            // Since local user created the group, its name is verified.
+            let lastVerifiedGroupNameHash = GroupRecord.groupNameVerificationHash(
                 groupName: snapshotResponse.groupSnapshot.title,
             )
 
             let groupModel = try builder.buildAsV2()
 
-            let (thread, groupRecord) = self.insertGroupThreadInDatabaseAndCreateInfoMessage(
+            var groupRecord = GroupStore().fetchGroupOrInsert(secretParams: seed.groupSecretParams, tx: tx)
+            let thread = self.insertGroupThreadInDatabaseAndCreateInfoMessage(
                 secretParams: seed.groupSecretParams,
+                groupRecord: &groupRecord,
                 groupModel: groupModel,
                 disappearingMessageToken: disappearingMessageToken,
                 groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
@@ -165,7 +134,8 @@ public class GroupManager: NSObject {
                 lastVerifiedGroupNameHash: lastVerifiedGroupNameHash,
                 transaction: tx,
             )
-            SSKEnvironment.shared.profileManagerRef.addGroupId(
+            let profileManager = SSKEnvironment.shared.profileManagerRef
+            profileManager.addGroupId(
                 toProfileWhitelist: groupModel.groupId,
                 userProfileWriter: .localUser,
                 transaction: tx,
@@ -244,8 +214,11 @@ public class GroupManager: NSObject {
         localDeviceId: DeviceId,
         transaction: DBWriteTransaction,
     ) -> TSGroupThread {
+        let secretParams = failIfThrows { try groupModel.secretParams() }
+        var groupRecord = GroupStore().fetchGroupOrInsert(secretParams: secretParams, tx: transaction)
         return self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
-            secretParams: try! groupModel.secretParams(),
+            secretParams: secretParams,
+            groupRecord: &groupRecord,
             newGroupModel: groupModel,
             newDisappearingMessageToken: disappearingMessageToken,
             newlyLearnedPniToAciAssociations: [:],
@@ -392,15 +365,17 @@ public class GroupManager: NSObject {
         secretParams: GroupSecretParams,
         waitForMessageProcessing: Bool = false,
     ) async throws {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let profileManager = SSKEnvironment.shared.profileManagerRef
         if waitForMessageProcessing {
             try await GroupManager.waitForMessageFetchingAndProcessingWithTimeout()
         }
         let groupId = try secretParams.getPublicParams().getGroupIdentifier()
-        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-            SSKEnvironment.shared.profileManagerRef.addGroupId(
+        await databaseStorage.awaitableWrite { tx in
+            profileManager.addGroupId(
                 toProfileWhitelist: groupId.serialize(),
                 userProfileWriter: .localUser,
-                transaction: transaction,
+                transaction: tx,
             )
         }
         try await updateGroupV2(
@@ -499,6 +474,9 @@ public class GroupManager: NSObject {
         inviteLinkPassword: Data,
         downloadedAvatar: (avatarUrlPath: String, avatarData: Data?)?,
     ) async throws {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+
         let groupId = try secretParams.getPublicParams().getGroupIdentifier()
 
         try await ensureLocalProfileHasCommitmentIfNecessary()
@@ -508,11 +486,11 @@ public class GroupManager: NSObject {
             downloadedAvatar: downloadedAvatar,
         )
 
-        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-            SSKEnvironment.shared.profileManagerRef.addGroupId(
+        await databaseStorage.awaitableWrite { tx in
+            profileManager.addGroupId(
                 toProfileWhitelist: groupId.serialize(),
                 userProfileWriter: .localUser,
-                transaction: transaction,
+                transaction: tx,
             )
         }
     }
@@ -663,8 +641,16 @@ public class GroupManager: NSObject {
                 owsFailDebug("Missing localDeviceId.")
                 return
             }
-            guard let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx) else {
-                owsFailDebug("Couldn't fetch thread that's guaranteed to exist.")
+            guard var groupRecord = GroupStore().fetchGroup(forGroupId: groupId, tx: tx) else {
+                owsFailDebug("Couldn't fetch GroupRecord that should exist")
+                return
+            }
+            guard
+                let threadId = groupRecord.threadId,
+                let threadUniqueId = TSGroupThread.threadUniqueId(forThreadId: threadId, tx: tx),
+                let groupThread = TSGroupThread.fetchViaCache(uniqueId: threadUniqueId, transaction: tx)
+            else {
+                owsFailDebug("Couldn't fetch TSGroupThread that should exist")
                 return
             }
 
@@ -689,6 +675,7 @@ public class GroupManager: NSObject {
                 // state.
                 // updatedLastVerifiedGroupNameHash is nil because this is not a change-name action.
                 updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+                    groupRecord: &groupRecord,
                     groupThread: groupThread,
                     newGroupModel: newGroupModel,
                     newDisappearingMessageToken: nil,
@@ -798,6 +785,7 @@ public class GroupManager: NSObject {
     // If disappearingMessageToken is nil, don't update the disappearing messages configuration.
     private static func insertGroupThreadInDatabaseAndCreateInfoMessage(
         secretParams: GroupSecretParams,
+        groupRecord: inout GroupRecord,
         groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken?,
         groupUpdateSource: GroupUpdateSource,
@@ -806,11 +794,7 @@ public class GroupManager: NSObject {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         lastVerifiedGroupNameHash: Data?,
         transaction: DBWriteTransaction,
-    ) -> (TSGroupThread, GroupRecord) {
-        let threadAssociatedDataStore = DependenciesBridge.shared.threadAssociatedDataStore
-
-        var groupRecord = GroupStore().fetchGroupOrInsert(secretParams: secretParams, tx: transaction)
-
+    ) -> TSGroupThread {
         let groupId = failIfThrows { try secretParams.getPublicParams().getGroupIdentifier() }
         if groupRecord.threadId != nil {
             owsFail("Inserting existing group thread: \(groupId)")
@@ -823,11 +807,7 @@ public class GroupManager: NSObject {
         )
 
         if let lastVerifiedGroupNameHash {
-            if let threadAssociatedData = threadAssociatedDataStore.fetch(for: groupThread.uniqueId, tx: transaction) {
-                threadAssociatedData.updateWith(lastVerifiedGroupNameHash: lastVerifiedGroupNameHash, updateStorageService: true, transaction: transaction)
-            } else {
-                owsFailDebug("missing threadAssociatedData for group")
-            }
+            groupRecord.setLastVerifiedGroupNameHash(lastVerifiedGroupNameHash, tx: transaction)
         }
 
         let newDisappearingMessageToken = disappearingMessageToken ?? DisappearingMessageToken.disabledToken
@@ -860,12 +840,9 @@ public class GroupManager: NSObject {
             break
         }
 
-        notifyStorageServiceOfInsertedGroup(
-            groupModel: groupModel,
-            transaction: transaction,
-        )
+        notifyStorageServiceOfInsertedGroup(secretParams: secretParams, tx: transaction)
 
-        return (groupThread, groupRecord)
+        return groupThread
     }
 
     /// Update persisted group-related state for the provided models, or insert
@@ -878,6 +855,7 @@ public class GroupManager: NSObject {
     /// group update.
     public static func tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
         secretParams: GroupSecretParams,
+        groupRecord: inout GroupRecord,
         newGroupModel: TSGroupModelV2,
         newDisappearingMessageToken: DisappearingMessageToken?,
         newlyLearnedPniToAciAssociations: [Pni: Aci],
@@ -896,8 +874,13 @@ public class GroupManager: NSObject {
         }
 
         let groupId = failIfThrows { try secretParams.getPublicParams().getGroupIdentifier() }
-        if let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: transaction) {
+        if
+            let threadId = groupRecord.threadId,
+            let threadUniqueId = TSGroupThread.threadUniqueId(forThreadId: threadId, tx: transaction),
+            let groupThread = TSGroupThread.fetchViaCache(uniqueId: threadUniqueId, transaction: transaction)
+        {
             updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+                groupRecord: &groupRecord,
                 groupThread: groupThread,
                 newGroupModel: newGroupModel,
                 newDisappearingMessageToken: newDisappearingMessageToken,
@@ -937,8 +920,9 @@ public class GroupManager: NSObject {
                 tx: transaction,
             )
 
-            let (groupThread, _) = insertGroupThreadInDatabaseAndCreateInfoMessage(
+            let groupThread = insertGroupThreadInDatabaseAndCreateInfoMessage(
                 secretParams: secretParams,
+                groupRecord: &groupRecord,
                 groupModel: newGroupModel,
                 disappearingMessageToken: newDisappearingMessageToken,
                 groupUpdateSource: shouldAttributeAuthor ? groupUpdateSource : .unknown,
@@ -960,6 +944,7 @@ public class GroupManager: NSObject {
     /// Associations between PNIs and ACIs that were learned as a result of this
     /// group update.
     public static func updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+        groupRecord: inout GroupRecord,
         groupThread: TSGroupThread,
         newGroupModel: TSGroupModel,
         newDisappearingMessageToken: DisappearingMessageToken?,
@@ -1033,7 +1018,6 @@ public class GroupManager: NSObject {
             }
 
             if
-                DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction).isPrimaryDevice ?? true,
                 oldGroupModel.membership.hasProfileKeyInGroup(serviceId: localIdentifiers.aci),
                 !newGroupModel.membership.hasProfileKeyInGroup(serviceId: localIdentifiers.aci)
             {
@@ -1051,23 +1035,21 @@ public class GroupManager: NSObject {
                         ,
                         newGroupModel.membership.canViewProfileKeys(serviceId: member)
                     {
-                        // Make a best-effort attempt to find other groups with
-                        // this blocked user in which our profile key is
-                        // exposed.
+                        // Make a best-effort attempt to find other groups with this blocked user
+                        // in which our profile key is exposed.
                         //
-                        // We can only efficiently query for groups in which
-                        // they are a full member, although that may not be all
-                        // the groups in which they can see your profile key.
-                        // Best effort.
-                        let mutualGroupThreads = Self.mutualGroupThreads(
-                            with: member,
+                        // We can only efficiently query for groups in which they are a full
+                        // member, although that may not be all the groups in which they can see
+                        // your profile key. Best effort.
+                        let groupThreads = Self.groupThreadsWithProfileKey(
+                            otherMember: member,
                             localAci: localIdentifiers.aci,
                             tx: transaction,
                         )
 
-                        // If there is exactly one group, it's the one we are leaving!
-                        // We should rotate, as it's the last group we have in common.
-                        if mutualGroupThreads.count == 1 {
+                        // If there is exactly one group, it's the one we are leaving! We should
+                        // rotate, as it's the last group we have in common.
+                        if groupThreads.count == 1 {
                             shouldRotateProfileKey = true
                             break
                         }
@@ -1075,7 +1057,8 @@ public class GroupManager: NSObject {
                 }
 
                 if shouldRotateProfileKey {
-                    SSKEnvironment.shared.profileManagerRef.forceRotateLocalProfileKeyForGroupDeparture(with: transaction)
+                    let profileManager = SSKEnvironment.shared.profileManagerRef
+                    profileManager.setNeedsProfileKeyRotation(tx: transaction)
                 }
             }
         }
@@ -1114,9 +1097,9 @@ public class GroupManager: NSObject {
         )
 
         if let updatedLastVerifiedGroupNameHash {
-            let threadAssociatedDataStore = DependenciesBridge.shared.threadAssociatedDataStore
-            let threadAssociatedData = threadAssociatedDataStore.fetch(for: groupThread.uniqueId, tx: transaction)
-            threadAssociatedData?.updateWith(lastVerifiedGroupNameHash: updatedLastVerifiedGroupNameHash, updateStorageService: true, transaction: transaction)
+            groupRecord.setLastVerifiedGroupNameHash(updatedLastVerifiedGroupNameHash, tx: transaction)
+            // TODO: We shouldn't update storage service unless we made the change on this device.
+            SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: newGroupModel)
         }
 
         let shouldInsertInfoMessages: Bool
@@ -1143,32 +1126,25 @@ public class GroupManager: NSObject {
         }
     }
 
-    private static func mutualGroupThreads(
-        with member: ServiceId,
+    private static func groupThreadsWithProfileKey(
+        otherMember: ServiceId,
         localAci: Aci,
         tx: DBReadTransaction,
-    ) -> [TSGroupThread] {
-        return DependenciesBridge.shared.groupMemberStore
-            .groupThreadIds(
-                withFullMember: member,
-                tx: tx,
-            )
+    ) -> some Collection<TSGroupThread> {
+        let groupMemberStore = DependenciesBridge.shared.groupMemberStore
+        let uniqueIds = groupMemberStore.groupThreadUniqueIds(withFullMember: otherMember, tx: tx)
+        return TSGroupThread.activeGroupThreads(uniqueIds: uniqueIds, tx: tx)
             .lazy
-            .compactMap { groupThreadId in
-                return TSGroupThread.fetchGroupThreadViaCache(uniqueId: groupThreadId, transaction: tx)
-            }
-            .filter { groupThread in
-                return groupThread.groupMembership.hasProfileKeyInGroup(serviceId: localAci)
-            }
+            .filter { $0.groupMembership.hasProfileKeyInGroup(serviceId: localAci) }
     }
 
-    public static func hasMutualGroupThread(
-        with member: ServiceId,
+    public static func hasGroupThreadWithProfileKey(
+        otherMember: ServiceId,
         localAci: Aci,
         tx: DBReadTransaction,
     ) -> Bool {
-        let mutualGroupThreads = Self.mutualGroupThreads(
-            with: member,
+        let mutualGroupThreads = Self.groupThreadsWithProfileKey(
+            otherMember: otherMember,
             localAci: localAci,
             tx: tx,
         )
@@ -1191,27 +1167,9 @@ public class GroupManager: NSObject {
 
     // MARK: - Storage Service
 
-    private static func notifyStorageServiceOfInsertedGroup(
-        groupModel: TSGroupModel,
-        transaction: DBReadTransaction,
-    ) {
-        guard let groupModel = groupModel as? TSGroupModelV2 else {
-            // We only need to notify the storage service about v2 groups.
-            return
-        }
-        guard
-            !SSKEnvironment.shared.groupsV2Ref.isGroupKnownToStorageService(
-                groupModel: groupModel,
-                transaction: transaction,
-            )
-        else {
-            // To avoid redundant storage service writes,
-            // don't bother notifying the storage service
-            // about v2 groups it already knows about.
-            return
-        }
-
-        SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: groupModel)
+    private static func notifyStorageServiceOfInsertedGroup(secretParams: GroupSecretParams, tx: DBReadTransaction) {
+        let masterKey = failIfThrows { try secretParams.getMasterKey() }
+        SSKEnvironment.shared.storageServiceManagerRef.recordPendingInsertions(forGroupMasterKeys: [masterKey])
     }
 
     // MARK: - Profiles
@@ -1256,7 +1214,8 @@ public class GroupManager: NSObject {
         // Ensure the thread is in our profile whitelist if we're a member of the group.
         // We don't want to do this if we're just a pending member or are leaving/have
         // already left the group.
-        SSKEnvironment.shared.profileManagerRef.addGroupId(
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        profileManager.addGroupId(
             toProfileWhitelist: newGroupModel.groupId,
             userProfileWriter: .localUser,
             transaction: tx,
@@ -1324,7 +1283,7 @@ public class GroupManager: NSObject {
     /// our profile key credential from the service until we've uploaded a profile
     /// key commitment to the service.
     public static func ensureLocalProfileHasCommitmentIfNecessary() async throws {
-        try await localProfileCommitmentQueue.run {
+        try await localProfileCommitmentQueue.runWithThrowingTask {
             try await _ensureLocalProfileHasCommitmentIfNecessary()
         }
     }
@@ -1347,7 +1306,7 @@ public class GroupManager: NSObject {
         // If we don't have a local profile key credential we should first
         // check if it is simply expired, by asking for a new one (which we
         // would get as part of fetching our local profile).
-        _ = try await SSKEnvironment.shared.profileManagerRef.fetchLocalUsersProfile(authedAccount: .implicit())
+        _ = try await SSKEnvironment.shared.profileManagerRef.fetchLocalUsersProfile(authedAccount: .implicit)
 
         guard !hasProfileKeyCredential() else {
             return
@@ -1364,7 +1323,7 @@ public class GroupManager: NSObject {
             SSKEnvironment.shared.profileManagerRef.reuploadLocalProfile(
                 unsavedRotatedProfileKey: nil,
                 mustReuploadAvatar: false,
-                authedAccount: .implicit(),
+                authedAccount: .implicit,
                 tx: tx,
             )
         }
@@ -1450,9 +1409,6 @@ extension GroupManager {
                 title != existingGroupModel.groupName
             {
                 groupChangeSet.setTitle(title)
-
-                // Updated verified group name hash in storage service.
-                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: existingGroupModel)
             }
 
             if

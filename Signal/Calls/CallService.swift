@@ -35,6 +35,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     private var groupCallManager: GroupCallManager { SSKEnvironment.shared.groupCallManagerRef }
     private var messageSenderJobQueue: MessageSenderJobQueue { SSKEnvironment.shared.messageSenderJobQueueRef }
     private var reachabilityManager: SSKReachabilityManager { SSKEnvironment.shared.reachabilityManagerRef }
+    private let tsAccountManager: any TSAccountManager
 
     var callUIAdapter: CallUIAdapter
 
@@ -146,6 +147,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         )
         self.db = db
         self.deviceSleepManager = deviceSleepManager
+        self.tsAccountManager = tsAccountManager
         self.callManager.delegate = self
         self.callServiceState.addObserver(self)
 
@@ -171,9 +173,9 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             })
         }
 
-        appReadiness.runNowOrWhenAppWillBecomeReady {
-            if let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci {
-                self.callManager.setSelfUuid(localAci.rawUUID)
+        appReadiness.runNowOrWhenAppWillBecomeReady { [self] in
+            if let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction() {
+                self.callManager.setSelfUuid(registeredState.localIdentifiers.aci.rawUUID)
             }
             self.notificationObservers.append(NotificationCenter.default.addObserver(forName: .registrationStateDidChange, object: nil, queue: .main) { [weak self] _ in
                 MainActor.assumeIsolated { self?.registrationChanged() }
@@ -284,8 +286,9 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 callLinkCall: call,
                 adHocCallRecordManager: adHocCallRecordManager,
                 callLinkStore: callLinkStore,
-                messageSenderJobQueue: messageSenderJobQueue,
                 db: db,
+                messageSenderJobQueue: messageSenderJobQueue,
+                tsAccountManager: tsAccountManager,
             )
             call.addObserver(self, syncStateImmediately: true)
         }
@@ -613,16 +616,29 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     private static let audioLevelsIntervalMillis: UInt64 = 200
 
+    static func buildSvcConfig() -> SvcConfig? {
+        if RingrtcSvcConfig.enableSvc(with: RemoteConfig.current), RingrtcVp9Config.enableVp9Encode(with: RemoteConfig.current) {
+            let mode = RingrtcSvcConfig.svcMode(with: RemoteConfig.current)
+            let modeForScreenshare = RingrtcSvcConfig.svcModeForScreenshare(with: RemoteConfig.current)
+            let maxBitrateBps = RingrtcSvcConfig.svcMaxBitrateBps(with: RemoteConfig.current)
+            return SvcConfig(mode: mode, modeForScreenshare: modeForScreenshare, maxBitrateBps: maxBitrateBps != 0 ? maxBitrateBps : nil)
+        } else {
+            return nil
+        }
+    }
+
     func buildAndConnectGroupCall(for groupId: GroupIdentifier, isVideoMuted: Bool) -> (SignalCall, GroupThreadCall)? {
         return _buildAndConnectGroupCall(isOutgoingVideoMuted: isVideoMuted) { () -> (SignalCall, GroupThreadCall)? in
             let videoCaptureController = VideoCaptureController()
             let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
+            let svcConfig = CallService.buildSvcConfig()
             let ringRtcCall = callManager.createGroupCall(
                 groupId: groupId.serialize(),
                 sfuUrl: sfuUrl,
                 hkdfExtraInfo: Data(),
                 audioLevelsIntervalMillis: Self.audioLevelsIntervalMillis,
                 dredDuration: RemoteConfig.current.ringrtcDredDuration,
+                svcConfig: svcConfig,
                 videoCaptureController: videoCaptureController,
             )
             guard let ringRtcCall else {
@@ -662,7 +678,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         case .fetch:
             state = try await callLinkStateUpdater.readCallLink(rootKey: callLink.rootKey).get()
         }
-        let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
+        let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+        let localIdentifiers = registeredState.localIdentifiers
         let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
         let (adminPasskey, isDeleted) = databaseStorage.read { tx -> (Data?, Bool) in
             let callLinkRecord = callLinkStore.fetch(roomId: callLink.rootKey.deriveRoomId(), tx: tx)
@@ -677,6 +694,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
             let secretParams = CallLinkSecretParams.deriveFromRootKey(callLink.rootKey.bytes)
             let authCredentialPresentation = authCredential.present(callLinkParams: secretParams)
+            let svcConfig = CallService.buildSvcConfig()
             let ringRtcCall = callManager.createCallLinkCall(
                 sfuUrl: sfuUrl,
                 endorsementPublicKey: serverPublicParams.endorsementPublicKey,
@@ -686,6 +704,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 hkdfExtraInfo: Data(),
                 audioLevelsIntervalMillis: Self.audioLevelsIntervalMillis,
                 dredDuration: RemoteConfig.current.ringrtcDredDuration,
+                svcConfig: svcConfig,
                 videoCaptureController: videoCaptureController,
             )
             guard let ringRtcCall else {
@@ -861,8 +880,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     }
 
     private func registrationChanged() {
-        if let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci {
-            callManager.setSelfUuid(localAci.rawUUID)
+        if let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction() {
+            callManager.setSelfUuid(registeredState.localIdentifiers.aci.rawUUID)
         }
     }
 
@@ -1644,6 +1663,15 @@ extension CallService: CallManagerDelegate {
 
             guard thread.groupMembership.fullMembers.count <= RemoteConfig.current.maxGroupCallRingSize else {
                 Logger.warn("discarding group ring \(ringId) from \(senderAci) for too-large group")
+                return .cancel
+            }
+
+            if
+                BuildFlags.improvedNotifications,
+                thread.isMuted,
+                !DependenciesBridge.shared.notificationPreferencesManager.notifyForCallsWhenMuted(thread: thread, tx: transaction)
+            {
+                Logger.info("silently ignoring group ring \(ringId) due to mute settings")
                 return .cancel
             }
 

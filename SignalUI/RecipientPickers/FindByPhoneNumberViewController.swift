@@ -155,13 +155,9 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
 
         self.contents = content
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: CommonStrings.nextButton,
-            style: .done,
-            target: self,
-            action: #selector(tryToSelectPhoneNumber),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "button"),
-        )
+        navigationItem.rightBarButtonItem = .nextButton { [weak self] in
+            self?.tryToSelectPhoneNumber()
+        }
         navigationItem.rightBarButtonItem?.isEnabled = false
 
         applyTheme()
@@ -216,7 +212,6 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
         return validPhoneNumber() != nil
     }
 
-    @objc
     private func tryToSelectPhoneNumber() {
         guard let phoneNumber = validPhoneNumber() else {
             return

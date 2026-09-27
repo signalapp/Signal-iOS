@@ -73,7 +73,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     public func backUpMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) async throws {
         Logger.info("")
-        try await backupQueue.run {
+        try await backupQueue.runWithThrowingTask {
             try await doBackupAndExpose(pin: pin, masterKey: masterKey, authMethod: authMethod)
         }
     }
@@ -96,7 +96,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     public func storeKeys(
         fromProvisioningMessage provisioningMessage: LinkingProvisioningMessage,
-        authedDevice: AuthedDevice,
+        authedAccount: AuthedAccount,
         tx: DBWriteTransaction,
     ) {
         Logger.info("")
@@ -107,7 +107,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     public func storeKeys(
         fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
-        authedDevice: AuthedDevice,
+        authedAccount: AuthedAccount,
         tx: DBWriteTransaction,
     ) throws(SVR.KeysError) {
         Logger.info("")
@@ -136,7 +136,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             // if we've gotten a key that we requested.
             tx.addSyncCompletion { [storageServiceManager] in
                 storageServiceManager.restoreOrCreateManifestIfNecessary(
-                    authedDevice: authedDevice,
+                    authedAccount: authedAccount,
                     masterKeySource: .implicit,
                 )
             }
@@ -585,7 +585,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     // MARK: - Migrations
 
     public func refreshBackupIfNecessary() async throws {
-        try await backupQueue.run {
+        try await backupQueue.runWithThrowingTask {
             let pin = db.read(block: twoFAManager.pinCode(transaction:))
 
             if let pin {
@@ -647,7 +647,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             }
         }
 
-        return try await connectionQueue.run {
+        return try await connectionQueue.runWithThrowingTask {
             while true {
                 Logger.info("Opening new connection")
                 do {
@@ -694,11 +694,11 @@ private extension SVR2.AuthMethod {
     var authedAccount: AuthedAccount {
         switch self {
         case .svrAuth(_, let backup):
-            return backup?.authedAccount ?? .implicit()
+            return backup?.authedAccount ?? .implicit
         case .chatServerAuth(let authedAccount):
             return authedAccount
         case .implicit:
-            return .implicit()
+            return .implicit
         }
     }
 }

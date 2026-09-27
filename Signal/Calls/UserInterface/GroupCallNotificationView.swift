@@ -248,7 +248,7 @@ private class BannerView: UIView {
         label.setCompressionResistanceHorizontalHigh()
         label.numberOfLines = 0
         label.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
-        label.textColor = .ows_white
+        label.textColor = .white
         label.text = actionText
 
         hStack.addArrangedSubview(.hStretchingSpacer())

@@ -163,7 +163,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
     }
 
     func clearConfiguration() {
-        self.backgroundColor = .ows_black
+        self.backgroundColor = .black
         self.blurredAvatarBackgroundView.clear()
         avatarView?.reset()
     }
@@ -202,7 +202,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
     private func createDetailedVideoOffIndicatorView() -> UIStackView {
         let icon = UIImageView()
         icon.contentMode = .scaleAspectFit
-        icon.setTemplateImageName("video-slash-fill-28", tintColor: .ows_white)
+        icon.setTemplateImageName("video-slash-fill-28", tintColor: .white)
 
         let label = UILabel()
         label.font = .dynamicTypeCaption1
@@ -214,23 +214,9 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
         label.textColor = Theme.darkThemePrimaryColor
 
         let container = UIStackView(arrangedSubviews: [icon, label])
-        if UIDevice.current.isIPhone5OrShorter {
-            // Use a horizontal layout to save on vertical space.
-            // Allow the icon to shrink below its natural size of 28pt...
-            icon.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-            container.axis = .horizontal
-            container.spacing = 4
-            // ...by always matching the label's height.
-            container.alignment = .fill
-        } else {
-            // Use a simple vertical layout.
-            icon.autoSetDimensions(to: CGSize(square: 28))
-            container.axis = .vertical
-            container.spacing = 10
-            container.alignment = .center
-            label.autoPinWidthToSuperview()
-        }
-
+        container.axis = .vertical
+        container.spacing = 10
+        container.alignment = .center
         return container
     }
 
@@ -245,7 +231,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
     private func createVideoOffIndicatorImageView() -> UIImageView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.setTemplateImageName("video-slash-fill-28", tintColor: .ows_white)
+        imageView.setTemplateImageName("video-slash-fill-28", tintColor: .white)
         return imageView
     }
 
@@ -285,11 +271,8 @@ class BlurredAvatarBackgroundView: UIView {
         switch type {
         case .local:
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard let localAddress = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
-                owsFailDebug("missing local address")
-                return
-            }
-            address = localAddress
+            let registeredState = tsAccountManager.mustBeRegisteredStateWithMaybeSneakyTransaction()
+            address = registeredState.localIdentifiers.aciAddress
         case .remoteInGroup:
             guard let remoteGroupMemberDeviceState else { return }
             address = remoteGroupMemberDeviceState.address

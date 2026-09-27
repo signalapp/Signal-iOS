@@ -22,7 +22,7 @@ public extension UIImage {
     }
 
     var withNativeScale: UIImage {
-        let scale = UIScreen.main.scale
+        let scale = UITraitCollection.current.displayScale
         if self.scale == scale {
             return self
         } else {

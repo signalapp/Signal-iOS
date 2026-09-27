@@ -38,7 +38,11 @@ class ChatListBackupProgressView: UIView {
         super.init(frame: .zero)
 
         backgroundColor = .Signal.quaternaryFill
-        layer.cornerRadius = if #available(iOS 26, *) { 26 } else { 12 }
+        if #available(iOS 26.0, *) {
+            self.cornerConfiguration = .capsule(maximumRadius: 26)
+        } else {
+            layer.cornerRadius = 12
+        }
         layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 12)
 
         addSubview(leadingAccessoryImageView)

@@ -228,7 +228,7 @@ final class GroupCallViewController: UIViewController {
 
     private var membersAtJoin: Set<SignalServiceAddress>?
 
-    private static let keyValueStore = KeyValueStore(collection: "GroupCallViewController")
+    private static let keyValueStore = NewKeyValueStore(collection: "GroupCallViewController")
     private static let didUserSwipeToSpeakerViewKey = "didUserSwipeToSpeakerView"
     private static let didUserSwipeToScreenShareKey = "didUserSwipeToScreenShare"
 
@@ -272,16 +272,16 @@ final class GroupCallViewController: UIViewController {
     private var callControlsConfirmationToastContainerViewBottomConstraint: NSLayoutConstraint?
 
     static func load(call: SignalCall, groupCall: GroupCall, tx: DBReadTransaction) -> GroupCallViewController {
-        let didUserEverSwipeToSpeakerView = keyValueStore.getBool(
-            didUserSwipeToSpeakerViewKey,
-            defaultValue: false,
-            transaction: tx,
-        )
-        let didUserEverSwipeToScreenShare = keyValueStore.getBool(
-            didUserSwipeToScreenShareKey,
-            defaultValue: false,
-            transaction: tx,
-        )
+        let didUserEverSwipeToSpeakerView = keyValueStore.fetchValue(
+            Bool.self,
+            forKey: didUserSwipeToSpeakerViewKey,
+            tx: tx,
+        ) ?? false
+        let didUserEverSwipeToScreenShare = keyValueStore.fetchValue(
+            Bool.self,
+            forKey: didUserSwipeToScreenShareKey,
+            tx: tx,
+        ) ?? false
 
         let phoneNumberSharingMode = SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx).orDefault
 
@@ -450,7 +450,7 @@ final class GroupCallViewController: UIViewController {
         view = UIView()
         view.clipsToBounds = true
 
-        view.backgroundColor = .ows_black
+        view.backgroundColor = .black
 
         scrollView.delegate = self
         view.addSubview(scrollView)
@@ -998,13 +998,13 @@ final class GroupCallViewController: UIViewController {
                 if !isAutoScrollingToScreenShare {
                     didUserEverSwipeToScreenShare = true
                     SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
-                        Self.keyValueStore.setBool(true, key: Self.didUserSwipeToScreenShareKey, transaction: writeTx)
+                        Self.keyValueStore.writeValue(true, forKey: Self.didUserSwipeToScreenShareKey, tx: writeTx)
                     }
                 }
             } else {
                 didUserEverSwipeToSpeakerView = true
                 SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
-                    Self.keyValueStore.setBool(true, key: Self.didUserSwipeToSpeakerViewKey, transaction: writeTx)
+                    Self.keyValueStore.writeValue(true, forKey: Self.didUserSwipeToSpeakerViewKey, tx: writeTx)
                 }
             }
 
@@ -1489,7 +1489,9 @@ extension GroupCallViewController: CallViewControllerWindowReference {
 
     var remoteVideoAddress: SignalServiceAddress {
         guard let firstMember = ringRtcCall.remoteDeviceStates.sortedByAddedTime.first else {
-            return DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aciAddress
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            let registeredState = tsAccountManager.mustBeRegisteredStateWithMaybeSneakyTransaction()
+            return registeredState.localIdentifiers.aciAddress
         }
         return firstMember.address
     }

@@ -94,28 +94,25 @@ public class TSAccountManagerImpl: TSAccountManager {
 
     // MARK: - Registration IDs
 
-    private static var aciRegistrationIdKey: String = "TSStorageLocalRegistrationId"
-    private static var pniRegistrationIdKey: String = "TSStorageLocalPniRegistrationId"
-
     public func getRegistrationId(for identity: OWSIdentity, tx: DBReadTransaction) -> UInt32? {
         let key = switch identity {
-        case .aci: Self.aciRegistrationIdKey
-        case .pni: Self.pniRegistrationIdKey
+        case .aci: Keys.aciRegistrationIdKey
+        case .pni: Keys.pniRegistrationIdKey
         }
         return kvStore.fetchValue(Int64.self, forKey: key, tx: tx).map(UInt32.init(truncatingIfNeeded:))
     }
 
     public func setRegistrationId(_ newRegistrationId: UInt32, for identity: OWSIdentity, tx: DBWriteTransaction) {
         let key = switch identity {
-        case .aci: Self.aciRegistrationIdKey
-        case .pni: Self.pniRegistrationIdKey
+        case .aci: Keys.aciRegistrationIdKey
+        case .pni: Keys.pniRegistrationIdKey
         }
         kvStore.writeValue(Int64(newRegistrationId), forKey: key, tx: tx)
     }
 
     public func clearRegistrationIds(tx: DBWriteTransaction) {
-        kvStore.removeValue(forKey: Self.aciRegistrationIdKey, tx: tx)
-        kvStore.removeValue(forKey: Self.pniRegistrationIdKey, tx: tx)
+        kvStore.removeValue(forKey: Keys.aciRegistrationIdKey, tx: tx)
+        kvStore.removeValue(forKey: Keys.pniRegistrationIdKey, tx: tx)
     }
 
     // MARK: - Manual Message Fetch
@@ -163,26 +160,25 @@ extension TSAccountManagerImpl: PhoneNumberDiscoverabilitySetter {
 extension TSAccountManagerImpl: LocalIdentifiersSetter {
 
     public func initializeLocalIdentifiers(
-        e164: E164,
         aci: Aci,
-        pni: Pni,
+        phoneNumber: LocalIdentifiers.PhoneNumber,
         deviceId: DeviceId,
         serverAuthToken: String,
         tx: DBWriteTransaction,
     ) {
         mutateWithLock(tx: tx) {
             let oldNumber = kvStore.fetchValue(String.self, forKey: Keys.localPhoneNumber, tx: tx)
-            Self.regStateLogger.info("local number \(oldNumber ?? "nil") -> \(e164)")
-            kvStore.writeValue(e164.stringValue, forKey: Keys.localPhoneNumber, tx: tx)
+            Self.regStateLogger.info("local number \(oldNumber ?? "nil") -> \(phoneNumber.e164)")
+            kvStore.writeValue(phoneNumber.e164.stringValue, forKey: Keys.localPhoneNumber, tx: tx)
 
             let oldAci = Aci.parseFrom(aciString: kvStore.fetchValue(String.self, forKey: Keys.localAci, tx: tx))
             Self.regStateLogger.info("local aci \(oldAci?.logString ?? "nil") -> \(aci)")
             kvStore.writeValue(aci.serviceIdUppercaseString, forKey: Keys.localAci, tx: tx)
 
             let oldPni = Pni.parseFrom(pniString: kvStore.fetchValue(String.self, forKey: Keys.localPni, tx: tx))
-            Self.regStateLogger.info("local pni \(oldPni?.logString ?? "nil") -> \(pni)")
+            Self.regStateLogger.info("local pni \(oldPni?.logString ?? "nil") -> \(phoneNumber.pni)")
             // Encoded without the "PNI:" prefix for backwards compatibility.
-            kvStore.writeValue(pni.rawUUID.uuidString, forKey: Keys.localPni, tx: tx)
+            kvStore.writeValue(phoneNumber.pni.rawUUID.uuidString, forKey: Keys.localPni, tx: tx)
 
             Self.regStateLogger.info("device id is primary? \(deviceId == .primary)")
             kvStore.writeValue(Int64(deviceId.uint32Value), forKey: Keys.deviceId, tx: tx)
@@ -198,24 +194,23 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
     }
 
     public func changeLocalNumber(
-        newE164: E164,
         aci: Aci,
-        pni: Pni,
+        phoneNumber: LocalIdentifiers.PhoneNumber,
         tx: DBWriteTransaction,
     ) {
         mutateWithLock(tx: tx) {
             let oldNumber = kvStore.fetchValue(String.self, forKey: Keys.localPhoneNumber, tx: tx)
-            Self.regStateLogger.info("local number \(oldNumber ?? "nil") -> \(newE164.stringValue)")
-            kvStore.writeValue(newE164.stringValue, forKey: Keys.localPhoneNumber, tx: tx)
+            Self.regStateLogger.info("local number \(oldNumber ?? "nil") -> \(phoneNumber.e164.stringValue)")
+            kvStore.writeValue(phoneNumber.e164.stringValue, forKey: Keys.localPhoneNumber, tx: tx)
 
             let oldAci = kvStore.fetchValue(String.self, forKey: Keys.localAci, tx: tx)
             Self.regStateLogger.info("local aci \(oldAci ?? "nil") -> \(aci)")
             kvStore.writeValue(aci.serviceIdUppercaseString, forKey: Keys.localAci, tx: tx)
 
             let oldPni = kvStore.fetchValue(String.self, forKey: Keys.localPni, tx: tx)
-            Self.regStateLogger.info("local pni \(oldPni ?? "nil") -> \(pni)")
+            Self.regStateLogger.info("local pni \(oldPni ?? "nil") -> \(phoneNumber.pni)")
             // Encoded without the "PNI:" prefix for backwards compatibility.
-            kvStore.writeValue(pni.rawUUID.uuidString, forKey: Keys.localPni, tx: tx)
+            kvStore.writeValue(phoneNumber.pni.rawUUID.uuidString, forKey: Keys.localPni, tx: tx)
         }
     }
 
@@ -240,23 +235,46 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
     }
 
     public func resetForReregistration(
-        localNumber: E164,
-        localAci: Aci,
-        discoverability: PhoneNumberDiscoverability?,
-        wasPrimaryDevice: Bool,
+        aci: Aci?,
+        phoneNumber: E164,
+        isPrimaryDevice: Bool,
         tx: DBWriteTransaction,
     ) {
         mutateWithLock(tx: tx) {
-            Self.regStateLogger.info("Resetting for reregistration, was primary? \(wasPrimaryDevice)")
-            kvStore.removeAll(tx: tx)
+            Self.regStateLogger.info("resetting for reregistration; isPrimary? \(isPrimaryDevice)")
 
-            kvStore.writeValue(localNumber.stringValue, forKey: Keys.reregistrationPhoneNumber, tx: tx)
-            kvStore.writeValue(localAci.serviceIdUppercaseString, forKey: Keys.reregistrationAci, tx: tx)
-            kvStore.writeValue(wasPrimaryDevice, forKey: Keys.reregistrationWasPrimaryDevice, tx: tx)
-        }
+            kvStore.writeValue(phoneNumber.stringValue, forKey: Keys.reregistrationPhoneNumber, tx: tx)
+            kvStore.writeValue(aci?.serviceIdUppercaseString, forKey: Keys.reregistrationAci, tx: tx)
+            kvStore.writeValue(isPrimaryDevice, forKey: Keys.reregistrationWasPrimaryDevice, tx: tx)
 
-        if let discoverability {
-            setPhoneNumberDiscoverability(discoverability, tx: tx)
+            let keysToKeep: Set<String> = [
+                Keys.isDiscoverableByPhoneNumber,
+                Keys.lastSetIsDiscoverableByPhoneNumber,
+                Keys.reregistrationAci,
+                Keys.reregistrationPhoneNumber,
+                Keys.reregistrationWasPrimaryDevice,
+            ]
+            let keysToRemove: Set<String> = [
+                Keys.deviceId,
+                Keys.isDeregisteredOrDelinked,
+                Keys.isManualMessageFetchEnabled,
+                Keys.isTransferInProgress,
+                Keys.localAci,
+                Keys.localPhoneNumber,
+                Keys.localPni,
+                Keys.aciRegistrationIdKey,
+                Keys.pniRegistrationIdKey,
+                Keys.registrationDate,
+                Keys.serverAuthToken,
+                Keys.wasTransferred,
+            ]
+            for key in kvStore.fetchKeys(tx: tx) {
+                if keysToKeep.contains(key) {
+                    continue
+                }
+                owsAssertDebug(keysToRemove.contains(key), "unknown key should be added to a set")
+                kvStore.removeValue(forKey: key, tx: tx)
+            }
         }
     }
 
@@ -425,11 +443,17 @@ extension TSAccountManagerImpl {
             // WARNING: AccountState is loaded before data migrations have run (as well as after).
             // Do not use data migrations to update AccountState data; do it through schema migrations
             // or through normal write transactions. TSAccountManager should be the only code accessing this state anyway.
-            let localIdentifiers = Self.loadLocalIdentifiers(
+            let (aci, phoneNumber, pni) = Self.loadLocalIdentifiers(
                 kvStore: kvStore,
                 tx: tx,
             )
-            self.localIdentifiers = localIdentifiers
+            self.localIdentifiers = { () -> LocalIdentifiers? in
+                guard let phoneNumber, let aci else {
+                    owsAssertDebug((phoneNumber == nil) == (aci == nil), "ACI/phone number presence must match")
+                    return nil
+                }
+                return LocalIdentifiers(aci: aci, pni: pni, phoneNumber: phoneNumber)
+            }()
 
             let persistedDeviceId = kvStore.fetchValue(Int64.self, forKey: Keys.deviceId, tx: tx).map(UInt32.init(truncatingIfNeeded:))
 
@@ -457,7 +481,9 @@ extension TSAccountManagerImpl {
             self.isTransferInProgress = isTransferInProgress
 
             self.registrationState = Self.loadRegistrationState(
-                localIdentifiers: localIdentifiers,
+                aci: aci,
+                phoneNumber: phoneNumber,
+                pni: pni,
                 isPrimaryDevice: isPrimaryDevice,
                 isTransferInProgress: isTransferInProgress,
                 kvStore: kvStore,
@@ -479,36 +505,30 @@ extension TSAccountManagerImpl {
         private static func loadLocalIdentifiers(
             kvStore: NewKeyValueStore,
             tx: DBReadTransaction,
-        ) -> LocalIdentifiers? {
+        ) -> (aci: Aci?, phoneNumber: String?, pni: Pni?) {
             let localNumber = kvStore.fetchValue(String.self, forKey: Keys.localPhoneNumber, tx: tx)
             let localAci = Aci.parseFrom(aciString: kvStore.fetchValue(String.self, forKey: Keys.localAci, tx: tx))
             let localPni = Pni.parseFrom(pniString: kvStore.fetchValue(String.self, forKey: Keys.localPni, tx: tx))
-            guard let localNumber, let localAci else {
-                owsAssertDebug((localNumber == nil) == (localAci == nil), "ACI/phone number presence must match")
-                return nil
-            }
-            return LocalIdentifiers(aci: localAci, pni: localPni, phoneNumber: localNumber)
+            return (localAci, localNumber, localPni)
         }
 
         private static func loadRegistrationState(
-            localIdentifiers: LocalIdentifiers?,
+            aci: Aci?,
+            phoneNumber: String?,
+            pni: Pni?,
             isPrimaryDevice: Bool?,
             isTransferInProgress: Bool,
             kvStore: NewKeyValueStore,
             tx: DBReadTransaction,
         ) -> TSRegistrationState {
-            let reregistrationPhoneNumber = kvStore.fetchValue(String.self, forKey: Keys.reregistrationPhoneNumber, tx: tx)
-            // TODO: Eventually require reregistrationAci during re-registration.
-            let reregistrationAci = Aci.parseFrom(aciString: kvStore.fetchValue(String.self, forKey: Keys.reregistrationAci, tx: tx))
-            let isDeregisteredOrDelinked = kvStore.fetchValue(Bool.self, forKey: Keys.isDeregisteredOrDelinked, tx: tx) ?? false
-            let wasTransferred = kvStore.fetchValue(Bool.self, forKey: Keys.wasTransferred, tx: tx) ?? false
-
             // Go in semi-reverse order; with higher priority stuff going first.
+            let wasTransferred = kvStore.fetchValue(Bool.self, forKey: Keys.wasTransferred, tx: tx) ?? false
             if wasTransferred {
                 // If we transferred, we are transferred regardless of what else
                 // may be going on. Other state might be a mess; doesn't matter.
                 return .transferred
-            } else if isTransferInProgress {
+            }
+            if isTransferInProgress {
                 // Ditto for a transfer in progress; regardless of whatever
                 // else is going on (except being transferred) this takes precedence.
                 switch isPrimaryDevice {
@@ -521,57 +541,56 @@ extension TSAccountManagerImpl {
                     // incoming transfer, where we started from a blank state.
                     return .transferringIncoming
                 }
-            } else if let reregistrationPhoneNumber {
-                // If a "reregistrationPhoneNumber" is present, we are reregistering.
-                // reregistrationAci is optional (for now, see above TODO).
-                // isDeregistered is probably also true; this takes precedence.
+            }
+            let reregistrationPhoneNumber = kvStore.fetchValue(String.self, forKey: Keys.reregistrationPhoneNumber, tx: tx)
+            if let reregistrationPhoneNumber {
+                // (Note: isDeregistered is probably also true; this takes precedence.)
+                let reregistrationAci = Aci.parseFrom(aciString: kvStore.fetchValue(String.self, forKey: Keys.reregistrationAci, tx: tx))
 
                 let shouldDefaultToPrimaryDevice = UIDevice.current.userInterfaceIdiom == .phone
                 if kvStore.fetchValue(Bool.self, forKey: Keys.reregistrationWasPrimaryDevice, tx: tx) ?? shouldDefaultToPrimaryDevice {
-                    return .reregistering(
-                        phoneNumber: reregistrationPhoneNumber,
-                        aci: reregistrationAci,
-                    )
+                    return .reregistering(ReregisteringLocalIdentifiers(phoneNumber: reregistrationPhoneNumber, aci: reregistrationAci))
                 } else {
-                    return .relinking(
-                        phoneNumber: reregistrationPhoneNumber,
-                        aci: reregistrationAci,
-                    )
+                    return .relinking(ReregisteringLocalIdentifiers(phoneNumber: reregistrationPhoneNumber, aci: reregistrationAci))
                 }
-            } else if isDeregisteredOrDelinked {
+            }
+            let isDeregisteredOrDelinked = kvStore.fetchValue(Bool.self, forKey: Keys.isDeregisteredOrDelinked, tx: tx) ?? false
+            if isDeregisteredOrDelinked {
                 // if isDeregistered is true, we may have been registered
                 // or not. But its being true means we should be deregistered
                 // (or delinked, based on whether this is a primary).
                 // isPrimaryDevice should have some value; if we've explicitly
                 // set isDeregistered that means we _were_ registered before.
+                let localIdentifiers = DeregisteredLocalIdentifiers(aci: aci, phoneNumber: phoneNumber, pni: pni)
                 switch isPrimaryDevice {
                 case true:
-                    return .deregistered
+                    return .deregistered(localIdentifiers)
                 case false:
-                    return .delinked
+                    return .delinked(localIdentifiers)
                 default:
                     owsFailDebug("deregistered or delinked && isPrimaryDevice == nil")
-                    return .delinked
+                    return .delinked(localIdentifiers)
                 }
-            } else if localIdentifiers == nil {
-                // Setting localIdentifiers is what marks us as registered
-                // in primary registration. (As long as above conditions don't
-                // override that state)
-                // For provisioning, we set them before finishing, but the fact
-                // that we set them means we linked (but didn't finish yet).
-                return .unregistered
-            } else {
+            }
+            if let aci, let phoneNumber {
+                let localIdentifiers = LocalIdentifiers(aci: aci, pni: pni, phoneNumber: phoneNumber)
                 // We have local identifiers, so we are registered/provisioned.
                 switch isPrimaryDevice {
                 case true:
-                    return .registered
+                    return .registered(localIdentifiers)
                 case false:
-                    return .provisioned
+                    return .provisioned(localIdentifiers)
                 default:
                     owsFailDebug("registered or provisioned && isPrimaryDevice == nil")
-                    return .provisioned
+                    return .provisioned(localIdentifiers)
                 }
             }
+            // Setting localIdentifiers is what marks us as registered
+            // in primary registration. (As long as above conditions don't
+            // override that state)
+            // For provisioning, we set them before finishing, but the fact
+            // that we set them means we linked (but didn't finish yet).
+            return .unregistered
         }
 
         func log(_ logger: PrefixedLogger) {
@@ -585,6 +604,9 @@ extension TSAccountManagerImpl {
             static let localPhoneNumber = "TSStorageRegisteredNumberKey"
             static let localAci = "TSStorageRegisteredUUIDKey"
             static let localPni = "TSAccountManager_RegisteredPNIKey"
+
+            static let aciRegistrationIdKey = "TSStorageLocalRegistrationId"
+            static let pniRegistrationIdKey = "TSStorageLocalPniRegistrationId"
 
             static let registrationDate = "TSAccountManager_RegistrationDateKey"
             static let isDeregisteredOrDelinked = "TSAccountManager_IsDeregisteredKey"

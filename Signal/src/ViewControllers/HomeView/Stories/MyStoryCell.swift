@@ -59,7 +59,7 @@ class MyStoryCell: UITableViewCell {
 
         failedIconView.autoSetDimension(.width, toSize: 16)
         failedIconView.contentMode = .scaleAspectFit
-        failedIconView.tintColor = .ows_accentRed
+        failedIconView.tintColor = .Signal.red
 
         let subtitleStack = UIStackView(arrangedSubviews: [failedIconView, subtitleLabel])
         subtitleStack.axis = .horizontal
@@ -267,7 +267,7 @@ class MyStoryCell: UITableViewCell {
             iconView.autoSetDimensions(to: .square(20))
             iconView.layer.cornerRadius = 10
             iconView.autoCenterInSuperview()
-            iconView.backgroundColor = .ows_accentBlue
+            iconView.backgroundColor = .Signal.accent
 
             // NOTE: gets written over by the cell's theme application.
             outerCircle.backgroundColor = .Signal.background

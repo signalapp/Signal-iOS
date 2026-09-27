@@ -278,11 +278,7 @@ open class ActionSheetController: OWSViewController {
             widthLimitConstraint?.isActive = false
             pinWidthConstraints?.forEach { $0.isActive = true }
             if #available(iOS 26.0, *) {
-                let topRadius: CGFloat = if UIDevice.current.hasIPhoneXNotch {
-                    40
-                } else {
-                    20
-                }
+                let topRadius: CGFloat = if view.safeAreaInsets.bottom > 0 { 40 } else { 20 }
                 backgroundView.cornerConfiguration = .uniformEdges(
                     topRadius: .fixed(topRadius),
                     bottomRadius: .containerConcentric(minimum: 20),
@@ -419,9 +415,9 @@ public class ActionSheetAction: NSObject {
         fileprivate var textColor: UIColor {
             switch self {
             case .default, .cancel:
-                UIColor.Signal.label
+                .Signal.label
             case .destructive:
-                UIColor.Signal.red
+                .Signal.red
             }
         }
     }

@@ -43,4 +43,5 @@ message RegistrationProvisionMessage {
   uint64 backupVersion = 14;
   bytes lastBackupForwardSecrecyToken = 15;
   bytes nextBackupSecretData = 16;
+  repeated string capabilities = 17;
 }

@@ -118,7 +118,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private let dateProvider: DateProvider
     private let db: any DB
     private let deviceSleepManager: (any DeviceSleepManager)?
-    private let kvStore: KeyValueStore
     private let logger: PrefixedLogger
     private let messagePipelineSupervisor: MessagePipelineSupervisor
     private let networkManager: NetworkManager
@@ -143,7 +142,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         self.dateProvider = dateProvider
         self.db = db
         self.deviceSleepManager = deviceSleepManager
-        self.kvStore = KeyValueStore(collection: "LinkAndSyncManagerImpl")
         self.logger = PrefixedLogger(prefix: "[LNS]")
         self.messagePipelineSupervisor = messagePipelineSupervisor
         self.networkManager = networkManager

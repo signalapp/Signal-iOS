@@ -1,1 +1,1 @@
-• Hem afegit una funció d'allò més pràctica perquè, durant una trucada de grup de Signal, puguis baixar ràpidament la mà un cop comencis a parlar.
+• This update introduces a new custom mute option so you can easily specify the exact date and time when you would like to end your moment of silence for notifications in a specific chat.

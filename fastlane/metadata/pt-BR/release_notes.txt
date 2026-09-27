@@ -1,1 +1,1 @@
-• Adicionamos um atalho prático para você baixar a mão rapidamente depois de começar a falar em uma chamada em grupo no Signal. É nosso recurso favorito nesse lançamento. Levanta a mão quem concorda.
+• This update introduces a new custom mute option so you can easily specify the exact date and time when you would like to end your moment of silence for notifications in a specific chat.

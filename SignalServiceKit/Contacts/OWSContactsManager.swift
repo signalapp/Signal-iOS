@@ -55,7 +55,7 @@ public enum ContactAuthorizationForSharing {
     case authorized
 }
 
-public class OWSContactsManager: NSObject, ContactsManagerProtocol {
+public class OWSContactsManager: NSObject, ContactsManagerProtocol, ThreadRemoverObserver {
     private let cnContactCache = LRUCache<String, CNContact>(maxSize: 50, shouldEvacuateInBackground: true)
     private let systemContactsCache = SystemContactsCache()
 
@@ -75,6 +75,7 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
     public let avatarGroupIdsToShowDownloadingSpinner = AtomicSet<Data>(lock: .init())
 
     private let nicknameManager: any NicknameManager
+    private let notificationPreferencesManager: NotificationPreferencesManager
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let systemContactsFetcher: SystemContactsFetcher
     private let usernameLookupManager: UsernameLookupManager
@@ -148,10 +149,12 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
     public init(
         appReadiness: AppReadiness,
         nicknameManager: any NicknameManager,
+        notificationPreferencesManager: NotificationPreferencesManager,
         recipientDatabaseTable: RecipientDatabaseTable,
         usernameLookupManager: any UsernameLookupManager,
     ) {
         self.nicknameManager = nicknameManager
+        self.notificationPreferencesManager = notificationPreferencesManager
         self.recipientDatabaseTable = recipientDatabaseTable
         self.systemContactsFetcher = SystemContactsFetcher(appReadiness: appReadiness)
         self.usernameLookupManager = usernameLookupManager
@@ -215,6 +218,14 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
             }
         }
     }
+
+    public func didRemoveThread(_ thread: TSThread, tx: DBWriteTransaction) {
+        guard let thread = thread as? TSGroupThread else {
+            return
+        }
+        let groupId = thread.groupId
+        groupIdsExplicitlyAllowingAvatarDownloadsStore.removeValue(forKey: groupId.hexadecimalString, tx: tx)
+    }
 }
 
 // MARK: - SystemContactsFetcherDelegate
@@ -261,38 +272,15 @@ private class SystemContactsCache {
 // MARK: -
 
 extension OWSContactsManager: ContactManager {
-    private func isInWhitelistedGroupsWithLocalUser(
+    private func isInWhitelistedGroupWithLocalUser(
         otherAddress: SignalServiceAddress,
-        requireMultipleMutualGroups: Bool,
         tx: DBReadTransaction,
     ) -> Bool {
-        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress else {
-            owsFailDebug("Missing localAddress.")
-            return false
-        }
-        let otherGroupThreadIds = TSGroupThread.groupThreadIds(with: otherAddress, transaction: tx)
-        guard !otherGroupThreadIds.isEmpty else {
-            return false
-        }
-        let localGroupThreadIds = TSGroupThread.groupThreadIds(with: localAddress, transaction: tx)
-        let groupThreadIds = Set(otherGroupThreadIds).intersection(localGroupThreadIds)
-
-        var isInOneWhitelistedGroup = false
-        let onlyNeedToCheckForOneMutualGroup = !requireMultipleMutualGroups
-
-        for groupThreadId in groupThreadIds {
-            guard let groupThread = TSGroupThread.fetchGroupThreadViaCache(uniqueId: groupThreadId, transaction: tx) else {
-                owsFailDebug("Missing group thread")
-                continue
-            }
-            if SSKEnvironment.shared.profileManagerRef.isGroupId(inProfileWhitelist: groupThread.groupId, transaction: tx) {
-                if isInOneWhitelistedGroup || onlyNeedToCheckForOneMutualGroup {
-                    return true
-                }
-                isInOneWhitelistedGroup = true
-            }
-        }
-        return false
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        return TSGroupThread.mutualGroupThreads(withFullMember: otherAddress, tx: tx)
+            .lazy
+            .filter { profileManager.isGroupId(inProfileWhitelist: $0.groupId, transaction: tx) }
+            .first != nil
     }
 
     // MARK: - Avatar Blurring
@@ -457,13 +445,7 @@ extension OWSContactsManager: ContactManager {
             return false
         }
 
-        if
-            isInWhitelistedGroupsWithLocalUser(
-                otherAddress: address,
-                requireMultipleMutualGroups: false,
-                tx: tx,
-            )
-        {
+        if isInWhitelistedGroupWithLocalUser(otherAddress: address, tx: tx) {
             addressesAllowingAvatarDownloadCache.insert(address)
             return false
         }
@@ -1095,7 +1077,7 @@ extension OWSContactsManager: ContactManager {
             keyValueStore.setBool(true, key: Constants.didIntersectAddressBook, transaction: tx)
             return
         }
-        guard SSKEnvironment.shared.preferencesRef.shouldNotifyOfNewAccounts(transaction: tx) else {
+        guard notificationPreferencesManager.shouldNotifyOfNewAccounts(tx: tx) else {
             return
         }
         let phoneNumbers = Set(addressBookPhoneNumbers.lazy.map { $0.rawValue.stringValue })

@@ -1122,117 +1122,6 @@ struct GRDBSchemaMigratorTest {
     }
 
     @Test
-    func testMigrateSessions() throws {
-        let databaseQueue = DatabaseQueue()
-        try databaseQueue.write { db in
-            try db.execute(sql: """
-            CREATE TABLE keyvalue (collection TEXT NOT NULL, key TEXT NOT NULL, value BLOB NOT NULL);
-            """)
-
-            try db.execute(sql: """
-            CREATE TABLE model_SignalRecipient (id INTEGER PRIMARY KEY, uniqueId TEXT NOT NULL);
-            """)
-
-            let recipient1UniqueId = UUID().uuidString
-            let recipient2UniqueId = UUID().uuidString
-            let recipient3UniqueId = UUID().uuidString
-            let recipient4UniqueId = UUID().uuidString
-
-            try db.execute(
-                sql: "INSERT INTO model_SignalRecipient (id, uniqueId) VALUES (?, ?)",
-                arguments: [1, recipient1UniqueId],
-            )
-            try db.execute(
-                sql: "INSERT INTO model_SignalRecipient (id, uniqueId) VALUES (?, ?)",
-                arguments: [2, recipient2UniqueId],
-            )
-            // Don't insert recipient3UniqueKey.
-            try db.execute(
-                sql: "INSERT INTO model_SignalRecipient (id, uniqueId) VALUES (?, ?)",
-                arguments: [4, recipient4UniqueId],
-            )
-
-            try db.execute(
-                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
-                arguments: ["TSStorageManagerSessionStoreCollection", recipient1UniqueId, keyedArchiverSessionData(deviceIds: [1, 2, 128])],
-            )
-            try db.execute(
-                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
-                arguments: ["TSStorageManagerPNISessionStoreCollection", recipient1UniqueId, keyedArchiverSessionData(deviceIds: [0, 2, 3])],
-            )
-            try db.execute(
-                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
-                arguments: ["TSStorageManagerSessionStoreCollection", recipient2UniqueId, keyedArchiverSessionData(deviceIds: [1])],
-            )
-            try db.execute(
-                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
-                arguments: ["TSStorageManagerSessionStoreCollection", recipient3UniqueId, keyedArchiverSessionData(deviceIds: [1])],
-            )
-
-            @objc(FakeLegacySession)
-            class FakeLegacySession: NSObject, NSCoding {
-                override init() {}
-                required init?(coder: NSCoder) { fatalError("should never be deserialized") }
-                func encode(with coder: NSCoder) {}
-            }
-            let legacyArchivedData: Data
-            do {
-                let sessionDictionary: [Int32: AnyObject] = [1: FakeLegacySession(), 2: Data() as NSData]
-                let archiver = NSKeyedArchiver(requiringSecureCoding: false)
-                archiver.setClassName("SSKLegacySessionClassThatNoLongerExists", for: FakeLegacySession.self)
-                archiver.encode(sessionDictionary, forKey: NSKeyedArchiveRootObjectKey)
-                legacyArchivedData = archiver.encodedData
-            }
-            try db.execute(
-                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
-                arguments: ["TSStorageManagerSessionStoreCollection", recipient4UniqueId, legacyArchivedData],
-            )
-
-            do {
-                let tx = DBWriteTransaction(database: db)
-                defer { tx.finalizeTransaction() }
-                try GRDBSchemaMigrator.createSession(tx: tx)
-                try GRDBSchemaMigrator.migrateSessions(tx: tx)
-                try GRDBSchemaMigrator.dropOldSessions(tx: tx)
-            }
-
-            let sessions = try Row.fetchAll(db, sql: "SELECT * FROM Session ORDER BY recipientId, localIdentity, deviceId")
-
-            #expect(sessions.count == 6)
-
-            #expect(sessions[0]["recipientId"] as Int64 == 1)
-            #expect(sessions[0]["localIdentity"] as Int64 == 0)
-            #expect(sessions[0]["deviceId"] as Int8 == 1)
-            #expect(sessions[0]["serializedRecord"] as Data? == Data())
-
-            #expect(sessions[1]["recipientId"] as Int64 == 1)
-            #expect(sessions[1]["localIdentity"] as Int64 == 0)
-            #expect(sessions[1]["deviceId"] as Int8 == 2)
-            #expect(sessions[1]["serializedRecord"] as Data? == Data())
-
-            #expect(sessions[2]["recipientId"] as Int64 == 1)
-            #expect(sessions[2]["localIdentity"] as Int64 == 1)
-            #expect(sessions[2]["deviceId"] as Int8 == 2)
-            #expect(sessions[2]["serializedRecord"] as Data? == Data())
-
-            #expect(sessions[3]["recipientId"] as Int64 == 1)
-            #expect(sessions[3]["localIdentity"] as Int64 == 1)
-            #expect(sessions[3]["deviceId"] as Int8 == 3)
-            #expect(sessions[3]["serializedRecord"] as Data? == Data())
-
-            #expect(sessions[4]["recipientId"] as Int64 == 2)
-            #expect(sessions[4]["localIdentity"] as Int64 == 0)
-            #expect(sessions[4]["deviceId"] as Int8 == 1)
-            #expect(sessions[4]["serializedRecord"] as Data? == Data())
-
-            #expect(sessions[5]["recipientId"] as Int64 == 4)
-            #expect(sessions[5]["localIdentity"] as Int64 == 0)
-            #expect(sessions[5]["deviceId"] as Int8 == 1)
-            #expect(sessions[5]["serializedRecord"] as Data? == nil)
-        }
-    }
-
-    @Test
     func testMigrateWhitelist() throws {
         let databaseQueue = DatabaseQueue()
         try databaseQueue.write { db in
@@ -1569,11 +1458,6 @@ struct GRDBSchemaMigratorTest {
             return try String.fetchAll(db, sql: "SELECT key FROM keyvalue WHERE collection = ?", arguments: ["SVR.Potential"])
         }
         #expect(Set(potentialEnclaves) == testCase.finalEnclaves)
-
-        let nonEmptyCollections = try databaseQueue.read { db in
-            return try String.fetchAll(db, sql: "SELECT DISTINCT collection FROM keyvalue")
-        }
-        #expect(Set(nonEmptyCollections) == ["SVR.Potential"])
     }
 
     @Test
@@ -2024,7 +1908,6 @@ struct GRDBSchemaMigratorTest {
                 defer { tx.finalizeTransaction() }
                 try GRDBSchemaMigrator.addPinnedThread(tx: tx)
                 try GRDBSchemaMigrator.migratePinnedThreads(tx: tx)
-                try GRDBSchemaMigrator.removeOldPinnedThreads(tx: tx)
             }
 
             let recipients = try Row.fetchAll(db, sql: "SELECT * FROM model_SignalRecipient")
@@ -2279,6 +2162,84 @@ struct GRDBSchemaMigratorTest {
     }
 
     @Test
+    func testMigrateNotificationPreferences() throws {
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            // A snapshot of the key value store as it existed when this migration was
+            // added. If the key value store's schema is updated in the future, don't
+            // update this call site. It must remain as a snapshot.
+            try db.execute(
+                sql: "CREATE TABLE keyvalue (key TEXT NOT NULL, collection TEXT NOT NULL, value BLOB NOT NULL, PRIMARY KEY (key, collection))",
+            )
+            let rows: [(collection: String, key: String, value: Any)] = [
+                ("SignalPreferences", "Notification Preview Type Key", NSNumber(value: UInt(1))),
+                ("SignalPreferences", "NotificationSoundInForeground", NSNumber(value: false)),
+                ("SignalPreferences", "MessageSentSound", NSNumber(value: true)),
+                ("SignalPreferences", "OWSPreferencesKeyShouldNotifyOfNewAccountKey", NSNumber(value: true)),
+                // Not a notification preference; must be left alone.
+                ("SignalPreferences", "Screen Security Key", NSNumber(value: true)),
+                ("SSKPreferences", "includeMutedThreadsInBadgeCount", NSNumber(value: true)),
+                // Not a notification preference; must be left alone.
+                ("SSKPreferences", "areLegacyLinkPreviewsEnabled", NSNumber(value: true)),
+                ("kOWSSoundsStorageNotificationCollection", "kOWSSoundsStorageGlobalNotificationKey", NSNumber(value: UInt64(13))),
+                // A per-thread notification sound; must be left alone.
+                ("kOWSSoundsStorageNotificationCollection", "some-thread-unique-id", NSNumber(value: UInt64(9))),
+            ]
+            for row in rows {
+                try db.execute(
+                    sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
+                    arguments: [row.collection, row.key, Self.keyedArchiverData(rootObject: row.value)],
+                )
+            }
+        }
+
+        try databaseQueue.write { db in
+            let tx = DBWriteTransaction(database: db)
+            defer { tx.finalizeTransaction() }
+            try GRDBSchemaMigrator.migrateNotificationPreferences(tx: tx)
+        }
+
+        try databaseQueue.read { db in
+            func fetchInt64(_ key: String) throws -> Int64? {
+                return try Int64.fetchOne(
+                    db,
+                    sql: "SELECT value FROM keyvalue WHERE collection = 'NotificationPreferences' AND key = ?",
+                    arguments: [key],
+                )
+            }
+            func fetchBool(_ key: String) throws -> Bool? {
+                return try Bool.fetchOne(
+                    db,
+                    sql: "SELECT value FROM keyvalue WHERE collection = 'NotificationPreferences' AND key = ?",
+                    arguments: [key],
+                )
+            }
+            #expect(try fetchInt64("PreviewType") == 1)
+            #expect(try fetchBool("PlaySoundInForeground") == false)
+            #expect(try fetchBool("MessageSentSound") == true)
+            #expect(try fetchBool("NotifyOfNewAccounts") == true)
+            #expect(try fetchBool("IncludeMutedThreadsInBadgeCount") == true)
+            #expect(try fetchInt64("GlobalNotificationSound") == 13)
+
+            // Everything else must be untouched.
+            let remaining = try Row.fetchAll(
+                db,
+                sql: "SELECT collection, key FROM keyvalue WHERE collection != 'NotificationPreferences' ORDER BY collection, key",
+            ).map { ($0["collection"] as String, $0["key"] as String) }
+            #expect(remaining.map(\.0) == [
+                "SSKPreferences",
+                "SignalPreferences",
+                "kOWSSoundsStorageNotificationCollection",
+            ])
+            #expect(remaining.map(\.1) == [
+                "areLegacyLinkPreviewsEnabled",
+                "Screen Security Key",
+                "some-thread-unique-id",
+            ])
+        }
+    }
+
+    @Test
     func testMigrateGroupSendEndorsements() throws {
         let databaseQueue = DatabaseQueue()
         try databaseQueue.write { db in
@@ -2381,6 +2342,526 @@ struct GRDBSchemaMigratorTest {
                 #expect(record["recipientId"] as Int64 == 4)
             }
             #expect(individualRecords.isEmpty)
+        }
+    }
+
+    @Test
+    func testMigrateGroupRefreshedAt() throws {
+        let groupId1 = Randomness.generateRandomBytes(32)
+        let groupId2 = Randomness.generateRandomBytes(32)
+        let groupId3 = Randomness.generateRandomBytes(32)
+        let groupId4 = Randomness.generateRandomBytes(32)
+
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "keyvalue" (
+                "collection" TEXT NOT NULL,
+                "key" TEXT NOT NULL,
+                "value" BLOB NOT NULL,
+                PRIMARY KEY ("collection", "key")
+            );
+
+            CREATE TABLE "GroupRecord" (
+                "rowId" INTEGER PRIMARY KEY,
+                "groupId" BLOB NOT NULL UNIQUE
+            );
+            """)
+
+            for groupId in [groupId1, groupId2, groupId3, groupId4] {
+                try db.execute(
+                    sql: """
+                    INSERT INTO "GroupRecord" ("groupId") VALUES (?)
+                    """,
+                    arguments: [groupId],
+                )
+            }
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    "groupRefreshStore",
+                    groupId1.hexadecimalString,
+                    1234.5,
+                ],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    "groupRefreshStore2",
+                    groupId2.hexadecimalString,
+                    1235.6,
+                ],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    "groupRefreshStore2",
+                    groupId4.hexadecimalString,
+                    "Blah",
+                ],
+            )
+
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.addGroupRefreshedAt(tx: tx)
+                try GRDBSchemaMigrator.migrateGroupRefreshedAt(tx: tx)
+            }
+
+            var groupRecords = try Row.fetchAll(db, sql: "SELECT * FROM GroupRecord ORDER BY rowId")[...]
+
+            do {
+                let groupRecord = groupRecords.removeFirst()
+                #expect(groupRecord["rowId"] as Int64 == 1)
+                #expect(groupRecord["groupId"] as Data? == groupId1)
+                #expect(groupRecord["refreshedAt"] as Int64 == 1234)
+            }
+            do {
+                let groupRecord = groupRecords.removeFirst()
+                #expect(groupRecord["rowId"] as Int64 == 2)
+                #expect(groupRecord["groupId"] as Data? == groupId2)
+                #expect(groupRecord["refreshedAt"] as Int64 == Int64(Date.distantPast.timeIntervalSince1970))
+            }
+            do {
+                let groupRecord = groupRecords.removeFirst()
+                #expect(groupRecord["rowId"] as Int64 == 3)
+                #expect(groupRecord["groupId"] as Data? == groupId3)
+                #expect(groupRecord["refreshedAt"] as Int64 == Int64(Date.distantPast.timeIntervalSince1970))
+            }
+            do {
+                let groupRecord = groupRecords.removeFirst()
+                #expect(groupRecord["rowId"] as Int64 == 4)
+                #expect(groupRecord["groupId"] as Data? == groupId4)
+                #expect(groupRecord["refreshedAt"] as Int64 == Int64(Date.distantPast.timeIntervalSince1970))
+            }
+            #expect(groupRecords.isEmpty)
+        }
+    }
+
+    @Test
+    func testAddGroupsPendingRestore() throws {
+        let secretParams1 = try GroupSecretParams.generate()
+        let masterKey1 = try secretParams1.getMasterKey()
+        let groupId1 = try secretParams1.getPublicParams().getGroupIdentifier()
+
+        let secretParams2 = try GroupSecretParams.generate()
+        let masterKey2 = try secretParams2.getMasterKey()
+        let groupId2 = try secretParams2.getPublicParams().getGroupIdentifier()
+
+        let secretParams3 = try GroupSecretParams.generate()
+        let masterKey3 = try secretParams3.getMasterKey()
+        let groupId3 = try secretParams3.getPublicParams().getGroupIdentifier()
+
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "keyvalue" (
+                "collection" TEXT NOT NULL,
+                "key" TEXT NOT NULL,
+                "value" BLOB NOT NULL,
+                PRIMARY KEY ("collection", "key")
+            );
+
+            CREATE TABLE "GroupRecord" (
+                "rowId" INTEGER PRIMARY KEY,
+                "groupId" BLOB NOT NULL UNIQUE,
+                "masterKey" BLOB
+            );
+            """)
+
+            try db.execute(
+                sql: """
+                INSERT INTO "GroupRecord" ("groupId", "masterKey") VALUES (?, ?)
+                """,
+                arguments: [groupId1.serialize(), masterKey1.serialize()],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    "GroupsV2Impl.groupsFromStorageService_EnqueuedRecordForRestore",
+                    masterKey1.serialize().hexadecimalString,
+                    Data(),
+                ],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    "GroupsV2Impl.groupsFromStorageService_EnqueuedRecordForRestore",
+                    masterKey2.serialize().hexadecimalString,
+                    Data(),
+                ],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    "GroupsV2Impl.groupsFromStorageService_EnqueuedForRestore",
+                    masterKey3.serialize().hexadecimalString,
+                    Data(),
+                ],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    "GroupsV2Impl.groupsFromStorageService_EnqueuedRecordForRestore",
+                    "Not Hexadecimal",
+                    Data(),
+                ],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
+                """,
+                arguments: [
+                    "GroupsV2Impl.groupsFromStorageService_EnqueuedRecordForRestore",
+                    "abcd1234",
+                    Data(),
+                ],
+            )
+
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.addGroupsPendingRestore(tx: tx)
+            }
+
+            var groupRecords = try Row.fetchAll(db, sql: "SELECT * FROM GroupRecord ORDER BY rowId")[...]
+
+            do {
+                let groupRecord = groupRecords.removeFirst()
+                #expect(groupRecord["rowId"] as Int64 == 1)
+                #expect(groupRecord["groupId"] as Data? == groupId1.serialize())
+                #expect(groupRecord["masterKey"] as Data? == masterKey1.serialize())
+            }
+            do {
+                let groupRecord = groupRecords.removeFirst()
+                #expect(groupRecord["rowId"] as Int64 == 2)
+                #expect(groupRecord["groupId"] as Data? == groupId2.serialize())
+                #expect(groupRecord["masterKey"] as Data? == masterKey2.serialize())
+            }
+            do {
+                let groupRecord = groupRecords.removeFirst()
+                #expect(groupRecord["rowId"] as Int64 == 3)
+                #expect(groupRecord["groupId"] as Data? == groupId3.serialize())
+                #expect(groupRecord["masterKey"] as Data? == masterKey3.serialize())
+            }
+            #expect(groupRecords.isEmpty)
+        }
+    }
+
+    @Test
+    func testMoveFromThreadAssociatedData() throws {
+        let secretParams1 = try GroupSecretParams.generate()
+        let groupId1 = try secretParams1.getPublicParams().getGroupIdentifier()
+
+        let secretParams2 = try GroupSecretParams.generate()
+        let groupId2 = try secretParams2.getPublicParams().getGroupIdentifier()
+
+        let threadUniqueId1 = UUID().uuidString
+        let threadUniqueId2 = UUID().uuidString
+
+        let lastVerifiedGroupNameHash = Data(repeating: 3, count: 32)
+
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "model_TSThread" (
+              "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+              "uniqueId" TEXT NOT NULL UNIQUE ON CONFLICT FAIL,
+              "isArchived" INTEGER NOT NULL,
+              "isMarkedUnread" BOOLEAN NOT NULL DEFAULT 0,
+              "mutedUntilTimestamp" INTEGER NOT NULL DEFAULT 0
+            );
+
+            CREATE TABLE "thread_associated_data" (
+              "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+              "threadUniqueId" TEXT NOT NULL UNIQUE ON CONFLICT FAIL,
+              "isArchived" BOOLEAN NOT NULL DEFAULT 0,
+              "isMarkedUnread" BOOLEAN NOT NULL DEFAULT 0,
+              "mutedUntilTimestamp" INTEGER NOT NULL DEFAULT 0,
+              "audioPlaybackRate" DOUBLE NOT NULL DEFAULT 1,
+              "lastVerifiedGroupNameHash" BLOB
+            );
+
+            CREATE TABLE "GroupRecord" (
+              "rowId" INTEGER PRIMARY KEY NOT NULL,
+              "groupId" BLOB NOT NULL UNIQUE,
+              "threadId" BLOB UNIQUE REFERENCES "model_TSThread" (
+                "id"
+              ) ON DELETE SET NULL ON UPDATE CASCADE
+            );
+            """)
+
+            try db.execute(
+                sql: """
+                INSERT INTO "model_TSThread" (
+                    "id", "uniqueId", "isArchived", "isMarkedUnread", "mutedUntilTimestamp"
+                ) VALUES (?, ?, ?, ?, ?)
+                """,
+                arguments: [1, threadUniqueId1, true, true, 1234],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "model_TSThread" (
+                    "id", "uniqueId", "isArchived", "isMarkedUnread", "mutedUntilTimestamp"
+                ) VALUES (?, ?, ?, ?, ?)
+                """,
+                arguments: [2, threadUniqueId2, false, false, 0],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "thread_associated_data" (
+                    "id",
+                    "threadUniqueId",
+                    "isArchived",
+                    "isMarkedUnread",
+                    "mutedUntilTimestamp",
+                    "audioPlaybackRate",
+                    "lastVerifiedGroupNameHash"
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                arguments: [3, threadUniqueId2, true, true, 1235, 2.0, lastVerifiedGroupNameHash],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "GroupRecord" (
+                    "rowId", "groupId", "threadId"
+                ) VALUES (?, ?, ?)
+                """,
+                arguments: [4, groupId1.serialize(), 2],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "GroupRecord" (
+                    "rowId", "groupId", "threadId"
+                ) VALUES (?, ?, ?)
+                """,
+                arguments: [5, groupId2.serialize(), nil],
+            )
+
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.moveFromThreadAssociatedData(tx: tx)
+            }
+
+            var groupRecords = try Row.fetchAll(db, sql: "SELECT * FROM GroupRecord ORDER BY rowId")[...]
+            do {
+                let groupRecord = groupRecords.removeFirst()
+                #expect(groupRecord["rowId"] as Int64 == 4)
+                #expect(groupRecord["groupId"] as Data? == groupId1.serialize())
+                #expect(groupRecord["threadId"] as Int64? == 2)
+                #expect(groupRecord["lastVerifiedGroupNameHash"] as Data? == lastVerifiedGroupNameHash)
+            }
+            do {
+                let groupRecord = groupRecords.removeFirst()
+                #expect(groupRecord["rowId"] as Int64 == 5)
+                #expect(groupRecord["groupId"] as Data? == groupId2.serialize())
+                #expect(groupRecord["threadId"] as Int64? == nil)
+                #expect(groupRecord["lastVerifiedGroupNameHash"] as Data? == nil)
+            }
+            #expect(groupRecords.isEmpty)
+
+            var threadRecords = try Row.fetchAll(db, sql: "SELECT * FROM model_TSThread ORDER BY id")[...]
+            do {
+                let threadRecord = threadRecords.removeFirst()
+                #expect(threadRecord["id"] as Int64 == 1)
+                #expect(threadRecord["uniqueId"] as String? == threadUniqueId1)
+                #expect(threadRecord["isArchived"] as Bool == true)
+                #expect(threadRecord["isMarkedUnread"] as Bool == true)
+                #expect(threadRecord["mutedUntilTimestamp"] as Int64? == 1234)
+                #expect(threadRecord["audioPlaybackRate"] as Double == 1.0)
+            }
+            do {
+                let threadRecord = threadRecords.removeFirst()
+                #expect(threadRecord["id"] as Int64 == 2)
+                #expect(threadRecord["uniqueId"] as String? == threadUniqueId2)
+                #expect(threadRecord["isArchived"] as Bool == true)
+                #expect(threadRecord["isMarkedUnread"] as Bool == true)
+                #expect(threadRecord["mutedUntilTimestamp"] as Int64? == 1235)
+                #expect(threadRecord["audioPlaybackRate"] as Double == 2.0)
+            }
+            #expect(threadRecords.isEmpty)
+        }
+    }
+
+    @Test
+    func testRemoveObsoleteThreadReferences() throws {
+        let groupId1 = try GroupSecretParams.generate().getPublicParams().getGroupIdentifier()
+        let groupId2 = try GroupSecretParams.generate().getPublicParams().getGroupIdentifier()
+        let groupId3 = try GroupSecretParams.generate().getPublicParams().getGroupIdentifier()
+        let threadUniqueId1 = UUID().uuidString
+        let threadUniqueId2 = UUID().uuidString
+
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "keyvalue" (
+                "collection" TEXT NOT NULL,
+                "key" TEXT NOT NULL,
+                "value" BLOB NOT NULL,
+                PRIMARY KEY ("collection", "key")
+            );
+
+            CREATE TABLE "model_TSThread" (
+              "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+              "uniqueId" TEXT NOT NULL UNIQUE ON CONFLICT FAIL
+            );
+
+            CREATE TABLE "GroupRecord" (
+              "rowId" INTEGER PRIMARY KEY NOT NULL,
+              "groupId" BLOB NOT NULL UNIQUE,
+              "threadId" BLOB UNIQUE REFERENCES "model_TSThread" (
+                "id"
+              ) ON DELETE SET NULL ON UPDATE CASCADE
+            );
+            """)
+
+            try db.execute(
+                sql: """
+                INSERT INTO "model_TSThread" (
+                    "id", "uniqueId"
+                ) VALUES (?, ?)
+                """,
+                arguments: [1, threadUniqueId1],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "GroupRecord" (
+                    "rowId", "groupId", "threadId"
+                ) VALUES (?, ?, ?)
+                """,
+                arguments: [1, groupId1.serialize(), 1],
+            )
+            try db.execute(
+                sql: """
+                INSERT INTO "GroupRecord" (
+                    "rowId", "groupId", "threadId"
+                ) VALUES (?, ?, ?)
+                """,
+                arguments: [2, groupId2.serialize(), nil],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" (
+                    "collection", "key", "value"
+                ) VALUES (?, ?, ?)
+                """,
+                arguments: ["DraftVoiceMessage", threadUniqueId1, Data()],
+            )
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" (
+                    "collection", "key", "value"
+                ) VALUES (?, ?, ?)
+                """,
+                arguments: ["DraftVoiceMessage", threadUniqueId2, Data()],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" (
+                    "collection", "key", "value"
+                ) VALUES (?, ?, ?)
+                """,
+                arguments: ["OWSContactsManager.skipGroupAvatarBlurByGroupIdStore", groupId1.serialize().hexadecimalString, Data()],
+            )
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" (
+                    "collection", "key", "value"
+                ) VALUES (?, ?, ?)
+                """,
+                arguments: ["OWSContactsManager.skipGroupAvatarBlurByGroupIdStore", groupId2.serialize().hexadecimalString, Data()],
+            )
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" (
+                    "collection", "key", "value"
+                ) VALUES (?, ?, ?)
+                """,
+                arguments: ["OWSContactsManager.skipGroupAvatarBlurByGroupIdStore", groupId3.serialize().hexadecimalString, Data()],
+            )
+
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" (
+                    "collection", "key", "value"
+                ) VALUES (?, ?, ?)
+                """,
+                arguments: ["BannerHiding_pendingMemberRequests", "hiddenState_" + threadUniqueId1, Data()],
+            )
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" (
+                    "collection", "key", "value"
+                ) VALUES (?, ?, ?)
+                """,
+                arguments: ["BannerHiding_pendingMemberRequests", "requestingMembersState_" + threadUniqueId1, Data()],
+            )
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" (
+                    "collection", "key", "value"
+                ) VALUES (?, ?, ?)
+                """,
+                arguments: ["BannerHiding_pendingMemberRequests", "hiddenState_" + threadUniqueId2, Data()],
+            )
+            try db.execute(
+                sql: """
+                INSERT INTO "keyvalue" (
+                    "collection", "key", "value"
+                ) VALUES (?, ?, ?)
+                """,
+                arguments: ["BannerHiding_pendingMemberRequests", "requestingMembersState_" + threadUniqueId2, Data()],
+            )
+
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.removeObsoleteThreadReferences(tx: tx)
+            }
+
+            let remainingValues = try String.fetchAll(
+                db,
+                sql: """
+                SELECT concat("collection", '.', "key") FROM "keyvalue" ORDER BY "collection", "key"
+                """,
+            )
+            let expectedValues = [
+                "BannerHiding_pendingMemberRequests.hiddenState_\(threadUniqueId1)",
+                "BannerHiding_pendingMemberRequests.requestingMembersState_\(threadUniqueId1)",
+                "DraftVoiceMessage.\(threadUniqueId1)",
+                "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore.\(groupId1.serialize().hexadecimalString)",
+            ]
+            #expect(remainingValues == expectedValues)
         }
     }
 }

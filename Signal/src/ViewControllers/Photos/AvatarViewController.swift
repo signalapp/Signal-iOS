@@ -11,13 +11,6 @@ class AvatarViewController: OWSViewController, InteractivelyDismissableViewContr
     private lazy var interactiveDismissal = MediaInteractiveDismiss(targetViewController: self)
     let avatarImage: UIImage
 
-    var maxAvatarPointSize: CGSize {
-        let currentScale = avatarImage.scale
-        let desiredScale = UIScreen.main.scale
-        let factor = currentScale / desiredScale
-        return CGSize.scale(avatarImage.size, factor: factor)
-    }
-
     private let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -37,9 +30,10 @@ class AvatarViewController: OWSViewController, InteractivelyDismissableViewContr
                 : .asUser,
         )
         guard
+            let appWindow = CurrentAppContext().mainWindow,
             let avatarImage = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
                 forThread: thread,
-                diameterPoints: UInt(UIScreen.main.bounds.size.smallerAxis),
+                diameterPoints: UInt(appWindow.bounds.size.smallerAxis),
                 localUserDisplayMode: localUserDisplayMode,
                 transaction: readTx,
             ) else { return nil }
@@ -52,15 +46,14 @@ class AvatarViewController: OWSViewController, InteractivelyDismissableViewContr
     }
 
     init?(address: SignalServiceAddress, renderLocalUserAsNoteToSelf: Bool, readTx: DBReadTransaction) {
-        let avatarImage = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
-            forAddress: address,
-            diameterPoints: UInt(UIScreen.main.bounds.size.smallerAxis),
-            localUserDisplayMode: renderLocalUserAsNoteToSelf ? .noteToSelf : .asUser,
-            transaction: readTx,
-        )
-        guard let avatarImage else {
-            return nil
-        }
+        guard
+            let appWindow = CurrentAppContext().mainWindow,
+            let avatarImage = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
+                forAddress: address,
+                diameterPoints: UInt(appWindow.bounds.size.smallerAxis),
+                localUserDisplayMode: renderLocalUserAsNoteToSelf ? .noteToSelf : .asUser,
+                transaction: readTx,
+            ) else { return nil }
 
         self.avatarImage = avatarImage
         super.init()
@@ -151,9 +144,9 @@ class AvatarViewController: OWSViewController, InteractivelyDismissableViewContr
             {
                 topInset = statusBarHeight
                 if #available(iOS 18, *) {
-                    topInset += (2 + .hairlineWidth)
+                    topInset += (2 + hairlineWidth)
                 } else if #available(iOS 16, *) {
-                    topInset -= .hairlineWidth
+                    topInset -= hairlineWidth
                 }
             }
             // On iOS 26 in landscape the navigation bar is offset 24 dp from the screen top edge.

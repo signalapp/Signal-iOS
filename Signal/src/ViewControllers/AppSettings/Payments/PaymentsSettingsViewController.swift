@@ -29,7 +29,6 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
     PaymentsViewPassphraseDelegate, PaymentsRestoreWalletDelegate
 {
 
-    private let appReadiness: AppReadinessSetter
     private let mode: PaymentsSettingsMode
 
     private let paymentsHistoryDataSource = PaymentsHistoryDataSource()
@@ -48,12 +47,8 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
 
     private var observations = [NotificationCenter.Observer]()
 
-    init(
-        mode: PaymentsSettingsMode,
-        appReadiness: AppReadinessSetter,
-    ) {
+    init(mode: PaymentsSettingsMode) {
         self.mode = mode
-        self.appReadiness = appReadiness
 
         super.init()
 
@@ -108,25 +103,25 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
         return Double(paymentBalance.amount.picoMob) >= significantPicoMob
     }
 
-    private static let keyValueStore = KeyValueStore(collection: "PaymentSettings")
+    private static let keyValueStore = NewKeyValueStore(collection: "PaymentSettings")
 
     private static let savePassphraseShownKey = "PaymentsSavePassphraseShown"
     private var savePassphraseShown: Bool {
         get {
             SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                Self.keyValueStore.getBool(
-                    Self.savePassphraseShownKey,
-                    defaultValue: false,
-                    transaction: transaction,
-                )
+                Self.keyValueStore.fetchValue(
+                    Bool.self,
+                    forKey: Self.savePassphraseShownKey,
+                    tx: transaction,
+                ) ?? false
             }
         }
         set {
             SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                Self.keyValueStore.setBool(
+                Self.keyValueStore.writeValue(
                     newValue,
-                    key: Self.savePassphraseShownKey,
-                    transaction: transaction,
+                    forKey: Self.savePassphraseShownKey,
+                    tx: transaction,
                 )
             }
         }
@@ -136,19 +131,19 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
     private var savePassphraseHelpCardEnabled: Bool {
         get {
             SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                Self.keyValueStore.getBool(
-                    Self.savePassphraseHelpCardEnabledKey,
-                    defaultValue: false,
-                    transaction: transaction,
-                )
+                Self.keyValueStore.fetchValue(
+                    Bool.self,
+                    forKey: Self.savePassphraseHelpCardEnabledKey,
+                    tx: transaction,
+                ) ?? false
             }
         }
         set {
             SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                Self.keyValueStore.setBool(
+                Self.keyValueStore.writeValue(
                     newValue,
-                    key: Self.savePassphraseHelpCardEnabledKey,
-                    transaction: transaction,
+                    forKey: Self.savePassphraseHelpCardEnabledKey,
+                    tx: transaction,
                 )
             }
             updateTableContents()
@@ -165,7 +160,7 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
 
     private func clearHelpCardEnabledFromDismissedList() {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            Self.helpCardStore.removeValue(forKey: HelpCard.saveRecoveryPhrase.rawValue, transaction: transaction)
+            Self.helpCardStore.removeValue(forKey: HelpCard.saveRecoveryPhrase.rawValue, tx: transaction)
         }
     }
 
@@ -230,11 +225,11 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
         return filterDismissedHelpCards(helpCards.orderedMembers)
     }
 
-    private static let helpCardStore = KeyValueStore(collection: "paymentsHelpCardStore")
+    private static let helpCardStore = NewKeyValueStore(collection: "paymentsHelpCardStore")
 
     private func filterDismissedHelpCards(_ helpCards: [HelpCard]) -> [HelpCard] {
         let dismissedKeys = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            Self.helpCardStore.allKeys(transaction: transaction)
+            Self.helpCardStore.fetchKeys(tx: transaction)
         }
         return helpCards.filter { helpCard in !dismissedKeys.contains(helpCard.rawValue) }
     }
@@ -245,7 +240,7 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
             savePassphraseHelpCardEnabled = false
         }
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            Self.helpCardStore.setString(helpCard.rawValue, key: helpCard.rawValue, transaction: transaction)
+            Self.helpCardStore.writeValue(helpCard.rawValue, forKey: helpCard.rawValue, tx: transaction)
         }
         updateTableContents()
     }
@@ -733,6 +728,7 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
                     label.font = .dynamicTypeBodyClamped
                     label.textColor = .Signal.label
                     cell.contentView.addSubview(label)
+                    label.translatesAutoresizingMaskIntoConstraints = false
                     NSLayoutConstraint.activate([
                         label.topAnchor.constraint(equalTo: cell.contentView.layoutMarginsGuide.topAnchor, constant: 10),
                         label.leadingAnchor.constraint(equalTo: cell.contentView.layoutMarginsGuide.leadingAnchor),
@@ -1148,7 +1144,7 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
     }
 
     private func enablePayments() {
-        guard !SUIEnvironment.shared.paymentsRef.isKillSwitchActive else {
+        guard SUIEnvironment.shared.paymentsRef.canUsePayments() else {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH",
                 comment: "Error message indicating that payments could not be activated because the feature is not currently available.",
@@ -1279,7 +1275,7 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
     }
 
     private func didTapAddMoneyButton() {
-        guard !SUIEnvironment.shared.paymentsRef.isKillSwitchActive else {
+        guard SUIEnvironment.shared.paymentsRef.canUsePayments() else {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH",
                 comment: "Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available.",
@@ -1292,7 +1288,7 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
     }
 
     private func didTapSendPaymentButton() {
-        guard !SUIEnvironment.shared.paymentsRef.isKillSwitchActive else {
+        guard SUIEnvironment.shared.paymentsRef.canUsePayments() else {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH",
                 comment: "Error message indicating that payments cannot be sent because the feature is not currently available.",
@@ -1341,12 +1337,12 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
         }
         switch mode {
         case .inAppSettings:
-            navigationController.popViewController(animated: true) { [appReadiness] in
-                let accountSettingsView = AccountSettingsViewController(appReadiness: appReadiness)
+            navigationController.popViewController(animated: true) {
+                let accountSettingsView = AccountSettingsViewController()
                 navigationController.pushViewController(accountSettingsView, animated: true)
             }
         case .standalone:
-            let accountSettingsView = AccountSettingsViewController(appReadiness: appReadiness)
+            let accountSettingsView = AccountSettingsViewController()
             navigationController.pushViewController(accountSettingsView, animated: true)
         }
     }
@@ -1377,20 +1373,20 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
 
     static func hasReviewedPassphraseWithSneakyTransaction() -> Bool {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            Self.keyValueStore.getBool(
-                Self.hasReviewedPassphraseKey,
-                defaultValue: false,
-                transaction: transaction,
-            )
+            Self.keyValueStore.fetchValue(
+                Bool.self,
+                forKey: Self.hasReviewedPassphraseKey,
+                tx: transaction,
+            ) ?? false
         }
     }
 
     static func setHasReviewedPassphraseWithSneakyTransaction() {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            Self.keyValueStore.setBool(
+            Self.keyValueStore.writeValue(
                 true,
-                key: Self.hasReviewedPassphraseKey,
-                transaction: transaction,
+                forKey: Self.hasReviewedPassphraseKey,
+                tx: transaction,
             )
         }
     }

@@ -362,7 +362,7 @@ public class OWSBackgroundTaskManager {
         // should be able to ensure background tasks by "narrowly" wrapping
         // their core logic with a OWSBackgroundTask and not worrying about "hand off"
         // between OWSBackgroundTasks.
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [self] in
             self.continuityTimer?.invalidate()
             self.continuityTimer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false, block: { [weak self] timer in
                 AssertIsOnMainThread()

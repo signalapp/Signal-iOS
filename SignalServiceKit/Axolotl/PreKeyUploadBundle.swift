@@ -57,13 +57,13 @@ public final class PartialPreKeyUploadBundle: PreKeyUploadBundle {
 
 public final class RegistrationPreKeyUploadBundle: PreKeyUploadBundle {
     public let identity: OWSIdentity
-    public let identityKeyPair: ECKeyPair
+    public let identityKeyPair: LibSignalClient.IdentityKeyPair
     public let signedPreKey: LibSignalClient.SignedPreKeyRecord
     public let lastResortPreKey: LibSignalClient.KyberPreKeyRecord
 
     public init(
         identity: OWSIdentity,
-        identityKeyPair: ECKeyPair,
+        identityKeyPair: LibSignalClient.IdentityKeyPair,
         signedPreKey: LibSignalClient.SignedPreKeyRecord,
         lastResortPreKey: LibSignalClient.KyberPreKeyRecord,
     ) {
@@ -77,14 +77,4 @@ public final class RegistrationPreKeyUploadBundle: PreKeyUploadBundle {
     public func getPreKeyRecords() -> [LibSignalClient.PreKeyRecord]? { nil }
     public func getLastResortPreKey() -> LibSignalClient.KyberPreKeyRecord? { lastResortPreKey }
     public func getPqPreKeyRecords() -> [LibSignalClient.KyberPreKeyRecord]? { nil }
-}
-
-public struct RegistrationPreKeyUploadBundles {
-    public let aci: RegistrationPreKeyUploadBundle
-    public let pni: RegistrationPreKeyUploadBundle
-
-    public init(aci: RegistrationPreKeyUploadBundle, pni: RegistrationPreKeyUploadBundle) {
-        self.aci = aci
-        self.pni = pni
-    }
 }

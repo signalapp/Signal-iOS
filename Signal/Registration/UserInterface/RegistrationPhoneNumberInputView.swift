@@ -55,7 +55,7 @@ class RegistrationPhoneNumberInputView: UIView {
         addSubview(stackView)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            dividerView.widthAnchor.constraint(equalToConstant: .hairlineWidth),
+            dividerView.widthAnchor.constraint(equalToConstant: hairlineWidth),
             dividerView.heightAnchor.constraint(equalTo: stackView.heightAnchor),
 
             stackView.heightAnchor.constraint(greaterThanOrEqualToConstant: 32),

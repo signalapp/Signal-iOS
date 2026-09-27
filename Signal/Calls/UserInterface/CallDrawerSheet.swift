@@ -945,7 +945,7 @@ private class CallMemberCell: UITableViewCell, ReusableTableViewCell {
         var config = UIButton.Configuration.plain()
         config.title = CallStrings.lowerHandButton
         config.titleTextAttributesTransformer = .defaultFont(.dynamicTypeBody)
-        config.baseForegroundColor = .ows_white
+        config.baseForegroundColor = .white
         config.contentInsets.leading = 0
         config.contentInsets.trailing = 0
         button.configuration = config

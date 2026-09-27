@@ -110,15 +110,8 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
         }
     }
 
-    private func _isVisiblePinnedThread(
-        _ thread: TSThread,
-        tx: DBReadTransaction,
-    ) -> Bool {
-        let associatedData = threadStore.fetchOrDefaultAssociatedData(for: thread, tx: tx)
-        // Ignore deleted or archived pinned threads. These shouldn't exist, but
-        // it's possible they are incorrectly received from linked devices.
-        owsAssertDebug(thread.uniqueId == associatedData.threadUniqueId)
-        return thread.shouldThreadBeVisible && !associatedData.isArchived
+    private func _isVisiblePinnedThread(_ thread: TSThread) -> Bool {
+        return thread.shouldThreadBeVisible && !thread.isArchived
     }
 
     public func pinnedThreads(tx: DBReadTransaction) -> [TSThread] {
@@ -126,7 +119,7 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
             guard let thread = _pinnedThread(forThreadId: $0.threadId, tx: tx) else {
                 return nil
             }
-            guard _isVisiblePinnedThread(thread, tx: tx) else {
+            guard _isVisiblePinnedThread(thread) else {
                 Logger.warn("Ignoring deleted or archived pinned thread \(thread.uniqueId)")
                 return nil
             }
@@ -157,7 +150,7 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
     ) {
         var didUpdate = false
         var oldPinnedThreads = pinnedThreadStore.fetchPinnedThreadRecords(tx: tx)[...]
-        threadIds.removingDuplicates(uniquingElementsBy: { $0 }).forEach { threadId in
+        threadIds.removingDuplicates().forEach { threadId in
             // Iterate through existing pinned threads, removing any that don't match.
             // (Some of these may appear later in `threadIds`, and if that's the case,
             // we'll remove them and then re-insert them in the right order.)
@@ -218,7 +211,7 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
                 guard let thread = _pinnedThread(forThreadId: $0.threadId, tx: tx) else {
                     return true
                 }
-                return !_isVisiblePinnedThread(thread, tx: tx)
+                return !_isVisiblePinnedThread(thread)
             })
             guard let firstMissingThreadIndex else {
                 throw TooManyPinnedThreadsError()
@@ -228,10 +221,9 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
         }
 
         // Pinning a thread should unarchive it and make it visible if it was not already so.
-        let associatedData = threadStore.fetchOrDefaultAssociatedData(for: thread, tx: tx)
-        if associatedData.isArchived {
-            threadStore.updateAssociatedData(
-                associatedData,
+        if thread.isArchived {
+            threadStore.updateThread(
+                thread,
                 isArchived: false,
                 updateStorageService: updateStorageService,
                 tx: tx,

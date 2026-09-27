@@ -3,83 +3,82 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
+import SignalServiceKit
 
-public class InteractionReactionState: NSObject {
-    var hasReactions: Bool { return !emojiCounts.isEmpty }
-
+public final class InteractionReactionState: Equatable {
     struct EmojiCount {
-        let emoji: String
+        let emoji: Emoji
+        let emojiVariant: String
         let count: Int
-        let highestSortOrder: UInt64
     }
 
-    let reactionsByEmoji: [Emoji: [OWSReaction]]
+    let reactions: [OWSReaction]
+    let emojiReactions: [Emoji: [OWSReaction]]
     let emojiCounts: [EmojiCount]
-    let localUserEmoji: String?
+    let localUserEmojiVariant: String?
 
-    init?(interaction: TSInteraction, transaction: DBReadTransaction) {
+    init?(interaction: TSInteraction, tx: DBReadTransaction) {
         // No reactions on non-message interactions
-        guard let message = interaction as? TSMessage else { return nil }
+        guard let message = interaction as? TSMessage else {
+            return nil
+        }
 
-        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress else {
             owsFailDebug("missing local address")
             return nil
         }
 
         let finder = ReactionFinder(uniqueMessageId: message.uniqueId)
-        let allReactions = finder.allReactions(transaction: transaction)
-        let localUserReaction = allReactions.first(where: { $0.reactor == localAddress })
+        let sortedReactions = finder.allReactions(transaction: tx)
+        let localUserReaction = sortedReactions.first(where: { $0.reactor == localAddress })
+        let localUserEmojiVariant = localUserReaction?.emoji
+        let localUserEmoji = localUserEmojiVariant.flatMap { Emoji($0) }
 
-        reactionsByEmoji = allReactions.reduce(
-            into: [Emoji: [OWSReaction]](),
-        ) { result, reaction in
+        var emojiReactions = [Emoji: [OWSReaction]]()
+        // These are "partially ordered" because they are sorted in reverse
+        // chronological order, but they are not sorted by frequency.
+        var partiallyOrderedEmojis = [Emoji]()
+        for reaction in sortedReactions {
             guard let emoji = Emoji(reaction.emoji) else {
-                return owsFailDebug("Skipping reaction with [unknown emoji]")
+                continue
             }
-
-            var reactions = result[emoji] ?? []
-            reactions.append(reaction)
-            result[emoji] = reactions
+            if emojiReactions[emoji] == nil {
+                partiallyOrderedEmojis.append(emoji)
+            }
+            emojiReactions[emoji, default: []].append(reaction)
         }
+        // Sort them by frequency using a stable sort so that ties are resolved
+        // using the reverse chronological order established above.
+        partiallyOrderedEmojis.sort(by: {
+            return emojiReactions[$0]!.count > emojiReactions[$1]!.count
+        })
 
-        emojiCounts = reactionsByEmoji.values.compactMap { reactions in
-            guard let mostRecentReaction = reactions.first else {
-                owsFailDebug("unexpectedly missing reactions")
-                return nil
-            }
-            let mostRecentEmoji = mostRecentReaction.emoji
-
-            // We show your own skintone (if you’ve reacted), or the most
-            // recent skintone (if you haven’t reacted).
-            let emojiToRender: String
-            if let localUserReaction, reactions.contains(localUserReaction) {
-                emojiToRender = localUserReaction.emoji
+        let sortedEmojiCounts = partiallyOrderedEmojis.map {
+            let reactions = emojiReactions[$0].owsFailUnwrap("must exist")
+            let reactionVariant: OWSReaction
+            if $0 == localUserEmoji {
+                reactionVariant = localUserReaction.owsFailUnwrap("must exist when localUserEmoji does")
             } else {
-                emojiToRender = mostRecentEmoji
+                reactionVariant = reactions.first.owsFailUnwrap("does not exist unless non-empty")
             }
-
-            let highestSortOrder =
-                (reactions.map { $0.sortOrder }.max() ?? mostRecentReaction.sortOrder)
-
             return EmojiCount(
-                emoji: emojiToRender,
+                emoji: $0,
+                emojiVariant: reactionVariant.emoji,
                 count: reactions.count,
-                highestSortOrder: highestSortOrder,
             )
-        }.sorted { (lhs: EmojiCount, rhs: EmojiCount) in
-            if lhs.count != rhs.count {
-                // Sort more common reactions (higher counter) first.
-                return lhs.count > rhs.count
-            } else if lhs.highestSortOrder != rhs.highestSortOrder {
-                // Sort reactions received in descending order of when we received them.
-                return lhs.highestSortOrder > rhs.highestSortOrder
-            } else {
-                // Ensure stability of sort by comparing emoji.
-                return lhs.emoji > rhs.emoji
-            }
         }
 
-        localUserEmoji = localUserReaction?.emoji
+        guard !sortedEmojiCounts.isEmpty else {
+            return nil
+        }
+
+        self.reactions = sortedReactions
+        self.emojiReactions = emojiReactions
+        self.emojiCounts = sortedEmojiCounts
+        self.localUserEmojiVariant = localUserEmojiVariant
+    }
+
+    public static func ==(lhs: InteractionReactionState, rhs: InteractionReactionState) -> Bool {
+        return lhs === rhs
     }
 }

@@ -66,7 +66,7 @@ final class BackupKeyServiceImpl: BackupKeyService {
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction,
     ) throws -> (MessageRootBackupKey, MediaRootBackupKey) {
-        guard let messageRootBackupKey = try? accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: tx) else {
+        guard let messageRootBackupKey = accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: tx) else {
             throw OWSAssertionError("Missing message root backup key! Do we not have an AEP?")
         }
 
@@ -152,7 +152,7 @@ final class BackupKeyServiceImpl: BackupKeyService {
             messageBackupKey,
             mediaBackupKey,
         ) = db.read { (
-            try? accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: $0),
+            accountKeyStore.getMessageRootBackupKey(aci: localIdentifiers.aci, tx: $0),
             accountKeyStore.getMediaRootBackupKey(tx: $0),
         ) }
 

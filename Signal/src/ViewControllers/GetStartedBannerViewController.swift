@@ -452,7 +452,7 @@ class GetStartedBannerViewController: OWSViewController {
         let cellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, GetStartedCard> { cell, indexPath, card in
             cell.contentConfiguration = GetStartedCardCellContentConfiguration(card: card)
         }
-        dataSource = UICollectionViewDiffableDataSource<Section, GetStartedCard>(collectionView: collectionView) { collectionView, indexPath, card in
+        dataSource = UICollectionViewDiffableDataSource<Section, GetStartedCard>(collectionView: collectionView) { [self] collectionView, indexPath, card in
             let cell = collectionView.dequeueConfiguredReusableCell(
                 using: cellRegistration,
                 for: indexPath,
@@ -497,15 +497,9 @@ class GetStartedBannerViewController: OWSViewController {
                 return []
             }
 
-            let visibleThreadCount: UInt
-            do {
-                let unarchivedThreadCount = try self.threadFinder.visibleThreadCount(isArchived: false, transaction: readTx)
-                let archivedThreadCount = try self.threadFinder.visibleThreadCount(isArchived: true, transaction: readTx)
-                visibleThreadCount = unarchivedThreadCount + archivedThreadCount
-            } catch {
-                owsFailDebug("Failed to fetch thread count")
-                return []
-            }
+            let unarchivedThreadCount = self.threadFinder.visibleThreadCount(isArchived: false, transaction: readTx)
+            let archivedThreadCount = self.threadFinder.visibleThreadCount(isArchived: true, transaction: readTx)
+            let visibleThreadCount = unarchivedThreadCount + archivedThreadCount
 
             // If we have five or more threads, dismiss all cards
             if visibleThreadCount >= 5 {
@@ -597,7 +591,7 @@ extension GetStartedBannerViewController: UICollectionViewDelegate {
 extension GetStartedBannerViewController {
 
     private static let activeCardsDidChange = NSNotification.Name("ActiveBannerCardsDidChange")
-    private static let keyValueStore = KeyValueStore(collection: "GetStartedBannerViewController")
+    private static let keyValueStore = NewKeyValueStore(collection: "GetStartedBannerViewController")
     private static let completePrefix = "ActiveCard."
 
     static func enableAllCards(writeTx: DBWriteTransaction) {
@@ -606,13 +600,13 @@ extension GetStartedBannerViewController {
         GetStartedCard.all.forEach { card in
             let key = completePrefix + card.identifier
 
-            let isActive = keyValueStore.getBool(key, defaultValue: false, transaction: writeTx)
+            let isActive = keyValueStore.fetchValue(Bool.self, forKey: key, tx: writeTx) ?? false
             guard !isActive else {
                 // Card already active.
                 return
             }
 
-            Self.keyValueStore.setBool(true, key: key, transaction: writeTx)
+            Self.keyValueStore.writeValue(true, forKey: key, tx: writeTx)
             didChange = true
         }
 
@@ -628,7 +622,7 @@ extension GetStartedBannerViewController {
     private static func getActiveCards(readTx: DBReadTransaction) -> [GetStartedCard] {
         GetStartedCard.all.filter { entry in
             let key = completePrefix + entry.identifier
-            let isActive = keyValueStore.getBool(key, defaultValue: false, transaction: readTx)
+            let isActive = keyValueStore.fetchValue(Bool.self, forKey: key, tx: readTx) ?? false
             return isActive
         }
     }
@@ -639,13 +633,13 @@ extension GetStartedBannerViewController {
         GetStartedCard.all.forEach { card in
             let key = completePrefix + card.identifier
 
-            let isActive = keyValueStore.getBool(key, defaultValue: false, transaction: writeTx)
+            let isActive = keyValueStore.fetchValue(Bool.self, forKey: key, tx: writeTx) ?? false
             guard isActive else {
                 // Card not active.
                 return
             }
 
-            Self.keyValueStore.removeValue(forKey: key, transaction: writeTx)
+            Self.keyValueStore.removeValue(forKey: key, tx: writeTx)
             didChange = true
         }
 
@@ -661,13 +655,13 @@ extension GetStartedBannerViewController {
     private static func completeCard(_ model: GetStartedCard, writeTx: DBWriteTransaction) {
         let key = Self.completePrefix + model.identifier
 
-        let isActive = keyValueStore.getBool(key, defaultValue: false, transaction: writeTx)
+        let isActive = keyValueStore.fetchValue(Bool.self, forKey: key, tx: writeTx) ?? false
         guard isActive else {
             // Card not active.
             return
         }
 
-        Self.keyValueStore.removeValue(forKey: key, transaction: writeTx)
+        Self.keyValueStore.removeValue(forKey: key, tx: writeTx)
 
         writeTx.addSyncCompletion {
             NotificationCenter.default.postOnMainThread(name: activeCardsDidChange, object: nil)

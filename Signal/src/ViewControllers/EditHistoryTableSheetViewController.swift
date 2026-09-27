@@ -88,14 +88,8 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
                 return false
             }
 
-            let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(
-                for: thread,
-                transaction: tx,
-            )
-
             parentRenderItems = buildRenderItem(
                 thread: thread,
-                threadAssociatedData: threadAssociatedData,
                 message: message,
                 forceDateHeader: true,
                 tx: tx,
@@ -105,7 +99,6 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
             for edit in edits {
                 let items = buildRenderItem(
                     thread: thread,
-                    threadAssociatedData: threadAssociatedData,
                     message: edit,
                     tx: tx,
                 )
@@ -207,7 +200,6 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
     var currentDaysBefore: Int = -1
     private func buildRenderItem(
         thread: TSThread,
-        threadAssociatedData: ThreadAssociatedData,
         message interaction: TSMessage,
         forceDateHeader: Bool = false,
         tx: DBReadTransaction,
@@ -243,7 +235,6 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
                 let dateItem = CVLoader.buildStandaloneRenderItem(
                     interaction: dateInteraction,
                     thread: thread,
-                    threadAssociatedData: threadAssociatedData,
                     conversationStyle: conversationStyle,
                     spoilerState: self.spoilerState,
                     groupNameColors: groupNameColors,
@@ -258,7 +249,6 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
             let item = CVLoader.buildStandaloneRenderItem(
                 interaction: interaction,
                 thread: thread,
-                threadAssociatedData: threadAssociatedData,
                 conversationStyle: conversationStyle,
                 spoilerState: self.spoilerState,
                 groupNameColors: groupNameColors,

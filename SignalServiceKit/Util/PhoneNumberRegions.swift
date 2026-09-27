@@ -5,53 +5,35 @@
 
 import Foundation
 
-public class PhoneNumberRegions: Equatable, ExpressibleByArrayLiteral, CustomDebugStringConvertible {
-    private let regions: Set<String>
-    private var previousCachedResult: (e164: String, result: Bool)?
+public struct PhoneNumberRegions {
+    private let regions: Set<String.SubSequence>
+    private let regionCounts: Set<Int>
 
-    public required init(arrayLiteral: String...) {
-        self.regions = Set(arrayLiteral)
+    public init(_ regions: some Sequence<String>) {
+        self.regions = Set(regions.map { $0[...] })
+        self.regionCounts = Set(self.regions.lazy.map(\.count))
     }
 
-    init(fromRemoteConfig remoteConfigValue: String) {
-        let regions = remoteConfigValue
+    static func parseRemoteConfigRegions(_ remoteConfigValue: String) -> some Sequence<String> {
+        return remoteConfigValue
             .components(separatedBy: ",")
             .lazy
             .compactMap { $0.asciiDigitsOnly.nilIfEmpty }
-        self.regions = Set(regions)
     }
 
     public var isEmpty: Bool { regions.isEmpty }
 
     public func contains(e164: String) -> Bool {
-        // We usually expect this to be called with the same E164, so we cache
-        // the previous result. We could probably optimize this whole class
-        // further, but this simple solution should be good enough.
-        if let previousCachedResult, previousCachedResult.e164 == e164 {
-            return previousCachedResult.result
-        }
-
-        let e164Prefix = "+"
-        guard e164.hasPrefix(e164Prefix) else {
-            owsFailDebug("Invalid e164: \(e164).")
+        guard let e164 = E164(e164) else {
+            owsFailDebug("Invalid e164: \(e164)")
             return false
         }
-        let e164WithoutPrefix = String(e164.dropFirst(e164Prefix.count))
-        if e164WithoutPrefix.isEmpty {
-            owsFailDebug("Invalid e164: \(e164).")
-            return false
+        let e164WithoutPrefix = e164.withoutPrefix()
+        for regionCount in self.regionCounts {
+            if self.regions.contains(e164WithoutPrefix.prefix(regionCount)) {
+                return true
+            }
         }
-
-        let result = regions.contains { region in
-            e164WithoutPrefix.hasPrefix(region)
-        }
-        previousCachedResult = (e164, result)
-        return result
+        return false
     }
-
-    public static func ==(lhs: PhoneNumberRegions, rhs: PhoneNumberRegions) -> Bool {
-        lhs.regions == rhs.regions
-    }
-
-    public var debugDescription: String { regions.debugDescription }
 }

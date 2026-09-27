@@ -294,14 +294,6 @@ public class TextStylingToolbar: UIControl {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override public var intrinsicContentSize: CGSize {
-        // NOTE: Update size calculation if changing margins around UIStackView in init(layout:currentColor:).
-        CGSize(
-            width: UIScreen.main.bounds.width,
-            height: stackView.frame.height + 2 + safeAreaInsets.bottom,
-        )
-    }
-
     func colorPickerBarValueChanged() {
         sendActions(for: .valueChanged)
     }

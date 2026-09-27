@@ -11,7 +11,6 @@ import UIKit
 @MainActor
 struct DoubleTapToEditOnboardingController {
     private enum Keys {
-        static let collectionIdentifier = "DoubleTapToEdit"
         static let hasSeenOnboarding = "hasSeenOnboarding"
     }
 
@@ -24,9 +23,9 @@ struct DoubleTapToEditOnboardingController {
     }
 
     func beginEditing(animated: Bool) {
-        let store = KeyValueStore(collection: Keys.collectionIdentifier)
+        let store = NewKeyValueStore(collection: "DoubleTapToEdit")
         let db = DependenciesBridge.shared.db
-        let hasSeenOnboarding = db.read { store.getBool(Keys.hasSeenOnboarding, defaultValue: false, transaction: $0) }
+        let hasSeenOnboarding = db.read { store.fetchValue(Bool.self, forKey: Keys.hasSeenOnboarding, tx: $0) ?? false }
 
         if hasSeenOnboarding {
             completionHandler()
@@ -35,7 +34,7 @@ struct DoubleTapToEditOnboardingController {
             sheet.customHeader = HeaderView()
             sheet.addAction(.acknowledge)
             sheet.onDismiss = {
-                db.asyncWrite { store.setBool(true, key: Keys.hasSeenOnboarding, transaction: $0) }
+                db.asyncWrite { store.writeValue(true, forKey: Keys.hasSeenOnboarding, tx: $0) }
                 MainActor.assumeIsolated {
                     completionHandler()
                 }

@@ -38,7 +38,6 @@ public final class ConversationViewController: OWSViewController {
 
     let context: ViewControllerContext
 
-    public let appReadiness: AppReadinessSetter
     public let viewState: CVViewState
     public let loadCoordinator: CVLoadCoordinator
     public let layout: ConversationViewLayout
@@ -66,7 +65,6 @@ public final class ConversationViewController: OWSViewController {
     // MARK: -
 
     public static func load(
-        appReadiness: AppReadinessSetter,
         threadViewModel: ThreadViewModel,
         action: ConversationViewAction,
         focusMessageId: String?,
@@ -108,7 +106,6 @@ public final class ConversationViewController: OWSViewController {
         let conversationViewModel = ConversationViewModel.load(for: thread, tx: tx)
 
         let cvc = ConversationViewController(
-            appReadiness: appReadiness,
             threadViewModel: threadViewModel,
             conversationViewModel: conversationViewModel,
             action: action,
@@ -135,7 +132,6 @@ public final class ConversationViewController: OWSViewController {
     }
 
     private init(
-        appReadiness: AppReadinessSetter,
         threadViewModel: ThreadViewModel,
         conversationViewModel: ConversationViewModel,
         action: ConversationViewAction,
@@ -148,7 +144,6 @@ public final class ConversationViewController: OWSViewController {
     ) {
         AssertIsOnMainThread()
 
-        self.appReadiness = appReadiness
         self.context = ViewControllerContext.shared
 
         self.viewState = CVViewState(
@@ -649,12 +644,6 @@ public final class ConversationViewController: OWSViewController {
                 self?.clearScrollActionForSizeTransition()
             },
         )
-    }
-
-    override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        AssertIsOnMainThread()
-        self.updateBarButtonItems()
-        self.updateNavigationBarSubtitleLabel()
     }
 
     override public func viewSafeAreaInsetsDidChange() {

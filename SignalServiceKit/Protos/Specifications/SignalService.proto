@@ -237,6 +237,7 @@ message DataMessage {
       optional string suffix = 4;
       optional string middleName = 5;
       reserved /*displayName*/ 6;
+      optional string nickname = 7;
     }
 
     message Phone {
@@ -289,11 +290,13 @@ message DataMessage {
     }
 
     optional Name name = 1;
+    reserved 2;
     repeated Phone number = 3;
     repeated Email email = 4;
     repeated PostalAddress address = 5;
     optional Avatar avatar = 6;
     optional string organization = 7;
+    optional bytes aciBinary = 8; // 16-byte UUID
   }
 
   message Sticker {

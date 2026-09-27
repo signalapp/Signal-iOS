@@ -12,17 +12,37 @@ public struct BadgeCount {
     }
 }
 
-public protocol BadgeCountFetcher {
-    func fetchBadgeCount(tx: DBReadTransaction) -> BadgeCount
-}
+public struct BadgeCountFetcher {
+    private let notificationPreferencesManager: NotificationPreferencesManager
+    private let callRecordMissedCallManager: CallRecordMissedCallManager
 
-class BadgeCountFetcherImpl: BadgeCountFetcher {
-    func fetchBadgeCount(tx: DBReadTransaction) -> BadgeCount {
-        let unreadInteractionCount = InteractionFinder.unreadCountInAllThreads(transaction: tx)
-        let unreadMissedCallCount = DependenciesBridge.shared.callRecordMissedCallManager.countUnreadMissedCalls(tx: tx)
+    init(
+        notificationPreferencesManager: NotificationPreferencesManager,
+        callRecordMissedCallManager: CallRecordMissedCallManager,
+    ) {
+        self.notificationPreferencesManager = notificationPreferencesManager
+        self.callRecordMissedCallManager = callRecordMissedCallManager
+    }
+
+    public func fetchBadgeCount(tx: DBReadTransaction) -> BadgeCount {
+        let badgeCountType: BadgeCountType
+        if BuildFlags.improvedNotifications {
+            badgeCountType = notificationPreferencesManager.badgeCountType(tx: tx)
+        } else {
+            badgeCountType = .unreadMessages
+        }
+
+        let unreadChatCount: UInt
+        switch badgeCountType {
+        case .unreadMessages:
+            unreadChatCount = InteractionFinder.unreadCountInAllThreads(transaction: tx)
+        case .unreadChats:
+            unreadChatCount = InteractionFinder.unreadThreadCountInAllThreads(transaction: tx)
+        }
+        let unreadMissedCallCount = callRecordMissedCallManager.countUnreadMissedCalls(tx: tx)
 
         return BadgeCount(
-            unreadChatCount: unreadInteractionCount,
+            unreadChatCount: unreadChatCount,
             unreadCallsCount: unreadMissedCallCount,
         )
     }

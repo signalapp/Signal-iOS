@@ -62,11 +62,8 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         return detailNavController.topViewController ?? selectedNavController.topViewController
     }
 
-    private let appReadiness: AppReadinessSetter
-
-    init(appReadiness: AppReadinessSetter) {
-        self.appReadiness = appReadiness
-        self.homeVC = HomeTabBarController(appReadiness: appReadiness)
+    init() {
+        self.homeVC = HomeTabBarController()
         super.init(nibName: nil, bundle: nil)
 
         viewControllers = [homeVC, detailPlaceholderVC]
@@ -236,7 +233,6 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
         let conversationViewController = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return ConversationViewController.load(
-                appReadiness: appReadiness,
                 threadViewModel: ThreadViewModel(
                     threadUniqueId: threadUniqueId,
                     forChatList: false,

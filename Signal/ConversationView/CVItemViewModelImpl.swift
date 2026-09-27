@@ -88,7 +88,7 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
         return componentState.archivedPaymentAttachment
     }
 
-    public var reactionState: InteractionReactionState? {
+    var reactionState: InteractionReactionState? {
         AssertIsOnMainThread()
 
         return componentState.reactions?.reactionState

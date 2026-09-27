@@ -29,8 +29,8 @@ concurrency:
 env:
   # Path format pulled from https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md#xcode
   DEVELOPER_DIR: /Applications/Xcode_26.6.app
-  # v1.36.1
-  swift-protobuf-ref: a008af1a102ff3dd6cc3764bb69bf63226d0f5f6
+  # v1.38.1
+  swift-protobuf-ref: 55d7a1cc5666b85c13464aea1c4b4a90feccb4c8
 
 jobs:
   check-protobuf:

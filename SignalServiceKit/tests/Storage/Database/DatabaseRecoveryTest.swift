@@ -122,10 +122,9 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
         let contactAci = Aci.randomForTesting()
 
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
-            XCTFail("No local address. Test is not set up correctly")
-            return
-        }
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+        let localAci = registeredState.localIdentifiers.aci
 
         try! databaseStorage.write { transaction in
             // Threads
@@ -155,7 +154,6 @@ final class DatabaseRecoveryTest: SSKBaseTest {
                 reactorAci: localAci,
                 reactorPhoneNumber: nil,
                 sentAtTimestamp: 1234,
-                sortOrder: 1234,
             )
             reaction.anyInsert(transaction: transaction)
 

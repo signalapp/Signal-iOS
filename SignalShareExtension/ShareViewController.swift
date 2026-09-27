@@ -60,14 +60,20 @@ public class ShareViewController: OWSNavigationController, ShareViewDelegate {
             // Wait one run loop to ensure the loading indicator is visible if setUp
             // blocks the main thread.
             DispatchQueue.main.async {
-                Task { try await self.setUp(initialLoadViewController: initialLoadViewController) }
+                Task {
+                    do {
+                        try await self.setUp(initialLoadViewController: initialLoadViewController)
+                    } catch {
+                        Logger.error("Unable to setup ShareViewController \(error)")
+                    }
+                }
             }
         }
     }
 
     private func setUp(initialLoadViewController: SAELoadViewController) async throws {
         // If we're low on storage space, don't try and do anything; abort.
-        guard LowDiskSpaceManager.hasEnoughDiskSpaceToLaunch() else {
+        guard LowDiskSpaceManager.additionalBytesRequiredToLaunch() == nil else {
             Logger.warn("Not enough disk space to share; showing error and skipping.")
             self.showLowDiskSpaceView()
             return
@@ -432,7 +438,7 @@ public class ShareViewController: OWSNavigationController, ShareViewDelegate {
         try Task.checkCancellation()
 
         // Make sure the user is not trying to share more than our attachment limit.
-        guard typedItems.count <= SignalAttachment.maxAttachmentsAllowed else {
+        guard typedItems.count <= MessageBodyAttachmentLimits.maxAllowedVisualMedia else {
             throw ShareViewControllerError.tooManyAttachments
         }
 
@@ -447,7 +453,10 @@ public class ShareViewController: OWSNavigationController, ShareViewDelegate {
                 comment: "Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared.",
             )
 
-            let alertTitle = String.nonPluralLocalizedStringWithFormat(format, OWSFormat.formatInt(SignalAttachment.maxAttachmentsAllowed))
+            let alertTitle = String.nonPluralLocalizedStringWithFormat(
+                format,
+                OWSFormat.formatInt(MessageBodyAttachmentLimits.maxAllowedVisualMedia),
+            )
 
             OWSActionSheets.showActionSheet(
                 title: alertTitle,

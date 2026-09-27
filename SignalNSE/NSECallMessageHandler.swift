@@ -54,6 +54,7 @@ class NSECallMessageHandler: CallMessageHandler {
             }
             let callOfferHandler = CallOfferHandlerImpl(
                 identityManager: identityManager,
+                notificationPreferencesManager: DependenciesBridge.shared.notificationPreferencesManager,
                 notificationPresenter: notificationPresenter,
                 profileManager: profileManager,
                 tsAccountManager: tsAccountManager,

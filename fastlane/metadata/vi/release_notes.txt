@@ -1,1 +1,1 @@
-• Chúng tôi đã thêm phím tắt tiện lợi để bạn nhanh chóng hạ tay xuống sau khi bạn bắt đầu nói trong một cuộc gọi nhóm Signal.
+• This update introduces a new custom mute option so you can easily specify the exact date and time when you would like to end your moment of silence for notifications in a specific chat.

@@ -21,11 +21,7 @@ public class MockTSAccountManager: TSAccountManager {
     // MARK: - Local Identifiers
 
     public var localIdentifiersMock: (() -> LocalIdentifiers?) = {
-        return LocalIdentifiers(
-            aci: .randomForTesting(),
-            pni: .randomForTesting(),
-            e164: .init("+15555555555")!,
-        )
+        return .forUnitTests
     }
 
     open var localIdentifiersWithMaybeSneakyTransaction: LocalIdentifiers? { localIdentifiersMock() }
@@ -61,7 +57,7 @@ public class MockTSAccountManager: TSAccountManager {
     // MARK: - Registration State
 
     public var registrationStateMock: (() -> TSRegistrationState) = {
-        return .registered
+        return .registered(.forUnitTests)
     }
 
     open var registrationStateWithMaybeSneakyTransaction: TSRegistrationState { registrationStateMock() }

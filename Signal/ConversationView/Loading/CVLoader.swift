@@ -269,14 +269,12 @@ public class CVLoader: NSObject {
     public static func debugui_buildStandaloneRenderItem(
         interaction: TSInteraction,
         thread: TSThread,
-        threadAssociatedData: ThreadAssociatedData,
         containerView: UIView,
         transaction: DBReadTransaction,
     ) -> CVRenderItem? {
         buildStandaloneRenderItem(
             interaction: interaction,
             thread: thread,
-            threadAssociatedData: threadAssociatedData,
             containerView: containerView,
             spoilerState: SpoilerRenderState(),
             transaction: transaction,
@@ -288,7 +286,6 @@ public class CVLoader: NSObject {
     public static func buildStandaloneRenderItem(
         interaction: TSInteraction,
         thread: TSThread,
-        threadAssociatedData: ThreadAssociatedData,
         containerView: UIView,
         spoilerState: SpoilerRenderState,
         timestampMode: CVComponentFooter.TimestampMode = .original,
@@ -315,7 +312,6 @@ public class CVLoader: NSObject {
         return CVLoader.buildStandaloneRenderItem(
             interaction: interaction,
             thread: thread,
-            threadAssociatedData: threadAssociatedData,
             coreState: coreState,
             spoilerState: spoilerState,
             groupNameColors: groupNameColors,
@@ -327,7 +323,6 @@ public class CVLoader: NSObject {
     public static func buildStandaloneRenderItem(
         interaction: TSInteraction,
         thread: TSThread,
-        threadAssociatedData: ThreadAssociatedData,
         conversationStyle: ConversationStyle,
         spoilerState: SpoilerRenderState,
         groupNameColors: GroupNameColors,
@@ -341,7 +336,6 @@ public class CVLoader: NSObject {
         return CVLoader.buildStandaloneRenderItem(
             interaction: interaction,
             thread: thread,
-            threadAssociatedData: threadAssociatedData,
             coreState: coreState,
             spoilerState: spoilerState,
             groupNameColors: groupNameColors,
@@ -353,7 +347,6 @@ public class CVLoader: NSObject {
     private static func buildStandaloneRenderItem(
         interaction: TSInteraction,
         thread: TSThread,
-        threadAssociatedData: ThreadAssociatedData,
         coreState: CVCoreState,
         spoilerState: SpoilerRenderState,
         groupNameColors: GroupNameColors,
@@ -389,7 +382,6 @@ public class CVLoader: NSObject {
             let itemModel = CVItemModelBuilder.buildStandaloneItem(
                 interaction: interaction,
                 thread: thread,
-                threadAssociatedData: threadAssociatedData,
                 threadViewModel: threadViewModel,
                 itemBuildingContext: itemBuildingContext,
                 groupNameColors: groupNameColors,

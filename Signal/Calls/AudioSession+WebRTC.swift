@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import AVFoundation
 import SignalServiceKit
 public import SignalUI
 import WebRTC
@@ -34,7 +35,7 @@ extension AudioSession {
 
     /**
      * Because we useManualAudio with our RTCAudioSession, we have to start/stop the recording audio session ourselves.
-     * See header for details on  manual audio.
+     * See header for details on manual audio.
      */
     public var isRTCAudioEnabled: Bool {
         get {
@@ -45,4 +46,27 @@ extension AudioSession {
             rtcAudioSession.isAudioEnabled = newValue
         }
     }
+
+    /**
+     * CallKit activates and deactivates the audio session out of process. Inform the RTCAudioSession
+     * on the WebRTC side because it clears the interruption flag and updates other state.
+     */
+    @MainActor
+    public func rtcAudioSessionDidActivate() {
+        Self.isRTCAudioSessionActivatedByCallKit = true
+        rtcAudioSession.audioSessionDidActivate(AVAudioSession.sharedInstance())
+    }
+
+    @MainActor
+    public func rtcAudioSessionDidDeactivate() {
+        guard Self.isRTCAudioSessionActivatedByCallKit else {
+            Logger.warn("Ignoring deactivation that doesn't match an activation")
+            return
+        }
+        Self.isRTCAudioSessionActivatedByCallKit = false
+        rtcAudioSession.audioSessionDidDeactivate(AVAudioSession.sharedInstance())
+    }
+
+    @MainActor
+    private static var isRTCAudioSessionActivatedByCallKit = false
 }

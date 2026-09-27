@@ -82,6 +82,7 @@ struct BackupOnboardingIntroView: View {
                     .font(Font(UIFont.dynamicTypeFont(ofStandardSize: 26)))
                     .fontWeight(.semibold)
                     .foregroundStyle(Color.Signal.label)
+                    .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(.horizontal, 32)
                 .multilineTextAlignment(.center)
@@ -95,6 +96,7 @@ struct BackupOnboardingIntroView: View {
                 .font(.body)
                 .foregroundStyle(Color.Signal.secondaryLabel)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, 32)
 
                 Spacer().frame(height: 32)
@@ -104,6 +106,7 @@ struct BackupOnboardingIntroView: View {
                         HStack {
                             Label {
                                 Text(bulletPoint.text)
+                                    .fixedSize(horizontal: false, vertical: true)
                             } icon: {
                                 Image(uiImage: bulletPoint.image)
                             }

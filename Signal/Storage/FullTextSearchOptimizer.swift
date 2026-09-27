@@ -9,7 +9,7 @@ import SignalServiceKit
 
 final class FullTextSearchOptimizer {
     private let db: any DB
-    private let keyValueStore: KeyValueStore
+    private let keyValueStore: NewKeyValueStore
     private let preconditions: Preconditions
 
     private enum Constants {
@@ -20,12 +20,12 @@ final class FullTextSearchOptimizer {
         static let versionKey = "version"
 
         /// Incrementing this value will ensure the optimizer runs again for all users.
-        static let currentVersion = 1
+        static let currentVersion: Int64 = 1
     }
 
     init(appContext: AppContext, db: any DB) {
         self.db = db
-        self.keyValueStore = KeyValueStore(collection: "FullTextSearchOptimizer")
+        self.keyValueStore = NewKeyValueStore(collection: "FullTextSearchOptimizer")
         self.preconditions = Preconditions([AppActivePrecondition(appContext: appContext)])
     }
 
@@ -38,14 +38,14 @@ final class FullTextSearchOptimizer {
     func run() async {
         do {
             let completedVersion = db.read { tx in
-                keyValueStore.getInt(Constants.versionKey, defaultValue: 0, transaction: tx)
+                keyValueStore.fetchValue(Int64.self, forKey: Constants.versionKey, tx: tx) ?? 0
             }
             guard completedVersion < Constants.currentVersion else {
                 return
             }
             try await performAllMerges()
             await db.awaitableWrite { tx in
-                self.keyValueStore.setInt(Constants.currentVersion, key: Constants.versionKey, transaction: tx)
+                self.keyValueStore.writeValue(Constants.currentVersion, forKey: Constants.versionKey, tx: tx)
             }
         } catch {
             Logger.warn("\(error)")

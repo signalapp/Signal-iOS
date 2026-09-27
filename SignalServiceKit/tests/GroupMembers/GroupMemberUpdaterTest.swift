@@ -156,7 +156,7 @@ struct GroupMemberUpdaterTest {
                             serviceId: oldGroupMember.serviceId.map { try! ServiceId.parseFrom(serviceIdString: $0) },
                             phoneNumber: oldGroupMember.phoneNumber,
                         )!,
-                        groupThreadId: groupThread.uniqueId,
+                        threadUniqueId: groupThread.uniqueId,
                         lastInteractionTimestamp: oldGroupMember.interactionTimestamp,
                     ),
                     tx: $0,

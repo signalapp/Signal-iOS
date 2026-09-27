@@ -305,7 +305,6 @@ public enum DatabaseRecovery {
             TSPaymentModel.databaseTableName,
             TSThread.databaseTableName,
             GroupRecord.databaseTableName,
-            ThreadAssociatedData.databaseTableName,
             // We'd like to get receipts back, but it's okay if we don't get them all.
             DonationReceipt.databaseTableName,
             // We'd like to lookups for our contacts' usernames. However, we

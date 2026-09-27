@@ -8,13 +8,9 @@ public import SignalUI
 import StoreKit
 
 public class ChatListViewController: OWSViewController, HomeTabViewController {
-    let appReadiness: AppReadinessSetter
-
     init(
         chatListMode: ChatListMode,
-        appReadiness: AppReadinessSetter,
     ) {
-        self.appReadiness = appReadiness
         self.viewState = CLVViewState(chatListMode: chatListMode, inboxFilter: nil)
 
         super.init()
@@ -25,6 +21,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         viewState.reminderViews.chatListViewController = self
         viewState.backupDownloadProgressView.chatListViewController = self
         viewState.backupExportProgressView.chatListViewController = self
+        viewState.localFileBackupRestoreProgressView.chatListViewController = self
+        viewState.localFileBackupExportProgressView.chatListViewController = self
         viewState.settingsButtonCreator.delegate = self
         viewState.proxyButtonCreator.delegate = self
         viewState.configure()
@@ -93,6 +91,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         // Backups
         viewState.backupDownloadProgressView.startTracking()
         viewState.backupExportProgressView.startTracking()
+        viewState.localFileBackupRestoreProgressView.startTracking()
+        viewState.localFileBackupExportProgressView.startTracking()
 
         updateBarButtonItems()
         updateArchiveReminderView()
@@ -172,6 +172,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         viewState.searchResultsController.viewWillAppear(animated)
         viewState.backupDownloadProgressView.willAppear()
         viewState.backupExportProgressView.willAppear()
+        viewState.localFileBackupRestoreProgressView.willAppear()
+        viewState.localFileBackupExportProgressView.willAppear()
 
         updateUnreadPaymentNotificationsCountWithSneakyTransaction()
 
@@ -237,8 +239,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             hasEverAppeared = true
         }
 
-        appReadiness.setUIIsReady()
-
         presentGetStartedBannerIfNecessary()
         reconcileExperienceUpgrades()
         requestReviewIfAppropriate()
@@ -253,7 +253,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             }
         }
 
-        Task { try await self.checkForFailedServiceExtensionLaunches() }
+        Task { try? await self.checkForFailedServiceExtensionLaunches() }
 
         if viewState.multiSelectState.isActive {
             showToolbar()
@@ -279,6 +279,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         searchResultsController.viewDidDisappear(animated)
         viewState.backupDownloadProgressView.didDisappear()
         viewState.backupExportProgressView.didDisappear()
+        viewState.localFileBackupRestoreProgressView.didDisappear()
+        viewState.localFileBackupExportProgressView.didDisappear()
     }
 
     override public func viewIsAppearing(_ animated: Bool) {
@@ -386,6 +388,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             profileBadgeManager: DependenciesBridge.shared.profileBadgeManager,
             profileManager: SSKEnvironment.shared.profileManagerRef,
             localFileBackupManager: DependenciesBridge.shared.localFileBackupManager,
+            localFileBackupStore: LocalFileBackupStore(),
         )
 
         Task {
@@ -436,7 +439,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         layerView.layoutMargins = UIEdgeInsets(top: 11 + kTailHeight, leading: 16, bottom: 11, trailing: 16)
 
         let shapeLayer = CAShapeLayer()
-        shapeLayer.fillColor = UIColor.ows_accentBlue.cgColor
+        shapeLayer.fillColor = UIColor.Signal.accent.cgColor
         layerView.layer.addSublayer(shapeLayer)
         layerView.layoutCallback = { view in
             let bezierPath = UIBezierPath()
@@ -778,11 +781,9 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         var rightBarButtonItems = [UIBarButtonItem]()
 
-        let compose = UIBarButtonItem(
-            image: Theme.iconImage(.buttonCompose),
-            primaryAction: UIAction { [weak self] _ in self?.showNewConversationView() },
-        )
-        compose.accessibilityIdentifier = "ChatListViewController.compose"
+        let compose = UIBarButtonItem.button(icon: .buttonCompose) { [weak self] in
+            self?.showNewConversationView()
+        }
         compose.accessibilityLabel = NSLocalizedString("COMPOSE_BUTTON_LABEL", comment: "Accessibility label from compose button.")
         compose.accessibilityHint = NSLocalizedString(
             "COMPOSE_BUTTON_HINT",
@@ -790,11 +791,9 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         )
         rightBarButtonItems.append(compose)
 
-        let camera = UIBarButtonItem(
-            image: Theme.iconImage(.buttonCamera),
-            primaryAction: UIAction { [weak self] _ in self?.showCameraView() },
-        )
-        camera.accessibilityIdentifier = "ChatListViewController.camera"
+        let camera = UIBarButtonItem.button(icon: .buttonCamera) { [weak self] in
+            self?.showCameraView()
+        }
         camera.accessibilityLabel = NSLocalizedString("CAMERA_BUTTON_LABEL", comment: "Accessibility label for camera button.")
         camera.accessibilityHint = NSLocalizedString(
             "CAMERA_BUTTON_HINT",
@@ -877,13 +876,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         let paddingLength: Int = 3
         let paddingString = "".padding(toLength: paddingLength, withPad: " ", startingAt: 0)
 
-        navigationItem.backBarButtonItem = UIBarButtonItem(
-            title: paddingString,
-            style: .plain,
-            target: nil,
-            action: nil,
-            accessibilityIdentifier: "back",
-        )
+        navigationItem.backBarButtonItem = .button(title: paddingString) {}
     }
 
     // We want to delay asking for a review until an opportune time.
@@ -1039,7 +1032,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         let iconView = UIImageView.withTemplateImageName(
             "payment",
-            tintColor: Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_white,
+            tintColor: Theme.isDarkThemeEnabled ? .ows_gray15 : .white,
         )
         iconView.autoSetDimensions(to: .square(24))
         let iconCircleView = OWSLayerView.circleView(size: CGFloat(Self.paymentsBannerAvatarSize))
@@ -1120,7 +1113,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         let viewLabel = UILabel()
         viewLabel.text = CommonStrings.viewButton
-        viewLabel.textColor = Theme.accentBlueColor
+        viewLabel.textColor = .Signal.accent
         viewLabel.font = UIFont.dynamicTypeSubheadlineClamped
 
         let textStack = UIStackView(arrangedSubviews: [titleLabel, viewLabel])
@@ -1138,9 +1131,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         let dismissIcon = UIImageView.withTemplateImageName(
             "x-compact",
-            tintColor: Theme.isDarkThemeEnabled
-                ? .ows_white
-                : .ows_gray60,
+            tintColor: Theme.isDarkThemeEnabled ? .white : .ows_gray60,
         )
         dismissIcon.autoSetDimensions(to: .square(16))
         dismissButton.addSubview(dismissIcon)
@@ -1218,13 +1209,13 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             return
         }
 
-        let keyValueStore = KeyValueStore(collection: "FailedNSELaunches")
+        let keyValueStore = NewKeyValueStore(collection: "FailedNSELaunches")
         let mostRecentDateKey = "mostRecentPromptDate"
         let promptCountKey = "promptCount"
 
         let shouldShowPrompt = SSKEnvironment.shared.databaseStorageRef.read { tx -> Bool in
             // If we've shown the prompt recently, don't show it again.
-            let promptCount = keyValueStore.getInt(promptCountKey, defaultValue: 0, transaction: tx)
+            let promptCount = keyValueStore.fetchValue(Int64.self, forKey: promptCountKey, tx: tx) ?? 0
             let promptBackoff: TimeInterval = {
                 switch promptCount {
                 case 0:
@@ -1239,7 +1230,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                     return 96 * .hour
                 }
             }()
-            let mostRecentDate = keyValueStore.getDate(mostRecentDateKey, transaction: tx)
+            let mostRecentDate = keyValueStore.fetchValue(Date.self, forKey: mostRecentDateKey, tx: tx)
             if let mostRecentDate, -mostRecentDate.timeIntervalSinceNow < promptBackoff {
                 return false
             }
@@ -1291,11 +1282,11 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         let promptDate = Date()
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            keyValueStore.setDate(promptDate, key: mostRecentDateKey, transaction: tx)
-            keyValueStore.setInt(
-                keyValueStore.getInt(promptCountKey, defaultValue: 0, transaction: tx) + 1,
-                key: promptCountKey,
-                transaction: tx,
+            keyValueStore.writeValue(promptDate, forKey: mostRecentDateKey, tx: tx)
+            keyValueStore.writeValue(
+                (keyValueStore.fetchValue(Int64.self, forKey: promptCountKey, tx: tx) ?? 0) + 1,
+                forKey: promptCountKey,
+                tx: tx,
             )
         }
     }
@@ -1401,7 +1392,7 @@ extension ChatListViewController {
             .dismissMessageContextMenu(animated: true)
 
         let navigationController = OWSNavigationController()
-        let appSettingsViewController = AppSettingsViewController(appReadiness: appReadiness)
+        let appSettingsViewController = AppSettingsViewController()
 
         var internalCompletion: (() -> Void)?
         var viewControllers: [UIViewController] = [appSettingsViewController]
@@ -1411,16 +1402,16 @@ extension ChatListViewController {
             break
 
         case .payments:
-            let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings, appReadiness: appReadiness)
+            let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings)
             viewControllers += [paymentsSettings]
 
         case .payment(let paymentsHistoryItem):
-            let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings, appReadiness: appReadiness)
+            let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings)
             let paymentsDetail = PaymentsDetailViewController(paymentItem: paymentsHistoryItem)
             viewControllers += [paymentsSettings, paymentsDetail]
 
         case .paymentsTransferIn:
-            let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings, appReadiness: appReadiness)
+            let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings)
             let paymentsTransferIn = PaymentsTransferInViewController()
             viewControllers += [paymentsSettings, paymentsTransferIn]
 
@@ -1461,7 +1452,7 @@ extension ChatListViewController {
                     if LocalFileBackupStore().shouldOverrideShowLocalBackupsOnboarding(tx: tx) {
                         return false
                     }
-                    return LocalFileBackupStore().haveLocalBackupsEverBeenEnabled(tx: tx)
+                    return LocalFileBackupStore().localBackupsEnabled(tx: tx)
                 }
 
                 backupSettingsVC = BackupOnboardingCoordinator(
@@ -1535,7 +1526,7 @@ extension ChatListViewController {
             viewControllers += [PrivacySettingsViewController(), AdvancedPrivacySettingsViewController(), ProxySettingsViewController()]
 
         case .accountSettings:
-            viewControllers += [AccountSettingsViewController(appReadiness: appReadiness)]
+            viewControllers += [AccountSettingsViewController()]
         }
 
         navigationController.setViewControllers(viewControllers, animated: false)

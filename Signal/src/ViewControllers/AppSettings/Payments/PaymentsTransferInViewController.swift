@@ -16,12 +16,9 @@ class PaymentsTransferInViewController: OWSViewController {
             comment: "Label for 'add money' view in the payment settings.",
         )
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: Theme.iconImage(.buttonShare),
-            primaryAction: UIAction { [weak self] _ in
-                self?.didTapShare()
-            },
-        )
+        navigationItem.leftBarButtonItem = .button(icon: .buttonShare) { [weak self] in
+            self?.didTapShare()
+        }
         navigationItem.rightBarButtonItem = .doneButton { [weak self] in
             self?.didTapDone()
         }

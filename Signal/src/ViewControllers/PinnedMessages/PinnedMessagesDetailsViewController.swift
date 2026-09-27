@@ -80,7 +80,7 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
 
         var currentDaysBefore = -1
         for (index, message) in pinnedMessages.reversed().enumerated() {
-            guard let renderItem = buildRenderItem(thread: threadViewModel.threadRecord, threadAssociatedData: threadViewModel.associatedData, message: message, tx: tx)
+            guard let renderItem = buildRenderItem(thread: threadViewModel.threadRecord, message: message, tx: tx)
             else {
                 continue
             }
@@ -234,7 +234,6 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
         return CVLoader.buildStandaloneRenderItem(
             interaction: dateInteraction,
             thread: threadViewModel.threadRecord,
-            threadAssociatedData: threadViewModel.associatedData,
             conversationStyle: conversationStyle,
             spoilerState: self.spoilerState,
             groupNameColors: groupNameColors,
@@ -244,7 +243,6 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
 
     private func buildRenderItem(
         thread: TSThread,
-        threadAssociatedData: ThreadAssociatedData,
         message: TSMessage,
         forceDateHeader: Bool = false,
         tx: DBReadTransaction,
@@ -266,7 +264,6 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
         return CVLoader.buildStandaloneRenderItem(
             interaction: message,
             thread: thread,
-            threadAssociatedData: threadAssociatedData,
             conversationStyle: conversationStyle,
             spoilerState: self.spoilerState,
             groupNameColors: groupNameColors,

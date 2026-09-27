@@ -24,14 +24,17 @@ class NotificationSettingsContentViewController: OWSTableViewController2 {
         let section = OWSTableSection()
         section.footerTitle = OWSLocalizedString("NOTIFICATIONS_FOOTER_WARNING", comment: "")
 
-        let selectedType = SSKEnvironment.shared.databaseStorageRef.read(block: SSKEnvironment.shared.preferencesRef.notificationPreviewType(tx:))
+        let notificationPreferencesManager = DependenciesBridge.shared.notificationPreferencesManager
+        let selectedType = DependenciesBridge.shared.db.read(block: notificationPreferencesManager.previewType(tx:))
         let allTypes: [NotificationType] = [.namePreview, .nameNoPreview, .noNameNoPreview]
         for type in allTypes {
             section.add(.init(
                 text: type.displayName,
                 actionBlock: { [weak self] in
                     if self != nil {
-                        SSKEnvironment.shared.preferencesRef.setNotificationPreviewType(type)
+                        DependenciesBridge.shared.db.write { tx in
+                            notificationPreferencesManager.setPreviewType(type, tx: tx)
+                        }
                     }
 
                     // rebuild callUIAdapter since notification configuration changed.

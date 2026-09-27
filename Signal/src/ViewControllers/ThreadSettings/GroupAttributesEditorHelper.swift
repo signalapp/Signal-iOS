@@ -188,7 +188,7 @@ class GroupAttributesEditorHelper: NSObject {
         secondaryShadowView.autoPinEdgesToSuperviewEdges()
 
         let cameraImageView = UIImageView(image: Theme.iconImage(.buttonCamera))
-        cameraImageView.tintColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_black
+        cameraImageView.tintColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .black
         cameraImageView.autoSetDimensions(to: CGSize.square(20))
         cameraImageView.contentMode = .scaleAspectFit
 

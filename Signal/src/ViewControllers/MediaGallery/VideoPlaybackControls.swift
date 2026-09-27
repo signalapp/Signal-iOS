@@ -557,6 +557,7 @@ class PlayerProgressView: UIView {
             let glassEffectView = UIVisualEffectView(effect: interactiveGlassEffect())
             glassEffectView.translatesAutoresizingMaskIntoConstraints = false
             glassEffectView.clipsToBounds = true
+            glassEffectView.contentView.semanticContentAttribute = .playback
             glassEffectView.cornerConfiguration = .capsule()
             addSubview(glassEffectView)
             NSLayoutConstraint.activate([

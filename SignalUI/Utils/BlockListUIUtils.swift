@@ -189,8 +189,11 @@ public class BlockListUIUtils {
         owsAssertDebug(!displayName.isEmpty)
         owsAssertDebug(address.isValid)
 
-        SSKEnvironment.shared.databaseStorageRef.write { tx in
-            SSKEnvironment.shared.blockingManagerRef.addBlockedAddress(address, blockMode: .local, transaction: tx)
+        let blockingManager = SSKEnvironment.shared.blockingManagerRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+
+        databaseStorage.write { tx in
+            blockingManager.addBlockedAddress(address, blockMode: .localUser, transaction: tx)
         }
 
         showOkActionSheet(
@@ -224,7 +227,7 @@ public class BlockListUIUtils {
             // "leave group" message.
             blockingManager.addBlockedGroupId(
                 groupThread.groupId,
-                blockMode: .local,
+                blockMode: .localUser,
                 transaction: tx,
             )
             if groupThread.groupModel.groupMembership.isLocalUserFullOrInvitedMember {
@@ -260,7 +263,7 @@ public class BlockListUIUtils {
         db.write { tx in
             blockingManager.addBlockedReleaseNotesThread(
                 thread: thread,
-                blockMode: .local,
+                blockMode: .localUser,
                 transaction: tx,
             )
         }
@@ -403,8 +406,11 @@ public class BlockListUIUtils {
         owsAssertDebug(address.isValid)
         owsAssertDebug(!displayName.isEmpty)
 
-        SSKEnvironment.shared.databaseStorageRef.write { tx in
-            SSKEnvironment.shared.blockingManagerRef.removeBlockedAddress(address, wasLocallyInitiated: true, transaction: tx)
+        let blockingManager = SSKEnvironment.shared.blockingManagerRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+
+        databaseStorage.write { tx in
+            blockingManager.removeBlockedAddress(address, wasLocallyInitiated: true, transaction: tx)
         }
 
         let actionSheetTitleFormat = OWSLocalizedString(
@@ -421,8 +427,11 @@ public class BlockListUIUtils {
         from viewController: UIViewController,
         completion: ((ActionSheetAction) -> Void)?,
     ) {
-        SSKEnvironment.shared.databaseStorageRef.write { tx in
-            SSKEnvironment.shared.blockingManagerRef.removeBlockedGroup(groupId: groupId, wasLocallyInitiated: true, transaction: tx)
+        let blockingManager = SSKEnvironment.shared.blockingManagerRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+
+        databaseStorage.write { tx in
+            blockingManager.removeBlockedGroup(groupId: groupId, wasLocallyInitiated: true, transaction: tx)
         }
 
         let actionSheetTitleFormat = OWSLocalizedString(

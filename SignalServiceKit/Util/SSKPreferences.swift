@@ -85,18 +85,6 @@ public class SSKPreferences: NSObject {
         userDefaults.removeObject(forKey: didEverUseYdbKey)
     }
 
-    // MARK: - Badge Count
-
-    private static let includeMutedThreadsInBadgeCount = "includeMutedThreadsInBadgeCount"
-
-    public static func includeMutedThreadsInBadgeCount(transaction: DBReadTransaction) -> Bool {
-        return store.getBool(includeMutedThreadsInBadgeCount, defaultValue: false, transaction: transaction)
-    }
-
-    public static func setIncludeMutedThreadsInBadgeCount(_ value: Bool, transaction: DBWriteTransaction) {
-        store.setBool(value, key: includeMutedThreadsInBadgeCount, transaction: transaction)
-    }
-
     // MARK: - Profile avatar preference
 
     @objc

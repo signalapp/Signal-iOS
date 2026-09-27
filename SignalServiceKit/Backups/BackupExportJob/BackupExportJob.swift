@@ -153,14 +153,10 @@ class BackupExportJob {
                 throw NotRegisteredError()
             }
 
-            guard
-                let backupKey = try? MessageRootBackupKey(
-                    accountEntropyPool: aep,
-                    aci: localIdentifiers.aci,
-                )
-            else {
-                throw OWSAssertionError("Missing or invalid message root backup key.")
-            }
+            let backupKey = MessageRootBackupKey(
+                accountEntropyPool: aep,
+                aci: localIdentifiers.aci,
+            )
 
             return (
                 aep,

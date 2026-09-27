@@ -1181,7 +1181,7 @@ private extension ConversationViewController {
             self?.resetVerificationStateToDefault(noLongerVerifiedIdentityKeys: noLongerVerifiedIdentityKeys)
         })
 
-        dismissKeyBoard()
+        dismissKeyboard()
         presentActionSheet(actionSheet)
     }
 }

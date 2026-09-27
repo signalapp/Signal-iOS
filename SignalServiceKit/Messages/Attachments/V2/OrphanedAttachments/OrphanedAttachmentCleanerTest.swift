@@ -419,7 +419,7 @@ private class _OrphanedAttachmentCleanerImpl_TaskSchedulerMock: _OrphanedAttachm
     func waitForNextTaskToSchedule() async {
         try? await withCheckedThrowingContinuation { [weak self] continuation in
             self?.scheduleContinuation = continuation
-            Task {
+            _ = Task {
                 try await Task.sleep(nanoseconds: (10 * .second).clampedNanoseconds)
                 self?.scheduleContinuation.take()?.resume(throwing: CancellationError())
             }

@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 
 class StoryPlaybackProgressView: UIView {
-    var playedColor: UIColor = .ows_white {
+    var playedColor: UIColor = .white {
         didSet {
             playedShapeLayer.fillColor = playedColor.cgColor
         }

@@ -45,7 +45,7 @@ class BlockingManagerTests: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             _ = otherBlockingManager.blockedAddresses(transaction: tx)
             let oldChangeToken = blockingManager.fetchChangeToken(tx: tx)
-            blockingManager.addBlockedAci(aci, blockMode: .local, tx: tx)
+            blockingManager.addBlockedAci(aci, blockMode: .localUser, tx: tx)
             let newChangeToken = blockingManager.fetchChangeToken(tx: tx)
             // Since this was a local change, we expect to need a sync message
             XCTAssertGreaterThan(newChangeToken, oldChangeToken)
@@ -70,8 +70,8 @@ class BlockingManagerTests: SSKBaseTest {
         let blockedAci = Aci.randomForTesting()
         let unblockedAci = Aci.randomForTesting()
         SSKEnvironment.shared.databaseStorageRef.write { tx in
-            blockingManager.addBlockedAci(blockedAci, blockMode: .local, tx: tx)
-            blockingManager.addBlockedAci(unblockedAci, blockMode: .local, tx: tx)
+            blockingManager.addBlockedAci(blockedAci, blockMode: .localUser, tx: tx)
+            blockingManager.addBlockedAci(unblockedAci, blockMode: .localUser, tx: tx)
             _ = otherBlockingManager.blockedAddresses(transaction: tx)
         }
 
@@ -115,12 +115,12 @@ class BlockingManagerTests: SSKBaseTest {
         try SSKEnvironment.shared.databaseStorageRef.write { tx in
             blockingManager.addBlockedAddress(
                 SignalServiceAddress(noLongerBlockedAci),
-                blockMode: .local,
+                blockMode: .localUser,
                 transaction: tx,
             )
             blockingManager.addBlockedAddress(
                 SignalServiceAddress(noLongerBlockedPhoneNumber),
-                blockMode: .local,
+                blockMode: .localUser,
                 transaction: tx,
             )
             do {
@@ -130,23 +130,24 @@ class BlockingManagerTests: SSKBaseTest {
                     groupId: thread.groupId,
                     threadId: thread.sqliteRowId!,
                     masterKey: try noLongerBlockedGroupParams.getMasterKey(),
+                    refreshedAt: .distantPast,
                     tx: tx,
                 )
             }
             blockingManager.addBlockedGroupId(
                 try noLongerBlockedGroupParams.getPublicParams().getGroupIdentifier().serialize(),
-                blockMode: .local,
+                blockMode: .localUser,
                 transaction: tx,
             )
 
             blockingManager.addBlockedAddress(
                 SignalServiceAddress(stillBlockedAci),
-                blockMode: .local,
+                blockMode: .localUser,
                 transaction: tx,
             )
             blockingManager.addBlockedAddress(
                 SignalServiceAddress(stillBlockedPhoneNumber),
-                blockMode: .local,
+                blockMode: .localUser,
                 transaction: tx,
             )
             do {
@@ -156,12 +157,13 @@ class BlockingManagerTests: SSKBaseTest {
                     groupId: thread.groupId,
                     threadId: thread.sqliteRowId!,
                     masterKey: try stillBlockedGroupParams.getMasterKey(),
+                    refreshedAt: .distantPast,
                     tx: tx,
                 )
             }
             blockingManager.addBlockedGroupId(
                 try stillBlockedGroupParams.getPublicParams().getGroupIdentifier().serialize(),
-                blockMode: .local,
+                blockMode: .localUser,
                 transaction: tx,
             )
             _ = otherBlockingManager.blockedAddresses(transaction: tx)
@@ -240,7 +242,7 @@ class BlockingManagerTests: SSKBaseTest {
             fakeMessageSender.sendMessageWasCalledBlock = { _ in continuation.resume() }
             // Test
             SSKEnvironment.shared.databaseStorageRef.write { tx in
-                blockingManager.addBlockedAci(Aci.randomForTesting(), blockMode: .local, tx: tx)
+                blockingManager.addBlockedAci(Aci.randomForTesting(), blockMode: .localUser, tx: tx)
             }
         }
 

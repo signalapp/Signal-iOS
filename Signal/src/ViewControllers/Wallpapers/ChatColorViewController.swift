@@ -438,7 +438,7 @@ private class ChatColorPicker: UIView {
                         "CHAT_COLOR_SETTINGS_AUTO",
                         comment: "Label for the 'automatic chat color' option in the chat color settings view.",
                     )
-                    label.textColor = .ows_white
+                    label.textColor = .white
                     label.font = UIFont.systemFont(ofSize: 13)
                     label.adjustsFontSizeToFitWidth = true
                     view.addSubview(label)
@@ -587,14 +587,14 @@ private class ChatColorPicker: UIView {
 
     // MARK: - Tooltip
 
-    private static let keyValueStore = KeyValueStore(collection: "ChatColorPicker")
+    private static let keyValueStore = NewKeyValueStore(collection: "ChatColorPicker")
     private static let tooltipWasDismissedKey = "tooltipWasDismissed"
 
     private var chatColorTooltip: ChatColorTooltip?
 
     fileprivate func dismissTooltip() {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            Self.keyValueStore.setBool(true, key: Self.tooltipWasDismissedKey, transaction: transaction)
+            Self.keyValueStore.writeValue(true, forKey: Self.tooltipWasDismissedKey, tx: transaction)
         }
         hideTooltip()
     }
@@ -606,7 +606,7 @@ private class ChatColorPicker: UIView {
 
     private func ensureTooltip() {
         let shouldShowTooltip = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            !Self.keyValueStore.getBool(Self.tooltipWasDismissedKey, defaultValue: false, transaction: transaction)
+            !(Self.keyValueStore.fetchValue(Bool.self, forKey: Self.tooltipWasDismissedKey, tx: transaction) ?? false)
         }
         let isShowingTooltip = chatColorTooltip != nil
         if shouldShowTooltip == isShowingTooltip {
@@ -683,14 +683,14 @@ private class ChatColorTooltip: TooltipView {
             comment: "Tooltip highlighting the auto chat color option.",
         )
         label.font = .dynamicTypeSubheadline
-        label.textColor = .ows_white
+        label.textColor = .white
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         return horizontalStack(forSubviews: [label])
     }
 
     override var bubbleColor: UIColor {
-        .ows_accentBlue
+        .Signal.accent
     }
 
     override var tailDirection: TooltipView.TailDirection {

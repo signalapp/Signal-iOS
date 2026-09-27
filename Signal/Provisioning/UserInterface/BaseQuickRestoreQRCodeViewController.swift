@@ -67,7 +67,8 @@ class BaseQuickRestoreQRCodeViewController:
     }
 
     func waitForMessage() async throws -> RegistrationProvisioningMessage {
-        return try await provisioningSocketManager.waitForMessage()
+        let messageData = try await provisioningSocketManager.waitForMessageData(RegistrationProtos_RegistrationProvisionEnvelope.self)
+        return try RegistrationProvisioningMessage(RegistrationProtos_RegistrationProvisionMessage(serializedBytes: messageData))
     }
 
     // MARK: ProvisioningSocketManagerUIDelegate

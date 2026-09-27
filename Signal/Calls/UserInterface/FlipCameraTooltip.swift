@@ -13,20 +13,20 @@ class FlipCameraTooltipManager {
         self.db = db
     }
 
-    private static let keyValueStore = KeyValueStore(collection: "FlipCameraButton")
+    private static let keyValueStore = NewKeyValueStore(collection: "FlipCameraButton")
     private static let tooltipWasSeenKey = "tooltipWasSeen"
 
     private var flipCameraTooltip: FlipCameraTooltipView?
 
     private func markTooltipAsRead() {
         db.write { tx in
-            Self.keyValueStore.setBool(true, key: Self.tooltipWasSeenKey, transaction: tx)
+            Self.keyValueStore.writeValue(true, forKey: Self.tooltipWasSeenKey, tx: tx)
         }
     }
 
     private func isTooltipRead() -> Bool {
         return db.read { tx in
-            Self.keyValueStore.getBool(Self.tooltipWasSeenKey, defaultValue: false, transaction: tx)
+            Self.keyValueStore.fetchValue(Bool.self, forKey: Self.tooltipWasSeenKey, tx: tx) ?? false
         }
     }
 
@@ -65,7 +65,7 @@ class FlipCameraTooltipManager {
 #if USE_DEBUG_UI
     func markTooltipAsUnread() {
         db.write { tx in
-            Self.keyValueStore.setBool(false, key: Self.tooltipWasSeenKey, transaction: tx)
+            Self.keyValueStore.writeValue(false, forKey: Self.tooltipWasSeenKey, tx: tx)
         }
     }
 #endif
@@ -117,7 +117,7 @@ class FlipCameraTooltipView: TooltipView {
             comment: "Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call",
         )
         label.font = .dynamicTypeSubheadline
-        label.textColor = .ows_white
+        label.textColor = .white
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         return horizontalStack(forSubviews: [label])
@@ -128,7 +128,7 @@ class FlipCameraTooltipView: TooltipView {
     }
 
     override var bubbleColor: UIColor {
-        .ows_accentBlue
+        .Signal.accent
     }
 
     override var tailReferenceViewUsesAutolayout: Bool {

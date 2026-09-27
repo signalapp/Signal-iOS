@@ -106,7 +106,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 subviews = [lottieView]
             } else {
                 let unblurAvatarIconView = CVImageView()
-                unblurAvatarIconView.setTemplateImageName("tap-outline-24", tintColor: .ows_white)
+                unblurAvatarIconView.setTemplateImageName("tap-outline-24", tintColor: .white)
                 unblurAvatarSubviewInfos.append(CGSize.square(24).asManualSubviewInfo(hasFixedSize: true))
 
                 let unblurAvatarLabelConfig = CVLabelConfig.unstyledText(
@@ -115,7 +115,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                         comment: "Indicator that a blurred avatar can be revealed by tapping.",
                     ),
                     font: UIFont.dynamicTypeSubheadlineClamped,
-                    textColor: .ows_white,
+                    textColor: .white,
                 )
                 let maxWidth = CGFloat(avatarSizeClass.diameter) - 12
                 let unblurAvatarLabelSize = CVText.measureLabel(
@@ -498,7 +498,6 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
     static func buildComponentState(
         thread: TSThread,
-        threadAssociatedData: ThreadAssociatedData,
         transaction: DBReadTransaction,
         avatarBuilder: CVAvatarBuilder,
     ) -> CVComponentState.ThreadDetails {
@@ -511,7 +510,6 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         } else if let groupThread = thread as? TSGroupThread {
             return buildComponentState(
                 groupThread: groupThread,
-                threadAssociatedData: threadAssociatedData,
                 transaction: transaction,
                 avatarBuilder: avatarBuilder,
             )
@@ -592,7 +590,6 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
     private static func buildComponentState(
         groupThread: TSGroupThread,
-        threadAssociatedData: ThreadAssociatedData,
         transaction: DBReadTransaction,
         avatarBuilder: CVAvatarBuilder,
     ) -> CVComponentState.ThreadDetails {
@@ -615,7 +612,6 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         let safetySection = Self.buildGroupsSafetySection(
             from: groupThread,
-            threadAssociatedData: threadAssociatedData,
             tx: transaction,
         )
         let descriptionText: String? = {
@@ -939,7 +935,6 @@ extension CVComponentThreadDetails {
 
     private static func buildGroupsSafetySection(
         from groupThread: TSGroupThread,
-        threadAssociatedData: ThreadAssociatedData,
         tx: DBReadTransaction,
     ) -> CVComponentState.ThreadDetails.SafetySection {
         let accountManager = DependenciesBridge.shared.tsAccountManager
@@ -1057,7 +1052,16 @@ extension CVComponentThreadDetails {
             .color(Self.otherDetailsTextColor),
         )
 
-        let shouldShowUnknownThreadWarning = !threadAssociatedData.isGroupNameVerified(groupName: groupThread.groupNameOrDefault)
+        let isGroupNameVerified = { () -> Bool in
+            guard let groupId = try? groupThread.groupIdentifier else {
+                return false
+            }
+            guard let groupRecord = GroupStore().fetchGroup(forGroupId: groupId, tx: tx) else {
+                return false
+            }
+            return groupRecord.isGroupNameVerified(groupName: groupThread.groupNameOrDefault)
+        }()
+        let shouldShowUnknownThreadWarning = !isGroupNameVerified
 
         return .init(
             shouldShowProfileNamesEducation: shouldShowUnknownThreadWarning,
@@ -1103,8 +1107,9 @@ extension CVComponentThreadDetails {
             )
         }
 
-        let groupThreads = TSGroupThread.groupThreads(with: contactThread.contactAddress, transaction: tx)
-        let mutualGroupNames = groupThreads.filter { $0.groupModel.groupMembership.isLocalUserFullMember && $0.shouldThreadBeVisible && !$0.isTerminatedGroup }.map { $0.groupNameOrDefault }
+        let mutualGroupNames = TSGroupThread
+            .mutualVisibleGroupThreads(withFullMember: contactThread.contactAddress, tx: tx)
+            .map { $0.groupNameOrDefault }
 
         let isMessageRequest = contactThread.hasPendingMessageRequest(transaction: tx)
 

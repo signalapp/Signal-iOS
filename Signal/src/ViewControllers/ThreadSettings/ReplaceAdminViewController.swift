@@ -46,20 +46,13 @@ class ReplaceAdminViewController: OWSTableViewController2 {
         )
 
         if #available(iOS 26, *) {
-            navigationItem.leftBarButtonItem = .systemItem(
-                .close,
-                action: { [weak self] in
-                    self?.dismiss(animated: true)
-                },
-            )
+            navigationItem.leftBarButtonItem = .systemItem(.close) { [weak self] in
+                self?.dismiss(animated: true)
+            }
         } else {
-            navigationItem.leftBarButtonItem = .button(
-                title: CommonStrings.cancelButton,
-                style: .plain,
-                action: { [weak self] in
-                    self?.dismiss(animated: true)
-                },
-            )
+            navigationItem.leftBarButtonItem = .button(title: CommonStrings.cancelButton) { [weak self] in
+                self?.dismiss(animated: true)
+            }
         }
 
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)

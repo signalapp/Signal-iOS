@@ -669,7 +669,13 @@ class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDownloadQu
             Task { [weak self, dateProvider] in
                 let now = dateProvider()
                 if restartDate > now {
-                    try await Task.sleep(nanoseconds: NSEC_PER_SEC * UInt64(restartDate.timeIntervalSince(now)))
+                    do {
+                        try await Task.sleep(nanoseconds: NSEC_PER_SEC * UInt64(restartDate.timeIntervalSince(now)))
+                    } catch is CancellationError {
+                        return
+                    } catch {
+                        Logger.error("Unexpected error while sleeping: \(error)")
+                    }
                 }
                 self?.didReachNetworkErrorRetryTime(token: BackupAttachmentDownloadQueueStatusTokenImpl(lastNetworkOr5xxErrorTime: errorDate))
             }

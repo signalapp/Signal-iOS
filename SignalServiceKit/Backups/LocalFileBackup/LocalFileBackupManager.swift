@@ -11,6 +11,8 @@ public enum LocalFileBackupError: Error {
         case stale
         case missing
         case noAccess
+        case failedToResolveBookmark(Error)
+        case trashed
     }
 
     case unableToAccessLocalFile(AccessFailureReason)
@@ -25,11 +27,12 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
         case backupFile = "main"
         case metadataFile = "metadata"
 
-        public static let backupDirectoryPrefix = "signal-backups-"
+        public static let backupDirectoryPrefix = "signal-backup-"
 
         static let dateFormatter: DateFormatter = {
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+            formatter.timeZone = TimeZone(identifier: "UTC")
             return formatter
         }()
 
@@ -61,14 +64,21 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
     private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
     private nonisolated let localFileBackupStore: LocalFileBackupStore
     private nonisolated let securityScopedBookmarkAccess: SecurityScopedBookmarkAccess
+    private let restoreProgress: LocalFileBackupAttachmentRestoreProgress
 
     private static let maxAllowedNumberOfBackups: Int = 2
 
-    private var folderPickerCompletion: (() -> Void)?
+    private var folderPickerCompletion: ((FolderPickerResult) -> Void)?
 
     public static let attachmentBatchSize = 50
 
+    public enum ProgressLabel {
+        public static let writeQueuedAttachment = "writeQueuedAttachment"
+        public static let ensureAttachmentMetadataExists = "ensureAttachmentMetadataExists"
+    }
+
     init(
+        appReadiness: AppReadiness,
         db: DB,
         dateProvider: @escaping DateProvider,
         attachmentStore: AttachmentStore,
@@ -76,6 +86,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         localFileBackupStore: LocalFileBackupStore,
         securityScopedBookmarkAccess: SecurityScopedBookmarkAccess,
+        restoreProgress: LocalFileBackupAttachmentRestoreProgress,
     ) {
         self.db = db
         self.dateProvider = dateProvider
@@ -85,6 +96,20 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
         self.logger = PrefixedLogger(prefix: "[LocalFileBackups]")
         self.localFileBackupStore = localFileBackupStore
         self.securityScopedBookmarkAccess = securityScopedBookmarkAccess
+        self.restoreProgress = restoreProgress
+
+        super.init()
+
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
+            guard BuildFlags.LocalFileBackups.restore else { return }
+            Task { [weak self] in
+                do {
+                    try await self?.restoreLocalFileBackupAttachments()
+                } catch {
+                    Logger.error("Failed to resume local file backup restore: \(error)")
+                }
+            }
+        }
     }
 
     /*
@@ -109,6 +134,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
     // MARK: - Restoring
 
     func restoreLocalFileBackupAttachments() async throws {
+        Logger.info("")
         let resolvedURL: URL?
         do {
             resolvedURL = try getSavedSecurityScopedBookmark(type: .restore)
@@ -150,6 +176,13 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
     }
 
     func _restoreLocalFileBackupAttachments(resolvedURL: URL) async throws {
+        Logger.info("")
+        let totalByteCount = db.read { tx in
+            localFileBackupStore.totalUnencryptedByteCountOfQueuedImports(tx: tx)
+        }
+
+        restoreProgress.beginObserving(totalByteCount: totalByteCount)
+
         while true {
             let attachmentsWithMetadata: [(AttachmentWithMetadata, BackupLocalFileAttachmentImportRecord)] = fetchImportRecordsAndAssociatedAttachmentRecords()
             if attachmentsWithMetadata.isEmpty {
@@ -171,18 +204,32 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
 
                 let attachmentKey = try AttachmentKey(combinedKey: attachmentWithMetadata.metadata.localKey)
 
-                let pendingAttachment = try await attachmentValidator.validateDownloadedContents(
-                    ofEncryptedFileAt: destination,
-                    attachmentKey: attachmentKey,
-                    plaintextLength: attachmentWithMetadata.metadata.unencryptedByteCount,
-                    integrityCheck: .plaintextHash(plaintextHash),
-                    mimeType: attachmentWithMetadata.attachment.mimeType,
-                    renderingFlag: .default,
-                    sourceFilename: nil,
-                )
+                var pendingAttachment: PendingAttachment
+                do {
+                    pendingAttachment = try await attachmentValidator.validateDownloadedContents(
+                        ofEncryptedFileAt: destination,
+                        attachmentKey: attachmentKey,
+                        plaintextLength: attachmentWithMetadata.metadata.unencryptedByteCount,
+                        integrityCheck: .plaintextHash(plaintextHash),
+                        mimeType: attachmentWithMetadata.attachment.mimeType,
+                        renderingFlag: .default,
+                        sourceFilename: nil,
+                    )
+                } catch let error as CancellationError {
+                    throw error
+                } catch {
+                    Logger.error("Error validating attachment id \(attachmentWithMetadata.attachment.id), error: \(error)")
+                    restoreProgress.didProcessAttachment(
+                        unencryptedByteCount: attachmentWithMetadata.metadata.unencryptedByteCount,
+                    )
+                    _ = try db.write { tx in
+                        try localFileImport.delete(tx.database)
+                    }
+                    continue
+                }
 
-                try db.write { tx in
-                    try attachmentStore.updateLocalFileBackupAttachmentAsTransferred(
+                db.write { tx in
+                    attachmentStore.updateLocalFileBackupAttachmentAsTransferred(
                         attachment: attachmentWithMetadata.attachment,
                         streamInfo: Attachment.StreamInfo(pendingAttachment: pendingAttachment),
                         tx: tx,
@@ -192,23 +239,30 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
                         tx: tx,
                     )
 
-                    try localFileImport.delete(tx.database)
+                    failIfThrows {
+                        try localFileImport.delete(tx.database)
+                    }
                 }
+
+                restoreProgress.didProcessAttachment(
+                    unencryptedByteCount: attachmentWithMetadata.metadata.unencryptedByteCount,
+                )
             }
         }
+
+        restoreProgress.didFinish()
     }
 
     // MARK: - Archiving
 
     /// - Parameter backupsRootDirectory
     /// The SignalBackups directory.
-    private func existingFilesInBackupDirectory(backupsRootDirectory: URL) throws -> [String: Int] {
+    func existingFilesInBackupDirectory(backupsRootDirectory: URL) throws -> [String: Int] {
         let fileCoordinator = NSFileCoordinator()
 
         var existingFiles: [String: Int] = [:]
         try fileCoordinator.coordinateThrows(
             readingItemAt: backupsRootDirectory,
-            options: .withoutChanges,
             by: { temporaryFileUrl in
                 let filesDirectoryUrl = temporaryFileUrl.appendingPathComponent(FileStructure.attachmentDirectory.rawValue)
                 guard
@@ -241,10 +295,19 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
 
     /// - Parameter backupsRootDirectory
     /// The SignalBackups directory.
-    func writeQueuedAttachmentsToDisk(backupsRootDirectory: URL, currentBackupDirectoryName: String) throws {
+    func writeQueuedAttachmentsToDisk(
+        backupsRootDirectory: URL,
+        currentBackupDirectoryName: String,
+        progress progressSink: OWSProgressSink?,
+    ) async throws {
         let fileCoordinator = NSFileCoordinator()
 
         let existingFiles = try existingFilesInBackupDirectory(backupsRootDirectory: backupsRootDirectory)
+
+        let totalByteCount = db.read { tx in
+            localFileBackupStore.totalUnencryptedByteCountOfQueuedExports(tx: tx)
+        }
+        let source = progressSink?.addSource(withLabel: ProgressLabel.writeQueuedAttachment, unitCount: totalByteCount)
 
         while true {
             try Task.checkCancellation()
@@ -280,7 +343,9 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
             )
 
             for attachmentWithMetadata in attachmentsWithMetadata {
+                let attachmentByteCount = UInt64(safeCast: attachmentWithMetadata.metadata.unencryptedByteCount)
                 guard let attachmentStream = attachmentWithMetadata.attachment.asStream() else {
+                    source?.incrementCompletedUnitCount(by: attachmentByteCount)
                     continue
                 }
 
@@ -297,6 +362,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
                     var fileProto = LocalBackupProto_FilesFrame()
                     fileProto.item = .mediaName(localFileBackupMediaName)
                     try manifestStream.write(data: fileProto.serializedData())
+                    source?.incrementCompletedUnitCount(by: attachmentByteCount)
                     continue
                 }
 
@@ -332,19 +398,23 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
                     var fileProto = LocalBackupProto_FilesFrame()
                     fileProto.item = .mediaName(localFileBackupMediaName)
                     try manifestStream.write(data: fileProto.serializedData())
+
+                    source?.incrementCompletedUnitCount(by: attachmentByteCount)
                 }
+                await Task.yield()
             }
 
             try manifestStream.close()
 
-            failIfThrows {
-                try db.write { tx in
+            await db.awaitableWrite { tx in
+                failIfThrows {
                     for localFileExport in localFileExports {
                         try localFileExport.delete(tx.database)
                     }
                 }
             }
         }
+        source?.complete()
     }
 
     func mediaNameForAttachment(localKey: Data, plaintextHash: Data) -> String {
@@ -391,12 +461,17 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
         return metadataProto
     }
 
-    func ensureAttachmentMetadataExists() async {
+    func ensureAttachmentMetadataExists(progressSink: OWSProgressSink?) async {
         struct TxContextAttachmentMetadata {
             var cursor: FailIfThrowsRecordCursor<Attachment.Record>
             var lastEnumeratedAttachmentId: Attachment.IDType?
             var didFinish: Bool
         }
+        let totalRemainingAttachmentCount = db.read { tx in
+            localFileBackupStore.attachmentCountSinceLastFetched(tx: tx)
+        }
+        let source = progressSink?.addSource(withLabel: ProgressLabel.ensureAttachmentMetadataExists, unitCount: UInt64(totalRemainingAttachmentCount))
+
         await TimeGatedBatch.processAll(
             db: db,
             buildTxContext: { tx -> TxContextAttachmentMetadata in
@@ -419,6 +494,8 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
                     return .done(())
                 }
 
+                source?.incrementCompletedUnitCount(by: 1)
+
                 let attachmentRecordId = nextAttachmentRecord.sqliteId!
                 txContext.lastEnumeratedAttachmentId = attachmentRecordId
 
@@ -440,6 +517,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
             concludeTx: { tx, txContext in
                 if txContext.didFinish {
                     localFileBackupStore.clearLastEnumeratedAttachmentRowId(tx: tx)
+                    source?.complete()
                 } else if let lastEnumeratedAttachmentId = txContext.lastEnumeratedAttachmentId {
                     localFileBackupStore.updateLastEnumeratedAttachmentRowId(lastEnumeratedAttachmentId, tx: tx)
                 }
@@ -609,9 +687,15 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
 
     // MARK: - Choosing backup location
 
+    public enum FolderPickerResult {
+        case picked
+        case cancelled
+        case failed(Error)
+    }
+
     /// This should only be used when choosing a file location for archiving a local file backup.
     /// When the file is chosen, it will be stored with an archive-specific DB key.
-    public func promptUserToChooseFileLocationForArchiving(fromViewController: UIViewController, completion: (() -> Void)?) {
+    public func promptUserToChooseFileLocationForArchiving(fromViewController: UIViewController, completion: ((FolderPickerResult) -> Void)?) {
         let pickerController = UIDocumentPickerViewController(
             forOpeningContentTypes: [.folder],
             asCopy: false,
@@ -643,11 +727,16 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
         } catch NSFileProviderError.noSuchItem {
             throw LocalFileBackupError.unableToAccessLocalFile(.missing)
         } catch {
-            throw OWSAssertionError("Unable to resolve bookmark data: \(error)")
+            logger.error("failedToResolveBookmark: \(error)")
+            throw LocalFileBackupError.unableToAccessLocalFile(.failedToResolveBookmark(error))
         }
 
         if isStale {
             throw LocalFileBackupError.unableToAccessLocalFile(.stale)
+        }
+
+        if resolvedURL.pathComponents.contains(".Trash") {
+            throw LocalFileBackupError.unableToAccessLocalFile(.trashed)
         }
 
         return resolvedURL
@@ -676,16 +765,24 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
 
         defer { securityScopedBookmarkAccess.stopAccessToSecurityScopedBookmark(url: url) }
 
+        let result: FolderPickerResult
         do {
             try saveSecurityScopedBookmark(url: url, type: .archive)
+            result = .picked
         } catch {
-            // TODO: [KC] show error screen.
-            logger.error("Failed to save bookmark: \(error)")
+            logger.error("Failed to save bookmark: \(error.shortDescription)")
+            result = .failed(error)
         }
 
         let completion = folderPickerCompletion
         folderPickerCompletion = nil
-        completion?()
+        completion?(result)
+    }
+
+    public func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        let completion = folderPickerCompletion
+        folderPickerCompletion = nil
+        completion?(.cancelled)
     }
 
     // MARK: - Prompt user to enable local backups, e.g. after restoring

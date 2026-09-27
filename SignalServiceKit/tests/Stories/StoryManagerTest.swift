@@ -99,7 +99,7 @@ class StoryManagerTest: SSKBaseTest {
 
             SSKEnvironment.shared.blockingManagerRef.addBlockedAddress(
                 SignalServiceAddress(author),
-                blockMode: .local,
+                blockMode: .localUser,
                 transaction: $0,
             )
 
@@ -151,11 +151,12 @@ class StoryManagerTest: SSKBaseTest {
                 groupId: groupId,
                 threadId: thread.sqliteRowId!,
                 masterKey: groupMasterKey,
+                refreshedAt: .distantPast,
                 tx: $0,
             )
             SSKEnvironment.shared.blockingManagerRef.addBlockedGroupId(
                 groupId,
-                blockMode: .local,
+                blockMode: .localUser,
                 transaction: $0,
             )
 
@@ -453,6 +454,7 @@ class StoryManagerTest: SSKBaseTest {
             groupId: groupModel.groupId,
             threadId: thread.sqliteRowId!,
             masterKey: try secretParams.getMasterKey(),
+            refreshedAt: .distantPast,
             tx: transaction,
         )
     }

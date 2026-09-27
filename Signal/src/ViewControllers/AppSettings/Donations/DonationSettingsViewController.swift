@@ -521,10 +521,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             )
 
             actionSheet.addAction(ActionSheetAction(
-                title: OWSLocalizedString(
-                    "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE",
-                    comment: "Title for a button asking the user to try their donation again, because something went wrong.",
-                ),
+                title: CommonStrings.tryAgainButton,
                 handler: { [weak self] _ in
                     guard let self else { return }
                     self.presentAwaitingIDEALAuthorizationActionSheet(donateMode: donationMode)
@@ -648,7 +645,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         donateMode: DonateViewController.DonateMode,
         clearErrorBlock: @escaping (DBWriteTransaction) -> Void,
     ) -> ActionSheetAction {
-        return ActionSheetAction(title: title) { _ in
+        return ActionSheetAction(title: title) { [self] _ in
             SSKEnvironment.shared.databaseStorageRef.write { tx in
                 clearErrorBlock(tx)
             }
@@ -727,7 +724,7 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
                         visibleBadgeIds: .setTo(newVisibleBadgeIds),
                         unsavedRotatedProfileKey: nil,
                         userProfileWriter: .localUser,
-                        authedAccount: .implicit(),
+                        authedAccount: .implicit,
                         tx: tx,
                     )
                 }

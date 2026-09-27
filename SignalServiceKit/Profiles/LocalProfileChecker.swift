@@ -172,7 +172,7 @@ final class LocalProfileChecker {
             profileManager.reuploadLocalProfile(
                 unsavedRotatedProfileKey: nil,
                 mustReuploadAvatar: mustReuploadAvatar,
-                authedAccount: .implicit(),
+                authedAccount: .implicit,
                 tx: tx,
             )
         }.awaitable()

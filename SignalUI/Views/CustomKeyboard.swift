@@ -94,7 +94,7 @@ open class CustomKeyboard: UIInputView {
             self.horizontal = traitCollection.horizontalSizeClass
             self.vertical = traitCollection.verticalSizeClass
             self.userInterfaceIdiom = traitCollection.userInterfaceIdiom
-            self.screenSize = UIScreen.main.bounds.size
+            self.screenSize = CurrentAppContext().mainWindow?.bounds.size ?? .zero
         }
 
         func hash(into hasher: inout Hasher) {
@@ -145,7 +145,7 @@ open class CustomKeyboard: UIInputView {
                     return nil
                 }
             case .pad:
-                return screenSize.height > screenSize.width ? 337 : 422
+                return screenSize.isPortrait ? 337 : 422
             default:
                 owsFailDebug("Invalid userInterfaceIdiom: \(userInterfaceIdiom)")
                 return nil

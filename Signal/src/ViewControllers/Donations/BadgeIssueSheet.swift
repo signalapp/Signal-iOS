@@ -229,10 +229,7 @@ public class BadgeIssueSheetState {
         case .askToTryAgain:
             return ActionButton(
                 action: .openDonationView,
-                text: OWSLocalizedString(
-                    "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE",
-                    comment: "Title for a button asking the user to try their donation again, because something went wrong.",
-                ),
+                text: CommonStrings.tryAgainButton,
                 hasNotNow: true,
             )
         case .askToRenewSubscription:

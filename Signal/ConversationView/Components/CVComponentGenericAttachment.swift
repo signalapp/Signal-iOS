@@ -247,23 +247,24 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
     private func tryToBuildProgressView() -> UIView? {
 
+        let cvAttachment = genericAttachment.attachment
         let direction: CVAttachmentProgressView.Direction
         switch CVAttachmentProgressView.progressType(
-            cvAttachment: genericAttachment.attachment,
+            cvAttachment: cvAttachment,
         ) {
         case .none:
             return nil
         case .uploading:
             // We currently only show progress for downloads here.
             return nil
-        case .skipped(let attachmentPointer):
+        case .skipped:
             direction = .download(
-                attachmentPointer: attachmentPointer,
+                attachmentID: cvAttachment.attachmentID,
                 downloadState: .none,
             )
-        case .downloading(let attachmentPointer, let downloadState):
+        case .downloading(let downloadState):
             direction = .download(
-                attachmentPointer: attachmentPointer,
+                attachmentID: cvAttachment.attachmentID,
                 downloadState: downloadState,
             )
         }

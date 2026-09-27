@@ -43,7 +43,7 @@ extension ProfileFetcher {
     public func fetchProfile(
         for serviceId: ServiceId,
         context: ProfileFetchContext = ProfileFetchContext(),
-        authedAccount: AuthedAccount = .implicit(),
+        authedAccount: AuthedAccount = .implicit,
     ) async throws -> FetchedProfile {
         return try await fetchProfileImpl(for: serviceId, context: context, authedAccount: authedAccount)
     }
@@ -51,7 +51,7 @@ extension ProfileFetcher {
     func fetchProfileSync(
         for serviceId: ServiceId,
         context: ProfileFetchContext = ProfileFetchContext(),
-        authedAccount: AuthedAccount = .implicit(),
+        authedAccount: AuthedAccount = .implicit,
     ) -> Task<FetchedProfile, Error> {
         return fetchProfileSyncImpl(for: serviceId, context: context, authedAccount: authedAccount)
     }
@@ -242,9 +242,6 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         guard shouldOpportunisticallyFetch(serviceId: serviceId) else {
             throw ProfileFetcherError.skippingOpportunisticFetch
         }
-        guard isRegisteredOrExplicitlyAuthenticated(authedAccount: authedAccount) else {
-            throw ProfileFetcherError.skippingOpportunisticFetch
-        }
         // We don't need opportunistic fetches for ourself.
         let localIdentifiers = try tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: authedAccount)
         guard !localIdentifiers.contains(serviceId: serviceId) else {
@@ -256,15 +253,6 @@ public actor ProfileFetcherImpl: ProfileFetcher {
             throw ProfileFetcherError.skippingOpportunisticFetch
         }
         return try await fetchProfileUrgently(serviceId: serviceId, context: context, authedAccount: authedAccount)
-    }
-
-    private func isRegisteredOrExplicitlyAuthenticated(authedAccount: AuthedAccount) -> Bool {
-        switch authedAccount.info {
-        case .implicit:
-            return tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
-        case .explicit:
-            return true
-        }
     }
 
     private func fetchProfileUrgently(

@@ -12,6 +12,7 @@ final class AdHocCallStateObserver {
     private let callLinkStore: CallLinkRecordStore
     private let db: any DB
     private let messageSenderJobQueue: MessageSenderJobQueue
+    private let tsAccountManager: any TSAccountManager
 
     private let callLinkCall: CallLinkCall
 
@@ -33,14 +34,16 @@ final class AdHocCallStateObserver {
         callLinkCall: CallLinkCall,
         adHocCallRecordManager: any AdHocCallRecordManager,
         callLinkStore: CallLinkRecordStore,
-        messageSenderJobQueue: MessageSenderJobQueue,
         db: any DB,
+        messageSenderJobQueue: MessageSenderJobQueue,
+        tsAccountManager: any TSAccountManager,
     ) {
         self.callLinkCall = callLinkCall
         self.adHocCallRecordManager = adHocCallRecordManager
         self.callLinkStore = callLinkStore
-        self.messageSenderJobQueue = messageSenderJobQueue
         self.db = db
+        self.messageSenderJobQueue = messageSenderJobQueue
+        self.tsAccountManager = tsAccountManager
     }
 
     func checkIfJoined() {
@@ -70,7 +73,12 @@ final class AdHocCallStateObserver {
             }
             if callLink.adminPasskey == nil, !callLink.isDeleted {
                 let updateSender = CallLinkUpdateMessageSender(messageSenderJobQueue: messageSenderJobQueue)
-                updateSender.sendCallLinkUpdateMessage(rootKey: rootKey, adminPasskey: nil, tx: tx)
+                updateSender.sendCallLinkUpdateMessage(
+                    rootKey: rootKey,
+                    adminPasskey: nil,
+                    localIdentifiers: tsAccountManager.mustBeRegisteredState(tx: tx).localIdentifiers,
+                    tx: tx,
+                )
             }
             adHocCallRecordManager.createOrUpdateRecord(
                 callId: callIdFromEra(eraId),

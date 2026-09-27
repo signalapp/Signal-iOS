@@ -65,7 +65,7 @@ public struct CallLink: Equatable {
         components.host = Constants.host
         components.path = Constants.path
         components.queryItems = [
-            URLQueryItem(name: Constants.key, value: rootKey.description),
+            URLQueryItem(name: Constants.key, value: rootKey.unredactedString),
         ]
         components.percentEncodedFragment = components.percentEncodedQuery
         components.query = nil

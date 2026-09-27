@@ -136,7 +136,6 @@ class AudioCell: MediaTileListModeCell {
             return
         }
 
-        let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: audioItem.thread, transaction: transaction)
         // Make an itemModel which is needed to play the audio file.
         // This is only used to save the playback rate, which is kind of nuts.
         let threadViewModel = ThreadViewModel(
@@ -174,11 +173,10 @@ class AudioCell: MediaTileListModeCell {
             return
         }
         let itemViewState = CVItemViewState.Builder()
-        itemViewState.audioPlaybackRate = threadAssociatedData.audioPlaybackRate
+        itemViewState.audioPlaybackRate = audioItem.thread.audioPlaybackRate
         let itemModel = CVItemModel(
             interaction: audioItem.interaction,
             thread: audioItem.thread,
-            threadAssociatedData: threadAssociatedData,
             componentState: componentState,
             itemViewState: itemViewState.build(),
             coreState: coreState,
@@ -254,7 +252,10 @@ class AudioCell: MediaTileListModeCell {
 
     @objc
     private func handlePanGesture(_ sender: UIPanGestureRecognizer) {
-        guard let audioMessageView, let audioItem else { return }
+        guard
+            let audioMessageView,
+            let audioAttachment
+        else { return }
 
         let location = panGestureRecognizer.location(in: audioMessageView)
         switch panGestureRecognizer.state {
@@ -271,8 +272,8 @@ class AudioCell: MediaTileListModeCell {
             let scrubbedTime = audioMessageView.scrubToLocation(location)
             let cvAudioPlayer = AppEnvironment.shared.cvAudioPlayerRef
             cvAudioPlayer.setPlaybackProgress(
-                progress: scrubbedTime,
-                forAttachment: audioItem.referencedAttachment.attachment,
+                scrubbedTime,
+                playbackID: CVAudioPlaybackID(audioAttachment: audioAttachment),
             )
         case .possible, .failed, .cancelled:
             audioMessageView.clearOverrideProgress(animated: false)

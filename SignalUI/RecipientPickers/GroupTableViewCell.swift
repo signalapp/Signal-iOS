@@ -83,7 +83,7 @@ public class GroupTableViewCell: UITableViewCell {
             customAccessoryContainer.isHiddenInStackView = true
         }
 
-        nameLabel.textColor = customTextColor ?? Theme.primaryTextColor
-        subtitleLabel.textColor = customTextColor ?? Theme.secondaryTextAndIconColor
+        nameLabel.textColor = customTextColor ?? UIColor.Signal.label
+        subtitleLabel.textColor = customTextColor ?? UIColor.Signal.secondaryLabel
     }
 }

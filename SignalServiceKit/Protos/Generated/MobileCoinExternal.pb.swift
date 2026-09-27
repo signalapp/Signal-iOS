@@ -26,13 +26,13 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
 
 //// A 32-byte compressed Ristretto curve point (public key)
-struct External_CompressedRistretto: Sendable {
+nonisolated struct External_CompressedRistretto: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -45,7 +45,7 @@ struct External_CompressedRistretto: Sendable {
 }
 
 //// A public address, used to identify recipients.
-struct External_PublicAddress: Sendable {
+nonisolated struct External_PublicAddress: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -98,7 +98,7 @@ struct External_PublicAddress: Sendable {
 /// Can be used by the recipient of a transaction output to verify that the
 /// bearer of this number knew the shared secret of the transaction output,
 /// thereby providing evidence that they are the sender.
-struct External_TxOutConfirmationNumber: Sendable {
+nonisolated struct External_TxOutConfirmationNumber: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -111,7 +111,7 @@ struct External_TxOutConfirmationNumber: Sendable {
 }
 
 /// MaskedAmount.
-struct External_MaskedAmount: Sendable {
+nonisolated struct External_MaskedAmount: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -146,7 +146,7 @@ struct External_MaskedAmount: Sendable {
 /// the recipient may know to anticipate the arrival of a transaction output,
 /// as well as know who it's from, when to consider it as having surpassed
 /// the tombstone block, and the expected amount of the output.
-struct External_Receipt: Sendable {
+nonisolated struct External_Receipt: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -199,7 +199,7 @@ struct External_Receipt: Sendable {
 
   /// Amount of the TxOut.
   /// Note: This value is self-reported by the sender and is unverifiable.
-  enum OneOf_MaskedAmount: Equatable, Sendable {
+  nonisolated enum OneOf_MaskedAmount: Equatable, Sendable {
     case maskedAmountV1(External_MaskedAmount)
     case maskedAmountV2(External_MaskedAmount)
 
@@ -213,9 +213,9 @@ struct External_Receipt: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "external"
+fileprivate nonisolated let _protobuf_package = "external"
 
-extension External_CompressedRistretto: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension External_CompressedRistretto: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".CompressedRistretto"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}data\0")
 
@@ -245,7 +245,7 @@ extension External_CompressedRistretto: SwiftProtobuf.Message, SwiftProtobuf._Me
   }
 }
 
-extension External_PublicAddress: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension External_PublicAddress: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PublicAddress"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}view_public_key\0\u{3}spend_public_key\0\u{3}fog_report_url\0\u{3}fog_report_id\0\u{3}fog_authority_sig\0")
 
@@ -299,7 +299,7 @@ extension External_PublicAddress: SwiftProtobuf.Message, SwiftProtobuf._MessageI
   }
 }
 
-extension External_TxOutConfirmationNumber: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension External_TxOutConfirmationNumber: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".TxOutConfirmationNumber"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}hash\0")
 
@@ -329,7 +329,7 @@ extension External_TxOutConfirmationNumber: SwiftProtobuf.Message, SwiftProtobuf
   }
 }
 
-extension External_MaskedAmount: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension External_MaskedAmount: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".MaskedAmount"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}commitment\0\u{3}masked_value\0\u{3}masked_token_id\0")
 
@@ -373,7 +373,7 @@ extension External_MaskedAmount: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   }
 }
 
-extension External_Receipt: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension External_Receipt: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Receipt"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}public_key\0\u{1}confirmation\0\u{3}tombstone_block\0\u{3}masked_amount_v1\0\u{3}masked_amount_v2\0")
 

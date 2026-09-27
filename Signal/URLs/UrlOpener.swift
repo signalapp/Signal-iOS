@@ -20,7 +20,6 @@ private enum OpenableUrl {
 }
 
 class UrlOpener {
-    private let appReadiness: AppReadinessSetter
     private let databaseStorage: SDSDatabaseStorage
     private let donationSubscriptionManager: DonationSubscriptionManager
     private let idealStore: PendingIDEALDonationStore
@@ -28,14 +27,12 @@ class UrlOpener {
     private let tsAccountManager: TSAccountManager
 
     init(
-        appReadiness: AppReadinessSetter,
         databaseStorage: SDSDatabaseStorage,
         donationSubscriptionManager: DonationSubscriptionManager,
         idealStore: PendingIDEALDonationStore,
         profileBadgeManager: ProfileBadgeManager,
         tsAccountManager: TSAccountManager,
     ) {
-        self.appReadiness = appReadiness
         self.databaseStorage = databaseStorage
         self.donationSubscriptionManager = donationSubscriptionManager
         self.idealStore = idealStore
@@ -265,7 +262,7 @@ class UrlOpener {
 
         case .completeIDEALDonation(let donationType):
             _ = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
-            Task { [appReadiness, databaseStorage] in
+            Task { [databaseStorage] in
                 let handled = await DonationViewsUtil.attemptToContinueActiveIDEALDonation(
                     type: donationType,
                     databaseStorage: databaseStorage,
@@ -282,7 +279,6 @@ class UrlOpener {
                         donationSubscriptionManager: donationSubscriptionManager,
                         idealStore: idealStore,
                         profileBadgeManager: profileBadgeManager,
-                        appReadiness: appReadiness,
                     )
                     Logger.info("[Donations] Completed iDEAL donation")
                 } catch Signal.DonationJobError.timeout {

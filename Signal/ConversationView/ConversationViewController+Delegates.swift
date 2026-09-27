@@ -290,7 +290,7 @@ extension ConversationViewController: ConversationInputTextViewDelegate {
                 )
             }
         } else {
-            dismissKeyBoard()
+            dismissKeyboard()
             showApprovalDialog(forAttachments: attachments, attachmentLimits: attachmentLimits)
         }
     }

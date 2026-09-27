@@ -219,7 +219,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             switch backupSettingsStore.backupPlan(tx: tx) {
             case .paid, .paidExpiringSoon, .paidAsTester:
                 backupFileSizeBytes = UInt64(safeCast: metadata.encryptedDataLength)
-                backupMediaSizeBytes = metadata.attachmentByteSize
+                backupMediaSizeBytes = metadata.remoteAttachmentByteSize
             case .free:
                 backupFileSizeBytes = UInt64(safeCast: metadata.encryptedDataLength)
                 backupMediaSizeBytes = 0
@@ -1339,26 +1339,27 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             backupSettingsStore.setLastBackupDetails(
                 date: Date(millisecondsSince1970: backupInfo.backupTimeMs),
                 backupFileSizeBytes: inputFileSize,
-                backupMediaSizeBytes: attachmentByteCounter.attachmentByteSize(),
+                backupMediaSizeBytes: attachmentByteCounter.remoteAttachmentByteSize(),
                 tx: tx,
             )
 
             tx.addSyncCompletion { [self] in
                 Task {
-                    // Kick off avatar fetches enqueued during restore.
-                    try await avatarFetcher.runIfNeeded()
+                    do {
+                        // Kick off avatar fetches enqueued during restore.
+                        try await avatarFetcher.runIfNeeded()
+                    } catch {
+                        logger.error("Failed to fetch avatars: \(error)")
+                    }
                 }
 
                 Task {
-                    // Kick off attachment downloads enqueued during restore.
-                    try await backupAttachmentCoordinator.restoreAttachmentsIfNeeded()
-
                     if BuildFlags.LocalFileBackups.restore {
                         do {
                             try await localFileBackupManager.restoreLocalFileBackupAttachments()
                         } catch LocalFileBackupError.unableToAccessLocalFile(let reason) {
                             switch reason {
-                            case .stale, .missing:
+                            case .stale, .missing, .failedToResolveBookmark, .trashed:
                                 logger.error("Unable to restore local file backup attachments (\(reason))")
                                 await db.awaitableWrite { tx in
                                     // Prompt the user to pick a new backup location.
@@ -1370,6 +1371,13 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                         } catch {
                             Logger.error("Error restoring attachments from local file backup: \(error)")
                         }
+                    }
+
+                    do {
+                        // Kick off attachment downloads enqueued during restore.
+                        try await backupAttachmentCoordinator.restoreAttachmentsIfNeeded()
+                    } catch {
+                        logger.error("Unable to restore remote backup attachments: \(error)")
                     }
                 }
 

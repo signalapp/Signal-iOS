@@ -191,6 +191,12 @@ public extension Cryptography {
         return PaddingBucket.forUnpaddedPlaintextSize(unencryptedSize)?.encryptedSize
     }
 
+    /// Given an unencrypted, unpadded byte count, returns the byte count of the final padded, encrypted blob
+    /// as it would be copied to the local backup file.
+    static func localBackupEncryptedSize(unencryptedSize: UInt64) -> UInt64? {
+        return PaddingBucket.forUnpaddedPlaintextSize(unencryptedSize)?.encryptedSize
+    }
+
     /// Encrypt an input file to a provided output file location.
     /// The encrypted output is prefixed with the random iv and postfixed with the hmac. The ciphertext is padded
     /// using standard pkcs7 padding but NOT with any custom padding applied to the plaintext prior to encryption.

@@ -92,3 +92,9 @@ public class VoiceMessageInterruptedDraftStore {
         return directoryUrl
     }
 }
+
+class VoiceMessageInterruptedDraftStoreWrapper: ThreadRemoverObserver {
+    func didRemoveThread(_ thread: TSThread, tx: DBWriteTransaction) {
+        VoiceMessageInterruptedDraftStore.clearDraft(for: thread.uniqueId, transaction: tx)
+    }
+}

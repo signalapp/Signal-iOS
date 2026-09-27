@@ -424,7 +424,7 @@ public class DonationSubscriptionManager {
         if statusCode != 200 {
             throw OWSAssertionError("[Donations] Receipt credential presentation request failed with status code \(statusCode)")
         }
-        _ = try await profileManager.fetchLocalUsersProfile(authedAccount: .implicit())
+        _ = try await profileManager.fetchLocalUsersProfile(authedAccount: .implicit)
     }
 
     // MARK: Heartbeat

@@ -5,35 +5,14 @@
 
 public import UIKit
 
-public enum NotificationType: UInt {
-    case noNameNoPreview = 0
-    case nameNoPreview = 1
-    case namePreview = 2
-
-    public var displayName: String {
-        switch self {
-        case .namePreview:
-            return OWSLocalizedString("NOTIFICATIONS_SENDER_AND_MESSAGE", comment: "")
-        case .nameNoPreview:
-            return OWSLocalizedString("NOTIFICATIONS_SENDER_ONLY", comment: "")
-        case .noNameNoPreview:
-            return OWSLocalizedString("NOTIFICATIONS_NONE", comment: "")
-        }
-    }
-}
-
 public class Preferences {
 
     private enum Key: String {
         case screenSecurity = "Screen Security Key"
-        case notificationPreviewType = "Notification Preview Type Key"
-        case playSoundInForeground = "NotificationSoundInForeground"
-        case messageSentSound = "MessageSentSound"
         case lastRecordedPushToken = "LastRecordedPushToken"
         case callsHideIPAddress = "CallsHideIPAddress"
         case hasDeclinedNoContactsView = "hasDeclinedNoContactsView"
         case shouldShowUnidentifiedDeliveryIndicators = "OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators"
-        case shouldNotifyOfNewAccountKey = "OWSPreferencesKeyShouldNotifyOfNewAccountKey"
         case iOSUpgradeNagDate = "iOSUpgradeNagDate"
         case systemCallLogEnabled = "OWSPreferencesKeySystemCallLogEnabled"
         case wasViewOnceTooltipShown = "OWSPreferencesKeyWasViewOnceTooltipShown"
@@ -57,7 +36,10 @@ public class Preferences {
 
     public init() {
         if CurrentAppContext().hasUI {
-            CurrentAppContext().appUserDefaults().set(UIScreen.main.scale, forKey: UserDefaultsKeys.deviceScale)
+            CurrentAppContext().appUserDefaults().set(
+                UITraitCollection.current.displayScale,
+                forKey: UserDefaultsKeys.deviceScale,
+            )
         }
     }
 
@@ -91,19 +73,6 @@ public class Preferences {
 
     private func setBool(_ value: Bool, forKey key: Key, tx: DBWriteTransaction) {
         keyValueStore.setBool(value, key: key.rawValue, transaction: tx)
-    }
-
-    private func uint(forKey key: Key, defaultValue: UInt) -> UInt {
-        let result = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            keyValueStore.getUInt(key.rawValue, defaultValue: defaultValue, transaction: transaction)
-        }
-        return result
-    }
-
-    private func setUInt(_ value: UInt, forKey key: Key) {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            keyValueStore.setUInt(value, key: key.rawValue, transaction: transaction)
-        }
     }
 
     private func date(forKey key: Key) -> Date? {
@@ -196,19 +165,11 @@ public class Preferences {
         keyValueStore.setBool(value, key: Key.shouldShowUnidentifiedDeliveryIndicators.rawValue, transaction: transaction)
     }
 
-    public func shouldNotifyOfNewAccounts(transaction: DBReadTransaction) -> Bool {
-        keyValueStore.getBool(Key.shouldNotifyOfNewAccountKey.rawValue, defaultValue: false, transaction: transaction)
-    }
-
-    public func setShouldNotifyOfNewAccounts(_ value: Bool, transaction: DBWriteTransaction) {
-        keyValueStore.setBool(value, key: Key.shouldNotifyOfNewAccountKey.rawValue, transaction: transaction)
-    }
-
     public var cachedDeviceScale: CGFloat {
-        guard !CurrentAppContext().hasUI else { return UIScreen.main.scale }
+        guard !CurrentAppContext().hasUI else { return UITraitCollection.current.displayScale }
 
         guard let cachedValue = CurrentAppContext().appUserDefaults().object(forKey: UserDefaultsKeys.deviceScale) as? CGFloat else {
-            return UIScreen.main.scale
+            return UITraitCollection.current.displayScale
         }
 
         return cachedValue
@@ -261,36 +222,6 @@ public class Preferences {
 
     public func setWasDeleteForEveryoneConfirmationShown() {
         setBool(true, forKey: .wasDeleteForEveryoneConfirmationShown)
-    }
-
-    // MARK: Notification Preferences
-
-    public var soundInForeground: Bool {
-        bool(forKey: .playSoundInForeground, defaultValue: true)
-    }
-
-    public func setSoundInForeground(_ value: Bool) {
-        setBool(value, forKey: .playSoundInForeground)
-    }
-
-    public var isMessageSentSoundEnabled: Bool {
-        bool(forKey: .messageSentSound, defaultValue: true)
-    }
-
-    public func setIsMessageSentSoundEnabled(_ value: Bool) {
-        setBool(value, forKey: .messageSentSound)
-    }
-
-    public func notificationPreviewType(tx: DBReadTransaction) -> NotificationType {
-        let rawValue = keyValueStore.getUInt(
-            Key.notificationPreviewType.rawValue,
-            transaction: tx,
-        )
-        return rawValue.flatMap(NotificationType.init(rawValue:)) ?? .namePreview
-    }
-
-    public func setNotificationPreviewType(_ value: NotificationType) {
-        setUInt(value.rawValue, forKey: .notificationPreviewType)
     }
 
     // MARK: Push Tokens

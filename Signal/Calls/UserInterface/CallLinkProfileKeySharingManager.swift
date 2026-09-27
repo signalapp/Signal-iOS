@@ -83,6 +83,8 @@ public class CallLinkProfileKeySharingManager {
             } catch is SpamChallengeRequiredError {
                 Logger.warn("Marking \(aci) as eligible for another attempt because of a captcha.")
                 self.consideredAcis.remove(aci)
+            } catch {
+                Logger.warn("Encountered unexpected error: \(error)")
             }
         }
     }

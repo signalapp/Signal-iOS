@@ -173,6 +173,7 @@ class ExperienceUpgradeManager {
                     if
                         checkPreconditionsForRemoteMegaphone(
                             remoteMegaphoneModel: remoteMegaphoneModel,
+                            registeredState: registeredState,
                             now: now,
                             tx: tx,
                         )
@@ -570,7 +571,6 @@ class ExperienceUpgradeManager {
         tx: DBReadTransaction,
     ) -> BackupsUpsellResult? {
         guard
-            remoteConfigManager.currentConfig().backupsMegaphone,
             tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice
         else {
             return nil
@@ -618,6 +618,7 @@ class ExperienceUpgradeManager {
 
     private func checkPreconditionsForRemoteMegaphone(
         remoteMegaphoneModel: RemoteMegaphoneModel,
+        registeredState: RegisteredState,
         now: Date,
         tx: DBReadTransaction,
     ) -> Bool {
@@ -634,15 +635,11 @@ class ExperienceUpgradeManager {
             return false
         }
 
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
-            return false
-        }
-
         guard
             RemoteConfig.isCountryCodeBucketEnabled(
                 csvString: manifest.countries,
                 key: manifest.id,
-                localIdentifiers: localIdentifiers,
+                localIdentifiers: registeredState.localIdentifiers,
             )
         else {
             return false

@@ -171,7 +171,7 @@ class SenderKeyReceivingManager: LibSignalClient.SenderKeyStore {
 // MARK: -
 
 /// Provides send-specific code; interfaces between LibSignal and SenderKeyManager.
-class SenderKeySendingManager: LibSignalClient.SenderKeyStore {
+class SenderKeySendingManager: LibSignalClient.SenderKeyStore, ThreadRemoverObserver {
     private let senderKeyManager: SenderKeyManager
     private let dateProvider: DateProvider
 
@@ -207,6 +207,10 @@ class SenderKeySendingManager: LibSignalClient.SenderKeyStore {
         let distributionId = UUID()
         senderKeyManager.sendingDistributionIdStore.setString(distributionId.uuidString, key: threadUniqueId, transaction: tx)
         return distributionId
+    }
+
+    private func removeDistributionId(forThreadUniqueId threadUniqueId: String, tx: DBWriteTransaction) {
+        senderKeyManager.sendingDistributionIdStore.removeValue(forKey: threadUniqueId, transaction: tx)
     }
 
     func deleteSenderKey(
@@ -576,5 +580,11 @@ class SenderKeySendingManager: LibSignalClient.SenderKeyStore {
                 }
             }
         }
+    }
+
+    // MARK: - ThreadRemoverObserver
+
+    func didRemoveThread(_ thread: TSThread, tx: DBWriteTransaction) {
+        removeDistributionId(forThreadUniqueId: thread.uniqueId, tx: tx)
     }
 }

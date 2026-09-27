@@ -53,7 +53,8 @@ class RemoteMuteToast: UIView {
             ).resolvedValue(useShortNameIfAvailable: true)
         }
         let toastText: String
-        let localAci = self.deps.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aci
+        let registeredState = self.deps.tsAccountManager.mustBeRegisteredStateWithMaybeSneakyTransaction()
+        let localAci = registeredState.localIdentifiers.aci
         if muteSource == localAci {
             toastText = String.nonPluralLocalizedStringWithFormat(
                 OWSLocalizedString(
@@ -78,7 +79,8 @@ class RemoteMuteToast: UIView {
 
     func displayOtherMuted(source: Aci, target: Aci) {
         let toastText: String
-        let localAci = self.deps.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aci
+        let registeredState = self.deps.tsAccountManager.mustBeRegisteredStateWithMaybeSneakyTransaction()
+        let localAci = registeredState.localIdentifiers.aci
         if source == localAci {
             if target == localAci {
                 // Don't display a toast if you muted your other device.
@@ -211,14 +213,14 @@ private class RemoteMuteBannerView: UIView {
         mutedIcon.attributedText = .with(
             image: UIImage(named: "mic-slash")!,
             font: .dynamicTypeTitle3,
-            attributes: [.foregroundColor: UIColor.ows_white],
+            attributes: [.foregroundColor: UIColor.white],
         )
         mutedIcon.setContentCompressionResistancePriority(
             .required,
             for: .horizontal,
         )
         mutedIcon.contentMode = .scaleAspectFit
-        mutedIcon.tintColor = .ows_white
+        mutedIcon.tintColor = .white
         mutedIcon.setContentHuggingHorizontalHigh()
         mutedIcon.setCompressionResistanceVerticalHigh()
 
@@ -229,7 +231,7 @@ private class RemoteMuteBannerView: UIView {
         label.setCompressionResistanceHorizontalHigh()
         label.numberOfLines = 0
         label.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
-        label.textColor = .ows_white
+        label.textColor = .white
         label.text = text
 
         hStack.addArrangedSubview(.hStretchingSpacer())

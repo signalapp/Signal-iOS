@@ -94,4 +94,18 @@ struct ArrayTest {
         let insertionIndex = elementSlice.insertionIndex(for: testCase.target, inCollectionAlreadySortedBy: <)
         #expect(insertionIndex == elementSlice.startIndex + testCase.expectedOffset)
     }
+
+    @Test
+    func testRemovingDuplicatesUniquingElementsBy() {
+        let inputValues = ["apple", "banana", "artichoke", "", ""]
+        let outputValues = inputValues.removingDuplicates(uniquingElementsBy: { $0.first })
+        #expect(outputValues == ["apple", "banana", ""])
+    }
+
+    @Test
+    func testRemovingDuplicates() {
+        let inputValues = ["banana", "apple", "banana", "orange", "orange", "apple"]
+        let outputValues = inputValues.removingDuplicates()
+        #expect(outputValues == ["banana", "apple", "orange"])
+    }
 }

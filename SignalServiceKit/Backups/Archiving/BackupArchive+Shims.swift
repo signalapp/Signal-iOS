@@ -75,11 +75,11 @@ public class _MessageBackup_BlockingManagerWrapper: _MessageBackup_BlockingManag
     }
 
     public func addBlockedAddress(_ address: SignalServiceAddress, tx: DBWriteTransaction) {
-        blockingManager.addBlockedAddress(address, blockMode: .restoreFromBackup, transaction: tx)
+        blockingManager.addBlockedAddress(address, blockMode: .backupRestore, transaction: tx)
     }
 
     public func addBlockedGroupId(_ groupId: Data, tx: DBWriteTransaction) {
-        blockingManager.addBlockedGroupId(groupId, blockMode: .restoreFromBackup, transaction: tx)
+        blockingManager.addBlockedGroupId(groupId, blockMode: .backupRestore, transaction: tx)
     }
 }
 
@@ -273,8 +273,6 @@ public protocol _MessageBackup_ProfileManagerShim {
 
     func getUserProfileForLocalUser(tx: DBReadTransaction) -> OWSUserProfile?
 
-    func allWhitelistedAddresses(tx: DBReadTransaction) -> [SignalServiceAddress]
-
     func isGroupId(inProfileWhitelist groupId: Data, tx: DBReadTransaction) -> Bool
 
     func addRecipientToProfileWhitelist(_ recipient: inout SignalRecipient, tx: DBWriteTransaction)
@@ -324,10 +322,6 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
 
     public func getUserProfileForLocalUser(tx: DBReadTransaction) -> OWSUserProfile? {
         return OWSUserProfile.getUserProfileForLocalUser(tx: tx)
-    }
-
-    public func allWhitelistedAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
-        profileManager.allWhitelistedAddresses(tx: tx)
     }
 
     public func isGroupId(inProfileWhitelist groupId: Data, tx: DBReadTransaction) -> Bool {

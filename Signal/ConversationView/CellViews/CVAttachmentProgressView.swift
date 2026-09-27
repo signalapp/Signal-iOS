@@ -10,15 +10,13 @@ import SignalUI
 class CVAttachmentProgressView: ManualLayoutView {
 
     enum Direction {
-        case upload(attachmentStream: AttachmentStream)
-        case download(attachmentPointer: AttachmentPointer, downloadState: AttachmentDownloadState)
+        case upload(attachmentID: Attachment.IDType)
+        case download(attachmentID: Attachment.IDType, downloadState: AttachmentDownloadState)
 
         var attachmentId: Attachment.IDType {
             switch self {
-            case .upload(let attachmentStream):
-                return attachmentStream.id
-            case .download(let attachmentPointer, _):
-                return attachmentPointer.id
+            case .upload(let attachmentID): attachmentID
+            case .download(let attachmentID, _): attachmentID
             }
         }
     }
@@ -243,18 +241,20 @@ class CVAttachmentProgressView: ManualLayoutView {
                 updateProgressView(progress: progress, animated: animated)
             default:
                 presentProgressView(progress: progress, animated: animated)
-                if case .download = direction {
+                switch direction {
+                case .download:
                     presentIcon(UIImage(named: "stop-20")!)
-                } else {
+                case .upload:
                     hideIcon()
                 }
             }
 
         case .unknownProgress:
             presentIndeterminateProgressView(animated: animated)
-            if case .download = direction {
+            switch direction {
+            case .download:
                 presentIcon(UIImage(named: "stop-20")!)
-            } else {
+            case .upload:
                 hideIcon()
             }
         }
@@ -418,11 +418,13 @@ class CVAttachmentProgressView: ManualLayoutView {
         applyState(.progress(progress: progress), animated: window != nil)
     }
 
+    // MARK: -
+
     enum ProgressType {
         case none
-        case uploading(attachmentStream: AttachmentStream)
-        case skipped(attachmentPointer: AttachmentPointer)
-        case downloading(attachmentPointer: AttachmentPointer, downloadState: AttachmentDownloadState)
+        case uploading
+        case skipped
+        case downloading(downloadState: AttachmentDownloadState)
     }
 
     static func progressType(cvAttachment: CVAttachment) -> ProgressType {
@@ -430,21 +432,18 @@ class CVAttachmentProgressView: ManualLayoutView {
         case .backupThumbnail:
             // TODO: [Backups]: Update download state based on the media tier attachment state
             return .none
-        case .stream(let referencedAttachmentStream, let isUploading, imageMetadata: _):
+        case .stream(_, let isUploading, _):
             if isUploading {
-                return .uploading(attachmentStream: referencedAttachmentStream.attachmentStream)
+                return .uploading
             } else {
                 return .none
             }
-        case .pointer(let attachmentPointer, let downloadState):
+        case .pointer(_, let downloadState):
             switch downloadState {
             case .none:
-                return .skipped(attachmentPointer: attachmentPointer.attachmentPointer)
+                return .skipped
             case .failed, .enqueuedOrDownloading:
-                return .downloading(
-                    attachmentPointer: attachmentPointer.attachmentPointer,
-                    downloadState: downloadState,
-                )
+                return .downloading(downloadState: downloadState)
             }
         case .undownloadable:
             return .none

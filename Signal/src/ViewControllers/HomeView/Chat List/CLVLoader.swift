@@ -56,16 +56,11 @@ public class CLVLoader {
     static func loadRenderStateForReset(viewInfo: CLVViewInfo, transaction: DBReadTransaction) -> CLVLoadResult {
         AssertIsOnMainThread()
 
-        do {
-            let renderState = try Self.loadRenderStateInternal(viewInfo: viewInfo, transaction: transaction)
-            return CLVLoadResult.renderStateForReset(renderState: renderState)
-        } catch {
-            owsFailDebug("error: \(error)")
-            return .reloadTable
-        }
+        let renderState = Self.loadRenderStateInternal(viewInfo: viewInfo, transaction: transaction)
+        return CLVLoadResult.renderStateForReset(renderState: renderState)
     }
 
-    private static func loadRenderStateInternal(viewInfo: CLVViewInfo, transaction: DBReadTransaction) throws -> CLVRenderState {
+    private static func loadRenderStateInternal(viewInfo: CLVViewInfo, transaction: DBReadTransaction) -> CLVRenderState {
         let threadFinder = ThreadFinder()
         let isViewingArchive = viewInfo.chatListMode == .archive
 
@@ -73,11 +68,11 @@ public class CLVLoader {
         let visibleThreadUniqueIds: [String]
         if isViewingArchive {
             pinnedThreadUniqueIds = []
-            visibleThreadUniqueIds = try threadFinder.visibleArchivedThreadUniqueIds(transaction: transaction)
+            visibleThreadUniqueIds = threadFinder.visibleArchivedThreadUniqueIds(transaction: transaction)
         } else {
             let pinnedThreadManager = DependenciesBridge.shared.pinnedThreadManager
             pinnedThreadUniqueIds = pinnedThreadManager.pinnedThreads(tx: transaction).map(\.uniqueId)
-            visibleThreadUniqueIds = try threadFinder.visibleInboxThreadUniqueIds(
+            visibleThreadUniqueIds = threadFinder.visibleInboxThreadUniqueIds(
                 filteredBy: viewInfo.inboxFilter,
                 requiredVisibleThreadIds: viewInfo.requiredVisibleThreadIds,
                 transaction: transaction,
@@ -145,7 +140,7 @@ public class CLVLoader {
             }
         }
 
-        let newRenderState = try Self.loadRenderStateInternal(viewInfo: viewInfo, transaction: transaction)
+        let newRenderState = Self.loadRenderStateInternal(viewInfo: viewInfo, transaction: transaction)
 
         let oldPinnedThreadIds: [String] = lastRenderState.pinnedThreadUniqueIds
         let oldUnpinnedThreadIds: [String] = lastRenderState.unpinnedThreadUniqueIds

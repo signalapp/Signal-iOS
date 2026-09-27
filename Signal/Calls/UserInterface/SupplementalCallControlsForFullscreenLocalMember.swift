@@ -24,7 +24,7 @@ class SupplementalCallControlsForFullscreenLocalMember: UIView {
 
     private lazy var flipCameraImageView = {
         let imageView = UIImageView(image: UIImage(named: "switch-camera-28"))
-        imageView.tintColor = .ows_white
+        imageView.tintColor = .white
         imageView.autoSetDimension(
             .height,
             toSize: 24,

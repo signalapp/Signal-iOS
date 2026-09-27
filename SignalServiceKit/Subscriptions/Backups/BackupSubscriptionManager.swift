@@ -613,7 +613,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     private let redemptionTaskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
     func redeemSubscriptionIfNecessary() async throws {
-        return try await redemptionTaskQueue.run {
+        return try await redemptionTaskQueue.runWithThrowingTask {
             try await self._redeemSubscriptionIfNecessary()
         }
     }

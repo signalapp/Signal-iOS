@@ -440,7 +440,7 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
         self.previewView?.isHidden = true
         self.previewView?.layer.shadowRadius = 12
         self.previewView?.layer.shadowOffset = CGSize(width: 0, height: 4)
-        self.previewView?.layer.shadowColor = UIColor.ows_black.cgColor
+        self.previewView?.layer.shadowColor = UIColor.black.cgColor
         self.previewView?.layer.shadowOpacity = 0
 
         self.auxiliaryPreviewView?.isHidden = true

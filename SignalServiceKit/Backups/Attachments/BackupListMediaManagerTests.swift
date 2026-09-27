@@ -64,6 +64,7 @@ public class BackupListMediaManagerTests {
         orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
         remoteConfigManager: remoteConfigManager,
         tsAccountManager: tsAccountManager,
+        localFileBackupStore: LocalFileBackupStore(),
     )
 
     @Test
@@ -132,8 +133,8 @@ public class BackupListMediaManagerTests {
                     plaintextHash: plaintextHash,
                     encryptionKey: encryptionKey.combinedKey,
                 )
-                let fullsizeMediaId = try! mediaRootBackupKey.deriveMediaId(mediaName)
-                let thumbnailMediaId = try! mediaRootBackupKey.deriveMediaId(AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName))
+                let fullsizeMediaId = mediaRootBackupKey.deriveMediaId(mediaName)
+                let thumbnailMediaId = mediaRootBackupKey.deriveMediaId(AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName))
                 for mediaId in [fullsizeMediaId, thumbnailMediaId] {
                     discoveredCdnNumberMedia.append(.init(
                         cdn: discoveredCdnNumber,
@@ -161,8 +162,8 @@ public class BackupListMediaManagerTests {
                     plaintextHash: plaintextHash,
                     encryptionKey: encryptionKey.combinedKey,
                 )
-                let fullsizeMediaId = try! mediaRootBackupKey.deriveMediaId(mediaName)
-                let thumbnailMediaId = try! mediaRootBackupKey.deriveMediaId(AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName))
+                let fullsizeMediaId = mediaRootBackupKey.deriveMediaId(mediaName)
+                let thumbnailMediaId = mediaRootBackupKey.deriveMediaId(AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName))
                 for mediaId in [fullsizeMediaId, thumbnailMediaId] {
                     matchingCdnNumberMedia.append(.init(
                         cdn: matchingCdnNumber,
@@ -201,8 +202,8 @@ public class BackupListMediaManagerTests {
                     plaintextHash: plaintextHash,
                     encryptionKey: encryptionKey.combinedKey,
                 )
-                let fullsizeMediaId = try! mediaRootBackupKey.deriveMediaId(mediaName)
-                let thumbnailMediaId = try! mediaRootBackupKey.deriveMediaId(AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName))
+                let fullsizeMediaId = mediaRootBackupKey.deriveMediaId(mediaName)
+                let thumbnailMediaId = mediaRootBackupKey.deriveMediaId(AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName))
                 for mediaId in [fullsizeMediaId, thumbnailMediaId] {
                     nonMatchingCdnNumberMedia.append(.init(
                         // Prefer a cdn number matching remote config,

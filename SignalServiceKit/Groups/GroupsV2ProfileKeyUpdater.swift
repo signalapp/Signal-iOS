@@ -17,45 +17,8 @@ import LibSignalClient
 // need to be updated and for updating them.
 class GroupsV2ProfileKeyUpdater {
 
-    private let appReadiness: AppReadiness
-
-    init(appReadiness: AppReadiness) {
-        self.appReadiness = appReadiness
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(reachabilityChanged),
-            name: SSKReachability.owsReachabilityDidChange,
-            object: nil,
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(didBecomeActive),
-            name: .OWSApplicationDidBecomeActive,
-            object: nil,
-        )
+    init() {
     }
-
-    // MARK: -
-
-    @objc
-    private func didBecomeActive() {
-        AssertIsOnMainThread()
-
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            self.setNeedsUpdate()
-        }
-    }
-
-    @objc
-    private func reachabilityChanged() {
-        AssertIsOnMainThread()
-
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            self.setNeedsUpdate()
-        }
-    }
-
-    // MARK: -
 
     // Stores the list of v2 groups that we need to update with our latest profile key.
     private let keyValueStore = NewKeyValueStore(collection: "GroupsV2ProfileKeyUpdater")
@@ -69,10 +32,18 @@ class GroupsV2ProfileKeyUpdater {
             owsFailDebug("Missing groupThread.")
             return
         }
-        self.tryToScheduleGroupForProfileKeyUpdate(groupThread: groupThread, transaction: tx)
-
+        let didSchedule = self.tryToScheduleGroupForProfileKeyUpdate(groupThread: groupThread, transaction: tx)
+        guard didSchedule else {
+            return
+        }
         tx.addSyncCompletion {
-            self.setNeedsUpdate()
+            Task {
+                do {
+                    try await self.updateIfNeeded()
+                } catch {
+                    Logger.warn("couldn't update profile key in group: \(error)")
+                }
+            }
         }
     }
 
@@ -81,7 +52,7 @@ class GroupsV2ProfileKeyUpdater {
             guard let groupThread = thread as? TSGroupThread else {
                 return
             }
-            self.tryToScheduleGroupForProfileKeyUpdate(groupThread: groupThread, transaction: transaction)
+            _ = self.tryToScheduleGroupForProfileKeyUpdate(groupThread: groupThread, transaction: transaction)
         }
 
         // Note that we don't kick off updates yet (don't schedule tryToUpdateNext
@@ -91,104 +62,47 @@ class GroupsV2ProfileKeyUpdater {
         // but it helps in the common case.
     }
 
-    private func tryToScheduleGroupForProfileKeyUpdate(groupThread: TSGroupThread, transaction: DBWriteTransaction) {
+    private func tryToScheduleGroupForProfileKeyUpdate(groupThread: TSGroupThread, transaction: DBWriteTransaction) -> Bool {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice else {
-            return
+        guard
+            let registeredState = try? tsAccountManager.registeredState(tx: transaction),
+            registeredState.isPrimary
+        else {
+            return false
         }
-        guard let localAddress = tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress else {
-            owsFailDebug("missing local address")
-            return
-        }
+        let localAddress = registeredState.localIdentifiers.aciAddress
 
         let groupMembership = groupThread.groupModel.groupMembership
         // We only need to update v2 groups of which we are a full member.
         guard groupThread.isGroupV2Thread, groupMembership.isFullMember(localAddress), !groupThread.isTerminatedGroup else {
-            return
+            return false
         }
         let groupId = groupThread.groupModel.groupId
         let key = self.key(for: groupId)
         self.keyValueStore.writeValue(groupId, forKey: key, tx: transaction)
+        return true
     }
 
-    func processProfileKeyUpdates() {
-        setNeedsUpdate()
+    private let taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
+
+    func updateIfNeeded() async throws {
+        try await taskQueue.runWithThrowingTask { try await _updateIfNeeded() }
     }
 
-    private struct State {
-        var isUpdating = false
-        var needsUpdate = false
-    }
-
-    private let state = AtomicValue<State>(State(), lock: .init())
-
-    private func setNeedsUpdate() {
-        self.state.update { $0.needsUpdate = true }
-        startUpdatingIfNeeded()
-    }
-
-    private func startUpdatingIfNeeded() {
-        Task { await self._startUpdatingIfNeeded() }
-    }
-
-    private func _startUpdatingIfNeeded() async {
-        let shouldStart = self.state.update {
-            if $0.isUpdating || !$0.needsUpdate {
-                return false
-            }
-            $0.isUpdating = true
-            $0.needsUpdate = false
-            return true
-        }
-        guard shouldStart else {
-            // Only one update should be in flight at a time.
-            return
-        }
-        defer {
-            self.state.update { $0.isUpdating = false }
-            // An external trigger might have called setNeedsUpdate while we were
-            // running, after we checked for runnable jobs, but before we cleared
-            // isUpdating. Check again since there might now be runnable jobs.
-            startUpdatingIfNeeded()
-        }
-        var failureCount = 0
-        while true {
-            // If an external trigger called setNeedsUpdate, we'll observe anything it
-            // wants us to observe during this iteration because we haven't checked
-            // anything yet. (If we'd already checked, eg, isReachable, then we'd risk
-            // missing the latest reachability update.)
-            self.state.update { $0.needsUpdate = false }
-
-            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard
-                await CurrentAppContext().isMainAppAndActiveIsolated,
-                !CurrentAppContext().isRunningTests,
-                tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice,
-                SSKEnvironment.shared.reachabilityManagerRef.isReachable
-            else {
-                return
-            }
-
-            do {
-                let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-                let groupIdKeys = databaseStorage.read(block: { tx in self.keyValueStore.fetchKeys(tx: tx) })
-                let taskQueue = ConcurrentTaskQueue(concurrentLimit: 16)
-                try await withThrowingTaskGroup(of: Void.self) { taskGroup in
-                    for groupIdKey in groupIdKeys {
-                        _ = taskGroup.addTaskUnlessCancelled {
-                            try await taskQueue.run {
-                                try Task.checkCancellation()
-                                try await self._tryToUpdateNext(groupIdKey: groupIdKey)
-                            }
-                        }
+    private func _updateIfNeeded() async throws {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let groupIdKeys = databaseStorage.read(block: { tx in self.keyValueStore.fetchKeys(tx: tx) })
+        let taskQueue = ConcurrentTaskQueue(concurrentLimit: 16)
+        try await withThrowingTaskGroup(of: Void.self) { taskGroup in
+            for groupIdKey in groupIdKeys {
+                _ = taskGroup.addTaskUnlessCancelled {
+                    try await taskQueue.runWithThrowingTask {
+                        try Task.checkCancellation()
+                        try await self._tryToUpdateNext(groupIdKey: groupIdKey)
                     }
-                    try await taskGroup.waitForAll()
                 }
-                return
-            } catch {
-                failureCount += 1
-                try? await Task.sleep(nanoseconds: OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount, maxAverageBackoff: 6 * .hour).clampedNanoseconds)
             }
+            try await taskGroup.waitForAll()
         }
     }
 
@@ -210,6 +124,10 @@ class GroupsV2ProfileKeyUpdater {
             case let httpError as OWSHTTPError where (400...499).contains(httpError.responseStatusCode):
                 // If a non-recoverable error occurs (e.g. we've been kicked out of the
                 // group), give up.
+                sendPromises = []
+            case is NotRegisteredError:
+                // If we're not registered, we can't rotate our profile key. We'll schedule
+                // another rotation after re-registering.
                 sendPromises = []
             case is CancellationError:
                 throw error
@@ -244,7 +162,8 @@ class GroupsV2ProfileKeyUpdater {
     }
 
     private func markAsComplete(groupIdKey: String) async {
-        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        await databaseStorage.awaitableWrite { transaction in
             self.keyValueStore.removeValue(forKey: groupIdKey, tx: transaction)
         }
     }
@@ -252,14 +171,19 @@ class GroupsV2ProfileKeyUpdater {
     /// - Returns: A list of Promises for sending the group update message(s).
     /// Each Promise represents sending a message to one or more recipients.
     private func tryToUpdate(groupId: GroupIdentifier) async throws -> [Promise<Void>] {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let groupsV2 = SSKEnvironment.shared.groupsV2Ref
+        let messageProcessor = SSKEnvironment.shared.messageProcessorRef
+        let profileManager = SSKEnvironment.shared.profileManagerRef
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard let localAci = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
-            throw OWSGenericError("missing local address")
+
+        // Check if we're a registered primary & wait until we're connected.
+        guard try tsAccountManager.registeredStateWithMaybeSneakyTransaction().isPrimary else {
+            throw OWSGenericError("not primary")
         }
+        try await messageProcessor.waitForFetchingAndProcessing()
 
-        try await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing()
-
-        let groupModel = SSKEnvironment.shared.databaseStorageRef.read { tx in
+        let groupModel = databaseStorage.read { tx in
             return TSGroupThread.fetchThread(forGroupId: groupId, tx: tx)?.groupModel as? TSGroupModelV2
         }
         guard let groupModel, let secretParams = try? groupModel.secretParams() else {
@@ -270,16 +194,16 @@ class GroupsV2ProfileKeyUpdater {
         try Task.checkCancellation()
         // Collect the avatar state to avoid an unnecessary download in the case
         // where we've already fetched the latest avatar.
-        let snapshotResponse = try await SSKEnvironment.shared.groupsV2Ref.fetchLatestSnapshot(
+        let snapshotResponse = try await groupsV2.fetchLatestSnapshot(
             secretParams: secretParams,
             justUploadedAvatars: GroupAvatarStateMap.from(groupModel: groupModel),
         )
+        // Intentionally fetch this again because substantial time may have elapsed.
+        let localAci = try tsAccountManager.registeredStateWithMaybeSneakyTransaction().localIdentifiers.aci
         guard snapshotResponse.groupSnapshot.groupMembership.isFullMember(localAci) else {
             // We're not a full member, no need to update profile key.
             return []
         }
-        let profileManager = SSKEnvironment.shared.profileManagerRef
-        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         let profileKey = databaseStorage.read(block: profileManager.localUserProfile(tx:))?.profileKey
         guard let profileKey else {
             throw OWSGenericError("missing local profile key")

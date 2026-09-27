@@ -4,10 +4,10 @@
 //
 
 import LibSignalClient
-public import SignalServiceKit
-public import SignalUI
+import SignalServiceKit
+import SignalUI
 
-public class AddToGroupViewController: OWSTableViewController2 {
+final class AddToGroupViewController: OWSTableViewController2, UISearchResultsUpdating {
 
     private let address: SignalServiceAddress
 
@@ -16,7 +16,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
         super.init()
     }
 
-    public class func presentForUser(
+    class func presentForUser(
         _ address: SignalServiceAddress,
         from fromViewController: UIViewController,
     ) {
@@ -29,19 +29,38 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
     // MARK: -
 
-    override public func viewDidLoad() {
+    private let searchController: UISearchController = {
+        let controller = UISearchController(searchResultsController: nil)
+        controller.obscuresBackgroundDuringPresentation = false
+        controller.hidesNavigationBarDuringPresentation = false
+        return controller
+    }()
+
+    private let collation = UILocalizedIndexedCollation.current()
+
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         title = OWSLocalizedString("ADD_TO_GROUP_TITLE", comment: "Title of the 'add to group' view.")
 
-        navigationItem.rightBarButtonItem = .cancelButton { [weak self] in
-            self?.didPressCloseButton()
-        }
+        navigationItem.rightBarButtonItem = .cancelButton(dismissingFrom: self)
+
+        searchController.searchResultsUpdater = self
+        navigationItem.searchController = searchController
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
 
+        tableView.sectionIndexColor = UIColor.Signal.label
+
         Task {
             await self.updateGroupThreads()
+        }
+    }
+
+    private var searchText: String? {
+        didSet {
+            guard oldValue != searchText else { return }
+            updateTableContents()
         }
     }
 
@@ -53,7 +72,10 @@ public class AddToGroupViewController: OWSTableViewController2 {
     }
 
     private func updateGroupThreads() async {
-        self.groupThreads = await fetchGroupThreads()
+        let groupThreads = await fetchGroupThreads()
+        self.groupThreads = groupThreads.sorted {
+            $0.groupNameOrDefault.localizedCaseInsensitiveCompare($1.groupNameOrDefault) == .orderedAscending
+        }
     }
 
     @concurrent
@@ -87,26 +109,109 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
     private func updateTableContents() {
         AssertIsOnMainThread()
-        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-        let groupsSection = databaseStorage.read { tx in
-            return OWSTableSection(items: groupThreads.map { item(forGroupThread: $0, tx: tx) })
+
+        let alreadyAMemberText = OWSLocalizedString(
+            "ADD_TO_GROUP_ALREADY_A_MEMBER",
+            comment: "Text indicating your contact is already a member of the group on the 'add to group' view.",
+        )
+
+        let db = DependenciesBridge.shared.db
+        let groups: [(thread: TSGroupThread, isAlreadyAMember: Bool, subtitle: String)] = db.read { tx in
+            groupThreads.compactMap { thread in
+                guard
+                    searchText.map({
+                        thread.groupNameOrDefault.localizedCaseInsensitiveContains($0)
+                    }) ?? true
+                else {
+                    return nil
+                }
+
+                let isAlreadyAMember: Bool
+                if let serviceId = self.address.serviceId {
+                    switch thread.groupMembership.canTryToAddToGroup(serviceId: serviceId) {
+                    case .alreadyInGroup:
+                        isAlreadyAMember = true
+                    case .addableWithProfileKeyCredential:
+                        let canAddToGroup = GroupMembership.canTryToAddWithProfileKeyCredential(serviceId: serviceId, tx: tx)
+                        isAlreadyAMember = !canAddToGroup
+                    case .addableOrInvitable:
+                        isAlreadyAMember = false
+                    }
+                } else {
+                    isAlreadyAMember = false
+                }
+                let subtitle = if isAlreadyAMember {
+                    alreadyAMemberText
+                } else {
+                    GroupViewUtils.membersNamesPreview(for: thread, tx: tx)
+                }
+                return (thread, isAlreadyAMember, subtitle)
+            }
         }
-        self.contents = OWSTableContents(sections: [groupsSection])
+
+        func item(thread: TSGroupThread, isAlreadyAMember: Bool, subtitle: String) -> OWSTableItem {
+            OWSTableItem(
+                customCellBlock: {
+                    let cell = GroupTableViewCell()
+                    cell.configure(
+                        thread: thread,
+                        customSubtitle: subtitle,
+                        customTextColor: isAlreadyAMember ? .Signal.tertiaryLabel : nil,
+                    )
+                    cell.isUserInteractionEnabled = !isAlreadyAMember
+                    return cell
+                },
+                actionBlock: { [weak self] in
+                    self?.didSelectGroup(thread)
+                },
+            )
+        }
+
+        if searchText != nil {
+            let items = groups.map { group in item(
+                thread: group.thread,
+                isAlreadyAMember: group.isAlreadyAMember,
+                subtitle: group.subtitle,
+            ) }
+            self.contents = OWSTableContents(sections: [OWSTableSection(items: items)])
+        } else {
+            let sections = collation.sectionTitles.map(OWSTableSection.init(title:))
+            for group in groups {
+                // `collation` needs a class and selector, so use NSString
+                let sectionIndex = collation.section(
+                    for: group.thread.groupNameOrDefault as NSString,
+                    collationStringSelector: #selector(getter: NSObjectProtocol.description),
+                )
+                sections[safe: sectionIndex]?.add(item(
+                    thread: group.thread,
+                    isAlreadyAMember: group.isAlreadyAMember,
+                    subtitle: group.subtitle,
+                ))
+            }
+
+            for section in sections where section.itemCount == 0 {
+                section.headerTitle = nil
+            }
+
+            let contents = OWSTableContents(sections: sections)
+            contents.sectionForSectionIndexTitleBlock = { [weak self] _, index in
+                return self?.collation.section(forSectionIndexTitle: index) ?? 0
+            }
+            contents.sectionIndexTitlesForTableViewBlock = { [weak self] in
+                return self?.collation.sectionIndexTitles ?? []
+            }
+            self.contents = contents
+        }
+
+    }
+
+    // MARK: UISearchResultsUpdating
+
+    func updateSearchResults(for searchController: UISearchController) {
+        searchText = searchController.searchBar.text?.stripped.nilIfEmpty
     }
 
     // MARK: Helpers
-
-    override public func themeDidChange() {
-        super.themeDidChange()
-        self.tableView.sectionIndexColor = Theme.primaryTextColor
-        updateTableContents()
-    }
-
-    private func didPressCloseButton() {
-        Logger.info("")
-
-        self.dismiss(animated: true)
-    }
 
     private func didSelectGroup(_ groupThread: TSGroupThread) {
         let shortName = SSKEnvironment.shared.databaseStorageRef.read { transaction in
@@ -167,44 +272,5 @@ public class AddToGroupViewController: OWSTableViewController2 {
             let toastText = String.nonPluralLocalizedStringWithFormat(toastFormat, shortName, groupThread.groupNameOrDefault)
             presentingViewController?.presentToast(text: toastText)
         }
-    }
-
-    // MARK: -
-
-    private func item(forGroupThread groupThread: TSGroupThread, tx: DBReadTransaction) -> OWSTableItem {
-        let alreadyAMemberText = OWSLocalizedString(
-            "ADD_TO_GROUP_ALREADY_A_MEMBER",
-            comment: "Text indicating your contact is already a member of the group on the 'add to group' view.",
-        )
-        let isAlreadyAMember: Bool
-        if let serviceId = self.address.serviceId {
-            switch groupThread.groupMembership.canTryToAddToGroup(serviceId: serviceId) {
-            case .alreadyInGroup:
-                isAlreadyAMember = true
-            case .addableWithProfileKeyCredential:
-                let canAddToGroup = GroupMembership.canTryToAddWithProfileKeyCredential(serviceId: serviceId, tx: tx)
-                isAlreadyAMember = !canAddToGroup
-            case .addableOrInvitable:
-                isAlreadyAMember = false
-            }
-        } else {
-            isAlreadyAMember = false
-        }
-
-        return OWSTableItem(
-            customCellBlock: {
-                let cell = GroupTableViewCell()
-                cell.configure(
-                    thread: groupThread,
-                    customSubtitle: isAlreadyAMember ? alreadyAMemberText : nil,
-                    customTextColor: isAlreadyAMember ? .Signal.tertiaryLabel : nil,
-                )
-                cell.isUserInteractionEnabled = !isAlreadyAMember
-                return cell
-            },
-            actionBlock: { [weak self] in
-                self?.didSelectGroup(groupThread)
-            },
-        )
     }
 }

@@ -115,11 +115,9 @@ public struct TSGroupModelBuilder {
 
         switch groupVersion {
         case .V1(let groupId):
-            guard GroupManager.isValidGroupId(groupId, groupsVersion: .V1) else {
-                throw OWSAssertionError("Invalid groupId.")
-            }
+            let groupId = try GroupIdentifierV1(rawValue: groupId)
             return TSGroupModel(
-                groupId: groupId,
+                groupId: groupId.rawValue,
                 name: name,
                 avatarData: avatarDataState.dataIfPresent,
                 members: Array(groupMembership.fullMembers),

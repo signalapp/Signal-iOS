@@ -59,9 +59,13 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         loadCoordinator.clearUnreadMessagesIndicator()
         inputToolbar?.quotedReplyDraft = nil
 
+        let shouldPlayMessageSentSound = DependenciesBridge.shared.db.read { tx in
+            let notificationPreferencesManager = DependenciesBridge.shared.notificationPreferencesManager
+            return notificationPreferencesManager.playSoundInForeground(tx: tx)
+                && notificationPreferencesManager.isMessageSentSoundEnabled(tx: tx)
+        }
         if
-            SSKEnvironment.shared.preferencesRef.soundInForeground,
-            SSKEnvironment.shared.preferencesRef.isMessageSentSoundEnabled,
+            shouldPlayMessageSentSound,
             let soundId = Sounds.systemSoundIDForSound(.standard(.messageSent), quiet: true)
         {
             AudioServicesPlaySystemSound(soundId)
@@ -505,7 +509,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         locationPicker.delegate = self
         let navigationController = OWSNavigationController(rootViewController: locationPicker)
         navigationController.presentationController?.delegate = self
-        dismissKeyBoard()
+        dismissKeyboard()
         presentFormSheet(navigationController, animated: true)
     }
 
@@ -517,9 +521,9 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             return
         }
 
-        dismissKeyBoard()
+        dismissKeyboard()
 
-        if SUIEnvironment.shared.paymentsRef.isKillSwitchActive {
+        guard SUIEnvironment.shared.paymentsRef.canUsePayments() else {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH",
                 comment: "Error message indicating that payments cannot be sent because the feature is not currently available.",
@@ -544,9 +548,11 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
     public func pollButtonPressed() {
         AssertIsOnMainThread()
 
-        dismissKeyBoard()
+        dismissKeyboard()
 
-        let newPollViewController = NewPollViewController2()
+        let newPollViewController = NewPollViewController2(
+            maxOptionCount: RemoteConfig.current.maxPollOptionSendCount,
+        )
         newPollViewController.sendDelegate = self
         present(OWSNavigationController(rootViewController: newPollViewController), animated: true)
     }
@@ -554,7 +560,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
     public func didSelectRecentPhoto(asset: PHAsset, attachment: PreviewableAttachment, attachmentLimits: OutgoingAttachmentLimits) {
         AssertIsOnMainThread()
 
-        dismissKeyBoard()
+        dismissKeyboard()
 
         let pickerModal = SendMediaNavigationController.showingApprovalWithPickedLibraryMedia(
             asset: asset,
@@ -620,19 +626,26 @@ private extension ConversationViewController {
     func chooseContactForSending() {
         AssertIsOnMainThread()
 
-        dismissKeyBoard()
+        dismissKeyboard()
         SUIEnvironment.shared.contactsViewHelperRef.checkReadAuthorization(
             purpose: .share,
             performWhenAllowed: {
-                let contactsPicker = ContactPickerViewController(allowsMultipleSelection: false, subtitleCellType: .none)
-                contactsPicker.delegate = self
-                contactsPicker.title = OWSLocalizedString(
-                    "CONTACT_PICKER_TITLE",
-                    comment: "navbar title for contact picker when sharing a contact",
-                )
-                let sheet = OWSNavigationController(rootViewController: contactsPicker)
-                sheet.presentationController?.delegate = self
-                self.presentFormSheet(sheet, animated: true)
+                if BuildFlags.accountIdentifierSharing {
+                    let contactsPicker = SelectContactForSharingViewController()
+                    let sheet = OWSNavigationController(rootViewController: contactsPicker)
+                    sheet.presentationController?.delegate = self
+                    self.presentFormSheet(sheet, animated: true)
+                } else {
+                    let contactsPicker = ContactPickerViewController(allowsMultipleSelection: false, subtitleCellType: .none)
+                    contactsPicker.delegate = self
+                    contactsPicker.title = OWSLocalizedString(
+                        "CONTACT_PICKER_TITLE",
+                        comment: "navbar title for contact picker when sharing a contact",
+                    )
+                    let sheet = OWSNavigationController(rootViewController: contactsPicker)
+                    sheet.presentationController?.delegate = self
+                    self.presentFormSheet(sheet, animated: true)
+                }
             },
             presentErrorFrom: self,
         )
@@ -652,7 +665,7 @@ private extension ConversationViewController {
         pickerController.delegate = self
         pickerController.presentationController?.delegate = self
 
-        dismissKeyBoard()
+        dismissKeyboard()
         presentFormSheet(pickerController, animated: true)
     }
 
@@ -689,7 +702,7 @@ private extension ConversationViewController {
                 if !pickerHidesStatusBar {
                     pickerModal.modalPresentationCapturesStatusBarAppearance = true
                 }
-                self.dismissKeyBoard()
+                self.dismissKeyboard()
                 self.present(pickerModal, animated: true) {
                     if pickerHidesStatusBar {
                         pickerModal.modalPresentationCapturesStatusBarAppearance = true
@@ -710,7 +723,7 @@ private extension ConversationViewController {
         pickerModal.sendMediaNavDelegate = self
         pickerModal.sendMediaNavDataSource = self
 
-        self.dismissKeyBoard()
+        self.dismissKeyboard()
         let presenter = self.splitViewController ?? self
         presenter.present(pickerModal, animated: false)
     }
@@ -727,7 +740,7 @@ public extension ConversationViewController {
         gifModal.approvalDelegate = self
         gifModal.approvalDataSource = self
         gifModal.presentationController?.delegate = self
-        dismissKeyBoard()
+        dismissKeyboard()
         present(gifModal, animated: true)
     }
 }

@@ -4,7 +4,7 @@
 //
 
 import Foundation
-public import LibSignalClient
+import LibSignalClient
 
 public enum TSRegistrationState {
     /// We are unregistered and never have been.
@@ -15,23 +15,23 @@ public enum TSRegistrationState {
     case unregistered
 
     /// Re-registering after becoming deregistered.
-    case reregistering(phoneNumber: String, aci: Aci?)
+    case reregistering(ReregisteringLocalIdentifiers)
     /// Re-linking after becoming delinked.
-    case relinking(phoneNumber: String, aci: Aci?)
+    case relinking(ReregisteringLocalIdentifiers)
 
     /// Registered as a primary device. "Normal" state.
-    case registered
+    case registered(LocalIdentifiers)
     /// Provisioned as a linked device. "Normal" state.
-    case provisioned
+    case provisioned(LocalIdentifiers)
 
     /// Deregistered after having been registered, typically due
     /// to an error in a server response informing us we've been
     /// deregistered. Applies to primary devices only.
-    case deregistered
+    case deregistered(DeregisteredLocalIdentifiers)
     /// Delinked after having been provisioned, typically due
     /// to an error in a server response informing us we've been
     /// delinked. Applies to linked devices only.
-    case delinked
+    case delinked(DeregisteredLocalIdentifiers)
 
     /// The user has initiated an incoming device transfer.
     /// isPrimary state will be determined based on the final transferred database.
@@ -52,25 +52,14 @@ public enum TSRegistrationState {
     case transferred
 }
 
-public enum DeregistrationState {
-    case deregistered
-    case delinked
-}
-
 extension TSRegistrationState {
 
+    public func registeredState() throws(NotRegisteredError) -> RegisteredState {
+        return try RegisteredState(registrationState: self)
+    }
+
     public var isRegistered: Bool {
-        switch self {
-        case
-            .unregistered, .reregistering, .relinking,
-            .deregistered, .delinked,
-            .transferringPrimaryOutgoing, .transferringLinkedOutgoing,
-            .transferringIncoming,
-            .transferred:
-            return false
-        case .registered, .provisioned:
-            return true
-        }
+        return (try? registeredState()) != nil
     }
 
     public var wasEverRegistered: Bool {
@@ -112,40 +101,15 @@ extension TSRegistrationState {
     }
 
     public var isRegisteredPrimaryDevice: Bool {
-        switch self {
-        case .registered:
-            return true
-        case
-            .unregistered,
-            .provisioned,
-            .reregistering,
-            .relinking,
-            .deregistered, .delinked,
-            .transferringPrimaryOutgoing, .transferringLinkedOutgoing,
-            .transferringIncoming,
-            .transferred:
-            return false
-        }
+        return (try? self.registeredState())?.isPrimary == true
     }
 
     public var isDeregistered: Bool {
-        return self.deregistrationState != nil
+        return self.deregisteredState != nil
     }
 
-    public var deregistrationState: DeregistrationState? {
-        switch self {
-        case
-            .unregistered, .reregistering, .relinking,
-            .registered, .provisioned,
-            .transferringPrimaryOutgoing, .transferringLinkedOutgoing,
-            .transferringIncoming,
-            .transferred:
-            return nil
-        case .deregistered:
-            return .deregistered
-        case .delinked:
-            return .delinked
-        }
+    public var deregisteredState: DeregisteredState? {
+        return DeregisteredState(registrationState: self)
     }
 
     public var logString: String {

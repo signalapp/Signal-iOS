@@ -130,42 +130,7 @@ public extension UIColor {
 
 public extension UIColor {
 
-    // MARK: Brand Colors
-
-    class var ows_signalBlue: UIColor {
-        return UIColor(rgbHex: 0x3A76F0)
-    }
-
-    class var ows_signalBlueDark: UIColor {
-        return UIColor(rgbHex: 0x1851B4)
-    }
-
-    // MARK: Accent Colors
-
-    /// Nav Bar, Primary Buttons
-    class var ows_accentBlue: UIColor {
-        // Ultramarine UI
-        return UIColor(rgbHex: 0x2C6BED)
-    }
-
-    /// Making calls, success states
-    @objc(ows_accentGreenColor)
-    class var ows_accentGreen: UIColor {
-        return UIColor(rgbHex: 0x4CAF50)
-    }
-
-    /// Ending calls, error states
-    @objc(ows_accentRedColor)
-    class var ows_accentRed: UIColor {
-        return UIColor(rgbHex: 0xF44336)
-    }
-
     // MARK: - GreyScale
-
-    @objc(ows_whiteColor)
-    class var ows_white: UIColor {
-        return UIColor(rgbHex: 0xFFFFFF)
-    }
 
     class var ows_gray02: UIColor {
         return UIColor(rgbHex: 0xF6F6F6)
@@ -239,10 +204,6 @@ public extension UIColor {
 
     class var ows_gray95: UIColor {
         return UIColor(rgbHex: 0x121212)
-    }
-
-    class var ows_black: UIColor {
-        return UIColor(rgbHex: 0x000000)
     }
 
     // MARK: Masks

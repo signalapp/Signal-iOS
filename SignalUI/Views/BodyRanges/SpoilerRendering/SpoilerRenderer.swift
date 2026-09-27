@@ -20,10 +20,11 @@ public class SpoilerRenderer {
         fileprivate let color: ThemedColor
 
         public static func standard(color: ThemedColor) -> Self {
+            let displayScale = UITraitCollection.current.displayScale
             return .init(
                 maxAlpha: 0.9,
                 alphaDropoffRate: 0.2,
-                particleSizePixels: UIScreen.main.scale > 2 ? 2 : 1,
+                particleSizePixels: displayScale > 2 ? 2 : 1,
                 color: color,
             )
         }

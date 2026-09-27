@@ -528,6 +528,12 @@ extension CallsListViewController {
             callHistoryItemReferences.remove(atOffsets: callHistoryItemIndicesToRemove)
         }
 
+        mutating func invalidateCallHistoryViewModels() {
+            for index in callHistoryItemReferences.indices {
+                callHistoryItemReferences[index].viewModel = nil
+            }
+        }
+
         /// Invalidates view models containing any of the given IDs.
         ///
         /// - Returns

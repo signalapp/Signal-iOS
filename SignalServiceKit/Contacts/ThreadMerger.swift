@@ -14,8 +14,6 @@ final class ThreadMerger {
     private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
     private let interactionStore: InteractionStore
     private let sdsThreadMerger: Shims.SDSThreadMerger
-    private let threadAssociatedDataManager: Shims.ThreadAssociatedDataManager
-    private let threadAssociatedDataStore: ThreadAssociatedDataStore
     private let threadRemover: ThreadRemover
     private let threadReplyInfoStore: ThreadReplyInfoStore
     private let threadStore: ThreadStore
@@ -30,8 +28,6 @@ final class ThreadMerger {
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         interactionStore: InteractionStore,
         sdsThreadMerger: Shims.SDSThreadMerger,
-        threadAssociatedDataManager: Shims.ThreadAssociatedDataManager,
-        threadAssociatedDataStore: ThreadAssociatedDataStore,
         threadRemover: ThreadRemover,
         threadReplyInfoStore: ThreadReplyInfoStore,
         threadStore: ThreadStore,
@@ -45,8 +41,6 @@ final class ThreadMerger {
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.interactionStore = interactionStore
         self.sdsThreadMerger = sdsThreadMerger
-        self.threadAssociatedDataManager = threadAssociatedDataManager
-        self.threadAssociatedDataStore = threadAssociatedDataStore
         self.threadRemover = threadRemover
         self.threadReplyInfoStore = threadReplyInfoStore
         self.threadStore = threadStore
@@ -57,7 +51,10 @@ final class ThreadMerger {
     private func mergeThread(_ thread: TSContactThread, into targetThread: TSContactThread, tx: DBWriteTransaction) -> Bool {
         let threadPair = MergePair<TSContactThread>(fromValue: thread, intoValue: targetThread)
         mergeDisappearingMessagesConfiguration(threadPair, tx: tx)
-        mergeThreadAssociatedData(threadPair, tx: tx)
+        mergeArchived(threadPair, tx: tx)
+        mergeMarkedUnread(threadPair, tx: tx)
+        mergeMutedUntil(threadPair, tx: tx)
+        mergePlaybackRate(threadPair, tx: tx)
         mergeThreadReplyInfo(threadPair, tx: tx)
         mergeChatColors(threadPair, tx: tx)
         mergeWallpaper(threadPair, tx: tx)
@@ -77,54 +74,30 @@ final class ThreadMerger {
         // TODO: [optional] Merge SendGiftBadgeJobRecord (they are canceled right now).
     }
 
-    private func mergeThreadAssociatedData(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
-        let valuePair = threadPair.map { threadAssociatedDataStore.fetchOrDefault(for: $0.uniqueId, tx: tx) }
+    private func mergeArchived(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
+        // If either thread isn't archived, the merged thread shouldn't be
+        // archived.
+        threadPair.intoValue.isArchived = threadPair.intoValue.isArchived && threadPair.fromValue.isArchived
+    }
 
-        // Create a new object so that the compiler complains if you add a new
-        // property but don't update this call site.
-        let resolvedValue = ThreadAssociatedData(
-            threadUniqueId: valuePair.intoValue.threadUniqueId,
+    private func mergeMarkedUnread(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
+        // If either thread is marked as unread, the merged thread should be marked
+        // as unread.
+        threadPair.intoValue.isMarkedUnread = threadPair.intoValue.isMarkedUnread || threadPair.fromValue.isMarkedUnread
+    }
 
-            // If either thread isn't archived, the merged thread shouldn't be
-            // archived.
-            isArchived: valuePair.fromValue.isArchived && valuePair.intoValue.isArchived,
+    private func mergeMutedUntil(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
+        // If either thread is muted, choose the longer mute duration.
+        threadPair.intoValue.mutedUntilTimestamp = max(threadPair.intoValue.mutedUntilTimestamp, threadPair.fromValue.mutedUntilTimestamp)
+    }
 
-            // If either thread is marked as unread, the merged thread should be marked
-            // as unread.
-            isMarkedUnread: valuePair.fromValue.isMarkedUnread || valuePair.intoValue.isMarkedUnread,
-
-            // If either thread is muted, choose the longer mute duration.
-            mutedUntilTimestamp: max(valuePair.fromValue.mutedUntilTimestamp, valuePair.intoValue.mutedUntilTimestamp),
-
-            // Prefer audio playback rates that have been changed from the default. If
-            // they have both been changed, prefer the one from the thread we're
-            // merging into.
-            audioPlaybackRate:
-            valuePair.intoValue.audioPlaybackRate != 1
-                ? valuePair.intoValue.audioPlaybackRate
-                : valuePair.fromValue.audioPlaybackRate,
-
-            // Only group threads track the last verified name hash.
-            lastVerifiedGroupNameHash: nil,
-
-        )
-
-        func newValueIfChanged<T: Equatable>(_ keyPath: KeyPath<ThreadAssociatedData, T>) -> T? {
-            let oldValue = valuePair.intoValue[keyPath: keyPath]
-            let newValue = resolvedValue[keyPath: keyPath]
-            return newValue != oldValue ? newValue : nil
+    private func mergePlaybackRate(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
+        // Prefer audio playback rates that have been changed from the default. If
+        // they have both been changed, prefer the one from the thread we're
+        // merging into.
+        if threadPair.intoValue.audioPlaybackRate == 1 {
+            threadPair.intoValue.audioPlaybackRate = threadPair.fromValue.audioPlaybackRate
         }
-
-        threadAssociatedDataManager.updateValue(
-            valuePair.intoValue,
-            isArchived: newValueIfChanged(\.isArchived),
-            isMarkedUnread: newValueIfChanged(\.isMarkedUnread),
-            mutedUntilTimestamp: newValueIfChanged(\.mutedUntilTimestamp),
-            audioPlaybackRate: newValueIfChanged(\.audioPlaybackRate),
-            lastVerifiedGroupNameHash: nil,
-            updateStorageService: true,
-            tx: tx,
-        )
     }
 
     private func mergeDisappearingMessagesConfiguration(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
@@ -372,13 +345,11 @@ class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
 extension ThreadMerger {
     enum Shims {
         typealias DisappearingMessagesConfigurationManager = _ThreadMerger_DisappearingMessagesConfigurationManagerShim
-        typealias ThreadAssociatedDataManager = _ThreadMerger_ThreadAssociatedDataManagerShim
         typealias SDSThreadMerger = _ThreadMerger_SDSThreadMergerShim
     }
 
     enum Wrappers {
         typealias DisappearingMessagesConfigurationManager = _ThreadMerger_DisappearingMessagesConfigurationManagerWrapper
-        typealias ThreadAssociatedDataManager = _ThreadMerger_ThreadAssociatedDataManagerWrapper
         typealias SDSThreadMerger = _ThreadMerger_SDSThreadMergerWrapper
     }
 }
@@ -393,45 +364,6 @@ class _ThreadMerger_DisappearingMessagesConfigurationManagerWrapper: _ThreadMerg
     }
 }
 
-protocol _ThreadMerger_ThreadAssociatedDataManagerShim {
-    func updateValue(
-        _ threadAssociatedData: ThreadAssociatedData,
-        isArchived: Bool?,
-        isMarkedUnread: Bool?,
-        mutedUntilTimestamp: UInt64?,
-        audioPlaybackRate: Float?,
-        lastVerifiedGroupNameHash: Data?,
-        updateStorageService: Bool,
-        tx: DBWriteTransaction,
-    )
-}
-
-class _ThreadMerger_ThreadAssociatedDataManagerWrapper: _ThreadMerger_ThreadAssociatedDataManagerShim {
-    func updateValue(
-        _ threadAssociatedData: ThreadAssociatedData,
-        isArchived: Bool?,
-        isMarkedUnread: Bool?,
-        mutedUntilTimestamp: UInt64?,
-        audioPlaybackRate: Float?,
-        lastVerifiedGroupNameHash: Data?,
-        updateStorageService: Bool,
-        tx: DBWriteTransaction,
-    ) {
-        guard isArchived != nil || isMarkedUnread != nil || mutedUntilTimestamp != nil || audioPlaybackRate != nil else {
-            return
-        }
-        threadAssociatedData.updateWith(
-            isArchived: isArchived,
-            isMarkedUnread: isMarkedUnread,
-            mutedUntilTimestamp: mutedUntilTimestamp,
-            audioPlaybackRate: audioPlaybackRate,
-            lastVerifiedGroupNameHash: lastVerifiedGroupNameHash,
-            updateStorageService: updateStorageService,
-            transaction: tx,
-        )
-    }
-}
-
 protocol _ThreadMerger_SDSThreadMergerShim {
     func mergeThread(_ thread: TSContactThread, into targetThread: TSContactThread, tx: DBWriteTransaction)
 }
@@ -443,7 +375,6 @@ protocol _ThreadMerger_SDSThreadMergerShim {
 extension ThreadMerger {
     static func forUnitTests(
         interactionStore: InteractionStore = MockInteractionStore(),
-        threadAssociatedDataStore: MockThreadAssociatedDataStore = MockThreadAssociatedDataStore(),
         threadStore: ThreadStore = MockThreadStore(),
     ) -> ThreadMerger {
         let disappearingMessagesConfigurationStore = MockDisappearingMessagesConfigurationStore()
@@ -460,12 +391,13 @@ extension ThreadMerger {
             databaseStorage: ThreadRemover_MockDatabaseStorage(),
             deletedCallRecordStore: DeletedCallRecordStoreImpl(),
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
+            groupMemberUpdater: MockGroupMemberUpdater(),
             lastVisibleInteractionStore: LastVisibleInteractionStore(),
-            threadAssociatedDataStore: threadAssociatedDataStore,
             threadReadCache: ThreadRemover_MockThreadReadCache(),
             threadReplyInfoStore: threadReplyInfoStore,
             threadStore: threadStore,
             wallpaperStore: wallpaperStore,
+            observers: [],
         )
         return ThreadMerger(
             callRecordStore: MockCallRecordStore(),
@@ -475,8 +407,6 @@ extension ThreadMerger {
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             interactionStore: interactionStore,
             sdsThreadMerger: ThreadMerger_MockSDSThreadMerger(),
-            threadAssociatedDataManager: ThreadMerger_MockThreadAssociatedDataManager(threadAssociatedDataStore),
-            threadAssociatedDataStore: threadAssociatedDataStore,
             threadRemover: threadRemover,
             threadReplyInfoStore: threadReplyInfoStore,
             threadStore: threadStore,
@@ -494,33 +424,6 @@ class ThreadMerger_MockDisappearingMessagesConfigurationManager: ThreadMerger.Sh
 
     func setToken(_ token: VersionedDisappearingMessageToken, for thread: TSContactThread, tx: DBWriteTransaction) {
         self.store.set(token: token, for: .thread(thread), tx: tx)
-    }
-}
-
-class ThreadMerger_MockThreadAssociatedDataManager: ThreadMerger.Shims.ThreadAssociatedDataManager {
-    private let store: MockThreadAssociatedDataStore
-    init(_ threadAssociatedDataStore: MockThreadAssociatedDataStore) {
-        self.store = threadAssociatedDataStore
-    }
-
-    func updateValue(
-        _ threadAssociatedData: ThreadAssociatedData,
-        isArchived: Bool?,
-        isMarkedUnread: Bool?,
-        mutedUntilTimestamp: UInt64?,
-        audioPlaybackRate: Float?,
-        lastVerifiedGroupNameHash: Data?,
-        updateStorageService: Bool,
-        tx: DBWriteTransaction,
-    ) {
-        self.store.values[threadAssociatedData.threadUniqueId] = ThreadAssociatedData(
-            threadUniqueId: threadAssociatedData.threadUniqueId,
-            isArchived: isArchived ?? threadAssociatedData.isArchived,
-            isMarkedUnread: isMarkedUnread ?? threadAssociatedData.isMarkedUnread,
-            mutedUntilTimestamp: mutedUntilTimestamp ?? threadAssociatedData.mutedUntilTimestamp,
-            audioPlaybackRate: audioPlaybackRate ?? threadAssociatedData.audioPlaybackRate,
-            lastVerifiedGroupNameHash: lastVerifiedGroupNameHash ?? threadAssociatedData.lastVerifiedGroupNameHash,
-        )
     }
 }
 

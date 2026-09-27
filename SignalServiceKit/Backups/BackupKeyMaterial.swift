@@ -25,10 +25,3 @@ extension BackupKeyMaterial {
 
     public func serialize() -> Data { backupKey.serialize() }
 }
-
-public enum BackupKeyMaterialError: Error {
-    case missingMessageBackupKey
-    case missingOrInvalidMRBK
-    /// Encountered an error using libsignal methods to derive keys.
-    case derivationError(Error)
-}

@@ -223,8 +223,6 @@ class ForwardMessageViewController: OWSNavigationController {
             )
             pickerVC.approvalTextMode = .active(placeholderText: placeholderText)
         }
-
-        pickerVC.shouldHideBottomFooter = selectedConversations.isEmpty
     }
 
     private func maximizeHeight() {

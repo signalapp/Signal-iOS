@@ -88,7 +88,7 @@ extension AppSetup {
     /// limited set of mock singletons.
     public struct TestDependencies {
         let backupAttachmentCoordinator: BackupAttachmentCoordinator?
-        let contactManager: (any ContactManager)?
+        let contactManager: (any ContactManager & ThreadRemoverObserver)?
         let dateProvider: DateProvider?
         let groupV2Updates: (any GroupV2Updates)?
         let groupsV2: (any GroupsV2)?
@@ -109,7 +109,7 @@ extension AppSetup {
 
         public init(
             backupAttachmentCoordinator: BackupAttachmentCoordinator? = nil,
-            contactManager: (any ContactManager)? = nil,
+            contactManager: (any ContactManager & ThreadRemoverObserver)? = nil,
             dateProvider: DateProvider? = nil,
             groupV2Updates: (any GroupV2Updates)? = nil,
             groupsV2: (any GroupsV2)? = nil,
@@ -336,7 +336,7 @@ extension AppSetup.GlobalsContinuation {
             db: databaseStorage,
             tsAccountManager: tsAccountManager,
         )
-        let versionedProfiles = testDependencies.versionedProfiles ?? VersionedProfilesImpl(appReadiness: appReadiness)
+        let versionedProfiles = testDependencies.versionedProfiles ?? VersionedProfilesImpl()
 
         let lastVisibleInteractionStore = LastVisibleInteractionStore()
         let usernameLookupManager = UsernameLookupManagerImpl(
@@ -349,9 +349,12 @@ extension AppSetup.GlobalsContinuation {
             searchableNameIndexer: searchableNameIndexer,
             storageServiceManager: storageServiceManager,
         )
+        let notificationPreferencesManager = NotificationPreferencesManager()
+
         let contactManager = testDependencies.contactManager ?? OWSContactsManager(
             appReadiness: appReadiness,
             nicknameManager: nicknameManager,
+            notificationPreferencesManager: notificationPreferencesManager,
             recipientDatabaseTable: recipientDatabaseTable,
             usernameLookupManager: usernameLookupManager,
         )
@@ -626,6 +629,8 @@ extension AppSetup.GlobalsContinuation {
             tsAccountManager: tsAccountManager,
         )
 
+        let localFileBackupStore = LocalFileBackupStore()
+
         let backupListMediaStore = BackupListMediaStore()
         let backupListMediaManager = BackupListMediaManagerImpl(
             accountKeyStore: accountKeyStore,
@@ -647,6 +652,7 @@ extension AppSetup.GlobalsContinuation {
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
             remoteConfigManager: remoteConfigManager,
             tsAccountManager: tsAccountManager,
+            localFileBackupStore: localFileBackupStore,
         )
 
         let attachmentDownloadManager = AttachmentDownloadManagerImpl(
@@ -679,8 +685,6 @@ extension AppSetup.GlobalsContinuation {
         let backupAttachmentDownloadScheduler = BackupAttachmentDownloadSchedulerImpl(
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
         )
-
-        let localFileBackupStore = LocalFileBackupStore()
 
         let attachmentManager = AttachmentManagerImpl(
             attachmentDownloadManager: attachmentDownloadManager,
@@ -722,8 +726,6 @@ extension AppSetup.GlobalsContinuation {
             recipientDatabaseTable: recipientDatabaseTable,
             storageServiceManager: storageServiceManager,
         )
-
-        let badgeCountFetcher = BadgeCountFetcherImpl()
 
         let identityManager = OWSIdentityManagerImpl(
             appReadiness: appReadiness,
@@ -783,7 +785,6 @@ extension AppSetup.GlobalsContinuation {
         )
 
         let groupMemberStore = GroupMemberStoreImpl()
-        let threadAssociatedDataStore = ThreadAssociatedDataStoreImpl()
         let threadReplyInfoStore = ThreadReplyInfoStore()
 
         let wallpaperImageStore = WallpaperImageStoreImpl(
@@ -865,6 +866,11 @@ extension AppSetup.GlobalsContinuation {
             threadStore: threadStore,
         )
 
+        let badgeCountFetcher = BadgeCountFetcher(
+            notificationPreferencesManager: notificationPreferencesManager,
+            callRecordMissedCallManager: callRecordMissedCallManager,
+        )
+
         let deleteForMeOutgoingSyncMessageManager = DeleteForMeOutgoingSyncMessageManagerImpl(
             recipientDatabaseTable: recipientDatabaseTable,
             syncMessageSender: DeleteForMeOutgoingSyncMessageManagerImpl.Wrappers.SyncMessageSender(messageSenderJobQueue),
@@ -937,17 +943,39 @@ extension AppSetup.GlobalsContinuation {
             threadStore: threadStore,
         )
 
+        let senderKeyStore = SenderKeyStore()
+        let senderKeyManager = SenderKeyManager(
+            oldSenderKeyStore: OldSenderKeyStore(),
+            recipientFetcher: recipientFetcher,
+            recipientStore: recipientDatabaseTable,
+            senderKeyStore: senderKeyStore,
+            sessionStore: sessionStore,
+        )
+        let senderKeySendingManager = SenderKeySendingManager(
+            senderKeyManager: senderKeyManager,
+            dateProvider: dateProvider,
+        )
+
         let threadRemover = ThreadRemoverImpl(
             chatColorSettingStore: chatColorSettingStore,
             databaseStorage: ThreadRemoverImpl.Wrappers.DatabaseStorage(databaseStorage),
             deletedCallRecordStore: deletedCallRecordStore,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
+            groupMemberUpdater: groupMemberUpdater,
             lastVisibleInteractionStore: lastVisibleInteractionStore,
-            threadAssociatedDataStore: threadAssociatedDataStore,
             threadReadCache: ThreadRemoverImpl.Wrappers.ThreadReadCache(modelReadCaches.threadReadCache),
             threadReplyInfoStore: threadReplyInfoStore,
             threadStore: threadStore,
             wallpaperStore: wallpaperStore,
+            observers: [
+                BannerHidingStore.joinRequestHiddenStore,
+                BannerHidingStore.joinRequestMembersStore,
+                BannerHidingStore.nameCollisionHiddenStore,
+                contactManager,
+                GroupMembershipNameCollisionFinderStore(),
+                senderKeySendingManager,
+                VoiceMessageInterruptedDraftStoreWrapper(),
+            ],
         )
 
         let threadDeletionManager = ThreadDeletionManagerImpl(
@@ -1025,7 +1053,6 @@ extension AppSetup.GlobalsContinuation {
                 profileManager: profileManager,
                 recipientMergeNotifier: RecipientMergeNotifier(),
                 signalServiceAddressCache: signalServiceAddressCache,
-                threadAssociatedDataStore: threadAssociatedDataStore,
                 threadRemover: threadRemover,
                 threadReplyInfoStore: threadReplyInfoStore,
                 threadStore: threadStore,
@@ -1052,21 +1079,10 @@ extension AppSetup.GlobalsContinuation {
             svr: svr,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
+            localFileBackupStore: localFileBackupStore,
         )
 
         let keyTransparencyStore = KeyTransparencyStore()
-
-        let senderKeyManager = SenderKeyManager(
-            oldSenderKeyStore: OldSenderKeyStore(),
-            recipientFetcher: recipientFetcher,
-            recipientStore: recipientDatabaseTable,
-            senderKeyStore: SenderKeyStore(),
-            sessionStore: sessionStore,
-        )
-        let senderKeySendingManager = SenderKeySendingManager(
-            senderKeyManager: senderKeyManager,
-            dateProvider: dateProvider,
-        )
 
         let registrationStateChangeManager = RegistrationStateChangeManagerImpl(
             authCredentialStore: authCredentialStore,
@@ -1094,7 +1110,11 @@ extension AppSetup.GlobalsContinuation {
             versionedProfiles: versionedProfiles,
         )
         chatConnectionManager.onRegistrationStateChange = { [weak registrationStateChangeManager] isDelinkedOrDeregistered, tx in
-            registrationStateChangeManager?.setIsDeregisteredOrDelinked(isDelinkedOrDeregistered, tx: tx)
+            registrationStateChangeManager?.setIsDeregisteredOrDelinked(
+                isDelinkedOrDeregistered,
+                notify: true,
+                tx: tx,
+            )
         }
 
         let attachmentUploadManager = AttachmentUploadManagerImpl(
@@ -1358,6 +1378,7 @@ extension AppSetup.GlobalsContinuation {
         let pollMessageManager = PollMessageManager(
             pollStore: PollStore(),
             recipientDatabaseTable: recipientDatabaseTable,
+            remoteConfigProvider: remoteConfigManager,
             interactionStore: interactionStore,
             accountManager: tsAccountManager,
             messageSenderJobQueue: messageSenderJobQueue,
@@ -1450,6 +1471,7 @@ extension AppSetup.GlobalsContinuation {
             backupAttachmentDownloadScheduler: backupAttachmentDownloadScheduler,
             chatColorSettingStore: chatColorSettingStore,
             wallpaperStore: wallpaperStore,
+            localFileBackupStore: localFileBackupStore,
         )
 
         let backupInteractionStore = BackupArchiveInteractionStore(interactionStore: interactionStore)
@@ -1497,6 +1519,7 @@ extension AppSetup.GlobalsContinuation {
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
             backupAttachmentDownloadScheduler: backupAttachmentDownloadScheduler,
+            localFileBackupStore: localFileBackupStore,
         )
         let backupsOversizeTextArchiver = BackupArchiveInlinedOversizeTextArchiver(
             attachmentsArchiver: backupAttachmentsArchiver,
@@ -1515,7 +1538,9 @@ extension AppSetup.GlobalsContinuation {
             recipientDatabaseTable: recipientDatabaseTable,
             reactionArchiver: backupReactionArchiver,
         )
+        let localFileBackupAttachmentRestoreProgress = LocalFileBackupAttachmentRestoreProgress()
         let localFileBackupManager = LocalFileBackupManager(
+            appReadiness: appReadiness,
             db: db,
             dateProvider: dateProvider,
             attachmentStore: attachmentStore,
@@ -1523,9 +1548,11 @@ extension AppSetup.GlobalsContinuation {
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             localFileBackupStore: localFileBackupStore,
             securityScopedBookmarkAccess: SecurityScopedBookmarkAccessImpl(),
+            restoreProgress: localFileBackupAttachmentRestoreProgress,
         )
         let backupArchiveManager = BackupArchiveManagerImpl(
             accountDataArchiver: BackupArchiveAccountDataArchiver(
+                adminDeleteManager: adminDeleteManager,
                 backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
                 backupSettingsStore: backupSettingsStore,
                 backupSubscriptionManager: backupSubscriptionManager,
@@ -1752,6 +1779,7 @@ extension AppSetup.GlobalsContinuation {
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
             tsAccountManager: tsAccountManager,
+            localFileBackupStore: localFileBackupStore,
         )
 
         let remoteReleaseNotesService = RemoteReleaseNotesService(signalService: signalService)
@@ -1865,6 +1893,7 @@ extension AppSetup.GlobalsContinuation {
             linkPreviewManager: linkPreviewManager,
             linkPreviewSettingStore: linkPreviewSettingStore,
             linkPreviewSettingManager: linkPreviewSettingManager,
+            localFileBackupAttachmentRestoreProgress: localFileBackupAttachmentRestoreProgress,
             localFileBackupExportJobRunner: localFileBackupExportJobRunner,
             accountKeyStore: accountKeyStore,
             localFileBackupManager: localFileBackupManager,
@@ -1874,6 +1903,7 @@ extension AppSetup.GlobalsContinuation {
             messageSender: messageSender,
             messageStickerManager: messageStickerManager,
             nicknameManager: nicknameManager,
+            notificationPreferencesManager: notificationPreferencesManager,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             archivedPaymentStore: archivedPaymentStore,
             pendingIDEALDonationStore: pendingIDEALDonationStore,
@@ -1900,6 +1930,7 @@ extension AppSetup.GlobalsContinuation {
             remoteReleaseNotesService: remoteReleaseNotesService,
             searchableNameIndexer: searchableNameIndexer,
             senderKeySendingManager: senderKeySendingManager,
+            senderKeyStore: senderKeyStore,
             sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
             signalProtocolStoreManager: signalProtocolStoreManager,
             storageServiceRecordIkmMigrator: storageServiceRecordIkmMigrator,
@@ -1910,7 +1941,6 @@ extension AppSetup.GlobalsContinuation {
             svr: svr,
             svrAuthCredentialManager: svrAuthCredentialManager,
             svrLocalStorage: svrLocalStorage,
-            threadAssociatedDataStore: threadAssociatedDataStore,
             threadReplyInfoStore: threadReplyInfoStore,
             threadDeletionManager: threadDeletionManager,
             threadStore: threadStore,
@@ -2294,7 +2324,7 @@ extension AppSetup.FinalContinuation {
                 PhoneNumberDiscoverabilityManager.Constants.discoverabilityDefault,
                 updateAccountAttributes: true,
                 updateStorageService: true,
-                authedAccount: .implicit(),
+                authedAccount: .implicit,
                 tx: tx,
             )
         }

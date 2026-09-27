@@ -12,15 +12,18 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
     private let backupAttachmentDownloadScheduler: BackupAttachmentDownloadScheduler
+    private let localFileBackupStore: LocalFileBackupStore
 
     init(
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         backupAttachmentDownloadScheduler: BackupAttachmentDownloadScheduler,
+        localFileBackupStore: LocalFileBackupStore,
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.backupAttachmentDownloadScheduler = backupAttachmentDownloadScheduler
+        self.localFileBackupStore = localFileBackupStore
     }
 
     // MARK: - Archiving
@@ -34,6 +37,7 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
         for referencedAttachment in referencedAttachments {
             let pointerProto = referencedAttachment.asBackupFilePointer(
                 context: context,
+                localFileBackupStore: localFileBackupStore,
             )
 
             var attachmentProto = BackupProto_MessageAttachment()
@@ -59,21 +63,21 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
         referencedAttachment: ReferencedAttachment,
         context: BackupArchive.ArchivingContext,
     ) -> BackupProto_FilePointer {
-        return referencedAttachment.asBackupFilePointer(context: context)
+        return referencedAttachment.asBackupFilePointer(context: context, localFileBackupStore: localFileBackupStore)
     }
 
     func archiveLinkPreviewAttachment(
         referencedAttachment: ReferencedAttachment,
         context: BackupArchive.ArchivingContext,
     ) -> BackupProto_FilePointer {
-        return referencedAttachment.asBackupFilePointer(context: context)
+        return referencedAttachment.asBackupFilePointer(context: context, localFileBackupStore: localFileBackupStore)
     }
 
     func archiveQuotedReplyThumbnailAttachment(
         referencedAttachment: ReferencedAttachment,
         context: BackupArchive.ArchivingContext,
     ) -> BackupProto_MessageAttachment {
-        let pointerProto = referencedAttachment.asBackupFilePointer(context: context)
+        let pointerProto = referencedAttachment.asBackupFilePointer(context: context, localFileBackupStore: localFileBackupStore)
 
         var attachmentProto = BackupProto_MessageAttachment()
         attachmentProto.pointer = pointerProto
@@ -88,14 +92,14 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
         referencedAttachment: ReferencedAttachment,
         context: BackupArchive.ArchivingContext,
     ) -> BackupProto_FilePointer {
-        return referencedAttachment.asBackupFilePointer(context: context)
+        return referencedAttachment.asBackupFilePointer(context: context, localFileBackupStore: localFileBackupStore)
     }
 
     func archiveStickerAttachment(
         referencedAttachment: ReferencedAttachment,
         context: BackupArchive.ArchivingContext,
     ) -> BackupProto_FilePointer {
-        return referencedAttachment.asBackupFilePointer(context: context)
+        return referencedAttachment.asBackupFilePointer(context: context, localFileBackupStore: localFileBackupStore)
     }
 
     // MARK: Restoring -
@@ -339,6 +343,12 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
         }
 
         for referencedAttachment in results {
+            // If this attachment has a pending local file backup import, its file
+            // will be restored from the local backup — don't enqueue a download.
+            if localFileBackupStore.hasPendingImportRecord(attachmentId: referencedAttachment.attachment.id, tx: context.tx) {
+                continue
+            }
+
             backupAttachmentDownloadScheduler.enqueueFromBackupIfNeeded(
                 referencedAttachment,
                 restoreStartTimestampMs: context.startDate.ows_millisecondsSince1970,
@@ -391,6 +401,7 @@ extension ReferencedAttachment {
 
     func asBackupFilePointer(
         context: BackupArchive.ArchivingContext,
+        localFileBackupStore: LocalFileBackupStore,
     ) -> BackupProto_FilePointer {
         var proto = BackupProto_FilePointer()
         proto.contentType = attachment.mimeType
@@ -415,9 +426,14 @@ extension ReferencedAttachment {
             proto.height = UInt32(pixelSize.height)
         }
 
-        proto.locatorInfo = self.asBackupFilePointerLocatorInfo(context: context)
+        proto.locatorInfo = self.asBackupFilePointerLocatorInfo(context: context, localFileBackupStore: localFileBackupStore)
 
-        if
+        if proto.locatorInfo.hasLocalKey {
+            context.attachmentByteCounter.addToLocalByteCount(
+                attachmentID: attachment.id,
+                byteCount: Cryptography.localBackupEncryptedSize(unencryptedSize: UInt64(safeCast: proto.locatorInfo.size)) ?? .max,
+            )
+        } else if
             let mediaTierInfo = attachment.mediaTierInfo,
             mediaTierInfo.isUploaded(currentUploadEra: context.currentUploadEra)
         {
@@ -425,7 +441,7 @@ extension ReferencedAttachment {
                 unencryptedSize: UInt64(safeCast: mediaTierInfo.unencryptedByteCount),
             ) ?? UInt64(UInt32.max)
 
-            context.attachmentByteCounter.addToByteCount(
+            context.attachmentByteCounter.addToRemoteByteCount(
                 attachmentID: attachment.id,
                 byteCount: estimatedMediaTierSize,
             )
@@ -438,6 +454,7 @@ extension ReferencedAttachment {
 
     private func asBackupFilePointerLocatorInfo(
         context: BackupArchive.ArchivingContext,
+        localFileBackupStore: LocalFileBackupStore,
     ) -> BackupProto_FilePointer.LocatorInfo {
         var locatorInfo = BackupProto_FilePointer.LocatorInfo()
 
@@ -471,36 +488,33 @@ extension ReferencedAttachment {
             transitTierInfoToExport = nil
         }
 
-        let isLocalBackup = context.localFileBackupAttachmentCollector != nil
-
-        if let transitTierInfoToExport, !isLocalBackup {
+        if let transitTierInfoToExport {
             locatorInfo.transitCdnKey = transitTierInfoToExport.cdnKey
             locatorInfo.transitCdnNumber = transitTierInfoToExport.cdnNumber
             locatorInfo.transitTierUploadTimestamp = transitTierInfoToExport.uploadTimestamp
         }
 
-        if let localFileBackupAttachmentCollector = context.localFileBackupAttachmentCollector {
-            if let streamInfo = attachment.streamInfo {
-                if
-                    let existingMetadata = LocalFileBackupStore().metadataRecord(
-                        attachmentId: attachment.id,
-                        failIfNotExists: true,
-                        tx: context.tx,
-                    )
-                {
-                    localFileBackupAttachmentCollector.append(id: attachment.id)
-                    locatorInfo.localKey = existingMetadata.localKey
-
-                    locatorInfo.key = attachment.encryptionKey
-                    locatorInfo.size = streamInfo.unencryptedByteCount
-                    locatorInfo.integrityCheck = .plaintextHash(streamInfo.plaintextHash)
-                }
-            } else {
-                // We have no stream info for an attachment we are trying to backup locally,
-                // which means its offloaded, or never downloaded, and we can't back it up.
-                // Leave fields unset so any restoring device knows it's unavailable
+        // If we are making a local backup, the attachment is downloaded, and we have a
+        // local key, store it to indicate this attachment should be stored to and restored from
+        // the local file backup. Check streamInfo because we may have a local key from a
+        // past restore for an attachment that has since been offloaded.
+        if
+            let localFileBackupAttachmentCollector = context.localFileBackupAttachmentCollector,
+            attachment.streamInfo != nil
+        {
+            if
+                let localKeyForAttachment = localFileBackupStore.metadataRecord(
+                    attachmentId: attachment.id,
+                    failIfNotExists: false,
+                    tx: context.tx,
+                )?.localKey
+            {
+                localFileBackupAttachmentCollector.append(id: attachment.id)
+                locatorInfo.localKey = localKeyForAttachment
             }
-        } else if let mediaTierInfo = attachment.mediaTierInfo {
+        }
+
+        if let mediaTierInfo = attachment.mediaTierInfo {
             locatorInfo.key = attachment.encryptionKey
             locatorInfo.size = mediaTierInfo.unencryptedByteCount
             locatorInfo.integrityCheck = .plaintextHash(mediaTierInfo.plaintextHash)

@@ -43,11 +43,16 @@ struct BackupPlanOptionView: View {
                 Text(title)
                     .font(.headline)
                     .multilineTextAlignment(.leading)
-                Text(subtitle).foregroundStyle(Color.Signal.secondaryLabel)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(subtitle)
+                    .foregroundStyle(Color.Signal.secondaryLabel)
+                    .fixedSize(horizontal: false, vertical: true)
 
                 ForEach(bullets, id: \.text) { bullet in
                     Label {
-                        Text(bullet.text).font(.subheadline)
+                        Text(bullet.text)
+                            .font(.subheadline)
+                            .fixedSize(horizontal: false, vertical: true)
                     } icon: {
                         Image(uiImage: bullet.icon)
                             .foregroundStyle(

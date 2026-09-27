@@ -6,13 +6,23 @@
 public import SignalServiceKit
 public import SignalUI
 
-public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
+public class CVComponentAudioAttachment:
+    CVComponentBase,
+    CVComponent,
+    CVAudioPlayerListener,
+    DatabaseChangeDelegate,
+    CVAccessibilityComponent
+{
 
     public var componentKey: CVComponentKey { .audioAttachment }
 
     private let audioAttachment: AudioAttachment
     private let nextAudioAttachment: AudioAttachment?
     private var attachment: Attachment { audioAttachment.attachment }
+    private var playbackID: CVAudioPlaybackID {
+        CVAudioPlaybackID(audioAttachment: audioAttachment)
+    }
+
     private var attachmentStream: AttachmentStream? { audioAttachment.attachmentStream?.attachmentStream }
     private let footerOverlay: CVComponent?
 
@@ -160,7 +170,8 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
     /// Checks if the message still exists and stops playback if it does not.
     private func checkIfMessageStillExists() {
-        guard AppEnvironment.shared.cvAudioPlayerRef.audioPlaybackState(forAttachmentId: attachment.id) == .playing else {
+        let cvAudioPlayer = AppEnvironment.shared.cvAudioPlayerRef
+        guard cvAudioPlayer.audioPlaybackState(playbackID: playbackID) == .playing else {
             return
         }
 
@@ -189,7 +200,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             return true
         }
 
-        if audioAttachment.isDownloaded {
+        if audioAttachment.attachmentStream != nil {
             AppEnvironment.shared.cvAudioPlayerRef.setPlaybackRate(
                 renderItem.itemViewState.audioPlaybackRate,
                 forThreadUniqueId: renderItem.itemModel.thread.uniqueId,
@@ -211,11 +222,10 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
             return true
 
-        } else if audioAttachment.isDownloading, let pointerId = audioAttachment.attachmentPointer?.attachment.id {
-            Logger.debug("Cancelling in-progress download because of user action: \(interaction.uniqueId):\(pointerId)")
+        } else if audioAttachment.isDownloading {
             SSKEnvironment.shared.databaseStorageRef.write { tx in
                 DependenciesBridge.shared.attachmentDownloadManager.cancelDownload(
-                    for: pointerId,
+                    for: audioAttachment.attachment.id,
                     tx: tx,
                 )
             }
@@ -310,8 +320,8 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             audioMessageView.clearOverrideProgress(animated: false)
             let scrubbedTime = audioMessageView.scrubToLocation(location)
             AppEnvironment.shared.cvAudioPlayerRef.setPlaybackProgress(
-                progress: scrubbedTime,
-                forAttachment: attachment,
+                scrubbedTime,
+                playbackID: playbackID,
             )
         case .possible, .began, .failed, .cancelled:
             audioMessageView.clearOverrideProgress(animated: false)
@@ -351,24 +361,21 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             footerOverlayView = nil
         }
     }
-}
 
-// MARK: - CVAudioPlayerListener
+    // MARK: - CVAudioPlayerListener
 
-extension CVComponentAudioAttachment: CVAudioPlayerListener {
-    func audioPlayerStateDidChange(attachmentId: Attachment.IDType) {}
+    func audioPlayerStateDidChange(playbackID: CVAudioPlaybackID) {}
 
-    func audioPlayerDidFinish(attachmentId: Attachment.IDType) {
-        guard attachmentId == audioAttachment.attachment.id else { return }
+    func audioPlayerDidFinish(playbackID: CVAudioPlaybackID) {
+        guard playbackID == self.playbackID else { return }
+
         AppEnvironment.shared.cvAudioPlayerRef.autoplayNextAudioAttachmentIfNeeded(nextAudioAttachment)
     }
 
-    func audioPlayerDidMarkViewed(attachmentId: Attachment.IDType) {}
-}
+    func audioPlayerDidMarkViewed(playbackID: CVAudioPlaybackID) {}
 
-// MARK: - DatabaseChangeDelegate
+    // MARK: - DatabaseChangeDelegate
 
-extension CVComponentAudioAttachment: DatabaseChangeDelegate {
     public func databaseChangesDidUpdate(databaseChanges: SignalServiceKit.DatabaseChanges) {
         guard databaseChanges.didUpdate(interaction: self.interaction) else {
             return
@@ -384,11 +391,9 @@ extension CVComponentAudioAttachment: DatabaseChangeDelegate {
     public func databaseChangesDidReset() {
         checkIfMessageStillExists()
     }
-}
 
-// MARK: -
+    // MARK: - CVAccessibilityComponent
 
-extension CVComponentAudioAttachment: CVAccessibilityComponent {
     public var accessibilityDescription: String {
         if
             audioAttachment.isVoiceMessage,

@@ -32,7 +32,7 @@ public class SubscriptionConfigManager {
     }
 
     public func refresh() async throws -> SubscriptionConfig {
-        return try await taskQueue.run {
+        return try await taskQueue.runWithThrowingTask {
             return try await _refresh()
         }
     }

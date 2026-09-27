@@ -167,7 +167,7 @@ extension ConversationViewController: SingleOrDoubleTapGestureDelegate {
 
     public func didEndGesture(_ sender: SingleOrDoubleTapGestureRecognizer, wasHandled: Bool) {
         if !wasHandled {
-            dismissKeyBoard()
+            dismissKeyboard()
         }
     }
 }

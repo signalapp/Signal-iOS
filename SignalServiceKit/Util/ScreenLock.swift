@@ -130,13 +130,54 @@ public class ScreenLock: NSObject {
         unexpectedFailure: @escaping ((Error) -> Void),
         cancel: @escaping (() -> Void),
     ) {
-        AssertIsOnMainThread()
-
-        tryToVerifyLocalAuthentication(
+        tryToAuthenticate(
             localizedReason: OWSLocalizedString(
                 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK",
                 comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'.",
             ),
+            success: success,
+            failure: failure,
+            unexpectedFailure: unexpectedFailure,
+            cancel: cancel,
+        )
+    }
+
+    // Authenticates in order to change the 'screen lock' settings themselves,
+    // e.g. to turn screen lock off or to lengthen its timeout. The user is
+    // already inside the app in that case, so the reason we show differs from
+    // the one shown when unlocking the app.
+    //
+    // Has the same threading and completion guarantees as
+    // `tryToUnlockScreenLock(success:failure:unexpectedFailure:cancel:)`.
+    public func tryToUnlockScreenLockSettings(
+        success: @escaping (() -> Void),
+        failure: @escaping ((Error) -> Void),
+        unexpectedFailure: @escaping ((Error) -> Void),
+        cancel: @escaping (() -> Void),
+    ) {
+        tryToAuthenticate(
+            localizedReason: OWSLocalizedString(
+                "SCREEN_LOCK_REASON_CHANGE_SCREEN_LOCK_SETTINGS",
+                comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to confirm a change to the 'screen lock' settings.",
+            ),
+            success: success,
+            failure: failure,
+            unexpectedFailure: unexpectedFailure,
+            cancel: cancel,
+        )
+    }
+
+    private func tryToAuthenticate(
+        localizedReason: String,
+        success: @escaping (() -> Void),
+        failure: @escaping ((Error) -> Void),
+        unexpectedFailure: @escaping ((Error) -> Void),
+        cancel: @escaping (() -> Void),
+    ) {
+        AssertIsOnMainThread()
+
+        tryToVerifyLocalAuthentication(
+            localizedReason: localizedReason,
             completion: { (outcome: Outcome) in
                 AssertIsOnMainThread()
 

@@ -19,14 +19,6 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
 
     override var placeOnGlassIfAvailable: Bool { true }
 
-    private var emojiCounts: [InteractionReactionState.EmojiCount] {
-        reactionState.emojiCounts
-    }
-
-    private var allEmoji: [Emoji] {
-        return emojiCounts.compactMap { Emoji($0.emoji) }
-    }
-
     init(reactionState: InteractionReactionState, message: TSMessage) {
         self.reactionState = reactionState
         self.messageId = message.uniqueId
@@ -86,7 +78,7 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
         // If the currently selected emoji still exists, keep it selected.
         // Otherwise, select the "all" page by setting selected emoji to nil.
         let newSelectedEmoji: Emoji?
-        if let selectedEmoji, allEmoji.contains(selectedEmoji) {
+        if let selectedEmoji, reactionState.emojiReactions[selectedEmoji] != nil {
             newSelectedEmoji = selectedEmoji
         } else {
             newSelectedEmoji = nil
@@ -96,16 +88,16 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
     }
 
     func buildEmojiCountItems() {
-        let allReactionsItem = EmojiItem(emoji: nil, count: emojiCounts.lazy.map { $0.count }.reduce(0, +)) { [weak self] in
+        let allReactionsItem = EmojiItem(emoji: nil, count: reactionState.emojiCounts.lazy.map { $0.count }.reduce(0, +)) { [weak self] in
             self?.setSelectedEmoji(nil)
         }
 
-        emojiCountsCollectionView.items = [allReactionsItem] + emojiCounts.map { emojiCount in
+        emojiCountsCollectionView.items = [allReactionsItem] + reactionState.emojiCounts.map { emojiCount in
             EmojiItem(
-                emoji: emojiCount.emoji,
+                emoji: emojiCount.emojiVariant,
                 count: emojiCount.count,
             ) { [weak self] in
-                self?.setSelectedEmoji(Emoji(emojiCount.emoji))
+                self?.setSelectedEmoji(emojiCount.emoji)
             }
         }
     }
@@ -153,24 +145,38 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
 
     private var nextPageEmoji: Emoji? {
         // If we don't have an emoji defined, the first emoji is always up next
-        guard let emoji = selectedEmoji else { return allEmoji.first }
+        guard let emoji = selectedEmoji else {
+            return reactionState.emojiCounts.first?.emoji
+        }
 
         // If we don't have an index, or we're at the end of the array, "all" is up next
-        guard let index = allEmoji.firstIndex(of: emoji), index < (allEmoji.count - 1) else { return nil }
+        guard
+            let index = reactionState.emojiCounts.firstIndex(where: { $0.emoji == emoji }),
+            index < (reactionState.emojiCounts.endIndex - 1)
+        else {
+            return nil
+        }
 
         // Otherwise, use the next emoji in the array
-        return allEmoji[index + 1]
+        return reactionState.emojiCounts[index + 1].emoji
     }
 
     private var previousPageEmoji: Emoji? {
         // If we don't have an emoji defined, the last emoji is always previous
-        guard let emoji = selectedEmoji else { return allEmoji.last }
+        guard let emoji = selectedEmoji else {
+            return reactionState.emojiCounts.last?.emoji
+        }
 
         // If we don't have an index, or we're at the start of the array, "all" is previous
-        guard let index = allEmoji.firstIndex(of: emoji), index > 0 else { return nil }
+        guard
+            let index = reactionState.emojiCounts.firstIndex(where: { $0.emoji == emoji }),
+            index > reactionState.emojiCounts.startIndex
+        else {
+            return nil
+        }
 
         // Otherwise, use the previous emoji in the array
-        return allEmoji[index - 1]
+        return reactionState.emojiCounts[index - 1].emoji
     }
 
     private var pageWidth: CGFloat { return min(contentView.frame.width, maxWidth) }
@@ -220,12 +226,12 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
         }
     }
 
-    private func reactions(for emoji: Emoji?, transaction: DBReadTransaction) -> [OWSReaction] {
+    private func findReactions(forEmoji emoji: Emoji?) -> [OWSReaction] {
         guard let emoji else {
-            return reactionFinder.allReactions(transaction: transaction)
+            return reactionState.reactions
         }
 
-        guard let reactions = reactionState.reactionsByEmoji[emoji] else {
+        guard let reactions = reactionState.emojiReactions[emoji] else {
             owsFailDebug("missing reactions for emoji \(emoji)")
             return []
         }
@@ -244,7 +250,7 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
             emojiReactorsViews.insert(emojiReactorsViews.removeLast(), at: 0)
             emojiReactorsViewConstraints.insert(emojiReactorsViewConstraints.removeLast(), at: 0)
 
-            let previousPageReactions = reactions(for: previousPageEmoji, transaction: transaction)
+            let previousPageReactions = findReactions(forEmoji: previousPageEmoji)
             previousPageReactorsView.configure(for: previousPageReactions, transaction: transaction)
 
             // We're paging forwards!
@@ -255,25 +261,25 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
             emojiReactorsViews.append(emojiReactorsViews.removeFirst())
             emojiReactorsViewConstraints.append(emojiReactorsViewConstraints.removeFirst())
 
-            let nextPageReactions = reactions(for: nextPageEmoji, transaction: transaction)
+            let nextPageReactions = findReactions(forEmoji: nextPageEmoji)
             nextPageReactorsView.configure(for: nextPageReactions, transaction: transaction)
 
             // We didn't get here through paging, stuff probably changed. Reload all the things.
         } else {
-            let currentPageReactions = reactions(for: selectedEmoji, transaction: transaction)
+            let currentPageReactions = findReactions(forEmoji: selectedEmoji)
             currentPageReactorsView.configure(for: currentPageReactions, transaction: transaction)
 
-            let previousPageReactions = reactions(for: previousPageEmoji, transaction: transaction)
+            let previousPageReactions = findReactions(forEmoji: previousPageEmoji)
             previousPageReactorsView.configure(for: previousPageReactions, transaction: transaction)
 
-            let nextPageReactions = reactions(for: nextPageEmoji, transaction: transaction)
+            let nextPageReactions = findReactions(forEmoji: nextPageEmoji)
             nextPageReactorsView.configure(for: nextPageReactions, transaction: transaction)
         }
 
         updatePageConstraints()
 
         // Update selection on the counts view to reflect our new selected emoji
-        if let selectedEmoji, let index = allEmoji.firstIndex(of: selectedEmoji) {
+        if let selectedEmoji, let index = reactionState.emojiCounts.firstIndex(where: { $0.emoji == selectedEmoji }) {
             emojiCountsCollectionView.setSelectedIndex(index + 1)
         } else {
             emojiCountsCollectionView.setSelectedIndex(0)

@@ -20,27 +20,37 @@ class PasswordManagerManager:
         var continuations: [ObjectIdentifier: CheckedContinuation<DisplayableAccountEntropyPool, Error>] = [:]
     }
 
-    private var window: UIWindow {
-        CurrentAppContext().mainWindow.owsFailUnwrap("Missing window!")
+    private let tsAccountManager: TSAccountManager
+
+    private let state: AtomicValue<State>
+
+    init(
+        tsAccountManager: TSAccountManager,
+    ) {
+        self.tsAccountManager = tsAccountManager
+
+        self.state = AtomicValue(State(), lock: .init())
     }
 
-    private let state: AtomicValue<State> = AtomicValue(State(), lock: .init())
-
-    override init() {
-        super.init()
+    private var window: UIWindow {
+        CurrentAppContext().mainWindow.owsFailUnwrap("Missing window!")
     }
 
     // MARK: -
 
     @available(iOS 26.2, *)
     func saveDisplayableAEP(_ displayableAEP: DisplayableAccountEntropyPool) async throws {
+        let registeredState: RegisteredState
+        do throws(NotRegisteredError) {
+            registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+        } catch {
+            Logger.warn("Cannot save to password manager while unregistered!")
+            throw error
+        }
+
         let credentialDataManager = ASCredentialDataManager()
-        let credentialName = OWSLocalizedString(
-            "BACKUP_RECORD_KEY_PASSWORD_MANAGER_CREDENTIAL_NAME",
-            comment: "Name used as both the username and title for the user's 'Recovery Key' credential when saving it to a password manager.",
-        )
         let password = ASPasswordCredential(
-            user: credentialName,
+            user: registeredState.localIdentifiers.aci.serviceIdUppercaseString,
             password: displayableAEP.displayString,
         )
         let scope = ASAutoFillURLScope(host: "signal.org")
@@ -49,7 +59,10 @@ class PasswordManagerManager:
             try await credentialDataManager.save(
                 password: password,
                 for: scope,
-                title: credentialName,
+                title: OWSLocalizedString(
+                    "PASSWORD_MANAGER_SIGNAL_APP_NAME",
+                    comment: "The name of the Signal app, used as the title for an entry in a user's password manager for their Signal Recovery Key. Should be localized with the same value as the app's name in the iOS App Store.",
+                ),
                 anchor: window,
             )
         } catch {

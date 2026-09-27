@@ -360,7 +360,7 @@ public class FullTextSearcher {
         var contactResults = [ContactSearchResult]()
         var contactThreadResults = [ConversationSearchResult<ConversationSortKey>]()
         var groupResults: [GroupSearchResult] = []
-        var groupThreadIds = Set<String>()
+        var groupThreadUniqueIds = Set<String>()
         var messages: [UInt64: ConversationSearchResult<MessageSortKey>] = [:]
 
         let nameResolver = NameResolverImpl(contactsManager: SSKEnvironment.shared.contactManagerRef)
@@ -389,8 +389,8 @@ public class FullTextSearcher {
             return threadViewModel
         }
 
-        func fetchGroupThreadIds(for address: SignalServiceAddress) -> [String] {
-            return TSGroupThread.groupThreadIds(with: address, transaction: transaction)
+        func fetchGroupThreadUniqueIds(for address: SignalServiceAddress) -> [String] {
+            return TSGroupThread.groupThreadUniqueIds(withFullMember: address, tx: transaction)
         }
 
         func fetchMentionedMessages(for address: SignalServiceAddress) -> [TSMessage] {
@@ -404,7 +404,7 @@ public class FullTextSearcher {
 
         func appendGroup(threadUniqueId: String, groupThread: @autoclosure () -> TSGroupThread?) {
             // Don't add threads multiple times.
-            guard groupThreadIds.insert(threadUniqueId).inserted else {
+            guard groupThreadUniqueIds.insert(threadUniqueId).inserted else {
                 return
             }
             // Don't fetch the thread unless necessary.
@@ -476,7 +476,7 @@ public class FullTextSearcher {
             }
 
             if fetchGroups {
-                fetchGroupThreadIds(for: address).forEach { groupThreadId in
+                fetchGroupThreadUniqueIds(for: address).forEach { groupThreadId in
                     appendGroup(
                         threadUniqueId: groupThreadId,
                         groupThread: fetchThread(threadUniqueId: groupThreadId),

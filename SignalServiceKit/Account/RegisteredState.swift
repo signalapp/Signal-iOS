@@ -9,12 +9,16 @@ public struct RegisteredState {
     public let isPrimary: Bool
     public let localIdentifiers: LocalIdentifiers
 
-    init(registrationState: TSRegistrationState, localIdentifiers: LocalIdentifiers?) throws(NotRegisteredError) {
-        guard registrationState.isRegistered else {
+    init(registrationState: TSRegistrationState) throws(NotRegisteredError) {
+        switch registrationState {
+        case .registered(let localIdentifiers):
+            self.isPrimary = true
+            self.localIdentifiers = localIdentifiers
+        case .provisioned(let localIdentifiers):
+            self.isPrimary = false
+            self.localIdentifiers = localIdentifiers
+        case .unregistered, .reregistering, .relinking, .deregistered, .delinked, .transferringIncoming, .transferringPrimaryOutgoing, .transferringLinkedOutgoing, .transferred:
             throw NotRegisteredError()
         }
-        // These are both valid when we're registered.
-        self.isPrimary = registrationState.isPrimaryDevice!
-        self.localIdentifiers = localIdentifiers!
     }
 }

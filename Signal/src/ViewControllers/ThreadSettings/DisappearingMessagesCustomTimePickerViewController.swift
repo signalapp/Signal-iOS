@@ -46,13 +46,9 @@ class DisappearingMessagesCustomTimePickerViewController: HostingController<Disa
 
     private func updateNavigationItem() {
         if hasUnsavedChanges {
-            navigationItem.rightBarButtonItem = .button(
-                title: CommonStrings.setButton,
-                style: .done,
-                action: { [weak self] in
-                    self?.completeAndPop()
-                },
-            )
+            navigationItem.rightBarButtonItem = .setButton { [weak self] in
+                self?.completeAndPop()
+            }
         } else {
             navigationItem.rightBarButtonItem = nil
         }

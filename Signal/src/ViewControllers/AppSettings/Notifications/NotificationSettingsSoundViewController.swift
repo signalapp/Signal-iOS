@@ -22,7 +22,9 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
         if let thread {
             self.originalNotificationSound = Sounds.notificationSoundWithSneakyTransaction(forThreadUniqueId: thread.uniqueId)
         } else {
-            self.originalNotificationSound = Sounds.globalNotificationSound
+            self.originalNotificationSound = DependenciesBridge.shared.db.read { tx in
+                DependenciesBridge.shared.notificationPreferencesManager.globalNotificationSound(tx: tx)
+            }
         }
 
         super.init()
@@ -69,7 +71,7 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
 
         for sound in Sounds.allNotificationSounds {
             let soundName: String
-            if sound == .standard(.note) {
+            if sound == NotificationPreferencesManager.Defaults.globalNotificationSound {
                 soundName = String.nonPluralLocalizedStringWithFormat(
                     OWSLocalizedString(
                         "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT",
@@ -153,7 +155,10 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
         if let thread {
             Sounds.setNotificationSound(notificationSound, forThread: thread)
         } else {
-            Sounds.setGlobalNotificationSound(notificationSound)
+            DependenciesBridge.shared.db.write { tx in
+                DependenciesBridge.shared.notificationPreferencesManager
+                    .setGlobalNotificationSound(notificationSound, tx: tx)
+            }
         }
 
         stopPlayingAndDismiss()

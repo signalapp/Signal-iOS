@@ -90,7 +90,7 @@ class IdentityKeyMismatchManagerImpl: IdentityKeyMismatchManager {
     private let taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
     func validateLocalPniIdentityKeyIfNecessary() async throws {
-        try await taskQueue.run {
+        try await taskQueue.runWithThrowingTask {
             try await _validateLocalPniIdentityKeyIfNecessary()
         }
     }
@@ -120,7 +120,7 @@ class IdentityKeyMismatchManagerImpl: IdentityKeyMismatchManager {
             await self.db.awaitableWrite { tx in
                 if !isValid {
                     logger.warn("Marking as deregistered.")
-                    self.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)
+                    self.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, notify: true, tx: tx)
                 }
                 if identity == .pni {
                     self.clearPniMessageDecryptionError(tx: tx)

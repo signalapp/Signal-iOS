@@ -8,16 +8,12 @@ import SignalServiceKit
 import SignalUI
 public import UIKit
 
-class HomeTabBarController: UITabBarController {
+class HomeTabBarController: UITabBarController, UITabBarControllerDelegate, BadgeObserver, StoryBadgeCountObserver {
 
-    private let appReadiness: AppReadinessSetter
-
-    init(appReadiness: AppReadinessSetter) {
-        self.appReadiness = appReadiness
+    init() {
         super.init(nibName: nil, bundle: nil)
     }
 
-    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -89,25 +85,22 @@ class HomeTabBarController: UITabBarController {
         }
     }
 
-    lazy var chatListViewController = ChatListViewController(chatListMode: .inbox, appReadiness: appReadiness)
+    lazy var chatListViewController = ChatListViewController(chatListMode: .inbox)
     lazy var chatListNavController = OWSNavigationController(rootViewController: chatListViewController)
     lazy var chatListTabBarItem = Tabs.chatList.tabBarItem
 
     // No need to share spoiler render state across the whole app.
-    lazy var storiesViewController = StoriesViewController(
-        appReadiness: appReadiness,
-        spoilerState: SpoilerRenderState(),
-    )
+    lazy var storiesViewController = StoriesViewController(spoilerState: SpoilerRenderState())
     lazy var storiesNavController = OWSNavigationController(rootViewController: storiesViewController)
     lazy var storiesTabBarItem = Tabs.stories.tabBarItem
 
-    lazy var callsListViewController = CallsListViewController(appReadiness: appReadiness)
+    lazy var callsListViewController = CallsListViewController()
     lazy var callsListNavController = OWSNavigationController(rootViewController: callsListViewController)
     lazy var callsListTabBarItem = Tabs.calls.tabBarItem
 
     // There are two things going on here that require this code. The first is a stored property can't
     // conditionally include itself with an @available property, so some type erasing hoops need to be
-    // jumped through to persis UITabs in a property.  As for why the need to persit UITabs -
+    // jumped through to persis UITabs in a property.  As for why the need to persist UITabs -
     // UITabs are constructed with a 'viewControllerBuilder' completion that is required to return a
     // fresh UIViewController instance each time a tab is replaced.  This behavior is in conflict with
     // how this view controller manages the same set of child viewcontroller throughout it's lifetime.
@@ -115,7 +108,7 @@ class HomeTabBarController: UITabBarController {
     // build UITabs once and persist them in a type erasing array.
     private var _uiTabs = [String: Any]()
     @available(iOS 18, *)
-    func uiTab(for tab: Tabs) -> UITab {
+    private func uiTab(for tab: Tabs) -> UITab {
         var uiTab = _uiTabs[tab.tabIdentifier]
         if uiTab == nil {
             let vc = childControllers(for: tab).navigationController
@@ -132,10 +125,6 @@ class HomeTabBarController: UITabBarController {
         set { selectedIndex = newValue.rawValue }
     }
 
-    var owsTabBar: OWSTabBar? {
-        return tabBar as? OWSTabBar
-    }
-
     private lazy var storyBadgeCountManager = StoryBadgeCountManager()
 
     override func viewDidLoad() {
@@ -144,9 +133,7 @@ class HomeTabBarController: UITabBarController {
         delegate = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(storiesEnabledStateDidChange), name: .storiesEnabledStateDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .themeDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterForeground), name: .OWSApplicationWillEnterForeground, object: nil)
-        applyTheme()
 
         // We read directly from the database here, as the cache may not have been warmed by the time
         // this view is loaded (since it's the very first thing to load). Otherwise, there can be a
@@ -168,29 +155,22 @@ class HomeTabBarController: UITabBarController {
         }
     }
 
-    @objc
-    private func applyTheme() {
-        tabBar.tintColor = Theme.primaryTextColor
-    }
-
     private func updateTabBars(areStoriesEnabled: Bool) {
         let newTabs = tabsToShow(areStoriesEnabled: areStoriesEnabled)
-        if #available(iOS 18, *), UIDevice.current.isIPad {
+        if #available(iOS 18, *) {
             self.tabs = newTabs.map(uiTab(for:))
         } else {
             initializeCustomTabBar(tabs: newTabs)
         }
-        applyTheme()
+        tabBar.tintColor = .Signal.label
     }
 
+    @available(iOS, deprecated: 18)
     private func initializeCustomTabBar(tabs: [Tabs]) {
         // Use our custom tab bar.
         setValue(OWSTabBar(), forKey: "tabBar")
-        updateCustomTabBar(newTabs: tabs)
-    }
 
-    private func updateCustomTabBar(newTabs: [Tabs]) {
-        viewControllers = newTabs
+        viewControllers = tabs
             .map(childControllers(for:))
             .map { navController, tabBarItem in
                 navController.tabBarItem = tabBarItem
@@ -250,7 +230,6 @@ class HomeTabBarController: UITabBarController {
 
         guard _isTabBarHidden != hidden else {
             tabBar.isHidden = hidden
-            owsTabBar?.applyTheme()
             completion?(true)
             return
         }
@@ -282,26 +261,24 @@ class HomeTabBarController: UITabBarController {
             }
             animator.addCompletion({
                 self.tabBar.isHidden = hidden
-                self.owsTabBar?.applyTheme()
                 completion?($0 == .end)
             })
             animator.startAnimation()
         } else {
             animations()
             self.tabBar.isHidden = hidden
-            owsTabBar?.applyTheme()
             completion?(true)
         }
     }
-}
 
-extension HomeTabBarController: BadgeObserver {
+    // MARK: - BadgeObserver
+
     func didUpdateBadgeCount(_ badgeManager: BadgeManager, badgeCount: BadgeCount) {
         func stringify(_ badgeValue: UInt) -> String? {
             return badgeValue > 0 ? badgeValue.formatted() : nil
         }
 
-        if #available(iOS 18, *), UIDevice.current.isIPad {
+        if #available(iOS 18, *) {
             uiTab(for: .chatList).badgeValue = stringify(badgeCount.unreadChatCount)
             uiTab(for: .chatList).accessibilityValue = stringify(badgeCount.unreadChatCount)
             uiTab(for: .calls).badgeValue = stringify(badgeCount.unreadCallsCount)
@@ -313,16 +290,15 @@ extension HomeTabBarController: BadgeObserver {
             callsListTabBarItem.accessibilityValue = stringify(badgeCount.unreadCallsCount)
         }
     }
-}
 
-extension HomeTabBarController: StoryBadgeCountObserver {
+    // MARK: - StoryBadgeCountObserver
 
     var isStoriesTabActive: Bool {
         return selectedHomeTab == .stories && CurrentAppContext().isAppForegroundAndActive()
     }
 
     func didUpdateStoryBadge(_ badge: String?) {
-        if #available(iOS 18, *), UIDevice.current.isIPad {
+        if #available(iOS 18, *) {
             uiTab(for: .stories).badgeValue = badge
         } else {
             storiesTabBarItem.badgeValue = badge
@@ -349,9 +325,9 @@ extension HomeTabBarController: StoryBadgeCountObserver {
         let xOffset: CGFloat = CurrentAppContext().isRTL ? 0 : -5
         badgeView?.layer.transform = CATransform3DMakeTranslation(xOffset, 1, 1)
     }
-}
 
-extension HomeTabBarController: UITabBarControllerDelegate {
+    // MARK: - UITabBarControllerDelegate
+
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
         // If we re-select the active tab, scroll to the top.
         if selectedViewController == viewController {
@@ -378,11 +354,8 @@ extension HomeTabBarController: UITabBarControllerDelegate {
     }
 }
 
+@available(iOS, deprecated: 18)
 public class OWSTabBar: UITabBar {
-
-    public var fullWidth: CGFloat {
-        return superview?.frame.width ?? .zero
-    }
 
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -417,61 +390,55 @@ public class OWSTabBar: UITabBar {
     }
 
     fileprivate func applyTheme() {
-        guard !self.isHidden else {
-            return
-        }
+        guard isHidden == false else { return }
 
-        if #available(iOS 26, *) {
-            return
-        }
-
-        if UIAccessibility.isReduceTransparencyEnabled {
+        guard UIAccessibility.isReduceTransparencyEnabled == false else {
             blurEffectView?.isHidden = true
             self.backgroundImage = UIImage.image(color: tabBarBackgroundColor)
-        } else {
-            let blurEffect = Theme.barBlurEffect
+            return
+        }
 
-            let blurEffectView: UIVisualEffectView = {
-                if let existingBlurEffectView = self.blurEffectView {
-                    existingBlurEffectView.isHidden = false
-                    return existingBlurEffectView
-                }
-
-                let blurEffectView = UIVisualEffectView()
-                blurEffectView.isUserInteractionEnabled = false
-
-                self.blurEffectView = blurEffectView
-                self.insertSubview(blurEffectView, at: 0)
-                blurEffectView.autoPinEdgesToSuperviewEdges()
-
-                return blurEffectView
-            }()
-
-            blurEffectView.effect = blurEffect
-
-            // remove hairline below bar.
-            self.shadowImage = UIImage()
-
-            // Alter the visual effect view's tint to match our background color
-            // so the tabbar, when over a solid color background matching tabBarBackgroundColor,
-            // exactly matches the background color. This is brittle, but there is no way to get
-            // this behavior from UIVisualEffectView otherwise.
-            if
-                let tintingView = blurEffectView.subviews.first(where: {
-                    String(describing: type(of: $0)) == "_UIVisualEffectSubview"
-                })
-            {
-                tintingView.backgroundColor = tabBarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
-                self.backgroundImage = UIImage()
-            } else {
-                if #available(iOS 17, *) { owsFailDebug("Check if this still works on new iOS version.") }
-
-                owsFailDebug("Unexpectedly missing visual effect subview")
-                // If we can't find the tinting subview (e.g. a new iOS version changed the behavior)
-                // We'll make the tabBar more translucent by setting a background color.
-                let color = tabBarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
-                self.backgroundImage = UIImage.image(color: color)
+        let blurEffect = Theme.barBlurEffect
+        let blurEffectView: UIVisualEffectView = {
+            if let existingBlurEffectView = self.blurEffectView {
+                existingBlurEffectView.isHidden = false
+                return existingBlurEffectView
             }
+
+            let blurEffectView = UIVisualEffectView()
+            blurEffectView.isUserInteractionEnabled = false
+
+            self.blurEffectView = blurEffectView
+            self.insertSubview(blurEffectView, at: 0)
+            blurEffectView.autoPinEdgesToSuperviewEdges()
+
+            return blurEffectView
+        }()
+
+        blurEffectView.effect = blurEffect
+
+        // remove hairline below bar.
+        self.shadowImage = UIImage()
+
+        // Alter the visual effect view's tint to match our background color
+        // so the tabbar, when over a solid color background matching tabBarBackgroundColor,
+        // exactly matches the background color. This is brittle, but there is no way to get
+        // this behavior from UIVisualEffectView otherwise.
+        if
+            let tintingView = blurEffectView.subviews.first(where: {
+                String(describing: type(of: $0)) == "_UIVisualEffectSubview"
+            })
+        {
+            tintingView.backgroundColor = tabBarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+            self.backgroundImage = UIImage()
+        } else {
+            if #available(iOS 17, *) { owsFailDebug("Check if this still works on new iOS version.") }
+
+            owsFailDebug("Unexpectedly missing visual effect subview")
+            // If we can't find the tinting subview (e.g. a new iOS version changed the behavior)
+            // We'll make the tabBar more translucent by setting a background color.
+            let color = tabBarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+            self.backgroundImage = UIImage.image(color: color)
         }
     }
 

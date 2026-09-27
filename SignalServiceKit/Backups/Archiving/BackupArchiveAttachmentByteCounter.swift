@@ -6,16 +6,31 @@
 import Foundation
 
 public class BackupArchiveAttachmentByteCounter {
-    private var bytesCounter: UInt64 = 0
-    private var includedAttachmentsInByteCount: Set<Attachment.IDType> = Set()
+    private struct BytesCounter {
+        var bytes: UInt64 = 0
+        var includedAttachments: Set<Attachment.IDType> = Set()
+    }
 
-    func addToByteCount(attachmentID: Attachment.IDType, byteCount: UInt64) {
-        if includedAttachmentsInByteCount.insert(attachmentID).inserted {
-            bytesCounter += byteCount
+    private var localBytesCounter = BytesCounter()
+    private var remoteBytesCounter = BytesCounter()
+
+    func addToRemoteByteCount(attachmentID: Attachment.IDType, byteCount: UInt64) {
+        if remoteBytesCounter.includedAttachments.insert(attachmentID).inserted {
+            remoteBytesCounter.bytes += byteCount
         }
     }
 
-    func attachmentByteSize() -> UInt64 {
-        bytesCounter
+    func addToLocalByteCount(attachmentID: Attachment.IDType, byteCount: UInt64) {
+        if localBytesCounter.includedAttachments.insert(attachmentID).inserted {
+            localBytesCounter.bytes += byteCount
+        }
+    }
+
+    func remoteAttachmentByteSize() -> UInt64 {
+        remoteBytesCounter.bytes
+    }
+
+    func localAttachmentByteSize() -> UInt64 {
+        localBytesCounter.bytes
     }
 }

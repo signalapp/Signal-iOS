@@ -58,16 +58,21 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
             throw OWSAssertionError("Couldn't configure audio session")
         }
 
+        var recorderSettings: [String: Any] = [
+            AVFormatIDKey: kAudioFormatMPEG4AAC,
+            AVSampleRateKey: DebugFlags.voiceMessageSampleRate.get(),
+            AVNumberOfChannelsKey: 1,
+            AVEncoderBitRateKey: DebugFlags.voiceMessageBitRate.get(),
+        ]
+        if let audioQuality = DebugFlags.voiceMessageAudioQuality.get()?.avAudioQuality {
+            recorderSettings[AVEncoderAudioQualityKey] = audioQuality.rawValue
+        }
+
         let audioRecorder: AVAudioRecorder
         do {
             audioRecorder = try AVAudioRecorder(
                 url: audioFileUrl,
-                settings: [
-                    AVFormatIDKey: kAudioFormatMPEG4AAC,
-                    AVSampleRateKey: 44100,
-                    AVNumberOfChannelsKey: 1,
-                    AVEncoderBitRateKey: 32000,
-                ],
+                settings: recorderSettings,
             )
             self.audioRecorder = audioRecorder
         } catch {

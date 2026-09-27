@@ -67,11 +67,12 @@ public extension UIViewController {
     }
 
     func presentFormSheet(_ viewControllerToPresent: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
-        // Presenting form sheet on iPhone should always use the default presentation style.
-        // We get this for free, except on phones with the regular width size class (big phones
-        // in landscape, XR, XS Max, 8+, etc.)
-        if UIDevice.current.isIPad {
-            viewControllerToPresent.modalPresentationStyle = .formSheet
+        viewControllerToPresent.modalPresentationStyle = .formSheet
+        if let sheet = viewControllerToPresent.sheetPresentationController {
+            sheet.detents = [.large()]
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+            sheet.prefersEdgeAttachedInCompactHeight = true
+            sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
         }
         present(viewControllerToPresent, animated: animated, completion: completion)
     }
@@ -154,5 +155,13 @@ public extension UIViewController {
                 continuation.resume()
             }
         }
+    }
+}
+
+// MARK: -
+
+public extension UIViewController {
+    var hairlineWidth: CGFloat {
+        traitCollection.hairlineWidth
     }
 }

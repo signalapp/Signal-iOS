@@ -4300,6 +4300,18 @@ public class SSKProtoDataMessageContactName: NSObject, Codable, NSSecureCoding {
         return proto.hasMiddleName
     }
 
+    @objc
+    public var nickname: String? {
+        guard hasNickname else {
+            return nil
+        }
+        return proto.nickname
+    }
+    @objc
+    public var hasNickname: Bool {
+        return proto.hasNickname
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -4388,6 +4400,9 @@ extension SSKProtoDataMessageContactName {
         if let _value = middleName {
             builder.setMiddleName(_value)
         }
+        if let _value = nickname {
+            builder.setNickname(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -4456,6 +4471,17 @@ public class SSKProtoDataMessageContactNameBuilder: NSObject {
 
     public func setMiddleName(_ valueParam: String) {
         proto.middleName = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setNickname(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.nickname = valueParam
+    }
+
+    public func setNickname(_ valueParam: String) {
+        proto.nickname = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -5556,6 +5582,18 @@ public class SSKProtoDataMessageContact: NSObject, Codable, NSSecureCoding {
         return proto.hasOrganization
     }
 
+    @objc
+    public var aciBinary: Data? {
+        guard hasAciBinary else {
+            return nil
+        }
+        return proto.aciBinary
+    }
+    @objc
+    public var hasAciBinary: Bool {
+        return proto.hasAciBinary
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -5675,6 +5713,9 @@ extension SSKProtoDataMessageContact {
         if let _value = organization {
             builder.setOrganization(_value)
         }
+        if let _value = aciBinary {
+            builder.setAciBinary(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -5751,6 +5792,17 @@ public class SSKProtoDataMessageContactBuilder: NSObject {
 
     public func setOrganization(_ valueParam: String) {
         proto.organization = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setAciBinary(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.aciBinary = valueParam
+    }
+
+    public func setAciBinary(_ valueParam: Data) {
+        proto.aciBinary = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

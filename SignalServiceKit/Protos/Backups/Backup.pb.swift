@@ -24,7 +24,7 @@ public import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
@@ -38,7 +38,7 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 /// - E164
 /// - ServiceIdToBinary(PNI)
 /// - Group Id
-public enum BackupProto_AvatarColor: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum BackupProto_AvatarColor: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case a100 // = 0
   case a110 // = 1
@@ -112,7 +112,7 @@ public enum BackupProto_AvatarColor: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-public enum BackupProto_GroupV2AccessLevel: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum BackupProto_GroupV2AccessLevel: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
 
   /// Interpret as "Unsatisfiable"
@@ -160,7 +160,7 @@ public enum BackupProto_GroupV2AccessLevel: SwiftProtobuf.Enum, Swift.CaseIterab
 
 }
 
-public struct BackupProto_BackupInfo: Sendable {
+public nonisolated struct BackupProto_BackupInfo: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -200,7 +200,7 @@ public struct BackupProto_BackupInfo: Sendable {
 ///
 /// For example, Chats may all be together at the beginning,
 /// or may each immediately precede its first ChatItem.
-public struct BackupProto_Frame: Sendable {
+public nonisolated struct BackupProto_Frame: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -275,7 +275,7 @@ public struct BackupProto_Frame: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, importers should skip this frame without throwing an error.
-  public enum OneOf_Item: Equatable, Sendable {
+  public nonisolated enum OneOf_Item: Equatable, Sendable {
     case account(BackupProto_AccountData)
     case recipient(BackupProto_Recipient)
     case chat(BackupProto_Chat)
@@ -290,7 +290,7 @@ public struct BackupProto_Frame: Sendable {
   public init() {}
 }
 
-public struct BackupProto_AccountData: @unchecked Sendable {
+public nonisolated struct BackupProto_AccountData: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -395,7 +395,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public enum PhoneNumberSharingMode: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum PhoneNumberSharingMode: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Interpret as "Nobody"
@@ -435,7 +435,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
 
   }
 
-  public enum SentMediaQuality: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum SentMediaQuality: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Interpret as "Standard"
@@ -475,7 +475,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
 
   }
 
-  public enum AppTheme: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum AppTheme: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Interpret as "System"
@@ -519,7 +519,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
 
   }
 
-  public enum CallsUseLessDataSetting: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum CallsUseLessDataSetting: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Interpret as "Never"
@@ -563,7 +563,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
 
   }
 
-  public struct UsernameLink: Sendable {
+  public nonisolated struct UsernameLink: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -578,7 +578,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    public enum Color: SwiftProtobuf.Enum, Swift.CaseIterable {
+    public nonisolated enum Color: SwiftProtobuf.Enum, Swift.CaseIterable {
       public typealias RawValue = Int
 
       /// Interpret as "Blue"
@@ -645,7 +645,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
     public init() {}
   }
 
-  public struct AutoDownloadSettings: Sendable {
+  public nonisolated struct AutoDownloadSettings: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -660,7 +660,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    public enum AutoDownloadOption: SwiftProtobuf.Enum, Swift.CaseIterable {
+    public nonisolated enum AutoDownloadOption: SwiftProtobuf.Enum, Swift.CaseIterable {
       public typealias RawValue = Int
 
       /// Interpret as "Never"
@@ -707,7 +707,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
     public init() {}
   }
 
-  public struct AccountSettings: @unchecked Sendable {
+  public nonisolated struct AccountSettings: @unchecked Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -887,9 +887,9 @@ public struct BackupProto_AccountData: @unchecked Sendable {
       set {_uniqueStorage()._allowAutomaticKeyVerification = newValue}
     }
 
-    public var seenAdminDeleteEducationDialog: Bool {
-      get {_storage._seenAdminDeleteEducationDialog}
-      set {_uniqueStorage()._seenAdminDeleteEducationDialog = newValue}
+    public var hasSeenAdminDeleteEducationDialog_p: Bool {
+      get {_storage._hasSeenAdminDeleteEducationDialog_p}
+      set {_uniqueStorage()._hasSeenAdminDeleteEducationDialog_p = newValue}
     }
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -899,7 +899,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
     fileprivate var _storage = _StorageClass.defaultInstance
   }
 
-  public struct SubscriberData: Sendable {
+  public nonisolated struct SubscriberData: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -915,7 +915,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
     public init() {}
   }
 
-  public struct IAPSubscriberData: Sendable {
+  public nonisolated struct IAPSubscriberData: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -946,7 +946,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     /// If unset, importers should ignore the subscriber data without throwing an error.
-    public enum OneOf_IapSubscriptionID: Equatable, Sendable {
+    public nonisolated enum OneOf_IapSubscriptionID: Equatable, Sendable {
       /// Identifies an Android Play Store IAP subscription.
       case purchaseToken(String)
       /// Identifies an iOS App Store IAP subscription.
@@ -957,7 +957,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
     public init() {}
   }
 
-  public struct AndroidSpecificSettings: Sendable {
+  public nonisolated struct AndroidSpecificSettings: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -971,7 +971,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    public enum NavigationBarSize: SwiftProtobuf.Enum, Swift.CaseIterable {
+    public nonisolated enum NavigationBarSize: SwiftProtobuf.Enum, Swift.CaseIterable {
       public typealias RawValue = Int
 
       /// Intepret as "Normal"
@@ -1014,7 +1014,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
     public init() {}
   }
 
-  public struct IOSSpecificSettings: Sendable {
+  public nonisolated struct IOSSpecificSettings: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1031,7 +1031,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-public struct BackupProto_Recipient: Sendable {
+public nonisolated struct BackupProto_Recipient: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1093,7 +1093,7 @@ public struct BackupProto_Recipient: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, importers should skip this frame without throwing an error.
-  public enum OneOf_Destination: Equatable, Sendable {
+  public nonisolated enum OneOf_Destination: Equatable, Sendable {
     case contact(BackupProto_Contact)
     case group(BackupProto_Group)
     case distributionList(BackupProto_DistributionListItem)
@@ -1106,7 +1106,7 @@ public struct BackupProto_Recipient: Sendable {
   public init() {}
 }
 
-public struct BackupProto_Contact: @unchecked Sendable {
+public nonisolated struct BackupProto_Contact: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1284,13 +1284,13 @@ public struct BackupProto_Contact: @unchecked Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, consider the user to be registered
-  public enum OneOf_Registration: Equatable, Sendable {
+  public nonisolated enum OneOf_Registration: Equatable, Sendable {
     case registered(BackupProto_Contact.Registered)
     case notRegistered(BackupProto_Contact.NotRegistered)
 
   }
 
-  public enum IdentityState: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum IdentityState: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// A valid value -- indicates unset by the user
@@ -1332,7 +1332,7 @@ public struct BackupProto_Contact: @unchecked Sendable {
 
   }
 
-  public enum Visibility: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum Visibility: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// A valid value -- the contact is not hidden
@@ -1372,7 +1372,7 @@ public struct BackupProto_Contact: @unchecked Sendable {
 
   }
 
-  public struct Registered: Sendable {
+  public nonisolated struct Registered: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1382,7 +1382,7 @@ public struct BackupProto_Contact: @unchecked Sendable {
     public init() {}
   }
 
-  public struct NotRegistered: Sendable {
+  public nonisolated struct NotRegistered: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1394,7 +1394,7 @@ public struct BackupProto_Contact: @unchecked Sendable {
     public init() {}
   }
 
-  public struct Name: Sendable {
+  public nonisolated struct Name: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1413,7 +1413,7 @@ public struct BackupProto_Contact: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-public struct BackupProto_Group: @unchecked Sendable {
+public nonisolated struct BackupProto_Group: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1463,7 +1463,7 @@ public struct BackupProto_Group: @unchecked Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public enum StorySendMode: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum StorySendMode: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// A valid value -- indicates unset by the user
@@ -1508,7 +1508,7 @@ public struct BackupProto_Group: @unchecked Sendable {
   /// These exist to allow us to have the latest snapshot of a group during restoration without having to hit the network.
   /// We would use Groups.proto if we could, but we want a plaintext version to improve export readability.
   /// For documentation, defer to Groups.proto. The only name change is Group -> GroupSnapshot to avoid the naming conflict.
-  public struct GroupSnapshot: Sendable {
+  public nonisolated struct GroupSnapshot: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1577,7 +1577,7 @@ public struct BackupProto_Group: @unchecked Sendable {
     fileprivate var _accessControl: BackupProto_Group.AccessControl? = nil
   }
 
-  public struct GroupAttributeBlob: Sendable {
+  public nonisolated struct GroupAttributeBlob: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1620,7 +1620,7 @@ public struct BackupProto_Group: @unchecked Sendable {
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     /// If unset, consider the field it represents to not be present
-    public enum OneOf_Content: Equatable, Sendable {
+    public nonisolated enum OneOf_Content: Equatable, Sendable {
       case title(String)
       case avatar(Data)
       case disappearingMessagesDuration(UInt32)
@@ -1631,7 +1631,7 @@ public struct BackupProto_Group: @unchecked Sendable {
     public init() {}
   }
 
-  public struct Member: Sendable {
+  public nonisolated struct Member: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1648,7 +1648,7 @@ public struct BackupProto_Group: @unchecked Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    public enum Role: SwiftProtobuf.Enum, Swift.CaseIterable {
+    public nonisolated enum Role: SwiftProtobuf.Enum, Swift.CaseIterable {
       public typealias RawValue = Int
 
       /// Intepret as "Default"
@@ -1691,7 +1691,7 @@ public struct BackupProto_Group: @unchecked Sendable {
     public init() {}
   }
 
-  public struct MemberPendingProfileKey: Sendable {
+  public nonisolated struct MemberPendingProfileKey: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1716,7 +1716,7 @@ public struct BackupProto_Group: @unchecked Sendable {
     fileprivate var _member: BackupProto_Group.Member? = nil
   }
 
-  public struct MemberPendingAdminApproval: Sendable {
+  public nonisolated struct MemberPendingAdminApproval: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1730,7 +1730,7 @@ public struct BackupProto_Group: @unchecked Sendable {
     public init() {}
   }
 
-  public struct MemberBanned: Sendable {
+  public nonisolated struct MemberBanned: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1744,7 +1744,7 @@ public struct BackupProto_Group: @unchecked Sendable {
     public init() {}
   }
 
-  public struct AccessControl: Sendable {
+  public nonisolated struct AccessControl: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1759,7 +1759,7 @@ public struct BackupProto_Group: @unchecked Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    public enum AccessRequired: SwiftProtobuf.Enum, Swift.CaseIterable {
+    public nonisolated enum AccessRequired: SwiftProtobuf.Enum, Swift.CaseIterable {
       public typealias RawValue = Int
 
       /// Intepret as "Unsatisfiable"
@@ -1815,7 +1815,7 @@ public struct BackupProto_Group: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-public struct BackupProto_Self: Sendable {
+public nonisolated struct BackupProto_Self: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1836,7 +1836,7 @@ public struct BackupProto_Self: Sendable {
   fileprivate var _avatarColor: BackupProto_AvatarColor? = nil
 }
 
-public struct BackupProto_ReleaseNotes: Sendable {
+public nonisolated struct BackupProto_ReleaseNotes: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1846,7 +1846,7 @@ public struct BackupProto_ReleaseNotes: Sendable {
   public init() {}
 }
 
-public struct BackupProto_Chat: Sendable {
+public nonisolated struct BackupProto_Chat: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1919,7 +1919,7 @@ public struct BackupProto_Chat: Sendable {
 /// note:
 /// - room id can be derived from the root key
 /// - the presence of an admin key means this user is a call admin
-public struct BackupProto_CallLink: Sendable {
+public nonisolated struct BackupProto_CallLink: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1944,7 +1944,7 @@ public struct BackupProto_CallLink: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public enum Restrictions: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum Restrictions: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Interpret as "Admin Approval"
@@ -1989,7 +1989,7 @@ public struct BackupProto_CallLink: Sendable {
   fileprivate var _adminKey: Data? = nil
 }
 
-public struct BackupProto_AdHocCall: Sendable {
+public nonisolated struct BackupProto_AdHocCall: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2005,7 +2005,7 @@ public struct BackupProto_AdHocCall: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public enum State: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum State: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Interpret as "Generic"
@@ -2044,7 +2044,7 @@ public struct BackupProto_AdHocCall: Sendable {
   public init() {}
 }
 
-public struct BackupProto_DistributionListItem: Sendable {
+public nonisolated struct BackupProto_DistributionListItem: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2075,7 +2075,7 @@ public struct BackupProto_DistributionListItem: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, importers should skip the item entirely without showing an error.
-  public enum OneOf_Item: Equatable, Sendable {
+  public nonisolated enum OneOf_Item: Equatable, Sendable {
     case deletionTimestamp(UInt64)
     case distributionList(BackupProto_DistributionList)
 
@@ -2084,7 +2084,7 @@ public struct BackupProto_DistributionListItem: Sendable {
   public init() {}
 }
 
-public struct BackupProto_DistributionList: Sendable {
+public nonisolated struct BackupProto_DistributionList: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2100,7 +2100,7 @@ public struct BackupProto_DistributionList: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public enum PrivacyMode: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum PrivacyMode: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Interpret as "Only with"
@@ -2147,7 +2147,7 @@ public struct BackupProto_DistributionList: Sendable {
   public init() {}
 }
 
-public struct BackupProto_ChatItem: @unchecked Sendable {
+public nonisolated struct BackupProto_ChatItem: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2338,7 +2338,7 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, importers should skip this item without throwing an error.
-  public enum OneOf_DirectionalDetails: Equatable, Sendable {
+  public nonisolated enum OneOf_DirectionalDetails: Equatable, Sendable {
     case incoming(BackupProto_ChatItem.IncomingMessageDetails)
     case outgoing(BackupProto_ChatItem.OutgoingMessageDetails)
     case directionless(BackupProto_ChatItem.DirectionlessMessageDetails)
@@ -2346,7 +2346,7 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
   }
 
   /// If unset, importers should skip this item without throwing an error.
-  public enum OneOf_Item: Equatable, Sendable {
+  public nonisolated enum OneOf_Item: Equatable, Sendable {
     case standardMessage(BackupProto_StandardMessage)
     case contactMessage(BackupProto_ContactMessage)
     case stickerMessage(BackupProto_StickerMessage)
@@ -2362,7 +2362,7 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
 
   }
 
-  public struct IncomingMessageDetails: Sendable {
+  public nonisolated struct IncomingMessageDetails: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2389,7 +2389,7 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
     fileprivate var _dateServerSent: UInt64? = nil
   }
 
-  public struct OutgoingMessageDetails: Sendable {
+  public nonisolated struct OutgoingMessageDetails: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2404,7 +2404,7 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
     public init() {}
   }
 
-  public struct DirectionlessMessageDetails: Sendable {
+  public nonisolated struct DirectionlessMessageDetails: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2414,7 +2414,7 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
     public init() {}
   }
 
-  public struct PinDetails: Sendable {
+  public nonisolated struct PinDetails: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2442,7 +2442,7 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    public enum OneOf_PinExpiry: Equatable, Sendable {
+    public nonisolated enum OneOf_PinExpiry: Equatable, Sendable {
       /// timestamp when the pin should expire
       case pinExpiresAtTimestamp(UInt64)
       case pinNeverExpires(Bool)
@@ -2457,7 +2457,7 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-public struct BackupProto_SendStatus: Sendable {
+public nonisolated struct BackupProto_SendStatus: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2529,7 +2529,7 @@ public struct BackupProto_SendStatus: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, importers should consider the status to be "pending"
-  public enum OneOf_DeliveryStatus: Equatable, Sendable {
+  public nonisolated enum OneOf_DeliveryStatus: Equatable, Sendable {
     case pending(BackupProto_SendStatus.Pending)
     case sent(BackupProto_SendStatus.Sent)
     case delivered(BackupProto_SendStatus.Delivered)
@@ -2540,7 +2540,7 @@ public struct BackupProto_SendStatus: Sendable {
 
   }
 
-  public struct Pending: Sendable {
+  public nonisolated struct Pending: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2550,19 +2550,7 @@ public struct BackupProto_SendStatus: Sendable {
     public init() {}
   }
 
-  public struct Sent: Sendable {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    public var sealedSender: Bool = false
-
-    public var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    public init() {}
-  }
-
-  public struct Delivered: Sendable {
+  public nonisolated struct Sent: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2574,7 +2562,7 @@ public struct BackupProto_SendStatus: Sendable {
     public init() {}
   }
 
-  public struct Read: Sendable {
+  public nonisolated struct Delivered: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2586,7 +2574,19 @@ public struct BackupProto_SendStatus: Sendable {
     public init() {}
   }
 
-  public struct Viewed: Sendable {
+  public nonisolated struct Read: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    public var sealedSender: Bool = false
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public init() {}
+  }
+
+  public nonisolated struct Viewed: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2599,7 +2599,7 @@ public struct BackupProto_SendStatus: Sendable {
   }
 
   /// e.g. user in group was blocked, so we skipped sending to them
-  public struct Skipped: Sendable {
+  public nonisolated struct Skipped: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2609,7 +2609,7 @@ public struct BackupProto_SendStatus: Sendable {
     public init() {}
   }
 
-  public struct Failed: Sendable {
+  public nonisolated struct Failed: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2618,7 +2618,7 @@ public struct BackupProto_SendStatus: Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    public enum FailureReason: SwiftProtobuf.Enum, Swift.CaseIterable {
+    public nonisolated enum FailureReason: SwiftProtobuf.Enum, Swift.CaseIterable {
       public typealias RawValue = Int
 
       /// A valid value -- could indicate a crash or lack of information
@@ -2664,7 +2664,7 @@ public struct BackupProto_SendStatus: Sendable {
   public init() {}
 }
 
-public struct BackupProto_Text: Sendable {
+public nonisolated struct BackupProto_Text: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2678,7 +2678,7 @@ public struct BackupProto_Text: Sendable {
   public init() {}
 }
 
-public struct BackupProto_StandardMessage: @unchecked Sendable {
+public nonisolated struct BackupProto_StandardMessage: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2732,7 +2732,7 @@ public struct BackupProto_StandardMessage: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-public struct BackupProto_ContactMessage: Sendable {
+public nonisolated struct BackupProto_ContactMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2755,7 +2755,7 @@ public struct BackupProto_ContactMessage: Sendable {
   fileprivate var _contact: BackupProto_ContactAttachment? = nil
 }
 
-public struct BackupProto_DirectStoryReplyMessage: Sendable {
+public nonisolated struct BackupProto_DirectStoryReplyMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2784,13 +2784,13 @@ public struct BackupProto_DirectStoryReplyMessage: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, importers should ignore the message without throwing an error.
-  public enum OneOf_Reply: Equatable, Sendable {
+  public nonisolated enum OneOf_Reply: Equatable, Sendable {
     case textReply(BackupProto_DirectStoryReplyMessage.TextReply)
     case emoji(String)
 
   }
 
-  public struct TextReply: @unchecked Sendable {
+  public nonisolated struct TextReply: @unchecked Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2823,7 +2823,7 @@ public struct BackupProto_DirectStoryReplyMessage: Sendable {
   public init() {}
 }
 
-public struct BackupProto_PaymentNotification: Sendable {
+public nonisolated struct BackupProto_PaymentNotification: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2868,7 +2868,7 @@ public struct BackupProto_PaymentNotification: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public struct TransactionDetails: Sendable {
+  public nonisolated struct TransactionDetails: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2895,14 +2895,14 @@ public struct BackupProto_PaymentNotification: Sendable {
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     /// If unset, importers should treat the transaction as successful with no metadata.
-    public enum OneOf_Payment: Equatable, Sendable {
+    public nonisolated enum OneOf_Payment: Equatable, Sendable {
       case transaction(BackupProto_PaymentNotification.TransactionDetails.Transaction)
       case failedTransaction(BackupProto_PaymentNotification.TransactionDetails.FailedTransaction)
 
     }
 
     /// Used to map to payments on the ledger
-    public struct MobileCoinTxoIdentification: Sendable {
+    public nonisolated struct MobileCoinTxoIdentification: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -2919,7 +2919,7 @@ public struct BackupProto_PaymentNotification: Sendable {
     }
 
     /// Failed payments can't be synced from the ledger
-    public struct FailedTransaction: Sendable {
+    public nonisolated struct FailedTransaction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -2928,7 +2928,7 @@ public struct BackupProto_PaymentNotification: Sendable {
 
       public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-      public enum FailureReason: SwiftProtobuf.Enum, Swift.CaseIterable {
+      public nonisolated enum FailureReason: SwiftProtobuf.Enum, Swift.CaseIterable {
         public typealias RawValue = Int
 
         /// A valid value -- reason unknown
@@ -2971,7 +2971,7 @@ public struct BackupProto_PaymentNotification: Sendable {
       public init() {}
     }
 
-    public struct Transaction: Sendable {
+    public nonisolated struct Transaction: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -3039,7 +3039,7 @@ public struct BackupProto_PaymentNotification: Sendable {
 
       public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-      public enum Status: SwiftProtobuf.Enum, Swift.CaseIterable {
+      public nonisolated enum Status: SwiftProtobuf.Enum, Swift.CaseIterable {
         public typealias RawValue = Int
 
         /// A valid value -- state unconfirmed
@@ -3100,7 +3100,7 @@ public struct BackupProto_PaymentNotification: Sendable {
   fileprivate var _transactionDetails: BackupProto_PaymentNotification.TransactionDetails? = nil
 }
 
-public struct BackupProto_GiftBadge: Sendable {
+public nonisolated struct BackupProto_GiftBadge: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3111,7 +3111,7 @@ public struct BackupProto_GiftBadge: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public enum State: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum State: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// A valid state
@@ -3158,7 +3158,7 @@ public struct BackupProto_GiftBadge: Sendable {
   public init() {}
 }
 
-public struct BackupProto_ViewOnceMessage: Sendable {
+public nonisolated struct BackupProto_ViewOnceMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3182,7 +3182,7 @@ public struct BackupProto_ViewOnceMessage: Sendable {
   fileprivate var _attachment: BackupProto_MessageAttachment? = nil
 }
 
-public struct BackupProto_ContactAttachment: @unchecked Sendable {
+public nonisolated struct BackupProto_ContactAttachment: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3227,7 +3227,7 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public struct Name: Sendable {
+  public nonisolated struct Name: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3249,7 +3249,7 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
     public init() {}
   }
 
-  public struct Phone: Sendable {
+  public nonisolated struct Phone: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3262,7 +3262,7 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    public enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
+    public nonisolated enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
       public typealias RawValue = Int
 
       /// Interpret as "Home"
@@ -3313,7 +3313,7 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
     public init() {}
   }
 
-  public struct Email: Sendable {
+  public nonisolated struct Email: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3326,7 +3326,7 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    public enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
+    public nonisolated enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
       public typealias RawValue = Int
 
       /// Intepret as "Home"
@@ -3377,7 +3377,7 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
     public init() {}
   }
 
-  public struct PostalAddress: Sendable {
+  public nonisolated struct PostalAddress: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3402,7 +3402,7 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    public enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
+    public nonisolated enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
       public typealias RawValue = Int
 
       /// Interpret as "Home"
@@ -3454,7 +3454,7 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-public struct BackupProto_StickerMessage: Sendable {
+public nonisolated struct BackupProto_StickerMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3478,7 +3478,7 @@ public struct BackupProto_StickerMessage: Sendable {
 }
 
 /// Tombstone for remote delete
-public struct BackupProto_RemoteDeletedMessage: Sendable {
+public nonisolated struct BackupProto_RemoteDeletedMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3488,7 +3488,7 @@ public struct BackupProto_RemoteDeletedMessage: Sendable {
   public init() {}
 }
 
-public struct BackupProto_Sticker: @unchecked Sendable {
+public nonisolated struct BackupProto_Sticker: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3537,7 +3537,7 @@ public struct BackupProto_Sticker: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-public struct BackupProto_LinkPreview: @unchecked Sendable {
+public nonisolated struct BackupProto_LinkPreview: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3592,7 +3592,7 @@ public struct BackupProto_LinkPreview: @unchecked Sendable {
 
 /// A FilePointer on a message that has additional
 /// metadata that applies only to message attachments.
-public struct BackupProto_MessageAttachment: @unchecked Sendable {
+public nonisolated struct BackupProto_MessageAttachment: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3632,7 +3632,7 @@ public struct BackupProto_MessageAttachment: @unchecked Sendable {
   /// Similar to SignalService.AttachmentPointer.Flags,
   /// but explicitly mutually exclusive. Note the different raw values
   /// (non-zero starting values are not supported in proto3.)
-  public enum Flag: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum Flag: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// A valid value -- no flag applied
@@ -3681,7 +3681,7 @@ public struct BackupProto_MessageAttachment: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-public struct BackupProto_FilePointer: Sendable {
+public nonisolated struct BackupProto_FilePointer: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3769,7 +3769,7 @@ public struct BackupProto_FilePointer: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public struct LocatorInfo: Sendable {
+  public nonisolated struct LocatorInfo: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3862,7 +3862,7 @@ public struct BackupProto_FilePointer: Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    public enum OneOf_IntegrityCheck: Equatable, Sendable {
+    public nonisolated enum OneOf_IntegrityCheck: Equatable, Sendable {
       /// Set if file was at one point downloaded and its plaintextHash was calculated
       case plaintextHash(Data)
       /// Set if file has not been downloaded so its integrity has not been verified
@@ -3893,7 +3893,7 @@ public struct BackupProto_FilePointer: Sendable {
   fileprivate var _locatorInfo: BackupProto_FilePointer.LocatorInfo? = nil
 }
 
-public struct BackupProto_Quote: Sendable {
+public nonisolated struct BackupProto_Quote: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3925,7 +3925,7 @@ public struct BackupProto_Quote: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Interpret as "Normal"
@@ -3973,7 +3973,7 @@ public struct BackupProto_Quote: Sendable {
 
   }
 
-  public struct QuotedAttachment: Sendable {
+  public nonisolated struct QuotedAttachment: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -4020,7 +4020,7 @@ public struct BackupProto_Quote: Sendable {
   fileprivate var _text: BackupProto_Text? = nil
 }
 
-public struct BackupProto_BodyRange: Sendable {
+public nonisolated struct BackupProto_BodyRange: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4053,13 +4053,13 @@ public struct BackupProto_BodyRange: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, importers should ignore the body range without throwing an error.
-  public enum OneOf_AssociatedValue: Equatable, Sendable {
+  public nonisolated enum OneOf_AssociatedValue: Equatable, Sendable {
     case mentionAci(Data)
     case style(BackupProto_BodyRange.Style)
 
   }
 
-  public enum Style: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum Style: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Importers should ignore the body range without throwing an error.
@@ -4114,7 +4114,7 @@ public struct BackupProto_BodyRange: Sendable {
   public init() {}
 }
 
-public struct BackupProto_Reaction: Sendable {
+public nonisolated struct BackupProto_Reaction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4134,7 +4134,7 @@ public struct BackupProto_Reaction: Sendable {
   public init() {}
 }
 
-public struct BackupProto_Poll: Sendable {
+public nonisolated struct BackupProto_Poll: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4153,7 +4153,7 @@ public struct BackupProto_Poll: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public struct PollOption: Sendable {
+  public nonisolated struct PollOption: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -4165,7 +4165,7 @@ public struct BackupProto_Poll: Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    public struct PollVote: Sendable {
+    public nonisolated struct PollVote: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -4187,7 +4187,7 @@ public struct BackupProto_Poll: Sendable {
   public init() {}
 }
 
-public struct BackupProto_AdminDeletedMessage: Sendable {
+public nonisolated struct BackupProto_AdminDeletedMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4200,7 +4200,7 @@ public struct BackupProto_AdminDeletedMessage: Sendable {
   public init() {}
 }
 
-public struct BackupProto_ChatUpdateMessage: Sendable {
+public nonisolated struct BackupProto_ChatUpdateMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4299,7 +4299,7 @@ public struct BackupProto_ChatUpdateMessage: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, importers should ignore the update message without throwing an error.
-  public enum OneOf_Update: Equatable, Sendable {
+  public nonisolated enum OneOf_Update: Equatable, Sendable {
     case simpleUpdate(BackupProto_SimpleChatUpdate)
     case groupChange(BackupProto_GroupChangeChatUpdate)
     case expirationTimerChange(BackupProto_ExpirationTimerChatUpdate)
@@ -4317,7 +4317,7 @@ public struct BackupProto_ChatUpdateMessage: Sendable {
   public init() {}
 }
 
-public struct BackupProto_IndividualCall: Sendable {
+public nonisolated struct BackupProto_IndividualCall: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4343,7 +4343,7 @@ public struct BackupProto_IndividualCall: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Interpret as "Audio call"
@@ -4383,7 +4383,7 @@ public struct BackupProto_IndividualCall: Sendable {
 
   }
 
-  public enum Direction: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum Direction: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Interpret as "Incoming"
@@ -4423,7 +4423,7 @@ public struct BackupProto_IndividualCall: Sendable {
 
   }
 
-  public enum State: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum State: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Interpret as "Accepted"
@@ -4482,7 +4482,7 @@ public struct BackupProto_IndividualCall: Sendable {
   fileprivate var _callID: UInt64? = nil
 }
 
-public struct BackupProto_GroupCall: Sendable {
+public nonisolated struct BackupProto_GroupCall: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4532,7 +4532,7 @@ public struct BackupProto_GroupCall: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public enum State: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum State: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Interpret as "Generic"
@@ -4621,7 +4621,7 @@ public struct BackupProto_GroupCall: Sendable {
   fileprivate var _endedCallTimestamp: UInt64? = nil
 }
 
-public struct BackupProto_SimpleChatUpdate: Sendable {
+public nonisolated struct BackupProto_SimpleChatUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4630,7 +4630,7 @@ public struct BackupProto_SimpleChatUpdate: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Importers should skip the update without throwing an error.
@@ -4733,7 +4733,7 @@ public struct BackupProto_SimpleChatUpdate: Sendable {
 
 /// For 1:1 chat updates only.
 /// For group thread updates use GroupExpirationTimerUpdate.
-public struct BackupProto_ExpirationTimerChatUpdate: Sendable {
+public nonisolated struct BackupProto_ExpirationTimerChatUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4746,7 +4746,7 @@ public struct BackupProto_ExpirationTimerChatUpdate: Sendable {
   public init() {}
 }
 
-public struct BackupProto_ProfileChangeChatUpdate: Sendable {
+public nonisolated struct BackupProto_ProfileChangeChatUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4760,7 +4760,7 @@ public struct BackupProto_ProfileChangeChatUpdate: Sendable {
   public init() {}
 }
 
-public struct BackupProto_LearnedProfileChatUpdate: Sendable {
+public nonisolated struct BackupProto_LearnedProfileChatUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4787,7 +4787,7 @@ public struct BackupProto_LearnedProfileChatUpdate: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, importers should consider the previous name to be an empty string.
-  public enum OneOf_PreviousName: Equatable, Sendable {
+  public nonisolated enum OneOf_PreviousName: Equatable, Sendable {
     case e164(UInt64)
     case username(String)
 
@@ -4796,7 +4796,7 @@ public struct BackupProto_LearnedProfileChatUpdate: Sendable {
   public init() {}
 }
 
-public struct BackupProto_ThreadMergeChatUpdate: Sendable {
+public nonisolated struct BackupProto_ThreadMergeChatUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4808,7 +4808,7 @@ public struct BackupProto_ThreadMergeChatUpdate: Sendable {
   public init() {}
 }
 
-public struct BackupProto_SessionSwitchoverChatUpdate: Sendable {
+public nonisolated struct BackupProto_SessionSwitchoverChatUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4820,7 +4820,7 @@ public struct BackupProto_SessionSwitchoverChatUpdate: Sendable {
   public init() {}
 }
 
-public struct BackupProto_GroupChangeChatUpdate: Sendable {
+public nonisolated struct BackupProto_GroupChangeChatUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4831,7 +4831,7 @@ public struct BackupProto_GroupChangeChatUpdate: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public struct Update: Sendable {
+  public nonisolated struct Update: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -5130,7 +5130,7 @@ public struct BackupProto_GroupChangeChatUpdate: Sendable {
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     /// If unset, importers should consider it to be a GenericGroupUpdate with unset updaterAci
-    public enum OneOf_Update: Equatable, Sendable {
+    public nonisolated enum OneOf_Update: Equatable, Sendable {
       case genericGroupUpdate(BackupProto_GenericGroupUpdate)
       case groupCreationUpdate(BackupProto_GroupCreationUpdate)
       case groupNameUpdate(BackupProto_GroupNameUpdate)
@@ -5176,7 +5176,7 @@ public struct BackupProto_GroupChangeChatUpdate: Sendable {
   public init() {}
 }
 
-public struct BackupProto_GenericGroupUpdate: Sendable {
+public nonisolated struct BackupProto_GenericGroupUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5197,7 +5197,7 @@ public struct BackupProto_GenericGroupUpdate: Sendable {
   fileprivate var _updaterAci: Data? = nil
 }
 
-public struct BackupProto_GroupCreationUpdate: Sendable {
+public nonisolated struct BackupProto_GroupCreationUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5218,7 +5218,7 @@ public struct BackupProto_GroupCreationUpdate: Sendable {
   fileprivate var _updaterAci: Data? = nil
 }
 
-public struct BackupProto_GroupNameUpdate: Sendable {
+public nonisolated struct BackupProto_GroupNameUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5250,7 +5250,7 @@ public struct BackupProto_GroupNameUpdate: Sendable {
   fileprivate var _newGroupName: String? = nil
 }
 
-public struct BackupProto_GroupAvatarUpdate: Sendable {
+public nonisolated struct BackupProto_GroupAvatarUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5273,7 +5273,7 @@ public struct BackupProto_GroupAvatarUpdate: Sendable {
   fileprivate var _updaterAci: Data? = nil
 }
 
-public struct BackupProto_GroupDescriptionUpdate: Sendable {
+public nonisolated struct BackupProto_GroupDescriptionUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5305,7 +5305,7 @@ public struct BackupProto_GroupDescriptionUpdate: Sendable {
   fileprivate var _newDescription: String? = nil
 }
 
-public struct BackupProto_GroupMembershipAccessLevelChangeUpdate: Sendable {
+public nonisolated struct BackupProto_GroupMembershipAccessLevelChangeUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5328,7 +5328,7 @@ public struct BackupProto_GroupMembershipAccessLevelChangeUpdate: Sendable {
   fileprivate var _updaterAci: Data? = nil
 }
 
-public struct BackupProto_GroupMemberLabelAccessLevelChangeUpdate: Sendable {
+public nonisolated struct BackupProto_GroupMemberLabelAccessLevelChangeUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5351,7 +5351,7 @@ public struct BackupProto_GroupMemberLabelAccessLevelChangeUpdate: Sendable {
   fileprivate var _updaterAci: Data? = nil
 }
 
-public struct BackupProto_GroupAttributesAccessLevelChangeUpdate: Sendable {
+public nonisolated struct BackupProto_GroupAttributesAccessLevelChangeUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5374,7 +5374,7 @@ public struct BackupProto_GroupAttributesAccessLevelChangeUpdate: Sendable {
   fileprivate var _updaterAci: Data? = nil
 }
 
-public struct BackupProto_GroupAnnouncementOnlyChangeUpdate: Sendable {
+public nonisolated struct BackupProto_GroupAnnouncementOnlyChangeUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5397,7 +5397,7 @@ public struct BackupProto_GroupAnnouncementOnlyChangeUpdate: Sendable {
   fileprivate var _updaterAci: Data? = nil
 }
 
-public struct BackupProto_GroupAdminStatusUpdate: Sendable {
+public nonisolated struct BackupProto_GroupAdminStatusUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5423,7 +5423,7 @@ public struct BackupProto_GroupAdminStatusUpdate: Sendable {
   fileprivate var _updaterAci: Data? = nil
 }
 
-public struct BackupProto_GroupMemberLeftUpdate: Sendable {
+public nonisolated struct BackupProto_GroupMemberLeftUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5435,7 +5435,7 @@ public struct BackupProto_GroupMemberLeftUpdate: Sendable {
   public init() {}
 }
 
-public struct BackupProto_GroupMemberRemovedUpdate: Sendable {
+public nonisolated struct BackupProto_GroupMemberRemovedUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5458,7 +5458,7 @@ public struct BackupProto_GroupMemberRemovedUpdate: Sendable {
   fileprivate var _removerAci: Data? = nil
 }
 
-public struct BackupProto_SelfInvitedToGroupUpdate: Sendable {
+public nonisolated struct BackupProto_SelfInvitedToGroupUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5479,7 +5479,7 @@ public struct BackupProto_SelfInvitedToGroupUpdate: Sendable {
   fileprivate var _inviterAci: Data? = nil
 }
 
-public struct BackupProto_SelfInvitedOtherUserToGroupUpdate: Sendable {
+public nonisolated struct BackupProto_SelfInvitedOtherUserToGroupUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5492,7 +5492,7 @@ public struct BackupProto_SelfInvitedOtherUserToGroupUpdate: Sendable {
   public init() {}
 }
 
-public struct BackupProto_GroupUnknownInviteeUpdate: Sendable {
+public nonisolated struct BackupProto_GroupUnknownInviteeUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5516,7 +5516,7 @@ public struct BackupProto_GroupUnknownInviteeUpdate: Sendable {
   fileprivate var _inviterAci: Data? = nil
 }
 
-public struct BackupProto_GroupInvitationAcceptedUpdate: Sendable {
+public nonisolated struct BackupProto_GroupInvitationAcceptedUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5539,7 +5539,7 @@ public struct BackupProto_GroupInvitationAcceptedUpdate: Sendable {
   fileprivate var _inviterAci: Data? = nil
 }
 
-public struct BackupProto_GroupInvitationDeclinedUpdate: Sendable {
+public nonisolated struct BackupProto_GroupInvitationDeclinedUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5571,7 +5571,7 @@ public struct BackupProto_GroupInvitationDeclinedUpdate: Sendable {
   fileprivate var _inviteeAci: Data? = nil
 }
 
-public struct BackupProto_GroupMemberJoinedUpdate: Sendable {
+public nonisolated struct BackupProto_GroupMemberJoinedUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5583,7 +5583,7 @@ public struct BackupProto_GroupMemberJoinedUpdate: Sendable {
   public init() {}
 }
 
-public struct BackupProto_GroupMemberAddedUpdate: Sendable {
+public nonisolated struct BackupProto_GroupMemberAddedUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5620,7 +5620,7 @@ public struct BackupProto_GroupMemberAddedUpdate: Sendable {
 }
 
 /// An invitation to self was revoked.
-public struct BackupProto_GroupSelfInvitationRevokedUpdate: Sendable {
+public nonisolated struct BackupProto_GroupSelfInvitationRevokedUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5644,7 +5644,7 @@ public struct BackupProto_GroupSelfInvitationRevokedUpdate: Sendable {
 /// These invitees should never be the local user.
 /// Use GroupSelfInvitationRevokedUpdate in those cases.
 /// The inviter or updater can be the local user.
-public struct BackupProto_GroupInvitationRevokedUpdate: Sendable {
+public nonisolated struct BackupProto_GroupInvitationRevokedUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5665,7 +5665,7 @@ public struct BackupProto_GroupInvitationRevokedUpdate: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public struct Invitee: Sendable {
+  public nonisolated struct Invitee: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -5713,7 +5713,7 @@ public struct BackupProto_GroupInvitationRevokedUpdate: Sendable {
   fileprivate var _updaterAci: Data? = nil
 }
 
-public struct BackupProto_GroupJoinRequestUpdate: Sendable {
+public nonisolated struct BackupProto_GroupJoinRequestUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5725,7 +5725,7 @@ public struct BackupProto_GroupJoinRequestUpdate: Sendable {
   public init() {}
 }
 
-public struct BackupProto_GroupJoinRequestApprovalUpdate: Sendable {
+public nonisolated struct BackupProto_GroupJoinRequestApprovalUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5751,7 +5751,7 @@ public struct BackupProto_GroupJoinRequestApprovalUpdate: Sendable {
   fileprivate var _updaterAci: Data? = nil
 }
 
-public struct BackupProto_GroupJoinRequestCanceledUpdate: Sendable {
+public nonisolated struct BackupProto_GroupJoinRequestCanceledUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5769,7 +5769,7 @@ public struct BackupProto_GroupJoinRequestCanceledUpdate: Sendable {
 /// cancellation; if there was another open request immediately
 /// after, it will be a separate GroupJoinRequestUpdate, either
 /// in the same frame or in a subsequent frame.
-public struct BackupProto_GroupSequenceOfRequestsAndCancelsUpdate: Sendable {
+public nonisolated struct BackupProto_GroupSequenceOfRequestsAndCancelsUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5783,7 +5783,7 @@ public struct BackupProto_GroupSequenceOfRequestsAndCancelsUpdate: Sendable {
   public init() {}
 }
 
-public struct BackupProto_GroupInviteLinkResetUpdate: Sendable {
+public nonisolated struct BackupProto_GroupInviteLinkResetUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5804,30 +5804,7 @@ public struct BackupProto_GroupInviteLinkResetUpdate: Sendable {
   fileprivate var _updaterAci: Data? = nil
 }
 
-public struct BackupProto_GroupInviteLinkEnabledUpdate: Sendable {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  public var updaterAci: Data {
-    get {_updaterAci ?? Data()}
-    set {_updaterAci = newValue}
-  }
-  /// Returns true if `updaterAci` has been explicitly set.
-  public var hasUpdaterAci: Bool {self._updaterAci != nil}
-  /// Clears the value of `updaterAci`. Subsequent reads from it will return its default value.
-  public mutating func clearUpdaterAci() {self._updaterAci = nil}
-
-  public var linkRequiresAdminApproval: Bool = false
-
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  public init() {}
-
-  fileprivate var _updaterAci: Data? = nil
-}
-
-public struct BackupProto_GroupInviteLinkAdminApprovalUpdate: Sendable {
+public nonisolated struct BackupProto_GroupInviteLinkEnabledUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5850,7 +5827,30 @@ public struct BackupProto_GroupInviteLinkAdminApprovalUpdate: Sendable {
   fileprivate var _updaterAci: Data? = nil
 }
 
-public struct BackupProto_GroupInviteLinkDisabledUpdate: Sendable {
+public nonisolated struct BackupProto_GroupInviteLinkAdminApprovalUpdate: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var updaterAci: Data {
+    get {_updaterAci ?? Data()}
+    set {_updaterAci = newValue}
+  }
+  /// Returns true if `updaterAci` has been explicitly set.
+  public var hasUpdaterAci: Bool {self._updaterAci != nil}
+  /// Clears the value of `updaterAci`. Subsequent reads from it will return its default value.
+  public mutating func clearUpdaterAci() {self._updaterAci = nil}
+
+  public var linkRequiresAdminApproval: Bool = false
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _updaterAci: Data? = nil
+}
+
+public nonisolated struct BackupProto_GroupInviteLinkDisabledUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5871,7 +5871,7 @@ public struct BackupProto_GroupInviteLinkDisabledUpdate: Sendable {
   fileprivate var _updaterAci: Data? = nil
 }
 
-public struct BackupProto_GroupMemberJoinedByLinkUpdate: Sendable {
+public nonisolated struct BackupProto_GroupMemberJoinedByLinkUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5884,7 +5884,7 @@ public struct BackupProto_GroupMemberJoinedByLinkUpdate: Sendable {
 }
 
 /// A gv1->gv2 migration occurred.
-public struct BackupProto_GroupV2MigrationUpdate: Sendable {
+public nonisolated struct BackupProto_GroupV2MigrationUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5896,7 +5896,7 @@ public struct BackupProto_GroupV2MigrationUpdate: Sendable {
 
 /// Another user migrated gv1->gv2 but was unable to add
 /// the local user and invited them instead.
-public struct BackupProto_GroupV2MigrationSelfInvitedUpdate: Sendable {
+public nonisolated struct BackupProto_GroupV2MigrationSelfInvitedUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5909,7 +5909,7 @@ public struct BackupProto_GroupV2MigrationSelfInvitedUpdate: Sendable {
 /// The local user migrated gv1->gv2 but was unable to
 /// add some members and invited them instead.
 /// (Happens if we don't have the invitee's profile key)
-public struct BackupProto_GroupV2MigrationInvitedMembersUpdate: Sendable {
+public nonisolated struct BackupProto_GroupV2MigrationInvitedMembersUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5924,7 +5924,7 @@ public struct BackupProto_GroupV2MigrationInvitedMembersUpdate: Sendable {
 /// The local user migrated gv1->gv2 but was unable to
 /// add or invite some members and dropped them instead.
 /// (Happens for e164 members where we don't have an aci).
-public struct BackupProto_GroupV2MigrationDroppedMembersUpdate: Sendable {
+public nonisolated struct BackupProto_GroupV2MigrationDroppedMembersUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5937,7 +5937,7 @@ public struct BackupProto_GroupV2MigrationDroppedMembersUpdate: Sendable {
 }
 
 /// For 1:1 timer updates, use ExpirationTimerChatUpdate.
-public struct BackupProto_GroupExpirationTimerUpdate: Sendable {
+public nonisolated struct BackupProto_GroupExpirationTimerUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5961,7 +5961,7 @@ public struct BackupProto_GroupExpirationTimerUpdate: Sendable {
   fileprivate var _updaterAci: Data? = nil
 }
 
-public struct BackupProto_GroupTerminateChangeUpdate: Sendable {
+public nonisolated struct BackupProto_GroupTerminateChangeUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5982,7 +5982,7 @@ public struct BackupProto_GroupTerminateChangeUpdate: Sendable {
   fileprivate var _updaterAci: Data? = nil
 }
 
-public struct BackupProto_PollTerminateUpdate: Sendable {
+public nonisolated struct BackupProto_PollTerminateUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5997,7 +5997,7 @@ public struct BackupProto_PollTerminateUpdate: Sendable {
   public init() {}
 }
 
-public struct BackupProto_PinMessageUpdate: Sendable {
+public nonisolated struct BackupProto_PinMessageUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -6012,7 +6012,7 @@ public struct BackupProto_PinMessageUpdate: Sendable {
   public init() {}
 }
 
-public struct BackupProto_StickerPack: Sendable {
+public nonisolated struct BackupProto_StickerPack: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -6026,7 +6026,7 @@ public struct BackupProto_StickerPack: Sendable {
   public init() {}
 }
 
-public struct BackupProto_ChatStyle: @unchecked Sendable {
+public nonisolated struct BackupProto_ChatStyle: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -6096,7 +6096,7 @@ public struct BackupProto_ChatStyle: @unchecked Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, importers should consider there to be no wallpaper.
-  public enum OneOf_Wallpaper: Equatable, Sendable {
+  public nonisolated enum OneOf_Wallpaper: Equatable, Sendable {
     case wallpaperPreset(BackupProto_ChatStyle.WallpaperPreset)
     /// This `FilePointer` is expected not to contain a `fileName`, `width`,
     /// `height`, or `caption`.
@@ -6105,7 +6105,7 @@ public struct BackupProto_ChatStyle: @unchecked Sendable {
   }
 
   /// If unset, importers should consider it to be AutomaticBubbleColor
-  public enum OneOf_BubbleColor: Equatable, Sendable {
+  public nonisolated enum OneOf_BubbleColor: Equatable, Sendable {
     /// Bubble setting is automatically determined based on the wallpaper setting,
     /// or `SOLID_ULTRAMARINE` for `noWallpaper`
     case autoBubbleColor(BackupProto_ChatStyle.AutomaticBubbleColor)
@@ -6115,7 +6115,7 @@ public struct BackupProto_ChatStyle: @unchecked Sendable {
 
   }
 
-  public enum WallpaperPreset: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum WallpaperPreset: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Interpret as the wallpaper being unset
@@ -6231,7 +6231,7 @@ public struct BackupProto_ChatStyle: @unchecked Sendable {
 
   }
 
-  public enum BubbleColorPreset: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum BubbleColorPreset: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Interpret as the user's default chat bubble color
@@ -6351,7 +6351,7 @@ public struct BackupProto_ChatStyle: @unchecked Sendable {
 
   }
 
-  public struct Gradient: Sendable {
+  public nonisolated struct Gradient: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -6370,7 +6370,7 @@ public struct BackupProto_ChatStyle: @unchecked Sendable {
     public init() {}
   }
 
-  public struct CustomChatColor: Sendable {
+  public nonisolated struct CustomChatColor: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -6400,7 +6400,7 @@ public struct BackupProto_ChatStyle: @unchecked Sendable {
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     /// If unset, use the default chat color
-    public enum OneOf_Color: Equatable, Sendable {
+    public nonisolated enum OneOf_Color: Equatable, Sendable {
       /// 0xAARRGGBB
       case solid(UInt32)
       case gradient(BackupProto_ChatStyle.Gradient)
@@ -6410,7 +6410,7 @@ public struct BackupProto_ChatStyle: @unchecked Sendable {
     public init() {}
   }
 
-  public struct AutomaticBubbleColor: Sendable {
+  public nonisolated struct AutomaticBubbleColor: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -6425,7 +6425,7 @@ public struct BackupProto_ChatStyle: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-public struct BackupProto_NotificationProfile: Sendable {
+public nonisolated struct BackupProto_NotificationProfile: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -6468,7 +6468,7 @@ public struct BackupProto_NotificationProfile: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  public enum DayOfWeek: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum DayOfWeek: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Interpret as "Monday"
@@ -6533,7 +6533,7 @@ public struct BackupProto_NotificationProfile: Sendable {
   fileprivate var _emoji: String? = nil
 }
 
-public struct BackupProto_ChatFolder: Sendable {
+public nonisolated struct BackupProto_ChatFolder: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -6564,7 +6564,7 @@ public struct BackupProto_ChatFolder: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// Represents the default "All chats" folder record vs all other custom folders
-  public enum FolderType: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public nonisolated enum FolderType: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
 
     /// Interpret as "Custom"
@@ -6609,17 +6609,17 @@ public struct BackupProto_ChatFolder: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "signal.backup"
+fileprivate nonisolated let _protobuf_package = "signal.backup"
 
-extension BackupProto_AvatarColor: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AvatarColor: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0A100\0\u{1}A110\0\u{1}A120\0\u{1}A130\0\u{1}A140\0\u{1}A150\0\u{1}A160\0\u{1}A170\0\u{1}A180\0\u{1}A190\0\u{1}A200\0\u{1}A210\0")
 }
 
-extension BackupProto_GroupV2AccessLevel: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupV2AccessLevel: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}ANY\0\u{1}MEMBER\0\u{1}ADMINISTRATOR\0\u{1}UNSATISFIABLE\0")
 }
 
-extension BackupProto_BackupInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_BackupInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BackupInfo"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}version\0\u{1}backupTimeMs\0\u{1}mediaRootBackupKey\0\u{1}currentAppVersion\0\u{1}firstAppVersion\0\u{1}debugInfo\0")
 
@@ -6674,7 +6674,7 @@ extension BackupProto_BackupInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageI
   }
 }
 
-extension BackupProto_Frame: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Frame: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Frame"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}account\0\u{1}recipient\0\u{1}chat\0\u{1}chatItem\0\u{1}stickerPack\0\u{1}adHocCall\0\u{1}notificationProfile\0\u{1}chatFolder\0")
 
@@ -6843,7 +6843,7 @@ extension BackupProto_Frame: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
   }
 }
 
-extension BackupProto_AccountData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AccountData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AccountData"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}profileKey\0\u{1}username\0\u{1}usernameLink\0\u{1}givenName\0\u{1}familyName\0\u{1}avatarUrlPath\0\u{1}donationSubscriberData\0\u{2}\u{2}accountSettings\0\u{1}backupsSubscriberData\0\u{1}svrPin\0\u{1}androidSpecificSettings\0\u{1}bioText\0\u{1}bioEmoji\0\u{2}\u{2}iosSpecificSettings\0\u{c}\u{8}\u{1}\u{c}\u{f}\u{1}")
 
@@ -7004,23 +7004,23 @@ extension BackupProto_AccountData: SwiftProtobuf.Message, SwiftProtobuf._Message
   }
 }
 
-extension BackupProto_AccountData.PhoneNumberSharingMode: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AccountData.PhoneNumberSharingMode: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}EVERYBODY\0\u{1}NOBODY\0")
 }
 
-extension BackupProto_AccountData.SentMediaQuality: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AccountData.SentMediaQuality: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_QUALITY\0\u{1}STANDARD\0\u{1}HIGH\0")
 }
 
-extension BackupProto_AccountData.AppTheme: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AccountData.AppTheme: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_APP_THEME\0\u{1}SYSTEM\0\u{1}LIGHT\0\u{1}DARK\0")
 }
 
-extension BackupProto_AccountData.CallsUseLessDataSetting: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AccountData.CallsUseLessDataSetting: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_CALL_DATA_SETTING\0\u{1}NEVER\0\u{1}MOBILE_DATA_ONLY\0\u{1}WIFI_AND_MOBILE_DATA\0")
 }
 
-extension BackupProto_AccountData.UsernameLink: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AccountData.UsernameLink: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".UsernameLink"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}entropy\0\u{1}serverId\0\u{1}color\0")
 
@@ -7060,11 +7060,11 @@ extension BackupProto_AccountData.UsernameLink: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension BackupProto_AccountData.UsernameLink.Color: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AccountData.UsernameLink.Color: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}BLUE\0\u{1}WHITE\0\u{1}GREY\0\u{1}OLIVE\0\u{1}GREEN\0\u{1}ORANGE\0\u{1}PINK\0\u{1}PURPLE\0")
 }
 
-extension BackupProto_AccountData.AutoDownloadSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AccountData.AutoDownloadSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".AutoDownloadSettings"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}images\0\u{1}audio\0\u{1}video\0\u{1}documents\0")
 
@@ -7109,13 +7109,13 @@ extension BackupProto_AccountData.AutoDownloadSettings: SwiftProtobuf.Message, S
   }
 }
 
-extension BackupProto_AccountData.AutoDownloadSettings.AutoDownloadOption: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AccountData.AutoDownloadSettings.AutoDownloadOption: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}NEVER\0\u{1}WIFI\0\u{1}WIFI_AND_CELLULAR\0")
 }
 
-extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".AccountSettings"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}linkPreviews\0\u{1}notDiscoverableByPhoneNumber\0\u{1}preferContactAvatars\0\u{1}universalExpireTimerSeconds\0\u{1}preferredReactionEmoji\0\u{1}displayBadgesOnProfile\0\u{1}keepMutedChatsArchived\0\u{1}hasSetMyStoriesPrivacy\0\u{1}hasViewedOnboardingStory\0\u{1}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}hasSeenGroupStoryEducationSheet\0\u{1}hasCompletedUsernameOnboarding\0\u{1}phoneNumberSharingMode\0\u{1}defaultChatStyle\0\u{1}customChatColors\0\u{1}optimizeOnDeviceStorage\0\u{1}backupTier\0\u{2}\u{2}defaultSentMediaQuality\0\u{1}autoDownloadSettings\0\u{2}\u{2}screenLockTimeoutMinutes\0\u{1}pinReminders\0\u{1}appTheme\0\u{1}callsUseLessDataSetting\0\u{1}allowSealedSenderFromAnyone\0\u{1}allowAutomaticKeyVerification\0\u{1}seenAdminDeleteEducationDialog\0\u{c}\u{16}\u{1}\u{c}\u{19}\u{1}")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}linkPreviews\0\u{1}notDiscoverableByPhoneNumber\0\u{1}preferContactAvatars\0\u{1}universalExpireTimerSeconds\0\u{1}preferredReactionEmoji\0\u{1}displayBadgesOnProfile\0\u{1}keepMutedChatsArchived\0\u{1}hasSetMyStoriesPrivacy\0\u{1}hasViewedOnboardingStory\0\u{1}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}hasSeenGroupStoryEducationSheet\0\u{1}hasCompletedUsernameOnboarding\0\u{1}phoneNumberSharingMode\0\u{1}defaultChatStyle\0\u{1}customChatColors\0\u{1}optimizeOnDeviceStorage\0\u{1}backupTier\0\u{2}\u{2}defaultSentMediaQuality\0\u{1}autoDownloadSettings\0\u{2}\u{2}screenLockTimeoutMinutes\0\u{1}pinReminders\0\u{1}appTheme\0\u{1}callsUseLessDataSetting\0\u{1}allowSealedSenderFromAnyone\0\u{1}allowAutomaticKeyVerification\0\u{1}hasSeenAdminDeleteEducationDialog\0\u{c}\u{16}\u{1}\u{c}\u{19}\u{1}")
 
   fileprivate class _StorageClass {
     var _readReceipts: Bool = false
@@ -7147,7 +7147,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
     var _callsUseLessDataSetting: BackupProto_AccountData.CallsUseLessDataSetting = .unknownCallDataSetting
     var _allowSealedSenderFromAnyone: Bool = false
     var _allowAutomaticKeyVerification: Bool = false
-    var _seenAdminDeleteEducationDialog: Bool = false
+    var _hasSeenAdminDeleteEducationDialog_p: Bool = false
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -7187,7 +7187,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
       _callsUseLessDataSetting = source._callsUseLessDataSetting
       _allowSealedSenderFromAnyone = source._allowSealedSenderFromAnyone
       _allowAutomaticKeyVerification = source._allowAutomaticKeyVerification
-      _seenAdminDeleteEducationDialog = source._seenAdminDeleteEducationDialog
+      _hasSeenAdminDeleteEducationDialog_p = source._hasSeenAdminDeleteEducationDialog_p
     }
   }
 
@@ -7235,7 +7235,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
         case 29: try { try decoder.decodeSingularEnumField(value: &_storage._callsUseLessDataSetting) }()
         case 30: try { try decoder.decodeSingularBoolField(value: &_storage._allowSealedSenderFromAnyone) }()
         case 31: try { try decoder.decodeSingularBoolField(value: &_storage._allowAutomaticKeyVerification) }()
-        case 32: try { try decoder.decodeSingularBoolField(value: &_storage._seenAdminDeleteEducationDialog) }()
+        case 32: try { try decoder.decodeSingularBoolField(value: &_storage._hasSeenAdminDeleteEducationDialog_p) }()
         default: break
         }
       }
@@ -7335,8 +7335,8 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
       if _storage._allowAutomaticKeyVerification != false {
         try visitor.visitSingularBoolField(value: _storage._allowAutomaticKeyVerification, fieldNumber: 31)
       }
-      if _storage._seenAdminDeleteEducationDialog != false {
-        try visitor.visitSingularBoolField(value: _storage._seenAdminDeleteEducationDialog, fieldNumber: 32)
+      if _storage._hasSeenAdminDeleteEducationDialog_p != false {
+        try visitor.visitSingularBoolField(value: _storage._hasSeenAdminDeleteEducationDialog_p, fieldNumber: 32)
       }
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -7376,7 +7376,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
         if _storage._callsUseLessDataSetting != rhs_storage._callsUseLessDataSetting {return false}
         if _storage._allowSealedSenderFromAnyone != rhs_storage._allowSealedSenderFromAnyone {return false}
         if _storage._allowAutomaticKeyVerification != rhs_storage._allowAutomaticKeyVerification {return false}
-        if _storage._seenAdminDeleteEducationDialog != rhs_storage._seenAdminDeleteEducationDialog {return false}
+        if _storage._hasSeenAdminDeleteEducationDialog_p != rhs_storage._hasSeenAdminDeleteEducationDialog_p {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -7386,7 +7386,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
   }
 }
 
-extension BackupProto_AccountData.SubscriberData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AccountData.SubscriberData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".SubscriberData"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}subscriberId\0\u{1}currencyCode\0\u{1}manuallyCancelled\0")
 
@@ -7426,7 +7426,7 @@ extension BackupProto_AccountData.SubscriberData: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-extension BackupProto_AccountData.IAPSubscriberData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AccountData.IAPSubscriberData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".IAPSubscriberData"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}subscriberId\0\u{1}purchaseToken\0\u{1}originalTransactionId\0")
 
@@ -7488,7 +7488,7 @@ extension BackupProto_AccountData.IAPSubscriberData: SwiftProtobuf.Message, Swif
   }
 }
 
-extension BackupProto_AccountData.AndroidSpecificSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AccountData.AndroidSpecificSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".AndroidSpecificSettings"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}useSystemEmoji\0\u{1}screenshotSecurity\0\u{1}navigationBarSize\0")
 
@@ -7528,11 +7528,11 @@ extension BackupProto_AccountData.AndroidSpecificSettings: SwiftProtobuf.Message
   }
 }
 
-extension BackupProto_AccountData.AndroidSpecificSettings.NavigationBarSize: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AccountData.AndroidSpecificSettings.NavigationBarSize: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_BAR_SIZE\0\u{1}NORMAL\0\u{1}COMPACT\0")
 }
 
-extension BackupProto_AccountData.IOSSpecificSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AccountData.IOSSpecificSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".IOSSpecificSettings"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isSystemCallLogEnabled\0")
 
@@ -7562,7 +7562,7 @@ extension BackupProto_AccountData.IOSSpecificSettings: SwiftProtobuf.Message, Sw
   }
 }
 
-extension BackupProto_Recipient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Recipient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Recipient"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}contact\0\u{1}group\0\u{1}distributionList\0\u{1}self\0\u{1}releaseNotes\0\u{1}callLink\0")
 
@@ -7702,7 +7702,7 @@ extension BackupProto_Recipient: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   }
 }
 
-extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Contact"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}aci\0\u{1}pni\0\u{1}username\0\u{1}e164\0\u{1}blocked\0\u{1}visibility\0\u{1}registered\0\u{1}notRegistered\0\u{1}profileKey\0\u{1}profileSharing\0\u{1}profileGivenName\0\u{1}profileFamilyName\0\u{1}hideStory\0\u{1}identityKey\0\u{1}identityState\0\u{1}nickname\0\u{1}note\0\u{1}systemGivenName\0\u{1}systemFamilyName\0\u{1}systemNickname\0\u{1}avatarColor\0\u{1}keyTransparencyData\0")
 
@@ -7945,15 +7945,15 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
   }
 }
 
-extension BackupProto_Contact.IdentityState: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Contact.IdentityState: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0DEFAULT\0\u{1}VERIFIED\0\u{1}UNVERIFIED\0")
 }
 
-extension BackupProto_Contact.Visibility: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Contact.Visibility: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0VISIBLE\0\u{1}HIDDEN\0\u{1}HIDDEN_MESSAGE_REQUEST\0")
 }
 
-extension BackupProto_Contact.Registered: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Contact.Registered: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_Contact.protoMessageName + ".Registered"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -7972,7 +7972,7 @@ extension BackupProto_Contact.Registered: SwiftProtobuf.Message, SwiftProtobuf._
   }
 }
 
-extension BackupProto_Contact.NotRegistered: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Contact.NotRegistered: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_Contact.protoMessageName + ".NotRegistered"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}unregisteredTimestamp\0")
 
@@ -8002,7 +8002,7 @@ extension BackupProto_Contact.NotRegistered: SwiftProtobuf.Message, SwiftProtobu
   }
 }
 
-extension BackupProto_Contact.Name: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Contact.Name: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_Contact.protoMessageName + ".Name"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}given\0\u{1}family\0")
 
@@ -8037,7 +8037,7 @@ extension BackupProto_Contact.Name: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension BackupProto_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Group"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}masterKey\0\u{1}whitelisted\0\u{1}hideStory\0\u{1}storySendMode\0\u{1}snapshot\0\u{1}blocked\0\u{1}avatarColor\0")
 
@@ -8149,11 +8149,11 @@ extension BackupProto_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
   }
 }
 
-extension BackupProto_Group.StorySendMode: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Group.StorySendMode: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0DEFAULT\0\u{1}DISABLED\0\u{1}ENABLED\0")
 }
 
-extension BackupProto_Group.GroupSnapshot: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Group.GroupSnapshot: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_Group.protoMessageName + ".GroupSnapshot"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}title\0\u{1}avatarUrl\0\u{1}disappearingMessagesTimer\0\u{1}accessControl\0\u{1}version\0\u{1}members\0\u{1}membersPendingProfileKey\0\u{1}membersPendingAdminApproval\0\u{1}inviteLinkPassword\0\u{1}description\0\u{3}announcements_only\0\u{3}members_banned\0\u{1}terminated\0\u{c}\u{1}\u{1}")
 
@@ -8247,7 +8247,7 @@ extension BackupProto_Group.GroupSnapshot: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension BackupProto_Group.GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Group.GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_Group.protoMessageName + ".GroupAttributeBlob"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}title\0\u{1}avatar\0\u{1}disappearingMessagesDuration\0\u{1}descriptionText\0")
 
@@ -8328,7 +8328,7 @@ extension BackupProto_Group.GroupAttributeBlob: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension BackupProto_Group.Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Group.Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_Group.protoMessageName + ".Member"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}user_id\0\u{1}role\0\u{2}\u{3}joinedAtVersion\0\u{3}label_emoji\0\u{3}label_string\0\u{c}\u{3}\u{1}\u{c}\u{4}\u{1}")
 
@@ -8378,11 +8378,11 @@ extension BackupProto_Group.Member: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension BackupProto_Group.Member.Role: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Group.Member.Role: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}DEFAULT\0\u{1}ADMINISTRATOR\0")
 }
 
-extension BackupProto_Group.MemberPendingProfileKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Group.MemberPendingProfileKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_Group.protoMessageName + ".MemberPendingProfileKey"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}member\0\u{1}addedByUserId\0\u{1}timestamp\0")
 
@@ -8426,7 +8426,7 @@ extension BackupProto_Group.MemberPendingProfileKey: SwiftProtobuf.Message, Swif
   }
 }
 
-extension BackupProto_Group.MemberPendingAdminApproval: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Group.MemberPendingAdminApproval: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_Group.protoMessageName + ".MemberPendingAdminApproval"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}user_id\0\u{2}\u{3}timestamp\0\u{c}\u{2}\u{1}\u{c}\u{3}\u{1}")
 
@@ -8461,7 +8461,7 @@ extension BackupProto_Group.MemberPendingAdminApproval: SwiftProtobuf.Message, S
   }
 }
 
-extension BackupProto_Group.MemberBanned: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Group.MemberBanned: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_Group.protoMessageName + ".MemberBanned"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}user_id\0\u{1}timestamp\0")
 
@@ -8496,7 +8496,7 @@ extension BackupProto_Group.MemberBanned: SwiftProtobuf.Message, SwiftProtobuf._
   }
 }
 
-extension BackupProto_Group.AccessControl: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Group.AccessControl: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_Group.protoMessageName + ".AccessControl"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}attributes\0\u{1}members\0\u{1}addFromInviteLink\0\u{1}memberLabel\0")
 
@@ -8541,11 +8541,11 @@ extension BackupProto_Group.AccessControl: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension BackupProto_Group.AccessControl.AccessRequired: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Group.AccessControl.AccessRequired: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}ANY\0\u{1}MEMBER\0\u{1}ADMINISTRATOR\0\u{1}UNSATISFIABLE\0")
 }
 
-extension BackupProto_Self: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Self: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Self"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}avatarColor\0")
 
@@ -8579,7 +8579,7 @@ extension BackupProto_Self: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
   }
 }
 
-extension BackupProto_ReleaseNotes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ReleaseNotes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ReleaseNotes"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -8598,7 +8598,7 @@ extension BackupProto_ReleaseNotes: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension BackupProto_Chat: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Chat: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Chat"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}recipientId\0\u{1}archived\0\u{1}pinnedOrder\0\u{1}expirationTimerMs\0\u{1}muteUntilMs\0\u{1}markedUnread\0\u{1}dontNotifyForMentionsIfMuted\0\u{1}style\0\u{1}expireTimerVersion\0")
 
@@ -8677,7 +8677,7 @@ extension BackupProto_Chat: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
   }
 }
 
-extension BackupProto_CallLink: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_CallLink: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CallLink"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}rootKey\0\u{1}adminKey\0\u{1}name\0\u{1}restrictions\0\u{1}expirationMs\0\u{c}\u{6}\u{1}")
 
@@ -8731,11 +8731,11 @@ extension BackupProto_CallLink: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
   }
 }
 
-extension BackupProto_CallLink.Restrictions: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_CallLink.Restrictions: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}NONE\0\u{1}ADMIN_APPROVAL\0")
 }
 
-extension BackupProto_AdHocCall: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AdHocCall: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AdHocCall"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}callId\0\u{1}recipientId\0\u{1}state\0\u{1}callTimestamp\0")
 
@@ -8780,11 +8780,11 @@ extension BackupProto_AdHocCall: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   }
 }
 
-extension BackupProto_AdHocCall.State: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AdHocCall.State: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_STATE\0\u{1}GENERIC\0")
 }
 
-extension BackupProto_DistributionListItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_DistributionListItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DistributionListItem"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}distributionId\0\u{1}deletionTimestamp\0\u{1}distributionList\0")
 
@@ -8851,7 +8851,7 @@ extension BackupProto_DistributionListItem: SwiftProtobuf.Message, SwiftProtobuf
   }
 }
 
-extension BackupProto_DistributionList: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_DistributionList: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DistributionList"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}allowReplies\0\u{1}privacyMode\0\u{1}memberRecipientIds\0")
 
@@ -8896,11 +8896,11 @@ extension BackupProto_DistributionList: SwiftProtobuf.Message, SwiftProtobuf._Me
   }
 }
 
-extension BackupProto_DistributionList.PrivacyMode: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_DistributionList.PrivacyMode: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}ONLY_WITH\0\u{1}ALL_EXCEPT\0\u{1}ALL\0")
 }
 
-extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ChatItem"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}chatId\0\u{1}authorId\0\u{1}dateSent\0\u{1}expireStartDate\0\u{1}expiresInMs\0\u{1}revisions\0\u{1}sms\0\u{1}incoming\0\u{1}outgoing\0\u{1}directionless\0\u{1}standardMessage\0\u{1}contactMessage\0\u{1}stickerMessage\0\u{1}remoteDeletedMessage\0\u{1}updateMessage\0\u{1}paymentNotification\0\u{1}giftBadge\0\u{1}viewOnceMessage\0\u{1}directStoryReplyMessage\0\u{1}poll\0\u{1}pinDetails\0\u{1}adminDeletedMessage\0")
 
@@ -9268,7 +9268,7 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
   }
 }
 
-extension BackupProto_ChatItem.IncomingMessageDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ChatItem.IncomingMessageDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_ChatItem.protoMessageName + ".IncomingMessageDetails"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}dateReceived\0\u{1}dateServerSent\0\u{1}read\0\u{1}sealedSender\0")
 
@@ -9317,7 +9317,7 @@ extension BackupProto_ChatItem.IncomingMessageDetails: SwiftProtobuf.Message, Sw
   }
 }
 
-extension BackupProto_ChatItem.OutgoingMessageDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ChatItem.OutgoingMessageDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_ChatItem.protoMessageName + ".OutgoingMessageDetails"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sendStatus\0\u{1}dateReceived\0")
 
@@ -9352,7 +9352,7 @@ extension BackupProto_ChatItem.OutgoingMessageDetails: SwiftProtobuf.Message, Sw
   }
 }
 
-extension BackupProto_ChatItem.DirectionlessMessageDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ChatItem.DirectionlessMessageDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_ChatItem.protoMessageName + ".DirectionlessMessageDetails"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -9371,7 +9371,7 @@ extension BackupProto_ChatItem.DirectionlessMessageDetails: SwiftProtobuf.Messag
   }
 }
 
-extension BackupProto_ChatItem.PinDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ChatItem.PinDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_ChatItem.protoMessageName + ".PinDetails"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}pinnedAtTimestamp\0\u{1}pinExpiresAtTimestamp\0\u{1}pinNeverExpires\0")
 
@@ -9433,7 +9433,7 @@ extension BackupProto_ChatItem.PinDetails: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension BackupProto_SendStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_SendStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SendStatus"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipientId\0\u{1}timestamp\0\u{1}pending\0\u{1}sent\0\u{1}delivered\0\u{1}read\0\u{1}viewed\0\u{1}skipped\0\u{1}failed\0")
 
@@ -9595,7 +9595,7 @@ extension BackupProto_SendStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageI
   }
 }
 
-extension BackupProto_SendStatus.Pending: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_SendStatus.Pending: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_SendStatus.protoMessageName + ".Pending"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -9614,7 +9614,7 @@ extension BackupProto_SendStatus.Pending: SwiftProtobuf.Message, SwiftProtobuf._
   }
 }
 
-extension BackupProto_SendStatus.Sent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_SendStatus.Sent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_SendStatus.protoMessageName + ".Sent"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sealedSender\0")
 
@@ -9644,7 +9644,7 @@ extension BackupProto_SendStatus.Sent: SwiftProtobuf.Message, SwiftProtobuf._Mes
   }
 }
 
-extension BackupProto_SendStatus.Delivered: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_SendStatus.Delivered: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_SendStatus.protoMessageName + ".Delivered"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sealedSender\0")
 
@@ -9674,7 +9674,7 @@ extension BackupProto_SendStatus.Delivered: SwiftProtobuf.Message, SwiftProtobuf
   }
 }
 
-extension BackupProto_SendStatus.Read: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_SendStatus.Read: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_SendStatus.protoMessageName + ".Read"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sealedSender\0")
 
@@ -9704,7 +9704,7 @@ extension BackupProto_SendStatus.Read: SwiftProtobuf.Message, SwiftProtobuf._Mes
   }
 }
 
-extension BackupProto_SendStatus.Viewed: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_SendStatus.Viewed: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_SendStatus.protoMessageName + ".Viewed"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sealedSender\0")
 
@@ -9734,7 +9734,7 @@ extension BackupProto_SendStatus.Viewed: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
-extension BackupProto_SendStatus.Skipped: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_SendStatus.Skipped: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_SendStatus.protoMessageName + ".Skipped"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -9753,7 +9753,7 @@ extension BackupProto_SendStatus.Skipped: SwiftProtobuf.Message, SwiftProtobuf._
   }
 }
 
-extension BackupProto_SendStatus.Failed: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_SendStatus.Failed: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_SendStatus.protoMessageName + ".Failed"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}reason\0")
 
@@ -9783,11 +9783,11 @@ extension BackupProto_SendStatus.Failed: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
-extension BackupProto_SendStatus.Failed.FailureReason: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_SendStatus.Failed.FailureReason: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}NETWORK\0\u{1}IDENTITY_KEY_MISMATCH\0")
 }
 
-extension BackupProto_Text: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Text: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Text"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}body\0\u{1}bodyRanges\0")
 
@@ -9822,7 +9822,7 @@ extension BackupProto_Text: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
   }
 }
 
-extension BackupProto_StandardMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_StandardMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".StandardMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}quote\0\u{1}text\0\u{1}attachments\0\u{1}linkPreview\0\u{1}longText\0\u{1}reactions\0")
 
@@ -9927,7 +9927,7 @@ extension BackupProto_StandardMessage: SwiftProtobuf.Message, SwiftProtobuf._Mes
   }
 }
 
-extension BackupProto_ContactMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ContactMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ContactMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contact\0\u{1}reactions\0")
 
@@ -9966,7 +9966,7 @@ extension BackupProto_ContactMessage: SwiftProtobuf.Message, SwiftProtobuf._Mess
   }
 }
 
-extension BackupProto_DirectStoryReplyMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_DirectStoryReplyMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DirectStoryReplyMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}textReply\0\u{1}emoji\0\u{1}reactions\0\u{c}\u{4}\u{1}")
 
@@ -10033,7 +10033,7 @@ extension BackupProto_DirectStoryReplyMessage: SwiftProtobuf.Message, SwiftProto
   }
 }
 
-extension BackupProto_DirectStoryReplyMessage.TextReply: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_DirectStoryReplyMessage.TextReply: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_DirectStoryReplyMessage.protoMessageName + ".TextReply"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}text\0\u{1}longText\0")
 
@@ -10110,7 +10110,7 @@ extension BackupProto_DirectStoryReplyMessage.TextReply: SwiftProtobuf.Message, 
   }
 }
 
-extension BackupProto_PaymentNotification: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_PaymentNotification: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".PaymentNotification"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}amountMob\0\u{1}feeMob\0\u{1}note\0\u{1}transactionDetails\0")
 
@@ -10159,7 +10159,7 @@ extension BackupProto_PaymentNotification: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension BackupProto_PaymentNotification.TransactionDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_PaymentNotification.TransactionDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_PaymentNotification.protoMessageName + ".TransactionDetails"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}transaction\0\u{1}failedTransaction\0")
 
@@ -10226,7 +10226,7 @@ extension BackupProto_PaymentNotification.TransactionDetails: SwiftProtobuf.Mess
   }
 }
 
-extension BackupProto_PaymentNotification.TransactionDetails.MobileCoinTxoIdentification: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_PaymentNotification.TransactionDetails.MobileCoinTxoIdentification: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_PaymentNotification.TransactionDetails.protoMessageName + ".MobileCoinTxoIdentification"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}publicKey\0\u{1}keyImages\0")
 
@@ -10261,7 +10261,7 @@ extension BackupProto_PaymentNotification.TransactionDetails.MobileCoinTxoIdenti
   }
 }
 
-extension BackupProto_PaymentNotification.TransactionDetails.FailedTransaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_PaymentNotification.TransactionDetails.FailedTransaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_PaymentNotification.TransactionDetails.protoMessageName + ".FailedTransaction"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}reason\0")
 
@@ -10291,11 +10291,11 @@ extension BackupProto_PaymentNotification.TransactionDetails.FailedTransaction: 
   }
 }
 
-extension BackupProto_PaymentNotification.TransactionDetails.FailedTransaction.FailureReason: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_PaymentNotification.TransactionDetails.FailedTransaction.FailureReason: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0GENERIC\0\u{1}NETWORK\0\u{1}INSUFFICIENT_FUNDS\0")
 }
 
-extension BackupProto_PaymentNotification.TransactionDetails.Transaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_PaymentNotification.TransactionDetails.Transaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_PaymentNotification.TransactionDetails.protoMessageName + ".Transaction"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{1}mobileCoinIdentification\0\u{1}timestamp\0\u{1}blockIndex\0\u{1}blockTimestamp\0\u{1}transaction\0\u{1}receipt\0")
 
@@ -10359,11 +10359,11 @@ extension BackupProto_PaymentNotification.TransactionDetails.Transaction: SwiftP
   }
 }
 
-extension BackupProto_PaymentNotification.TransactionDetails.Transaction.Status: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_PaymentNotification.TransactionDetails.Transaction.Status: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0INITIAL\0\u{1}SUBMITTED\0\u{1}SUCCESSFUL\0")
 }
 
-extension BackupProto_GiftBadge: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GiftBadge: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GiftBadge"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}receiptCredentialPresentation\0\u{1}state\0")
 
@@ -10398,11 +10398,11 @@ extension BackupProto_GiftBadge: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   }
 }
 
-extension BackupProto_GiftBadge.State: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GiftBadge.State: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNOPENED\0\u{1}OPENED\0\u{1}REDEEMED\0\u{1}FAILED\0")
 }
 
-extension BackupProto_ViewOnceMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ViewOnceMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ViewOnceMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}attachment\0\u{1}reactions\0")
 
@@ -10441,7 +10441,7 @@ extension BackupProto_ViewOnceMessage: SwiftProtobuf.Message, SwiftProtobuf._Mes
   }
 }
 
-extension BackupProto_ContactAttachment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ContactAttachment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ContactAttachment"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{2}\u{2}number\0\u{1}email\0\u{1}address\0\u{1}avatar\0\u{1}organization\0")
 
@@ -10546,7 +10546,7 @@ extension BackupProto_ContactAttachment: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
-extension BackupProto_ContactAttachment.Name: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ContactAttachment.Name: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_ContactAttachment.protoMessageName + ".Name"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}givenName\0\u{1}familyName\0\u{1}prefix\0\u{1}suffix\0\u{1}middleName\0\u{1}nickname\0")
 
@@ -10601,7 +10601,7 @@ extension BackupProto_ContactAttachment.Name: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension BackupProto_ContactAttachment.Phone: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ContactAttachment.Phone: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_ContactAttachment.protoMessageName + ".Phone"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}value\0\u{1}type\0\u{1}label\0")
 
@@ -10641,11 +10641,11 @@ extension BackupProto_ContactAttachment.Phone: SwiftProtobuf.Message, SwiftProto
   }
 }
 
-extension BackupProto_ContactAttachment.Phone.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ContactAttachment.Phone.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}HOME\0\u{1}MOBILE\0\u{1}WORK\0\u{1}CUSTOM\0")
 }
 
-extension BackupProto_ContactAttachment.Email: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ContactAttachment.Email: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_ContactAttachment.protoMessageName + ".Email"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}value\0\u{1}type\0\u{1}label\0")
 
@@ -10685,11 +10685,11 @@ extension BackupProto_ContactAttachment.Email: SwiftProtobuf.Message, SwiftProto
   }
 }
 
-extension BackupProto_ContactAttachment.Email.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ContactAttachment.Email.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}HOME\0\u{1}MOBILE\0\u{1}WORK\0\u{1}CUSTOM\0")
 }
 
-extension BackupProto_ContactAttachment.PostalAddress: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ContactAttachment.PostalAddress: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_ContactAttachment.protoMessageName + ".PostalAddress"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0\u{1}label\0\u{1}street\0\u{1}pobox\0\u{1}neighborhood\0\u{1}city\0\u{1}region\0\u{1}postcode\0\u{1}country\0")
 
@@ -10759,11 +10759,11 @@ extension BackupProto_ContactAttachment.PostalAddress: SwiftProtobuf.Message, Sw
   }
 }
 
-extension BackupProto_ContactAttachment.PostalAddress.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ContactAttachment.PostalAddress.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}HOME\0\u{1}WORK\0\u{1}CUSTOM\0")
 }
 
-extension BackupProto_StickerMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_StickerMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".StickerMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sticker\0\u{1}reactions\0")
 
@@ -10802,7 +10802,7 @@ extension BackupProto_StickerMessage: SwiftProtobuf.Message, SwiftProtobuf._Mess
   }
 }
 
-extension BackupProto_RemoteDeletedMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_RemoteDeletedMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RemoteDeletedMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -10821,7 +10821,7 @@ extension BackupProto_RemoteDeletedMessage: SwiftProtobuf.Message, SwiftProtobuf
   }
 }
 
-extension BackupProto_Sticker: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Sticker: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Sticker"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}packId\0\u{1}packKey\0\u{1}stickerId\0\u{1}emoji\0\u{1}data\0")
 
@@ -10919,7 +10919,7 @@ extension BackupProto_Sticker: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
   }
 }
 
-extension BackupProto_LinkPreview: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_LinkPreview: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".LinkPreview"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}url\0\u{1}title\0\u{1}image\0\u{1}description\0\u{1}date\0")
 
@@ -11017,7 +11017,7 @@ extension BackupProto_LinkPreview: SwiftProtobuf.Message, SwiftProtobuf._Message
   }
 }
 
-extension BackupProto_MessageAttachment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_MessageAttachment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MessageAttachment"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}pointer\0\u{1}flag\0\u{1}wasDownloaded\0\u{1}clientUuid\0")
 
@@ -11108,11 +11108,11 @@ extension BackupProto_MessageAttachment: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
-extension BackupProto_MessageAttachment.Flag: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_MessageAttachment.Flag: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0NONE\0\u{1}VOICE_MESSAGE\0\u{1}BORDERLESS\0\u{1}GIF\0")
 }
 
-extension BackupProto_FilePointer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_FilePointer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FilePointer"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{4}contentType\0\u{1}incrementalMac\0\u{1}incrementalMacChunkSize\0\u{1}fileName\0\u{1}width\0\u{1}height\0\u{1}caption\0\u{1}blurHash\0\u{2}\u{2}locatorInfo\0\u{c}\u{1}\u{1}\u{c}\u{2}\u{1}\u{c}\u{3}\u{1}\u{c}\u{c}\u{1}")
 
@@ -11186,7 +11186,7 @@ extension BackupProto_FilePointer: SwiftProtobuf.Message, SwiftProtobuf._Message
   }
 }
 
-extension BackupProto_FilePointer.LocatorInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_FilePointer.LocatorInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_FilePointer.protoMessageName + ".LocatorInfo"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}key\0\u{2}\u{2}size\0\u{1}transitCdnKey\0\u{1}transitCdnNumber\0\u{1}transitTierUploadTimestamp\0\u{1}mediaTierCdnNumber\0\u{2}\u{2}localKey\0\u{1}plaintextHash\0\u{1}encryptedDigest\0\u{c}\u{2}\u{1}\u{c}\u{8}\u{1}")
 
@@ -11278,7 +11278,7 @@ extension BackupProto_FilePointer.LocatorInfo: SwiftProtobuf.Message, SwiftProto
   }
 }
 
-extension BackupProto_Quote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Quote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Quote"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetSentTimestamp\0\u{1}authorId\0\u{1}text\0\u{1}attachments\0\u{1}type\0")
 
@@ -11332,11 +11332,11 @@ extension BackupProto_Quote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
   }
 }
 
-extension BackupProto_Quote.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Quote.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}NORMAL\0\u{1}GIFT_BADGE\0\u{1}VIEW_ONCE\0\u{1}POLL\0")
 }
 
-extension BackupProto_Quote.QuotedAttachment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Quote.QuotedAttachment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_Quote.protoMessageName + ".QuotedAttachment"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contentType\0\u{1}fileName\0\u{1}thumbnail\0")
 
@@ -11380,7 +11380,7 @@ extension BackupProto_Quote.QuotedAttachment: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension BackupProto_BodyRange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_BodyRange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BodyRange"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}start\0\u{1}length\0\u{1}mentionAci\0\u{1}style\0")
 
@@ -11447,11 +11447,11 @@ extension BackupProto_BodyRange: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   }
 }
 
-extension BackupProto_BodyRange.Style: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_BodyRange.Style: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0NONE\0\u{1}BOLD\0\u{1}ITALIC\0\u{1}SPOILER\0\u{1}STRIKETHROUGH\0\u{1}MONOSPACE\0")
 }
 
-extension BackupProto_Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Reaction"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}emoji\0\u{1}authorId\0\u{1}sentTimestamp\0\u{1}sortOrder\0")
 
@@ -11496,7 +11496,7 @@ extension BackupProto_Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
   }
 }
 
-extension BackupProto_Poll: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Poll: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Poll"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}question\0\u{1}allowMultiple\0\u{1}options\0\u{1}hasEnded\0\u{1}reactions\0")
 
@@ -11546,7 +11546,7 @@ extension BackupProto_Poll: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
   }
 }
 
-extension BackupProto_Poll.PollOption: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Poll.PollOption: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_Poll.protoMessageName + ".PollOption"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}option\0\u{1}votes\0")
 
@@ -11581,7 +11581,7 @@ extension BackupProto_Poll.PollOption: SwiftProtobuf.Message, SwiftProtobuf._Mes
   }
 }
 
-extension BackupProto_Poll.PollOption.PollVote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_Poll.PollOption.PollVote: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_Poll.PollOption.protoMessageName + ".PollVote"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}voterId\0\u{1}voteCount\0")
 
@@ -11616,7 +11616,7 @@ extension BackupProto_Poll.PollOption.PollVote: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension BackupProto_AdminDeletedMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_AdminDeletedMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AdminDeletedMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}adminId\0")
 
@@ -11646,7 +11646,7 @@ extension BackupProto_AdminDeletedMessage: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension BackupProto_ChatUpdateMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ChatUpdateMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ChatUpdateMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}simpleUpdate\0\u{1}groupChange\0\u{1}expirationTimerChange\0\u{1}profileChange\0\u{1}threadMerge\0\u{1}sessionSwitchover\0\u{1}individualCall\0\u{1}groupCall\0\u{1}learnedProfileChange\0\u{1}pollTerminate\0\u{1}pinMessage\0")
 
@@ -11866,7 +11866,7 @@ extension BackupProto_ChatUpdateMessage: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
-extension BackupProto_IndividualCall: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_IndividualCall: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".IndividualCall"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}callId\0\u{1}type\0\u{1}direction\0\u{1}state\0\u{1}startedCallTimestamp\0\u{1}read\0")
 
@@ -11925,19 +11925,19 @@ extension BackupProto_IndividualCall: SwiftProtobuf.Message, SwiftProtobuf._Mess
   }
 }
 
-extension BackupProto_IndividualCall.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_IndividualCall.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_TYPE\0\u{1}AUDIO_CALL\0\u{1}VIDEO_CALL\0")
 }
 
-extension BackupProto_IndividualCall.Direction: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_IndividualCall.Direction: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_DIRECTION\0\u{1}INCOMING\0\u{1}OUTGOING\0")
 }
 
-extension BackupProto_IndividualCall.State: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_IndividualCall.State: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_STATE\0\u{1}ACCEPTED\0\u{1}NOT_ACCEPTED\0\u{1}MISSED\0\u{1}MISSED_NOTIFICATION_PROFILE\0")
 }
 
-extension BackupProto_GroupCall: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupCall: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupCall"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}callId\0\u{1}state\0\u{1}ringerRecipientId\0\u{1}startedCallRecipientId\0\u{1}startedCallTimestamp\0\u{1}endedCallTimestamp\0\u{1}read\0")
 
@@ -12001,11 +12001,11 @@ extension BackupProto_GroupCall: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   }
 }
 
-extension BackupProto_GroupCall.State: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupCall.State: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_STATE\0\u{1}GENERIC\0\u{1}JOINED\0\u{1}RINGING\0\u{1}ACCEPTED\0\u{1}DECLINED\0\u{1}MISSED\0\u{1}MISSED_NOTIFICATION_PROFILE\0\u{1}OUTGOING_RING\0")
 }
 
-extension BackupProto_SimpleChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_SimpleChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SimpleChatUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0")
 
@@ -12035,11 +12035,11 @@ extension BackupProto_SimpleChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._Me
   }
 }
 
-extension BackupProto_SimpleChatUpdate.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_SimpleChatUpdate.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}JOINED_SIGNAL\0\u{1}IDENTITY_UPDATE\0\u{1}IDENTITY_VERIFIED\0\u{1}IDENTITY_DEFAULT\0\u{1}CHANGE_NUMBER\0\u{1}RELEASE_CHANNEL_DONATION_REQUEST\0\u{1}END_SESSION\0\u{1}CHAT_SESSION_REFRESH\0\u{1}BAD_DECRYPT\0\u{1}PAYMENTS_ACTIVATED\0\u{1}PAYMENT_ACTIVATION_REQUEST\0\u{1}UNSUPPORTED_PROTOCOL_MESSAGE\0\u{1}REPORTED_SPAM\0\u{1}BLOCKED\0\u{1}UNBLOCKED\0\u{1}MESSAGE_REQUEST_ACCEPTED\0")
 }
 
-extension BackupProto_ExpirationTimerChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ExpirationTimerChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ExpirationTimerChatUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}expiresInMs\0")
 
@@ -12069,7 +12069,7 @@ extension BackupProto_ExpirationTimerChatUpdate: SwiftProtobuf.Message, SwiftPro
   }
 }
 
-extension BackupProto_ProfileChangeChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ProfileChangeChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ProfileChangeChatUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}previousName\0\u{1}newName\0")
 
@@ -12104,7 +12104,7 @@ extension BackupProto_ProfileChangeChatUpdate: SwiftProtobuf.Message, SwiftProto
   }
 }
 
-extension BackupProto_LearnedProfileChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_LearnedProfileChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".LearnedProfileChatUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}e164\0\u{1}username\0")
 
@@ -12161,7 +12161,7 @@ extension BackupProto_LearnedProfileChatUpdate: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension BackupProto_ThreadMergeChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ThreadMergeChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ThreadMergeChatUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}previousE164\0")
 
@@ -12191,7 +12191,7 @@ extension BackupProto_ThreadMergeChatUpdate: SwiftProtobuf.Message, SwiftProtobu
   }
 }
 
-extension BackupProto_SessionSwitchoverChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_SessionSwitchoverChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SessionSwitchoverChatUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}e164\0")
 
@@ -12221,7 +12221,7 @@ extension BackupProto_SessionSwitchoverChatUpdate: SwiftProtobuf.Message, SwiftP
   }
 }
 
-extension BackupProto_GroupChangeChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupChangeChatUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupChangeChatUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updates\0")
 
@@ -12251,7 +12251,7 @@ extension BackupProto_GroupChangeChatUpdate: SwiftProtobuf.Message, SwiftProtobu
   }
 }
 
-extension BackupProto_GroupChangeChatUpdate.Update: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupChangeChatUpdate.Update: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_GroupChangeChatUpdate.protoMessageName + ".Update"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}genericGroupUpdate\0\u{1}groupCreationUpdate\0\u{1}groupNameUpdate\0\u{1}groupAvatarUpdate\0\u{1}groupDescriptionUpdate\0\u{1}groupMembershipAccessLevelChangeUpdate\0\u{1}groupAttributesAccessLevelChangeUpdate\0\u{1}groupAnnouncementOnlyChangeUpdate\0\u{1}groupAdminStatusUpdate\0\u{1}groupMemberLeftUpdate\0\u{1}groupMemberRemovedUpdate\0\u{1}selfInvitedToGroupUpdate\0\u{1}selfInvitedOtherUserToGroupUpdate\0\u{1}groupUnknownInviteeUpdate\0\u{1}groupInvitationAcceptedUpdate\0\u{1}groupInvitationDeclinedUpdate\0\u{1}groupMemberJoinedUpdate\0\u{1}groupMemberAddedUpdate\0\u{1}groupSelfInvitationRevokedUpdate\0\u{1}groupInvitationRevokedUpdate\0\u{1}groupJoinRequestUpdate\0\u{1}groupJoinRequestApprovalUpdate\0\u{1}groupJoinRequestCanceledUpdate\0\u{1}groupInviteLinkResetUpdate\0\u{1}groupInviteLinkEnabledUpdate\0\u{1}groupInviteLinkAdminApprovalUpdate\0\u{1}groupInviteLinkDisabledUpdate\0\u{1}groupMemberJoinedByLinkUpdate\0\u{1}groupV2MigrationUpdate\0\u{1}groupV2MigrationSelfInvitedUpdate\0\u{1}groupV2MigrationInvitedMembersUpdate\0\u{1}groupV2MigrationDroppedMembersUpdate\0\u{1}groupSequenceOfRequestsAndCancelsUpdate\0\u{1}groupExpirationTimerUpdate\0\u{1}groupMemberLabelAccessLevelChangeUpdate\0\u{1}groupTerminateChangeUpdate\0")
 
@@ -12896,7 +12896,7 @@ extension BackupProto_GroupChangeChatUpdate.Update: SwiftProtobuf.Message, Swift
   }
 }
 
-extension BackupProto_GenericGroupUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GenericGroupUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GenericGroupUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0")
 
@@ -12930,7 +12930,7 @@ extension BackupProto_GenericGroupUpdate: SwiftProtobuf.Message, SwiftProtobuf._
   }
 }
 
-extension BackupProto_GroupCreationUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupCreationUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupCreationUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0")
 
@@ -12964,7 +12964,7 @@ extension BackupProto_GroupCreationUpdate: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension BackupProto_GroupNameUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupNameUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupNameUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0\u{1}newGroupName\0")
 
@@ -13003,7 +13003,7 @@ extension BackupProto_GroupNameUpdate: SwiftProtobuf.Message, SwiftProtobuf._Mes
   }
 }
 
-extension BackupProto_GroupAvatarUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupAvatarUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupAvatarUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0\u{1}wasRemoved\0")
 
@@ -13042,7 +13042,7 @@ extension BackupProto_GroupAvatarUpdate: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
-extension BackupProto_GroupDescriptionUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupDescriptionUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupDescriptionUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0\u{1}newDescription\0")
 
@@ -13081,7 +13081,7 @@ extension BackupProto_GroupDescriptionUpdate: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension BackupProto_GroupMembershipAccessLevelChangeUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupMembershipAccessLevelChangeUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupMembershipAccessLevelChangeUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0\u{1}accessLevel\0")
 
@@ -13120,7 +13120,7 @@ extension BackupProto_GroupMembershipAccessLevelChangeUpdate: SwiftProtobuf.Mess
   }
 }
 
-extension BackupProto_GroupMemberLabelAccessLevelChangeUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupMemberLabelAccessLevelChangeUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupMemberLabelAccessLevelChangeUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0\u{1}accessLevel\0")
 
@@ -13159,7 +13159,7 @@ extension BackupProto_GroupMemberLabelAccessLevelChangeUpdate: SwiftProtobuf.Mes
   }
 }
 
-extension BackupProto_GroupAttributesAccessLevelChangeUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupAttributesAccessLevelChangeUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupAttributesAccessLevelChangeUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0\u{1}accessLevel\0")
 
@@ -13198,7 +13198,7 @@ extension BackupProto_GroupAttributesAccessLevelChangeUpdate: SwiftProtobuf.Mess
   }
 }
 
-extension BackupProto_GroupAnnouncementOnlyChangeUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupAnnouncementOnlyChangeUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupAnnouncementOnlyChangeUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0\u{1}isAnnouncementOnly\0")
 
@@ -13237,7 +13237,7 @@ extension BackupProto_GroupAnnouncementOnlyChangeUpdate: SwiftProtobuf.Message, 
   }
 }
 
-extension BackupProto_GroupAdminStatusUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupAdminStatusUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupAdminStatusUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0\u{1}memberAci\0\u{1}wasAdminStatusGranted\0")
 
@@ -13281,7 +13281,7 @@ extension BackupProto_GroupAdminStatusUpdate: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension BackupProto_GroupMemberLeftUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupMemberLeftUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupMemberLeftUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}aci\0")
 
@@ -13311,7 +13311,7 @@ extension BackupProto_GroupMemberLeftUpdate: SwiftProtobuf.Message, SwiftProtobu
   }
 }
 
-extension BackupProto_GroupMemberRemovedUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupMemberRemovedUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupMemberRemovedUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}removerAci\0\u{1}removedAci\0")
 
@@ -13350,7 +13350,7 @@ extension BackupProto_GroupMemberRemovedUpdate: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension BackupProto_SelfInvitedToGroupUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_SelfInvitedToGroupUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SelfInvitedToGroupUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}inviterAci\0")
 
@@ -13384,7 +13384,7 @@ extension BackupProto_SelfInvitedToGroupUpdate: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension BackupProto_SelfInvitedOtherUserToGroupUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_SelfInvitedOtherUserToGroupUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SelfInvitedOtherUserToGroupUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}inviteeServiceId\0")
 
@@ -13414,7 +13414,7 @@ extension BackupProto_SelfInvitedOtherUserToGroupUpdate: SwiftProtobuf.Message, 
   }
 }
 
-extension BackupProto_GroupUnknownInviteeUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupUnknownInviteeUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupUnknownInviteeUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}inviterAci\0\u{1}inviteeCount\0")
 
@@ -13453,7 +13453,7 @@ extension BackupProto_GroupUnknownInviteeUpdate: SwiftProtobuf.Message, SwiftPro
   }
 }
 
-extension BackupProto_GroupInvitationAcceptedUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupInvitationAcceptedUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupInvitationAcceptedUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}inviterAci\0\u{1}newMemberAci\0")
 
@@ -13492,7 +13492,7 @@ extension BackupProto_GroupInvitationAcceptedUpdate: SwiftProtobuf.Message, Swif
   }
 }
 
-extension BackupProto_GroupInvitationDeclinedUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupInvitationDeclinedUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupInvitationDeclinedUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}inviterAci\0\u{1}inviteeAci\0")
 
@@ -13531,7 +13531,7 @@ extension BackupProto_GroupInvitationDeclinedUpdate: SwiftProtobuf.Message, Swif
   }
 }
 
-extension BackupProto_GroupMemberJoinedUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupMemberJoinedUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupMemberJoinedUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}newMemberAci\0")
 
@@ -13561,7 +13561,7 @@ extension BackupProto_GroupMemberJoinedUpdate: SwiftProtobuf.Message, SwiftProto
   }
 }
 
-extension BackupProto_GroupMemberAddedUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupMemberAddedUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupMemberAddedUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0\u{1}newMemberAci\0\u{1}hadOpenInvitation\0\u{1}inviterAci\0")
 
@@ -13610,7 +13610,7 @@ extension BackupProto_GroupMemberAddedUpdate: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension BackupProto_GroupSelfInvitationRevokedUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupSelfInvitationRevokedUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupSelfInvitationRevokedUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}revokerAci\0")
 
@@ -13644,7 +13644,7 @@ extension BackupProto_GroupSelfInvitationRevokedUpdate: SwiftProtobuf.Message, S
   }
 }
 
-extension BackupProto_GroupInvitationRevokedUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupInvitationRevokedUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupInvitationRevokedUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0\u{1}invitees\0")
 
@@ -13683,7 +13683,7 @@ extension BackupProto_GroupInvitationRevokedUpdate: SwiftProtobuf.Message, Swift
   }
 }
 
-extension BackupProto_GroupInvitationRevokedUpdate.Invitee: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupInvitationRevokedUpdate.Invitee: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_GroupInvitationRevokedUpdate.protoMessageName + ".Invitee"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}inviterAci\0\u{1}inviteeAci\0\u{1}inviteePni\0")
 
@@ -13727,7 +13727,7 @@ extension BackupProto_GroupInvitationRevokedUpdate.Invitee: SwiftProtobuf.Messag
   }
 }
 
-extension BackupProto_GroupJoinRequestUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupJoinRequestUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupJoinRequestUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}requestorAci\0")
 
@@ -13757,7 +13757,7 @@ extension BackupProto_GroupJoinRequestUpdate: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension BackupProto_GroupJoinRequestApprovalUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupJoinRequestApprovalUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupJoinRequestApprovalUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}requestorAci\0\u{1}updaterAci\0\u{1}wasApproved\0")
 
@@ -13801,7 +13801,7 @@ extension BackupProto_GroupJoinRequestApprovalUpdate: SwiftProtobuf.Message, Swi
   }
 }
 
-extension BackupProto_GroupJoinRequestCanceledUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupJoinRequestCanceledUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupJoinRequestCanceledUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}requestorAci\0")
 
@@ -13831,7 +13831,7 @@ extension BackupProto_GroupJoinRequestCanceledUpdate: SwiftProtobuf.Message, Swi
   }
 }
 
-extension BackupProto_GroupSequenceOfRequestsAndCancelsUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupSequenceOfRequestsAndCancelsUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupSequenceOfRequestsAndCancelsUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}requestorAci\0\u{1}count\0")
 
@@ -13866,7 +13866,7 @@ extension BackupProto_GroupSequenceOfRequestsAndCancelsUpdate: SwiftProtobuf.Mes
   }
 }
 
-extension BackupProto_GroupInviteLinkResetUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupInviteLinkResetUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupInviteLinkResetUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0")
 
@@ -13900,7 +13900,7 @@ extension BackupProto_GroupInviteLinkResetUpdate: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-extension BackupProto_GroupInviteLinkEnabledUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupInviteLinkEnabledUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupInviteLinkEnabledUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0\u{1}linkRequiresAdminApproval\0")
 
@@ -13939,7 +13939,7 @@ extension BackupProto_GroupInviteLinkEnabledUpdate: SwiftProtobuf.Message, Swift
   }
 }
 
-extension BackupProto_GroupInviteLinkAdminApprovalUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupInviteLinkAdminApprovalUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupInviteLinkAdminApprovalUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0\u{1}linkRequiresAdminApproval\0")
 
@@ -13978,7 +13978,7 @@ extension BackupProto_GroupInviteLinkAdminApprovalUpdate: SwiftProtobuf.Message,
   }
 }
 
-extension BackupProto_GroupInviteLinkDisabledUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupInviteLinkDisabledUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupInviteLinkDisabledUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0")
 
@@ -14012,7 +14012,7 @@ extension BackupProto_GroupInviteLinkDisabledUpdate: SwiftProtobuf.Message, Swif
   }
 }
 
-extension BackupProto_GroupMemberJoinedByLinkUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupMemberJoinedByLinkUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupMemberJoinedByLinkUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}newMemberAci\0")
 
@@ -14042,7 +14042,7 @@ extension BackupProto_GroupMemberJoinedByLinkUpdate: SwiftProtobuf.Message, Swif
   }
 }
 
-extension BackupProto_GroupV2MigrationUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupV2MigrationUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupV2MigrationUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -14061,7 +14061,7 @@ extension BackupProto_GroupV2MigrationUpdate: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension BackupProto_GroupV2MigrationSelfInvitedUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupV2MigrationSelfInvitedUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupV2MigrationSelfInvitedUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -14080,7 +14080,7 @@ extension BackupProto_GroupV2MigrationSelfInvitedUpdate: SwiftProtobuf.Message, 
   }
 }
 
-extension BackupProto_GroupV2MigrationInvitedMembersUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupV2MigrationInvitedMembersUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupV2MigrationInvitedMembersUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}invitedMembersCount\0")
 
@@ -14110,7 +14110,7 @@ extension BackupProto_GroupV2MigrationInvitedMembersUpdate: SwiftProtobuf.Messag
   }
 }
 
-extension BackupProto_GroupV2MigrationDroppedMembersUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupV2MigrationDroppedMembersUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupV2MigrationDroppedMembersUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}droppedMembersCount\0")
 
@@ -14140,7 +14140,7 @@ extension BackupProto_GroupV2MigrationDroppedMembersUpdate: SwiftProtobuf.Messag
   }
 }
 
-extension BackupProto_GroupExpirationTimerUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupExpirationTimerUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupExpirationTimerUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}expiresInMs\0\u{1}updaterAci\0")
 
@@ -14179,7 +14179,7 @@ extension BackupProto_GroupExpirationTimerUpdate: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-extension BackupProto_GroupTerminateChangeUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_GroupTerminateChangeUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GroupTerminateChangeUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0")
 
@@ -14213,7 +14213,7 @@ extension BackupProto_GroupTerminateChangeUpdate: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-extension BackupProto_PollTerminateUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_PollTerminateUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".PollTerminateUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetSentTimestamp\0\u{1}question\0")
 
@@ -14248,7 +14248,7 @@ extension BackupProto_PollTerminateUpdate: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension BackupProto_PinMessageUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_PinMessageUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".PinMessageUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}targetSentTimestamp\0\u{1}authorId\0")
 
@@ -14283,7 +14283,7 @@ extension BackupProto_PinMessageUpdate: SwiftProtobuf.Message, SwiftProtobuf._Me
   }
 }
 
-extension BackupProto_StickerPack: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_StickerPack: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".StickerPack"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}packId\0\u{1}packKey\0")
 
@@ -14318,7 +14318,7 @@ extension BackupProto_StickerPack: SwiftProtobuf.Message, SwiftProtobuf._Message
   }
 }
 
-extension BackupProto_ChatStyle: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ChatStyle: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ChatStyle"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}wallpaperPreset\0\u{1}wallpaperPhoto\0\u{1}autoBubbleColor\0\u{1}bubbleColorPreset\0\u{1}customColorId\0\u{2}\u{2}dimWallpaperInDarkMode\0")
 
@@ -14470,15 +14470,15 @@ extension BackupProto_ChatStyle: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   }
 }
 
-extension BackupProto_ChatStyle.WallpaperPreset: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ChatStyle.WallpaperPreset: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_WALLPAPER_PRESET\0\u{1}SOLID_BLUSH\0\u{1}SOLID_COPPER\0\u{1}SOLID_DUST\0\u{1}SOLID_CELADON\0\u{1}SOLID_RAINFOREST\0\u{1}SOLID_PACIFIC\0\u{1}SOLID_FROST\0\u{1}SOLID_NAVY\0\u{1}SOLID_LILAC\0\u{1}SOLID_PINK\0\u{1}SOLID_EGGPLANT\0\u{1}SOLID_SILVER\0\u{1}GRADIENT_SUNSET\0\u{1}GRADIENT_NOIR\0\u{1}GRADIENT_HEATMAP\0\u{1}GRADIENT_AQUA\0\u{1}GRADIENT_IRIDESCENT\0\u{1}GRADIENT_MONSTERA\0\u{1}GRADIENT_BLISS\0\u{1}GRADIENT_SKY\0\u{1}GRADIENT_PEACH\0")
 }
 
-extension BackupProto_ChatStyle.BubbleColorPreset: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ChatStyle.BubbleColorPreset: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN_BUBBLE_COLOR_PRESET\0\u{1}SOLID_ULTRAMARINE\0\u{1}SOLID_CRIMSON\0\u{1}SOLID_VERMILION\0\u{1}SOLID_BURLAP\0\u{1}SOLID_FOREST\0\u{1}SOLID_WINTERGREEN\0\u{1}SOLID_TEAL\0\u{1}SOLID_BLUE\0\u{1}SOLID_INDIGO\0\u{1}SOLID_VIOLET\0\u{1}SOLID_PLUM\0\u{1}SOLID_TAUPE\0\u{1}SOLID_STEEL\0\u{1}GRADIENT_EMBER\0\u{1}GRADIENT_MIDNIGHT\0\u{1}GRADIENT_INFRARED\0\u{1}GRADIENT_LAGOON\0\u{1}GRADIENT_FLUORESCENT\0\u{1}GRADIENT_BASIL\0\u{1}GRADIENT_SUBLIME\0\u{1}GRADIENT_SEA\0\u{1}GRADIENT_TANGERINE\0")
 }
 
-extension BackupProto_ChatStyle.Gradient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ChatStyle.Gradient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_ChatStyle.protoMessageName + ".Gradient"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}angle\0\u{1}colors\0\u{1}positions\0")
 
@@ -14518,7 +14518,7 @@ extension BackupProto_ChatStyle.Gradient: SwiftProtobuf.Message, SwiftProtobuf._
   }
 }
 
-extension BackupProto_ChatStyle.CustomChatColor: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ChatStyle.CustomChatColor: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_ChatStyle.protoMessageName + ".CustomChatColor"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}solid\0\u{1}gradient\0")
 
@@ -14585,7 +14585,7 @@ extension BackupProto_ChatStyle.CustomChatColor: SwiftProtobuf.Message, SwiftPro
   }
 }
 
-extension BackupProto_ChatStyle.AutomaticBubbleColor: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ChatStyle.AutomaticBubbleColor: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_ChatStyle.protoMessageName + ".AutomaticBubbleColor"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -14604,7 +14604,7 @@ extension BackupProto_ChatStyle.AutomaticBubbleColor: SwiftProtobuf.Message, Swi
   }
 }
 
-extension BackupProto_NotificationProfile: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_NotificationProfile: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".NotificationProfile"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}emoji\0\u{1}color\0\u{1}createdAtMs\0\u{1}allowAllCalls\0\u{1}allowAllMentions\0\u{1}allowedMembers\0\u{1}scheduleEnabled\0\u{1}scheduleStartTime\0\u{1}scheduleEndTime\0\u{1}scheduleDaysEnabled\0\u{1}id\0")
 
@@ -14693,11 +14693,11 @@ extension BackupProto_NotificationProfile: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension BackupProto_NotificationProfile.DayOfWeek: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_NotificationProfile.DayOfWeek: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}MONDAY\0\u{1}TUESDAY\0\u{1}WEDNESDAY\0\u{1}THURSDAY\0\u{1}FRIDAY\0\u{1}SATURDAY\0\u{1}SUNDAY\0")
 }
 
-extension BackupProto_ChatFolder: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ChatFolder: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ChatFolder"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}showOnlyUnread\0\u{1}showMutedChats\0\u{1}includeAllIndividualChats\0\u{1}includeAllGroupChats\0\u{1}folderType\0\u{1}includedRecipientIds\0\u{1}excludedRecipientIds\0\u{1}id\0")
 
@@ -14767,6 +14767,6 @@ extension BackupProto_ChatFolder: SwiftProtobuf.Message, SwiftProtobuf._MessageI
   }
 }
 
-extension BackupProto_ChatFolder.FolderType: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension BackupProto_ChatFolder.FolderType: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}ALL\0\u{1}CUSTOM\0")
 }

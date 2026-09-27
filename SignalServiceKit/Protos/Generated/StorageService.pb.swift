@@ -24,12 +24,12 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
 
-enum StorageServiceProtos_OptionalBool: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum StorageServiceProtos_OptionalBool: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case unset // = 0
   case `true` // = 1
@@ -76,7 +76,7 @@ enum StorageServiceProtos_OptionalBool: SwiftProtobuf.Enum, Swift.CaseIterable {
 /// - E164
 /// - ServiceIdToBinary(PNI)
 /// - Group Id
-enum StorageServiceProtos_AvatarColor: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum StorageServiceProtos_AvatarColor: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case a100 // = 0
   case a110 // = 1
@@ -150,7 +150,7 @@ enum StorageServiceProtos_AvatarColor: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-struct StorageServiceProtos_StorageItem: Sendable {
+nonisolated struct StorageServiceProtos_StorageItem: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -166,7 +166,7 @@ struct StorageServiceProtos_StorageItem: Sendable {
   init() {}
 }
 
-struct StorageServiceProtos_StorageItems: Sendable {
+nonisolated struct StorageServiceProtos_StorageItems: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -179,7 +179,7 @@ struct StorageServiceProtos_StorageItems: Sendable {
   init() {}
 }
 
-struct StorageServiceProtos_StorageManifest: Sendable {
+nonisolated struct StorageServiceProtos_StorageManifest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -195,7 +195,7 @@ struct StorageServiceProtos_StorageManifest: Sendable {
   init() {}
 }
 
-struct StorageServiceProtos_ReadOperation: Sendable {
+nonisolated struct StorageServiceProtos_ReadOperation: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -207,7 +207,7 @@ struct StorageServiceProtos_ReadOperation: Sendable {
   init() {}
 }
 
-struct StorageServiceProtos_WriteOperation: Sendable {
+nonisolated struct StorageServiceProtos_WriteOperation: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -234,7 +234,7 @@ struct StorageServiceProtos_WriteOperation: Sendable {
   fileprivate var _manifest: StorageServiceProtos_StorageManifest? = nil
 }
 
-struct StorageServiceProtos_ManifestRecord: Sendable {
+nonisolated struct StorageServiceProtos_ManifestRecord: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -250,7 +250,7 @@ struct StorageServiceProtos_ManifestRecord: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  struct Key: Sendable {
+  nonisolated struct Key: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -263,7 +263,7 @@ struct StorageServiceProtos_ManifestRecord: Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
+    nonisolated enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
       typealias RawValue = Int
       case unknown // = 0
       case contact // = 1
@@ -323,7 +323,7 @@ struct StorageServiceProtos_ManifestRecord: Sendable {
   init() {}
 }
 
-struct StorageServiceProtos_StorageRecord: Sendable {
+nonisolated struct StorageServiceProtos_StorageRecord: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -380,7 +380,7 @@ struct StorageServiceProtos_StorageRecord: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_Record: Equatable, Sendable {
+  nonisolated enum OneOf_Record: Equatable, Sendable {
     case contact(StorageServiceProtos_ContactRecord)
     case groupV1(StorageServiceProtos_GroupV1Record)
     case groupV2(StorageServiceProtos_GroupV2Record)
@@ -393,7 +393,7 @@ struct StorageServiceProtos_StorageRecord: Sendable {
   init() {}
 }
 
-struct StorageServiceProtos_ContactRecord: @unchecked Sendable {
+nonisolated struct StorageServiceProtos_ContactRecord: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -535,7 +535,7 @@ struct StorageServiceProtos_ContactRecord: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum IdentityState: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum IdentityState: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case `default` // = 0
     case verified // = 1
@@ -573,7 +573,7 @@ struct StorageServiceProtos_ContactRecord: @unchecked Sendable {
 
   }
 
-  struct Name: Sendable {
+  nonisolated struct Name: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -592,7 +592,7 @@ struct StorageServiceProtos_ContactRecord: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct StorageServiceProtos_GroupV1Record: Sendable {
+nonisolated struct StorageServiceProtos_GroupV1Record: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -605,7 +605,7 @@ struct StorageServiceProtos_GroupV1Record: Sendable {
   init() {}
 }
 
-struct StorageServiceProtos_GroupV2Record: Sendable {
+nonisolated struct StorageServiceProtos_GroupV2Record: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -643,7 +643,7 @@ struct StorageServiceProtos_GroupV2Record: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum StorySendMode: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum StorySendMode: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case `default` // = 0
     case disabled // = 1
@@ -686,7 +686,7 @@ struct StorageServiceProtos_GroupV2Record: Sendable {
   fileprivate var _avatarColor: StorageServiceProtos_AvatarColor? = nil
 }
 
-struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
+nonisolated struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -939,7 +939,7 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum PhoneNumberSharingMode: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum PhoneNumberSharingMode: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case unknown // = 0
     case everybody // = 1
@@ -977,7 +977,7 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
 
   }
 
-  struct PinnedConversation: Sendable {
+  nonisolated struct PinnedConversation: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1018,7 +1018,7 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum OneOf_Identifier: Equatable, Sendable {
+    nonisolated enum OneOf_Identifier: Equatable, Sendable {
       case contact(StorageServiceProtos_AccountRecord.PinnedConversation.Contact)
       case legacyGroupID(Data)
       case groupMasterKey(Data)
@@ -1026,7 +1026,7 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
 
     }
 
-    struct Contact: Sendable {
+    nonisolated struct Contact: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1043,7 +1043,7 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
       init() {}
     }
 
-    struct ReleaseNotes: Sendable {
+    nonisolated struct ReleaseNotes: Sendable {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
@@ -1056,7 +1056,7 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
     init() {}
   }
 
-  struct Payments: Sendable {
+  nonisolated struct Payments: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1070,7 +1070,7 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
     init() {}
   }
 
-  struct UsernameLink: Sendable {
+  nonisolated struct UsernameLink: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1086,7 +1086,7 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum Color: SwiftProtobuf.Enum, Swift.CaseIterable {
+    nonisolated enum Color: SwiftProtobuf.Enum, Swift.CaseIterable {
       typealias RawValue = Int
       case unknown // = 0
       case blue // = 1
@@ -1151,7 +1151,7 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
     init() {}
   }
 
-  struct IAPSubscriberData: Sendable {
+  nonisolated struct IAPSubscriberData: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1180,7 +1180,7 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum OneOf_IapSubscriptionID: Equatable, Sendable {
+    nonisolated enum OneOf_IapSubscriptionID: Equatable, Sendable {
       /// Identifies an Android Play Store IAP subscription.
       case purchaseToken(String)
       /// Identifies an iOS App Store IAP subscription.
@@ -1196,7 +1196,7 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct StorageServiceProtos_StoryDistributionListRecord: Sendable {
+nonisolated struct StorageServiceProtos_StoryDistributionListRecord: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1221,7 +1221,7 @@ struct StorageServiceProtos_StoryDistributionListRecord: Sendable {
   init() {}
 }
 
-struct StorageServiceProtos_CallLinkRecord: Sendable {
+nonisolated struct StorageServiceProtos_CallLinkRecord: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1242,17 +1242,17 @@ struct StorageServiceProtos_CallLinkRecord: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "StorageServiceProtos"
+fileprivate nonisolated let _protobuf_package = "StorageServiceProtos"
 
-extension StorageServiceProtos_OptionalBool: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_OptionalBool: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNSET\0\u{1}TRUE\0\u{1}FALSE\0")
 }
 
-extension StorageServiceProtos_AvatarColor: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_AvatarColor: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0A100\0\u{1}A110\0\u{1}A120\0\u{1}A130\0\u{1}A140\0\u{1}A150\0\u{1}A160\0\u{1}A170\0\u{1}A180\0\u{1}A190\0\u{1}A200\0\u{1}A210\0")
 }
 
-extension StorageServiceProtos_StorageItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_StorageItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".StorageItem"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}key\0\u{1}value\0")
 
@@ -1287,7 +1287,7 @@ extension StorageServiceProtos_StorageItem: SwiftProtobuf.Message, SwiftProtobuf
   }
 }
 
-extension StorageServiceProtos_StorageItems: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_StorageItems: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".StorageItems"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}items\0")
 
@@ -1317,7 +1317,7 @@ extension StorageServiceProtos_StorageItems: SwiftProtobuf.Message, SwiftProtobu
   }
 }
 
-extension StorageServiceProtos_StorageManifest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_StorageManifest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".StorageManifest"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}version\0\u{1}value\0")
 
@@ -1352,7 +1352,7 @@ extension StorageServiceProtos_StorageManifest: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension StorageServiceProtos_ReadOperation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_ReadOperation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ReadOperation"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}readKey\0")
 
@@ -1382,7 +1382,7 @@ extension StorageServiceProtos_ReadOperation: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension StorageServiceProtos_WriteOperation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_WriteOperation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".WriteOperation"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}manifest\0\u{1}insertItem\0\u{1}deleteKey\0\u{1}deleteAll\0")
 
@@ -1431,7 +1431,7 @@ extension StorageServiceProtos_WriteOperation: SwiftProtobuf.Message, SwiftProto
   }
 }
 
-extension StorageServiceProtos_ManifestRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_ManifestRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ManifestRecord"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}version\0\u{1}keys\0\u{1}sourceDevice\0\u{1}recordIkm\0")
 
@@ -1476,7 +1476,7 @@ extension StorageServiceProtos_ManifestRecord: SwiftProtobuf.Message, SwiftProto
   }
 }
 
-extension StorageServiceProtos_ManifestRecord.Key: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_ManifestRecord.Key: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = StorageServiceProtos_ManifestRecord.protoMessageName + ".Key"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}data\0\u{1}type\0")
 
@@ -1511,11 +1511,11 @@ extension StorageServiceProtos_ManifestRecord.Key: SwiftProtobuf.Message, SwiftP
   }
 }
 
-extension StorageServiceProtos_ManifestRecord.Key.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_ManifestRecord.Key.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}CONTACT\0\u{1}GROUPV1\0\u{1}GROUPV2\0\u{1}ACCOUNT\0\u{1}STORY_DISTRIBUTION_LIST\0\u{2}\u{2}CALL_LINK\0")
 }
 
-extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".StorageRecord"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contact\0\u{1}groupV1\0\u{1}groupV2\0\u{1}account\0\u{1}storyDistributionList\0\u{2}\u{2}callLink\0")
 
@@ -1650,7 +1650,7 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ContactRecord"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}aci\0\u{1}e164\0\u{1}profileKey\0\u{1}identityKey\0\u{1}identityState\0\u{1}givenName\0\u{1}familyName\0\u{1}username\0\u{1}blocked\0\u{1}whitelisted\0\u{1}archived\0\u{1}markedUnread\0\u{1}mutedUntilTimestamp\0\u{1}hideStory\0\u{1}pni\0\u{1}unregisteredAtTimestamp\0\u{1}systemGivenName\0\u{1}systemFamilyName\0\u{1}systemNickname\0\u{1}hidden\0\u{2}\u{2}nickname\0\u{1}note\0\u{1}avatarColor\0\u{1}aciBinary\0\u{1}pniBinary\0")
 
@@ -1888,11 +1888,11 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension StorageServiceProtos_ContactRecord.IdentityState: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_ContactRecord.IdentityState: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0DEFAULT\0\u{1}VERIFIED\0\u{1}UNVERIFIED\0")
 }
 
-extension StorageServiceProtos_ContactRecord.Name: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_ContactRecord.Name: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = StorageServiceProtos_ContactRecord.protoMessageName + ".Name"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}given\0\u{1}family\0")
 
@@ -1927,7 +1927,7 @@ extension StorageServiceProtos_ContactRecord.Name: SwiftProtobuf.Message, SwiftP
   }
 }
 
-extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupV1Record"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{c}\u{2}\u{1}\u{c}\u{3}\u{1}\u{c}\u{4}\u{1}\u{c}\u{5}\u{1}\u{c}\u{6}\u{1}")
 
@@ -1957,7 +1957,7 @@ extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupV2Record"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}masterKey\0\u{1}blocked\0\u{1}whitelisted\0\u{1}archived\0\u{1}markedUnread\0\u{1}mutedUntilTimestamp\0\u{1}dontNotifyForMentionsIfMuted\0\u{1}hideStory\0\u{2}\u{2}storySendMode\0\u{1}avatarColor\0\u{1}verifiedNameHash\0")
 
@@ -2041,11 +2041,11 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension StorageServiceProtos_GroupV2Record.StorySendMode: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_GroupV2Record.StorySendMode: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0DEFAULT\0\u{1}DISABLED\0\u{1}ENABLED\0")
 }
 
-extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AccountRecord"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}profileKey\0\u{1}givenName\0\u{1}familyName\0\u{1}avatarUrl\0\u{1}noteToSelfArchived\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}proxiedLinkPreviews\0\u{1}noteToSelfMarkedUnread\0\u{1}linkPreviews\0\u{1}phoneNumberSharingMode\0\u{1}notDiscoverableByPhoneNumber\0\u{1}pinnedConversations\0\u{1}preferContactAvatars\0\u{1}payments\0\u{1}universalExpireTimer\0\u{2}\u{2}e164\0\u{1}preferredReactionEmoji\0\u{1}donorSubscriberID\0\u{1}donorSubscriberCurrencyCode\0\u{1}displayBadgesOnProfile\0\u{1}donorSubscriptionManuallyCancelled\0\u{1}keepMutedChatsArchived\0\u{1}myStoryPrivacyHasBeenSet\0\u{1}viewedOnboardingStory\0\u{2}\u{2}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}readOnboardingStory\0\u{2}\u{2}username\0\u{1}completedUsernameOnboarding\0\u{1}usernameLink\0\u{2}\u{5}backupTier\0\u{1}backupSubscriberData\0\u{1}avatarColor\0\u{2}\u{4}automaticKeyVerificationDisabled\0\u{1}seenAdminDeleteEducationDialog\0\u{1}releaseNotesChatArchived\0\u{1}releaseNotesChatMutedUntilTimestamp\0\u{1}releaseNotesChatBlocked\0\u{1}releaseNotesChatMarkedUnread\0\u{c}\u{12}\u{1}\u{c}\u{1c}\u{1}\u{c} \u{1}\u{c}$\u{1}\u{c}%\u{1}\u{c}&\u{1}\u{c}'\u{1}\u{c}+\u{1}")
 
@@ -2395,11 +2395,11 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension StorageServiceProtos_AccountRecord.PhoneNumberSharingMode: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_AccountRecord.PhoneNumberSharingMode: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}EVERYBODY\0\u{1}NOBODY\0")
 }
 
-extension StorageServiceProtos_AccountRecord.PinnedConversation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_AccountRecord.PinnedConversation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = StorageServiceProtos_AccountRecord.protoMessageName + ".PinnedConversation"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contact\0\u{2}\u{2}legacyGroupId\0\u{1}groupMasterKey\0\u{1}releaseNotes\0")
 
@@ -2490,7 +2490,7 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation: SwiftProtobuf.M
   }
 }
 
-extension StorageServiceProtos_AccountRecord.PinnedConversation.Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_AccountRecord.PinnedConversation.Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = StorageServiceProtos_AccountRecord.PinnedConversation.protoMessageName + ".Contact"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}serviceId\0\u{1}e164\0\u{1}serviceIdBinary\0")
 
@@ -2530,7 +2530,7 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation.Contact: SwiftPr
   }
 }
 
-extension StorageServiceProtos_AccountRecord.PinnedConversation.ReleaseNotes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_AccountRecord.PinnedConversation.ReleaseNotes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = StorageServiceProtos_AccountRecord.PinnedConversation.protoMessageName + ".ReleaseNotes"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -2549,7 +2549,7 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation.ReleaseNotes: Sw
   }
 }
 
-extension StorageServiceProtos_AccountRecord.Payments: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_AccountRecord.Payments: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = StorageServiceProtos_AccountRecord.protoMessageName + ".Payments"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}enabled\0\u{1}paymentsEntropy\0")
 
@@ -2584,7 +2584,7 @@ extension StorageServiceProtos_AccountRecord.Payments: SwiftProtobuf.Message, Sw
   }
 }
 
-extension StorageServiceProtos_AccountRecord.UsernameLink: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_AccountRecord.UsernameLink: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = StorageServiceProtos_AccountRecord.protoMessageName + ".UsernameLink"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}entropy\0\u{1}serverId\0\u{1}color\0")
 
@@ -2624,11 +2624,11 @@ extension StorageServiceProtos_AccountRecord.UsernameLink: SwiftProtobuf.Message
   }
 }
 
-extension StorageServiceProtos_AccountRecord.UsernameLink.Color: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_AccountRecord.UsernameLink.Color: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}BLUE\0\u{1}WHITE\0\u{1}GREY\0\u{1}OLIVE\0\u{1}GREEN\0\u{1}ORANGE\0\u{1}PINK\0\u{1}PURPLE\0")
 }
 
-extension StorageServiceProtos_AccountRecord.IAPSubscriberData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_AccountRecord.IAPSubscriberData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = StorageServiceProtos_AccountRecord.protoMessageName + ".IAPSubscriberData"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}subscriberId\0\u{1}purchaseToken\0\u{1}originalTransactionId\0")
 
@@ -2690,7 +2690,7 @@ extension StorageServiceProtos_AccountRecord.IAPSubscriberData: SwiftProtobuf.Me
   }
 }
 
-extension StorageServiceProtos_StoryDistributionListRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_StoryDistributionListRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".StoryDistributionListRecord"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}identifier\0\u{1}name\0\u{1}recipientServiceIds\0\u{1}deletedAtTimestamp\0\u{1}allowsReplies\0\u{1}isBlockList\0\u{1}recipientServiceIdsBinary\0")
 
@@ -2750,7 +2750,7 @@ extension StorageServiceProtos_StoryDistributionListRecord: SwiftProtobuf.Messag
   }
 }
 
-extension StorageServiceProtos_CallLinkRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension StorageServiceProtos_CallLinkRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".CallLinkRecord"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}rootKey\0\u{1}adminPasskey\0\u{1}deletedAtTimestampMs\0\u{c}\u{4}\u{1}")
 

@@ -7,10 +7,25 @@ public import Foundation
 public import SignalServiceKit
 public import SignalUI
 
+/// Identifies playback of one attachment on one message. The same attachment
+/// can belong to multiple messages, such as a forwarded voice note, and each
+/// is played back independently.
+public struct CVAudioPlaybackID: Hashable {
+    public let attachmentID: Attachment.IDType
+    public let interactionID: String
+
+    public init(audioAttachment: AudioAttachment) {
+        self.attachmentID = audioAttachment.attachment.id
+        self.interactionID = audioAttachment.owningMessage.uniqueId
+    }
+}
+
+// MARK: -
+
 protocol CVAudioPlayerListener {
-    func audioPlayerStateDidChange(attachmentId: Attachment.IDType)
-    func audioPlayerDidFinish(attachmentId: Attachment.IDType)
-    func audioPlayerDidMarkViewed(attachmentId: Attachment.IDType)
+    func audioPlayerStateDidChange(playbackID: CVAudioPlaybackID)
+    func audioPlayerDidFinish(playbackID: CVAudioPlaybackID)
+    func audioPlayerDidMarkViewed(playbackID: CVAudioPlaybackID)
 }
 
 // MARK: -
@@ -27,7 +42,7 @@ protocol CVAudioPlayerListener {
 //     * The cell is scrolled offscreen and unloaded.
 //     * etc.
 // * Ensure thread safety.
-public class CVAudioPlayer: NSObject {
+public class CVAudioPlayer: NSObject, AudioPlayerDelegate, CVAudioPlaybackDelegate {
     // The currently playing audio, if any.
     private var _audioPlayback: CVAudioPlayback?
     private var audioPlayback: CVAudioPlayback? {
@@ -43,7 +58,7 @@ public class CVAudioPlayer: NSObject {
         }
     }
 
-    private var autoplayAttachmentId: Attachment.IDType?
+    private var autoplayPlaybackID: CVAudioPlaybackID?
 
     // Views need to update to reflect playback progress, state changes.
     private var listeners = WeakArray<CVAudioPlayerListener>()
@@ -61,8 +76,7 @@ public class CVAudioPlayer: NSObject {
     //
     // Playback progress should be continuous even if the corresponding
     // cells are reloaded or scrolled offscreen and unloaded.
-    public typealias AttachmentId = Attachment.IDType
-    private var progressCache = LRUCache<AttachmentId, TimeInterval>(maxSize: 512)
+    private var progressCache = LRUCache<CVAudioPlaybackID, TimeInterval>(maxSize: 512)
 
     // Playback rate cached by thread id, _not_ attachment ID. Playback rate is preserved
     // across all audio attachments in a given thread.
@@ -76,45 +90,42 @@ public class CVAudioPlayer: NSObject {
     // called when the current attachment finishes playing.
     var shouldAutoplayNextAudioAttachment: (() -> Bool)?
 
-    public func audioPlaybackState(forAttachmentId attachmentId: Attachment.IDType) -> AudioPlaybackState {
+    public func audioPlaybackState(playbackID: CVAudioPlaybackID) -> AudioPlaybackState {
         AssertIsOnMainThread()
 
-        guard let audioPlayback else {
-            return .stopped
-        }
-        guard audioPlayback.attachmentId == attachmentId else {
+        guard let audioPlayback, audioPlayback.playbackID == playbackID else {
             return .stopped
         }
         return audioPlayback.audioPlaybackState
     }
 
-    private func ensurePlayback(for attachment: AudioAttachment, forAutoplay: Bool = false) -> CVAudioPlayback? {
+    private func ensurePlayback(for audioAttachment: AudioAttachment, forAutoplay: Bool = false) -> CVAudioPlayback? {
         AssertIsOnMainThread()
 
-        guard let attachmentId = attachment.attachmentStream?.attachmentStream.id else {
+        guard let referencedAttachmentStream = audioAttachment.attachmentStream else {
             return nil
         }
 
-        autoplayAttachmentId = forAutoplay ? attachmentId : nil
+        let playbackID = CVAudioPlaybackID(audioAttachment: audioAttachment)
+        autoplayPlaybackID = forAutoplay ? playbackID : nil
 
         if
             let audioPlayback = self.audioPlayback,
-            audioPlayback.attachmentId == attachmentId
+            audioPlayback.playbackID == playbackID
         {
             return audioPlayback
         }
-        guard let audioPlayback = CVAudioPlayback(attachment: attachment) else {
-            owsFailDebug("Could not play audio attachment.")
-            return nil
-        }
+
+        let audioPlayback = CVAudioPlayback(
+            audioAttachment: audioAttachment,
+            attachmentStream: referencedAttachmentStream.attachmentStream,
+        )
+
         // Restore playback continuity.
-        if let progress = progressCache[attachmentId] {
+        if let progress = progressCache[audioPlayback.playbackID] {
             audioPlayback.setProgress(progress)
         }
-        if
-            let uniqueThreadId = audioPlayback.uniqueThreadId,
-            let playbackRate = playbackRateCache[uniqueThreadId]
-        {
+        if let playbackRate = playbackRateCache[audioPlayback.uniqueThreadId] {
             audioPlayback.setPlaybackRate(playbackRate)
         } else {
             audioPlayback.setPlaybackRate(1)
@@ -125,9 +136,9 @@ public class CVAudioPlayer: NSObject {
         self.audioPlayback = audioPlayback
 
         // Let the existing player know its state has changed.
-        if let oldId = oldAudioPlayback?.attachmentId {
+        if let oldAudioPlayback {
             for listener in listeners.elements {
-                listener.audioPlayerStateDidChange(attachmentId: oldId)
+                listener.audioPlayerStateDidChange(playbackID: oldAudioPlayback.playbackID)
             }
         }
 
@@ -144,7 +155,7 @@ public class CVAudioPlayer: NSObject {
 
         if audioAttachment.markOwningMessageAsViewed() {
             for listener in listeners.elements {
-                listener.audioPlayerDidMarkViewed(attachmentId: audioPlayback.attachmentId)
+                listener.audioPlayerDidMarkViewed(playbackID: audioPlayback.playbackID)
             }
         }
 
@@ -176,8 +187,8 @@ public class CVAudioPlayer: NSObject {
             return
         }
 
-        guard let audioAttachment, let attachmentStream = audioAttachment.attachmentStream else {
-            if audioPlayback?.attachmentId == autoplayAttachmentId {
+        guard let audioAttachment, audioAttachment.attachmentStream != nil else {
+            if audioPlayback?.playbackID == autoplayPlaybackID {
                 // Play a tone indicating the last track completed.
                 playStandardSound(.endLastTrack)
             }
@@ -192,13 +203,13 @@ public class CVAudioPlayer: NSObject {
         // Play a tone indicating the next track is starting.
         playStandardSound(.beginNextTrack) { [weak self] in
             // Make sure the user didn't start another attachment while the tone was playing.
-            guard self?.autoplayAttachmentId == attachmentStream.attachmentStream.id else { return }
-            guard self?.audioPlayback?.attachmentId == attachmentStream.attachmentStream.id else { return }
+            guard self?.autoplayPlaybackID == audioPlayback.playbackID else { return }
+            guard self?.audioPlayback === audioPlayback else { return }
             guard audioPlayback.audioPlaybackState != .playing else { return }
 
             if audioAttachment.markOwningMessageAsViewed() {
                 for listener in self?.listeners.elements ?? [] {
-                    listener.audioPlayerDidMarkViewed(attachmentId: audioPlayback.attachmentId)
+                    listener.audioPlayerDidMarkViewed(playbackID: audioPlayback.playbackID)
                 }
             }
 
@@ -207,23 +218,19 @@ public class CVAudioPlayer: NSObject {
         }
     }
 
-    public func setPlaybackProgress(
-        progress: TimeInterval,
-        forAttachment attachment: Attachment,
-    ) {
+    public func setPlaybackProgress(_ progress: TimeInterval, playbackID: CVAudioPlaybackID) {
         AssertIsOnMainThread()
 
-        progressCache[attachment.id] = progress
-        if let audioPlayback, audioPlayback.attachmentId == attachment.id {
+        progressCache[playbackID] = progress
+        if let audioPlayback, audioPlayback.playbackID == playbackID {
             audioPlayback.setProgress(progress)
         }
     }
 
-    public func playbackProgress(forAttachmentStream attachmentStream: AttachmentStream) -> TimeInterval {
+    public func playbackProgress(playbackID: CVAudioPlaybackID) -> TimeInterval {
         AssertIsOnMainThread()
 
-        let attachmentId = attachmentStream.id
-        return progressCache[attachmentId] ?? 0
+        return progressCache[playbackID] ?? 0
     }
 
     public func setPlaybackRate(
@@ -250,9 +257,9 @@ public class CVAudioPlayer: NSObject {
         audioPlayback.stop()
         self.audioPlayback = nil
     }
-}
 
-extension CVAudioPlayer: AudioPlayerDelegate {
+    // MARK: - AudioPlayerDelegate
+
     public func setAudioProgress(_ progress: TimeInterval, duration: TimeInterval, playbackRate: Float) {}
 
     public func audioPlayerDidFinish() {
@@ -264,36 +271,34 @@ extension CVAudioPlayer: AudioPlayerDelegate {
             self?.soundComplete = nil
         }
     }
-}
 
-// MARK: -
+    // MARK: - CVAudioPlaybackDelegate
 
-extension CVAudioPlayer: CVAudioPlaybackDelegate {
     fileprivate func audioPlaybackStateDidChange(_ audioPlayback: CVAudioPlayback) {
         AssertIsOnMainThread()
 
         switch audioPlayback.audioPlaybackState {
         case .playing:
             if audioPlayback != self.audioPlayback { audioPlayback.togglePlayState() }
-            progressCache[audioPlayback.attachmentId] = audioPlayback.progress
+            progressCache[audioPlayback.playbackID] = audioPlayback.progress
         case .stopped:
-            progressCache[audioPlayback.attachmentId] = 0
+            progressCache[audioPlayback.playbackID] = 0
         case .paused:
             break
         }
 
         for listener in listeners.elements {
-            listener.audioPlayerStateDidChange(attachmentId: audioPlayback.attachmentId)
+            listener.audioPlayerStateDidChange(playbackID: audioPlayback.playbackID)
         }
     }
 
     fileprivate func audioPlaybackDidFinish(_ audioPlayback: CVAudioPlayback) {
         AssertIsOnMainThread()
 
-        progressCache[audioPlayback.attachmentId] = 0
+        progressCache[audioPlayback.playbackID] = 0
 
         for listener in listeners.elements {
-            listener.audioPlayerDidFinish(attachmentId: audioPlayback.attachmentId)
+            listener.audioPlayerDidFinish(playbackID: audioPlayback.playbackID)
         }
     }
 }
@@ -312,10 +317,10 @@ private protocol CVAudioPlaybackDelegate: AnyObject {
 // TODO: Should we combine this with AudioPlayer?
 private class CVAudioPlayback: NSObject, AudioPlayerDelegate {
 
-    fileprivate weak var delegate: CVAudioPlaybackDelegate?
+    weak var delegate: CVAudioPlaybackDelegate?
 
-    fileprivate let uniqueThreadId: String?
-    fileprivate let attachmentId: Attachment.IDType
+    let uniqueThreadId: String
+    let playbackID: CVAudioPlaybackID
 
     private let audioPlayer: AudioPlayer
 
@@ -379,17 +384,15 @@ private class CVAudioPlayback: NSObject, AudioPlayerDelegate {
         delegate?.audioPlaybackDidFinish(self)
     }
 
-    init?(attachment: AudioAttachment) {
+    init(
+        audioAttachment: AudioAttachment,
+        attachmentStream: AttachmentStream,
+    ) {
         AssertIsOnMainThread()
 
-        guard let attachmentStream = attachment.attachmentStream else {
-            owsFailDebug("missing audio attachment stream \(attachment)")
-            return nil
-        }
-        self.attachmentId = attachmentStream.attachmentStream.id
-
-        audioPlayer = AudioPlayer(attachment: attachmentStream.attachmentStream, audioBehavior: .audioMessagePlayback)
-        uniqueThreadId = attachment.owningMessage?.uniqueThreadId
+        playbackID = CVAudioPlaybackID(audioAttachment: audioAttachment)
+        audioPlayer = AudioPlayer(attachment: attachmentStream, audioBehavior: .audioMessagePlayback)
+        uniqueThreadId = audioAttachment.owningMessage.uniqueThreadId
 
         super.init()
 
@@ -401,7 +404,7 @@ private class CVAudioPlayback: NSObject, AudioPlayerDelegate {
         stop()
     }
 
-    fileprivate func stop() {
+    func stop() {
         AssertIsOnMainThread()
 
         audioPlayer.stop()

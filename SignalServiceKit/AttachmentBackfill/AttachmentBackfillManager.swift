@@ -73,10 +73,7 @@ public class AttachmentBackfillManager {
             return
         }
 
-        guard let localThread = threadStore.getOrCreateLocalThread(tx: tx) else {
-            owsFailDebug("Failed to get local thread.", logger: logger)
-            return
-        }
+        let localThread = threadStore.getOrCreateLocalThread(localIdentifiers: localIdentifiers, tx: tx)
 
         let requestProtoBuilder = SSKProtoSyncMessageAttachmentBackfillRequest.builder()
         requestProtoBuilder.setTargetMessage(backfillTarget.addressableMessage.asProto)
@@ -508,11 +505,7 @@ public class AttachmentBackfillManager {
         customizeResponseBlock: (SSKProtoSyncMessageAttachmentBackfillResponseBuilder) -> Void,
         tx: DBWriteTransaction,
     ) {
-        guard let localThread = threadStore.getOrCreateLocalThread(tx: tx) else {
-            owsFailDebug("Failed to get local thread.", logger: logger)
-            return
-        }
-
+        let localThread = threadStore.getOrCreateLocalThread(localIdentifiers: localIdentifiers, tx: tx)
         let responseProtoBuilder = SSKProtoSyncMessageAttachmentBackfillResponse.builder()
         responseProtoBuilder.setTargetMessage(backfillTarget.addressableMessage.asProto)
         responseProtoBuilder.setTargetConversation(backfillTarget.conversationIdentifier.asProto)

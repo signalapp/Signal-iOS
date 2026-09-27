@@ -17,7 +17,7 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
     init(type: CallMemberView.MemberType) {
         self.type = type
         super.init(frame: .zero)
-        backgroundColor = .ows_black
+        backgroundColor = .black
         isUserInteractionEnabled = false
         switch type {
         case .local:

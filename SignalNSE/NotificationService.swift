@@ -101,7 +101,7 @@ class NotificationService: UNNotificationServiceExtension {
     private func _didReceive(_ request: UNNotificationRequest, logger: NSELogger) async -> UNNotificationContent {
         globalEnvironment.setUpLogging(logger: logger)
 
-        if LowDiskSpaceManager.hasEnoughDiskSpaceToLaunch() {
+        if LowDiskSpaceManager.additionalBytesRequiredToLaunch() == nil {
             hasShownLowDiskSpaceWarning = false
         } else {
             if hasShownLowDiskSpaceWarning {

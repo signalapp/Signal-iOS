@@ -235,7 +235,7 @@ class GroupMemberSearchViewController: OWSViewController {
 
         allMembers = db.read { tx in
             contactManager.sortedComparableNames(
-                for: groupMembership.fullMembers.filter { !$0.isLocalAddress },
+                for: groupMembership.fullMembers,
                 tx: tx,
             ).compactMap { comparableName in
                 guard let aci = comparableName.address.aci else { return nil }

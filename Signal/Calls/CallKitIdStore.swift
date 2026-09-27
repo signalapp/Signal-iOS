@@ -13,7 +13,7 @@ class CallKitIdStore {
     private static let phoneNumberStore = KeyValueStore(collection: "TSStorageManagerCallKitIdToPhoneNumberCollection")
     private static let serviceIdStore = KeyValueStore(collection: "TSStorageManagerCallKitIdToUUIDCollection")
     private static let groupIdStore = NewKeyValueStore(collection: "TSStorageManagerCallKitIdToGroupId")
-    private static let callLinkStore = KeyValueStore(collection: "CallKitIdToCallLink")
+    private static let callLinkStore = NewKeyValueStore(collection: "CallKitIdToCallLink")
 
     static func setGroupId(_ groupId: GroupIdentifier, forCallKitId callKitId: String) {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
@@ -21,7 +21,7 @@ class CallKitIdStore {
             assert(!phoneNumberStore.hasValue(callKitId, transaction: tx))
             assert(!serviceIdStore.hasValue(callKitId, transaction: tx))
             assert(groupIdStore.fetchValue(Data.self, forKey: callKitId, tx: tx) == nil)
-            assert(!callLinkStore.hasValue(callKitId, transaction: tx))
+            assert(callLinkStore.fetchValue(Data.self, forKey: callKitId, tx: tx) == nil)
 
             groupIdStore.writeValue(groupId.serialize(), forKey: callKitId, tx: tx)
         }
@@ -33,7 +33,7 @@ class CallKitIdStore {
             assert(!phoneNumberStore.hasValue(callKitId, transaction: tx))
             assert(!serviceIdStore.hasValue(callKitId, transaction: tx))
             assert(groupIdStore.fetchValue(Data.self, forKey: callKitId, tx: tx) == nil)
-            assert(!callLinkStore.hasValue(callKitId, transaction: tx))
+            assert(callLinkStore.fetchValue(Data.self, forKey: callKitId, tx: tx) == nil)
 
             let address = thread.contactAddress
             if let serviceIdString = address.serviceIdUppercaseString {
@@ -55,7 +55,7 @@ class CallKitIdStore {
             assert(groupIdStore.fetchValue(Data.self, forKey: callKitId, tx: tx) == nil)
             // Call Links may be stored multiple times...
 
-            callLinkStore.setData(callLink.rootKey.bytes, key: callKitId, transaction: tx)
+            callLinkStore.writeValue(callLink.rootKey.bytes, forKey: callKitId, tx: tx)
         }
     }
 
@@ -81,7 +81,7 @@ class CallKitIdStore {
                 return TSContactThread.getWithContactAddress(address, transaction: tx).map { .individual($0) }
             }
 
-            if let rootKeyBytes = callLinkStore.getData(callKitId, transaction: tx) {
+            if let rootKeyBytes = callLinkStore.fetchValue(Data.self, forKey: callKitId, tx: tx) {
                 return (try? CallLinkRootKey(rootKeyBytes)).map { .callLink(CallLink(rootKey: $0)) }
             }
 

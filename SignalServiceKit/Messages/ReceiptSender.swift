@@ -68,7 +68,7 @@ public class ReceiptSender: NSObject {
 
         super.init()
 
-        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [self] in
             self.sendPendingReceiptsIfNeeded()
 
             self.observers.append(NotificationCenter.default.addObserver(

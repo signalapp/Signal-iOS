@@ -384,12 +384,19 @@ public class NotificationActionHandler {
                 continuation.resume()
             }
         }
-        guard let viewController = CurrentAppContext().frontmostViewController() else {
-            Logger.error("Responding to reregister notification action without a view controller!")
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let registrationState = tsAccountManager.registrationStateWithMaybeSneakyTransaction
+        guard let deregisteredState = registrationState.deregisteredState else {
+            Logger.warn("ignoring request from logged out notification")
             return
         }
-        Logger.info("Reregistering from deregistered notification")
-        RegistrationUtils.reregister(fromViewController: viewController, appReadiness: appReadiness)
+        if deregisteredState.isPrimary {
+            Logger.info("re-registering from logged out notification")
+            RegistrationUtils.showReRegistration(deregisteredState: deregisteredState)
+        } else {
+            Logger.info("re-linking from logged out notification")
+            RegistrationUtils.showReLinking(deregisteredState: deregisteredState)
+        }
     }
 
     @MainActor

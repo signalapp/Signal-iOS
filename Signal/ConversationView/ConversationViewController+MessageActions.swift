@@ -73,10 +73,7 @@ extension ConversationViewController {
             dismissReactionsDetailSheet(animated: true)
             return
         }
-        guard
-            let reactionState = renderItem.reactionState,
-            reactionState.hasReactions
-        else {
+        guard let reactionState = renderItem.reactionState else {
             // There are no longer reactions on this message, dismiss the sheet.
             dismissReactionsDetailSheet(animated: true)
             return
@@ -213,7 +210,7 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
             componentView.contextMenuPresentationWillBegin?()
         }
 
-        dismissKeyBoard()
+        dismissKeyboard()
     }
 
     public func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {

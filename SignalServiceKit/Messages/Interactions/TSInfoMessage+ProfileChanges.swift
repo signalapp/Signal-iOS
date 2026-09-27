@@ -42,14 +42,7 @@ public extension TSInfoMessage {
             saveProfileUpdateMessage(thread: contactThread)
         }
 
-        for groupThread in TSGroupThread.groupThreads(with: address, transaction: transaction) {
-            guard
-                groupThread.groupModel.groupMembership.isLocalUserFullMember,
-                groupThread.shouldThreadBeVisible,
-                !groupThread.isTerminatedGroup
-            else {
-                continue
-            }
+        for groupThread in TSGroupThread.mutualVisibleGroupThreads(withFullMember: address, tx: transaction) {
             saveProfileUpdateMessage(thread: groupThread)
         }
     }

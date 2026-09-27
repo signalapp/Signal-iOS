@@ -36,10 +36,9 @@ class OWSRecipientIdentityTest: SSKBaseTest {
         // Create local account.
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: .init(
+                localIdentifiers: LocalIdentifiers(
                     aci: localAci,
-                    pni: Pni.randomForTesting(),
-                    e164: E164("+16505550100")!,
+                    phoneNumber: LocalIdentifiers.PhoneNumber(e164: E164("+16505550100")!, pni: .randomForTesting()),
                 ),
                 tx: tx,
             )

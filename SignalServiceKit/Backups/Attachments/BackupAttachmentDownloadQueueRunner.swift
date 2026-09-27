@@ -137,39 +137,35 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
             logger.info("\(logString) backup attachment download queue empty!")
             return
         case .notRegisteredAndReady:
-            try await taskQueue.stop()
+            await taskQueue.stop()
             return
         case .noWifiReachability:
             logger.info("Skipping \(logString) backup attachment downloads while not reachable by wifi")
-            try await taskQueue.stop()
+            await taskQueue.stop()
             return
         case .noReachability:
             logger.info("Skipping \(logString) backup attachment downloads while not reachable at all")
-            try await taskQueue.stop()
+            await taskQueue.stop()
             return
         case .lowBattery:
             logger.info("Skipping \(logString) backup attachment downloads while low battery")
-            try await taskQueue.stop()
+            await taskQueue.stop()
             return
         case .lowPowerMode:
             logger.info("Skipping \(logString) backup attachment downloads while low power mode")
-            try await taskQueue.stop()
+            await taskQueue.stop()
             return
         case .lowDiskSpace:
             logger.info("Skipping \(logString) backup attachment downloads while low on disk space")
-            try await taskQueue.stop()
+            await taskQueue.stop()
             return
         case .appBackgrounded:
             logger.info("Skipping \(logString) backup attachment downloads while backgrounded")
-            try await taskQueue.stop()
+            await taskQueue.stop()
             return
         }
 
-        do {
-            try await progress.beginObserving()
-        } catch {
-            owsFailDebug("Unable to observe \(logString) download progres \(error.grdbErrorForLogging)")
-        }
+        progress.beginObserving()
 
         let backgroundTask = OWSBackgroundTask(
             label: #function + logString,
@@ -177,7 +173,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
             switch status {
             case .expired:
                 Task {
-                    try? await taskQueue?.stop()
+                    await taskQueue?.stop()
                 }
             case .couldNotStart, .success:
                 break
@@ -287,22 +283,22 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                 // The queue will stop on its own, finish this task.
                 break
             case .suspended:
-                try? await loader.stop()
+                await loader.stop()
                 return .retryableError(SuspendedError())
             case .lowDiskSpace:
-                try? await loader.stop()
+                await loader.stop()
                 return .retryableError(NeedsDiskSpaceError())
             case .lowBattery, .lowPowerMode:
-                try? await loader.stop()
+                await loader.stop()
                 return .retryableError(NeedsBatteryError())
             case .appBackgrounded:
-                try? await loader.stop()
+                await loader.stop()
                 return .retryableError(AppBackgroundedError())
             case .noWifiReachability, .noReachability:
-                try? await loader.stop()
+                await loader.stop()
                 return .retryableError(NeedsInternetError())
             case .notRegisteredAndReady:
-                try? await loader.stop()
+                await loader.stop()
                 return .retryableError(NeedsToBeRegisteredError())
             }
 
@@ -322,7 +318,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
 
             if needsListMedia {
                 // If we need to list media, quit out early so we can do that.
-                try? await loader.stop(reason: NeedsListMediaError())
+                await loader.stop(reason: NeedsListMediaError())
                 return .retryableError(NeedsListMediaError())
             }
 
@@ -334,7 +330,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
             if record.record.isThumbnail {
                 progressSink = nil
             } else {
-                progressSink = await progress.willBeginDownloadingFullsizeAttachment(
+                progressSink = progress.willBeginDownloadingFullsizeAttachment(
                     withId: record.record.attachmentRowId,
                 )
             }
@@ -365,7 +361,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                 // No longer at all eligible to download from this source.
                 // count this as having completed the download for progress tracking purposes.
                 if !record.record.isThumbnail {
-                    await progress.didFinishDownloadOfFullsizeAttachment(
+                    progress.didFinishDownloadOfFullsizeAttachment(
                         withId: record.record.attachmentRowId,
                         byteCount: UInt64(record.record.estimatedByteCount),
                     )
@@ -398,7 +394,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                 }
                 // count this as having completed the download.
                 if !record.record.isThumbnail {
-                    await progress.didFinishDownloadOfFullsizeAttachment(
+                    progress.didFinishDownloadOfFullsizeAttachment(
                         withId: record.record.attachmentRowId,
                         byteCount: UInt64(record.record.estimatedByteCount),
                     )
@@ -440,7 +436,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
             } catch let error {
                 if Task.isCancelled {
                     logger.info("Cancelled; stopping the queue")
-                    try? await loader.stop(reason: CancellationError())
+                    await loader.stop(reason: CancellationError())
                     return .retryableError(CancellationError())
                 }
 
@@ -455,7 +451,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                     break
                 case .suspended, .lowDiskSpace, .lowBattery, .lowPowerMode, .noWifiReachability, .noReachability, .appBackgrounded, .notRegisteredAndReady:
                     // Stop the queue now proactively.
-                    try? await loader.stop()
+                    await loader.stop()
                 }
 
                 switch error as? AttachmentDownloads.Error {
@@ -466,13 +462,13 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                     // This should be impossible. Stop the queue, it can start up again later
                     // on whatever the next trigger is.
                     await backupMediaErrorNotificationPresenter.notifyIfNecessary()
-                    try? await loader.stop()
+                    await loader.stop()
                     return .retryableError(error)
                 case .blockedByActiveCall:
                     // TODO: [Backups] suspend downloads during calls and resume after
                     owsFailDebug("Backup downloads should never be blocked by active calls!")
                     await backupMediaErrorNotificationPresenter.notifyIfNecessary()
-                    try? await loader.stop()
+                    await loader.stop()
                     return .retryableError(error)
                 case .blockedByPendingMessageRequest:
                     switch source {
@@ -488,7 +484,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                         await backupMediaErrorNotificationPresenter.notifyIfNecessary()
                         // This should be impossible. Stop the queue, it can start up again later
                         // on whatever the next trigger is.
-                        try? await loader.stop()
+                        await loader.stop()
                         return .retryableError(error)
                     }
                 case .blockedByNetworkState:
@@ -496,7 +492,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                     // (e.g. we need wifi and aren't connected). Stop the queue; the status should
                     // catch up momentarily and notify when reachability state changes.
                     Logger.warn("Download failed due to reachability; proactively stopping the queue")
-                    try? await loader.stop()
+                    await loader.stop()
                     return .retryableError(error)
                 }
 
@@ -573,7 +569,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
             await statusManager.jobDidSucceed(token: statusToken, mode: mode)
 
             if !record.record.isThumbnail {
-                await progress.didFinishDownloadOfFullsizeAttachment(
+                progress.didFinishDownloadOfFullsizeAttachment(
                     withId: record.record.attachmentRowId,
                     byteCount: UInt64(record.record.estimatedByteCount),
                 )
@@ -732,7 +728,7 @@ class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQueueRunn
                 Logger.info("Did drain thumbnail queue")
             case .fullsize:
                 Logger.info("Did drain fullsize queue")
-                await progress.didEmptyFullsizeDownloadQueue()
+                progress.didEmptyFullsizeDownloadQueue()
             }
             await statusManager.didEmptyQueue(for: mode)
             switch mode {

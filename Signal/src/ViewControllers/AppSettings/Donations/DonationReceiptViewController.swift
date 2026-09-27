@@ -71,7 +71,7 @@ class DonationReceiptViewController: OWSTableViewController2 {
     private func updateSignalLogoImage() {
         let signalLogoImage = UIImage(named: "signal-full-logo")
         if traitCollection.userInterfaceStyle == .dark {
-            signalLogoView.image = signalLogoImage?.tintedImage(color: .ows_white)
+            signalLogoView.image = signalLogoImage?.tintedImage(color: .white)
         } else {
             signalLogoView.image = signalLogoImage
         }

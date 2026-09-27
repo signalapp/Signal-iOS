@@ -24,22 +24,22 @@ class GroupMemberMergeObserverImpl: RecipientMergeObserver {
     func willBreakAssociation(for recipient: SignalRecipient, mightReplaceNonnilPhoneNumber: Bool, tx: DBWriteTransaction) {}
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, tx: DBWriteTransaction) {
-        var groupThreadIds = [String]()
+        var groupThreadUniqueIds = [String]()
         if let aci = mergedRecipient.newRecipient.aci {
-            groupThreadIds.append(contentsOf: groupMemberStore.groupThreadIds(withFullMember: aci, tx: tx))
+            groupThreadUniqueIds.append(contentsOf: groupMemberStore.groupThreadUniqueIds(withFullMember: aci, tx: tx))
         }
         if let phoneNumber = E164(mergedRecipient.newRecipient.phoneNumber?.stringValue) {
-            groupThreadIds.append(contentsOf: groupMemberStore.groupThreadIds(withFullMember: phoneNumber, tx: tx))
+            groupThreadUniqueIds.append(contentsOf: groupMemberStore.groupThreadUniqueIds(withFullMember: phoneNumber, tx: tx))
         }
         if let pni = mergedRecipient.newRecipient.pni {
-            groupThreadIds.append(contentsOf: groupMemberStore.groupThreadIds(withFullMember: pni, tx: tx))
+            groupThreadUniqueIds.append(contentsOf: groupMemberStore.groupThreadUniqueIds(withFullMember: pni, tx: tx))
         }
-        resolveGroupMembers(in: groupThreadIds, tx: tx)
+        resolveGroupMembers(in: groupThreadUniqueIds, tx: tx)
     }
 
-    private func resolveGroupMembers(in groupThreadIds: [String], tx: DBWriteTransaction) {
-        for threadId in Set(groupThreadIds) {
-            guard let thread = threadStore.fetchGroupThread(uniqueId: threadId, tx: tx) else {
+    private func resolveGroupMembers(in groupThreadUniqueIds: [String], tx: DBWriteTransaction) {
+        for threadUniqueId in Set(groupThreadUniqueIds) {
+            guard let thread = threadStore.fetchGroupThread(uniqueId: threadUniqueId, tx: tx) else {
                 continue
             }
             mergeV1GroupMembersIfNeeded(in: thread, tx: tx)

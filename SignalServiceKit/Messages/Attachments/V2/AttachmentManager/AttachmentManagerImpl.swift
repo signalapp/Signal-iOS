@@ -191,10 +191,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         }()
 
         let sourceFilename = proto.fileName
-        let mimeType = self.mimeType(
-            fromProtoContentType: proto.contentType,
-            sourceFilename: sourceFilename,
-        )
+        let mimeType = proto.mimeType
 
         let contentType = Attachment.ContentType(mimeType: mimeType)
         var attachmentRecord = Attachment.Record.forInsertingPointer(
@@ -307,10 +304,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         } ?? .knownNil
 
         let sourceFilename = proto.fileName.nilIfEmpty
-        let mimeType = self.mimeType(
-            fromProtoContentType: proto.contentType,
-            sourceFilename: sourceFilename,
-        )
+        let mimeType = MimeTypeUtil.mimeType(proto.contentType, orInferredFrom: sourceFilename)
 
         let sourceMediaSizePixels: CGSize?
         if
@@ -359,6 +353,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 if plaintextHash.isEmpty {
                     fallthrough
                 }
+                let hasLocalKey = proto.locatorInfo.hasLocalKey
                 let mediaTierCdnNumber = proto.locatorInfo.hasMediaTierCdnNumber ? proto.locatorInfo.mediaTierCdnNumber : nil
                 attachmentRecord = .forInsertingFromBackup(
                     blurHash: proto.blurHash.nilIfEmpty,
@@ -367,7 +362,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                     encryptionKey: encryptionKey,
                     latestTransitTierInfo: transitTierInfo,
                     plaintextHash: plaintextHash,
-                    mediaTierInfo: .init(
+                    mediaTierInfo: hasLocalKey ? nil : .init(
                         cdnNumber: mediaTierCdnNumber,
                         unencryptedByteCount: proto.locatorInfo.size,
                         plaintextHash: plaintextHash,
@@ -375,7 +370,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                         uploadEra: uploadEra,
                         lastDownloadAttemptTimestamp: nil,
                     ),
-                    thumbnailMediaTierInfo: .init(
+                    thumbnailMediaTierInfo: hasLocalKey ? nil : .init(
                         // Assume the thumbnail uses the same cdn as fullsize;
                         // this _can_ go wrong if the server changes cdns between
                         // the two uploads but worst case we lose the thumbnail.
@@ -444,7 +439,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 estimatedMediaTierSize = UInt64(UInt32.max)
             }
 
-            attachmentByteCounter.addToByteCount(
+            attachmentByteCounter.addToRemoteByteCount(
                 attachmentID: attachment.id,
                 byteCount: estimatedMediaTierSize,
             )
@@ -457,6 +452,10 @@ public class AttachmentManagerImpl: AttachmentManager {
                     unencryptedByteCount: proto.locatorInfo.size,
                     localKey: proto.locatorInfo.localKey,
                     tx: tx,
+                )
+                attachmentByteCounter.addToLocalByteCount(
+                    attachmentID: attachment.id,
+                    byteCount: Cryptography.localBackupEncryptedSize(unencryptedSize: UInt64(safeCast: proto.locatorInfo.size)) ?? .max,
                 )
             }
 
@@ -543,29 +542,6 @@ public class AttachmentManagerImpl: AttachmentManager {
             incrementalMacInfo: incrementalMacInfo,
             lastDownloadAttemptTimestamp: nil,
         )
-    }
-
-    private func mimeType(
-        fromProtoContentType contentType: String?,
-        sourceFilename: String?,
-    ) -> String {
-        if let protoMimeType = contentType?.nilIfEmpty {
-            return protoMimeType
-        } else {
-            // Content type might not set if the sending client can't
-            // infer a MIME type from the file extension.
-            if
-                let sourceFilename,
-                let fileExtension = (sourceFilename as NSString).pathExtension.lowercased().nilIfEmpty,
-                let inferredMimeType = MimeTypeUtil.mimeTypeForFileExtension(fileExtension)?.nilIfEmpty
-            {
-                Logger.warn("Missing attachment content type! Inferred MIME type: \(inferredMimeType)")
-                return inferredMimeType
-            } else {
-                Logger.warn("Missing attachment content type! Failed to infer MIME type, falling back to octet-stream.")
-                return MimeType.applicationOctetStream.rawValue
-            }
-        }
     }
 
     private func _createAttachmentStream(

@@ -22,13 +22,10 @@ public class CVPollView: ManualStackView {
 
     public weak var pollVoteDelegate: CVPollVoteDelegate?
 
-    private let subtitleStack = ManualStackView(name: "subtitleStack")
     private let questionTextLabel = CVLabel()
-    private let pollLabel = CVLabel()
-    private let chooseLabel = CVLabel()
+    private let pollSubtitleLabel = CVLabel()
 
     private static let measurementKey_outerStack = "CVPollView.measurementKey_outerStack"
-    private static let measurementKey_subtitleStack = "CVPollView.measurementKey_subtitleStack"
     private static let measurementKey_optionStack = "CVPollView.measurementKey_optionStack"
     fileprivate static let measurementKey_optionRowOuterStack = "CVPollView.measurementKey_optionOuterRowStack"
     fileprivate static let measurementKey_optionRowInnerStack = "CVPollView.measurementKey_optionInnerRowStack"
@@ -117,18 +114,9 @@ public class CVPollView: ManualStackView {
             )
         }
 
-        var pollSubtitleTextLabelConfig: CVLabelConfig {
-            return CVLabelConfig.unstyledText(
-                OWSLocalizedString("POLL_LABEL", comment: "Label specifying the message type as a poll"),
-                font: UIFont.dynamicTypeFootnote,
-                textColor: colorConfigurator.textColor.withAlphaComponent(0.8),
-                numberOfLines: 0,
-                lineBreakMode: .byWordWrapping,
-            )
-        }
-
-        var chooseSubtitleTextLabelConfig: CVLabelConfig {
-            var selectLabel: String
+        var subtitleTextLabelConfig: CVLabelConfig {
+            let pollPrefix = OWSLocalizedString("POLL_LABEL", comment: "Label specifying the message type as a poll")
+            let selectLabel: String
             if poll.isEnded {
                 selectLabel = OWSLocalizedString("POLL_FINAL_RESULTS_LABEL", comment: "Label specifying the poll is finished and these are the final results")
             } else {
@@ -140,9 +128,8 @@ public class CVPollView: ManualStackView {
                     comment: "Label specifying the user can select one option",
                 )
             }
-
             return CVLabelConfig.unstyledText(
-                selectLabel,
+                "\(pollPrefix) · \(selectLabel)",
                 font: UIFont.dynamicTypeFootnote,
                 textColor: colorConfigurator.textColor.withAlphaComponent(0.8),
                 numberOfLines: 0,
@@ -170,8 +157,6 @@ public class CVPollView: ManualStackView {
 
         let checkBoxSize = CGSize(square: 24)
         let checkBoxEndedSize = CGSize(square: 20)
-
-        let circleSize = CGSize(square: 2)
 
         let progressBarHeight = CGFloat(8)
 
@@ -241,33 +226,12 @@ public class CVPollView: ManualStackView {
 
         // MARK: - Subtitle
 
-        var subtitleStackSubviews = [ManualStackSubviewInfo]()
-
-        let pollSubtitleLabelConfig = configurator.pollSubtitleTextLabelConfig
-        let pollSubtitleSize = CVText.measureLabel(
-            config: pollSubtitleLabelConfig,
+        let subtitleTextLabelConfig = configurator.subtitleTextLabelConfig
+        let subtitleSize = CVText.measureLabel(
+            config: subtitleTextLabelConfig,
             maxWidth: maxLabelWidth,
         )
-        subtitleStackSubviews.append(pollSubtitleSize.asManualSubviewInfo)
-
-        // Small bullet
-        subtitleStackSubviews.append(configurator.circleSize.asManualSubviewInfo(hasFixedSize: true))
-
-        let chooseSubtitleLabelConfig = configurator.chooseSubtitleTextLabelConfig
-        let chooseSubtitleSize = CVText.measureLabel(
-            config: chooseSubtitleLabelConfig,
-            maxWidth: maxLabelWidth,
-        )
-        subtitleStackSubviews.append(chooseSubtitleSize.asManualSubviewInfo)
-
-        let subtitleStackMeasurement = ManualStackView.measure(
-            config: configurator.subtitleStackConfig,
-            measurementBuilder: measurementBuilder,
-            measurementKey: measurementKey_subtitleStack,
-            subviewInfos: subtitleStackSubviews,
-        )
-
-        outerStackSubviewInfos.append(subtitleStackMeasurement.measuredSize.asManualSubviewInfo)
+        outerStackSubviewInfos.append(subtitleSize.asManualSubviewInfo)
 
         // MARK: - Options
 
@@ -360,38 +324,6 @@ public class CVPollView: ManualStackView {
         return outerStackMeasurement.measuredSize
     }
 
-    private func buildSubtitleStack(configurator: Configurator, cellMeasurement: CVCellMeasurement) {
-        let pollLabelConfig = configurator.pollSubtitleTextLabelConfig
-        pollLabelConfig.applyForRendering(label: pollLabel)
-
-        let chooseLabelConfig = configurator.chooseSubtitleTextLabelConfig
-        chooseLabelConfig.applyForRendering(label: chooseLabel)
-
-        let circleView = UIView()
-        circleView.backgroundColor = configurator.colorConfigurator.subtitleColor
-        circleView.layer.cornerRadius = configurator.circleSize.width / 2
-
-        let circleContainer = ManualLayoutView(name: "circleContainer")
-        circleContainer.addSubview(circleView, withLayoutBlock: { [weak self] _ in
-            guard let self else {
-                return
-            }
-
-            let subviewFrame = CGRect(
-                origin: CGPoint(x: 0, y: chooseLabel.bounds.midY),
-                size: configurator.circleSize,
-            )
-            Self.setSubviewFrame(subview: circleView, frame: subviewFrame)
-        })
-
-        subtitleStack.configure(
-            config: configurator.subtitleStackConfig,
-            cellMeasurement: cellMeasurement,
-            measurementKey: Self.measurementKey_subtitleStack,
-            subviews: [pollLabel, circleContainer, chooseLabel],
-        )
-    }
-
     private func localUserVoteState(
         localAci: Aci,
         option: OWSPoll.OWSPollOption,
@@ -429,8 +361,9 @@ public class CVPollView: ManualStackView {
         questionTextLabel.isAccessibilityElement = true
         questionTextLabel.accessibilityLabel = accessibilitySummary
 
-        buildSubtitleStack(configurator: configurator, cellMeasurement: cellMeasurement)
-        outerStackSubViews.append(subtitleStack)
+        let subtitleTextLabelConfig = configurator.subtitleTextLabelConfig
+        subtitleTextLabelConfig.applyForRendering(label: pollSubtitleLabel)
+        outerStackSubViews.append(pollSubtitleLabel)
 
         var optionSubviews = [UIView]()
         for option in poll.sortedOptions() {
@@ -491,9 +424,7 @@ public class CVPollView: ManualStackView {
 
         questionTextLabel.text = nil
 
-        pollLabel.text = nil
-        chooseLabel.text = nil
-        subtitleStack.reset()
+        pollSubtitleLabel.text = nil
     }
 
     // MARK: - PollOptionView

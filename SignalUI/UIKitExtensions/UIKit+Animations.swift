@@ -114,8 +114,7 @@ public extension UIView {
             return
         }
 
-        let initialAlpha = alpha
-        if !isHidden, initialAlpha > 0 {
+        if self.isHidden, alpha > 0 {
             UIView.performWithoutAnimation {
                 self.alpha = 0
                 self.isHidden = false
@@ -125,15 +124,17 @@ public extension UIView {
         UIView.animate(
             withDuration: duration,
             animations: {
-                self.alpha = isHidden ? 0 : initialAlpha
+                self.alpha = isHidden ? 0 : 1
             },
             completion: { finished in
                 guard finished else {
                     completion?(false)
                     return
                 }
-                self.isHidden = isHidden
-                self.alpha = initialAlpha
+                if isHidden {
+                    self.alpha = 1
+                    self.isHidden = true
+                }
                 completion?(true)
             },
         )
@@ -148,20 +149,20 @@ public extension UIView {
             return
         }
 
-        let initialAlpha = alpha
-        if !isHidden, initialAlpha > 0 {
+        if self.isHidden, alpha > 0 {
             UIView.performWithoutAnimation {
                 self.alpha = 0
                 self.isHidden = false
             }
         }
         animator.addAnimations {
-            self.alpha = isHidden ? 0 : initialAlpha
+            self.alpha = isHidden ? 0 : 1
         }
         animator.addCompletion { position in
-            guard position == .end else { return }
-            self.isHidden = isHidden
-            self.alpha = initialAlpha
+            guard isHidden, position == .end else { return }
+
+            self.alpha = 1
+            self.isHidden = true
         }
     }
 }

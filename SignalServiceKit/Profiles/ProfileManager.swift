@@ -165,7 +165,6 @@ public protocol ProfileManager: ProfileManagerProtocol {
 
     // MARK: -
 
-    func allWhitelistedAddresses(tx: DBReadTransaction) -> [SignalServiceAddress]
     func allWhitelistedRegisteredAddresses(tx: DBReadTransaction) -> [SignalServiceAddress]
 }
 

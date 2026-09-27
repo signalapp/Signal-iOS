@@ -658,13 +658,11 @@ public class GroupsV2IncomingChanges {
             newIsAnnouncementsOnly = action.announcementsOnly
         }
 
-        if RemoteConfig.current.groupTerminateReceiveEnabled {
-            if changeActionsProto.terminateGroup != nil {
-                if !isChangeAuthorAdmin {
-                    owsFailDebug("Cannot terminate group")
-                }
-                newGroupTerminated = true
+        if changeActionsProto.terminateGroup != nil {
+            if !isChangeAuthorAdmin {
+                owsFailDebug("Cannot terminate group")
             }
+            newGroupTerminated = true
         }
 
         let newGroupMembership = groupMembershipBuilder.build()

@@ -75,10 +75,12 @@ class TSInfoMessageLegacyPersistableGroupUpdateItemTest: XCTestCase {
                 let newValue = constant.toNewItem(
                     updater: .aci(updaterAci),
                     oldGroupModel: nil,
-                    localIdentifiers: .init(
+                    localIdentifiers: LocalIdentifiers(
                         aci: .randomForTesting(),
-                        pni: Pni.constantForTesting("PNI:7CE80DE3-6243-4AD5-AE60-0D1F205391DA"),
-                        e164: .init("+15555555555")!,
+                        phoneNumber: LocalIdentifiers.PhoneNumber(
+                            e164: E164("+15555555555")!,
+                            pni: Pni.constantForTesting("PNI:7CE80DE3-6243-4AD5-AE60-0D1F205391DA"),
+                        ),
                     ),
                 )
             else {

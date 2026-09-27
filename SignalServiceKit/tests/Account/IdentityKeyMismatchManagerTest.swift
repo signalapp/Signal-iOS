@@ -50,7 +50,7 @@ final class IdentityKeyMismatchManagerTest: XCTestCase {
             self?.isMarkedDeregistered = isDeregistered
         }
 
-        tsAccountManagerMock.registrationStateMock = { .provisioned }
+        tsAccountManagerMock.registrationStateMock = { .provisioned(.mock) }
 
         identityKeyMismatchManager = IdentityKeyMismatchManagerImpl(
             db: db,
@@ -73,7 +73,7 @@ final class IdentityKeyMismatchManagerTest: XCTestCase {
 
     func testDoesntRecordIfPrimaryDevice() async {
         messageProcessorMock.waitForFetchingAndProcessingMock = {}
-        tsAccountManagerMock.registrationStateMock = { .registered }
+        tsAccountManagerMock.registrationStateMock = { .registered(.mock) }
 
         await db.awaitableWrite { tx in
             return identityKeyMismatchManager.recordSuspectedIssueWithPniIdentityKey(tx: tx)
@@ -88,6 +88,7 @@ final class IdentityKeyMismatchManagerTest: XCTestCase {
         messageProcessorMock.waitForFetchingAndProcessingMock = {}
         whoAmIManagerMock.whoAmIResponse = .value(.forUnitTest(localIdentifiers: localIdentifiers))
         tsAccountManagerMock.localIdentifiersMock = { localIdentifiers.withoutPni() }
+        tsAccountManagerMock.registrationStateMock = { .provisioned(localIdentifiers.withoutPni()) }
 
         await runRunRun(recordIssue: true)
 
@@ -142,7 +143,7 @@ final class IdentityKeyMismatchManagerTest: XCTestCase {
 
     func testEarlyExitIfPrimary() async {
         messageProcessorMock.waitForFetchingAndProcessingMock = {}
-        tsAccountManagerMock.registrationStateMock = { .registered }
+        tsAccountManagerMock.registrationStateMock = { .registered(.mock) }
 
         // This will fail if it doesn't early-exit, due to missing mocks.
         await runRunRun(recordIssue: false)

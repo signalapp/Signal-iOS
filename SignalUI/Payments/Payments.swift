@@ -32,7 +32,7 @@ public protocol Payments: AnyObject {
 
     func didReceiveMCAuthError()
 
-    var isKillSwitchActive: Bool { get }
+    func canUsePayments() -> Bool
 
     func clearState(transaction: DBWriteTransaction)
 }
@@ -143,7 +143,7 @@ extension MockPayments: PaymentsSwift {
         owsFail("Not implemented.")
     }
 
-    public var isKillSwitchActive: Bool { false }
+    public func canUsePayments() -> Bool { false }
 
     public func warmCaches() {
         // Do nothing.

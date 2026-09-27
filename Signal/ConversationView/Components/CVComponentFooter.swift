@@ -184,7 +184,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             owsAssertDebug(!isOverlayingMedia)
             textColor = UIColor.Signal.secondaryLabel
         } else if isOverlayingMedia {
-            textColor = .ows_white
+            textColor = .white
         } else if isOutsideBubble, !conversationStyle.hasWallpaper {
             textColor = Theme.secondaryTextAndIconColor
         } else {

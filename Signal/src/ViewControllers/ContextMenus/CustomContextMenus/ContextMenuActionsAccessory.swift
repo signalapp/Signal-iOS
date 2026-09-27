@@ -221,7 +221,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
             /// If we want the colors to take effect, however, we make it a subview of the root view.
             let makeLabelSubviewOfVisualEffectsView: Bool
             if attributes.contains(.destructive) {
-                titleLabel.textColor = UIColor.Signal.red
+                titleLabel.textColor = .Signal.red
                 makeLabelSubviewOfVisualEffectsView = false
             } else if attributes.contains(.disabled) {
                 titleLabel.textColor = .Signal.secondaryLabel
@@ -318,7 +318,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
 
             if let separatorView {
                 var separatorFrame = bounds
-                separatorFrame.height = 1.0 / UIScreen.main.scale
+                separatorFrame.height = hairlineWidth
                 separatorFrame.y = bounds.maxY - separatorFrame.height
                 separatorView.frame = separatorFrame
             }
@@ -413,7 +413,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
             layer.cornerRadius = cornerRadius
             layer.shadowRadius = 64
             layer.shadowOffset = CGSize(width: 0, height: 32)
-            layer.shadowColor = UIColor.ows_black.cgColor
+            layer.shadowColor = UIColor.black.cgColor
             layer.shadowOpacity = 0.2
         }
 

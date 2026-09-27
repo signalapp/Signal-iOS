@@ -3,12 +3,26 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalServiceKit
 import UIKit
 
 public class OWSWindow: UIWindow {
-    override public init(frame: CGRect) {
-        super.init(frame: frame)
+    override public init(windowScene: UIWindowScene) {
+        super.init(windowScene: windowScene)
+        commonInit()
+    }
 
+    @available(*, unavailable, message: "Must use windowScene init!")
+    override init(frame: CGRect) {
+        owsFail("Not implemented!")
+    }
+
+    @available(*, unavailable, message: "Must use windowScene init!")
+    required init?(coder: NSCoder) {
+        owsFail("Not implemented!")
+    }
+
+    private func commonInit() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(themeDidChange),
@@ -17,15 +31,6 @@ public class OWSWindow: UIWindow {
         )
 
         applyTheme()
-    }
-
-    // This useless override is defined so that you can call `-init` from Swift.
-    override public init(windowScene: UIWindowScene) {
-        fatalError("init(windowScene:) has not been implemented")
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     @objc

@@ -231,7 +231,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
         }
         contents.add(installedSection)
 
-        let itemForAvailablePack = { (dataSource: StickerPackDataSource) -> OWSTableItem in
+        let itemForAvailablePack = { [self] (dataSource: StickerPackDataSource) -> OWSTableItem in
             OWSTableItem(
                 customCellBlock: { [weak self] in
                     guard let self else {
@@ -409,7 +409,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
         var authorViews = [UIView]()
         if isDefaultStickerPack {
             let builtInPackView = UIImageView()
-            builtInPackView.setTemplateImageName("check-circle-fill-compact", tintColor: Theme.accentBlueColor)
+            builtInPackView.setTemplateImageName("check-circle-fill-compact", tintColor: .Signal.accent)
             builtInPackView.setCompressionResistanceHigh()
             builtInPackView.setContentHuggingHigh()
             authorViews.append(builtInPackView)
@@ -419,7 +419,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
             let authorLabel = UILabel()
             authorLabel.text = authorName
             authorLabel.font = isDefaultStickerPack ? UIFont.dynamicTypeCaption1.semibold() : UIFont.dynamicTypeCaption1
-            authorLabel.textColor = isDefaultStickerPack ? Theme.accentBlueColor : Theme.secondaryTextAndIconColor
+            authorLabel.textColor = isDefaultStickerPack ? .Signal.accent : .Signal.secondaryLabel
             authorLabel.lineBreakMode = .byTruncatingTail
             authorViews.append(authorLabel)
         }

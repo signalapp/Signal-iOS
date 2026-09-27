@@ -38,6 +38,8 @@ class InternalSettingsViewController: OWSTableViewController2 {
     }
 
     func updateTableContents() {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
         let contents = OWSTableContents()
 
         let debugSection = OWSTableSection()
@@ -93,9 +95,9 @@ class InternalSettingsViewController: OWSTableViewController2 {
             },
         ))
         debugSection.add(.disclosureItem(
-            withText: "Misc. Actions",
+            withText: "Misc.",
             actionBlock: { [weak self] in
-                let vc = InternalMiscActionsViewController()
+                let vc = InternalMiscViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
             },
         ))
@@ -127,22 +129,23 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 try? Attachment.Record.fetchCount(tx.database),
                 DependenciesBridge.shared.donationSubscriptionManager.getSubscriberID(tx: tx),
                 SSKEnvironment.shared.storageServiceManagerRef.currentManifestVersion(tx: tx),
-                DependenciesBridge.shared.tsAccountManager.getRegistrationId(for: .aci, tx: tx),
-                DependenciesBridge.shared.tsAccountManager.getRegistrationId(for: .pni, tx: tx),
+                tsAccountManager.getRegistrationId(for: .aci, tx: tx),
+                tsAccountManager.getRegistrationId(for: .pni, tx: tx),
             )
         }
 
         let regSection = OWSTableSection(title: "Account")
-        let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction
-        regSection.add(.copyableItem(label: "Phone Number", value: localIdentifiers?.phoneNumber))
-        regSection.add(.copyableItem(label: "ACI", value: localIdentifiers?.aci.serviceIdString))
-        regSection.add(.copyableItem(label: "PNI", value: localIdentifiers?.pni?.serviceIdString))
-        if let loggingKey = DebugLogger.shared.loggingKey, let localIdentifiers {
+        let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction
+            .owsFailUnwrap("must have been registered at some point")
+        regSection.add(.copyableItem(label: "Phone Number", value: localIdentifiers.phoneNumber))
+        regSection.add(.copyableItem(label: "ACI", value: localIdentifiers.aci.serviceIdString))
+        regSection.add(.copyableItem(label: "PNI", value: localIdentifiers.pni?.serviceIdString))
+        if let loggingKey = DebugLogger.shared.loggingKey {
             regSection.add(.copyableItem(label: "Phone Number Log Hash", value: loggingKey.hashForLogging(string: localIdentifiers.phoneNumber)))
             regSection.add(.copyableItem(label: "ACI Log Hash", value: loggingKey.hashForLogging(aci: localIdentifiers.aci)))
             regSection.add(.copyableItem(label: "PNI Log Hash", value: localIdentifiers.pni.map { loggingKey.hashForLogging(pni: $0) }))
         }
-        regSection.add(.copyableItem(label: "Device ID", value: "\(DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction)"))
+        regSection.add(.copyableItem(label: "Device ID", value: "\(tsAccountManager.storedDeviceIdWithMaybeTransaction)"))
         regSection.add(.copyableItem(label: "ACI Registration ID", value: aciRegistrationId.map({ "\($0)" }) ?? "<missing>"))
         regSection.add(.copyableItem(label: "PNI Registration ID", value: pniRegistrationId.map({ "\($0)" }) ?? "<missing>"))
         regSection.add(.copyableItem(label: "Push Token", value: SSKEnvironment.shared.preferencesRef.pushToken))

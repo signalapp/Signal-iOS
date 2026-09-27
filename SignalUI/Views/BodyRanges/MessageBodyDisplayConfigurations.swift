@@ -88,7 +88,7 @@ public extension HydratedMessageBody.DisplayConfiguration {
             baseTextColor: .primaryText,
             mentionBackgroundColor: ThemedColor(
                 light: .ows_blackAlpha20,
-                dark: .ows_signalBlueDark,
+                dark: .Signal.accent,
             ),
             revealedSpoilerIds: revealedSpoilerIds,
         )

@@ -21,12 +21,12 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
         _ message: TSMessage,
         context: BackupArchive.RecipientArchivingContext,
     ) -> BackupArchive.ArchiveInteractionResult<[BackupProto_Reaction]> {
-        let reactions = reactionStore.allReactions(message: message, context: context)
+        let reactions = reactionStore.allReactions(message: message, context: context).reversed()
 
         var errors = [ArchiveFrameError]()
         var reactionProtos = [BackupProto_Reaction]()
 
-        for reaction in reactions {
+        for (sortOrder, reaction) in reactions.enumerated() {
             guard
                 let authorAddress = BackupArchive.ContactAddress(
                     aci: reaction.reactorAci,
@@ -53,7 +53,7 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
             reactionProto.emoji = reaction.emoji
             reactionProto.authorID = authorId.value
             reactionProto.sentTimestamp = sentAtTimestamp
-            reactionProto.sortOrder = reaction.sortOrder
+            reactionProto.sortOrder = UInt64(sortOrder)
 
             reactionProtos.append(reactionProto)
         }
@@ -73,7 +73,7 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
         context: BackupArchive.RecipientRestoringContext,
     ) -> BackupArchive.RestoreInteractionResult<Void> {
         var reactionErrors = [BackupArchive.RestoreFrameError]()
-        for reaction in reactions {
+        for reaction in reactions.sorted(by: { $0.sortOrder < $1.sortOrder }) {
             let reactorAddress = context[reaction.authorRecipientId]
 
             switch reactorAddress {
@@ -83,7 +83,6 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
                     emoji: reaction.emoji,
                     reactorAci: context.localIdentifiers.aci,
                     sentAtTimestamp: reaction.sentTimestamp,
-                    sortOrder: reaction.sortOrder,
                     context: context,
                 )
             case .contact(let address):
@@ -93,7 +92,6 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
                         emoji: reaction.emoji,
                         reactorAci: aci,
                         sentAtTimestamp: reaction.sentTimestamp,
-                        sortOrder: reaction.sortOrder,
                         context: context,
                     )
                 } else if let e164 = address.e164 {
@@ -102,7 +100,6 @@ class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
                         emoji: reaction.emoji,
                         reactorE164: e164,
                         sentAtTimestamp: reaction.sentTimestamp,
-                        sortOrder: reaction.sortOrder,
                         context: context,
                     )
                 } else {

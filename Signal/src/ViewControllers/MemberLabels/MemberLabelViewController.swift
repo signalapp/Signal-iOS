@@ -66,11 +66,8 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
 
         view.backgroundColor = UIColor.Signal.groupedBackground
         addNavigationTitleView(groupName: groupModel.groupNameOrDefault)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            systemItem: .done,
-            primaryAction: UIAction { [weak self] _ in self?.didTapDone() },
-        )
 
+        navigationItem.rightBarButtonItem = .doneButton { [weak self] in self?.didTapDone() }
         navigationItem.leftBarButtonItem = .cancelButton(
             dismissingFrom: self,
             hasUnsavedChanges: { [weak self] in
@@ -307,8 +304,6 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         let mockMessage = MockIncomingMessage(messageBody: messageBody, thread: mockGroupThread, authorAci: localIdentifiers.aci)
 
         let renderItem = db.read { tx in
-            let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: mockGroupThread, ignoreMissing: true, transaction: tx)
-
             let conversationStyle = ConversationStyle(
                 type: .`default`,
                 thread: mockGroupThread,
@@ -321,7 +316,6 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
             return CVLoader.buildStandaloneRenderItem(
                 interaction: mockMessage,
                 thread: mockGroupThread,
-                threadAssociatedData: threadAssociatedData,
                 conversationStyle: conversationStyle,
                 spoilerState: SpoilerRenderState(),
                 groupNameColors: groupNameColors,
@@ -419,7 +413,7 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         let charsRemaining = Self.maxCharCount - count
         characterCountLabel.text = String(charsRemaining)
         characterCountLabel.isHidden = charsRemaining > Self.showCharacterCountMax
-        characterCountLabel.textColor = charsRemaining > 5 ? UIColor.Signal.tertiaryLabel.withAlphaComponent(0.3) : UIColor.Signal.red
+        characterCountLabel.textColor = charsRemaining > 5 ? .Signal.tertiaryLabel.withAlphaComponent(0.3) : .Signal.red
 
         if updatedMemberLabel == nil, updatedEmoji == nil {
             clearButton.isHidden = true
@@ -529,7 +523,7 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
                     separator.backgroundColor = UIColor.Signal.tertiaryLabel
                     contactListStackView.addArrangedSubview(separator)
                     NSLayoutConstraint.activate([
-                        separator.heightAnchor.constraint(equalToConstant: .hairlineWidth),
+                        separator.heightAnchor.constraint(equalToConstant: hairlineWidth),
                     ])
                     contactListStackView.setCustomSpacing(6, after: separator)
                 }

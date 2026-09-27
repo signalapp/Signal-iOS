@@ -43,8 +43,14 @@ public func withUncooperativeTimeout<T>(seconds: TimeInterval, operation: @escap
             }
         }
         Task {
-            try await Task.sleep(nanoseconds: seconds.clampedNanoseconds)
-            takeContinuation()?.resume(throwing: UncooperativeTimeoutError())
+            do {
+                try await Task.sleep(nanoseconds: seconds.clampedNanoseconds)
+                takeContinuation()?.resume(throwing: UncooperativeTimeoutError())
+            } catch is CancellationError {
+                return
+            } catch {
+                Logger.error("Unexpected error while waiting for timeout: \(error)")
+            }
         }
     }
 }

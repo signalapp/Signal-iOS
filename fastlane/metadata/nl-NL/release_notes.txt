@@ -1,1 +1,1 @@
-• We hebben een handige snelkoppeling toegevoegd, waarmee je snel je hand omlaag kunt doen zodra je bent begonnen met spreken tijdens een Signal-groepsoproep. Laat je handjes zien als jij hier net zo blij mee bent als wij!
+• This update introduces a new custom mute option so you can easily specify the exact date and time when you would like to end your moment of silence for notifications in a specific chat.

@@ -141,7 +141,7 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
         case .incomingDownloading(let attachmentPointer, _):
             let progressView = CVAttachmentProgressView(
                 direction: .download(
-                    attachmentPointer: attachmentPointer,
+                    attachmentID: attachmentPointer.id,
                     downloadState: .enqueuedOrDownloading,
                 ),
                 configuration: configuration,

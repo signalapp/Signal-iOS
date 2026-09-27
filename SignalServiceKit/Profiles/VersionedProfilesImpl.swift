@@ -30,16 +30,10 @@ public struct VersionedProfileRequest {
 public class VersionedProfilesImpl: VersionedProfiles {
 
     private enum CredentialStore {
-        private static let deprecatedCredentialStore = KeyValueStore(collection: "VersionedProfiles.credentialStore")
-
-        private static let expiringCredentialStore = KeyValueStore(collection: "VersionedProfilesImpl.expiringCredentialStore")
+        private static let expiringCredentialStore = NewKeyValueStore(collection: "VersionedProfilesImpl.expiringCredentialStore")
 
         private static func storeKey(for aci: Aci) -> String {
             return aci.serviceIdUppercaseString
-        }
-
-        static func dropDeprecatedCredentialsIfNecessary(transaction: DBWriteTransaction) {
-            deprecatedCredentialStore.removeAll(transaction: transaction)
         }
 
         static func getValidCredential(
@@ -47,9 +41,10 @@ public class VersionedProfilesImpl: VersionedProfiles {
             transaction: DBReadTransaction,
         ) throws -> ExpiringProfileKeyCredential? {
             guard
-                let credentialData = expiringCredentialStore.getData(
-                    storeKey(for: aci),
-                    transaction: transaction,
+                let credentialData = expiringCredentialStore.fetchValue(
+                    Data.self,
+                    forKey: storeKey(for: aci),
+                    tx: transaction,
                 )
             else {
                 return nil
@@ -79,32 +74,25 @@ public class VersionedProfilesImpl: VersionedProfiles {
                 throw OWSAssertionError("Invalid credential data")
             }
 
-            expiringCredentialStore.setData(
+            expiringCredentialStore.writeValue(
                 credentialData,
-                key: storeKey(for: aci),
-                transaction: transaction,
+                forKey: storeKey(for: aci),
+                tx: transaction,
             )
         }
 
         static func removeValue(for aci: Aci, transaction: DBWriteTransaction) {
-            expiringCredentialStore.removeValue(forKey: storeKey(for: aci), transaction: transaction)
+            expiringCredentialStore.removeValue(forKey: storeKey(for: aci), tx: transaction)
         }
 
         static func removeAll(transaction: DBWriteTransaction) {
-            expiringCredentialStore.removeAll(transaction: transaction)
+            expiringCredentialStore.removeAll(tx: transaction)
         }
     }
 
     // MARK: - Init
 
-    public init(appReadiness: AppReadiness) {
-        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-            // Once we think all clients in the world have migrated to expiring
-            // credentials we can remove this.
-            SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
-                CredentialStore.dropDeprecatedCredentialsIfNecessary(transaction: transaction)
-            }
-        }
+    public init() {
     }
 
     // MARK: -
@@ -140,7 +128,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
         let profilePaymentAddressData: Data? = await {
             guard
                 SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled,
-                !SSKEnvironment.shared.paymentsHelperRef.isKillSwitchActive
+                SSKEnvironment.shared.paymentsHelperRef.canUsePayments()
             else {
                 return nil
             }

@@ -6,7 +6,9 @@
 import SignalServiceKit
 import SignalUI
 
-class StickerPackViewController: OWSViewController {
+class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegate, StickerPackCollectionViewDelegate,
+    SendMessageDelegate
+{
 
     // MARK: Properties
 
@@ -219,14 +221,9 @@ class StickerPackViewController: OWSViewController {
 
     // MARK: Layout
 
-    private lazy var shareBarButtonItem: UIBarButtonItem = {
-        UIBarButtonItem(
-            image: UIImage(named: "forward"),
-            primaryAction: UIAction { [weak self] _ in
-                self?.shareButtonPressed()
-            },
-        )
-    }()
+    private lazy var shareBarButtonItem = UIBarButtonItem.button(image: .forward) { [weak self] in
+        self?.shareButtonPressed()
+    }
 
     private let coverView = StickerReusableView()
 
@@ -520,91 +517,16 @@ class StickerPackViewController: OWSViewController {
 
         updateContent()
     }
-}
 
-// MARK: -
-
-private class StickerPackViewControllerAnimationController: UIPresentationController {
-
-    let backdropView: UIView = UIView()
-
-    override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
-        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-        backdropView.backgroundColor = .Signal.backdrop
-    }
-
-    override func presentationTransitionWillBegin() {
-        guard let containerView else { return }
-        backdropView.alpha = 0
-        containerView.addSubview(backdropView)
-        backdropView.autoPinEdgesToSuperviewEdges()
-
-        presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
-            self.backdropView.alpha = 1
-        }, completion: nil)
-    }
-
-    override func dismissalTransitionWillBegin() {
-        presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
-            self.backdropView.alpha = 0
-        }, completion: { _ in
-            self.backdropView.removeFromSuperview()
-        })
-    }
-
-    var isFullScreen: Bool {
-        guard let containerSize = containerView?.frame.size else { return true }
-        guard UIDevice.current.isIPad, containerSize.width > (max(UIScreen.main.bounds.width, UIScreen.main.bounds.height) / 2) - 5 else { return true }
-        return false
-    }
-
-    override var frameOfPresentedViewInContainerView: CGRect {
-        var frame = super.frameOfPresentedViewInContainerView
-        let containerSize = frame.size
-
-        if !isFullScreen {
-            frame.size = CGSize(width: 540, height: 620)
-            frame.origin = CGPoint(x: containerSize.width / 2 - frame.size.width / 2, y: containerSize.height / 2 - frame.size.height / 2)
-        }
-
-        return frame
-    }
-
-    override func containerViewWillLayoutSubviews() {
-        super.containerViewWillLayoutSubviews()
-        presentedView?.frame = frameOfPresentedViewInContainerView
-
-        if isFullScreen {
-            presentedView?.clipsToBounds = false
-            presentedView?.layer.cornerRadius = 0
-        } else {
-            presentedView?.clipsToBounds = true
-            presentedView?.layer.cornerRadius = 13
-        }
-    }
-}
-
-extension StickerPackViewController: UIViewControllerTransitioningDelegate {
-
-    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        return StickerPackViewControllerAnimationController(presentedViewController: presented, presenting: presenting)
-    }
-}
-
-// MARK: -
-
-extension StickerPackViewController: StickerPackDataSourceDelegate {
+    // MARK: - StickerPackDataSourceDelegate
 
     func stickerPackDataDidChange() {
         AssertIsOnMainThread()
 
         updateContent()
     }
-}
 
-// MARK: -
-
-extension StickerPackViewController: StickerPackCollectionViewDelegate {
+    // MARK: - StickerPackCollectionViewDelegate
 
     func didSelectSticker(_: StickerInfo) {
         // This view controller does nothing.
@@ -617,11 +539,8 @@ extension StickerPackViewController: StickerPackCollectionViewDelegate {
     func stickerPreviewHasOverlay() -> Bool {
         return true
     }
-}
 
-// MARK: -
-
-extension StickerPackViewController: SendMessageDelegate {
+    // MARK: - SendMessageDelegate
 
     func sendMessageFlowDidComplete(threads: [TSThread]) {
         AssertIsOnMainThread()

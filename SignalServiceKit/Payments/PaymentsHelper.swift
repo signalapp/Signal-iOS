@@ -12,9 +12,7 @@ public protocol PaymentsHelper: AnyObject {
 
     var keyValueStore: KeyValueStore { get }
 
-    var isKillSwitchActive: Bool { get }
-    var hasValidPhoneNumberForPayments: Bool { get }
-    var canEnablePayments: Bool { get }
+    func canUsePayments() -> Bool
 
     var isPaymentsVersionOutdated: Bool { get }
     func setPaymentsVersionOutdated(_ value: Bool)
@@ -149,9 +147,7 @@ public class MockPaymentsHelper {}
 
 extension MockPaymentsHelper: PaymentsHelperSwift, PaymentsHelper {
 
-    public var isKillSwitchActive: Bool { false }
-    public var hasValidPhoneNumberForPayments: Bool { false }
-    public var canEnablePayments: Bool { false }
+    public func canUsePayments() -> Bool { false }
 
     public var isPaymentsVersionOutdated: Bool { false }
     public func setPaymentsVersionOutdated(_ value: Bool) {}

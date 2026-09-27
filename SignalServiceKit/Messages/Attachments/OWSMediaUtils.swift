@@ -40,7 +40,8 @@ public enum OWSMediaUtils {
         generator.appliesPreferredTrackTransform = true
         let time: CMTime = CMTimeMake(value: 1, timescale: 60)
         let cgImage = try generator.copyCGImage(at: time, actualTime: nil)
-        return UIImage(cgImage: cgImage, scale: UIScreen.main.scale, orientation: .up)
+        let displayScale = UITraitCollection.current.displayScale
+        return UIImage(cgImage: cgImage, scale: displayScale, orientation: .up)
     }
 
     public static func validateVideoExtension(ofPath path: String) throws {

@@ -26,62 +26,21 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
         warmCaches()
     }
 
-    public var isKillSwitchActive: Bool {
-        RemoteConfig.current.paymentsResetKillSwitch || !hasValidPhoneNumberForPayments
-    }
-
-    public var hasValidPhoneNumberForPayments: Bool {
+    private func hasValidPhoneNumberForPayments() -> Bool {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         guard let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction() else {
             return false
         }
         let localNumber = registeredState.localIdentifiers.phoneNumber
         let paymentsDisabledRegions = RemoteConfig.current.paymentsDisabledRegions
-        if paymentsDisabledRegions.isEmpty {
-            return Self.isValidPhoneNumberForPayments_fixedAllowlist(localNumber)
-        } else {
-            return Self.isValidPhoneNumberForPayments_remoteConfigBlocklist(localNumber, paymentsDisabledRegions: paymentsDisabledRegions)
-        }
+        return !paymentsDisabledRegions.contains(e164: localNumber)
     }
 
-    private static func isValidPhoneNumberForPayments_fixedAllowlist(_ e164: String) -> Bool {
-        guard let phoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(e164) else {
-            owsFailDebug("Could not parse phone number: \(e164).")
+    public func canUsePayments() -> Bool {
+        if RemoteConfig.current.paymentsResetKillSwitch {
             return false
         }
-        guard let callingCode = phoneNumber.getCallingCode() else {
-            owsFailDebug("Missing callingCode: \(e164).")
-            return false
-        }
-        let validCallingCodes: [Int] = [
-            // France
-            33,
-            // Switzerland
-            41,
-            // Parts of UK.
-            44,
-            // Germany
-            49,
-        ]
-        return validCallingCodes.contains(callingCode)
-    }
-
-    static func isValidPhoneNumberForPayments_remoteConfigBlocklist(
-        _ e164: String,
-        paymentsDisabledRegions: PhoneNumberRegions,
-    ) -> Bool {
-        owsAssertDebug(
-            !paymentsDisabledRegions.isEmpty,
-            "Missing paymentsDisabledRegions. Used the fixed allowlist instead.",
-        )
-        return !paymentsDisabledRegions.contains(e164: e164)
-    }
-
-    public var canEnablePayments: Bool {
-        guard !isKillSwitchActive else {
-            return false
-        }
-        return hasValidPhoneNumberForPayments
+        return hasValidPhoneNumberForPayments()
     }
 
     // MARK: - PaymentsState
@@ -172,7 +131,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
         // to enable it even if the current device no longer supports enabling payments. This will
         // behave as if the payments kill switch is turned on until the user is on a payments enabled
         // install, but preserve their access to payments in the UI.
-        let canEnablePaymentsLocallyOrRemotely = self.canEnablePayments || !originatedLocally
+        let canEnablePaymentsLocallyOrRemotely = self.canUsePayments() || !originatedLocally
 
         if newPaymentsState.isEnabled, !canEnablePaymentsLocallyOrRemotely {
             // If we cannot enable payments, ensure that any new entropy is always preserved.
@@ -256,7 +215,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
                         _ = SSKEnvironment.shared.profileManagerRef.reuploadLocalProfile(
                             unsavedRotatedProfileKey: nil,
                             mustReuploadAvatar: false,
-                            authedAccount: .implicit(),
+                            authedAccount: .implicit,
                             tx: tx,
                         )
                     }

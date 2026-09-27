@@ -102,14 +102,8 @@ class ScreenLockUI {
     // The "countdown" until screen lock takes effect.
     private var screenLockCountdownTimestamp: UInt64?
 
-    lazy var screenBlockingWindow: UIWindow = {
-        let window = OWSWindow(frame: .zero)
-        window.isHidden = false
-        window.windowLevel = ._background
-        window.isOpaque = true
-        window.backgroundColor = Theme.launchScreenBackgroundColor
-        return window
-    }()
+    /// Created once the app has a window, in `setupWithRootWindow(_:)`.
+    private(set) var screenBlockingWindow: UIWindow!
 
     private lazy var screenBlockingViewController: ScreenLockViewController = {
         let viewController = ScreenLockViewController()
@@ -213,9 +207,18 @@ class ScreenLockUI {
     // * During 'Screen Lock' unlock process.
     private func createScreenBlockingWindowWithRootWindow(_ rootWindow: UIWindow) {
         AssertIsOnMainThread()
+        guard let windowScene = rootWindow.windowScene else {
+            owsFail("Missing root window scene!")
+        }
 
-        screenBlockingWindow.frame = rootWindow.bounds
-        screenBlockingWindow.rootViewController = screenBlockingViewController
+        let window = OWSWindow(windowScene: windowScene)
+        window.isHidden = false
+        window.windowLevel = ._background
+        window.isOpaque = true
+        window.backgroundColor = Theme.launchScreenBackgroundColor
+        window.frame = rootWindow.bounds
+        window.rootViewController = screenBlockingViewController
+        self.screenBlockingWindow = window
     }
 
     // Ensure that:

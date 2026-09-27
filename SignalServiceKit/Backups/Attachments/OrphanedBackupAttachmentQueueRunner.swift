@@ -136,7 +136,7 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
                 // but cancel the task.
                 Logger.info("Stopping when unregistered")
                 let error = OWSRetryableError()
-                try? await loader.stop(reason: error)
+                await loader.stop(reason: error)
                 return .retryableError(error)
             case
                 .relinking,
@@ -152,19 +152,19 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
 
             guard let localAci else {
                 let error = OWSAssertionError("Deleting without being registered")
-                try? await loader.stop(reason: error)
+                await loader.stop(reason: error)
                 return .retryableError(error)
             }
 
             guard let mediaRootBackupKey else {
                 let error = OWSAssertionError("Deleting without being registered")
-                try? await loader.stop(reason: error)
+                await loader.stop(reason: error)
                 return .retryableError(error)
             }
 
             if needsListMedia {
                 // If we need to list media, quit out early so we can do that.
-                try? await loader.stop(reason: NeedsListMediaError())
+                await loader.stop(reason: NeedsListMediaError())
                 return .retryableError(NeedsListMediaError())
             }
 
@@ -181,16 +181,11 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
                     mediaNameToUse = AttachmentBackupThumbnail.thumbnailMediaName(fullsizeMediaName: mediaName)
                 }
 
-                do {
-                    mediaId = try mediaRootBackupKey.mediaEncryptionMetadata(
-                        mediaName: mediaNameToUse,
-                        // Doesn't matter what we use, we just want the mediaId.
-                        type: .outerLayerFullsizeOrThumbnail,
-                    ).mediaId
-                } catch let error {
-                    Logger.error("Failed to generate media IDs")
-                    return .unretryableError(error)
-                }
+                mediaId = mediaRootBackupKey.mediaEncryptionMetadata(
+                    mediaName: mediaNameToUse,
+                    // Doesn't matter what we use, we just want the mediaId.
+                    type: .outerLayerFullsizeOrThumbnail,
+                ).mediaId
             } else {
                 return .unretryableError(OWSAssertionError("Invalid record"))
             }
@@ -204,7 +199,7 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
                     logger: .empty(), // TODO: [Logging]
                 )
             } catch let error {
-                try? await loader.stop(reason: error)
+                await loader.stop(reason: error)
                 return .unretryableError(error)
             }
 

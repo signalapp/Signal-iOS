@@ -32,9 +32,9 @@ extension OWSFakeProfileManager: ProfileManagerProtocol {
         recipientWhitelist.insert(recipient.id)
     }
 
-    func removeRecipientFromProfileWhitelist(_ recipient: inout SignalRecipient, userProfileWriter: UserProfileWriter, tx: DBWriteTransaction) {
+    func removeRecipientFromProfileWhitelist(_ recipient: inout SignalRecipient, userProfileWriter: UserProfileWriter, tx: DBWriteTransaction) -> Bool {
         recipient.status = .unspecified
-        recipientWhitelist.remove(recipient.id)
+        return recipientWhitelist.remove(recipient.id) != nil
     }
 
     func isRecipientInProfileWhitelist(_ recipient: SignalRecipient, tx: DBReadTransaction) -> Bool {
@@ -49,18 +49,15 @@ extension OWSFakeProfileManager: ProfileManagerProtocol {
         groupIdWhitelist.insert(groupId)
     }
 
-    func removeGroupId(fromProfileWhitelist groupId: Data, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
-        groupIdWhitelist.remove(groupId)
+    func removeGroupId(fromProfileWhitelist groupId: Data, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) -> Bool {
+        return groupIdWhitelist.remove(groupId) != nil
     }
 
     func setLocalProfileKey(_ key: Aes256Key, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
         localProfileKey = key
     }
 
-    func rotateProfileKeyUponRecipientHide(withTx tx: DBWriteTransaction) {
-    }
-
-    func forceRotateLocalProfileKeyForGroupDeparture(with transaction: DBWriteTransaction) {
+    func setNeedsProfileKeyRotation(tx: DBWriteTransaction) {
     }
 }
 
@@ -176,7 +173,6 @@ extension OWSFakeProfileManager: ProfileManager {
     ) {
     }
 
-    func allWhitelistedAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] { [] }
     func allWhitelistedRegisteredAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] { [] }
 }
 

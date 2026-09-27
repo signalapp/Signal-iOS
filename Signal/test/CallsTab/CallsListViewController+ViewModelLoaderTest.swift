@@ -55,6 +55,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             callRecords: callRecords,
             callExpirations: [:],
             title: "Hey, I just met you, and this is crazy, but here's my number, so call me maybe?",
+            isMuted: false,
             recipientType: recipientType,
             direction: direction,
             medium: .video,

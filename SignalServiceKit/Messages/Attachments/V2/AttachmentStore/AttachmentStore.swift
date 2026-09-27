@@ -621,16 +621,11 @@ public struct AttachmentStore {
         attachment: Attachment,
         streamInfo: Attachment.StreamInfo,
         tx: DBWriteTransaction,
-    ) throws(AttachmentInsertError) {
-        // Find if there is already an attachment with the same plaintext hash.
-        if
-            let existingAttachmentId = fetchAttachmentRecord(
-                plaintextHash: streamInfo.plaintextHash,
-                tx: tx,
-            )?.sqliteId,
-            existingAttachmentId != attachment.id
-        {
-            throw AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId: existingAttachmentId)
+    ) {
+        guard fetch(id: attachment.id, tx: tx) != nil else {
+            // The attachment was deleted between when we fetched it and now,
+            // thats fine, no need to update it.
+            return
         }
 
         attachment.streamInfo = streamInfo

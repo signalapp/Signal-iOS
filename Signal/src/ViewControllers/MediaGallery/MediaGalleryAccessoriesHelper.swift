@@ -147,10 +147,9 @@ class MediaGalleryAccessoriesHelper {
 
     // MARK: - Batch Selection
 
-    private lazy var selectButton = UIBarButtonItem(
-        title: CommonStrings.selectButton,
-        primaryAction: UIAction { [weak self] _ in self?.didTapSelect() },
-    )
+    private lazy var selectButton = UIBarButtonItem.button(title: CommonStrings.selectButton) { [weak self] in
+        self?.didTapSelect()
+    }
 
     var isInBatchSelectMode = false {
         didSet {
@@ -191,11 +190,9 @@ class MediaGalleryAccessoriesHelper {
                     "SELECT_ALL",
                     comment: "Button text to select all in any list selection mode",
                 ),
-                style: .plain,
-                action: { [weak self] in
-                    self?.didSelectAll()
-                },
-            )
+            ) { [weak self] in
+                self?.didSelectAll()
+            }
         } else {
             viewController.navigationItem.rightBarButtonItem = nil // TODO: Search
             viewController.navigationItem.leftBarButtonItem = previousLeftBarButtonItem
@@ -317,17 +314,13 @@ class MediaGalleryAccessoriesHelper {
         return menuItems.menu(with: .singleSelection)
     }
 
-    private lazy var listViewButton: UIBarButtonItem = UIBarButtonItem(
-        title: nil,
-        image: UIImage(imageLiteralResourceName: "list-bullet"),
-        primaryAction: nil,
+    private lazy var listViewButton = UIBarButtonItem(
+        image: .listBullet,
         menu: createLayoutPickerMenu(checkedLayout: .list),
     )
 
-    private lazy var gridViewButton: UIBarButtonItem = UIBarButtonItem(
-        title: nil,
-        image: UIImage(imageLiteralResourceName: "grid-square"),
-        primaryAction: nil,
+    private lazy var gridViewButton = UIBarButtonItem(
+        image: .gridSquare,
         menu: createLayoutPickerMenu(checkedLayout: .grid),
     )
 
@@ -365,7 +358,7 @@ class MediaGalleryAccessoriesHelper {
     private func updateBottomToolbarControls() {
         guard footerBarState != .hidden else { return }
 
-        let fixedSpace = { return UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil) }
+        let fixedSpace = { UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil) }
         let footerBarItems: [UIBarButtonItem]? = {
             switch footerBarState {
             case .hidden:
@@ -469,13 +462,9 @@ class MediaGalleryAccessoriesHelper {
 
     // MARK: - Delete
 
-    private lazy var deleteButton = UIBarButtonItem.button(
-        icon: .buttonDelete,
-        style: .plain,
-        action: { [weak self] in
-            self?.didPressDelete()
-        },
-    )
+    private lazy var deleteButton = UIBarButtonItem.button(icon: .buttonDelete) { [weak self] in
+        self?.didPressDelete()
+    }
 
     private func updateDeleteButton() {
         guard let viewController else { return }

@@ -71,16 +71,20 @@ struct DebugLogDumper {
 
 final class DebugLogs {
     private let dumper: DebugLogDumper
-    private var logsDirPath: String?
+    private let collectLogsTask: Task<String?, Never>
 
     init(dumper: DebugLogDumper) {
         self.dumper = dumper
-        self.logsDirPath = DebugLogs.collectAndFlushLogs(dumper: dumper)
+        self.collectLogsTask = Task {
+            await DebugLogs.collectAndFlushLogs(dumper: dumper)
+        }
     }
 
     deinit {
-        if let logsDirPath {
-            OWSFileSystem.deleteFile(logsDirPath)
+        Task { [collectLogsTask] in
+            if let logsDirPath = await collectLogsTask.value {
+                OWSFileSystem.deleteFile(logsDirPath)
+            }
         }
     }
 
@@ -89,18 +93,29 @@ final class DebugLogs {
         onSubmit: (() -> Void)? = nil,
         onCancel: (() -> Void)? = nil,
     ) {
-        guard let logsDirPath else {
-            Logger.error("No logs path found for preview")
-            handleError(error: .noLogs, viewController: viewController)
-            onCancel?()
-            return
-        }
-        let logFilePaths = ((try? FileManager.default.contentsOfDirectory(atPath: logsDirPath)) ?? []).map {
-            URL(fileURLWithPath: logsDirPath).appendingPathComponent($0).path
-        }
-        let previewVC = DebugLogPreviewViewController(logFilePaths: logFilePaths, onSubmit: onSubmit, onCancel: onCancel)
+        let previewVC = DebugLogPreviewViewController(onSubmit: onSubmit, onCancel: onCancel)
         let nav = OWSNavigationController(rootViewController: previewVC)
         viewController.present(nav, animated: true)
+
+        Task { @MainActor in
+            guard let logsDirPath = await self.collectLogsTask.value else {
+                Logger.error("No logs path found for preview")
+
+                guard nav.presentingViewController != nil else {
+                    // If the user already dismissed, onCancel was called
+                    return
+                }
+
+                await nav.awaitableDismiss(animated: true)
+                await self.handleError(error: .noLogs, viewController: viewController)
+                onCancel?()
+                return
+            }
+            let logFilePaths = ((try? FileManager.default.contentsOfDirectory(atPath: logsDirPath)) ?? []).map {
+                URL(fileURLWithPath: logsDirPath).appendingPathComponent($0).path
+            }
+            previewVC.loadLogs(logFilePaths: logFilePaths)
+        }
     }
 
     /// Presents a log preview with an option to submit. Completion is only
@@ -183,7 +198,7 @@ final class DebugLogs {
         do {
             url = try await uploadLogsWithUI(from: viewController)
         } catch {
-            self.handleError(error: error, viewController: viewController)
+            await self.handleError(error: error, viewController: viewController)
             return
         }
         guard let url else { return }
@@ -300,26 +315,10 @@ final class DebugLogs {
         return zipDirPath
     }
 
-    func exportLogs(viewController: UIViewController) {
-        AssertIsOnMainThread()
-        guard let logsDirPath else {
-            return handleError(
-                error: .noLogs,
-                viewController: viewController,
-            )
-        }
-        AttachmentSharing.showShareUI(
-            for: URL(fileURLWithPath: logsDirPath),
-            sender: nil,
-            from: viewController,
-        ) {
-            OWSFileSystem.deleteFile(logsDirPath)
-        }
-    }
-
+    @concurrent
     private static func collectAndFlushLogs(
         dumper: DebugLogDumper,
-    ) -> String? {
+    ) async -> String? {
         // Dump any additional details that are relevant.
         dumper.dump()
         Logger.info("About to zip debug logs")
@@ -332,7 +331,7 @@ final class DebugLogs {
     }
 
     func uploadLogs() async throws(DebugLogsError) -> URL {
-        guard let logsDirPath else {
+        guard let logsDirPath = await collectLogsTask.value else {
             throw DebugLogsError.noLogs
         }
 
@@ -364,10 +363,11 @@ final class DebugLogs {
         }
     }
 
+    @MainActor
     private func handleError(
         error: DebugLogsError,
         viewController: UIViewController,
-    ) {
+    ) async {
         let logsPath: String?
         let completion: (() -> Void)?
         switch error {
@@ -375,7 +375,7 @@ final class DebugLogs {
             logsPath = nil
             completion = nil
         case .couldNotPackageLogs:
-            logsPath = self.logsDirPath
+            logsPath = await collectLogsTask.value
             completion = nil
         case .uploadError(let zipFilePath):
             logsPath = zipFilePath

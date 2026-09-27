@@ -97,7 +97,7 @@ public class QuickRestoreManager {
                 lastBackupSizeBytes = nil
             }
 
-            let backupKey = try MessageRootBackupKey(
+            let backupKey = MessageRootBackupKey(
                 accountEntropyPool: accountEntropyPool,
                 aci: localIdentifiers.aci,
             )
@@ -132,12 +132,25 @@ public class QuickRestoreManager {
 
         let restoreMethodToken = UUID().uuidString
 
+        let capabilities: [RegistrationProvisioningMessage.Capability]
+        if
+            deviceProvisioningUrl.capabilities.contains(.wifiaware),
+            DeviceTransfer.platformSupportsWifiAware(),
+            RemoteConfig.current.wifiAwareDeviceTransferEnabled
+        {
+            capabilities = [RegistrationProvisioningMessage.Capability.wifiaware]
+        } else {
+            capabilities = []
+        }
+
         let registrationMessage = RegistrationProvisioningMessage(
-            accountEntropyPool: accountEntropyPool,
             aci: myAci,
             aciIdentityKeyPair: aciIdentityKeyPair.identityKeyPair,
-            pniIdentityKeyPair: pniIdentityKeyPair.identityKeyPair,
-            phoneNumber: myPhoneNumber,
+            phoneNumberState: RegistrationProvisioningMessage.PhoneNumberState(
+                phoneNumber: myPhoneNumber,
+                pniIdentityKeyPair: pniIdentityKeyPair.identityKeyPair,
+            ),
+            accountEntropyPool: accountEntropyPool,
             pin: pinCode,
             tier: backupTier,
             backupVersion: BackupArchiveManagerImpl.Constants.supportedBackupVersion,
@@ -146,6 +159,7 @@ public class QuickRestoreManager {
             restoreMethodToken: restoreMethodToken,
             lastBackupForwardSecrecyToken: lastBackupForwardSecrecyToken,
             nextBackupSecretData: nextBackupSecretData,
+            capabilites: capabilities,
         )
 
         let theirPublicKey = deviceProvisioningUrl.publicKey

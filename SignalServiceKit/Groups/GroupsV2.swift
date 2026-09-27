@@ -54,14 +54,9 @@ public protocol GroupsV2 {
 
     func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: DBWriteTransaction)
 
-    func processProfileKeyUpdates()
+    func processProfileKeyUpdates() async throws
 
     func updateLocalProfileKeyInGroup(groupId: GroupIdentifier, tx: DBWriteTransaction)
-
-    func isGroupKnownToStorageService(
-        groupModel: TSGroupModelV2,
-        transaction: DBReadTransaction,
-    ) -> Bool
 
     func createNewGroupOnService(
         _ newGroup: GroupsV2Protos.NewGroupParams,
@@ -196,7 +191,7 @@ public struct GroupsV2BuiltGroupChange {
 // MARK: -
 
 public protocol GroupV2Updates {
-    func autoRefreshGroup() async throws(CancellationError)
+    func autoRefreshGroups() async throws
 
     func refreshGroupImpl(
         secretParams: GroupSecretParams,
@@ -463,7 +458,7 @@ public class MockGroupsV2: GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func processProfileKeyUpdates() {
+    public func processProfileKeyUpdates() async throws {
         owsFail("Not implemented.")
     }
 
@@ -484,13 +479,6 @@ public class MockGroupsV2: GroupsV2 {
         groupSecretParams: GroupSecretParams,
     ) async throws -> String {
         owsFail("Not implemented.")
-    }
-
-    public func isGroupKnownToStorageService(
-        groupModel: TSGroupModelV2,
-        transaction: DBReadTransaction,
-    ) -> Bool {
-        return true
     }
 
     public func groupRecordPendingStorageServiceRestore(masterKeyData: Data, transaction: DBReadTransaction) -> StorageServiceProtoGroupV2Record? {
@@ -588,7 +576,7 @@ public class MockGroupV2Updates: GroupV2Updates {
         owsFail("Not implemented.")
     }
 
-    public func autoRefreshGroup() async throws(CancellationError) {
+    public func autoRefreshGroups() async throws {
         owsFail("Not implemented.")
     }
 
