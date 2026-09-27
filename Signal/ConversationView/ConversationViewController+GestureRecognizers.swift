@@ -140,6 +140,8 @@ extension ConversationViewController: SingleOrDoubleTapGestureDelegate {
     // MARK: - Tap
 
     public func handleSingleTap(_ sender: SingleOrDoubleTapGestureRecognizer) -> Bool {
+        viewState.doubleTapReactionMessageId = nil
+
         // Stop any recording voice memos.
         finishRecordingVoiceMessage(sendImmediately: false)
 
@@ -151,12 +153,29 @@ extension ConversationViewController: SingleOrDoubleTapGestureDelegate {
             return false
         }
 
-        return cell.handleTap(sender: sender, componentDelegate: self)
+        let wasHandled = cell.handleTap(sender: sender, componentDelegate: self)
+        if !wasHandled, let message = doubleTapReactionMessage(in: cell, sender: sender) {
+            viewState.doubleTapReactionMessageId = message.uniqueId
+        }
+        return wasHandled
     }
 
     public func handleDoubleTap(_ sender: SingleOrDoubleTapGestureRecognizer) -> Bool {
+        guard
+            !isShowingSelectionUI,
+            collectionViewActiveContextMenuInteraction?.contextMenuVisible != true
+        else {
+            return false
+        }
         guard let cell = findCell(forGesture: sender) else {
             return false
+        }
+        if
+            let message = doubleTapReactionMessage(in: cell, sender: sender),
+            message.uniqueId == viewState.doubleTapReactionMessageId
+        {
+            addDoubleTapHeartReaction(to: message.uniqueId)
+            return true
         }
         guard cell.canHandleDoubleTap(sender: sender, componentDelegate: self) else {
             return false
@@ -166,8 +185,53 @@ extension ConversationViewController: SingleOrDoubleTapGestureDelegate {
     }
 
     public func didEndGesture(_ sender: SingleOrDoubleTapGestureRecognizer, wasHandled: Bool) {
+        viewState.doubleTapReactionMessageId = nil
         if !wasHandled {
             dismissKeyboard()
+        }
+    }
+
+    private func doubleTapReactionMessage(in cell: CVCell, sender: UIGestureRecognizer) -> TSIncomingMessage? {
+        guard
+            !isShowingSelectionUI,
+            thread.canSendReactionToThread,
+            cell.renderItem?.componentState.bodyText != nil,
+            let message = cell.renderItem?.interaction as? TSIncomingMessage,
+            shouldShowReactionPickerForInteraction(message),
+            let messageView = cell.componentView as? CVComponentMessage.CVComponentViewMessage,
+            let bodyTextView = messageView.bodyTextView,
+            bodyTextView.rootView.containsGestureLocation(sender)
+        else {
+            return nil
+        }
+        return message
+    }
+
+    private func addDoubleTapHeartReaction(to messageId: String) {
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { tx -> Bool in
+            // Re-fetch inside the write: the message may have expired or been deleted
+            // since the gesture began. Read the reaction here to handle rapid repeats.
+            guard
+                let message = TSMessage.fetchMessageViaCache(uniqueId: messageId, transaction: tx) as? TSIncomingMessage,
+                !message.wasRemotelyDeleted,
+                let thread = message.thread(tx: tx),
+                thread.canSendReactionToThread,
+                let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci,
+                message.reaction(for: localAci, tx: tx)?.emoji != "❤️"
+            else {
+                return false
+            }
+            ReactionManager.localUserReacted(
+                to: messageId,
+                emoji: "❤️",
+                isRemoving: false,
+                tx: tx,
+            )
+            return true
+        } completion: { didReact in
+            if didReact {
+                ImpactHapticFeedback.impactOccurred(style: .light)
+            }
         }
     }
 }
