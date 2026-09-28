@@ -125,9 +125,6 @@ public protocol RegistrationCoordinator {
     ///     device containing the necessary info to reregister
     func restoreFromRegistrationMessage(message: RegistrationProvisioningMessage) -> Guarantee<RegistrationStep>
 
-    /// Mark the users choice to skip restoring from backup and continuing to the next step.
-    func skipRestoreFromBackup() -> Guarantee<RegistrationStep>
-
     /// Set whether the user's PNI should be discoverable by phone number.
     /// If the update is rejected for any reason, the next step will be the same current
     /// step but with attached metadata giving more info on the rejection.

@@ -523,20 +523,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return Guarantee.wrapAsync { await self.nextStep() }
     }
 
-    public func skipRestoreFromBackup() -> Guarantee<RegistrationStep> {
-        logger.info("")
-        inMemoryState.hasSkippedRestoreFromMessageBackup = true
-
-        inMemoryState.needsToAskForDeviceTransfer = false
-        deps.db.write { tx in
-            updatePersistedState(tx) {
-                $0.hasDeclinedTransfer = true
-                $0.restoreMethod = .declined
-            }
-        }
-        return Guarantee.wrapAsync { await self.nextStep() }
-    }
-
     public func resetRestoreMode() -> Guarantee<RegistrationStep> {
         inMemoryState.registrationMessage = nil
         inMemoryState.accountEntropyPool = nil
