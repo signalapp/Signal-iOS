@@ -22,28 +22,8 @@ class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
         static let layoutMargins = UIEdgeInsets(hMargin: 36, vMargin: 18)
         static let cornerRadius: CGFloat = 26
 
-        static let referenceFontSizePts: CGFloat = 17
-        static let lineSpacing: CGFloat = 18
-
-        static let chunkSize = 4
-        static let chunksPerRow = 4
-        static let rowCount = 4
-        static let spacesBetweenChunks = 2
-
-        static func charactersPerRow(includingSpaces: Bool) -> Int {
-            let chunkChars = Constants.chunkSize * Constants.chunksPerRow
-
-            if includingSpaces {
-                let spaceChars = Constants.spacesBetweenChunks * (Constants.chunksPerRow - 1)
-                return chunkChars + spaceChars
-            } else {
-                return chunkChars
-            }
-        }
-
         static let aepLengthPrecondition: Void = {
-            let characterCount = chunkSize * chunksPerRow * rowCount
-            owsPrecondition(characterCount == AccountEntropyPool.Constants.byteLength)
+            owsPrecondition(Utils.FormatConstants.characterCount == AccountEntropyPool.Constants.byteLength)
         }()
     }
 
@@ -126,7 +106,7 @@ class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
     /// The number of rows the text view displays when the entire contents is
     /// visible.
     var rowCount: Int {
-        Constants.rowCount
+        Utils.FormatConstants.rowCount
     }
 
     /// The number of rows the text view displays. Defaults to "all rows".
@@ -134,14 +114,14 @@ class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
     /// In `display` mode, callers may set to have the text view display a
     /// truncated AEP. Setting this calls `setNeedsLayout`, so callers may
     /// animate sizing changes using `layoutIfNeeded`.
-    var visibleRowCount: Int = Constants.rowCount {
+    var visibleRowCount: Int = Utils.FormatConstants.rowCount {
         didSet {
-            owsPrecondition((1...Constants.rowCount).contains(visibleRowCount))
+            owsPrecondition((1...Utils.FormatConstants.rowCount).contains(visibleRowCount))
 
             switch mode {
             case .display(let displayableAEP):
                 textView.text = String(displayableAEP.displayString.prefix(
-                    Constants.charactersPerRow(includingSpaces: false) * visibleRowCount,
+                    Self.Utils.charactersPerRow(includingSpaces: false) * visibleRowCount,
                 ))
                 setNeedsLayout()
             case .entry:
@@ -156,68 +136,23 @@ class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
         super.layoutSubviews()
 
         let width = self.width - self.layoutMargins.totalWidth
-
-        // Any character will do because font is monospaced.
-        let referenceFontSize = "0".size(withAttributes: [
-            .font: UIFont.monospacedSystemFont(
-                ofSize: Constants.referenceFontSizePts,
-                weight: .regular,
-            ),
-        ])
-
-        let characterWidth = width / CGFloat(Constants.charactersPerRow(includingSpaces: true))
-        let fontSize = (characterWidth / referenceFontSize.width) * Constants.referenceFontSizePts
-
-        let font = UIFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
-        self.textView.editorFont = font
-
+        self.textView.editorFont = Self.Utils.fontSize(forWidth: width)
         textViewHeightConstraint.constant = textHeight(forRowCount: visibleRowCount, width: width)
     }
 
     private func textHeight(forRowCount rowCount: Int, width: CGFloat) -> CGFloat {
         let sizingString = Array(repeating: "0", count: rowCount).joined(separator: "\n")
-        return attributedString(for: sizingString).boundingRect(
+        return Self.Utils.attributedString(for: sizingString, font: textView.editorFont).boundingRect(
             with: CGSize(width: width, height: .greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
             context: nil,
         ).size.ceil.height
     }
 
-    private func attributedString(for string: String) -> NSAttributedString {
-        var attributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.Signal.label,
-            .paragraphStyle: {
-                let paragraphStyle = NSMutableParagraphStyle()
-                paragraphStyle.lineSpacing = Constants.lineSpacing
-                return paragraphStyle
-            }(),
-        ]
-
-        if let editorFont = textView.editorFont {
-            attributes[.font] = editorFont
-        }
-
-        return NSAttributedString(
-            string: string,
-            attributes: attributes,
-        )
-    }
-
     // MARK: - TextViewWithPlaceholderDelegate
 
     func textViewDidUpdateText(_ textView: TextViewWithPlaceholder) {
-        // For autofill, the text is set without first passing through the formatting code.
-        // Detect if the text is not formatted by looking for spaced chunks, and call the
-        // formatting function if not.
-        let formattedSpace = String(repeating: " ", count: Constants.spacesBetweenChunks)
-        if
-            let t = textView.text,
-            !t.isEmpty,
-            t.count > Constants.chunkSize,
-            !t.contains(formattedSpace)
-        {
-            textView.reformatText(replacementText: t)
-        }
+        Self.Utils.textViewDidUpdateText(textView)
 
         switch mode {
         case .entry(let onTextViewChanged):
@@ -239,32 +174,126 @@ class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
             textView.textViewDidChange(uiTextView)
         }
 
-        _ = FormattedNumberField.textField(
-            uiTextView,
-            shouldChangeCharactersIn: range,
-            replacementString: text,
-            allowedCharacters: DisplayableAccountEntropyPool.allowedCharacters,
-            maxCharacters: AccountEntropyPool.Constants.byteLength,
-            format: { unformatted in
-                return unformatted
-                    .uppercased()
-                    .enumerated()
-                    .map { index, char -> String in
-                        if index > 0, index % Constants.chunkSize == 0 {
-                            return String(repeating: " ", count: Constants.spacesBetweenChunks) + String(char)
-                        } else {
-                            return String(char)
-                        }
-                    }
-                    .joined()
-            },
+        Self.Utils.textViewShouldChangeTextIn(
+            uiTextView: uiTextView,
+            shouldChangeTextIn: range,
+            replacementText: text,
+            font: textView.editorFont,
         )
 
-        let selectedTextRange = uiTextView.selectedTextRange
-        uiTextView.attributedText = self.attributedString(for: uiTextView.text)
-        uiTextView.selectedTextRange = selectedTextRange
-
         return false
+    }
+
+    enum Utils {
+        enum FormatConstants {
+            static let referenceFontSizePts: CGFloat = 17
+            static let lineSpacing: CGFloat = 18
+
+            static let chunkSize = 4
+            static let chunksPerRow = 4
+            static let rowCount = 4
+            static let spacesBetweenChunks = 2
+
+            static let characterCount = chunkSize * chunksPerRow * rowCount
+        }
+
+        static func charactersPerRow(includingSpaces: Bool) -> Int {
+            let chunkChars = FormatConstants.chunkSize * FormatConstants.chunksPerRow
+
+            if includingSpaces {
+                let spaceChars = FormatConstants.spacesBetweenChunks * (FormatConstants.chunksPerRow - 1)
+                return chunkChars + spaceChars
+            } else {
+                return chunkChars
+            }
+        }
+
+        static func formatAepForTextDisplay(inputText: String) -> String {
+            return inputText
+                .uppercased()
+                .enumerated()
+                .map { index, char -> String in
+                    if index > 0, index % FormatConstants.chunkSize == 0 {
+                        return String(repeating: " ", count: FormatConstants.spacesBetweenChunks) + String(char)
+                    } else {
+                        return String(char)
+                    }
+                }
+                .joined()
+        }
+
+        static func attributedString(for string: String, font: UIFont?) -> NSAttributedString {
+            var attributes: [NSAttributedString.Key: Any] = [
+                .foregroundColor: UIColor.Signal.label,
+                .paragraphStyle: {
+                    let paragraphStyle = NSMutableParagraphStyle()
+                    paragraphStyle.lineSpacing = FormatConstants.lineSpacing
+                    return paragraphStyle
+                }(),
+            ]
+
+            if let font {
+                attributes[.font] = font
+            }
+
+            return NSAttributedString(
+                string: string,
+                attributes: attributes,
+            )
+        }
+
+        static func fontSize(forWidth width: CGFloat) -> UIFont {
+            // Any character will do because font is monospaced.
+            let referenceFontSize = "0".size(withAttributes: [
+                .font: UIFont.monospacedSystemFont(
+                    ofSize: FormatConstants.referenceFontSizePts,
+                    weight: .regular,
+                ),
+            ])
+
+            let characterWidth = width / CGFloat(charactersPerRow(includingSpaces: true))
+            let fontSize = (characterWidth / referenceFontSize.width) * FormatConstants.referenceFontSizePts
+
+            return UIFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
+        }
+
+        static func textViewDidUpdateText(_ textView: TextViewWithPlaceholder) {
+            // For autofill, the text is set without first passing through the formatting code.
+            // Detect if the text is not formatted by looking for spaced chunks, and call the
+            // formatting function if not.
+
+            let formattedSpace = String(repeating: " ", count: FormatConstants.spacesBetweenChunks)
+            if
+                let t = textView.text,
+                !t.isEmpty,
+                t.count > FormatConstants.chunkSize,
+                !t.contains(formattedSpace)
+            {
+                textView.reformatText(replacementText: t)
+            }
+        }
+
+        static func textViewShouldChangeTextIn(
+            uiTextView: UITextView,
+            shouldChangeTextIn range: NSRange,
+            replacementText text: String,
+            font: UIFont?,
+        ) {
+            _ = FormattedNumberField.textField(
+                uiTextView,
+                shouldChangeCharactersIn: range,
+                replacementString: text,
+                allowedCharacters: DisplayableAccountEntropyPool.allowedCharacters,
+                maxCharacters: AccountEntropyPool.Constants.byteLength,
+                format: { unformatted in
+                    return formatAepForTextDisplay(inputText: unformatted)
+                },
+            )
+
+            let selectedTextRange = uiTextView.selectedTextRange
+            uiTextView.attributedText = attributedString(for: uiTextView.text, font: font)
+            uiTextView.selectedTextRange = selectedTextRange
+        }
     }
 }
 
