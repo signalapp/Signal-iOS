@@ -378,9 +378,13 @@ struct LocalFileBackupManagerTests {
             return id
         }
 
+        let totalByteCount = db.read { tx in
+            LocalFileBackupStore().totalUnencryptedByteCountOfQueuedImports(tx: tx)
+        }
+
         /* restore */
 
-        try await localFileBackupManager._restoreLocalFileBackupAttachments(resolvedURL: localBackupURL)
+        try await localFileBackupManager._restoreLocalFileBackupAttachments(resolvedURL: localBackupURL, totalByteCount: totalByteCount)
 
         let importRecords = try db.read { tx in
             try BackupLocalFileAttachmentImportRecord.fetchAll(tx.database)

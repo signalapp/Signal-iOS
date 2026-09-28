@@ -134,6 +134,15 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
     // MARK: - Restoring
 
     func restoreLocalFileBackupAttachments() async throws {
+        let totalByteCount = db.read { tx in
+            localFileBackupStore.totalUnencryptedByteCountOfQueuedImports(tx: tx)
+        }
+
+        guard totalByteCount > 0 else {
+            // Nothing to restore.
+            return
+        }
+
         Logger.info("")
         let resolvedURL: URL?
         do {
@@ -156,7 +165,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
             securityScopedBookmarkAccess.stopAccessToSecurityScopedBookmark(url: resolvedURL)
         }
 
-        try await _restoreLocalFileBackupAttachments(resolvedURL: resolvedURL)
+        try await _restoreLocalFileBackupAttachments(resolvedURL: resolvedURL, totalByteCount: totalByteCount)
     }
 
     private func fetchImportRecordsAndAssociatedAttachmentRecords() -> [(AttachmentWithMetadata, BackupLocalFileAttachmentImportRecord)] {
@@ -175,12 +184,8 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
         }
     }
 
-    func _restoreLocalFileBackupAttachments(resolvedURL: URL) async throws {
+    func _restoreLocalFileBackupAttachments(resolvedURL: URL, totalByteCount: UInt64) async throws {
         Logger.info("")
-        let totalByteCount = db.read { tx in
-            localFileBackupStore.totalUnencryptedByteCountOfQueuedImports(tx: tx)
-        }
-
         restoreProgress.beginObserving(totalByteCount: totalByteCount)
 
         while true {
