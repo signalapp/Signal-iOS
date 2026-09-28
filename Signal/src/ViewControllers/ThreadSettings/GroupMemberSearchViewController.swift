@@ -545,8 +545,8 @@ extension GroupMemberSearchViewController: UITableViewDelegate {
         }
         var configuration = UIListContentConfiguration.groupedHeader()
         configuration.text = headerTitle
-        configuration.textProperties.font = .dynamicTypeHeadlineClamped
-        configuration.textProperties.color = UIColor.Signal.label
+        configuration.textProperties.font = OWSTableViewController2.defaultHeaderFont
+        configuration.textProperties.color = OWSTableViewController2.defaultHeaderTextColor
         header.contentConfiguration = configuration
         return header
     }

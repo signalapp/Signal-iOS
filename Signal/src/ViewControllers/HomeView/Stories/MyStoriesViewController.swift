@@ -280,8 +280,8 @@ extension MyStoriesViewController: UITableViewDataSource {
         }
 
         let textView = LinkingTextView()
-        textView.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
-        textView.font = UIFont.dynamicTypeHeadlineClamped
+        textView.textColor = .Signal.label
+        textView.font = OWSTableViewController2.defaultHeaderFont
         textView.text = StoryManager.storyName(for: thread)
 
         var textContainerInset = OWSTableViewController2.cellOuterInsets(in: tableView)

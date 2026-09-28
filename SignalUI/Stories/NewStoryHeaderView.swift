@@ -25,7 +25,7 @@ public class NewStoryHeaderView: UIStackView {
         isLayoutMarginsRelativeArrangement = true
         layoutMargins = .init(
             top: 11,
-            leading: OWSTableViewController2.cellHInnerMargin * 0.5,
+            leading: OWSTableViewController2.defaultHeaderTextHorizontalInset,
             bottom: 14,
             trailing: 0,
         )
@@ -33,8 +33,8 @@ public class NewStoryHeaderView: UIStackView {
         layoutMargins.right += delegate.tableView.safeAreaInsets.right
 
         let textView = UILabel()
-        textView.textColor = UIColor.Signal.label
-        textView.font = UIFont.dynamicTypeHeadlineClamped
+        textView.textColor = OWSTableViewController2.defaultHeaderTextColor
+        textView.font = OWSTableViewController2.defaultHeaderFont
         textView.text = title
 
         addArrangedSubview(textView)

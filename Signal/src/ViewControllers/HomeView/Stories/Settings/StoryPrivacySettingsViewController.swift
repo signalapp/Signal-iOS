@@ -7,7 +7,8 @@ import Foundation
 import SignalServiceKit
 import SignalUI
 
-class StoryPrivacySettingsViewController: OWSTableViewController2 {
+class StoryPrivacySettingsViewController: OWSTableViewController2, NewStoryHeaderDelegate {
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -239,9 +240,9 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
             StoryManager.setAreViewReceiptsEnabled(sender.isOn, transaction: $0)
         }
     }
-}
 
-extension StoryPrivacySettingsViewController: NewStoryHeaderDelegate {
+    // MARK: - NewStoryHeaderDelegate
+
     func newStoryHeaderView(_ newStoryHeaderView: NewStoryHeaderView, didCreateNewStoryItems items: [StoryConversationItem]) {
         updateTableContents()
     }

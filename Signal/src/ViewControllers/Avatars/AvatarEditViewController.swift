@@ -300,13 +300,15 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController,
             "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR",
             comment: "Text prompting the user to choose a color when editing their avatar",
         )
-        label.textColor = .Signal.label
-        label.font = UIFont.dynamicTypeHeadlineClamped
+        label.textColor = OWSTableViewController2.defaultHeaderTextColor
+        label.font = OWSTableViewController2.defaultHeaderFont
 
         let view = UIView()
-        view.layoutMargins = UIEdgeInsets(
-            hMargin: OWSTableViewController2.cellHInnerMargin * 0.5,
-            vMargin: 8,
+        view.directionalLayoutMargins = NSDirectionalEdgeInsets(
+            top: 32,
+            leading: OWSTableViewController2.defaultHeaderTextHorizontalInset,
+            bottom: 12,
+            trailing: OWSTableViewController2.defaultHeaderTextHorizontalInset,
         )
         view.addSubview(label)
         label.translatesAutoresizingMaskIntoConstraints = false

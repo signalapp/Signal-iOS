@@ -460,31 +460,28 @@ class MessageDetailViewController: OWSTableViewController2 {
             let section = OWSTableSection()
             sections.append(section)
 
-            let sectionTitle = self.sectionTitle(for: statusGroup)
+            let sectionTitle = sectionTitle(for: statusGroup)
             if let iconName = sectionIconName(for: statusGroup) {
                 let headerView = UIView()
                 headerView.layoutMargins = .init(
                     top: (defaultSpacingBetweenSections ?? 0) + 12,
-                    left: Self.cellHInnerMargin * 0.5,
+                    left: OWSTableViewController2.defaultHeaderTextHorizontalInset,
                     bottom: 10,
-                    right: Self.cellHInnerMargin * 0.5,
+                    right: Self.cellHInnerMargin,
                 )
 
                 let label = UILabel()
-                label.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
-                label.font = UIFont.dynamicTypeHeadlineClamped
+                label.textColor = OWSTableViewController2.defaultHeaderTextColor
+                label.font = OWSTableViewController2.defaultHeaderFont
                 label.text = sectionTitle
 
                 headerView.addSubview(label)
                 label.autoPinHeightToSuperviewMargins()
                 label.autoPinEdge(toSuperviewMargin: .leading)
 
-                let iconView = UIImageView()
+                let iconView = UIImageView(image: UIImage(named: iconName))
                 iconView.contentMode = .scaleAspectFit
-                iconView.setTemplateImageName(
-                    iconName,
-                    tintColor: Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90,
-                )
+                iconView.tintColor = OWSTableViewController2.defaultHeaderTextColor
                 headerView.addSubview(iconView)
                 iconView.autoAlignAxis(.horizontal, toSameAxisOf: label)
                 iconView.autoPinEdge(.leading, to: .trailing, of: label)

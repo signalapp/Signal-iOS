@@ -1109,28 +1109,31 @@ extension ConversationSettingsViewController {
         headerView.alignment = .center
         headerView.isLayoutMarginsRelativeArrangement = true
         headerView.layoutMargins = UIEdgeInsets(
-            top: (defaultSpacingBetweenSections ?? 0) + 12,
-            leading: Self.cellHInnerMargin * 0.5,
-            bottom: 10,
-            trailing: Self.cellHInnerMargin * 0.5,
+            top: (defaultSpacingBetweenSections ?? 0),
+            leading: OWSTableViewController2.defaultHeaderTextHorizontalInset,
+            bottom: 1,
+            trailing: 0,
         )
         headerView.layoutMargins.left += tableView.safeAreaInsets.left
         headerView.layoutMargins.right += tableView.safeAreaInsets.right
 
         let titleLabel = UILabel()
         titleLabel.text = title
-        titleLabel.textColor = UIColor.Signal.label
-        titleLabel.font = .dynamicTypeHeadlineClamped
+        titleLabel.textColor = OWSTableViewController2.defaultHeaderTextColor
+        titleLabel.font = OWSTableViewController2.defaultHeaderFont
         titleLabel.numberOfLines = 0
         headerView.addArrangedSubview(titleLabel)
 
         headerView.addArrangedSubview(.hStretchingSpacer())
 
-        let searchButton = UIButton(primaryAction: UIAction { [weak self] _ in
-            self?.showGroupMemberSearch()
-        })
-        searchButton.setImage(UIImage(resource: .search), for: .normal)
-        searchButton.tintColor = UIColor.Signal.label
+        let searchButton = UIButton(
+            configuration: .plain(),
+            primaryAction: UIAction { [weak self] _ in
+                self?.showGroupMemberSearch()
+            },
+        )
+        searchButton.configuration?.image = UIImage(resource: .search)
+        searchButton.tintColor = OWSTableViewController2.defaultHeaderTextColor
         searchButton.accessibilityLabel = OWSLocalizedString(
             "GROUP_MEMBER_SEARCH_BUTTON_ACCESSIBILITY_LABEL",
             comment: "Accessibility label for the button that opens the group member search sheet.",

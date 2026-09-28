@@ -632,6 +632,11 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
         ])
     }
 
+    public static var defaultHeaderTextHorizontalInset: CGFloat {
+        let multiplier: CGFloat = Self.useNativeSectionTitleAppearance ? 1 : 0.5
+        return Self.cellHInnerMargin * multiplier
+    }
+
     public static var defaultFooterFont: UIFont { .dynamicTypeFootnoteClamped }
 
     public static var defaultFooterTextColor: UIColor {
@@ -658,9 +663,8 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
         )
 
         if useDeepInsets {
-            let multiplier: CGFloat = Self.useNativeSectionTitleAppearance ? 1 : 0.5
-            textContainerInset.leading += Self.cellHInnerMargin * multiplier
-            textContainerInset.trailing += Self.cellHInnerMargin * multiplier
+            textContainerInset.leading += Self.defaultHeaderTextHorizontalInset
+            textContainerInset.trailing += Self.defaultHeaderTextHorizontalInset
         }
 
         return textContainerInset
