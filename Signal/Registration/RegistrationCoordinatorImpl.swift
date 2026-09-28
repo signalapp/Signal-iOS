@@ -4373,7 +4373,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func makeRegisterOrChangeNumberRequest(
         _ method: RegistrationRequestFactory.VerificationMethod,
         reglockToken: RegistrationLock?,
-        responseHandler: @escaping @MainActor (AccountResponse) async -> RegistrationStep,
+        responseHandler: @MainActor (AccountResponse) async -> RegistrationStep,
     ) async -> RegistrationStep {
         logger.info("")
 
@@ -4541,7 +4541,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         accountAttributes: AccountAttributes,
         skipDeviceTransfer: Bool,
         apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
-        responseHandler: @escaping (AccountResponse) async -> RegistrationStep,
+        responseHandler: (AccountResponse) async -> RegistrationStep,
     ) async -> RegistrationStep {
         // If there are identity keys, we have to persist them before generating prekeys
         if let registrationMessage = inMemoryState.registrationMessage {
