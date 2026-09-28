@@ -55,6 +55,13 @@ public class TextViewWithPlaceholder: UIView, UITextViewDelegate {
         }
     }
 
+    public var placeholderFont: UIFont? {
+        get { placeholderTextView.font }
+        set {
+            placeholderTextView.font = newValue
+        }
+    }
+
     public func acceptAutocorrectSuggestion() {
         textView.acceptAutocorrectSuggestion()
     }
