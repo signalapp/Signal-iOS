@@ -74,7 +74,13 @@ extension ChatListViewController {
             self.setToolbarItems(toolbarButtons.items, animated: false)
             self.updateCaptions()
             self.navigationController?.setToolbarHidden(false, animated: true)
-            (self.tabBarController as? HomeTabBarController)?.setTabBarHidden(true)
+            switch viewState.chatListMode {
+            case .inbox:
+                (self.tabBarController as? HomeTabBarController)?.setTabBarHidden(true)
+            case .archive:
+                // The tab bar is already hidden
+                break
+            }
             return
         }
 
@@ -263,7 +269,13 @@ extension ChatListViewController {
         AssertIsOnMainThread()
 
         if #available(iOS 26, *) {
-            (self.tabBarController as? HomeTabBarController)?.setTabBarHidden(false)
+            switch viewState.chatListMode {
+            case .inbox:
+                (self.tabBarController as? HomeTabBarController)?.setTabBarHidden(false)
+            case .archive:
+                // The tab bar should stay hidden in the archive
+                break
+            }
             self.navigationController?.setToolbarHidden(true, animated: true)
             return
         }
