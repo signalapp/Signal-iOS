@@ -1490,7 +1490,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 },
             )
             if result.fields.count > 0 {
-                throw OWSAssertionError("Unknown fields during Backup validation! \(result.fields)")
+                logger.warn("Unknown fields during Backup validation! \(result.fields)")
             }
         } catch let validationError as MessageBackupValidationError {
             await db.awaitableWrite { tx in
