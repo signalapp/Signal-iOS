@@ -1186,9 +1186,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
             let shouldDeriveAudioDetails: Bool = switch record.sourceType {
             case .transitTier:
-                BuildFlags.AudioWaveforms.deriveAudioDetailsOnDownload
+                DebugFlags.audioDeriveDetailsOnDownload.get()
             case .mediaTierFullsize, .mediaTierThumbnail:
-                BuildFlags.AudioWaveforms.deriveAudioDetailsFromBackups
+                DebugFlags.audioDeriveDetailsFromBackups.get()
             }
 
             let pendingAttachment: PendingAttachment

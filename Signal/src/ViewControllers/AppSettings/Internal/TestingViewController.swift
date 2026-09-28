@@ -62,6 +62,15 @@ class TestingViewController: OWSTableViewController2 {
         }
         contents.add(voiceMessageSection)
 
+        let audioSection = OWSTableSection(title: "Audio")
+        for audioFlag in DebugFlags.audioTestableFlags {
+            addTestableFlag(
+                audioFlag,
+                toSection: audioSection,
+            )
+        }
+        contents.add(audioSection)
+
         self.contents = contents
     }
 

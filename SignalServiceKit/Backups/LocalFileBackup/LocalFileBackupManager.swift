@@ -210,7 +210,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
                 let attachmentKey = try AttachmentKey(combinedKey: attachmentWithMetadata.metadata.localKey)
 
                 let shouldDeriveAudioDetails =
-                    BuildFlags.AudioWaveforms.deriveAudioDetailsFromBackups
+                    DebugFlags.audioDeriveDetailsFromBackups.get()
                         && attachmentWithMetadata.attachment.audioDetails == nil
 
                 var pendingAttachment: PendingAttachment

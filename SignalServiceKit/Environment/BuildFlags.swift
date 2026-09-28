@@ -312,6 +312,25 @@ public enum DebugFlags {
         voiceMessageSampleRate,
         voiceMessageAudioQuality,
     ]
+
+    // MARK: - TestableFlag: Audio
+
+    public static let audioDeriveDetailsOnDownload = TestableFlag<Bool>(
+        BuildFlags.AudioWaveforms.deriveAudioDetailsOnDownload,
+        title: "Derive audio details on download",
+        details: "Compute waveforms and durations for downloaded audio attachments, rather than relying on sender-provided values.",
+    )
+
+    public static let audioDeriveDetailsFromBackups = TestableFlag<Bool>(
+        BuildFlags.AudioWaveforms.deriveAudioDetailsFromBackups,
+        title: "Derive audio details from Backups",
+        details: "Compute waveforms and durations for audio attachments restored from Backups, rather than relying on backed-up values.",
+    )
+
+    public static let audioTestableFlags: [AnyTestableFlag] = [
+        audioDeriveDetailsOnDownload,
+        audioDeriveDetailsFromBackups,
+    ]
 }
 
 // MARK: -
