@@ -477,6 +477,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     private func settingsBarButtonItem() -> UIBarButtonItem {
         let backupSettingsStore = BackupSettingsStore()
+        let failureStateManager = DependenciesBridge.shared.backupFailureStateManager
         let backupSubscriptionIssueStore = BackupSubscriptionIssueStore()
         let db = SSKEnvironment.shared.databaseStorageRef
 
@@ -539,7 +540,16 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                                 ),
                                 image: image,
                                 handler: { [weak self] _ in
-                                    SignalApp.shared.showAppSettings(mode: .backups())
+                                    let backupSettingPageType: ShowAppSettingsMode.BackupSettingsPage = db.read { tx in
+                                        if failureStateManager.hasFailedRemoteBackup(tx: tx) {
+                                            return .remote()
+                                        } else if failureStateManager.hasFailedLocalBackup(tx: tx) {
+                                            return .local
+                                        }
+                                        return .landingPage
+                                    }
+
+                                    SignalApp.shared.showAppSettings(mode: .backups(page: backupSettingPageType))
                                     db.write { tx in
                                         backupSettingsStore.setErrorBadgeMuted(target: .chatListMenuItem, tx: tx)
                                     }
