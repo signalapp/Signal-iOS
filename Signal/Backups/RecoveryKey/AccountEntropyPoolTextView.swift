@@ -142,7 +142,11 @@ class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
 
     private func textHeight(forRowCount rowCount: Int, width: CGFloat) -> CGFloat {
         let sizingString = Array(repeating: "0", count: rowCount).joined(separator: "\n")
-        return Self.Utils.attributedString(for: sizingString, font: textView.editorFont).boundingRect(
+        return Self.Utils.attributedString(
+            for: sizingString,
+            font: textView.editorFont,
+            lineSpacing: Utils.FormatConstants.lineSpacing,
+        ).boundingRect(
             with: CGSize(width: width, height: .greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
             context: nil,
@@ -179,6 +183,7 @@ class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
             shouldChangeTextIn: range,
             replacementText: text,
             font: textView.editorFont,
+            lineSpacing: Utils.FormatConstants.lineSpacing,
         )
 
         return false
@@ -222,12 +227,16 @@ class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
                 .joined()
         }
 
-        static func attributedString(for string: String, font: UIFont?) -> NSAttributedString {
+        static func attributedString(
+            for string: String,
+            font: UIFont?,
+            lineSpacing: CGFloat,
+        ) -> NSAttributedString {
             var attributes: [NSAttributedString.Key: Any] = [
                 .foregroundColor: UIColor.Signal.label,
                 .paragraphStyle: {
                     let paragraphStyle = NSMutableParagraphStyle()
-                    paragraphStyle.lineSpacing = FormatConstants.lineSpacing
+                    paragraphStyle.lineSpacing = lineSpacing
                     return paragraphStyle
                 }(),
             ]
@@ -278,6 +287,7 @@ class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
             shouldChangeTextIn range: NSRange,
             replacementText text: String,
             font: UIFont?,
+            lineSpacing: CGFloat,
         ) {
             _ = FormattedNumberField.textField(
                 uiTextView,
@@ -291,7 +301,11 @@ class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
             )
 
             let selectedTextRange = uiTextView.selectedTextRange
-            uiTextView.attributedText = attributedString(for: uiTextView.text, font: font)
+            uiTextView.attributedText = attributedString(
+                for: uiTextView.text,
+                font: font,
+                lineSpacing: lineSpacing,
+            )
             uiTextView.selectedTextRange = selectedTextRange
         }
     }
