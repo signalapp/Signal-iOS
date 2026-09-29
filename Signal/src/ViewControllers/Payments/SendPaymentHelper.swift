@@ -76,12 +76,16 @@ class SendPaymentHelper {
         observations.append(NotificationCenter.default.addObserver(
             name: PaymentsImpl.currentPaymentBalanceDidChange,
         ) { [weak self] _ in
-            self?.currentPaymentBalanceDidChange()
+            MainActor.assumeIsolated {
+                self?.currentPaymentBalanceDidChange()
+            }
         })
         observations.append(NotificationCenter.default.addObserver(
             name: PaymentsCurrenciesImpl.paymentConversionRatesDidChange,
         ) { [weak self] _ in
-            self?.paymentConversionRatesDidChange()
+            MainActor.assumeIsolated {
+                self?.paymentConversionRatesDidChange()
+            }
         })
     }
 

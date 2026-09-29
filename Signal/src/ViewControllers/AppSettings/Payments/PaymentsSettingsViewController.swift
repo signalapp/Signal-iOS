@@ -373,22 +373,30 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
         observations.append(NotificationCenter.default.addObserver(
             name: PaymentsConstants.arePaymentsEnabledDidChange,
         ) { [weak self] _ in
-            self?.arePaymentsEnabledDidChange()
+            MainActor.assumeIsolated {
+                self?.arePaymentsEnabledDidChange()
+            }
         })
         observations.append(NotificationCenter.default.addObserver(
             name: PaymentsConstants.isPaymentsVersionOutdatedDidChange,
         ) { [weak self] _ in
-            self?.isPaymentsVersionOutdatedDidChange()
+            MainActor.assumeIsolated {
+                self?.isPaymentsVersionOutdatedDidChange()
+            }
         })
         observations.append(NotificationCenter.default.addObserver(
             name: PaymentsImpl.currentPaymentBalanceDidChange,
         ) { [weak self] _ in
-            self?.updateTableContents()
+            MainActor.assumeIsolated {
+                self?.updateTableContents()
+            }
         })
         observations.append(NotificationCenter.default.addObserver(
             name: PaymentsCurrenciesImpl.paymentConversionRatesDidChange,
         ) { [weak self] _ in
-            self?.updateTableContents()
+            MainActor.assumeIsolated {
+                self?.updateTableContents()
+            }
         })
     }
 

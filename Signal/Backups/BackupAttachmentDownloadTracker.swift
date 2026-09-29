@@ -157,7 +157,9 @@ private class Tracker {
         ) { [weak self] _ in
             guard let self else { return }
 
-            handleDownloadQueueStatusUpdate()
+            MainActor.assumeIsolated {
+                self.handleDownloadQueueStatusUpdate()
+            }
         }
 
         return (

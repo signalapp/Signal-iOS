@@ -307,15 +307,17 @@ public class ContactCellView: ManualStackView {
             observation = NotificationCenter.default.addObserver(
                 name: UserProfileNotifications.otherUsersProfileDidChange,
             ) { [weak self] notification in
-                guard
-                    let changedAddress = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
-                    changedAddress.isValid
-                else {
-                    owsFailDebug("changedAddress was unexpectedly nil")
-                    return
-                }
-                if case .address(changedAddress) = configuration.dataSource {
-                    self?.updateNameLabelsWithSneakyTransaction(configuration: configuration)
+                MainActor.assumeIsolated {
+                    guard
+                        let changedAddress = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
+                        changedAddress.isValid
+                    else {
+                        owsFailDebug("changedAddress was unexpectedly nil")
+                        return
+                    }
+                    if case .address(changedAddress) = configuration.dataSource {
+                        self?.updateNameLabelsWithSneakyTransaction(configuration: configuration)
+                    }
                 }
             }
         }

@@ -34,7 +34,7 @@ extension NotificationCenter {
 
     public func addObserver(
         name: Notification.Name,
-        block: @escaping (Notification) -> Void,
+        block: @escaping @Sendable (Notification) -> Void,
     ) -> Observer {
         return Observer(wrapped: addObserver(
             forName: name,

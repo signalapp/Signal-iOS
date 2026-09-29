@@ -582,7 +582,9 @@ class SendPaymentViewController: OWSViewController, SendPaymentMemoViewDelegate,
         observations.append(NotificationCenter.default.addObserver(
             name: PaymentsConstants.isPaymentsVersionOutdatedDidChange,
         ) { [weak self] _ in
-            self?.isPaymentsVersionOutdatedDidChange()
+            MainActor.assumeIsolated {
+                self?.isPaymentsVersionOutdatedDidChange()
+            }
         })
     }
 

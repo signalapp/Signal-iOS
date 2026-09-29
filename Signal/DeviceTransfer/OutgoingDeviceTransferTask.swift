@@ -105,7 +105,11 @@ class OutgoingDeviceTransferTask {
         notificationObservers.append(
             NotificationCenter.default.addObserver(
                 name: .OWSApplicationDidEnterBackground,
-                block: didEnterBackground(_:),
+                block: { [weak self] notification in
+                    MainActor.assumeIsolated {
+                        self?.didEnterBackground(notification)
+                    }
+                },
             ),
         )
 

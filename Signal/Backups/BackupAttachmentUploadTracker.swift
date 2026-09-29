@@ -156,9 +156,11 @@ private class Tracker {
         ) { [weak self] notification in
             guard let self else { return }
 
-            handleQueueStatusUpdate(
-                backupAttachmentUploadQueueStatusManager.currentStatus(for: .fullsize),
-            )
+            MainActor.assumeIsolated {
+                self.handleQueueStatusUpdate(
+                    self.backupAttachmentUploadQueueStatusManager.currentStatus(for: .fullsize),
+                )
+            }
         }
 
         // Now that we're observing updates, handle the initial value as if we'd

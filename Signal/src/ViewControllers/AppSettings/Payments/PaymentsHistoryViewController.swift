@@ -87,7 +87,9 @@ class PaymentsHistoryViewController: OWSTableViewController2, PaymentsHistoryDat
         notificationObserver = NotificationCenter.default.addObserver(
             name: PaymentsCurrenciesImpl.paymentConversionRatesDidChange,
         ) { [weak self] _ in
-            self?.updateTableContents()
+            MainActor.assumeIsolated {
+                self?.updateTableContents()
+            }
         }
     }
 

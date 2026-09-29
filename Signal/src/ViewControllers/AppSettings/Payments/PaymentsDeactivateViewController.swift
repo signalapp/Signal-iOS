@@ -118,12 +118,16 @@ class PaymentsDeactivateViewController: OWSViewController {
         observations.append(NotificationCenter.default.addObserver(
             name: PaymentsConstants.arePaymentsEnabledDidChange,
         ) { [weak self] _ in
-            self?.arePaymentsEnabledDidChange()
+            MainActor.assumeIsolated {
+                self?.arePaymentsEnabledDidChange()
+            }
         })
         observations.append(NotificationCenter.default.addObserver(
             name: PaymentsImpl.currentPaymentBalanceDidChange,
         ) { [weak self] _ in
-            self?.currentPaymentBalanceDidChange()
+            MainActor.assumeIsolated {
+                self?.currentPaymentBalanceDidChange()
+            }
         })
     }
 

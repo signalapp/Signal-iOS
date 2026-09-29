@@ -128,7 +128,9 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             contentSizeChangeNotificationObserver = NotificationCenter.default.addObserver(
                 name: UIContentSizeCategory.didChangeNotification,
             ) { [weak self] _ in
-                self?.updateTextViewFontSize()
+                MainActor.assumeIsolated {
+                    self?.updateTextViewFontSize()
+                }
             }
         }
     }

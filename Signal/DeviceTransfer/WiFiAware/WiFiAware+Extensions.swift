@@ -30,8 +30,8 @@ enum WiFiAware {
         discoveredPeersStream: AsyncThrowingStream<[any DeviceTransfer.Peer], any Error>,
         peerDiscoveryTask: Task<Void, Never>,
     ) {
-        var knownDeviceSet = Set<WADeviceTransferPeer>()
         struct State {
+            var knownDeviceSet = Set<WADeviceTransferPeer>()
             let sink: AsyncThrowingStream<[any DeviceTransfer.Peer], any Error>.Continuation
         }
         let (stream, _sink) = AsyncThrowingStream<[any DeviceTransfer.Peer], any Error>.makeStream(
@@ -39,6 +39,7 @@ enum WiFiAware {
         )
         let state = SeriallyAccessedState(State(sink: _sink))
 
+        @Sendable
         func reduceDevicesList(_ updatedDeviceList: Dictionary<UInt64, WAPairedDevice>) -> [WADeviceTransferPeer] {
             let newDevices = updatedDeviceList.values
             let pairedDevices = newDevices.reduce(into: [String: WADeviceTransferPeer]()) { devices, device in
@@ -58,12 +59,12 @@ enum WiFiAware {
         }
 
         let notification = NotificationCenter.default.addObserver(name: .OWSApplicationWillEnterForeground) { _ in
-            state.enqueueUpdate {
+            state.enqueueUpdate { _state in
                 guard let updatedDevices = try? await WAPairedDevice.allDevices.current() else { return }
                 let deviceList = reduceDevicesList(updatedDevices)
                 logger.debug("Known devices on foreground \(updatedDevices)")
-                knownDeviceSet = Set(deviceList)
-                $0.sink.yield(deviceList)
+                _state.knownDeviceSet = Set(deviceList)
+                _state.sink.yield(deviceList)
             }
         }
 
@@ -77,22 +78,24 @@ enum WiFiAware {
                     // If the current device snapshot is empty, send an initial value since the
                     // loop below won't initially fire.
                     logger.debug("No peers found")
-                    state.enqueueUpdate {
-                        knownDeviceSet.removeAll()
-                        $0.sink.yield([])
+                    state.enqueueUpdate { _state in
+                        _state.knownDeviceSet.removeAll()
+                        _state.sink.yield([])
                     }
                 }
                 for try await updatedDeviceList in WAPairedDevice.allDevices {
                     let pairedDevices = reduceDevicesList(updatedDeviceList)
                     let pairedDeviceSet = Set(pairedDevices)
-                    let differences = pairedDeviceSet.symmetricDifference(knownDeviceSet)
-                    if !differences.isEmpty {
-                        state.enqueueUpdate {
+
+                    state.enqueueUpdate { _state in
+                        let differences = pairedDeviceSet.symmetricDifference(_state.knownDeviceSet)
+                        if !differences.isEmpty {
                             logger.debug("Devices after update \(pairedDevices)")
-                            knownDeviceSet = pairedDeviceSet
-                            $0.sink.yield(pairedDevices)
+                            _state.knownDeviceSet = pairedDeviceSet
+                            _state.sink.yield(pairedDevices)
                         }
                     }
+
                 }
             } catch is CancellationError {
                 state.enqueueUpdate { $0.sink.finish() }
