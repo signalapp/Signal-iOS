@@ -3906,6 +3906,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return nil
         }
 
+        guard accountIdentity.localIdentifiers.phoneNumber != nil else {
+            owsFailDebug("shouldn't be trying to restore SVR without a phone number")
+            return nil
+        }
+
         logger.info("")
         guard let pin = inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk else {
             return showPinEntryIfNeeded(accountIdentity: accountIdentity)
@@ -3930,6 +3935,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         accountIdentity: AccountIdentity,
     ) async -> RegistrationStep? {
         logger.info("")
+
+        guard accountIdentity.localIdentifiers.phoneNumber != nil else {
+            return nil
+        }
 
         guard let pin = inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk else {
             return showPinEntryIfNeeded(accountIdentity: accountIdentity)
