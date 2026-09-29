@@ -127,11 +127,7 @@ public final class OWSContactName: NSObject, NSSecureCoding {
     func ensureDisplayName() {
         if _displayName.isEmptyOrNil {
             if let cnContact = systemContactForName() {
-                if let nickname = cnContact.nickname.nilIfEmpty {
-                    _displayName = nickname
-                } else {
-                    _displayName = CNContactFormatter.string(from: cnContact, style: .fullName)
-                }
+                _displayName = CNContactFormatter.string(from: cnContact, style: .fullName)
             }
         }
 

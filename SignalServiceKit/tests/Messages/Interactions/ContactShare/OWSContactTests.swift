@@ -52,4 +52,16 @@ struct OWSContactTests {
         #expect(decoded.note == "Met at the conference")
         #expect(decoded == contact)
     }
+
+    @Test
+    func displayNamePrefersTheFullNameOverTheNickname() {
+        let name = OWSContactName(givenName: "Ada", familyName: "Lovelace", nickname: "Countess")
+        #expect(name.displayName == "Ada Lovelace")
+    }
+
+    @Test
+    func displayNameFallsBackToTheNickname() {
+        let name = OWSContactName(nickname: "Countess")
+        #expect(name.displayName == "Countess")
+    }
 }
