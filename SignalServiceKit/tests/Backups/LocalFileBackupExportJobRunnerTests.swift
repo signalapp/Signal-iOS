@@ -42,15 +42,7 @@ struct LocalFileBackupExportJobRunnerTests {
         self.localFileBackupExportJobStore = LocalFileBackupExportJobStore()
 
         let mockTSAccountManager = MockTSAccountManager()
-        mockTSAccountManager.localIdentifiersMock = {
-            return LocalIdentifiers(
-                aci: Aci.randomForTesting(),
-                accountType: .phoneNumberfull(
-                    phoneNumber: "+16505550101",
-                    pni: .randomForTesting(),
-                ),
-            )
-        }
+        mockTSAccountManager.localIdentifiersMock = { .forUnitTests }
 
         let accountKeyStore = AccountKeyStore(backupSettingsStore: BackupSettingsStore())
         let aep = AccountEntropyPool()

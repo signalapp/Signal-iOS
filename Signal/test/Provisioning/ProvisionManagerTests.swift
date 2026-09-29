@@ -47,9 +47,10 @@ public class ProvisioningManagerTests {
     func testProvisioning() async throws {
         let myAciIdentityKeyPair = IdentityKeyPair.generate()
         let myPniIdentityKeyPair = IdentityKeyPair.generate()
-        let myAci = Aci.randomForTesting()
-        let myPhoneNumber = E164("+16505550100")!
-        let myPni = Pni.randomForTesting()
+        let localIdentifiers = LocalIdentifiers.forUnitTests
+        let myAci = localIdentifiers.aci
+        let myPhoneNumber = E164(localIdentifiers.phoneNumber!)!
+        let myPni = localIdentifiers.pni!
         let profileKey = Aes256Key.generateRandom()
         let accountEntropyPool = AccountEntropyPool()
         let mrbk = MediaRootBackupKey(backupKey: .generateRandom())
@@ -70,13 +71,6 @@ public class ProvisioningManagerTests {
             _ = try! SignalRecipient.insertRecord(aci: myAci, phoneNumber: myPhoneNumber, pni: myPni, tx: tx)
         }
 
-        let localIdentifiers = LocalIdentifiers(
-            aci: myAci,
-            accountType: .phoneNumberfull(
-                phoneNumber: myPhoneNumber.stringValue,
-                pni: myPni,
-            ),
-        )
         mockTsAccountManager.registrationStateMock = {
             return .registered(localIdentifiers)
         }

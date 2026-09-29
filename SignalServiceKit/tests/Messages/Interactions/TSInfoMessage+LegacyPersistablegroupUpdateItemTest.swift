@@ -75,13 +75,7 @@ class TSInfoMessageLegacyPersistableGroupUpdateItemTest: XCTestCase {
                 let newValue = constant.toNewItem(
                     updater: .aci(updaterAci),
                     oldGroupModel: nil,
-                    localIdentifiers: LocalIdentifiers(
-                        aci: .randomForTesting(),
-                        accountType: .phoneNumberfull(
-                            phoneNumber: "+15555555555",
-                            pni: .constantForTesting("PNI:7CE80DE3-6243-4AD5-AE60-0D1F205391DA"),
-                        ),
-                    ),
+                    localIdentifiers: .forUnitTests,
                 )
             else {
                 XCTFail("Should always be able to convert!")

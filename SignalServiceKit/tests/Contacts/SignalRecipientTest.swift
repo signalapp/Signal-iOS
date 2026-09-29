@@ -12,15 +12,9 @@ import XCTest
 
 class SignalRecipientTest: SSKBaseTest {
 
-    private lazy var localAci = Aci.randomForTesting()
-    private lazy var localPhoneNumber = E164("+16505550199")!
-    private lazy var localIdentifiers = LocalIdentifiers(
-        aci: localAci,
-        accountType: .phoneNumberfull(
-            phoneNumber: localPhoneNumber.stringValue,
-            pni: Pni.randomForTesting(),
-        ),
-    )
+    private lazy var localAci = localIdentifiers.aci
+    private lazy var localPhoneNumber = E164(localIdentifiers.phoneNumber!)!
+    private lazy var localIdentifiers = LocalIdentifiers.forUnitTests
 
     override func setUp() {
         super.setUp()

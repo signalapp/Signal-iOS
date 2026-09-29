@@ -8,9 +8,7 @@ import XCTest
 @testable import SignalServiceKit
 
 class MessageDecryptionTest: SSKBaseTest {
-    let localE164Identifier = "+13235551234"
-    let localAci = UUID()
-    let localPni = UUID()
+    let localIdentifiers = LocalIdentifiers.forUnitTests
 
     let remoteE164Identifier = "+14715355555"
     lazy var remoteClient: TestSignalClient = FakeSignalClient.generate(e164Identifier: remoteE164Identifier)
@@ -32,13 +30,7 @@ class MessageDecryptionTest: SSKBaseTest {
         identityManager.generateAndPersistNewIdentityKey(for: .pni)
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: LocalIdentifiers(
-                    aci: Aci(fromUUID: localAci),
-                    accountType: .phoneNumberfull(
-                        phoneNumber: localE164Identifier,
-                        pni: Pni(fromUUID: localPni),
-                    ),
-                ),
+                localIdentifiers: localIdentifiers,
                 tx: tx,
             )
 
@@ -68,10 +60,10 @@ class MessageDecryptionTest: SSKBaseTest {
             switch destinationIdentity {
             case .aci:
                 localClient = self.localClient
-                localDestinationServiceId = Aci(fromUUID: localAci)
+                localDestinationServiceId = localIdentifiers.aci
             case .pni:
                 localClient = self.localPniClient
-                localDestinationServiceId = Pni(fromUUID: localPni)
+                localDestinationServiceId = localIdentifiers.pni!
             }
 
             switch type {

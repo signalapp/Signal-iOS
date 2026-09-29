@@ -12,7 +12,8 @@ import XCTest
 @testable import SignalServiceKit
 
 class OWSRecipientIdentityTest: SSKBaseTest {
-    private lazy var localAci = Aci.randomForTesting()
+    private lazy var localIdentifiers = LocalIdentifiers.forUnitTests
+    private lazy var localAci = localIdentifiers.aci
     private lazy var aliceAci = Aci.randomForTesting()
     private lazy var bobAci = Aci.randomForTesting()
     private lazy var charlieAci = Aci.randomForTesting()
@@ -36,13 +37,7 @@ class OWSRecipientIdentityTest: SSKBaseTest {
         // Create local account.
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: LocalIdentifiers(
-                    aci: localAci,
-                    accountType: .phoneNumberfull(
-                        phoneNumber: "+16505550100",
-                        pni: .randomForTesting(),
-                    ),
-                ),
+                localIdentifiers: .forUnitTests,
                 tx: tx,
             )
         }

@@ -77,16 +77,13 @@ private class TestDependencies {
 
 class RecipientMergerTest: XCTestCase {
     func testTwoWayMergeCases() {
+        let localIdentifiers = LocalIdentifiers.forUnitTests
         let aci_A = Aci.constantForTesting("00000000-0000-4000-8000-00000000000A")
         let aci_B = Aci.constantForTesting("00000000-0000-4000-8000-00000000000B")
-        let aciMe = Aci.constantForTesting("00000000-0000-4000-8000-00000000000C")
+        let aciMe = localIdentifiers.aci
         let e164_A = E164("+16505550101")!
         let e164_B = E164("+16505550102")!
-        let e164Me = E164("+16505550103")!
-        let localIdentifiers = LocalIdentifiers(
-            aci: aciMe,
-            accountType: .phoneNumberfull(phoneNumber: e164Me.stringValue, pni: nil),
-        )
+        let e164Me = E164(localIdentifiers.phoneNumber!)!
 
         enum TrustLevel {
             case high

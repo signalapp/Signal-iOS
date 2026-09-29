@@ -9,9 +9,7 @@ import XCTest
 @testable import SignalServiceKit
 
 class MessageProcessingIntegrationTest: SSKBaseTest {
-
-    let localE164Identifier = "+13235551234"
-    let localAci = Aci.randomForTesting()
+    let localIdentifiers = LocalIdentifiers.forUnitTests
 
     let aliceE164Identifier = "+14715355555"
     var aliceClient: TestSignalClient!
@@ -35,13 +33,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         identityManager.generateAndPersistNewIdentityKey(for: .pni)
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
-                localIdentifiers: LocalIdentifiers(
-                    aci: localAci,
-                    accountType: .phoneNumberfull(
-                        phoneNumber: localE164Identifier,
-                        pni: .randomForTesting(),
-                    ),
-                ),
+                localIdentifiers: localIdentifiers,
                 tx: tx,
             )
 

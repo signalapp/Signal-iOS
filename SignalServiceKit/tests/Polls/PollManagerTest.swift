@@ -215,15 +215,7 @@ struct PollManagerTest {
 
     @Test
     func testOutgoingPollTerminate() throws {
-        mockTSAccountManager.localIdentifiersMock = {
-            return LocalIdentifiers(
-                aci: pollAuthorAci,
-                accountType: .phoneNumberfull(
-                    phoneNumber: "+16505550101",
-                    pni: .randomForTesting(),
-                ),
-            )
-        }
+        mockTSAccountManager.localIdentifiersMock = { .forUnitTests }
 
         let question = "What should we have for breakfast?"
         let outgoingMessage = insertOutgoingPollMessage(question: question)
@@ -256,7 +248,7 @@ struct PollManagerTest {
         try db.write { tx in
             _ = try pollMessageManager.processIncomingPollTerminate(
                 pollTerminateProto: terminateProto,
-                terminateAuthor: pollAuthorAci,
+                terminateAuthor: LocalIdentifiers.forUnitTests.aci,
                 threadUniqueId: groupThread.uniqueId,
                 transaction: tx,
             )
@@ -275,15 +267,7 @@ struct PollManagerTest {
 
     @Test
     func testIncomingPollVote() throws {
-        mockTSAccountManager.localIdentifiersMock = {
-            return LocalIdentifiers(
-                aci: pollAuthorAci,
-                accountType: .phoneNumberfull(
-                    phoneNumber: "+16505550101",
-                    pni: .randomForTesting(),
-                ),
-            )
-        }
+        mockTSAccountManager.localIdentifiersMock = { .forUnitTests }
 
         let question = "What should we have for breakfast?"
         let outgoingMessage = insertOutgoingPollMessage(question: question)
@@ -308,7 +292,7 @@ struct PollManagerTest {
         )
 
         let pollWaffleVoteProto = buildPollVoteProto(
-            pollAuthor: pollAuthorAci,
+            pollAuthor: LocalIdentifiers.forUnitTests.aci,
             targetSentTimestamp: outgoingMessage.timestamp,
             optionIndexes: [1],
             voteCount: 1,
@@ -338,7 +322,7 @@ struct PollManagerTest {
 
         // Revoke vote for waffle and send it to pancake
         let pollVoteProtoRevoke = buildPollVoteProto(
-            pollAuthor: pollAuthorAci,
+            pollAuthor: LocalIdentifiers.forUnitTests.aci,
             targetSentTimestamp: outgoingMessage.timestamp,
             optionIndexes: [0],
             voteCount: 2,
