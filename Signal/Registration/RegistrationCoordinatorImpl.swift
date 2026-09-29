@@ -4088,14 +4088,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         accountIdentity: AccountIdentity,
         masterKeySource: StorageService.MasterKeySource,
     ) async -> RegistrationStep {
-        db.write { tx in
-            switch mode {
-            case .registering, .reRegistering:
-                break
-            case .changingNumber:
-                owsFailDebug("Unexpectedly restoring from Storage Service while changing number, rather than during (re)registration! Bailing.")
-                return
-            }
+        switch mode {
+        case .registering, .reRegistering:
+            break
+        case .changingNumber:
+            owsFail("shouldn't restore storage service during change number")
+            // ...because we already have everything from storage service saved locally
         }
 
         do {
