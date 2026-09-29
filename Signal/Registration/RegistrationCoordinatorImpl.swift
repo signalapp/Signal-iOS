@@ -798,10 +798,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     public func setPhoneNumberDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability) -> Guarantee<RegistrationStep> {
         logger.info("")
-        guard let accountIdentity = persistedState.accountIdentity else {
-            owsFailBeta("Shouldn't be setting phone number discoverability prior to registration.")
-            return .value(.showErrorSheet(.genericError))
-        }
+
+        let accountIdentity = persistedState.accountIdentity.owsFailUnwrap("must exist")
 
         updatePhoneNumberDiscoverability(
             accountIdentity: accountIdentity,
@@ -819,10 +817,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) -> Guarantee<RegistrationStep> {
         logger.info("")
 
-        guard let accountIdentity = persistedState.accountIdentity else {
-            owsFailBeta("Shouldn't be setting phone number discoverability prior to registration.")
-            return .value(.showErrorSheet(.genericError))
-        }
+        let accountIdentity = persistedState.accountIdentity.owsFailUnwrap("must exist")
 
         inMemoryState.pendingProfileInfo = (givenName: givenName, familyName: familyName, avatarData: avatarData)
 
