@@ -342,7 +342,6 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
         class func contactNameCell(for contactName: String) -> UITableViewCell {
             let checkmark = SelectionIndicatorView()
             checkmark.isSelected = true
-            checkmark.isEnabled = false
 
             let nameField = ContactFieldViewHelper.contactFieldView(forContactName: contactName)
 
