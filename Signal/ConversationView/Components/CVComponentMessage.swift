@@ -2221,6 +2221,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 return wallpaperBlurView
             }
             let wallpaperBlurView = CVWallpaperBlurView()
+            // Stay above the swipe-to-reply bubble
+            wallpaperBlurView.layer.zPosition = 0
             self.wallpaperBlurView = wallpaperBlurView
             return wallpaperBlurView
         }
