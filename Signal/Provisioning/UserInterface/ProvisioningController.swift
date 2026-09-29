@@ -114,27 +114,6 @@ class ProvisioningController: NSObject {
         }
     }
 
-    static func presentRelinkingFlow() {
-        let provisioningSocketManager = ProvisioningSocketManager(linkType: .linkDevice)
-        let provisioningController = ProvisioningController(provisioningSocketManager: provisioningSocketManager)
-        let navController = ProvisioningNavigationController(provisioningController: provisioningController)
-        provisioningController.setUpDebugLogsGesture(on: navController)
-
-        let vc = ProvisioningQRCodeViewController(
-            provisioningController: provisioningController,
-            provisioningSocketManager: provisioningSocketManager,
-        )
-        navController.setViewControllers([vc], animated: false)
-        CurrentAppContext().mainWindow?.rootViewController = navController
-
-        Task {
-            await provisioningController.awaitProvisioning(
-                from: vc,
-                navigationController: navController,
-            )
-        }
-    }
-
 #if DEBUG
     static func preview() -> ProvisioningController {
         ProvisioningController(provisioningSocketManager: ProvisioningSocketManager(linkType: .linkDevice))

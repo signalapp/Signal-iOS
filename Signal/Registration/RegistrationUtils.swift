@@ -37,6 +37,7 @@ enum RegistrationUtils {
         viewController.presentActionSheet(actionSheet)
     }
 
+    @MainActor
     static func showReLinking(deregisteredState: DeregisteredState) {
         Logger.info("showReLinking")
 
@@ -59,7 +60,7 @@ enum RegistrationUtils {
             )
         }
         preferences.unsetRecordedAPNSTokens()
-        ProvisioningController.presentRelinkingFlow()
+        ProvisioningController.presentProvisioningFlow(skipOnboarding: true)
     }
 
     static func showReRegistration(deregisteredState: DeregisteredState) {
