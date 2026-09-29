@@ -171,26 +171,6 @@ struct PreKeyTaskManager {
         try await uploadAndPersistBundle(bundle, auth: auth)
     }
 
-    func createOneTimePreKeys(
-        identity: OWSIdentity,
-        auth: ChatServiceAuth,
-    ) async throws {
-        logger.info("[\(identity)] Create one-time prekeys")
-        try Task.checkCancellation()
-        let bundle = try await db.awaitableWrite { tx in
-            let identityKeyPair = try self.requireIdentityKeyPair(for: identity, tx: tx)
-            return self.createAndPersistPartialBundle(
-                identity: identity,
-                identityKeyPair: identityKeyPair,
-                targets: [.oneTimePreKey, .oneTimePqPreKey],
-                tx: tx,
-            )
-        }
-
-        try Task.checkCancellation()
-        try await uploadAndPersistBundle(bundle, auth: auth)
-    }
-
     // MARK: - Private helpers
 
     // MARK: Per-identity registration generators

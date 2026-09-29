@@ -815,6 +815,13 @@ final class AppLifecycleManager: NSObject, UNUserNotificationCenterDelegate {
             },
         )
 
+        let preKeyManager = DependenciesBridge.shared.preKeyManager
+        cron.scheduleFrequently(
+            mustBeRegistered: true,
+            mustBeConnected: true,
+            operation: { try await preKeyManager.checkPreKeysIfNecessary() },
+        )
+
         let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
         storageServiceManager.registerForCron(cron)
 
@@ -1526,13 +1533,6 @@ final class AppLifecycleManager: NSObject, UNUserNotificationCenterDelegate {
 
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction()
-
-        if registeredState != nil {
-            Task {
-                // Always check prekeys after app launches, and sometimes check on app activation.
-                try? await DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary()
-            }
-        }
 
         if !hasActivated {
             hasActivated = true

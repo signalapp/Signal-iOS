@@ -166,6 +166,10 @@ public class _RegistrationCoordinator_PreKeyManagerMock: PreKeyManager {
     }
 
     public func isAppLockedDueToPreKeyUpdateFailures(registeredState: RegisteredState, tx: DBReadTransaction) -> Bool { fatalError() }
+    public func resetOneTimePreKeyCheckTimestamp() {
+        run.addObservedStep(.resetOneTimePreKeyTimestamp)
+    }
+
     public func checkPreKeysIfNecessary() async throws { fatalError() }
     public func createPreKeysForProvisioning(forIdentity identity: OWSIdentity, keyPair: IdentityKeyPair) async -> RegistrationPreKeyUploadBundle { fatalError() }
     public func rotateSignedPreKeysIfNeeded() async throws { fatalError() }
@@ -185,14 +189,6 @@ public class _RegistrationCoordinator_PreKeyManagerMock: PreKeyManager {
     public func finalizeRegistrationPreKeyBundle(_ bundle: RegistrationPreKeyUploadBundle, uploadDidSucceed: Bool) async {
         run.addObservedStep(.finalizePreKeys)
         await finalizePreKeyBundleMocks.removeFirst()(bundle.identity, uploadDidSucceed)
-    }
-
-    public typealias RotateOneTimePreKeysMock = (ChatServiceAuth) async throws -> Void
-    private var rotateOneTimePreKeysMocks = [RotateOneTimePreKeysMock]()
-    public func addRotateOneTimePreKeyMock(_ mock: @escaping RotateOneTimePreKeysMock) { rotateOneTimePreKeysMocks.append(mock) }
-    public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async throws {
-        run.addObservedStep(.rotateOneTimePreKeys)
-        return try await rotateOneTimePreKeysMocks.removeFirst()(auth)
     }
 
     public func setIsChangingNumber(_ isChangingNumber: Bool) {

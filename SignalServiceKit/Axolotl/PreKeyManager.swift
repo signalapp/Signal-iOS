@@ -9,6 +9,8 @@ public import LibSignalClient
 public protocol PreKeyManager {
     func isAppLockedDueToPreKeyUpdateFailures(registeredState: RegisteredState, tx: DBReadTransaction) -> Bool
 
+    func resetOneTimePreKeyCheckTimestamp()
+
     func checkPreKeysIfNecessary() async throws
 
     /// Creates a new set of prekeys for registration, creating a new identity
@@ -35,8 +37,6 @@ public protocol PreKeyManager {
         _ bundle: RegistrationPreKeyUploadBundle,
         uploadDidSucceed: Bool,
     ) async
-
-    func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async throws
 
     func rotateSignedPreKeysIfNeeded() async throws
 

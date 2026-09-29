@@ -75,7 +75,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         )
     }
 
-    @Atomic private var lastOneTimePreKeyCheckTimestamp: Date?
+    private let lastOneTimePreKeyCheckTimestamp = AtomicValue<Date?>(nil, lock: UnfairLock())
 
     private func needsSignedPreKeyRotation(identity: OWSIdentity, tx: DBReadTransaction) -> Bool {
         let store = protocolStoreManager.signalProtocolStore(for: identity).signedPreKeyStore
@@ -115,8 +115,12 @@ public class PreKeyManagerImpl: PreKeyManager {
         return false
     }
 
+    public func resetOneTimePreKeyCheckTimestamp() {
+        lastOneTimePreKeyCheckTimestamp.set(nil)
+    }
+
     private func refreshOneTimePreKeysCheckDidSucceed() {
-        lastOneTimePreKeyCheckTimestamp = Date()
+        lastOneTimePreKeyCheckTimestamp.set(Date())
     }
 
     public func checkPreKeysIfNecessary() async throws {
@@ -131,7 +135,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         let shouldCheckOneTimePreKeys = {
             if
                 shouldThrottle,
-                let lastOneTimePreKeyCheckTimestamp,
+                let lastOneTimePreKeyCheckTimestamp = lastOneTimePreKeyCheckTimestamp.get(),
                 fabs(lastOneTimePreKeyCheckTimestamp.timeIntervalSinceNow) < Constants.oneTimePreKeyCheckFrequencySeconds
             {
                 return false
@@ -196,18 +200,6 @@ public class PreKeyManagerImpl: PreKeyManager {
     ) async {
         logger.info("Finalize registration prekeys")
         await taskManager.persistRegistrationBundle(bundle, uploadDidSucceed: uploadDidSucceed)
-    }
-
-    public func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async throws {
-        logger.info("Rotate one-time prekeys for registration")
-
-        return try await taskQueue.runWithThrowingTask {
-            try Task.checkCancellation()
-            try await taskManager.createOneTimePreKeys(identity: .aci, auth: auth)
-            try Task.checkCancellation()
-            try await taskManager.createOneTimePreKeys(identity: .pni, auth: auth)
-            self.refreshOneTimePreKeysCheckDidSucceed()
-        }
     }
 
     public func rotateSignedPreKeysIfNeeded() async throws {

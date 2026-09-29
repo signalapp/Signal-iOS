@@ -11,6 +11,7 @@ import LibSignalClient
 class MockPreKeyManager: PreKeyManager {
     func isAppLockedDueToPreKeyUpdateFailures(registeredState: RegisteredState, tx: SignalServiceKit.DBReadTransaction) -> Bool { false }
     func refreshOneTimePreKeysCheckDidSucceed() { }
+    func resetOneTimePreKeyCheckTimestamp() { }
     func checkPreKeysIfNecessary() async throws { }
     var attemptedRefreshes: [(OWSIdentity, Bool)] = []
 
@@ -40,9 +41,6 @@ class MockPreKeyManager: PreKeyManager {
 
     func finalizeRegistrationPreKeyBundle(_ bundle: RegistrationPreKeyUploadBundle, uploadDidSucceed: Bool) async {
         didFinalizeRegistrationPrekeys = true
-    }
-
-    func rotateOneTimePreKeysForRegistration(auth: ChatServiceAuth) async throws {
     }
 
     func rotateSignedPreKeysIfNeeded() async throws {}

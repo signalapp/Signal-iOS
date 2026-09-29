@@ -1200,11 +1200,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// before finishing post-registration steps.
         var accountIdentity: AccountIdentity?
 
-        /// After registration is complete, we generate and sync
-        /// one time prekeys (signed prekeys are included in the registration
-        /// request). We do not proceed until this succeeds.
-        var didRefreshOneTimePreKeys: Bool = false
-
         /// When we try and register, the server gives us an error if its possible
         /// to execute a device-to-device transfer. The user can decline; if they
         /// do, this will get set so we try force a re-register.
@@ -1263,7 +1258,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case hasRestoredFromSVR
             case sessionState
             case accountIdentity
-            case didRefreshOneTimePreKeys
             case hasDeclinedTransfer
             case restoreMethod
             case restoreMode
@@ -1510,6 +1504,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // may have stored something, and we want to ensure we delete or update it.
             deps.svr.invalidateBackupAttemptForEveryEnclave(tx: tx)
 
+            deps.preKeyManager.resetOneTimePreKeyCheckTimestamp()
             deps.registrationStateChangeManager.didRegisterOrProvision(
                 account: accountIdentity.authedAccountExplicit,
                 tx: tx,
@@ -3629,33 +3624,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .done
         }
 
-        // We _must_ do these steps first.
-        if shouldRefreshOneTimePreKeys() {
-            // After atomic account creation, our account is ready to go from the start.
-            // But we should still upload one-time prekeys, as that is not part
-            // of account creation.
-            do {
-                try await deps.preKeyManager.rotateOneTimePreKeysForRegistration(auth: accountIdentity.chatServiceAuth)
-                self.db.write { tx in
-                    self.updatePersistedState(tx) {
-                        // No harm marking both down as done even though
-                        // we only did one or the other.
-                        $0.didRefreshOneTimePreKeys = true
-                    }
-                }
-                return await nextStep()
-            } catch {
-                if error.isPostRegDeregisteredError {
-                    return await becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
-                }
-                logger.error("Failed to create prekeys: \(error)")
-                // Note this is undismissable; the user will be on whatever
-                // screen they were on but with the error sheet atop which retries
-                // via `nextStep()` when tapped.
-                return .showErrorSheet(.genericError)
-            }
-        }
-
         if
             shouldRestoreFromStorageServiceBeforeUpdatingSVR(),
             let restoredKey = persistedState.recoveredSVRMasterKey
@@ -5043,15 +5011,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return !inMemoryState.hasRestoredFromStorageService
                 && !inMemoryState.hasSkippedRestoreFromStorageService
                 && persistedState.restoreMethod?.backupType == nil
-        case .changingNumber:
-            return false
-        }
-    }
-
-    private func shouldRefreshOneTimePreKeys() -> Bool {
-        switch mode {
-        case .registering, .reRegistering:
-            return !persistedState.didRefreshOneTimePreKeys
         case .changingNumber:
             return false
         }

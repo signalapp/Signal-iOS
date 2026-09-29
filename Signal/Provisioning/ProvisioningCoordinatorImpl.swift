@@ -399,7 +399,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             throw error
         }
 
-        return try await completeProvisioning_finalizePrekeys(
+        return await completeProvisioning_finalizePrekeys(
             provisionMessage: provisionMessage,
             aciPreKeyBundle: aciPreKeyBundle,
             pniPreKeyBundle: pniPreKeyBundle,
@@ -431,18 +431,11 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         aciPreKeyBundle: RegistrationPreKeyUploadBundle,
         pniPreKeyBundle: RegistrationPreKeyUploadBundle?,
         authedAccount: AuthedAccount.Explicit,
-    ) async throws(CompleteProvisioningError) -> CompleteProvisioningStepResult {
+    ) async -> CompleteProvisioningStepResult {
         await self.preKeyManager.finalizeRegistrationPreKeyBundle(aciPreKeyBundle, uploadDidSucceed: true)
         if let pniPreKeyBundle {
             await self.preKeyManager.finalizeRegistrationPreKeyBundle(pniPreKeyBundle, uploadDidSucceed: true)
         }
-        do {
-            try await self.preKeyManager
-                .rotateOneTimePreKeysForRegistration(auth: authedAccount.chatServiceAuth)
-        } catch {
-            throw .genericError(error)
-        }
-
         return CompleteProvisioningStepResult(
             authedAccount: authedAccount,
             undoBlock: {
@@ -507,6 +500,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         }
 
         await self.db.awaitableWrite { tx in
+            self.preKeyManager.resetOneTimePreKeyCheckTimestamp()
             self.registrationStateChangeManager.didRegisterOrProvision(account: authedAccount, tx: tx)
         }
 

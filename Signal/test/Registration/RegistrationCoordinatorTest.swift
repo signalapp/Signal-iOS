@@ -228,9 +228,9 @@ public class RegistrationCoordinatorTest {
         case restoreKeys
         case requestPushToken
         case createPreKeys
+        case resetOneTimePreKeyTimestamp
         case createAccount
         case finalizePreKeys
-        case rotateOneTimePreKeys
         case restoreStorageService
         case markPinEnabled
         case confirmReservedUsername
@@ -243,9 +243,9 @@ public class RegistrationCoordinatorTest {
             case .restoreKeys: return "restoreKeys"
             case .requestPushToken: return "requestPushToken"
             case .createPreKeys: return "createPreKeys"
+            case .resetOneTimePreKeyTimestamp: return "resetOneTimePreKeyTimestamp"
             case .createAccount: return "createAccount"
             case .finalizePreKeys: return "finalizePreKeys"
-            case .rotateOneTimePreKeys: return "rotateOneTimePreKeys"
             case .restoreStorageService: return "restoreStorageService"
             case .markPinEnabled: return "markPinEnabled"
             case .confirmReservedUsername: return "confirmReservedUsername"
@@ -386,11 +386,6 @@ public class RegistrationCoordinatorTest {
             )
         }
 
-        // When registered, we should create pre-keys.
-        preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
-            #expect(auth == expectedAuth())
-        })
-
         var didMarkReglockEnabled = false
         ows2FAManagerMock.didMarkRegistrationLockEnabled = { didMarkReglockEnabled = true }
 
@@ -518,11 +513,6 @@ public class RegistrationCoordinatorTest {
                 password: authPassword,
             )
         }
-
-        // When registered, we should create pre-keys.
-        preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
-            #expect(auth == expectedAuth())
-        })
 
         // We haven't marked the PIN enabled; that should happen now.
         var didMarkPinEnabled = false
@@ -888,11 +878,6 @@ public class RegistrationCoordinatorTest {
             )
         }
 
-        // When registered, it should try and sync pre-keys.
-        preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
-            #expect(auth == expectedAuth())
-        })
-
         // We haven't marked the PIN enabled; that should happen.
         ows2FAManagerMock.didMarkPinEnabled = { pin in
             self.testRun.addObservedStep(.markPinEnabled)
@@ -967,10 +952,10 @@ public class RegistrationCoordinatorTest {
             .createAccount,
             .finalizePreKeys,
             .finalizePreKeys,
-            .rotateOneTimePreKeys,
             .markPinEnabled,
             .restoreStorageService,
             .confirmReservedUsername,
+            .resetOneTimePreKeyTimestamp,
             .rotateManifest,
         ]
 
@@ -1229,11 +1214,6 @@ public class RegistrationCoordinatorTest {
                 password: authPassword,
             )
         }
-
-        // When registered, we should create pre-keys.
-        preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
-            #expect(auth == expectedAuth())
-        })
 
         var didMarkReglockEnabled = false
         ows2FAManagerMock.didMarkRegistrationLockEnabled = { didMarkReglockEnabled = true }
@@ -1552,11 +1532,6 @@ public class RegistrationCoordinatorTest {
             )
         }
 
-        // When registered, it should try and create pre-keys.
-        preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
-            #expect(auth == expectedAuth())
-        })
-
         // Once we create pre-keys, we mark the PIN enabled.
         ows2FAManagerMock.didMarkPinEnabled = { pin in
             self.testRun.addObservedStep(.markPinEnabled)
@@ -1622,10 +1597,10 @@ public class RegistrationCoordinatorTest {
             .createAccount,
             .finalizePreKeys,
             .finalizePreKeys,
-            .rotateOneTimePreKeys,
             .restoreStorageService,
             .markPinEnabled,
             .confirmReservedUsername,
+            .resetOneTimePreKeyTimestamp,
             .rotateManifest,
         ]
 
@@ -1825,12 +1800,6 @@ public class RegistrationCoordinatorTest {
         preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
             #expect(didSucceed)
         }
-
-        // Then we should try and create one time pre-keys
-        // with the credentials we got in the identity response.
-        preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
-            #expect(auth == expectedAuth())
-        })
 
         // Finish the validation.
         var didMarkPinEnabled = false
@@ -2849,12 +2818,6 @@ public class RegistrationCoordinatorTest {
             #expect(didSucceed)
         }
 
-        // Then we should try and create one time pre-keys
-        // with the credentials we got in the identity response.
-        preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
-            #expect(auth == expectedAuth())
-        })
-
         // When we skip the pin, it should skip any SVR backups.
         ows2FAManagerMock.didMarkPinEnabled = { _ in
             Issue.record("Shouldn't mark PIN enabled with skipped PIN!")
@@ -2964,12 +2927,6 @@ public class RegistrationCoordinatorTest {
         preKeyManagerMock.addFinalizePreKeyBundleMock { _, didSucceed in
             #expect(didSucceed)
         }
-
-        // Then we should try and create one time pre-keys
-        // with the credentials we got in the identity response.
-        preKeyManagerMock.addRotateOneTimePreKeyMock({ auth in
-            #expect(auth == expectedAuth())
-        })
 
         // When we skip the pin, it should skip any SVR backups.
         ows2FAManagerMock.didMarkPinEnabled = { _ in
