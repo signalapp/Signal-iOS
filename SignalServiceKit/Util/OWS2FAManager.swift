@@ -164,9 +164,10 @@ public class OWS2FAManager {
         return lastCompletedReminderDate.addingTimeInterval(repetitionInterval.rawValue)
     }
 
-    public func isDueForV2Reminder(transaction tx: DBReadTransaction) -> Bool {
+    public func isDueForV2Reminder(registeredState: RegisteredState, tx: DBReadTransaction) -> Bool {
+        // The existence of RegisteredState implies we're registered.
+        _ = registeredState
         guard
-            tsAccountManager.registrationState(tx: tx).isRegistered,
             isPinEnabled(tx: tx),
             areRemindersEnabled(transaction: tx)
         else {

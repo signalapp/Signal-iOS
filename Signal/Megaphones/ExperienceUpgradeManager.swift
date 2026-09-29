@@ -123,7 +123,7 @@ class ExperienceUpgradeManager {
 
                 switch upgrade.manifest {
                 case .introducingPins:
-                    if checkPreconditionsForIntroducingPins(tx: tx) {
+                    if checkPreconditionsForIntroducingPins(registeredState: registeredState, tx: tx) {
                         nextMegaphone = IntroducingPinsMegaphone(
                             experienceUpgrade: upgrade,
                             fromViewController: fromViewController,
@@ -200,7 +200,7 @@ class ExperienceUpgradeManager {
                         )
                     }
                 case .pinReminder:
-                    if checkPreconditionsForPinReminder(tx: tx) {
+                    if checkPreconditionsForPinReminder(registeredState: registeredState, tx: tx) {
                         nextMegaphone = PinReminderMegaphone(
                             experienceUpgrade: upgrade,
                             fromViewController: fromViewController,
@@ -377,12 +377,14 @@ class ExperienceUpgradeManager {
     // MARK: - Megaphone Preconditions
 
     private func checkPreconditionsForIntroducingPins(
+        registeredState: RegisteredState,
         tx: DBReadTransaction,
     ) -> Bool {
         // The PIN setup flow requires an internet connection and you to not already have a PIN
         if
+            registeredState.isPrimary,
+            registeredState.localIdentifiers.phoneNumber != nil,
             reachabilityManager.isReachable,
-            tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
             !ows2FAManager.hasEverHadPin(tx: tx)
         {
             return true
@@ -509,9 +511,10 @@ class ExperienceUpgradeManager {
     }
 
     private func checkPreconditionsForPinReminder(
+        registeredState: RegisteredState,
         tx: DBReadTransaction,
     ) -> Bool {
-        return ows2FAManager.isDueForV2Reminder(transaction: tx)
+        return ows2FAManager.isDueForV2Reminder(registeredState: registeredState, tx: tx)
     }
 
     private func checkPreconditionsForContactsPermissionReminder() -> Bool {

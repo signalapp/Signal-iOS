@@ -37,8 +37,15 @@ class AccountSettingsViewController: OWSTableViewController2 {
     func updateTableContents() {
         let contents = OWSTableContents()
 
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let tsRegistrationState = tsAccountManager.registrationStateWithMaybeSneakyTransaction
+
         // Show the change pin and reglock sections
-        if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice {
+        if
+            let registeredState = try? tsRegistrationState.registeredState(),
+            registeredState.isPrimary,
+            registeredState.localIdentifiers.phoneNumber != nil
+        {
             let pinSection = OWSTableSection()
             let isPinEnabled = SSKEnvironment.shared.ows2FAManagerRef.isPinEnabledWithSneakyTransaction
 
@@ -124,8 +131,6 @@ class AccountSettingsViewController: OWSTableViewController2 {
             contents.add(advancedSection)
         }
 
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        let tsRegistrationState = tsAccountManager.registrationStateWithMaybeSneakyTransaction
         if let deregisteredState = tsRegistrationState.deregisteredState {
             let accountSection = OWSTableSection()
             accountSection.headerTitle = accountSettingsTitle
