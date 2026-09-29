@@ -2714,7 +2714,7 @@
 "CONVERSATION_SETTINGS_MUTE_BUTTON" = "silenciar";
 
 /* Label for button to mute a thread until a date the user picks. */
-"CONVERSATION_SETTINGS_MUTE_CUSTOM_ACTION" = "Mute until…";
+"CONVERSATION_SETTINGS_MUTE_CUSTOM_ACTION" = "Silenciar até…";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 horas";
@@ -6179,13 +6179,13 @@
 "MUTE_CONFIRMATION_TOAST_LABEL" = "Microfone desligado";
 
 /* Label next to the selected date and time on the sheet for muting a chat's notifications until a custom date. */
-"MUTE_UNTIL_SHEET_MUTE_UNTIL_LABEL" = "Mute Until";
+"MUTE_UNTIL_SHEET_MUTE_UNTIL_LABEL" = "Silenciar até";
 
 /* Footer on the sheet for muting a chat's notifications until a custom date, clarifying which time zone the selected date and time are in. Embeds {{the name of the current time zone}}. */
-"MUTE_UNTIL_SHEET_TIME_ZONE_FOOTER_FORMAT" = "All times in %1$@";
+"MUTE_UNTIL_SHEET_TIME_ZONE_FOOTER_FORMAT" = "Todas as horas em %1$@";
 
 /* Title for the sheet for muting a chat's notifications until a custom date. */
-"MUTE_UNTIL_SHEET_TITLE" = "Mute Notifications";
+"MUTE_UNTIL_SHEET_TITLE" = "Silenciar notificações";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Silenciado";
@@ -8552,7 +8552,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Deverá ativar o código de desbloqueio nas definições do seu iOS para poder utilizar o bloqueio de ecrã.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to confirm a change to the 'screen lock' settings. */
-"SCREEN_LOCK_REASON_CHANGE_SCREEN_LOCK_SETTINGS" = "Authenticate to change Screen Lock settings.";
+"SCREEN_LOCK_REASON_CHANGE_SCREEN_LOCK_SETTINGS" = "Efetue a autenticação para alterar as definições do bloqueio de ecrã.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autentique-se para abrir o Signal.";

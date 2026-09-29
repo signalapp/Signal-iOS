@@ -1,1 +1,1 @@
-• This update introduces a new custom mute option so you can easily specify the exact date and time when you would like to end your moment of silence for notifications in a specific chat.
+• Această actualizare introduce o nouă opțiune personalizată de dezactivare a notificărilor, astfel încât să poți specifica cu ușurință data și ora exactă la care dorești să închei perioada de dezactivare a notificărilor într-un anumit chat.

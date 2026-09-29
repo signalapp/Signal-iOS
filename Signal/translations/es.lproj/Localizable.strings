@@ -578,7 +578,7 @@
 "BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_SAVE_MANUALLY_BUTTON_TITLE" = "Guardar manualmente";
 
 /* Title for a button that retries saving the user's Recovery Key to their password manager, in an error sheet shown when confirming it fails. */
-"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_SAVE_TO_PW_MGR_BUTTON_TITLE" = "Guardar en el gestor de contraseñas";
+"BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_SAVE_TO_PW_MGR_BUTTON_TITLE" = "Guardar en gestor de contraseñas";
 
 /* Title for an error sheet shown when confirming the user's Recovery Key via their password manager fails. */
 "BACKUP_CONFIRM_KEY_PW_MGR_ERROR_SHEET_TITLE" = "Error al confirmar tu clave de recuperación";
@@ -722,7 +722,7 @@
 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE" = "Crear nueva clave";
 
 /* Subtitle for a view allowing users to save their newly-created 'Recovery Key', emphasizing that the key is new. */
-"BACKUP_RECORD_KEY_NEW_SUBTITLE" = "Esta nueva clave reemplazará a la anterior, y la necesitarás para recuperar tu cuenta y tus datos. Guárdala en un lugar seguro. Si la pierdes, no podrás recuperar tu cuenta.";
+"BACKUP_RECORD_KEY_NEW_SUBTITLE" = "Esta nueva clave reemplazará la anterior, y la necesitarás para recuperar tu cuenta y tus datos. Guárdala en un lugar seguro. Si la pierdes, no podrás recuperar tu cuenta.";
 
 /* Title for a view allowing users to save their newly-created 'Recovery Key', emphasizing that the key is new. */
 "BACKUP_RECORD_KEY_NEW_TITLE" = "Guarda tu nueva clave de recuperación";
@@ -767,7 +767,7 @@
 "BACKUP_SAVE_KEY_SAVE_MANUALLY_BUTTON_TITLE" = "Guardar manualmente";
 
 /* Title for a button that begins saving the user's Recovery Key to their password manager. */
-"BACKUP_SAVE_KEY_SAVE_TO_PW_MGR_BUTTON_TITLE" = "Guardar en el gestor de contraseñas";
+"BACKUP_SAVE_KEY_SAVE_TO_PW_MGR_BUTTON_TITLE" = "Guardar en gestor de contraseñas";
 
 /* Message describing that the Background App Refresh permission is disabled for Signal. \"Background App Refresh\" should be localized the same way it is in iOS Settings app permissions. */
 "BACKUP_SETTINGS_BACKGROUND_APP_REFRESH_DISABLED_MESSAGE" = "Las copias de seguridad automáticas están desactivadas. Actualiza los permisos de Signal para activarlas.";
@@ -2714,7 +2714,7 @@
 "CONVERSATION_SETTINGS_MUTE_BUTTON" = "silenciar";
 
 /* Label for button to mute a thread until a date the user picks. */
-"CONVERSATION_SETTINGS_MUTE_CUSTOM_ACTION" = "Mute until…";
+"CONVERSATION_SETTINGS_MUTE_CUSTOM_ACTION" = "Silenciar hasta…";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 horas";
@@ -3134,7 +3134,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Detener transferencia";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Si cierras esta ventana se detendrá la transferencia en progreso. ¿Quieres cerrarla de todos modos?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Si cierras esta ventana se detendrá la transferencia en curso. ¿Quieres cerrarla de todos modos?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "¿Detener transferencia?";
@@ -5348,7 +5348,7 @@
 "LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "Antes de vincular tu dispositivo, confirma que eres tú";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking. */
-"LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "Para vincular un dispositivo, debes autenticarte";
+"LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "Valida tu identidad para vincular un dispositivo";
 
 /* Body text for a sheet when a user has started linking a device informing them to finish the process on that other device */
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Termina de vincular Signal en tu otro dispositivo.";
@@ -5408,7 +5408,7 @@
 "LINKED_DEVICE_INFO_SHEET_HEADER" = "Los <bold>dispositivos vinculados</bold> te permiten acceder de forma segura a tu cuenta y mensajes de Signal desde cualquiera de tus dispositivos adicionales.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Ya no es posible gestionar los contactos del teléfono desde un dispositivo vinculado. Cualquier cambio que hagas en tu lista de contactos de Signal usando tu dispositivo principal, se sincronizará en este dispositivo vinculado.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Ya no es posible gestionar los contactos del teléfono desde un dispositivo vinculado. Cualquier cambio que hagas en tu lista de contactos de Signal usando tu dispositivo principal se sincronizará en este dispositivo vinculado.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Más información";
@@ -5492,10 +5492,10 @@
 "LOCAL_BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BODY" = "Solo necesitas crear una clave nueva si otra persona sabe tu clave actual. Para crear una nueva clave, primero debes deshabilitar las copias de seguridad locales.\n\nUna vez que hayas deshabilitado las copias de seguridad y creado una nueva clave, tendrás que volver a habilitar y subir tus copias de seguridad.";
 
 /* Body for an error sheet shown when the user's folder choice does not contain a backup file. */
-"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_BODY" = "No se ha encontrado ninguna copia de seguridad de Signal en la carpeta seleccionada. Prueba con otra carpeta.";
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_BODY" = "No se ha encontrado ninguna copia de seguridad de Signal en la carpeta seleccionada. Busca en otra carpeta.";
 
 /* Title for an error sheet shown when the user's folder choice does not contain a backup file. */
-"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_TITLE" = "No se ha encontrado ninguna copia de seguridad";
+"LOCAL_BACKUPS_MISSING_BACKUP_ACTION_SHEET_TITLE" = "No hay ninguna copia de seguridad";
 
 /* Title for a button that lets the user select a new folder. */
 "LOCAL_BACKUPS_MISSING_BACKUP_TRY_DIFFERENT_FOLDER" = "Buscar en otra carpeta";
@@ -5504,7 +5504,7 @@
 "LOCAL_BACKUPS_SELECT_HERO_SHEET_BODY" = "Toca \"Continuar\" y sigue estos pasos para acceder a tu copia de seguridad:";
 
 /* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
-"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_1" = "Selecciona la carpeta de nivel superior donde se guarda tu copia de seguridad.";
+"LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_1" = "Selecciona la carpeta de nivel superior donde está tu copia de seguridad.";
 
 /* Bullet point for a sheet asking the user to select their backup to restore from during registration. */
 "LOCAL_BACKUPS_SELECT_HERO_SHEET_BULLET_2" = "Toca \"Abrir\".";
@@ -5552,13 +5552,13 @@
 "LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_BUTTON" = "Elegir carpeta";
 
 /* Title text for a sheet telling the user to choose a folder to store their Signal on-device backup. */
-"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "Selecciona una carpeta";
+"LOCAL_FILE_BACKUPS_CHOOSE_FOLDER_TITLE" = "Elige una carpeta";
 
 /* Warning shown when a user tries to enable local file backups with optimize media enabled */
 "LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET" = "Tienes activada la opción \"Optimizar almacenamiento de Signal\". Desactívala si quieres incluir todos tus archivos multimedia en tu copia de seguridad local.";
 
 /* Message for a sheet warning the user about enabling Optimize Storage with local backups enabled. */
-"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_BODY" = "Al activar la opción \"Optimizar almacenamiento de Signal\", se eliminarán los archivos multimedia antiguos de tu dispositivo. Podrás volver a descargarlos en cualquier momento. También se eliminarán los archivos multimedia antiguos de tu copia de seguridad local.";
+"LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_BODY" = "Si activas la opción \"Optimizar almacenamiento de Signal\", se eliminarán los archivos multimedia antiguos de tu dispositivo. Podrás volver a descargarlos en cualquier momento. También se eliminarán los archivos multimedia antiguos de tu copia de seguridad local.";
 
 /* Title for a sheet warning the user about enabling Optimize Storage with local backups enabled. */
 "LOCAL_FILE_BACKUPS_OPTIMIZE_MEDIA_WARNING_ACTION_SHEET_2_TITLE" = "Se eliminarán los archivos multimedia de tu copia de seguridad local";
@@ -6179,13 +6179,13 @@
 "MUTE_CONFIRMATION_TOAST_LABEL" = "Micrófono desactivado";
 
 /* Label next to the selected date and time on the sheet for muting a chat's notifications until a custom date. */
-"MUTE_UNTIL_SHEET_MUTE_UNTIL_LABEL" = "Mute Until";
+"MUTE_UNTIL_SHEET_MUTE_UNTIL_LABEL" = "Silenciar hasta";
 
 /* Footer on the sheet for muting a chat's notifications until a custom date, clarifying which time zone the selected date and time are in. Embeds {{the name of the current time zone}}. */
-"MUTE_UNTIL_SHEET_TIME_ZONE_FOOTER_FORMAT" = "All times in %1$@";
+"MUTE_UNTIL_SHEET_TIME_ZONE_FOOTER_FORMAT" = "Todas las horas se muestran en %1$@";
 
 /* Title for the sheet for muting a chat's notifications until a custom date. */
-"MUTE_UNTIL_SHEET_TITLE" = "Mute Notifications";
+"MUTE_UNTIL_SHEET_TITLE" = "Silenciar notificaciones";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Silenciado";
@@ -6500,7 +6500,7 @@
 "ONBOARDING_CHOOSE_BACKUP_SHEET_SUBTITLE" = "Si eliges una copia de seguridad anterior, es posible que pierdas mensajes o archivos.";
 
 /* Title for the sheet that lets users pick from available local backups to restore. */
-"ONBOARDING_CHOOSE_BACKUP_SHEET_TITLE" = "Elegir una copia de seguridad para restaurar";
+"ONBOARDING_CHOOSE_BACKUP_SHEET_TITLE" = "Elige una copia de seguridad para restaurar";
 
 /* The body for the device transfer 'choice' view 'restore backup' option */
 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY" = "Restaura tu cuenta y tus mensajes desde tu copia de seguridad de Signal";
@@ -6554,7 +6554,7 @@
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_PAID" = "Todos tus archivos multimedia";
 
 /* Text for action button that opens a picker to choose an older local backup. */
-"ONBOARDING_CONFIRM_BACKUP_RESTORE_CHOOSE_OLDER_ACTION" = "Seleccionar una copia anterior";
+"ONBOARDING_CONFIRM_BACKUP_RESTORE_CHOOSE_OLDER_ACTION" = "Elegir una copia anterior";
 
 /* Text for action button confirming the restore. */
 "ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION" = "Restaurar copia";
@@ -6950,7 +6950,7 @@
 "PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "Error en la autenticación biométrica";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'. */
-"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "Debes autenticarte para confirmar el pago.";
+"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "Valida tu identidad para confirmar el pago.";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Añadir nota";
@@ -8552,10 +8552,10 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Debes configurar un código en Ajustes de iOS para poder usar el bloqueo de pantalla.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to confirm a change to the 'screen lock' settings. */
-"SCREEN_LOCK_REASON_CHANGE_SCREEN_LOCK_SETTINGS" = "Authenticate to change Screen Lock settings.";
+"SCREEN_LOCK_REASON_CHANGE_SCREEN_LOCK_SETTINGS" = "Valida tu identidad para cambiar los ajustes de la pantalla de bloqueo.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autentica tu identidad para acceder a Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Valida tu identidad para acceder a Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Error de autenticación";
@@ -9062,7 +9062,7 @@
 "SETTINGS_LOCAL_FILE_BACKUPS_LAST_BACKUP_DATE" = "Última copia de seguridad";
 
 /* Message for an action sheet when a user cannot perform a remote backup because a local backup is in progress */
-"SETTINGS_LOCAL_FILE_BACKUPS_LOCAL_BACKUP_IN_PROGRESS_MESSAGE" = "No se ha podido hacer una copia segura de Signal porque hay una copia de seguridad local en proceso. Inténtalo de nuevo más tarde.";
+"SETTINGS_LOCAL_FILE_BACKUPS_LOCAL_BACKUP_IN_PROGRESS_MESSAGE" = "No se ha podido hacer una copia segura de Signal porque hay una copia de seguridad local en curso. Inténtalo de nuevo más tarde.";
 
 /* Label for a progress bar while attachments are being copied for an on-device backup. Embeds 1:{{%1$@ completed bytes copied, %2$@ total bytes to copy, %3$@ percentage complete }}. */
 "SETTINGS_LOCAL_FILE_BACKUPS_PROGRESS_COPYING_ATTACHMENTS" = "Creando copia de seguridad local: %1$@ de %2$@ (%3$@)";
@@ -9077,7 +9077,7 @@
 "SETTINGS_LOCAL_FILE_BACKUPS_PROGRESS_RESTORING_ATTACHMENTS" = "Restaurando copia de seguridad local (%1$@ de %2$@)";
 
 /* Message for an action sheet when a user cannot perform a local backup because a remote backup is in progress */
-"SETTINGS_LOCAL_FILE_BACKUPS_REMOTE_BACKUP_IN_PROGRESS_MESSAGE" = "No se ha podido hacer una copia de seguridad local porque hay una copia segura de Signal en proceso. Inténtalo de nuevo más tarde.";
+"SETTINGS_LOCAL_FILE_BACKUPS_REMOTE_BACKUP_IN_PROGRESS_MESSAGE" = "No se ha podido hacer una copia de seguridad local porque hay una copia segura de Signal en curso. Inténtalo de nuevo más tarde.";
 
 /* Footer text on the on-device backups settings page explaining how to restore a backup. */
 "SETTINGS_LOCAL_FILE_BACKUPS_RESTORE_FOOTER" = "Para restaurar una copia de seguridad, debes reinstalar Signal. Abre la aplicación, toca \"Restaurar o transferir\" y selecciona \"Copia de seguridad local\".";
@@ -9185,7 +9185,7 @@
 "SETTINGS_NOTIFICATIONS_RESET_CONFIRMATION_ACTION" = "Restablecer";
 
 /* Question confirming that notification settings should be reset. */
-"SETTINGS_NOTIFICATIONS_RESET_CONFIRMATION_MESSAGE" = "¿Restablecer los ajustes de notificaciones predeterminados para todos los chats?";
+"SETTINGS_NOTIFICATIONS_RESET_CONFIRMATION_MESSAGE" = "¿Restablecer ajustes de notificaciones predeterminados para todos los chats?";
 
 /* Explanation for the button that resets all notification settings. */
 "SETTINGS_NOTIFICATIONS_RESET_FOOTER" = "Se restablecerán los ajustes predeterminados de las notificaciones, incluidos los de tus chats.";
@@ -9770,7 +9770,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED" = "Debes crear un PIN para usar el bloqueo de registro.";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Si olvidas tu PIN de Signal al volver a registrarte en Signal, no podrás acceder a tu cuenta durante 7 días.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Si vuelves a registrarte en Signal y olvidas tu PIN de Signal, no podrás acceder a tu cuenta durante 7 días.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "¿Activar el bloqueo de registro?";

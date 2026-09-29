@@ -2714,7 +2714,7 @@
 "CONVERSATION_SETTINGS_MUTE_BUTTON" = "মিউট করুন";
 
 /* Label for button to mute a thread until a date the user picks. */
-"CONVERSATION_SETTINGS_MUTE_CUSTOM_ACTION" = "Mute until…";
+"CONVERSATION_SETTINGS_MUTE_CUSTOM_ACTION" = "মিউট রাখুন যতক্ষণ না…";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 ঘন্টা";
@@ -6179,13 +6179,13 @@
 "MUTE_CONFIRMATION_TOAST_LABEL" = "মাইক বন্ধ করুন";
 
 /* Label next to the selected date and time on the sheet for muting a chat's notifications until a custom date. */
-"MUTE_UNTIL_SHEET_MUTE_UNTIL_LABEL" = "Mute Until";
+"MUTE_UNTIL_SHEET_MUTE_UNTIL_LABEL" = "এই পর্যন্ত মিউট করুন";
 
 /* Footer on the sheet for muting a chat's notifications until a custom date, clarifying which time zone the selected date and time are in. Embeds {{the name of the current time zone}}. */
-"MUTE_UNTIL_SHEET_TIME_ZONE_FOOTER_FORMAT" = "All times in %1$@";
+"MUTE_UNTIL_SHEET_TIME_ZONE_FOOTER_FORMAT" = "%1$@-এর মধ্যে পুরো সময়";
 
 /* Title for the sheet for muting a chat's notifications until a custom date. */
-"MUTE_UNTIL_SHEET_TITLE" = "Mute Notifications";
+"MUTE_UNTIL_SHEET_TITLE" = "নোটিফিকেশন মিউট করুন";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "মিউট করা হয়েছে";
@@ -8552,7 +8552,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "স্ক্রীন এর লক্  ব্যবহার করার জন্য আপনাকে অবশ্যই আপনার আইওএস সেটিংসে একটি পাসকোড সক্ষম করতে হবে।";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to confirm a change to the 'screen lock' settings. */
-"SCREEN_LOCK_REASON_CHANGE_SCREEN_LOCK_SETTINGS" = "Authenticate to change Screen Lock settings.";
+"SCREEN_LOCK_REASON_CHANGE_SCREEN_LOCK_SETTINGS" = "স্ক্রিন লক সেটিংস পরিবর্তন করতে অথেন্টিকেট করুন।";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Signal খোলার জন্য অনুমতি দিন।";

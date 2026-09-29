@@ -1,1 +1,1 @@
-• This update introduces a new custom mute option so you can easily specify the exact date and time when you would like to end your moment of silence for notifications in a specific chat.
+• 本次更新新增了一項自訂靜音選項，讓您可以輕鬆指定在特定聊天室中，希望何時結束通知靜音的具體日期和時間。

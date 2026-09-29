@@ -2585,7 +2585,7 @@
 "CONVERSATION_PICKER_SECTION_STORIES" = "스토리";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "수신자 선택";
+"CONVERSATION_PICKER_TITLE" = "수신인 선택";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "검색 결과 없음";
@@ -2714,7 +2714,7 @@
 "CONVERSATION_SETTINGS_MUTE_BUTTON" = "알림 끄기";
 
 /* Label for button to mute a thread until a date the user picks. */
-"CONVERSATION_SETTINGS_MUTE_CUSTOM_ACTION" = "Mute until…";
+"CONVERSATION_SETTINGS_MUTE_CUSTOM_ACTION" = "직접 설정";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8시간";
@@ -2966,16 +2966,16 @@
 "DATE_YESTERDAY" = "어제";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "로그를 압축할 수 없습니다.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "로그를 압축하지 못했습니다.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "로그를 업로드할 수 없습니다.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "로그를 업로드하지 못했습니다.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "디버그 로그 링크로 무엇을 하시겠어요?";
 
 /* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "로그를 찾을 수 없습니다.";
+"DEBUG_LOG_ALERT_NO_LOGS" = "로그를 찾지 못했습니다.";
 
 /* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "링크 복사";
@@ -2990,10 +2990,10 @@
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "공유";
 
 /* Title of the debug log alert. */
-"DEBUG_LOG_ALERT_TITLE" = "하나만 더";
+"DEBUG_LOG_ALERT_TITLE" = "마지막 단계";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "디버그 로그에 대한 정보";
+"DEBUG_LOG_INFO_BUTTON" = "디버그 로그 관련 정보";
 
 /* Header text displayed above the debug log preview */
 "DEBUG_LOG_PREVIEW_HEADER" = "제출한 로그는 별도의 비공개 URL에 30일 동안 게시됩니다.";
@@ -6179,13 +6179,13 @@
 "MUTE_CONFIRMATION_TOAST_LABEL" = "마이크 꺼짐";
 
 /* Label next to the selected date and time on the sheet for muting a chat's notifications until a custom date. */
-"MUTE_UNTIL_SHEET_MUTE_UNTIL_LABEL" = "Mute Until";
+"MUTE_UNTIL_SHEET_MUTE_UNTIL_LABEL" = "직접 설정";
 
 /* Footer on the sheet for muting a chat's notifications until a custom date, clarifying which time zone the selected date and time are in. Embeds {{the name of the current time zone}}. */
-"MUTE_UNTIL_SHEET_TIME_ZONE_FOOTER_FORMAT" = "All times in %1$@";
+"MUTE_UNTIL_SHEET_TIME_ZONE_FOOTER_FORMAT" = "모든 시간은 %1$@ 기준";
 
 /* Title for the sheet for muting a chat's notifications until a custom date. */
-"MUTE_UNTIL_SHEET_TITLE" = "Mute Notifications";
+"MUTE_UNTIL_SHEET_TITLE" = "알림 끄기";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "음소거 상태";
@@ -8552,7 +8552,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "화면 잠금을 사용하려면 iOS 설정에서 암호를 켜야 합니다.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to confirm a change to the 'screen lock' settings. */
-"SCREEN_LOCK_REASON_CHANGE_SCREEN_LOCK_SETTINGS" = "Authenticate to change Screen Lock settings.";
+"SCREEN_LOCK_REASON_CHANGE_SCREEN_LOCK_SETTINGS" = "화면 잠금 설정을 변경하려면 인증이 필요합니다.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Signal을 열려면 인증하세요.";

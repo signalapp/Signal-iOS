@@ -1,1 +1,1 @@
-• This update introduces a new custom mute option so you can easily specify the exact date and time when you would like to end your moment of silence for notifications in a specific chat.
+• Một tùy chọn tắt thông báo tùy chỉnh mới cho phép bạn chỉ định chính xác ngày và giờ muốn tiếp tục nhận thông báo trong cuộc trò chuyện.

@@ -1133,7 +1133,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_BODY" = "Opslagoptimalisatie kan alleen worden gebruikt met een betaald abonnement op Signal Secure Backups. Upgrade je back-upabonnement om deze functie te gebruiken.";
 
 /* Title for a Backup plan upsell view encouraging users to subscribe to a paid Backup plan to use storage optimization. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_TITLE" = "Upgraden om Opslagoptimalisatie in te schakelen";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_UPSELL_TITLE" = "Upgraden om opslagoptimalisatie in te schakelen";
 
 /* Subtitle for a notification telling the user they are out of remote storage space. */
 "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE" = "Je hebt de limiet voor je back-upopslag bereikt. Maak ruimte vrij in Signal om back-ups van chats en media te kunnen maken.";
@@ -2660,13 +2660,13 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS" = "Ledenlabels toevoegen";
 
 /* Description for the 'edit member label access'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS_FOOTER" = "Kies wie ledenlabels mogen toevoegen in deze groep.";
+"CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS_FOOTER" = "Kies wie ledenlabels kan toevoegen in deze groep.";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Leden toevoegen";
 
 /* Description for the 'edit membership access'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "Kies wie het groepslidmaatschap mogen bewerken.";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "Kies wie het groepslidmaatschap kan bewerken.";
 
 /* Label for 'group link' action in conversation settings view. */
 "CONVERSATION_SETTINGS_GROUP_LINK" = "Groepslink";
@@ -2714,7 +2714,7 @@
 "CONVERSATION_SETTINGS_MUTE_BUTTON" = "dempen";
 
 /* Label for button to mute a thread until a date the user picks. */
-"CONVERSATION_SETTINGS_MUTE_CUSTOM_ACTION" = "Mute until…";
+"CONVERSATION_SETTINGS_MUTE_CUSTOM_ACTION" = "Dempen tot…";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 uur";
@@ -2783,7 +2783,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Alle leden";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Kies wie berichten mogen verzenden en oproepen mogen beginnen in deze groep.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Kies wie berichten kan verzenden en oproepen kan beginnen in deze groep.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Berichten verzenden & oproepen beginnen";
@@ -6179,13 +6179,13 @@
 "MUTE_CONFIRMATION_TOAST_LABEL" = "Microfoon uit";
 
 /* Label next to the selected date and time on the sheet for muting a chat's notifications until a custom date. */
-"MUTE_UNTIL_SHEET_MUTE_UNTIL_LABEL" = "Mute Until";
+"MUTE_UNTIL_SHEET_MUTE_UNTIL_LABEL" = "Dempen tot";
 
 /* Footer on the sheet for muting a chat's notifications until a custom date, clarifying which time zone the selected date and time are in. Embeds {{the name of the current time zone}}. */
-"MUTE_UNTIL_SHEET_TIME_ZONE_FOOTER_FORMAT" = "All times in %1$@";
+"MUTE_UNTIL_SHEET_TIME_ZONE_FOOTER_FORMAT" = "Alle tijden in (%1$@)";
 
 /* Title for the sheet for muting a chat's notifications until a custom date. */
-"MUTE_UNTIL_SHEET_TITLE" = "Mute Notifications";
+"MUTE_UNTIL_SHEET_TITLE" = "Meldingen dempen";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Gedempt";
@@ -6950,7 +6950,7 @@
 "PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "Biometrische authenticatie mislukt";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'. */
-"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "Authenticeer om de betaling te bevestigen.";
+"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "Verifieer je identiteit om de betaling te bevestigen.";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Opmerking toevoegen";
@@ -8552,7 +8552,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Om appvergrendeling te kunnen gebruiken, moet je een toegangscode instellen in de iOS-instellingen.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to confirm a change to the 'screen lock' settings. */
-"SCREEN_LOCK_REASON_CHANGE_SCREEN_LOCK_SETTINGS" = "Authenticate to change Screen Lock settings.";
+"SCREEN_LOCK_REASON_CHANGE_SCREEN_LOCK_SETTINGS" = "Verifieer je identiteit om de instellingen voor appvergrendeling te wijzigen.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Verifieer je identiteit om Signal te openen";
@@ -9860,7 +9860,7 @@
 "SETTINGS_WHILE_MUTED_CALLS" = "Oproepen";
 
 /* Explanation for the switch controlling whether calls ring or notify while this chat is muted. */
-"SETTINGS_WHILE_MUTED_CALLS_CHAT_FOOTER" = "Speel beltoon af en ontvang meldingen wanneer een oproep wordt gestart terwijl deze chat is gedempt";
+"SETTINGS_WHILE_MUTED_CALLS_CHAT_FOOTER" = "Speel beltoon af en ontvang meldingen wanneer een oproep wordt gestart als deze chat is gedempt";
 
 /* Explanation for the switch controlling whether calls ring or notify in muted chats. */
 "SETTINGS_WHILE_MUTED_CALLS_FOOTER" = "Speel beltoon af en ontvang meldingen wanneer een oproep wordt gestart in een gedempte chat";
@@ -9869,7 +9869,7 @@
 "SETTINGS_WHILE_MUTED_MENTIONS" = "Vermeldingen";
 
 /* Explanation for the switch controlling whether mentions of you notify while this chat is muted. */
-"SETTINGS_WHILE_MUTED_MENTIONS_CHAT_FOOTER" = "Ontvang meldingen wanneer je wordt vermeld terwijl deze chat is gedempt";
+"SETTINGS_WHILE_MUTED_MENTIONS_CHAT_FOOTER" = "Ontvang meldingen wanneer je wordt vermeld als deze chat is gedempt";
 
 /* Explanation for the switch controlling whether mentions of you notify in muted chats. */
 "SETTINGS_WHILE_MUTED_MENTIONS_FOOTER" = "Ontvang meldingen wanneer je wordt vermeld in een gedempte chat";
@@ -9878,7 +9878,7 @@
 "SETTINGS_WHILE_MUTED_REPLIES" = "Antwoorden";
 
 /* Explanation for the switch controlling whether replies to your messages notify while this chat is muted. */
-"SETTINGS_WHILE_MUTED_REPLIES_CHAT_FOOTER" = "Ontvang meldingen wanneer iemand op je bericht antwoordt terwijl deze chat is gedempt";
+"SETTINGS_WHILE_MUTED_REPLIES_CHAT_FOOTER" = "Ontvang meldingen wanneer iemand op je bericht antwoordt als deze chat is gedempt";
 
 /* Explanation for the switch controlling whether replies to your messages notify in muted chats. */
 "SETTINGS_WHILE_MUTED_REPLIES_FOOTER" = "Ontvang meldingen wanneer iemand op je bericht antwoordt in een gedempte chat";
