@@ -581,11 +581,12 @@ class ProvisioningController: NSObject {
                 ),
                 style: .default,
                 handler: { _ in
-                    Task { @MainActor in
-                        await self.resetBackToQrCodeController(
-                            from: viewController,
-                            navigationController: navigationController,
-                        )
+                    ModalActivityIndicatorViewController.present(
+                        fromViewController: viewController,
+                        title: CommonStrings.deletingModal,
+                    ) { _ in
+                        let keyFetcher = SSKEnvironment.shared.databaseStorageRef.keyFetcher
+                        SignalApp.shared.resetAppDataAndExit(keyFetcher: keyFetcher)
                     }
                 },
             ))
