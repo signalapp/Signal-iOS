@@ -35,6 +35,16 @@ public final class LocalIdentifiers {
 
     public let accountType: AccountType
 
+    /// The `accountType`, wrapped in a boolean result.
+    public var hasPhoneNumber: Bool {
+        switch self.accountType {
+        case .phoneNumberfull:
+            return true
+        case .phoneNumberless:
+            return false
+        }
+    }
+
     /// The PNI for the current user.
     ///
     /// - Note: Primary & linked devices may not have access to their PNI. The

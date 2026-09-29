@@ -3913,7 +3913,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return nil
         }
 
-        guard accountIdentity.localIdentifiers.phoneNumber != nil else {
+        guard accountIdentity.localIdentifiers.hasPhoneNumber else {
             owsFailDebug("shouldn't be trying to restore SVR without a phone number")
             return nil
         }
@@ -3943,7 +3943,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) async -> RegistrationStep? {
         logger.info("")
 
-        guard accountIdentity.localIdentifiers.phoneNumber != nil else {
+        guard accountIdentity.localIdentifiers.hasPhoneNumber else {
             return nil
         }
 

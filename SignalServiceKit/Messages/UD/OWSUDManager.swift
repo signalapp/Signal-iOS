@@ -286,7 +286,7 @@ public class OWSUDManagerImpl: OWSUDManager {
         let registeredState = try self.tsAccountManager.registeredStateWithMaybeSneakyTransaction()
         async let aciOnlyCert = fetchSenderCertificate(aciOnly: true, forceRefresh: forceRefresh)
         var defaultCert: SenderCertificate?
-        if registeredState.localIdentifiers.phoneNumber != nil {
+        if registeredState.localIdentifiers.hasPhoneNumber {
             defaultCert = try await fetchSenderCertificate(aciOnly: false, forceRefresh: forceRefresh)
         }
         return SenderCertificates(

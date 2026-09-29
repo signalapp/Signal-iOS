@@ -1678,7 +1678,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         }
 
         let oldIsDiscoverable = tsAccountManager.phoneNumberDiscoverability(tx: transaction)?.isDiscoverable
-        let newIsDiscoverable = !record.notDiscoverableByPhoneNumber && localIdentifiers.phoneNumber != nil
+        let newIsDiscoverable = !record.notDiscoverableByPhoneNumber && localIdentifiers.hasPhoneNumber
         if newIsDiscoverable != oldIsDiscoverable {
             phoneNumberDiscoverabilityManager.setPhoneNumberDiscoverability(
                 newIsDiscoverable ? .everybody : .nobody,

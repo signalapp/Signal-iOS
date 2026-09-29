@@ -109,10 +109,6 @@ public enum LocalDeviceId: CustomStringConvertible {
 }
 
 extension TSAccountManager {
-    public func hasPhoneNumberWithSneakyTransaction() -> Bool {
-        return self.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber != nil
-    }
-
     public func mustBeRegisteredStateWithMaybeSneakyTransaction() -> RegisteredState {
         return failIfThrows { try registeredStateWithMaybeSneakyTransaction() }
     }

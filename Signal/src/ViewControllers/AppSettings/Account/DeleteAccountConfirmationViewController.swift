@@ -26,7 +26,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if registeredStateAtStart.localIdentifiers.phoneNumber != nil {
+        if registeredStateAtStart.localIdentifiers.hasPhoneNumber {
             shouldAvoidKeyboard = true
         }
 
@@ -52,7 +52,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     override func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
 
-        if registeredStateAtStart.localIdentifiers.phoneNumber != nil {
+        if registeredStateAtStart.localIdentifiers.hasPhoneNumber {
             nationalNumberTextField.becomeFirstResponder()
         }
     }
@@ -214,7 +214,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             return
         }
 
-        if registeredStateAtStart.localIdentifiers.phoneNumber != nil {
+        if registeredStateAtStart.localIdentifiers.hasPhoneNumber {
             nationalNumberTextField.resignFirstResponder()
         }
 

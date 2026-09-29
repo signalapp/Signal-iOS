@@ -16,7 +16,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        owsPrecondition(tsAccountManager.hasPhoneNumberWithSneakyTransaction())
+        owsPrecondition(tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.hasPhoneNumber == true)
         loadValues()
         title = OWSLocalizedString(
             "SETTINGS_PHONE_NUMBER_PRIVACY_TITLE",

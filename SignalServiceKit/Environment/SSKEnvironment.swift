@@ -251,7 +251,7 @@ public class SSKEnvironment: NSObject {
 
         guard
             let registeredState = try? tsAccountManager.registeredStateWithMaybeSneakyTransaction(),
-            registeredState.localIdentifiers.phoneNumber != nil
+            registeredState.localIdentifiers.hasPhoneNumber
         else {
             // We must be a registered account with a phone number for this check.
             return

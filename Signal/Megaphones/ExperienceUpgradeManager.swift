@@ -383,7 +383,7 @@ class ExperienceUpgradeManager {
         // The PIN setup flow requires an internet connection and you to not already have a PIN
         if
             registeredState.isPrimary,
-            registeredState.localIdentifiers.phoneNumber != nil,
+            registeredState.localIdentifiers.hasPhoneNumber,
             reachabilityManager.isReachable,
             !ows2FAManager.hasEverHadPin(tx: tx)
         {

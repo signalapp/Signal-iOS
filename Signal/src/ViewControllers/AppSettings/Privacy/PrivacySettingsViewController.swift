@@ -34,7 +34,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
-        if case .phoneNumberfull = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.accountType {
+        if tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.hasPhoneNumber == true {
             let whoCanSection = OWSTableSection()
             whoCanSection.add(.disclosureItem(
                 withText: OWSLocalizedString(

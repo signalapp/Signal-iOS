@@ -104,7 +104,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         if needsLastResortPreKeyRotation(identity: .aci, tx: tx) {
             return true
         }
-        if registeredState.localIdentifiers.phoneNumber != nil {
+        if registeredState.localIdentifiers.hasPhoneNumber {
             if needsSignedPreKeyRotation(identity: .pni, tx: tx) {
                 return true
             }
@@ -170,7 +170,7 @@ public class PreKeyManagerImpl: PreKeyManager {
             try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
             try Task.checkCancellation()
             try await taskManager.refresh(identity: .aci, targets: targets, auth: .implicit())
-            if shouldCheckPniPreKeys, try tsAccountManager.registeredStateWithMaybeSneakyTransaction().localIdentifiers.phoneNumber != nil {
+            if shouldCheckPniPreKeys, try tsAccountManager.registeredStateWithMaybeSneakyTransaction().localIdentifiers.hasPhoneNumber {
                 try Task.checkCancellation()
                 try await self.waitUntilNotChangingNumberIfNeeded(targets: targets)
                 try await taskManager.refresh(identity: .pni, targets: targets, auth: .implicit())

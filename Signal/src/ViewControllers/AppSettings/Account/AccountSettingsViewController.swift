@@ -44,7 +44,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
         if
             let registeredState = try? tsRegistrationState.registeredState(),
             registeredState.isPrimary,
-            registeredState.localIdentifiers.phoneNumber != nil
+            registeredState.localIdentifiers.hasPhoneNumber
         {
             let pinSection = OWSTableSection()
             let isPinEnabled = SSKEnvironment.shared.ows2FAManagerRef.isPinEnabledWithSneakyTransaction
