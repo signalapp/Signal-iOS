@@ -79,6 +79,8 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
             },
         )
         button.accessibilityLabel = CommonStrings.doneButton
+        button.setContentHuggingHigh()
+        button.setCompressionResistanceHigh()
         return button
     }()
 
