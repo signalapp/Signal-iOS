@@ -103,7 +103,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return await nextStep(pathway: getPathway())
     }
 
-    public func continueFromSplash() -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func continueFromSplash() {
         logger.info("")
 
         db.write { tx in
@@ -111,7 +112,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 $0.hasShownSplash = true
             }
         }
-        return Guarantee.wrapAsync { await self.nextStep() }
     }
 
     public func requestPermissions() -> Guarantee<RegistrationStep> {
@@ -126,13 +126,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
-    public func submitProspectiveChangeNumberE164(_ e164: E164) -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func submitProspectiveChangeNumberE164(_ e164: E164) {
         logger.info("")
         self.inMemoryState.changeNumberProspectiveE164 = e164
-        return Guarantee.wrapAsync { await self.nextStep() }
     }
 
-    public func submitE164(_ e164: E164) -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func submitE164(_ e164: E164) {
         logger.info("")
 
         let pathway = getPathway()
@@ -177,11 +178,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         }
         inMemoryState.hasEnteredE164 = true
-
-        return Guarantee.wrapAsync { await self.nextStep() }
     }
 
-    public func requestChangeE164() -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func requestChangeE164() {
         logger.info("")
         db.write { tx in
             updatePersistedState(tx) {
@@ -196,10 +196,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
         inMemoryState.hasEnteredE164 = false
         inMemoryState.changeNumberProspectiveE164 = nil
-        return Guarantee.wrapAsync { await self.nextStep() }
     }
 
-    public func requestSMSCode() -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func requestSMSCode() {
         logger.info("")
         switch getPathway() {
         case
@@ -211,14 +211,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             .svrAuthCredentialCandidates,
             .profileSetup:
             owsFailBeta("Shouldn't be resending SMS from non session paths.")
-            return Guarantee.wrapAsync { await self.nextStep() }
         case .session:
             inMemoryState.pendingCodeTransport = .sms
-            return Guarantee.wrapAsync { await self.nextStep() }
         }
     }
 
-    public func requestVoiceCode() -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func requestVoiceCode() {
         logger.info("")
         switch getPathway() {
         case
@@ -230,10 +229,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             .svrAuthCredentialCandidates,
             .profileSetup:
             owsFailBeta("Shouldn't be sending voice code from non session paths.")
-            return Guarantee.wrapAsync { await self.nextStep() }
         case .session:
             inMemoryState.pendingCodeTransport = .voice
-            return Guarantee.wrapAsync { await self.nextStep() }
         }
     }
 
@@ -259,7 +256,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     /// This is due to the fact we either lack the necessary information (e.g. - device transfer info)
     /// and/or the user hasn't fully committed to the restore method yet (e.g. - they hit cancel on restore from
     /// backup and choose device transfer instead).
-    public func updateRestoreMethod(method: RegistrationRestoreMethod) -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func updateRestoreMethod(method: RegistrationRestoreMethod) {
         switch method {
         case .declined:
             inMemoryState.hasSkippedRestoreFromMessageBackup = true
@@ -299,10 +297,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
             }
         }
-        return Guarantee.wrapAsync { await self.nextStep() }
     }
 
-    public func updateAccountEntropyPool(_ accountEntropyPool: SignalServiceKit.AccountEntropyPool) -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func updateAccountEntropyPool(_ accountEntropyPool: SignalServiceKit.AccountEntropyPool) {
         inMemoryState.accountEntropyPool = accountEntropyPool
         inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = false
         inMemoryState.askForPinDuringReregistration = false
@@ -321,10 +319,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 updateMasterKeyAndLocalState(masterKey: accountEntropyPool.getMasterKey(), tx: tx)
             }
         }
-        return Guarantee.wrapAsync { await self.nextStep() }
     }
 
-    public func restoreFromRegistrationMessage(message: RegistrationProvisioningMessage) -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func restoreFromRegistrationMessage(message: RegistrationProvisioningMessage) {
         inMemoryState.accountEntropyPool = message.accountEntropyPool
         inMemoryState.registrationMessage = message
         inMemoryState.pinFromUser = message.pin
@@ -338,7 +336,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             updateMasterKeyAndLocalState(masterKey: message.accountEntropyPool.getMasterKey(), tx: tx)
         }
         // TODO: Display prompt for restore method selection
-        return Guarantee.wrapAsync { await self.nextStep() }
     }
 
     public func submitCaptcha(_ token: String) -> Guarantee<RegistrationStep> {
@@ -361,26 +358,26 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
-    public func setHasOldDevice(_ hasOldDevice: Bool) -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func setHasOldDevice(_ hasOldDevice: Bool) {
         deps.db.write { tx in
             updatePersistedState(tx) {
                 $0.hasShownSplash = true
                 $0.restoreMode = hasOldDevice ? .quickRestore : .manualRestore
             }
         }
-        return Guarantee.wrapAsync { await self.nextStep() }
     }
 
-    public func setPINCodeForConfirmation(_ blob: RegistrationPinConfirmationBlob) -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func setPINCodeForConfirmation(_ blob: RegistrationPinConfirmationBlob) {
         logger.info("")
         inMemoryState.unconfirmedPinBlob = blob
-        return Guarantee.wrapAsync { await self.nextStep() }
     }
 
-    public func resetUnconfirmedPINCode() -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func resetUnconfirmedPINCode() {
         logger.info("")
         inMemoryState.unconfirmedPinBlob = nil
-        return Guarantee.wrapAsync { await self.nextStep() }
     }
 
     public func submitPINCode(_ code: String) -> Guarantee<RegistrationStep> {
@@ -440,7 +437,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return Guarantee.wrapAsync { await self.nextStep() }
     }
 
-    public func skipPINCode() -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func skipPINCode() {
         logger.info("")
         let shouldGiveUpTryingToRestoreWithSVR: Bool = {
             switch getPathway() {
@@ -473,10 +471,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
         inMemoryState.pinFromUser = nil
         self.wipeInMemoryStateToPreventSVRPathAttempts()
-        return Guarantee.wrapAsync { await self.nextStep() }
     }
 
-    public func skipAndCreateNewPINCode() -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func skipAndCreateNewPINCode() {
         logger.info("")
         switch getPathway() {
         case
@@ -487,7 +485,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             .svrAuthCredentialCandidates,
             .session:
             logger.error("Invalid state from which to skip!")
-            return Guarantee.wrapAsync { await self.nextStep() }
+            return
         case
             .svrAuthCredential,
             .profileSetup:
@@ -509,29 +507,31 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
         inMemoryState.pinFromUser = nil
         self.wipeInMemoryStateToPreventSVRPathAttempts()
-        return Guarantee.wrapAsync { await self.nextStep() }
     }
 
-    public func resetRestoreMode() -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func resetRestoreMode() {
         inMemoryState.registrationMessage = nil
         inMemoryState.accountEntropyPool = nil
         inMemoryState.askForPinDuringReregistration = true
-        db.write { tx in
+        deps.db.write { tx in
             self.updatePersistedState(tx) {
                 $0.shouldSkipRegistrationSplash = false
                 $0.hasShownSplash = false
                 $0.restoreMode = nil
             }
         }
-        return resetRestoreMethodChoice()
+        resetRestoreMethodChoice()
     }
 
-    public func cancelRecoveryKeyEntry() -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func cancelRecoveryKeyEntry() {
         inMemoryState.accountEntropyPool = nil
-        return resetRestoreMethodChoice()
+        resetRestoreMethodChoice()
     }
 
-    public func resetRestoreMethodChoice() -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func resetRestoreMethodChoice() {
         inMemoryState.needsToAskForDeviceTransfer = true
         inMemoryState.restoreFromBackupProgressSink = nil
         deps.db.write { tx in
@@ -540,13 +540,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 $0.restoreMethod = nil
             }
         }
-        return Guarantee.wrapAsync { await self.nextStep() }
     }
 
+    @MainActor
     public func confirmRestoreFromBackup(
         progress: OWSSequentialProgressRootSink<BackupRestoreProgressPhase>,
         selectedBackup: RegistrationRestoreFromBackupConfirmationState.AvailableBackup,
-    ) -> Guarantee<RegistrationStep> {
+    ) {
         inMemoryState.restoreFromBackupProgressSink = progress
         switch selectedBackup {
         case .local(let date):
@@ -554,7 +554,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .remote:
             break
         }
-        return Guarantee.wrapAsync { await self.nextStep() }
     }
 
     private func restoreFromMessageBackup(
@@ -785,7 +784,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
-    public func setPhoneNumberDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability) -> Guarantee<RegistrationStep> {
+    @MainActor
+    public func setPhoneNumberDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability) {
         logger.info("")
 
         let accountIdentity = persistedState.accountIdentity.owsFailUnwrap("must exist")
@@ -794,16 +794,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             accountIdentity: accountIdentity,
             phoneNumberDiscoverability: phoneNumberDiscoverability,
         )
-
-        return Guarantee.wrapAsync { await self.nextStep() }
     }
 
+    @MainActor
     public func setProfileInfo(
         givenName: OWSUserProfile.NameComponent,
         familyName: OWSUserProfile.NameComponent?,
         avatarData: Data?,
         phoneNumberDiscoverability: PhoneNumberDiscoverability?,
-    ) -> Guarantee<RegistrationStep> {
+    ) {
         logger.info("")
 
         let accountIdentity = persistedState.accountIdentity.owsFailUnwrap("must exist")
@@ -816,8 +815,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 phoneNumberDiscoverability: phoneNumberDiscoverability,
             )
         }
-
-        return Guarantee.wrapAsync { await self.nextStep() }
     }
 
     public func acknowledgeReglockTimeout() -> AcknowledgeReglockResult {
@@ -1555,6 +1552,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private typealias AvailableBackup = RegistrationRestoreFromBackupConfirmationState.AvailableBackup
+    @MainActor
     private func fetchBackupCdnInfo(
         accountEntropyPool: SignalServiceKit.AccountEntropyPool,
         accountIdentity: AccountIdentity,
@@ -1604,7 +1602,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     ),
                 )
             case .skipRestore:
-                return await updateRestoreMethod(method: .declined).awaitable()
+                updateRestoreMethod(method: .declined)
+                return await nextStep()
             case .tryAgain, .restartQuickRestore, .none:
                 return await nextStep()
             }

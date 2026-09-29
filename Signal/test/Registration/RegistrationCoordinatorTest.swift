@@ -270,7 +270,8 @@ public class RegistrationCoordinatorTest {
             // With no state set up, should show the splash.
             #expect(await coordinator.nextStep() == .registrationSplash)
             // Once we show it, don't show it again.
-            #expect(await coordinator.continueFromSplash().awaitable() != .registrationSplash)
+            coordinator.continueFromSplash()
+            #expect(await coordinator.nextStep() != .registrationSplash)
         case .reRegistering, .changingNumber:
             #expect(await coordinator.nextStep() != .registrationSplash)
         }
@@ -303,7 +304,8 @@ public class RegistrationCoordinatorTest {
         case .registering:
             // Gotta get the splash out of the way.
             #expect(await coordinator.nextStep() == .registrationSplash)
-            nextStep = await coordinator.continueFromSplash().awaitable()
+            coordinator.continueFromSplash()
+            nextStep = await coordinator.nextStep()
         case .reRegistering, .changingNumber:
             // No splash for these.
             nextStep = await coordinator.nextStep()
@@ -437,8 +439,9 @@ public class RegistrationCoordinatorTest {
 
         // Give it a phone number, which should show the PIN entry step.
         // Now it should ask for the PIN to confirm the user knows it.
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
+            await coordinator.nextStep() ==
                 .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: mode)),
         )
 
@@ -552,8 +555,9 @@ public class RegistrationCoordinatorTest {
         // Give it a phone number, which should show the PIN entry step.
 
         // Now it should ask for the PIN to confirm the user knows it.
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
+            await coordinator.nextStep() ==
                 .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: mode)),
         )
 
@@ -652,8 +656,9 @@ public class RegistrationCoordinatorTest {
 
         // Give it a phone number, which should show the PIN entry step.
         // Now it should ask for the PIN to confirm the user knows it.
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
+            await coordinator.nextStep() ==
                 .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: mode)),
         )
 
@@ -774,8 +779,9 @@ public class RegistrationCoordinatorTest {
 
         // Give it a phone number, which should show the PIN entry step.
         // Now it should ask for the PIN to confirm the user knows it.
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
+            await coordinator.nextStep() ==
                 .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: mode)),
         )
 
@@ -931,8 +937,9 @@ public class RegistrationCoordinatorTest {
 
         // Give it a phone number, which should show the PIN entry step.
         // Now it should ask for the PIN to confirm the user knows it.
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
+            await coordinator.nextStep() ==
                 .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: mode)),
         )
 
@@ -1074,8 +1081,9 @@ public class RegistrationCoordinatorTest {
 
         // Give it a phone number, which should show the PIN entry step.
         // Now it should ask for the PIN to confirm the user knows it.
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
+            await coordinator.nextStep() ==
                 .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: mode)),
         )
 
@@ -1262,8 +1270,9 @@ public class RegistrationCoordinatorTest {
 
         // Give it a phone number, which should show the PIN entry step.
         // Now it should ask for the PIN to confirm the user knows it.
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
+            await coordinator.nextStep() ==
                 .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: mode)),
         )
 
@@ -1423,8 +1432,9 @@ public class RegistrationCoordinatorTest {
 
         // Give it a phone number, which should show the PIN entry step.
         // Now it should ask for the PIN to confirm the user knows it.
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
+            await coordinator.nextStep() ==
                 .pinEntry(Stubs.pinEntryStateForRegRecoveryPath(mode: mode)),
         )
 
@@ -1577,8 +1587,9 @@ public class RegistrationCoordinatorTest {
 
         // At this point, we should be asking for PIN entry so we can use the credential
         // to recover the SVR master key.
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
+            await coordinator.nextStep() ==
                 .pinEntry(Stubs.pinEntryStateForSVRAuthCredentialPath(mode: mode)),
         )
 
@@ -1647,8 +1658,9 @@ public class RegistrationCoordinatorTest {
 
         // Give it a phone number, which should cause it to check the auth credentials.
         // Now we should expect to be at verification code entry since we already set the phone number.
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
+            await coordinator.nextStep() ==
                 .verificationCodeEntry(stubs.verificationCodeEntryState(mode: mode)),
         )
 
@@ -1728,8 +1740,9 @@ public class RegistrationCoordinatorTest {
 
         // Give it a phone number, which should cause it to check the auth credentials.
         // Now we should expect to be at verification code entry since we already set the phone number.
+        coordinator.submitE164(originalE164)
         #expect(
-            await coordinator.submitE164(originalE164).awaitable() ==
+            await coordinator.nextStep() ==
                 .verificationCodeEntry(stubs.verificationCodeEntryState(mode: mode)),
         )
 
@@ -1737,14 +1750,16 @@ public class RegistrationCoordinatorTest {
         #expect(getSvrCredentialUsernames() == [Stubs.svr2AuthCredential.credential.username])
 
         // Now change the phone number; this should take us back to phone number entry.
+        coordinator.requestChangeE164()
         #expect(
-            await coordinator.requestChangeE164().awaitable() ==
+            await coordinator.nextStep() ==
                 .phoneNumberEntry(stubs.phoneNumberEntryState(mode: mode)),
         )
 
         // Now it should ask for PIN entry; we are on the SVR auth credential path.
+        coordinator.submitE164(changedE164)
         #expect(
-            await coordinator.submitE164(changedE164).awaitable() ==
+            await coordinator.nextStep() ==
                 .pinEntry(Stubs.pinEntryStateForSVRAuthCredentialPath(mode: mode)),
         )
     }
@@ -1848,8 +1863,9 @@ public class RegistrationCoordinatorTest {
 
         // Confirm the pin first.
         // No exit allowed since we've already started trying to create the account.
+        coordinator.setPINCodeForConfirmation(.stub())
         #expect(
-            await coordinator.setPINCodeForConfirmation(.stub()).awaitable() ==
+            await coordinator.nextStep() ==
                 .pinEntry(Stubs.pinEntryStateForPostRegConfirm(mode: mode, exitConfigOverride: .noExitAllowed)),
         )
 
@@ -1884,8 +1900,9 @@ public class RegistrationCoordinatorTest {
         // Give it a phone number, which should cause it to start a session.
         // It should put us on the phone number entry screen again
         // with an error.
+        coordinator.submitE164(badE164)
         #expect(
-            await coordinator.submitE164(badE164).awaitable() ==
+            await coordinator.nextStep() ==
                 .phoneNumberEntry(
                     stubs.phoneNumberEntryState(
                         mode: mode,
@@ -1911,8 +1928,9 @@ public class RegistrationCoordinatorTest {
         // Give it a phone number, which should cause it to start a session.
         // It should put us on the phone number entry screen again
         // with an error.
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
+            await coordinator.nextStep() ==
                 .phoneNumberEntry(
                     stubs.phoneNumberEntryState(
                         mode: mode,
@@ -1937,8 +1955,9 @@ public class RegistrationCoordinatorTest {
 
         // Give it a phone number, which should cause it to start a session.
         // It should put us on the verification code entry screen with an error.
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
+            await coordinator.nextStep() ==
                 .verificationCodeEntry(stubs.verificationCodeEntryState(
                     mode: mode,
                     nextSMS: 10,
@@ -1974,8 +1993,9 @@ public class RegistrationCoordinatorTest {
 
         // Give it a phone number, which should cause it to start a session.
         // We should get back the code entry step, with a validation error for the sms transport.
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
+            await coordinator.nextStep() ==
                 .verificationCodeEntry(stubs.verificationCodeEntryState(
                     mode: mode,
                     nextSMS: nil,
@@ -1985,8 +2005,9 @@ public class RegistrationCoordinatorTest {
         )
 
         // We should get back the code entry step.
+        coordinator.requestVoiceCode()
         #expect(
-            await coordinator.requestVoiceCode().awaitable() ==
+            await coordinator.nextStep() ==
                 .verificationCodeEntry(stubs.verificationCodeEntryState(mode: mode)),
         )
         #expect(sessionManager.didRequestCode)
@@ -2017,8 +2038,9 @@ public class RegistrationCoordinatorTest {
         // Give it a phone number, which should cause it to start a session.
         // We should get back the code entry step,
         // with a validation error for the sms transport.
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
+            await coordinator.nextStep() ==
                 .verificationCodeEntry(stubs.verificationCodeEntryState(
                     mode: mode,
                     nextVerificationAttempt: nil,
@@ -2075,9 +2097,9 @@ public class RegistrationCoordinatorTest {
         // Give it a phone number, which should cause it to start a session.
         // It should put us on the phone number entry screen again
         // with an error.
-        let step = await coordinator.submitE164(Stubs.e164).awaitable()
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            step ==
+            await coordinator.nextStep() ==
                 .phoneNumberEntry(
                     stubs.phoneNumberEntryState(
                         mode: mode,
@@ -2140,24 +2162,27 @@ public class RegistrationCoordinatorTest {
 
         // Give it a phone number, which should cause it to start a session.
         // We should be on the verification code entry screen.
+        coordinator.submitE164(originalE164)
         #expect(
-            await coordinator.submitE164(originalE164).awaitable() ==
+            await coordinator.nextStep() ==
                 .verificationCodeEntry(
                     stubs.verificationCodeEntryState(mode: mode, e164: originalE164),
                 ),
         )
 
         // Ask to change the number; this should put us back on phone number entry.
+        coordinator.requestChangeE164()
         #expect(
-            await coordinator.requestChangeE164().awaitable() ==
+            await coordinator.nextStep() ==
                 .phoneNumberEntry(stubs.phoneNumberEntryState(mode: mode)),
         )
 
         // Give it the new phone number, which should cause it to start a session.
         // We should be on the verification code entry screen.
         // TODO: Missing a 'requestPushToken'?
+        coordinator.submitE164(changedE164)
         #expect(
-            await coordinator.submitE164(changedE164).awaitable() ==
+            await coordinator.nextStep() ==
                 .verificationCodeEntry(
                     stubs.verificationCodeEntryState(mode: mode, e164: changedE164),
                 ),
@@ -2197,7 +2222,8 @@ public class RegistrationCoordinatorTest {
 
         // Give it a phone number, which should cause it to start a session.
         // Once we get that session, we should get a captcha step back.
-        #expect(await coordinator.submitE164(Stubs.e164).awaitable() == .captchaChallenge)
+        coordinator.submitE164(Stubs.e164)
+        #expect(await coordinator.nextStep() == .captchaChallenge)
 
         // We should get back the code entry step. Submit a captcha challenge.
         #expect(
@@ -2206,7 +2232,8 @@ public class RegistrationCoordinatorTest {
         )
 
         // Now try and resend a code, which should hit us with the captcha challenge immediately.
-        #expect(await coordinator.requestSMSCode().awaitable() == .captchaChallenge)
+        coordinator.requestSMSCode()
+        #expect(await coordinator.nextStep() == .captchaChallenge)
 
         // This means when we fulfill the challenge, it should
         // immediately try and send the code that couldn't be sent before because
@@ -2261,7 +2288,8 @@ public class RegistrationCoordinatorTest {
         // resulting request for another SMS code.
 
         // Give it a phone number, which should cause it to start a session.
-        _ = await coordinator.submitE164(Stubs.e164).awaitable()
+        coordinator.submitE164(Stubs.e164)
+        _ = await coordinator.nextStep()
 
         // We should still be waiting.
         #expect(
@@ -2311,8 +2339,8 @@ public class RegistrationCoordinatorTest {
         timeoutProviderMock.pushTokenTimeout = 2
 
         // Give it a phone number, which should cause it to start a session.
-        let nextStep = await coordinator.submitE164(Stubs.e164).awaitable()
-        #expect(nextStep == .showErrorSheet(.sessionInvalidated))
+        coordinator.submitE164(Stubs.e164)
+        #expect(await coordinator.nextStep() == .showErrorSheet(.sessionInvalidated))
 
         // One time to set up, one time for the min wait time, one time
         // for the full timeout.
@@ -2354,8 +2382,8 @@ public class RegistrationCoordinatorTest {
         timeoutProviderMock.pushTokenTimeout = 2
 
         // Give it a phone number, which should cause it to start a session.
-        let nextStep = await coordinator.submitE164(Stubs.e164).awaitable()
-        #expect(nextStep == .showErrorSheet(.sessionInvalidated))
+        coordinator.submitE164(Stubs.e164)
+        #expect(await coordinator.nextStep() == .showErrorSheet(.sessionInvalidated))
 
         // One time to set up, one time for the min wait time, one time
         // for the full timeout.
@@ -2389,8 +2417,9 @@ public class RegistrationCoordinatorTest {
         )))
 
         // Give it a phone number, which should cause it to start a session.
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
+            await coordinator.nextStep() ==
                 .phoneNumberEntry(stubs.phoneNumberEntryState(
                     mode: mode,
                     previouslyEnteredE164: Stubs.e164,
@@ -2427,8 +2456,8 @@ public class RegistrationCoordinatorTest {
         )))
 
         // Give it a phone number, which should cause it to start a session.
-        let step = await coordinator.submitE164(Stubs.e164).awaitable()
-        #expect(step == .verificationCodeEntry(stubs.verificationCodeEntryState(mode: mode)))
+        coordinator.submitE164(Stubs.e164)
+        #expect(await coordinator.nextStep() == .verificationCodeEntry(stubs.verificationCodeEntryState(mode: mode)))
         let fulfillment = sessionManager.latestChallengeFulfillment
         #expect(fulfillment == .pushChallenge("a pre-auth challenge token"))
     }
@@ -2458,11 +2487,11 @@ public class RegistrationCoordinatorTest {
         timeoutProviderMock.pushTokenTimeout = 2
 
         // Give it a phone number, which should cause it to start a session.
-        let nextStep = await coordinator.submitE164(Stubs.e164).awaitable()
+        coordinator.submitE164(Stubs.e164)
 
         // After that, we should get a captcha step back, because we haven't
         // yet received the push challenge token.
-        #expect(nextStep == .captchaChallenge)
+        #expect(await coordinator.nextStep() == .captchaChallenge)
     }
 
     @MainActor @Test(arguments: Self.testCases())
@@ -2505,8 +2534,8 @@ public class RegistrationCoordinatorTest {
         // Give it a phone number, which should cause it to start a session.
         // Once we get that session, we should wait a short time for the
         // push challenge token and fulfill it.
-        let step = await coordinator.submitE164(Stubs.e164).awaitable()
-        #expect(step == .verificationCodeEntry(stubs.verificationCodeEntryState(mode: mode)))
+        coordinator.submitE164(Stubs.e164)
+        #expect(await coordinator.nextStep() == .verificationCodeEntry(stubs.verificationCodeEntryState(mode: mode)))
     }
 
     @MainActor @Test(arguments: Self.testCases())
@@ -2540,7 +2569,8 @@ public class RegistrationCoordinatorTest {
         )))
 
         // Give it a phone number, which should cause it to start a session.
-        #expect(await coordinator.submitE164(Stubs.e164).awaitable() == .captchaChallenge)
+        coordinator.submitE164(Stubs.e164)
+        #expect(await coordinator.nextStep() == .captchaChallenge)
         #expect(sessionManager.latestChallengeFulfillment == nil)
     }
 
@@ -2567,7 +2597,8 @@ public class RegistrationCoordinatorTest {
         // Once we get that session, we should get a captcha step back.
         // We have an unknown challenge, but we should do known challenges first!
         // Give it a phone number, which should cause it to start a session.
-        #expect(await coordinator.submitE164(Stubs.e164).awaitable() == .captchaChallenge)
+        coordinator.submitE164(Stubs.e164)
+        #expect(await coordinator.nextStep() == .captchaChallenge)
 
         // This means we should get the app update banner.
         #expect(await coordinator.submitCaptcha(Stubs.captchaToken).awaitable() == .appUpdateBanner)
@@ -2638,8 +2669,9 @@ public class RegistrationCoordinatorTest {
                 )),
         )
 
+        coordinator.requestSMSCode()
         #expect(
-            await coordinator.requestSMSCode().awaitable() ==
+            await coordinator.nextStep() ==
                 .verificationCodeEntry(stubs.verificationCodeEntryState(
                     mode: mode,
                     nextSMS: 7,
@@ -2648,8 +2680,9 @@ public class RegistrationCoordinatorTest {
                 )),
         )
 
+        coordinator.requestVoiceCode()
         #expect(
-            await coordinator.requestVoiceCode().awaitable() ==
+            await coordinator.nextStep() ==
                 .verificationCodeEntry(stubs.verificationCodeEntryState(
                     mode: mode,
                     nextSMS: 5,
@@ -2740,8 +2773,9 @@ public class RegistrationCoordinatorTest {
 
         // Give it a phone number, which should cause it to start a session.
         // Now we should expect to be at verification code entry since we sent the code.
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
+            await coordinator.nextStep() ==
                 .verificationCodeEntry(stubs.verificationCodeEntryState(mode: mode)),
         )
 
@@ -2857,7 +2891,8 @@ public class RegistrationCoordinatorTest {
         #expect(db.read { accountKeyStore.getAccountEntropyPool(tx: $0) == nil })
 
         // Skip the PIN code.
-        #expect(await coordinator.skipPINCode().awaitable() == .done)
+        coordinator.skipPINCode()
+        #expect(await coordinator.nextStep() == .done)
 
         // We should now have set the AEP.
         #expect(db.read { accountKeyStore.getAccountEntropyPool(tx: $0) != nil })
@@ -2958,8 +2993,9 @@ public class RegistrationCoordinatorTest {
 
         // Skip the PIN code and create a new one instead.
         // When we skip, we should be asked to _create_ the PIN.
+        coordinator.skipAndCreateNewPINCode()
         #expect(
-            await coordinator.skipAndCreateNewPINCode().awaitable() ==
+            await coordinator.nextStep() ==
                 .pinEntry(
                     Stubs.pinEntryStateForPostRegCreate(mode: mode, exitConfigOverride: .noExitAllowed),
                 ),
@@ -2969,7 +3005,8 @@ public class RegistrationCoordinatorTest {
         #expect(db.read { accountKeyStore.getAccountEntropyPool(tx: $0) == nil })
 
         // Skip this PIN code, too.
-        #expect(await coordinator.skipPINCode().awaitable() == .done)
+        coordinator.skipPINCode()
+        #expect(await coordinator.nextStep() == .done)
 
         // We should now have set the master key (i.e., the AEP).
         #expect(db.read { accountKeyStore.getAccountEntropyPool(tx: $0) != nil })
@@ -3079,7 +3116,8 @@ public class RegistrationCoordinatorTest {
         }
 
         // Now we should show the permissions.
-        #expect(await coordinator.continueFromSplash().awaitable() == .permissions)
+        coordinator.continueFromSplash()
+        #expect(await coordinator.nextStep() == .permissions)
 
         // Once the state is updated we can proceed.
         #expect(await coordinator.requestPermissions().awaitable() == expectedNextStep)
@@ -3128,8 +3166,9 @@ public class RegistrationCoordinatorTest {
         sessionManager.addRequestCodeResponseMock(.success(stubs.session(nextVerificationAttempt: 0)))
 
         // We should get back the code entry step.
+        coordinator.submitE164(Stubs.e164)
         #expect(
-            await coordinator.submitE164(Stubs.e164).awaitable() ==
+            await coordinator.nextStep() ==
                 .verificationCodeEntry(stubs.verificationCodeEntryState(mode: mode)),
         )
     }
