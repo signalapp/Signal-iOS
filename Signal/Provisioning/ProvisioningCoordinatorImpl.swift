@@ -79,35 +79,20 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         deviceName: String,
         progressViewModel: LinkAndSyncSecondaryProgressViewModel,
     ) async throws(CompleteProvisioningError) {
-        // * Primary devices that are re-registering can provision instead as long as either
-        // the phone number or aci matches.
-        // * Secondary devices _cannot_ be re-linked to primaries with a different aci.
-        let oldLocalIdentifiers: ReregisteringLocalIdentifiers?
-        switch self.tsAccountManager.registrationStateWithMaybeSneakyTransaction {
-        case .reregistering(let localIdentifiers):
-            oldLocalIdentifiers = localIdentifiers
-            if let oldPhoneNumber = localIdentifiers.phoneNumber {
-                switch provisionMessage.accountType {
-                case .phoneNumberfull(let phoneNumberState):
-                    guard oldPhoneNumber == phoneNumberState.phoneNumber.e164.stringValue else {
-                        Logger.warn("can't re-link primary a different phone number")
-                        throw .previouslyLinkedWithDifferentAccount
-                    }
-                case .phoneNumberless:
+        let registrationState = self.tsAccountManager.registrationStateWithMaybeSneakyTransaction
+        switch registrationState {
+        case .unregistered:
+            break
+        case .relinking(let localIdentifiers):
+            // Secondary devices must be re-linked to a primary with the same ACI.
+            if let oldAci = localIdentifiers.aci {
+                guard oldAci == provisionMessage.aci else {
+                    Logger.warn("can't re-link with a different aci")
                     throw .previouslyLinkedWithDifferentAccount
                 }
             }
-        case .relinking(let localIdentifiers):
-            oldLocalIdentifiers = localIdentifiers
         default:
-            oldLocalIdentifiers = nil
-        }
-
-        if let oldAci = oldLocalIdentifiers?.aci {
-            guard oldAci == provisionMessage.aci else {
-                Logger.warn("can't re-link with a different aci")
-                throw .previouslyLinkedWithDifferentAccount
-            }
+            owsFail("can't link with state: \(registrationState)")
         }
 
         let result = try await completeProvisioning_updateCensorshipCircumvention(
