@@ -142,18 +142,22 @@ extension TSAccountManagerImpl: PhoneNumberDiscoverabilitySetter {
 
     public func setPhoneNumberDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability, tx: DBWriteTransaction) {
         mutateWithLock(tx: tx) {
-            kvStore.writeValue(
-                phoneNumberDiscoverability == .everybody,
-                forKey: Keys.isDiscoverableByPhoneNumber,
-                tx: tx,
-            )
-
-            kvStore.writeValue(
-                dateProvider(),
-                forKey: Keys.lastSetIsDiscoverableByPhoneNumber,
-                tx: tx,
-            )
+            _setPhoneNumberDiscoverability(phoneNumberDiscoverability, tx: tx)
         }
+    }
+
+    fileprivate func _setPhoneNumberDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability, tx: DBWriteTransaction) {
+        kvStore.writeValue(
+            phoneNumberDiscoverability == .everybody,
+            forKey: Keys.isDiscoverableByPhoneNumber,
+            tx: tx,
+        )
+
+        kvStore.writeValue(
+            dateProvider(),
+            forKey: Keys.lastSetIsDiscoverableByPhoneNumber,
+            tx: tx,
+        )
     }
 }
 
@@ -193,6 +197,10 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
             kvStore.writeValue(newAuthPassword, forKey: Keys.serverAuthToken, tx: tx)
 
             kvStore.writeValue(dateProvider(), forKey: Keys.registrationDate, tx: tx)
+
+            if newNumber == nil {
+                _setPhoneNumberDiscoverability(.nobody, tx: tx)
+            }
 
             kvStore.removeValue(forKey: Keys.isDeregisteredOrDelinked, tx: tx)
             kvStore.removeValue(forKey: Keys.reregistrationPhoneNumber, tx: tx)

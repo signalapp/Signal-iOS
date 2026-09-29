@@ -137,7 +137,7 @@ public protocol RegistrationCoordinator {
         givenName: OWSUserProfile.NameComponent,
         familyName: OWSUserProfile.NameComponent?,
         avatarData: Data?,
-        phoneNumberDiscoverability: PhoneNumberDiscoverability,
+        phoneNumberDiscoverability: PhoneNumberDiscoverability?,
     ) -> Guarantee<RegistrationStep>
 
     /// The user has hit a reglock timeout and is acknowledging it.

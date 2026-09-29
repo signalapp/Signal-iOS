@@ -1391,7 +1391,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         builder.setPhoneNumberSharingMode(phoneNumberSharingMode.asProtoMode)
 
         builder.setNotDiscoverableByPhoneNumber(
-            tsAccountManager.phoneNumberDiscoverability(tx: transaction).orDefault.isNotDiscoverableByPhoneNumber,
+            !tsAccountManager.phoneNumberDiscoverability(tx: transaction).orDefault.isDiscoverable,
         )
 
         let pinnedConversationProtos = self.pinnedConversationProtos(transaction: transaction)
@@ -1677,10 +1677,11 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             }
         }
 
-        let localPhoneNumberDiscoverability = tsAccountManager.phoneNumberDiscoverability(tx: transaction)
-        if record.notDiscoverableByPhoneNumber != localPhoneNumberDiscoverability?.isNotDiscoverableByPhoneNumber {
+        let oldIsDiscoverable = tsAccountManager.phoneNumberDiscoverability(tx: transaction)?.isDiscoverable
+        let newIsDiscoverable = !record.notDiscoverableByPhoneNumber && localIdentifiers.phoneNumber != nil
+        if newIsDiscoverable != oldIsDiscoverable {
             phoneNumberDiscoverabilityManager.setPhoneNumberDiscoverability(
-                record.notDiscoverableByPhoneNumber ? .nobody : .everybody,
+                newIsDiscoverable ? .everybody : .nobody,
                 updateAccountAttributes: false,
                 updateStorageService: false,
                 authedAccount: authedAccount,

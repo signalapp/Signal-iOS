@@ -15,6 +15,8 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        owsPrecondition(tsAccountManager.hasPhoneNumberWithSneakyTransaction())
         loadValues()
         title = OWSLocalizedString(
             "SETTINGS_PHONE_NUMBER_PRIVACY_TITLE",
@@ -34,8 +36,9 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
     }
 
     private func loadValues() {
-        SSKEnvironment.shared.databaseStorageRef.read { tx in
-            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        databaseStorage.read { tx in
             phoneNumberDiscoverability = tsAccountManager.phoneNumberDiscoverability(tx: tx).orDefault
             phoneNumberSharingMode = SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx).orDefault
         }

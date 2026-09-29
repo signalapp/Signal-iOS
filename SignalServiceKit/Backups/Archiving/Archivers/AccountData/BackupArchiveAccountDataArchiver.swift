@@ -456,7 +456,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             typingIndicators.setTypingIndicatorsEnabled(value: settings.typingIndicators, tx: context.tx)
             linkPreviewSettingStore.setAreLinkPreviewsEnabled(settings.linkPreviews, tx: context.tx)
             phoneNumberDiscoverabilityManager.setPhoneNumberDiscoverability(
-                settings.notDiscoverableByPhoneNumber ? .nobody : .everybody,
+                (context.localIdentifiers.phoneNumber == nil || settings.notDiscoverableByPhoneNumber) ? .nobody : .everybody,
                 updateAccountAttributes: false, // This should be updated later, similar to storage service
                 updateStorageService: false,
                 authedAccount: .implicit,

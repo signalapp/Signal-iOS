@@ -650,7 +650,7 @@ extension RegistrationNavigationController: RegistrationProfilePresenter {
         givenName: OWSUserProfile.NameComponent,
         familyName: OWSUserProfile.NameComponent?,
         avatarData: Data?,
-        phoneNumberDiscoverability: PhoneNumberDiscoverability,
+        phoneNumberDiscoverability: PhoneNumberDiscoverability?,
     ) {
         pushNextController(
             coordinator.setProfileInfo(

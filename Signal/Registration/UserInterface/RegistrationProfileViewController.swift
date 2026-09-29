@@ -10,8 +10,7 @@ import SignalUI
 // MARK: - RegistrationProfileState
 
 public struct RegistrationProfileState: Equatable {
-    let e164: E164
-    let phoneNumberDiscoverability: PhoneNumberDiscoverability
+    var discoverabilityState: RegistrationPhoneNumberDiscoverabilityState?
 }
 
 // MARK: - RegistrationProfilePresenter
@@ -21,7 +20,7 @@ protocol RegistrationProfilePresenter: AnyObject {
         givenName: OWSUserProfile.NameComponent,
         familyName: OWSUserProfile.NameComponent?,
         avatarData: Data?,
-        phoneNumberDiscoverability: PhoneNumberDiscoverability,
+        phoneNumberDiscoverability: PhoneNumberDiscoverability?,
     )
 }
 
@@ -236,24 +235,7 @@ class RegistrationProfileViewController: OWSViewController {
         return stackView
     }()
 
-    private lazy var phoneNumberPrivacyButton: PhoneNumberPrivacyButton = {
-        let button = PhoneNumberPrivacyButton(phoneNumberDiscoverability: state.phoneNumberDiscoverability)
-        button.addAction(
-            UIAction { [weak self] _ in
-                guard let self else { return }
-                let vc = RegistrationPhoneNumberDiscoverabilityViewController(
-                    state: RegistrationPhoneNumberDiscoverabilityState(
-                        e164: self.state.e164,
-                        phoneNumberDiscoverability: self.state.phoneNumberDiscoverability,
-                    ),
-                    presenter: self,
-                )
-                self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
-            },
-            for: .primaryActionTriggered,
-        )
-        return button
-    }()
+    private var phoneNumberPrivacyButton: PhoneNumberPrivacyButton?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -279,6 +261,22 @@ class RegistrationProfileViewController: OWSViewController {
             cameraIconButton.trailingAnchor.constraint(equalTo: avatarView.trailingAnchor, constant: 1),
         ])
 
+        if let discoverabilityState = self.state.discoverabilityState {
+            let phoneNumberPrivacyButton = PhoneNumberPrivacyButton(phoneNumberDiscoverability: discoverabilityState.phoneNumberDiscoverability)
+            phoneNumberPrivacyButton.addAction(
+                UIAction { [weak self] _ in
+                    guard let self else { return }
+                    let vc = RegistrationPhoneNumberDiscoverabilityViewController(
+                        state: self.state.discoverabilityState.owsFailUnwrap("must be set if initially set"),
+                        presenter: self,
+                    )
+                    self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+                },
+                for: .primaryActionTriggered,
+            )
+            self.phoneNumberPrivacyButton = phoneNumberPrivacyButton
+        }
+
         let stackView = addStaticContentStackView(
             arrangedSubviews: [
                 titleLabel,
@@ -287,7 +285,7 @@ class RegistrationProfileViewController: OWSViewController {
                 nameStackView,
                 phoneNumberPrivacyButton,
                 .vStretchingSpacer(),
-            ],
+            ].compacted(),
             isScrollable: true,
             shouldAvoidKeyboard: true,
         )
@@ -364,7 +362,7 @@ class RegistrationProfileViewController: OWSViewController {
             givenName: givenNameComponent,
             familyName: familyNameComponent,
             avatarData: avatarData,
-            phoneNumberDiscoverability: state.phoneNumberDiscoverability,
+            phoneNumberDiscoverability: state.discoverabilityState?.phoneNumberDiscoverability,
         )
     }
 }
@@ -430,11 +428,8 @@ extension RegistrationProfileViewController: RegistrationPhoneNumberDiscoverabil
     var presentedAsModal: Bool { return true }
 
     func setPhoneNumberDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability) {
-        phoneNumberPrivacyButton.phoneNumberDiscoverability = phoneNumberDiscoverability
-        self.state = RegistrationProfileState(
-            e164: self.state.e164,
-            phoneNumberDiscoverability: phoneNumberDiscoverability,
-        )
+        phoneNumberPrivacyButton?.phoneNumberDiscoverability = phoneNumberDiscoverability
+        self.state.discoverabilityState?.phoneNumberDiscoverability = phoneNumberDiscoverability
         self.presentedViewController?.dismiss(animated: true)
     }
 }

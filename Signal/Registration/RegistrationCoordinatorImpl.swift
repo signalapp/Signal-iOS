@@ -815,7 +815,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         givenName: OWSUserProfile.NameComponent,
         familyName: OWSUserProfile.NameComponent?,
         avatarData: Data?,
-        phoneNumberDiscoverability: PhoneNumberDiscoverability,
+        phoneNumberDiscoverability: PhoneNumberDiscoverability?,
     ) -> Guarantee<RegistrationStep> {
         logger.info("")
 
@@ -826,10 +826,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         inMemoryState.pendingProfileInfo = (givenName: givenName, familyName: familyName, avatarData: avatarData)
 
-        updatePhoneNumberDiscoverability(
-            accountIdentity: accountIdentity,
-            phoneNumberDiscoverability: phoneNumberDiscoverability,
-        )
+        if let phoneNumberDiscoverability {
+            updatePhoneNumberDiscoverability(
+                accountIdentity: accountIdentity,
+                phoneNumberDiscoverability: phoneNumberDiscoverability,
+            )
+        }
 
         return Guarantee.wrapAsync { await self.nextStep() }
     }
@@ -3721,18 +3723,23 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return await nextStep()
             } else {
                 return .setupProfile(RegistrationProfileState(
-                    e164: accountIdentity.e164,
-                    phoneNumberDiscoverability: inMemoryState.phoneNumberDiscoverability.orDefault,
+                    discoverabilityState: accountIdentity.localIdentifiers.phoneNumber.map {
+                        return RegistrationPhoneNumberDiscoverabilityState(
+                            phoneNumber: $0,
+                            phoneNumberDiscoverability: inMemoryState.phoneNumberDiscoverability.orDefault,
+                        )
+                    },
                 ))
             }
         }
 
         if
             inMemoryState.phoneNumberDiscoverability == nil,
+            let phoneNumber = accountIdentity.localIdentifiers.phoneNumber,
             persistedState.restoreMethod?.backupType == nil
         {
             return .phoneNumberDiscoverability(RegistrationPhoneNumberDiscoverabilityState(
-                e164: accountIdentity.e164,
+                phoneNumber: phoneNumber,
                 phoneNumberDiscoverability: inMemoryState.phoneNumberDiscoverability.orDefault,
             ))
         }

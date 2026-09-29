@@ -10,9 +10,6 @@ public enum PhoneNumberDiscoverability {
     case nobody
 
     public var isDiscoverable: Bool { self == .everybody }
-
-    /// Helpful for Storage Service operations that use the negative.
-    public var isNotDiscoverableByPhoneNumber: Bool { !isDiscoverable }
 }
 
 public protocol PhoneNumberDiscoverabilityManager {
