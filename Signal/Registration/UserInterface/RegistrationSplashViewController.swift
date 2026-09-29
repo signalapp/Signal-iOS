@@ -36,7 +36,7 @@ public class RegistrationSplashViewController: OWSViewController, OWSNavigationC
 
         view.backgroundColor = .Signal.background
 
-        if UIDevice.current.isIPad {
+        if !RegistrationUtils.isPrimaryByDefault {
             let modeSwitchButton = UIButton(
                 configuration: .plain(),
                 primaryAction: UIAction { [weak self] _ in

@@ -9,6 +9,10 @@ import SignalUI
 
 enum RegistrationUtils {
 
+    static var isPrimaryByDefault: Bool {
+        return !UIDevice.current.isIPad
+    }
+
     static func showReRegistrationPrompt(fromViewController viewController: UIViewController, deregisteredState: DeregisteredState) {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         owsPrecondition(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true)

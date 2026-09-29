@@ -183,10 +183,10 @@ class ProvisioningController: NSObject {
     func cancelProvisioning(from viewController: UIViewController) {
         Logger.info("")
 
-        if UIDevice.current.isIPad {
-            SignalApp.shared.showSecondaryProvisioning(skipOnboarding: false)
-        } else {
+        if RegistrationUtils.isPrimaryByDefault {
             switchToPrimaryRegistration(viewController: viewController)
+        } else {
+            SignalApp.shared.showSecondaryProvisioning(skipOnboarding: false)
         }
     }
 

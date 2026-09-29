@@ -1051,10 +1051,10 @@ final class AppLifecycleManager: NSObject, UNUserNotificationCenterDelegate {
             fallthrough
 
         case .unregistered:
-            if UIDevice.current.isIPad {
-                return .secondaryProvisioning
-            } else {
+            if RegistrationUtils.isPrimaryByDefault {
                 return .registration(regLoader, .registering)
+            } else {
+                return .secondaryProvisioning
             }
         }
     }
