@@ -247,7 +247,7 @@ public protocol _RegistrationCoordinator_ProfileManagerShim {
         tx: DBWriteTransaction,
     ) -> Promise<Void>
 
-    func scheduleReuploadLocalProfile(authedAccount: AuthedAccount)
+    func scheduleReuploadLocalProfile(authedAccount: AuthedAccount, tx: DBWriteTransaction)
 }
 
 public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordinator_ProfileManagerShim {
@@ -280,17 +280,13 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
         )
     }
 
-    public func scheduleReuploadLocalProfile(authedAccount: AuthedAccount) {
-        Task {
-            await DependenciesBridge.shared.db.awaitableWrite { tx in
-                _ = manager.reuploadLocalProfile(
-                    unsavedRotatedProfileKey: nil,
-                    mustReuploadAvatar: true,
-                    authedAccount: authedAccount,
-                    tx: tx,
-                )
-            }
-        }
+    public func scheduleReuploadLocalProfile(authedAccount: AuthedAccount, tx: DBWriteTransaction) {
+        _ = manager.reuploadLocalProfile(
+            unsavedRotatedProfileKey: nil,
+            mustReuploadAvatar: true,
+            authedAccount: authedAccount,
+            tx: tx,
+        )
     }
 }
 

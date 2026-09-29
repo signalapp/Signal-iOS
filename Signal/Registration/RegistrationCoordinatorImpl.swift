@@ -3707,8 +3707,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             persistedState.restoreMethod?.backupType == nil
         {
             if let profileInfo = inMemoryState.pendingProfileInfo {
-                let updatePromise = db.write { tx in
-                    deps.profileManager.updateLocalProfile(
+                db.write { tx in
+                    _ = deps.profileManager.updateLocalProfile(
                         givenName: profileInfo.givenName,
                         familyName: profileInfo.familyName,
                         avatarData: profileInfo.avatarData,
@@ -3716,19 +3716,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         tx: tx,
                     )
                 }
-                do {
-                    _ = try await updatePromise.awaitable()
-                    self.inMemoryState.hasProfileName = true
-                    self.inMemoryState.pendingProfileInfo = nil
-                    return await nextStep()
-                } catch {
-                    if error.isPostRegDeregisteredError {
-                        return await becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
-                    }
-                    return .showErrorSheet(
-                        error.isNetworkFailureOrTimeout ? .networkError : .genericError,
-                    )
-                }
+                self.inMemoryState.hasProfileName = true
+                self.inMemoryState.pendingProfileInfo = nil
+                return await nextStep()
             } else {
                 return .setupProfile(RegistrationProfileState(
                     e164: accountIdentity.e164,
@@ -4101,7 +4091,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
             loadProfileState()
             if inMemoryState.hasProfileName {
-                scheduleReuploadProfileStateAsync(accountIdentity: accountIdentity)
+                db.write { tx in
+                    scheduleReuploadProfileState(accountIdentity: accountIdentity, tx: tx)
+                }
             }
             inMemoryState.hasRestoredFromStorageService = true
         } catch {
@@ -4211,15 +4203,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
-    private func scheduleReuploadProfileStateAsync(accountIdentity: AccountIdentity) {
-        logger.debug("restored local profile name. Uploading...")
+    private func scheduleReuploadProfileState(accountIdentity: AccountIdentity, tx: DBWriteTransaction) {
         // if we don't have a `localGivenName`, there's nothing to upload, and trying
         // to upload would fail.
 
         // Note we *don't* block on the update. There's no need to block registration on
         // it completing, and if there are any errors, it's durable.
         self.deps.profileManager
-            .scheduleReuploadLocalProfile(authedAccount: accountIdentity.authedAccount)
+            .scheduleReuploadLocalProfile(authedAccount: accountIdentity.authedAccount, tx: tx)
     }
 
     private func loadProfileState() {

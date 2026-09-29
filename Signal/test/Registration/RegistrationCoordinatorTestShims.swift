@@ -227,7 +227,7 @@ public class _RegistrationCoordinator_ProfileManagerMock: _RegistrationCoordinat
 
     public var didScheduleReuploadLocalProfile = false
 
-    public func scheduleReuploadLocalProfile(authedAccount: AuthedAccount) {
+    public func scheduleReuploadLocalProfile(authedAccount: AuthedAccount, tx: DBWriteTransaction) {
         didScheduleReuploadLocalProfile = true
     }
 }
