@@ -159,6 +159,10 @@ public extension ContactsViewHelper {
         }
     }
 
+    static func presentContactReadAccessDeniedAlert(purpose: ReadPurpose, viewController: UIViewController) {
+        presentContactAccessDeniedAlert(from: viewController, access: .read(purpose))
+    }
+
     private static func presentContactAccessDeniedAlert(from viewController: UIViewController, access: Access) {
         owsAssertDebug(!CurrentAppContext().isNSE)
 

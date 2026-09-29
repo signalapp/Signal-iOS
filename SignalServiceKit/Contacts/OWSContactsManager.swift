@@ -127,6 +127,10 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol, ThreadRemove
         }
     }
 
+    public var rawAuthorizationStatus: RawContactAuthorizationStatus {
+        systemContactsFetcher.rawAuthorizationStatus
+    }
+
     public var sharingAuthorization: ContactAuthorizationForSharing {
         switch self.systemContactsFetcher.rawAuthorizationStatus {
         case .notDetermined:

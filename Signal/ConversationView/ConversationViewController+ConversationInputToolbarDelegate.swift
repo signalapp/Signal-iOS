@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Contacts
 import CoreServices
 import LibSignalClient
 public import Photos
@@ -631,16 +632,27 @@ private extension ConversationViewController {
         AssertIsOnMainThread()
 
         dismissKeyboard()
-        SUIEnvironment.shared.contactsViewHelperRef.checkReadAuthorization(
-            purpose: .share,
-            performWhenAllowed: {
-                if BuildFlags.accountIdentifierSharing {
-                    let contactsPicker = ContactSharingPickerViewController()
-                    contactsPicker.contactSharingDelegate = self
-                    let sheet = OWSNavigationController(rootViewController: contactsPicker)
-                    sheet.presentationController?.delegate = self
-                    self.presentFormSheet(sheet, animated: true)
-                } else {
+
+        if BuildFlags.accountIdentifierSharing {
+            let presentPicker = {
+                let contactsPicker = ContactSharingPickerViewController()
+                contactsPicker.contactSharingDelegate = self
+                let sheet = OWSNavigationController(rootViewController: contactsPicker)
+                sheet.presentationController?.delegate = self
+                self.presentFormSheet(sheet, animated: true)
+            }
+            switch SSKEnvironment.shared.contactManagerImplRef.sharingAuthorization {
+            case .notDetermined:
+                CNContactStore().requestAccess(for: .contacts) { _, _ in
+                    DispatchQueue.main.async(execute: presentPicker)
+                }
+            case .authorized, .denied:
+                presentPicker()
+            }
+        } else {
+            SUIEnvironment.shared.contactsViewHelperRef.checkReadAuthorization(
+                purpose: .share,
+                performWhenAllowed: {
                     let contactsPicker = ContactPickerViewController(allowsMultipleSelection: false, subtitleCellType: .none)
                     contactsPicker.delegate = self
                     contactsPicker.title = OWSLocalizedString(
@@ -650,10 +662,10 @@ private extension ConversationViewController {
                     let sheet = OWSNavigationController(rootViewController: contactsPicker)
                     sheet.presentationController?.delegate = self
                     self.presentFormSheet(sheet, animated: true)
-                }
-            },
-            presentErrorFrom: self,
-        )
+                },
+                presentErrorFrom: self,
+            )
+        }
     }
 
     // MARK: - Attachment Picking: Documents

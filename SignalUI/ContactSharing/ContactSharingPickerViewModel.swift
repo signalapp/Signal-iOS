@@ -20,7 +20,7 @@ final class ContactSharingPickerViewModel {
     private let blockedRecipientIdentifiersProvider: (DBReadTransaction) -> Set<SignalRecipient.RowId>
     private let comparableValueConfigProvider: () -> DisplayName.ComparableValue.Config
     private let contactManager: any ContactManager
-    private let contactsSharingAuthorizationProvider: () -> ContactAuthorizationForSharing
+    private let contactsAuthorizationStatusProvider: () -> RawContactAuthorizationStatus
     private let db: any DB
     private let displayNamesForRecipientsProvider: ([SignalRecipient], DBReadTransaction) -> [DisplayName]
     private let nicknameRecordStore: any NicknameRecordStore
@@ -31,7 +31,8 @@ final class ContactSharingPickerViewModel {
     private let recipientHidingManager: any RecipientHidingManager
     private let recipientManager: any SignalRecipientManager
     private let searchDebounceInterval: DispatchQueue.SchedulerTimeType.Stride
-    private let systemContactsProvider: (ContactAuthorizationForSharing) -> [SystemContact]
+    private let systemContactsProvider: (RawContactAuthorizationStatus) -> [SystemContact]
+    private let systemContactsRefresher: () async -> Void
     private let tsAccountManager: any TSAccountManager
     private let userProfileProvider: (SignalRecipient, DBReadTransaction) -> OWSUserProfile?
 
@@ -39,7 +40,7 @@ final class ContactSharingPickerViewModel {
 
     enum State {
         case initial
-        case loaded([Row])
+        case loaded(rows: [Row], contactsAccessPrompt: ContactsAccessPrompt?)
 
         var isInitial: Bool {
             switch self {
@@ -51,6 +52,8 @@ final class ContactSharingPickerViewModel {
 
     private let stateSubject = CurrentValueSubject<State, Never>(.initial)
     private let searchTextSubject = CurrentValueSubject<String, Never>("")
+    private var loadedContactsAuthorizationStatus: RawContactAuthorizationStatus?
+    private var cancellables = Set<AnyCancellable>()
 
     var state: State { stateSubject.value }
 
@@ -68,18 +71,24 @@ final class ContactSharingPickerViewModel {
     }()
 
     private nonisolated static func displayedRows(for state: State, searchText: String) -> DisplayedRows {
-        let searchText = searchText.strippedOrNil
-
-        guard case .loaded(let rows) = state else {
-            return DisplayedRows(isSearching: searchText != nil, rows: [])
+        switch state {
+        case .initial:
+            return DisplayedRows(contactsAccessPrompt: nil, isSearching: false, rows: [])
+        case .loaded(let rows, contactsAccessPrompt: let contactsAccessPrompt):
+            if let searchText = searchText.strippedOrNil {
+                return DisplayedRows(
+                    contactsAccessPrompt: nil,
+                    isSearching: true,
+                    rows: rows.filter { $0.matches(searchText: searchText) },
+                )
+            } else {
+                return DisplayedRows(
+                    contactsAccessPrompt: contactsAccessPrompt,
+                    isSearching: false,
+                    rows: rows,
+                )
+            }
         }
-        guard let searchText else {
-            return DisplayedRows(isSearching: false, rows: rows)
-        }
-        return DisplayedRows(
-            isSearching: true,
-            rows: rows.filter { $0.matches(searchText: searchText) },
-        )
     }
 
     // MARK: - Lifecycle
@@ -89,10 +98,11 @@ final class ContactSharingPickerViewModel {
         blockedRecipientIdentifiersProvider: ((DBReadTransaction) -> Set<SignalRecipient.RowId>)? = nil,
         comparableValueConfigProvider: (() -> DisplayName.ComparableValue.Config)? = nil,
         contactManager: any ContactManager = SSKEnvironment.shared.contactManagerRef,
-        contactsSharingAuthorizationProvider: (() -> ContactAuthorizationForSharing)? = nil,
+        contactsAuthorizationStatusProvider: (() -> RawContactAuthorizationStatus)? = nil,
         db: any DB = SSKEnvironment.shared.databaseStorageRef,
         displayNamesForRecipientsProvider: (([SignalRecipient], DBReadTransaction) -> [DisplayName])? = nil,
         nicknameRecordStore: any NicknameRecordStore = NicknameRecordStoreImpl(),
+        notificationCenter: NotificationCenter = .default,
         phoneNumberUtil: PhoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef,
         phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher = DependenciesBridge.shared.phoneNumberVisibilityFetcher,
         profileManager: any ProfileManager = SSKEnvironment.shared.profileManagerRef,
@@ -100,7 +110,8 @@ final class ContactSharingPickerViewModel {
         recipientHidingManager: any RecipientHidingManager = DependenciesBridge.shared.recipientHidingManager,
         recipientManager: any SignalRecipientManager = DependenciesBridge.shared.recipientManager,
         searchDebounceInterval: DispatchQueue.SchedulerTimeType.Stride = .milliseconds(300),
-        systemContactsProvider: ((ContactAuthorizationForSharing) -> [SystemContact])? = nil,
+        systemContactsProvider: ((RawContactAuthorizationStatus) -> [SystemContact])? = nil,
+        systemContactsRefresher: (() async -> Void)? = nil,
         tsAccountManager: any TSAccountManager = DependenciesBridge.shared.tsAccountManager,
         userProfileProvider: ((SignalRecipient, DBReadTransaction) -> OWSUserProfile?)? = nil,
     ) {
@@ -110,8 +121,8 @@ final class ContactSharingPickerViewModel {
         }
         self.comparableValueConfigProvider = comparableValueConfigProvider ?? { .current() }
         self.contactManager = contactManager
-        self.contactsSharingAuthorizationProvider = contactsSharingAuthorizationProvider ?? {
-            SSKEnvironment.shared.contactManagerImplRef.sharingAuthorization
+        self.contactsAuthorizationStatusProvider = contactsAuthorizationStatusProvider ?? {
+            SSKEnvironment.shared.contactManagerImplRef.rawAuthorizationStatus
         }
         self.db = db
         self.displayNamesForRecipientsProvider = displayNamesForRecipientsProvider ?? { recipients, tx in
@@ -126,10 +137,21 @@ final class ContactSharingPickerViewModel {
         self.recipientManager = recipientManager
         self.searchDebounceInterval = searchDebounceInterval
         self.systemContactsProvider = systemContactsProvider ?? Self.fetchSystemContacts
+        self.systemContactsRefresher = systemContactsRefresher ?? {
+            await Self.refreshSystemContacts(contactManager: SSKEnvironment.shared.contactManagerImplRef)
+        }
         self.tsAccountManager = tsAccountManager
         self.userProfileProvider = userProfileProvider ?? { recipient, tx in
             profileManager.userProfile(for: recipient.address, tx: tx)
         }
+
+        notificationCenter.publisher(for: UIApplication.didBecomeActiveNotification)
+            .sink { [weak self] _ in
+                MainActor.assumeIsolated {
+                    self?.reloadIfContactsAuthorizationChanged()
+                }
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Searching
@@ -142,14 +164,51 @@ final class ContactSharingPickerViewModel {
 
     func loadData() {
         let comparableValueConfig = comparableValueConfigProvider()
+        let contactsAuthorizationStatus = contactsAuthorizationStatusProvider()
 
+        loadedContactsAuthorizationStatus = contactsAuthorizationStatus
         stateSubject.value = .loaded(
-            mergeRows(
+            rows: mergeRows(
                 comparableValueConfig: comparableValueConfig,
                 signalContactsData: loadSignalContactsData(comparableValueConfig: comparableValueConfig),
-                systemContacts: systemContactsProvider(contactsSharingAuthorizationProvider()),
+                systemContacts: systemContactsProvider(contactsAuthorizationStatus),
             ),
+            contactsAccessPrompt: contactsAccessPrompt(authorizationStatus: contactsAuthorizationStatus),
         )
+    }
+
+    // MARK: - Contacts Access
+
+    private func reloadIfContactsAuthorizationChanged() {
+        guard contactsAuthorizationStatusProvider() != loadedContactsAuthorizationStatus else {
+            return
+        }
+        loadData()
+    }
+
+    func reloadAfterLimitedContactsAccessChange() async {
+        await systemContactsRefresher()
+        loadData()
+    }
+
+    private func contactsAccessPrompt(authorizationStatus: RawContactAuthorizationStatus) -> ContactsAccessPrompt? {
+        switch authorizationStatus {
+        case .limited:
+            .manageLimitedAccess
+        case .denied:
+            .allowAccessInSettings
+        case .restricted:
+            .explainRestrictedAccess
+        case .notDetermined, .authorized:
+            nil
+        }
+    }
+
+    private static func refreshSystemContacts(contactManager: OWSContactsManager) async {
+        guard contactManager.isSyncingAllowed else {
+            return
+        }
+        try? await contactManager.userRequestedSystemContactsRefresh().awaitable()
     }
 
     private func loadSignalContactsData(
@@ -202,9 +261,12 @@ final class ContactSharingPickerViewModel {
     }
 
     private static func fetchSystemContacts(
-        contactAuthorizationForSharing: ContactAuthorizationForSharing,
+        contactsAuthorizationStatus: RawContactAuthorizationStatus,
     ) -> [SystemContact] {
-        guard contactAuthorizationForSharing == .authorized else {
+        switch contactsAuthorizationStatus {
+        case .authorized, .limited:
+            break
+        case .notDetermined, .denied, .restricted:
             return []
         }
 
@@ -406,7 +468,19 @@ final class ContactSharingPickerViewModel {
 
     // MARK: - Supporting Types
 
+    /// A prompt about the app's access to the user's system contacts.
+    enum ContactsAccessPrompt {
+        /// Access is limited to some contacts; offer to choose more.
+        case manageLimitedAccess
+        /// Access was denied; point the user to Settings.
+        case allowAccessInSettings
+        /// Access is restricted, for example by Screen Time; explain why
+        /// system contacts are missing.
+        case explainRestrictedAccess
+    }
+
     struct DisplayedRows {
+        let contactsAccessPrompt: ContactsAccessPrompt?
         let isSearching: Bool
         let rows: [Row]
     }

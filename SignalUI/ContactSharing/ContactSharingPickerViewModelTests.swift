@@ -17,6 +17,7 @@ struct ContactSharingPickerViewModelTests {
 
     private let db = InMemoryDB()
     private let nicknameRecordStore = NicknameRecordStoreImpl()
+    private let notificationCenter = NotificationCenter()
     private let phoneNumberVisibilityFetcher = MockPhoneNumberVisibilityFetcher()
     private let providers = StubbedProviders()
     private let recipientDatabaseTable = RecipientDatabaseTable()
@@ -404,6 +405,114 @@ struct ContactSharingPickerViewModelTests {
         #expect(emissions.last?.rows.map(\.displayName) == ["Alice"])
     }
 
+    // MARK: - Contacts Access Prompt
+
+    @Test
+    func testNoPromptIsShownWhenContactsAccessIsAuthorized() async throws {
+        providers.contactsAuthorizationStatus = .authorized
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        #expect(try await displayedRows(of: viewModel).contactsAccessPrompt == nil)
+    }
+
+    @Test
+    func testRestrictedContactsAccessIsExplained() async throws {
+        providers.contactsAuthorizationStatus = .restricted
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        #expect(try await displayedRows(of: viewModel).contactsAccessPrompt == .explainRestrictedAccess)
+    }
+
+    @Test
+    func testThePromptIsHiddenWhileSearching() async throws {
+        providers.contactsAuthorizationStatus = .denied
+        addContact(named: "Alice")
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+        viewModel.setSearchText("ali")
+
+        #expect(try await displayedRows(of: viewModel).contactsAccessPrompt == nil)
+    }
+
+    @Test
+    func testDeniedContactsAccessPointsToSettings() async throws {
+        providers.contactsAuthorizationStatus = .denied
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        #expect(try await displayedRows(of: viewModel).contactsAccessPrompt == .allowAccessInSettings)
+    }
+
+    @Test
+    func testLimitedContactsAccessShowsTheManagePrompt() async throws {
+        providers.contactsAuthorizationStatus = .limited
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        #expect(try await displayedRows(of: viewModel).contactsAccessPrompt == .manageLimitedAccess)
+    }
+
+    @Test
+    func testBecomingActiveReloadsWhenContactsAuthorizationChanged() async throws {
+        providers.contactsAuthorizationStatus = .denied
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+        providers.contactsAuthorizationStatus = .authorized
+        providers.systemContacts = [makeSystemContact(givenName: "Dave", phoneNumber: "+16505550199")]
+        notificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil)
+
+        let displayedRows = try await displayedRows(of: viewModel)
+        #expect(displayedRows.contactsAccessPrompt == nil)
+        #expect(displayedRows.rows.map(\.displayName) == ["Dave"])
+    }
+
+    @Test
+    func testBecomingActiveDoesNotReloadWhenContactsAuthorizationIsUnchanged() {
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+        notificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil)
+
+        #expect(providers.fetchSystemContactsCount == 1)
+    }
+
+    @Test
+    func testChangingLimitedContactsAccessRefreshesAndReloads() async throws {
+        providers.contactsAuthorizationStatus = .limited
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+        providers.systemContacts = [makeSystemContact(givenName: "Dave", phoneNumber: "+16505550199")]
+        await viewModel.reloadAfterLimitedContactsAccessChange()
+
+        #expect(providers.refreshSystemContactsCount == 1)
+        #expect(try await names(of: viewModel) == ["Dave"])
+    }
+
+    @Test
+    func testLoadingWithAPromptEmitsOnce() {
+        providers.contactsAuthorizationStatus = .denied
+        addContact(named: "Alice")
+
+        let viewModel = makeViewModel()
+        var emissions = [ContactSharingPickerViewModel.DisplayedRows]()
+        let cancellable = viewModel.displayedRowsPublisher.sink { emissions.append($0) }
+        defer { cancellable.cancel() }
+
+        viewModel.loadData()
+
+        #expect(emissions.count == 2)
+        #expect(emissions.last?.contactsAccessPrompt == .allowAccessInSettings)
+        #expect(emissions.last?.rows.map(\.displayName) == ["Alice"])
+    }
+
     // MARK: - Collating
 
     @Test
@@ -732,10 +841,11 @@ struct ContactSharingPickerViewModelTests {
             blockedRecipientIdentifiersProvider: { _ in providers.blockedRecipientIds },
             comparableValueConfigProvider: { comparableValueConfig },
             contactManager: FakeContactsManager(),
-            contactsSharingAuthorizationProvider: { .authorized },
+            contactsAuthorizationStatusProvider: { providers.contactsAuthorizationStatus },
             db: db,
             displayNamesForRecipientsProvider: { recipients, _ in providers.displayNames(for: recipients) },
             nicknameRecordStore: nicknameRecordStore,
+            notificationCenter: notificationCenter,
             phoneNumberUtil: PhoneNumberUtil(),
             phoneNumberVisibilityFetcher: phoneNumberVisibilityFetcher,
             profileManager: OWSFakeProfileManager(),
@@ -748,6 +858,7 @@ struct ContactSharingPickerViewModelTests {
             ),
             searchDebounceInterval: .zero,
             systemContactsProvider: { _ in providers.fetchSystemContacts() },
+            systemContactsRefresher: { providers.refreshSystemContacts() },
             tsAccountManager: MockTSAccountManager(),
             userProfileProvider: { recipient, _ in providers.userProfile(for: recipient) },
         )
@@ -871,6 +982,7 @@ struct ContactSharingPickerViewModelTests {
 private final class StubbedProviders {
 
     var blockedRecipientIds: Set<SignalRecipient.RowId> = []
+    var contactsAuthorizationStatus: RawContactAuthorizationStatus = .authorized
     var systemContacts: [SystemContact] = []
 
     /// Recipients without an entry here resolve to `.unknown`.
@@ -880,6 +992,7 @@ private final class StubbedProviders {
 
     private(set) var displayNamesFetchCount = 0
     private(set) var fetchSystemContactsCount = 0
+    private(set) var refreshSystemContactsCount = 0
     private(set) var userProfileFetchCount = 0
 
     func displayNames(for recipients: [SignalRecipient]) -> [DisplayName] {
@@ -890,6 +1003,10 @@ private final class StubbedProviders {
     func userProfile(for recipient: SignalRecipient) -> OWSUserProfile? {
         userProfileFetchCount += 1
         return userProfiles[recipient.id]
+    }
+
+    func refreshSystemContacts() {
+        refreshSystemContactsCount += 1
     }
 
     func fetchSystemContacts() -> [SystemContact] {

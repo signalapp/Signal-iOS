@@ -8707,6 +8707,21 @@
 /* Button text to select all in any list selection mode */
 "SELECT_ALL" = "Select All";
 
+/* Shown on the 'Select Contact' view when access to the user's contacts is restricted, for example by Screen Time or device management. */
+"SELECT_CONTACT_FOR_SHARING_ACCESS_RESTRICTED" = "Access to phone contacts is restricted on this device.";
+
+/* Shown on the 'Select Contact' view when the user has denied access to their contacts. Followed by a 'Learn More' link. */
+"SELECT_CONTACT_FOR_SHARING_ALLOW_ACCESS_IN_SETTINGS_FOOTER" = "To see your phone contacts here, allow access in your device settings.";
+
+/* Subtitle shown on the 'Select Contact' view when the user has no contacts. */
+"SELECT_CONTACT_FOR_SHARING_NO_CONTACTS_SUBTITLE" = "Your contacts will appear here.";
+
+/* Title shown on the 'Select Contact' view when the user has no contacts. */
+"SELECT_CONTACT_FOR_SHARING_NO_CONTACTS_TITLE" = "No Contacts";
+
+/* Title shown on the 'Select Contact' view when no contacts match the user's search. */
+"SELECT_CONTACT_FOR_SHARING_NO_SEARCH_RESULTS_TITLE" = "No Results";
+
 /* Placeholder text for the search bar on the 'Select Contact' view */
 "SELECT_CONTACT_FOR_SHARING_SEARCH_BAR_PLACEHOLDER" = "Search";
 
