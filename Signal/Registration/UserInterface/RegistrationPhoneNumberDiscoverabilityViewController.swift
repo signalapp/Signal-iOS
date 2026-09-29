@@ -84,7 +84,7 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
         ))
         titleLabel.accessibilityIdentifier = "registration.phoneNumberDiscoverability.titleLabel"
 
-        let formattedPhoneNumber = state.phoneNumber
+        let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(e164: state.phoneNumber)
         let explanationTextFormat = OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT",
             comment: "Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number}",
