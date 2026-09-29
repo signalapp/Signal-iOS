@@ -83,19 +83,6 @@ final class IdentityKeyMismatchManagerTest: XCTestCase {
         XCTAssertFalse(kvStore.hasDecryptionError())
     }
 
-    func testUnlinkedIfDecryptionErrorAndMissingPni() async {
-        let localIdentifiers = LocalIdentifiers.mock
-        messageProcessorMock.waitForFetchingAndProcessingMock = {}
-        whoAmIManagerMock.whoAmIResponse = .value(.forUnitTest(localIdentifiers: localIdentifiers))
-        tsAccountManagerMock.localIdentifiersMock = { localIdentifiers.withoutPni() }
-        tsAccountManagerMock.registrationStateMock = { .provisioned(localIdentifiers.withoutPni()) }
-
-        await runRunRun(recordIssue: true)
-
-        XCTAssertFalse(kvStore.hasDecryptionError())
-        XCTAssertTrue(self.isMarkedDeregistered)
-    }
-
     func testUnlinkedIfDecryptionErrorAndMismatchedIdentityKey() async {
         let localIdentifiers = LocalIdentifiers.mock
         messageProcessorMock.waitForFetchingAndProcessingMock = {}

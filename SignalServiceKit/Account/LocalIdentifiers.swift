@@ -173,10 +173,6 @@ extension LocalIdentifiers {
             ),
         )
     }
-
-    func withoutPni() -> Self {
-        return Self(aci: self.aci, accountType: .phoneNumberfull(phoneNumber: self.phoneNumber!, pni: nil))
-    }
 }
 
 #endif
