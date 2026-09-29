@@ -35,6 +35,15 @@ public final class Theme {
         }
     }
 
+    public class func setupAppearance() {
+        // Tint color for template images and accessory checkmarks in table view cells.
+        UITableViewCell.appearance().tintColor = .Signal.label
+
+        if #unavailable(iOS 26) {
+            setupLegacyAppearance()
+        }
+    }
+
     @available(iOS, deprecated: 26)
     public class func setupLegacyAppearance() {
         guard #unavailable(iOS 26) else { return }
