@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Contacts
 import CoreServices
 import LibSignalClient
 public import Photos
@@ -634,21 +633,11 @@ private extension ConversationViewController {
         dismissKeyboard()
 
         if BuildFlags.accountIdentifierSharing {
-            let presentPicker = {
-                let contactsPicker = ContactSharingPickerViewController()
-                contactsPicker.contactSharingDelegate = self
-                let sheet = OWSNavigationController(rootViewController: contactsPicker)
-                sheet.presentationController?.delegate = self
-                self.presentFormSheet(sheet, animated: true)
-            }
-            switch SSKEnvironment.shared.contactManagerImplRef.sharingAuthorization {
-            case .notDetermined:
-                CNContactStore().requestAccess(for: .contacts) { _, _ in
-                    DispatchQueue.main.async(execute: presentPicker)
-                }
-            case .authorized, .denied:
-                presentPicker()
-            }
+            let contactsPicker = ContactSharingPickerViewController()
+            contactsPicker.contactSharingDelegate = self
+            let sheet = OWSNavigationController(rootViewController: contactsPicker)
+            sheet.presentationController?.delegate = self
+            presentFormSheet(sheet, animated: true)
         } else {
             SUIEnvironment.shared.contactsViewHelperRef.checkReadAuthorization(
                 purpose: .share,

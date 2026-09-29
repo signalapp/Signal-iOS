@@ -47,11 +47,12 @@ public class ContactSharingPickerViewController: OWSTableViewController2, UISear
         case noContacts
         case noContactsWithAccessDenied
         case noContactsWithAccessRestricted
+        case noContactsWithAccessNotRequested
         case noSearchResults
 
         var title: String {
             switch self {
-            case .noContacts, .noContactsWithAccessDenied, .noContactsWithAccessRestricted:
+            case .noContacts, .noContactsWithAccessDenied, .noContactsWithAccessRestricted, .noContactsWithAccessNotRequested:
                 OWSLocalizedString(
                     "SELECT_CONTACT_FOR_SHARING_NO_CONTACTS_TITLE",
                     comment: "Title shown on the 'Select Contact' view when the user has no contacts.",
@@ -79,6 +80,8 @@ public class ContactSharingPickerViewController: OWSTableViewController2, UISear
             case .noContactsWithAccessRestricted:
                 return ContactSharingPickerViewController.accessRestrictedText
                     .styled(with: .font(font), .color(color), .alignment(.center))
+            case .noContactsWithAccessNotRequested:
+                return ContactSharingPickerViewController.allowAccessText(font: font, color: color, alignment: .center)
             case .noSearchResults:
                 return nil
             }
@@ -87,7 +90,7 @@ public class ContactSharingPickerViewController: OWSTableViewController2, UISear
         var showsLearnMoreButton: Bool {
             switch self {
             case .noContactsWithAccessDenied: true
-            case .noContacts, .noContactsWithAccessRestricted, .noSearchResults: false
+            case .noContacts, .noContactsWithAccessRestricted, .noContactsWithAccessNotRequested, .noSearchResults: false
             }
         }
     }
@@ -251,8 +254,10 @@ public class ContactSharingPickerViewController: OWSTableViewController2, UISear
         let emptyState: EmptyState? = switch (rows.isEmpty, displayedRows.isSearching, displayedRows.contactsAccessPrompt) {
         case (false, _, _): nil
         case (true, true, _): .noSearchResults
+        case (true, false, .requestAccess): nil
         case (true, false, .allowAccessInSettings): .noContactsWithAccessDenied
         case (true, false, .explainRestrictedAccess): .noContactsWithAccessRestricted
+        case (true, false, .requestAccessAfterDismissal): .noContactsWithAccessNotRequested
         case (true, false, .manageLimitedAccess), (true, false, nil): .noContacts
         }
         showEmptyState(emptyState)
@@ -279,7 +284,9 @@ public class ContactSharingPickerViewController: OWSTableViewController2, UISear
             contents.add(allowAccessInSettingsSection())
         case .explainRestrictedAccess:
             contents.add(OWSTableSection(title: nil, items: [], footerTitle: Self.accessRestrictedText))
-        case .manageLimitedAccess, nil:
+        case .requestAccessAfterDismissal:
+            contents.add(allowAccessSection())
+        case .requestAccess, .manageLimitedAccess, nil:
             break
         }
 
@@ -352,11 +359,24 @@ public class ContactSharingPickerViewController: OWSTableViewController2, UISear
 
     private func contactsAccessPromptSection(prompt: ContactsAccessPrompt?) -> OWSTableSection? {
         switch prompt {
+        case .requestAccess:
+            permissionPromptSection()
         case .manageLimitedAccess:
             limitedContactsAccessSection()
-        case .allowAccessInSettings, .explainRestrictedAccess, nil:
+        case .requestAccessAfterDismissal, .allowAccessInSettings, .explainRestrictedAccess, nil:
             nil
         }
+    }
+
+    private func allowAccessSection() -> OWSTableSection {
+        let section = OWSTableSection()
+        section.footerAttributedTitle = Self.allowAccessText(
+            font: Self.defaultFooterFont,
+            color: Self.defaultFooterTextColor,
+            alignment: .natural,
+        )
+        section.footerTextViewDelegate = self
+        return section
     }
 
     private func allowAccessInSettingsSection() -> OWSTableSection {
@@ -368,6 +388,23 @@ public class ContactSharingPickerViewController: OWSTableViewController2, UISear
         ]).styled(with: .font(Self.defaultFooterFont), .color(Self.defaultFooterTextColor))
         section.footerTextViewDelegate = self
         return section
+    }
+
+    private static func allowAccessText(font: UIFont, color: UIColor, alignment: NSTextAlignment) -> NSAttributedString {
+        let text = NSMutableAttributedString(attributedString: OWSLocalizedString(
+            "SELECT_CONTACT_FOR_SHARING_ALLOW_ACCESS",
+            comment: "Shown on the 'Select Contact' view after the user has dismissed the contacts permission prompt without deciding. The text inside the <link> tags is tappable and asks iOS for access to the user's contacts.",
+        ).styled(
+            with: .font(font),
+            .color(color),
+            .alignment(alignment),
+            .xmlRules([.style("link", .init(.link(Constants.allowAccessURL), .font(font.semibold())))]),
+        ))
+        text.enumerateAttribute(.link, in: text.entireRange) { value, range, _ in
+            guard value != nil else { return }
+            text.mutableString.replaceOccurrences(of: " ", with: "\u{00A0}", range: range)
+        }
+        return text
     }
 
     private static var accessRestrictedText: String {
@@ -399,10 +436,48 @@ public class ContactSharingPickerViewController: OWSTableViewController2, UISear
         ])
     }
 
+    private func permissionPromptSection() -> OWSTableSection {
+        OWSTableSection(items: [
+            OWSTableItem(customCellBlock: { [weak self] in
+                let cell = OWSTableItem.newCell()
+                cell.selectionStyle = .none
+                guard let self else { return cell }
+                let promptView = self.makePermissionPromptView()
+                cell.contentView.addSubview(promptView)
+                promptView.autoPinEdgesToSuperviewEdges()
+                return cell
+            }),
+        ])
+    }
+
+    private func makePermissionPromptView() -> ContactSharingPermissionPromptView {
+        let promptView = ContactSharingPermissionPromptView(
+            onDismiss: { [weak self] in
+                self?.viewModel.dismissContactsPermissionPrompt()
+            },
+            onAllowAccess: { [weak self] in
+                self?.requestContactsAccess()
+            },
+        )
+        promptView.preservesSuperviewLayoutMargins = false
+        promptView.insetsLayoutMarginsFromSafeArea = false
+        promptView.directionalLayoutMargins = NSDirectionalEdgeInsets(
+            hMargin: Self.cellHInnerMargin,
+            vMargin: 24,
+        )
+        return promptView
+    }
+
+    private func requestContactsAccess() {
+        Task { await viewModel.requestContactsAccess() }
+    }
+
     private func didTapLink(_ url: URL) {
         switch url {
         case Constants.learnMoreURL:
             presentContactAccessDeniedSheet()
+        case Constants.allowAccessURL:
+            requestContactsAccess()
         default:
             break
         }
@@ -439,6 +514,7 @@ public class ContactSharingPickerViewController: OWSTableViewController2, UISear
 
     private enum Constants {
         static let learnMoreURL = URL(string: "https://support.signal.org/")!
+        static let allowAccessURL = URL(string: "sgnl-contact-sharing://allow-access")!
     }
 
     // MARK: - UITextViewDelegate

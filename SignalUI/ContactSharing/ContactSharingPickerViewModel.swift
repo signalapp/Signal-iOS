@@ -20,9 +20,11 @@ final class ContactSharingPickerViewModel {
     private let blockedRecipientIdentifiersProvider: (DBReadTransaction) -> Set<SignalRecipient.RowId>
     private let comparableValueConfigProvider: () -> DisplayName.ComparableValue.Config
     private let contactManager: any ContactManager
+    private let contactsAccessRequester: () async -> Void
     private let contactsAuthorizationStatusProvider: () -> RawContactAuthorizationStatus
     private let db: any DB
     private let displayNamesForRecipientsProvider: ([SignalRecipient], DBReadTransaction) -> [DisplayName]
+    private let keyValueStore = NewKeyValueStore(collection: "ContactSharingPicker")
     private let nicknameRecordStore: any NicknameRecordStore
     private let phoneNumberUtil: PhoneNumberUtil
     private let phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher
@@ -98,6 +100,7 @@ final class ContactSharingPickerViewModel {
         blockedRecipientIdentifiersProvider: ((DBReadTransaction) -> Set<SignalRecipient.RowId>)? = nil,
         comparableValueConfigProvider: (() -> DisplayName.ComparableValue.Config)? = nil,
         contactManager: any ContactManager = SSKEnvironment.shared.contactManagerRef,
+        contactsAccessRequester: (() async -> Void)? = nil,
         contactsAuthorizationStatusProvider: (() -> RawContactAuthorizationStatus)? = nil,
         db: any DB = SSKEnvironment.shared.databaseStorageRef,
         displayNamesForRecipientsProvider: (([SignalRecipient], DBReadTransaction) -> [DisplayName])? = nil,
@@ -121,6 +124,9 @@ final class ContactSharingPickerViewModel {
         }
         self.comparableValueConfigProvider = comparableValueConfigProvider ?? { .current() }
         self.contactManager = contactManager
+        self.contactsAccessRequester = contactsAccessRequester ?? {
+            await Self.requestSystemContactsAccess(contactManager: SSKEnvironment.shared.contactManagerImplRef)
+        }
         self.contactsAuthorizationStatusProvider = contactsAuthorizationStatusProvider ?? {
             SSKEnvironment.shared.contactManagerImplRef.rawAuthorizationStatus
         }
@@ -179,6 +185,11 @@ final class ContactSharingPickerViewModel {
 
     // MARK: - Contacts Access
 
+    func requestContactsAccess() async {
+        await contactsAccessRequester()
+        reloadIfContactsAuthorizationChanged()
+    }
+
     private func reloadIfContactsAuthorizationChanged() {
         guard contactsAuthorizationStatusProvider() != loadedContactsAuthorizationStatus else {
             return
@@ -191,16 +202,46 @@ final class ContactSharingPickerViewModel {
         loadData()
     }
 
+    func dismissContactsPermissionPrompt() {
+        db.write { tx in
+            keyValueStore.writeValue(true, forKey: Constants.hasDismissedContactsPermissionPromptKey, tx: tx)
+        }
+        guard case .loaded(let rows, _) = state else {
+            return
+        }
+        stateSubject.value = .loaded(rows: rows, contactsAccessPrompt: .requestAccessAfterDismissal)
+    }
+
     private func contactsAccessPrompt(authorizationStatus: RawContactAuthorizationStatus) -> ContactsAccessPrompt? {
         switch authorizationStatus {
+        case .notDetermined:
+            hasDismissedContactsPermissionPrompt() ? .requestAccessAfterDismissal : .requestAccess
         case .limited:
             .manageLimitedAccess
         case .denied:
             .allowAccessInSettings
         case .restricted:
             .explainRestrictedAccess
-        case .notDetermined, .authorized:
+        case .authorized:
             nil
+        }
+    }
+
+    private func hasDismissedContactsPermissionPrompt() -> Bool {
+        db.read { tx in
+            keyValueStore.fetchValue(Bool.self, forKey: Constants.hasDismissedContactsPermissionPromptKey, tx: tx) ?? false
+        }
+    }
+
+    private static func requestSystemContactsAccess(contactManager: OWSContactsManager) async {
+        guard contactManager.isSyncingAllowed else {
+            _ = try? await CNContactStore().requestAccess(for: .contacts)
+            return
+        }
+        await withCheckedContinuation { continuation in
+            contactManager.requestSystemContactsOnce { _ in
+                continuation.resume()
+            }
         }
     }
 
@@ -468,8 +509,17 @@ final class ContactSharingPickerViewModel {
 
     // MARK: - Supporting Types
 
+    private enum Constants {
+        static let hasDismissedContactsPermissionPromptKey = "hasDismissedContactsPermissionPrompt"
+    }
+
     /// A prompt about the app's access to the user's system contacts.
     enum ContactsAccessPrompt {
+        /// Access hasn't been requested; offer to request it.
+        case requestAccess
+        /// Access hasn't been requested, and the user dismissed the offer;
+        /// keep a smaller link to request it.
+        case requestAccessAfterDismissal
         /// Access is limited to some contacts; offer to choose more.
         case manageLimitedAccess
         /// Access was denied; point the user to Settings.

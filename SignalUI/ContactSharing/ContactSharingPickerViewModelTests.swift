@@ -408,6 +408,16 @@ struct ContactSharingPickerViewModelTests {
     // MARK: - Contacts Access Prompt
 
     @Test
+    func testThePermissionPromptShowsWhenContactsAccessIsNotDetermined() async throws {
+        providers.contactsAuthorizationStatus = .notDetermined
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        #expect(try await displayedRows(of: viewModel).contactsAccessPrompt == .requestAccess)
+    }
+
+    @Test
     func testNoPromptIsShownWhenContactsAccessIsAuthorized() async throws {
         providers.contactsAuthorizationStatus = .authorized
 
@@ -460,6 +470,40 @@ struct ContactSharingPickerViewModelTests {
     }
 
     @Test
+    func testDismissingThePermissionPromptLeavesALinkToAllowAccess() async throws {
+        providers.contactsAuthorizationStatus = .notDetermined
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+        viewModel.dismissContactsPermissionPrompt()
+
+        #expect(try await displayedRows(of: viewModel).contactsAccessPrompt == .requestAccessAfterDismissal)
+    }
+
+    @Test
+    func testDismissingThePermissionPromptIsRemembered() async throws {
+        providers.contactsAuthorizationStatus = .notDetermined
+        makeViewModel().dismissContactsPermissionPrompt()
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        #expect(try await displayedRows(of: viewModel).contactsAccessPrompt == .requestAccessAfterDismissal)
+    }
+
+    @Test
+    func testDismissingThePermissionPromptDoesNotAffectOtherAccessStates() async throws {
+        providers.contactsAuthorizationStatus = .notDetermined
+        makeViewModel().dismissContactsPermissionPrompt()
+        providers.contactsAuthorizationStatus = .limited
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+
+        #expect(try await displayedRows(of: viewModel).contactsAccessPrompt == .manageLimitedAccess)
+    }
+
+    @Test
     func testBecomingActiveReloadsWhenContactsAuthorizationChanged() async throws {
         providers.contactsAuthorizationStatus = .denied
 
@@ -494,6 +538,39 @@ struct ContactSharingPickerViewModelTests {
 
         #expect(providers.refreshSystemContactsCount == 1)
         #expect(try await names(of: viewModel) == ["Dave"])
+    }
+
+    @Test
+    func testRequestingContactsAccessReloadsWithTheNewAuthorization() async throws {
+        providers.contactsAuthorizationStatus = .notDetermined
+        providers.contactsAuthorizationStatusAfterAccessRequest = .authorized
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+        providers.systemContacts = [makeSystemContact(givenName: "Dave", phoneNumber: "+16505550199")]
+        await viewModel.requestContactsAccess()
+
+        let displayedRows = try await displayedRows(of: viewModel)
+        #expect(providers.requestContactsAccessCount == 1)
+        #expect(displayedRows.contactsAccessPrompt == nil)
+        #expect(displayedRows.rows.map(\.displayName) == ["Dave"])
+    }
+
+    @Test
+    func testRequestingContactsAccessDoesNotReloadAgainAfterBecomingActive() async {
+        providers.contactsAuthorizationStatus = .notDetermined
+        providers.contactsAuthorizationStatusAfterAccessRequest = .authorized
+
+        let notificationCenter = notificationCenter
+        providers.onRequestContactsAccess = {
+            notificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil)
+        }
+
+        let viewModel = makeViewModel()
+        viewModel.loadData()
+        await viewModel.requestContactsAccess()
+
+        #expect(providers.fetchSystemContactsCount == 2)
     }
 
     @Test
@@ -841,6 +918,7 @@ struct ContactSharingPickerViewModelTests {
             blockedRecipientIdentifiersProvider: { _ in providers.blockedRecipientIds },
             comparableValueConfigProvider: { comparableValueConfig },
             contactManager: FakeContactsManager(),
+            contactsAccessRequester: { providers.requestContactsAccess() },
             contactsAuthorizationStatusProvider: { providers.contactsAuthorizationStatus },
             db: db,
             displayNamesForRecipientsProvider: { recipients, _ in providers.displayNames(for: recipients) },
@@ -983,6 +1061,8 @@ private final class StubbedProviders {
 
     var blockedRecipientIds: Set<SignalRecipient.RowId> = []
     var contactsAuthorizationStatus: RawContactAuthorizationStatus = .authorized
+    var contactsAuthorizationStatusAfterAccessRequest: RawContactAuthorizationStatus?
+    var onRequestContactsAccess: (() -> Void)?
     var systemContacts: [SystemContact] = []
 
     /// Recipients without an entry here resolve to `.unknown`.
@@ -993,6 +1073,7 @@ private final class StubbedProviders {
     private(set) var displayNamesFetchCount = 0
     private(set) var fetchSystemContactsCount = 0
     private(set) var refreshSystemContactsCount = 0
+    private(set) var requestContactsAccessCount = 0
     private(set) var userProfileFetchCount = 0
 
     func displayNames(for recipients: [SignalRecipient]) -> [DisplayName] {
@@ -1003,6 +1084,14 @@ private final class StubbedProviders {
     func userProfile(for recipient: SignalRecipient) -> OWSUserProfile? {
         userProfileFetchCount += 1
         return userProfiles[recipient.id]
+    }
+
+    func requestContactsAccess() {
+        requestContactsAccessCount += 1
+        if let contactsAuthorizationStatusAfterAccessRequest {
+            contactsAuthorizationStatus = contactsAuthorizationStatusAfterAccessRequest
+        }
+        onRequestContactsAccess?()
     }
 
     func refreshSystemContacts() {
