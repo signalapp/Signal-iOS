@@ -302,22 +302,21 @@ class ScreenLockUI {
 
         isShowingScreenLockUI = true
 
-        ScreenLock.shared.tryToUnlockScreenLock(
-            success: {
+        Task { @MainActor in
+            switch await ScreenLock.shared.tryToUnlockScreenLock() {
+            case .success:
                 Logger.info("unlock screen lock succeeded.")
 
                 self.isShowingScreenLockUI = false
                 self.isScreenLockLocked = false
                 self.ensureUI()
-            },
-            failure: { error in
+            case .failure(let localizedErrorMessage):
                 Logger.info("unlock screen lock failed.")
 
                 self.clearAuthUIWhenActive()
                 self.didLastUnlockAttemptFail = true
-                self.showScreenLockFailureAlertWithMessage(error.userErrorDescription)
-            },
-            unexpectedFailure: { error in
+                self.showScreenLockFailureAlertWithMessage(localizedErrorMessage)
+            case .unexpectedFailure:
                 Logger.info("unlock screen lock unexpectedly failed.")
 
                 // Local Authentication isn't working properly.
@@ -326,16 +325,15 @@ class ScreenLockUI {
                 DispatchQueue.main.async {
                     self.clearAuthUIWhenActive()
                 }
-            },
-            cancel: {
+            case .cancel:
                 Logger.info("unlock screen lock cancelled.")
 
                 self.clearAuthUIWhenActive()
                 self.didLastUnlockAttemptFail = true
                 // Re-show the unlock UI.
                 self.ensureUI()
-            },
-        )
+            }
+        }
 
         ensureUI()
     }

@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import LocalAuthentication
 
 public class OWSPaymentsLock {
 
@@ -129,50 +128,32 @@ public class OWSPaymentsLock {
             return
         }
 
-        let context = DeviceOwnerAuthenticationType.localAuthenticationContext()
+        let localDeviceAuth = LocalDeviceAuthentication(useCase: .unlockPaymentsLock)
 
-        var authError: NSError?
-        let canEvaluatePolicy = context.canEvaluatePolicy(
-            .deviceOwnerAuthentication,
-            error: &authError,
-        )
-
-        guard canEvaluatePolicy, authError == nil else {
-            Logger.error(
-                "could not determine if local authentication is supported: " +
-                    "\(String(describing: authError))",
-            )
-
-            let outcome = Self.outcomeForLAError(errorParam: authError)
-            switch outcome {
-            case .success:
-                owsFailDebug("local authentication unexpected success")
-                completion(.failure(error: .localizedDefaultErrorDescription))
-            case .cancel, .failure, .unexpectedFailure, .disabled:
-                completion(outcome)
-            }
+        let attemptToken: LocalDeviceAuthentication.AttemptToken
+        switch localDeviceAuth.checkCanAttempt() {
+        case .success(let token):
+            attemptToken = token
+        case .failure(let authError):
+            Logger.error("could not attempt local authentication: \(authError)")
+            completion(LocalAuthOutcome.outcomeFromAuthError(
+                authError,
+                defaultErrorDescription: .localizedDefaultErrorDescription,
+            ))
             return
         }
 
-        context.evaluatePolicy(
-            .deviceOwnerAuthentication,
-            localizedReason: .localizedAuthReason,
-        ) { success, evaluateError in
-
-            guard success else {
-                let outcome = Self.outcomeForLAError(errorParam: evaluateError)
-                switch outcome {
-                case .success:
-                    owsFailDebug("local authentication unexpected success")
-                    completion(.failure(error: .localizedDefaultErrorDescription))
-                case .cancel, .failure, .unexpectedFailure, .disabled:
-                    completion(outcome)
-                }
-                return
+        Task {
+            switch await localDeviceAuth.attempt(token: attemptToken) {
+            case .success:
+                Logger.info("local authentication succeeded.")
+                completion(.success)
+            case .failure(let authError):
+                completion(LocalAuthOutcome.outcomeFromAuthError(
+                    authError,
+                    defaultErrorDescription: .localizedDefaultErrorDescription,
+                ))
             }
-
-            Logger.info("local authentication succeeded.")
-            completion(.success)
         }
     }
 
@@ -181,22 +162,6 @@ public class OWSPaymentsLock {
         return await withCheckedContinuation { continuation in
             self.tryToUnlock(completion: { continuation.resume(returning: $0) })
         }
-    }
-
-    // MARK: - Outcome
-
-    private static func outcomeForLAError(errorParam: Error?) -> LocalAuthOutcome {
-        guard
-            let error = errorParam,
-            let laError = error as? LAError
-        else {
-            return .failure(error: .localizedDefaultErrorDescription)
-        }
-
-        return LocalAuthOutcome.outcomeFromLAError(
-            laError,
-            defaultErrorDescription: .localizedDefaultErrorDescription,
-        )
     }
 }
 
@@ -215,67 +180,41 @@ private extension String {
         )
     }
 
-    static var localizedAuthReason: String {
-        OWSLocalizedString(
-            "PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK",
-            comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'.",
-        )
-    }
-
 }
 
 private extension OWSPaymentsLock.LocalAuthOutcome {
-    static func outcomeFromLAError(
-        _ laError: LAError,
+    static func outcomeFromAuthError(
+        _ authError: LocalDeviceAuthentication.AuthError,
         defaultErrorDescription: String,
     ) -> OWSPaymentsLock.LocalAuthOutcome {
-        switch laError.code {
-        case .biometryNotAvailable:
+        switch authError {
+        case .notConfigured(.biometryNotAvailable):
             Logger.error("local authentication error: biometryNotAvailable.")
-            return .failure(error: LAError.notAvailableLocalized)
-        case .biometryNotEnrolled:
+            return .failure(error: .notAvailableLocalized)
+        case .notConfigured(.biometryNotEnrolled):
             Logger.error("local authentication error: biometryNotEnrolled.")
-            return .failure(error: LAError.notEnrolledLocalized)
-        case .biometryLockout:
-            Logger.error("local authentication error: biometryLockout.")
-            return .failure(error: LAError.lockoutLocalized)
-        case .authenticationFailed:
-            Logger.error("local authentication error: authenticationFailed.")
-            return .failure(error: LAError.authenticationFailedLocalized)
-        case .passcodeNotSet:
+            return .failure(error: .notEnrolledLocalized)
+        case .notConfigured(.passcodeNotSet):
             Logger.error("local authentication error: passcodeNotSet.")
-            return .failure(error: LAError.passcodeNotSetLocalized)
-        case .touchIDNotAvailable:
-            Logger.error("local authentication error: touchIDNotAvailable.")
-            return .failure(error: LAError.notAvailableLocalized)
-        case .touchIDNotEnrolled:
-            Logger.error("local authentication error: touchIDNotEnrolled.")
-            return .failure(error: LAError.notEnrolledLocalized)
-        case .touchIDLockout:
-            Logger.error("local authentication error: touchIDLockout.")
-            return .failure(error: LAError.lockoutLocalized)
-        case .userCancel, .userFallback, .systemCancel, .appCancel:
+            return .failure(error: .passcodeNotSetLocalized)
+        case .failed(.lockout):
+            Logger.error("local authentication error: lockout.")
+            return .failure(error: .lockoutLocalized)
+        case .failed(.authenticationFailed):
+            Logger.error("local authentication error: authenticationFailed.")
+            return .failure(error: .authenticationFailedLocalized)
+        case .canceled:
             Logger.info("local authentication cancelled.")
             return .cancel
-        case .invalidContext:
-            owsFailDebug("context not valid.")
-            return .unexpectedFailure(error: defaultErrorDescription)
-        case .notInteractive:
-            owsFailDebug("context not interactive.")
-            return .unexpectedFailure(error: defaultErrorDescription)
-        case .companionNotAvailable:
-            owsFailDebug("companion device not available.")
-            return .unexpectedFailure(error: defaultErrorDescription)
-        @unknown default:
-            owsFailDebug("Unexpected enum value.")
+        case .failed(.unexpected):
             return .unexpectedFailure(error: defaultErrorDescription)
         }
     }
 }
 
-private extension LAError {
+private extension String {
 
-    // Localized LAError Descriptions
+    // Localized Error Descriptions
 
     static var authenticationFailedLocalized: String {
         OWSLocalizedString(

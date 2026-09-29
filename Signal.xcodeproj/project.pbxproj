@@ -1419,7 +1419,6 @@
 		72328C872C6C3E6D000EA728 /* OWSMultipart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72328C862C6C3E6D000EA728 /* OWSMultipart.swift */; };
 		72328C892C6C6733000EA728 /* OWSCountryMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72328C882C6C6733000EA728 /* OWSCountryMetadata.swift */; };
 		72328C8B2C6C7322000EA728 /* OWSCensorshipConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72328C8A2C6C7322000EA728 /* OWSCensorshipConfiguration.swift */; };
-		72345D192B9A17CF000237B3 /* DeviceOwnerAuthenticationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1E28CBA4A5006845CD /* DeviceOwnerAuthenticationType.swift */; };
 		72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AB271B521500B05242 /* CommonStrings.swift */; };
 		72345D1E2B9A1F64000237B3 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
 		72345D1F2B9A1FCF000237B3 /* DateUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452851A26DE890300824983 /* DateUtil.swift */; };
@@ -1800,6 +1799,7 @@
 		A5E7C675248C5443007C949A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A5E7C673248C5442007C949A /* InfoPlist.strings */; };
 		A8B4B2CDBC78CBC03A4BC247 /* MockAciContactShareNameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA74775FE55A58CC252DB9AA /* MockAciContactShareNameManager.swift */; };
 		AB0C401C2E5BADCE00A1B2C3 /* NotificationSettingsBadgeCountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0C401B2E5BADCE00A1B2C3 /* NotificationSettingsBadgeCountViewController.swift */; };
+		B0AD302792B460C279F2579E /* RecipientPickerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFECE43A156F07034673DD1 /* RecipientPickerViewModelTests.swift */; };
 		B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60EDE031A05A01700D73516 /* AudioToolbox.framework */; };
 		B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
@@ -5790,7 +5790,6 @@
 		66F98DE72DBBF24F009F1A86 /* LineWrappingStackViewTestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineWrappingStackViewTestController.swift; sourceTree = "<group>"; };
 		66F98DE92DC5314E009F1A86 /* ChatListViewController+BackupDownloadProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+BackupDownloadProgressView.swift"; sourceTree = "<group>"; };
 		66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsBiometryLockPromptViewController.swift; sourceTree = "<group>"; };
-		66FA2B1E28CBA4A5006845CD /* DeviceOwnerAuthenticationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceOwnerAuthenticationType.swift; sourceTree = "<group>"; };
 		66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStorySettingsViewController.swift; sourceTree = "<group>"; };
 		66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectMyStoryRecipientsViewController.swift; sourceTree = "<group>"; };
 		66FC636E29DF797700F00DAC /* MessageBodyRanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyRanges.swift; sourceTree = "<group>"; };
@@ -5932,6 +5931,7 @@
 		76F4B580293ACCD200A7CF2F /* UIKit+Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIKit+Animations.swift"; sourceTree = "<group>"; };
 		76F958622A09A5AE00B43E63 /* DebugUIDiskUsage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIDiskUsage.swift; sourceTree = "<group>"; };
 		76FCCDBB27AB8FBE00BAA7F0 /* MediaControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaControls.swift; sourceTree = "<group>"; };
+		7CFECE43A156F07034673DD1 /* RecipientPickerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerViewModelTests.swift; sourceTree = "<group>"; };
 		7F965533D71CA51BE6704CC4 /* Pods_SignalNSE.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalNSE.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FF88FB580BC19B240EEB86A /* Pods_Signal.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Signal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		83B9573827C9A1FA00A678FD /* CaptchaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptchaView.swift; sourceTree = "<group>"; };
@@ -15959,7 +15959,6 @@
 				F94C912128FDEAF50065DF75 /* Decimal+IsInteger.swift */,
 				F94C911F28FDEA2E0065DF75 /* Decimal+Rounded.swift */,
 				66F98DDF2DB710EA009F1A86 /* DeviceBatteryLevelManager.swift */,
-				66FA2B1E28CBA4A5006845CD /* DeviceOwnerAuthenticationType.swift */,
 				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
 				502D69312A7AC07C0085B656 /* Dictionary+SSK.swift */,
 				F9C5CB16289453B200548EEE /* DispatchQueue+OWS.swift */,
@@ -19804,7 +19803,6 @@
 				50F401CC2D483BF40094CA56 /* DeviceId.swift in Sources */,
 				505C2ED629971D4E00C23FB2 /* DeviceLimitExceededError.swift in Sources */,
 				50E5E4B129932D9B00E15A1C /* DeviceMessage.swift in Sources */,
-				72345D192B9A17CF000237B3 /* DeviceOwnerAuthenticationType.swift in Sources */,
 				F9C5CDC3289453B400548EEE /* DeviceProvisioningService.swift in Sources */,
 				72C9058C2B9AC7BD00E586B8 /* DeviceSleepManager.swift in Sources */,
 				F9C5CC94289453B300548EEE /* DeviceTransfer.pb.swift in Sources */,

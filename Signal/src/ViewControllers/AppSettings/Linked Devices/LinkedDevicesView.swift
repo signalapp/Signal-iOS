@@ -5,7 +5,6 @@
 
 import Combine
 import LibSignalClient
-import LocalAuthentication
 import SignalServiceKit
 import SignalUI
 import SwiftUI
@@ -536,19 +535,19 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
     }
 
     private func didTapLinkDeviceButton() {
-        let localDeviceAuth = LocalDeviceAuthentication()
+        let localDeviceAuth = LocalDeviceAuthentication(useCase: .linkNewDevice)
         let localDeviceAuthAttemptToken: LocalDeviceAuthentication.AttemptToken
 
         switch localDeviceAuth.checkCanAttempt() {
         case .success(let attemptToken):
             localDeviceAuthAttemptToken = attemptToken
-        case .failure(.notRequired):
+        case .failure(.notConfigured):
             showLinkNewDeviceView()
             return
         case .failure(.canceled):
             return
-        case .failure(.genericError(let localizedErrorMessage)):
-            showError(message: localizedErrorMessage)
+        case .failure(.failed(let failureReason)):
+            showError(message: failureReason.localizedErrorMessage)
             return
         }
 
@@ -662,12 +661,12 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
         localDeviceAuthAttemptToken: LocalDeviceAuthentication.AttemptToken,
     ) async {
         switch await localDeviceAuth.attempt(token: localDeviceAuthAttemptToken) {
-        case .success, .failure(.notRequired):
+        case .success, .failure(.notConfigured):
             showLinkNewDeviceView()
         case .failure(.canceled):
             break
-        case .failure(.genericError(let localizedErrorMessage)):
-            showError(message: localizedErrorMessage)
+        case .failure(.failed(let failureReason)):
+            showError(message: failureReason.localizedErrorMessage)
         }
     }
 

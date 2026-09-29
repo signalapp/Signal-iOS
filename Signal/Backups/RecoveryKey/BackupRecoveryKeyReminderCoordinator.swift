@@ -72,7 +72,9 @@ class BackupRecoveryKeyReminderCoordinator {
     ) {
         Task { @MainActor in
             guard
-                let authSuccess = await LocalDeviceAuthentication().performBiometricAuth()
+                let authSuccess = await LocalDeviceAuthentication(
+                    useCase: .recoveryKeyReminder,
+                ).performBiometricAuth()
             else {
                 return
             }

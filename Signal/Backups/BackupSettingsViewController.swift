@@ -545,7 +545,9 @@ class BackupSettingsViewController:
             if areBackupsDisabled {
                 guard
                     let aep = db.read(block: { accountKeyStore.getAccountEntropyPool(tx: $0) }),
-                    let authSuccess = await LocalDeviceAuthentication().performBiometricAuth()
+                    let authSuccess = await LocalDeviceAuthentication(
+                        useCase: .enableBackups,
+                    ).performBiometricAuth()
                 else {
                     return
                 }
@@ -1382,7 +1384,9 @@ class BackupSettingsViewController:
     private func _showViewRecoveryKey() async {
         guard
             let navigationController,
-            let authSuccess = await LocalDeviceAuthentication().performBiometricAuth(),
+            let authSuccess = await LocalDeviceAuthentication(
+                useCase: .viewRecoveryKey,
+            ).performBiometricAuth(),
             let aep = db.read(block: { accountKeyStore.getAccountEntropyPool(tx: $0) })
         else {
             return

@@ -8,7 +8,7 @@ import SignalServiceKit
 
 public class PaymentOnboarding {
     private class func ftPaymentsLockActionSheetMessage() -> String {
-        switch DeviceOwnerAuthenticationType.current {
+        switch LocalDeviceAuthentication.AuthenticationType.current {
         case .unknown:
             return OWSLocalizedString(
                 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE",
@@ -38,7 +38,7 @@ public class PaymentOnboarding {
     }
 
     private class func ftPaymentsLockAffirmativeActionTitle() -> String {
-        switch DeviceOwnerAuthenticationType.current {
+        switch LocalDeviceAuthentication.AuthenticationType.current {
         case .unknown:
             return OWSLocalizedString(
                 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION",

@@ -229,7 +229,9 @@ class BackupOnboardingCoordinator {
     private func showSaveAndConfirmKey() {
         Task {
             guard
-                let authSuccess = await LocalDeviceAuthentication().performBiometricAuth(),
+                let authSuccess = await LocalDeviceAuthentication(
+                    useCase: .enableBackups,
+                ).performBiometricAuth(),
                 let aep = db.read(block: { accountKeyStore.getAccountEntropyPool(tx: $0) })
             else {
                 return

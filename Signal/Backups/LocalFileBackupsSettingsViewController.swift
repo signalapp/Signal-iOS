@@ -634,7 +634,9 @@ class LocalFileBackupsSettingsViewController: OWSTableViewController2 {
     private func _showViewRecoveryKey() async {
         guard
             let navigationController,
-            let authSuccess = await LocalDeviceAuthentication().performBiometricAuth()
+            let authSuccess = await LocalDeviceAuthentication(
+                useCase: .viewRecoveryKey,
+            ).performBiometricAuth()
         else {
             return
         }

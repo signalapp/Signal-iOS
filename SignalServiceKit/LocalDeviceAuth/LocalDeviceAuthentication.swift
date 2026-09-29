@@ -6,10 +6,123 @@
 import LocalAuthentication
 
 public struct LocalDeviceAuthentication {
+
+    /// Describes why we're asking the user to authenticate. Presented to the
+    /// user as part of the system authentication prompt.
+    public enum UseCase {
+        case changeScreenLockSettings
+        case enableBackups
+        case linkNewDevice
+        case recoveryKeyReminder
+        case transferAccount
+        case unlockPaymentsLock
+        case unlockScreenLock
+        case viewRecoveryKey
+
+        public var localizedReason: String {
+            switch self {
+            case .changeScreenLockSettings:
+                return OWSLocalizedString(
+                    "SCREEN_LOCK_REASON_CHANGE_SCREEN_LOCK_SETTINGS",
+                    comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to confirm a change to the 'screen lock' settings.",
+                )
+            case .enableBackups:
+                return OWSLocalizedString(
+                    "ENABLE_BACKUPS_AUTHENTICATION_REASON",
+                    comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to turn on backups.",
+                )
+            case .linkNewDevice:
+                return OWSLocalizedString(
+                    "LINK_NEW_DEVICE_AUTHENTICATION_REASON",
+                    comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking.",
+                )
+            case .recoveryKeyReminder:
+                return OWSLocalizedString(
+                    "RECOVERY_KEY_REMINDER_AUTHENTICATION_REASON",
+                    comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode during a periodic reminder to record your recovery key.",
+                )
+            case .transferAccount:
+                return OWSLocalizedString(
+                    "TRANSFER_ACCOUNT_AUTHENTICATION_REASON",
+                    comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to transfer your account to a new device.",
+                )
+            case .unlockPaymentsLock:
+                return OWSLocalizedString(
+                    "PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK",
+                    comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'.",
+                )
+            case .unlockScreenLock:
+                return OWSLocalizedString(
+                    "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK",
+                    comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'.",
+                )
+            case .viewRecoveryKey:
+                return OWSLocalizedString(
+                    "VIEW_RECOVERY_KEY_AUTHENTICATION_REASON",
+                    comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to view your recovery key.",
+                )
+            }
+        }
+    }
+
+    /// The kind of authentication the device will present to the user.
+    public enum AuthenticationType {
+        case unknown
+        case passcode
+        case faceId
+        case touchId
+        case opticId
+
+        public static var current: Self {
+            let context = LocalDeviceAuthentication.makeContext()
+
+            // Calling this sets the biometryType we check below.
+            context.canEvaluatePolicy(.deviceOwnerAuthentication, error: nil)
+
+            switch context.biometryType {
+            case .none:
+                return .passcode
+            case .faceID:
+                return .faceId
+            case .touchID:
+                return .touchId
+            case .opticID:
+                return .opticId
+            @unknown default:
+                return .unknown
+            }
+        }
+    }
+
     public enum AuthError: Error {
-        case notRequired
+        /// This device isn't set up for local authentication, so it can't be
+        /// performed at all.
+        case notConfigured(NotConfiguredReason)
         case canceled
-        case genericError(localizedErrorMessage: String)
+        case failed(FailureReason)
+
+        public enum NotConfiguredReason {
+            case biometryNotAvailable
+            case biometryNotEnrolled
+            case passcodeNotSet
+        }
+
+        public enum FailureReason {
+            case authenticationFailed
+            case lockout
+            case unexpected
+
+            public var localizedErrorMessage: String {
+                switch self {
+                case .authenticationFailed:
+                    return DeviceAuthenticationErrorMessage.authenticationFailed
+                case .lockout:
+                    return DeviceAuthenticationErrorMessage.lockout
+                case .unexpected:
+                    return DeviceAuthenticationErrorMessage.unknownError
+                }
+            }
+        }
     }
 
     /// An opaque object representing successful authentication.
@@ -18,9 +131,22 @@ public struct LocalDeviceAuthentication {
     public struct AttemptToken {}
 
     private let context: LAContext
+    private let useCase: UseCase
 
-    public init() {
-        context = DeviceOwnerAuthenticationType.localAuthenticationContext()
+    public init(useCase: UseCase) {
+        self.context = Self.makeContext()
+        self.useCase = useCase
+    }
+
+    private static func makeContext() -> LAContext {
+        let context = LAContext()
+
+        // Never recycle biometric auth.
+        context.touchIDAuthenticationAllowableReuseDuration = TimeInterval(0)
+
+        assert(!context.interactionNotAllowed)
+
+        return context
     }
 
     // MARK: -
@@ -30,13 +156,13 @@ public struct LocalDeviceAuthentication {
 
         switch self.checkCanAttempt() {
         case .success(let attemptToken): localDeviceAuthAttemptToken = attemptToken
-        case .failure(.notRequired): return AuthSuccess()
-        case .failure(.canceled), .failure(.genericError): return nil
+        case .failure(.notConfigured): return AuthSuccess()
+        case .failure(.canceled), .failure(.failed): return nil
         }
 
         switch await self.attempt(token: localDeviceAuthAttemptToken) {
-        case .success, .failure(.notRequired): return AuthSuccess()
-        case .failure(.canceled), .failure(.genericError): return nil
+        case .success, .failure(.notConfigured): return AuthSuccess()
+        case .failure(.canceled), .failure(.failed): return nil
         }
     }
 
@@ -61,10 +187,7 @@ public struct LocalDeviceAuthentication {
         do {
             try await context.evaluatePolicy(
                 .deviceOwnerAuthentication,
-                localizedReason: OWSLocalizedString(
-                    "LINK_NEW_DEVICE_AUTHENTICATION_REASON",
-                    comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking.",
-                ),
+                localizedReason: useCase.localizedReason,
             )
 
             return .success(AuthSuccess())
@@ -79,17 +202,16 @@ public struct LocalDeviceAuthentication {
             let laError = error as? LAError
         else {
             owsFailDebug("Unexpected or missing auth error: \(error as Optional)")
-            return .genericError(localizedErrorMessage: DeviceAuthenticationErrorMessage.unknownError)
+            return .failed(.unexpected)
         }
 
         switch laError.code {
-        case
-            .biometryNotAvailable,
-            .biometryNotEnrolled,
-            .passcodeNotSet,
-            .touchIDNotAvailable,
-            .touchIDNotEnrolled:
-            return .notRequired
+        case .biometryNotAvailable, .touchIDNotAvailable:
+            return .notConfigured(.biometryNotAvailable)
+        case .biometryNotEnrolled, .touchIDNotEnrolled:
+            return .notConfigured(.biometryNotEnrolled)
+        case .passcodeNotSet:
+            return .notConfigured(.passcodeNotSet)
         case
             .userCancel,
             .userFallback,
@@ -97,21 +219,21 @@ public struct LocalDeviceAuthentication {
             .appCancel:
             return .canceled
         case .biometryLockout, .touchIDLockout:
-            return .genericError(localizedErrorMessage: DeviceAuthenticationErrorMessage.lockout)
+            return .failed(.lockout)
         case .authenticationFailed:
-            return .genericError(localizedErrorMessage: DeviceAuthenticationErrorMessage.authenticationFailed)
+            return .failed(.authenticationFailed)
         case .invalidContext:
             owsFailDebug("Context not valid.")
-            return .genericError(localizedErrorMessage: DeviceAuthenticationErrorMessage.unknownError)
+            return .failed(.unexpected)
         case .notInteractive:
             owsFailDebug("Context not interactive!")
-            return .genericError(localizedErrorMessage: DeviceAuthenticationErrorMessage.unknownError)
+            return .failed(.unexpected)
         case .companionNotAvailable:
             owsFailDebug("Companion device not available.")
-            return .genericError(localizedErrorMessage: DeviceAuthenticationErrorMessage.unknownError)
+            return .failed(.unexpected)
         @unknown default:
             owsFailDebug("Unexpected LAContext error code: \(laError.code)")
-            return .genericError(localizedErrorMessage: DeviceAuthenticationErrorMessage.unknownError)
+            return .failed(.unexpected)
         }
     }
 }

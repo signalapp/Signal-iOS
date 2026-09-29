@@ -71,27 +71,20 @@ final class SAEScreenLockViewController: ScreenLockViewController, ScreenLockVie
 
         isShowingAuthUI = true
 
-        ScreenLock.shared.tryToUnlockScreenLock(
-            success: {
-                AssertIsOnMainThread()
-
+        Task { @MainActor in
+            switch await ScreenLock.shared.tryToUnlockScreenLock() {
+            case .success:
                 Logger.info("unlock screen lock succeeded.")
 
                 self.isShowingAuthUI = false
                 self.invokeCompletion(didUnlock: true)
-            },
-            failure: { error in
-                AssertIsOnMainThread()
-
+            case .failure(let localizedErrorMessage):
                 Logger.info("unlock screen lock failed.")
 
                 self.isShowingAuthUI = false
                 self.ensureUI()
-                self.showScreenLockFailureAlertWithMessage(error.userErrorDescription)
-            },
-            unexpectedFailure: { error in
-                AssertIsOnMainThread()
-
+                self.showScreenLockFailureAlertWithMessage(localizedErrorMessage)
+            case .unexpectedFailure:
                 Logger.info("unlock screen lock unexpectedly failed.")
 
                 self.isShowingAuthUI = false
@@ -102,16 +95,13 @@ final class SAEScreenLockViewController: ScreenLockViewController, ScreenLockVie
                 DispatchQueue.main.async {
                     self.ensureUI()
                 }
-            },
-            cancel: {
-                AssertIsOnMainThread()
-
+            case .cancel:
                 Logger.info("unlock screen lock cancelled.")
 
                 self.isShowingAuthUI = false
                 self.ensureUI()
-            },
-        )
+            }
+        }
 
         ensureUI()
     }

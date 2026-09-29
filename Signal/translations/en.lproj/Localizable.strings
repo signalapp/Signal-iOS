@@ -3799,6 +3799,9 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
 
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to turn on backups. */
+"ENABLE_BACKUPS_AUTHENTICATION_REASON" = "Authenticate to turn on backups";
+
 /* Label for a toast that confirms that local backups are enabled. */
 "ENABLE_LOCAL_FILE_BACKUPS_TOAST_CONFIRM" = "On-device backups enabled";
 
@@ -7936,6 +7939,9 @@
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_TITLE" = "Invite to Signal";
 
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode during a periodic reminder to record your recovery key. */
+"RECOVERY_KEY_REMINDER_AUTHENTICATION_REASON" = "Authenticate to view your recovery key";
+
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
 
@@ -10594,6 +10600,9 @@
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
 
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to transfer your account to a new device. */
+"TRANSFER_ACCOUNT_AUTHENTICATION_REASON" = "Authenticate to transfer your account";
+
 /* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
 "TRANSFER_COMPLETE_SHEET_BUTTON" = "Close Signal";
 
@@ -10920,6 +10929,9 @@
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "View Photo";
+
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to view your recovery key. */
+"VIEW_RECOVERY_KEY_AUTHENTICATION_REASON" = "Authenticate to view your recovery key";
 
 /* View the story of a group or user */
 "VIEW_STORY" = "View Story";

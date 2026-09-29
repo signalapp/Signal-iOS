@@ -157,7 +157,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         let appSecuritySection = OWSTableSection()
         appSecuritySection.headerTitle = OWSLocalizedString("SETTINGS_SECURITY_TITLE", comment: "Section header")
 
-        switch DeviceOwnerAuthenticationType.current {
+        switch LocalDeviceAuthentication.AuthenticationType.current {
         case .unknown:
             appSecuritySection.footerTitle = OWSLocalizedString("SETTINGS_SECURITY_DETAIL", comment: "Section footer")
         case .passcode:
@@ -205,7 +205,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         let paymentsSection = OWSTableSection()
         paymentsSection.headerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_SECURITY_TITLE", comment: "Title for the payments section in the app’s privacy settings tableview")
 
-        switch DeviceOwnerAuthenticationType.current {
+        switch LocalDeviceAuthentication.AuthenticationType.current {
         case .unknown:
             paymentsSection.footerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_SECURITY_DETAIL", comment: "Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown.")
         case .passcode:
@@ -304,26 +304,31 @@ class PrivacySettingsViewController: OWSTableViewController2 {
     /// Requires device owner authentication before weakening screen lock.
     private func authenticateToWeakenScreenLock(success: @escaping () -> Void) {
         // If there's no passcode, there's nothing to authenticate against.
-        if case .failure(.notRequired) = LocalDeviceAuthentication().checkCanAttempt() {
+        switch LocalDeviceAuthentication(useCase: .changeScreenLockSettings).checkCanAttempt() {
+        case .failure(.notConfigured):
             success()
             return
+        case .success, .failure:
+            break
         }
 
-        ScreenLock.shared.tryToUnlockScreenLockSettings(
-            success: success,
-            failure: { [weak self] error in
+        Task { @MainActor [weak self] in
+            switch await ScreenLock.shared.tryToUnlockScreenLockSettings() {
+            case .success:
+                success()
+            case .failure(let localizedErrorMessage):
                 self?.updateTableContents()
-                self?.showScreenLockAuthFailureAlert(message: error.userErrorDescription)
-            },
-            unexpectedFailure: { [weak self] error in
+                self?.showScreenLockAuthFailureAlert(message: localizedErrorMessage)
+            case .unexpectedFailure:
                 self?.updateTableContents()
-                self?.showScreenLockAuthFailureAlert(message: error.userErrorDescription)
-            },
-            cancel: { [weak self] in
+                self?.showScreenLockAuthFailureAlert(
+                    message: DeviceAuthenticationErrorMessage.unknownError,
+                )
+            case .cancel:
                 // The user backed out; there's no error to report.
                 self?.updateTableContents()
-            },
-        )
+            }
+        }
     }
 
     private func showScreenLockAuthFailureAlert(message: String) {

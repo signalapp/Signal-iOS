@@ -4,15 +4,14 @@
 //
 
 import Foundation
-import LocalAuthentication
 
 public class ScreenLock: NSObject {
 
     public enum Outcome {
         case success
         case cancel
-        case failure(error: String)
-        case unexpectedFailure(error: String)
+        case failure(localizedErrorMessage: String)
+        case unexpectedFailure
     }
 
     public static let screenLockTimeoutDefault: TimeInterval = 15 * .minute
@@ -116,217 +115,67 @@ public class ScreenLock: NSObject {
 
     // MARK: - Methods
 
-    // This method should only be called:
-    //
-    // * On the main thread.
-    //
-    // Exactly one of these completions will be performed:
-    //
-    // * Asynchronously.
-    // * On the main thread.
-    public func tryToUnlockScreenLock(
-        success: @escaping (() -> Void),
-        failure: @escaping ((Error) -> Void),
-        unexpectedFailure: @escaping ((Error) -> Void),
-        cancel: @escaping (() -> Void),
-    ) {
-        tryToAuthenticate(
-            localizedReason: OWSLocalizedString(
-                "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK",
-                comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'.",
-            ),
-            success: success,
-            failure: failure,
-            unexpectedFailure: unexpectedFailure,
-            cancel: cancel,
-        )
+    /// Authenticates in order to unlock the app.
+    public func tryToUnlockScreenLock() async -> Outcome {
+        return await tryToAuthenticate(useCase: .unlockScreenLock)
     }
 
-    // Authenticates in order to change the 'screen lock' settings themselves,
-    // e.g. to turn screen lock off or to lengthen its timeout. The user is
-    // already inside the app in that case, so the reason we show differs from
-    // the one shown when unlocking the app.
-    //
-    // Has the same threading and completion guarantees as
-    // `tryToUnlockScreenLock(success:failure:unexpectedFailure:cancel:)`.
-    public func tryToUnlockScreenLockSettings(
-        success: @escaping (() -> Void),
-        failure: @escaping ((Error) -> Void),
-        unexpectedFailure: @escaping ((Error) -> Void),
-        cancel: @escaping (() -> Void),
-    ) {
-        tryToAuthenticate(
-            localizedReason: OWSLocalizedString(
-                "SCREEN_LOCK_REASON_CHANGE_SCREEN_LOCK_SETTINGS",
-                comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to confirm a change to the 'screen lock' settings.",
-            ),
-            success: success,
-            failure: failure,
-            unexpectedFailure: unexpectedFailure,
-            cancel: cancel,
-        )
+    /// Authenticates in order to change the screen lock settings themselves,
+    /// e.g. to turn screen lock off or to lengthen its timeout.
+    public func tryToUnlockScreenLockSettings() async -> Outcome {
+        return await tryToAuthenticate(useCase: .changeScreenLockSettings)
     }
 
     private func tryToAuthenticate(
-        localizedReason: String,
-        success: @escaping (() -> Void),
-        failure: @escaping ((Error) -> Void),
-        unexpectedFailure: @escaping ((Error) -> Void),
-        cancel: @escaping (() -> Void),
-    ) {
-        AssertIsOnMainThread()
+        useCase: LocalDeviceAuthentication.UseCase,
+    ) async -> Outcome {
+        let localDeviceAuth = LocalDeviceAuthentication(useCase: useCase)
 
-        tryToVerifyLocalAuthentication(
-            localizedReason: localizedReason,
-            completion: { (outcome: Outcome) in
-                AssertIsOnMainThread()
-
-                switch outcome {
-                case .failure(let error):
-                    Logger.error("local authentication failed with error: \(error)")
-                    failure(self.authenticationError(errorDescription: error))
-                case .unexpectedFailure(let error):
-                    Logger.error("local authentication failed with unexpected error: \(error)")
-                    unexpectedFailure(self.authenticationError(errorDescription: error))
-                case .success:
-                    success()
-                case .cancel:
-                    cancel()
-                }
-            },
-        )
-    }
-
-    // This method should only be called:
-    //
-    // * On the main thread.
-    //
-    // completionParam will be performed:
-    //
-    // * Asynchronously.
-    // * On the main thread.
-    private func tryToVerifyLocalAuthentication(
-        localizedReason: String,
-        completion completionParam: @escaping ((Outcome) -> Void),
-    ) {
-        AssertIsOnMainThread()
-
-        let defaultErrorDescription = DeviceAuthenticationErrorMessage.unknownError
-
-        // Ensure completion is always called on the main thread.
-        let completion = { (outcome: Outcome) in
-            DispatchQueue.main.async {
-                completionParam(outcome)
-            }
-        }
-
-        let context = DeviceOwnerAuthenticationType.localAuthenticationContext()
-
-        var authError: NSError?
-        let canEvaluatePolicy = context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &authError)
-        if !canEvaluatePolicy || authError != nil {
-            Logger.error("could not determine if local authentication is supported: \(String(describing: authError))")
-
-            let outcome = self.outcomeForLAError(
-                errorParam: authError,
-                defaultErrorDescription: defaultErrorDescription,
-            )
-            switch outcome {
+        let authError: LocalDeviceAuthentication.AuthError
+        switch localDeviceAuth.checkCanAttempt() {
+        case .success(let attemptToken):
+            switch await localDeviceAuth.attempt(token: attemptToken) {
             case .success:
-                owsFailDebug("local authentication unexpected success")
-                completion(.failure(error: defaultErrorDescription))
-            case .cancel, .failure, .unexpectedFailure:
-                completion(outcome)
-            }
-            return
-        }
-
-        context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: localizedReason) { success, evaluateError in
-
-            if success {
                 Logger.info("local authentication succeeded.")
-                completion(.success)
-            } else {
-                let outcome = self.outcomeForLAError(
-                    errorParam: evaluateError,
-                    defaultErrorDescription: defaultErrorDescription,
-                )
-                switch outcome {
-                case .success:
-                    owsFailDebug("local authentication unexpected success")
-                    completion(.failure(error: defaultErrorDescription))
-                case .cancel, .failure, .unexpectedFailure:
-                    completion(outcome)
-                }
+                return .success
+            case .failure(let error):
+                authError = error
             }
+        case .failure(let error):
+            authError = error
         }
+
+        return outcomeForAuthError(authError)
     }
 
     // MARK: - Outcome
 
-    private func outcomeForLAError(errorParam: Error?, defaultErrorDescription: String) -> Outcome {
-        if let error = errorParam {
-            guard let laError = error as? LAError else {
-                return .failure(error: defaultErrorDescription)
-            }
-
-            switch laError.code {
-            case .biometryNotAvailable:
-                Logger.error("local authentication error: biometryNotAvailable.")
-                return .failure(error: ScreenLock.ErrorMessage.authenticationNotAvailable)
-            case .biometryNotEnrolled:
-                Logger.error("local authentication error: biometryNotEnrolled.")
-                return .failure(error: ScreenLock.ErrorMessage.authenticationNotEnrolled)
-            case .biometryLockout:
-                Logger.error("local authentication error: biometryLockout.")
-                return .failure(error: DeviceAuthenticationErrorMessage.lockout)
-            default:
-                // Fall through to second switch
-                break
-            }
-
-            switch laError.code {
-            case .authenticationFailed:
-                Logger.error("local authentication error: authenticationFailed.")
-                return .failure(error: DeviceAuthenticationErrorMessage.authenticationFailed)
-            case .userCancel, .userFallback, .systemCancel, .appCancel:
-                Logger.info("local authentication cancelled.")
-                return .cancel
-            case .passcodeNotSet:
-                Logger.error("local authentication error: passcodeNotSet.")
-                return .failure(error: ScreenLock.ErrorMessage.passcodeNotSet)
-            case .touchIDNotAvailable:
-                Logger.error("local authentication error: touchIDNotAvailable.")
-                return .failure(error: ScreenLock.ErrorMessage.authenticationNotAvailable)
-            case .touchIDNotEnrolled:
-                Logger.error("local authentication error: touchIDNotEnrolled.")
-                return .failure(error: ScreenLock.ErrorMessage.authenticationNotEnrolled)
-            case .touchIDLockout:
-                Logger.error("local authentication error: touchIDLockout.")
-                return .failure(error: DeviceAuthenticationErrorMessage.lockout)
-            case .invalidContext:
-                owsFailDebug("context not valid.")
-                return .unexpectedFailure(error: defaultErrorDescription)
-            case .notInteractive:
-                owsFailDebug("context not interactive.")
-                return .unexpectedFailure(error: defaultErrorDescription)
-            case .companionNotAvailable:
-                owsFailDebug("companion device not available.")
-                return .unexpectedFailure(error: defaultErrorDescription)
-            @unknown default:
-                owsFailDebug("Unexpected enum value.")
-                return .unexpectedFailure(error: defaultErrorDescription)
-            }
+    private func outcomeForAuthError(
+        _ authError: LocalDeviceAuthentication.AuthError,
+    ) -> Outcome {
+        switch authError {
+        case .notConfigured(.biometryNotAvailable):
+            Logger.error("local authentication error: biometryNotAvailable.")
+            return .failure(localizedErrorMessage: ScreenLock.ErrorMessage.authenticationNotAvailable)
+        case .notConfigured(.biometryNotEnrolled):
+            Logger.error("local authentication error: biometryNotEnrolled.")
+            return .failure(localizedErrorMessage: ScreenLock.ErrorMessage.authenticationNotEnrolled)
+        case .notConfigured(.passcodeNotSet):
+            Logger.error("local authentication error: passcodeNotSet.")
+            return .failure(localizedErrorMessage: ScreenLock.ErrorMessage.passcodeNotSet)
+        case .failed(.lockout):
+            Logger.error("local authentication error: lockout.")
+            return .failure(localizedErrorMessage: DeviceAuthenticationErrorMessage.lockout)
+        case .failed(.authenticationFailed):
+            Logger.error("local authentication error: authenticationFailed.")
+            return .failure(localizedErrorMessage: DeviceAuthenticationErrorMessage.authenticationFailed)
+        case .canceled:
+            Logger.info("local authentication cancelled.")
+            return .cancel
+        case .failed(.unexpected):
+            Logger.error("local authentication error: unexpected.")
+            return .unexpectedFailure
         }
-        return .failure(error: defaultErrorDescription)
-    }
-
-    private func authenticationError(errorDescription: String) -> Error {
-        return OWSError(
-            error: .localAuthenticationError,
-            description: errorDescription,
-            isRetryable: false,
-        )
     }
 }
 

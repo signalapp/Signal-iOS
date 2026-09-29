@@ -20,7 +20,7 @@ private enum KnownDeviceOwnerAuthenticationType {
     case faceId
     case opticId
 
-    static func from(_ deviceOwnerAuthenticationType: DeviceOwnerAuthenticationType) -> KnownDeviceOwnerAuthenticationType? {
+    static func from(_ deviceOwnerAuthenticationType: LocalDeviceAuthentication.AuthenticationType) -> KnownDeviceOwnerAuthenticationType? {
         switch deviceOwnerAuthenticationType {
         case .unknown:
             return nil
@@ -46,7 +46,7 @@ class PaymentsBiometryLockPromptViewController: OWSViewController {
 
     private weak var delegate: PaymentsBiometryLockPromptDelegate?
 
-    init?(deviceOwnerAuthenticationType: DeviceOwnerAuthenticationType, delegate: PaymentsBiometryLockPromptDelegate?) {
+    init?(deviceOwnerAuthenticationType: LocalDeviceAuthentication.AuthenticationType, delegate: PaymentsBiometryLockPromptDelegate?) {
         guard let knownDeviceOwnerAuthenticationType = KnownDeviceOwnerAuthenticationType.from(deviceOwnerAuthenticationType) else {
             return nil
         }
