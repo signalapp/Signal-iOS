@@ -75,6 +75,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             linkAndSyncManager: MockLinkAndSyncManager(),
             accountKeyStore: accountKeyStore,
             networkManager: networkManagerMock,
+            preferences: Preferences(appContext: TestAppContext()),
             preKeyManager: prekeyManagerMock,
             profileManager: profileManagerMock,
             pushRegistrationManager: pushRegistrationManagerMock,

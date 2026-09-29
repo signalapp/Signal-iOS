@@ -40,26 +40,8 @@ enum RegistrationUtils {
     @MainActor
     static func showReLinking(deregisteredState: DeregisteredState) {
         Logger.info("showReLinking")
-
-        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-        let preferences = SSKEnvironment.shared.preferencesRef
-        let registrationStateChangeManager = DependenciesBridge.shared.registrationStateChangeManager
-
         owsPrecondition(!deregisteredState.isPrimary)
 
-        guard let localIdentifiers = deregisteredState.localIdentifiers.asReregisteringLocalIdentifiers else {
-            owsFailDebug("couldn't fetch identifiers for re-linking")
-            return
-        }
-
-        databaseStorage.write { tx in
-            registrationStateChangeManager.resetForReregistration(
-                localIdentifiers: localIdentifiers,
-                isPrimaryDevice: false,
-                tx: tx,
-            )
-        }
-        preferences.unsetRecordedAPNSTokens()
         ProvisioningController.presentProvisioningFlow(skipOnboarding: true)
     }
 
@@ -79,14 +61,15 @@ enum RegistrationUtils {
         let dependencies = RegistrationCoordinatorDependencies.from(NSObject())
         let desiredMode = RegistrationMode.reRegistering(localIdentifiers)
         let loader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)
-        let coordinator = databaseStorage.write {
-            return loader.coordinator(
+        let coordinator = databaseStorage.write { tx in
+            let result = loader.coordinator(
                 forDesiredMode: desiredMode,
-                transaction: $0,
+                transaction: tx,
                 logger: logger,
             )
+            preferences.unsetRecordedAPNSTokens(tx: tx)
+            return result
         }
-        preferences.unsetRecordedAPNSTokens()
         let navController = RegistrationNavigationController.withCoordinator(coordinator)
         let window: UIWindow = CurrentAppContext().mainWindow!
         window.rootViewController = navController

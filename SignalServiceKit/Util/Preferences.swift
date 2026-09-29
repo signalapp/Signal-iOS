@@ -34,9 +34,9 @@ public class Preferences {
     private static let preferencesCollection = "SignalPreferences"
     private let keyValueStore = KeyValueStore(collection: Preferences.preferencesCollection)
 
-    public init() {
-        if CurrentAppContext().hasUI {
-            CurrentAppContext().appUserDefaults().set(
+    public init(appContext: any AppContext) {
+        if appContext.hasUI {
+            appContext.appUserDefaults().set(
                 UITraitCollection.current.displayScale,
                 forKey: UserDefaultsKeys.deviceScale,
             )
@@ -54,8 +54,12 @@ public class Preferences {
 
     private func removeValue(forKey key: Key) {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            keyValueStore.removeValue(forKey: key.rawValue, transaction: transaction)
+            removeValue(forKey: key, tx: transaction)
         }
+    }
+
+    private func removeValue(forKey key: Key, tx: DBWriteTransaction) {
+        keyValueStore.removeValue(forKey: key.rawValue, transaction: tx)
     }
 
     private func bool(forKey key: Key, defaultValue: Bool) -> Bool {
@@ -238,8 +242,8 @@ public class Preferences {
         setString(value, for: .lastRecordedPushToken, tx: tx)
     }
 
-    public func unsetRecordedAPNSTokens() {
+    public func unsetRecordedAPNSTokens(tx: DBWriteTransaction) {
         Logger.warn("Forgetting recorded APNS tokens")
-        removeValue(forKey: .lastRecordedPushToken)
+        removeValue(forKey: .lastRecordedPushToken, tx: tx)
     }
 }

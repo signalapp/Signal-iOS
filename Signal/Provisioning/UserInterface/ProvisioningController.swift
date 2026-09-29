@@ -39,6 +39,7 @@ class ProvisioningController: NSObject {
             linkAndSyncManager: DependenciesBridge.shared.linkAndSyncManager,
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
             networkManager: SSKEnvironment.shared.networkManagerRef,
+            preferences: SSKEnvironment.shared.preferencesRef,
             preKeyManager: DependenciesBridge.shared.preKeyManager,
             profileManager: SSKEnvironment.shared.profileManagerImplRef,
             pushRegistrationManager: ProvisioningCoordinatorImpl.Wrappers.PushRegistrationManager(AppEnvironment.shared.pushRegistrationManagerRef),
@@ -162,7 +163,10 @@ class ProvisioningController: NSObject {
     func cancelProvisioning(from viewController: UIViewController) {
         Logger.info("")
 
-        if RegistrationUtils.isPrimaryByDefault {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        if tsAccountManager.registrationStateWithMaybeSneakyTransaction.deregisteredState?.isPrimary == false {
+            SignalApp.shared.showConversationSplitView()
+        } else if RegistrationUtils.isPrimaryByDefault {
             switchToPrimaryRegistration(viewController: viewController)
         } else {
             SignalApp.shared.showSecondaryProvisioning(skipOnboarding: false)

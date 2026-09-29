@@ -1411,7 +1411,7 @@ extension AppSetup.GlobalsContinuation {
             viewOnceMessages: SentMessageTranscriptReceiverImpl.Wrappers.ViewOnceMessages(),
         )
 
-        let preferences = Preferences()
+        let preferences = Preferences(appContext: appContext)
         let systemStoryManager = testDependencies.systemStoryManager ?? SystemStoryManager(
             appReadiness: appReadiness,
             messageProcessor: messageProcessor,
