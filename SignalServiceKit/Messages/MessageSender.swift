@@ -750,14 +750,18 @@ public class MessageSenderImpl: MessageSender, DeviceMessageBuilder {
 
             let serializedMessage = try self.buildAndRecordMessage(message, in: thread, tx: tx)
 
-            let senderCertificate: SenderCertificate = {
-                switch SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx).orDefault {
+            let senderCertificate = { () -> SenderCertificate? in
+                let udManager = SSKEnvironment.shared.udManagerRef
+                switch udManager.phoneNumberSharingMode(tx: tx).orDefault {
                 case .everybody:
                     return senderCertificates.defaultCert
                 case .nobody:
                     return senderCertificates.uuidOnlyCert
                 }
             }()
+            guard let senderCertificate else {
+                throw OWSAssertionError("can't send without a valid sender certificate")
+            }
 
             let udAccessMap = self.fetchSealedSenderAccess(
                 for: serviceIds.compactMap { $0 as? Aci },

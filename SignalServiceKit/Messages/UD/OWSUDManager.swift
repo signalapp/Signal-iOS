@@ -61,7 +61,7 @@ public struct OWSUDAccess {
 // MARK: -
 
 public struct SenderCertificates {
-    let defaultCert: SenderCertificate
+    let defaultCert: SenderCertificate?
     let uuidOnlyCert: SenderCertificate
 }
 
@@ -283,11 +283,14 @@ public class OWSUDManagerImpl: OWSUDManager {
     }
 
     private func _fetchSenderCertificates(forceRefresh: Bool) async throws -> SenderCertificates {
-        _ = try self.tsAccountManager.registeredStateWithMaybeSneakyTransaction()
-        async let defaultCert = fetchSenderCertificate(aciOnly: false, forceRefresh: forceRefresh)
+        let registeredState = try self.tsAccountManager.registeredStateWithMaybeSneakyTransaction()
         async let aciOnlyCert = fetchSenderCertificate(aciOnly: true, forceRefresh: forceRefresh)
+        var defaultCert: SenderCertificate?
+        if registeredState.localIdentifiers.phoneNumber != nil {
+            defaultCert = try await fetchSenderCertificate(aciOnly: false, forceRefresh: forceRefresh)
+        }
         return SenderCertificates(
-            defaultCert: try await defaultCert,
+            defaultCert: defaultCert,
             uuidOnlyCert: try await aciOnlyCert,
         )
     }
