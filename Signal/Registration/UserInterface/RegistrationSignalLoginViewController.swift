@@ -205,6 +205,9 @@ class RegistrationSignalLoginViewController: OWSViewController {
         helpButton.configuration = config
         helpButton.tintColor = UIColor.Signal.accent
         helpButton.translatesAutoresizingMaskIntoConstraints = false
+        helpButton.addAction(.init(handler: { [weak self] _ in
+            self?.showHelp()
+        }), for: .primaryActionTriggered)
 
         let helpButtonContainer = UIView.transparentContainer()
         helpButtonContainer.translatesAutoresizingMaskIntoConstraints = false
@@ -242,7 +245,25 @@ class RegistrationSignalLoginViewController: OWSViewController {
     }
 
     private func showHelp() {
-        // REGISTRATION_SIGNAL_LOGIN_HELP_BODY
+        let helpSheet = HeroSheetViewController(
+            hero: .image(.signalLogin),
+            title: nil,
+            body: OWSLocalizedString(
+                "REGISTRATION_SIGNAL_LOGIN_HELP_BODY",
+                comment: "Title for help button for the 'Signal Login' screen.",
+            ),
+            primaryButton: .init(
+                title: CommonStrings.learnMore,
+                action: .custom({ _ in
+                    // TODO[#less]: Add proper support URL
+                    CurrentAppContext().open(
+                        URL.Support.generic,
+                        completion: nil,
+                    )
+                }),
+            ),
+        )
+        present(helpSheet, animated: true)
     }
 }
 
