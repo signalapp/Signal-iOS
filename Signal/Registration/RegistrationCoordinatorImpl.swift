@@ -4321,15 +4321,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 """,
             )
 
-            // We do these here, and not in export state, so that we don't risk
-            // syncing out-of-date state to storage service.
+            // TODO: Maybe move this to the "export state" method.
             self.deps.registrationStateChangeManager.didUpdateLocalPhoneNumber(
                 aci: accountIdentity.aci,
                 phoneNumber: LocalIdentifiers.PhoneNumber(e164: accountIdentity.e164, pni: accountIdentity.pni),
                 tx: tx,
             )
-            // Make sure we update our local account.
-            self.deps.storageServiceManager.recordPendingLocalAccountUpdates()
         }
     }
 
