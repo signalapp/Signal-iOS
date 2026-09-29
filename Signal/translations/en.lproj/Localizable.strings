@@ -8197,6 +8197,15 @@
 /* Tutorial text describing the second step to scanning the restore/transfer QR code with your old phone: tap the camera icon */
 "REGISTRATION_SCAN_QR_CODE_TUTORIAL_TAP_CAMERA" = "Tap the camera icon";
 
+/* Description for the 'Signal Login' screen. */
+"REGISTRATION_SIGNAL_LOGIN_BODY" = "Enter your account ID followed by your recovery key to restore your account.";
+
+/* Title for help button for the 'Signal Login' screen. */
+"REGISTRATION_SIGNAL_LOGIN_NEED_HELP_TITLE" = "Need Help?";
+
+/* Title text for the 'Signal Login' screen. */
+"REGISTRATION_SIGNAL_LOGIN_TITLE" = "Signal Login";
+
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
 "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Voice Call";
 
@@ -9948,6 +9957,12 @@
 
 /* Shown in the header when the user hasn't provided a custom name for a call. */
 "SIGNAL_CALL" = "Signal Call";
+
+/* Placeholder of the 'Account ID' username field. */
+"SIGNAL_LOGIN_ACCOUNT_ID_PLACEHOLDER_TITLE" = "Account ID";
+
+/* Placeholder of the 'Recovery Key' password field. */
+"SIGNAL_LOGIN_RECOVERY_KEY_PLACEHOLDER_TITLE" = "Recovery Key";
 
 /* Title for the sheet presented when user taps on Signal Proxy link in chat. */
 "SIGNAL_PROXY" = "Signal Proxy Server";

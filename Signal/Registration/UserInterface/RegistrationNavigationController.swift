@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 public import SignalServiceKit
 public import SignalUI
 
@@ -280,6 +281,14 @@ public class RegistrationNavigationController: OWSNavigationController {
                     controller.updateState(state)
                     return nil
                 },
+            )
+        case .promptForLogin(let state):
+            return Controller(
+                type: RegistrationSignalLoginViewController.self,
+                make: { presenter in
+                    return RegistrationSignalLoginViewController(state: state, presenter: presenter)
+                },
+                update: nil,
             )
         case .pinEntry(let state):
             return Controller(
@@ -680,7 +689,7 @@ extension RegistrationNavigationController: RegistrationReglockTimeoutPresenter 
 }
 
 extension RegistrationNavigationController: RegistrationEnterAccountEntropyPoolPresenter {
-    func next(accountEntropyPool: AccountEntropyPool) {
+    func next(accountEntropyPool: SignalServiceKit.AccountEntropyPool) {
         let guarantee = coordinator.updateAccountEntropyPool(accountEntropyPool)
         pushNextController(guarantee)
     }
@@ -759,6 +768,10 @@ extension RegistrationNavigationController: RegistrationRestoreFromBackupConfirm
             pushNextController(guarantee, loadingMode: .restoringBackup(progressModal))
         }
     }
+}
+
+extension RegistrationNavigationController: RegistrationSignalLoginPresenter {
+    func submitLogin(aci: Aci, aep: SignalServiceKit.AccountEntropyPool) { }
 }
 
 private protocol AnyController {

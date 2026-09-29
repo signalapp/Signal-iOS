@@ -32,6 +32,9 @@ public enum RegistrationStep: Equatable {
     /// If registering via session, the step to enter the verification code.
     case verificationCodeEntry(RegistrationVerificationState)
 
+    /// Prompt the user to enter ACI/AEP for registration
+    case promptForLogin(RegistrationSignalLoginState)
+
     /// For the first time we enter the pin. This can be
     /// for first account setup, creating a pin, or if
     /// re-registering and needing to confirm the pin.
@@ -157,6 +160,7 @@ public enum RegistrationStep: Equatable {
         case .phoneNumberEntry: return "phoneNumberEntry"
         case .verificationCodeEntry: return "verificationCodeEntry"
         case .deviceTransfer: return "deviceTransfer"
+        case .promptForLogin: return "promptForLogin"
         case .pinEntry: return "pinEntry"
         case .pinAttemptsExhaustedWithoutReglock: return "pinAttemptsExhaustedWithoutReglock"
         case .captchaChallenge: return "captchaChallenge"
