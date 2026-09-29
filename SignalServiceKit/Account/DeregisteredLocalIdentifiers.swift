@@ -21,4 +21,8 @@ public struct DeregisteredLocalIdentifiers {
     public let aci: Aci?
     public let phoneNumber: String?
     public let pni: Pni?
+
+    public var asReregisteringLocalIdentifiers: ReregisteringLocalIdentifiers? {
+        return .parseFrom(phoneNumber: self.phoneNumber, aci: self.aci)
+    }
 }

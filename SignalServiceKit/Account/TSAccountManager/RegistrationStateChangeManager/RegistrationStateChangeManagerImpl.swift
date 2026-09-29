@@ -198,14 +198,12 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     }
 
     public func resetForReregistration(
-        aci: Aci?,
-        phoneNumber: E164,
+        localIdentifiers: ReregisteringLocalIdentifiers,
         isPrimaryDevice: Bool,
         tx: DBWriteTransaction,
     ) {
         tsAccountManager.resetForReregistration(
-            aci: aci,
-            phoneNumber: phoneNumber,
+            localIdentifiers: localIdentifiers,
             isPrimaryDevice: isPrimaryDevice,
             tx: tx,
         )

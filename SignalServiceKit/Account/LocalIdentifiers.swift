@@ -142,6 +142,15 @@ public final class LocalIdentifiers {
         }
         return address.phoneNumber == self.phoneNumber
     }
+
+    public var asReregisteringLocalIdentifiers: ReregisteringLocalIdentifiers {
+        switch self.accountType {
+        case .phoneNumberfull(let phoneNumber, pni: _):
+            return .phoneNumberfull(phoneNumber: phoneNumber, aci: self.aci)
+        case .phoneNumberless:
+            return .phoneNumberless(aci: self.aci)
+        }
+    }
 }
 
 public extension LocalIdentifiers {

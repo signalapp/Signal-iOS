@@ -28,10 +28,12 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         self.state = state
         self.presenter = presenter
 
+        let phoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef
+
         self.phoneNumberInput = RegistrationPhoneNumberInputView(initialPhoneNumber: {
             switch state {
             case let .initialRegistration(state):
-                if let e164 = state.previouslyEnteredE164, let result = RegistrationPhoneNumberParser(phoneNumberUtil: SSKEnvironment.shared.phoneNumberUtilRef).parseE164(e164) {
+                if let e164 = state.previouslyEnteredE164, let result = RegistrationPhoneNumberParser(phoneNumberUtil: phoneNumberUtil).parseE164(e164) {
                     return result
                 }
                 return RegistrationPhoneNumber(
@@ -39,8 +41,14 @@ class RegistrationPhoneNumberViewController: OWSViewController {
                     nationalNumber: "",
                 )
             case let .reregistration(state):
-                guard let result = RegistrationPhoneNumberParser(phoneNumberUtil: SSKEnvironment.shared.phoneNumberUtilRef).parseE164(state.e164) else {
-                    owsFail("Could not parse re-registration E164")
+                guard let phoneNumber = state.localPhoneNumber else {
+                    owsFail("#less not supported")
+                }
+                guard
+                    let phoneNumber = E164(phoneNumber),
+                    let result = RegistrationPhoneNumberParser(phoneNumberUtil: phoneNumberUtil).parseE164(phoneNumber)
+                else {
+                    owsFail("couldn't parse re-registration E164")
                 }
                 return result
             }

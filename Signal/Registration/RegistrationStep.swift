@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import SignalServiceKit
 
 public enum RegistrationStep: Equatable {
 
@@ -124,7 +125,7 @@ public enum RegistrationStep: Equatable {
         /// post-registration steps they were deregistered, likely by
         /// another device registering on the same number.
         /// The only path forward is to reset _everything_ and re-register.
-        case becameDeregistered(reregParams: RegistrationMode.ReregistrationParams)
+        case becameDeregistered(localIdentifiers: EquatableReregisteringLocalIdentifiers)
 
         /// A network error occurred. The user can probably fix this by
         /// checking their internet connection.

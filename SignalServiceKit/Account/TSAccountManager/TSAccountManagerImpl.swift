@@ -253,16 +253,15 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
     }
 
     public func resetForReregistration(
-        aci: Aci?,
-        phoneNumber: E164,
+        localIdentifiers: ReregisteringLocalIdentifiers,
         isPrimaryDevice: Bool,
         tx: DBWriteTransaction,
     ) {
         mutateWithLock(tx: tx) {
             Self.regStateLogger.info("resetting for reregistration; isPrimary? \(isPrimaryDevice)")
 
-            kvStore.writeValue(phoneNumber.stringValue, forKey: Keys.reregistrationPhoneNumber, tx: tx)
-            kvStore.writeValue(aci?.serviceIdUppercaseString, forKey: Keys.reregistrationAci, tx: tx)
+            kvStore.writeValue(localIdentifiers.phoneNumber, forKey: Keys.reregistrationPhoneNumber, tx: tx)
+            kvStore.writeValue(localIdentifiers.aci?.serviceIdUppercaseString, forKey: Keys.reregistrationAci, tx: tx)
             kvStore.writeValue(isPrimaryDevice, forKey: Keys.reregistrationWasPrimaryDevice, tx: tx)
 
             let keysToKeep: Set<String> = [
@@ -575,7 +574,7 @@ extension TSAccountManagerImpl {
                     return .transferringIncoming
                 }
             }
-            let reregisteringLocalIdentifiers = ReregisteringLocalIdentifiers(
+            let reregisteringLocalIdentifiers = ReregisteringLocalIdentifiers.parseFrom(
                 phoneNumber: kvStore.fetchValue(String.self, forKey: Keys.reregistrationPhoneNumber, tx: tx),
                 aci: Aci.parseFrom(aciString: kvStore.fetchValue(String.self, forKey: Keys.reregistrationAci, tx: tx)),
             )

@@ -418,8 +418,8 @@ public class RegistrationNavigationController: OWSNavigationController {
                     "REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT",
                     comment: "Error shown if an SMS/call service provider is unable to send a verification code to the provided number.",
                 )
-            case .becameDeregistered(let reregParams):
-                handleDeregistrationReset(reregParams)
+            case .becameDeregistered(let localIdentifiers):
+                handleDeregistrationReset(localIdentifiers: localIdentifiers.wrappedValue)
                 return nil
             case .verificationCodeSubmissionUnavailable:
                 title = nil
@@ -465,7 +465,7 @@ public class RegistrationNavigationController: OWSNavigationController {
         }
     }
 
-    private func handleDeregistrationReset(_ reregParams: RegistrationMode.ReregistrationParams) {
+    private func handleDeregistrationReset(localIdentifiers: ReregisteringLocalIdentifiers) {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "DEREGISTRATION_NOTIFICATION",
@@ -482,7 +482,7 @@ public class RegistrationNavigationController: OWSNavigationController {
             handler: { [weak self] _ in
                 guard let self else { return }
                 let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
-                SignalApp.shared.showRegistration(loader: loader, desiredMode: .reRegistering(reregParams))
+                SignalApp.shared.showRegistration(loader: loader, desiredMode: .reRegistering(localIdentifiers))
             },
         ))
         // We explicitly don't want the user to be able to dismiss.

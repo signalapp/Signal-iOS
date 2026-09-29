@@ -29,7 +29,8 @@ public enum RegistrationPhoneNumberViewState: Equatable {
     }
 
     public struct Reregistration: Equatable {
-        let e164: E164
+        let localPhoneNumber: String?
+        // TODO: [#less] Add ACI.
         let validationError: ValidationError?
         let canExitRegistration: Bool
     }

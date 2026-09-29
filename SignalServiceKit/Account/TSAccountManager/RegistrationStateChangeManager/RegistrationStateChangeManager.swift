@@ -63,8 +63,7 @@ public protocol RegistrationStateChangeManager {
      * are triggered internally by this class and don't need separate observation.
      */
     func resetForReregistration(
-        aci: Aci?,
-        phoneNumber: E164,
+        localIdentifiers: ReregisteringLocalIdentifiers,
         isPrimaryDevice: Bool,
         tx: DBWriteTransaction,
     )

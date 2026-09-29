@@ -33,13 +33,6 @@ enum RegistrationUtils {
         viewController.presentActionSheet(actionSheet)
     }
 
-    private static func fetchIdentifiers(localIdentifiers: DeregisteredLocalIdentifiers) -> (Aci?, E164)? {
-        guard let phoneNumber = E164(localIdentifiers.phoneNumber) else {
-            return nil
-        }
-        return (localIdentifiers.aci, phoneNumber)
-    }
-
     static func showReLinking(deregisteredState: DeregisteredState) {
         Logger.info("showReLinking")
 
@@ -49,15 +42,14 @@ enum RegistrationUtils {
 
         owsPrecondition(!deregisteredState.isPrimary)
 
-        guard let (localAci, localPhoneNumber) = fetchIdentifiers(localIdentifiers: deregisteredState.localIdentifiers) else {
+        guard let localIdentifiers = deregisteredState.localIdentifiers.asReregisteringLocalIdentifiers else {
             owsFailDebug("couldn't fetch identifiers for re-linking")
             return
         }
 
         databaseStorage.write { tx in
             registrationStateChangeManager.resetForReregistration(
-                aci: localAci,
-                phoneNumber: localPhoneNumber,
+                localIdentifiers: localIdentifiers,
                 isPrimaryDevice: false,
                 tx: tx,
             )
@@ -75,15 +67,12 @@ enum RegistrationUtils {
 
         owsPrecondition(deregisteredState.isPrimary)
 
-        guard let (localAci, localPhoneNumber) = fetchIdentifiers(localIdentifiers: deregisteredState.localIdentifiers) else {
+        guard let localIdentifiers = deregisteredState.localIdentifiers.asReregisteringLocalIdentifiers else {
             owsFailDebug("couldn't fetch identifiers for re-registration")
             return
         }
         let dependencies = RegistrationCoordinatorDependencies.from(NSObject())
-        let desiredMode = RegistrationMode.reRegistering(RegistrationMode.ReregistrationParams(
-            aci: localAci,
-            e164: localPhoneNumber,
-        ))
+        let desiredMode = RegistrationMode.reRegistering(localIdentifiers)
         let loader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)
         let coordinator = databaseStorage.write {
             return loader.coordinator(

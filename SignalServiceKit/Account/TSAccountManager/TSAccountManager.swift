@@ -183,8 +183,7 @@ public protocol LocalIdentifiersSetter {
     func setIsDeregisteredOrDelinked(_ isDeregisteredOrDelinked: Bool, tx: DBWriteTransaction) -> Bool
 
     func resetForReregistration(
-        aci: Aci?,
-        phoneNumber: E164,
+        localIdentifiers: ReregisteringLocalIdentifiers,
         isPrimaryDevice: Bool,
         tx: DBWriteTransaction,
     )

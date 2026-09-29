@@ -135,17 +135,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     public func submitE164(_ e164: E164) -> Guarantee<RegistrationStep> {
         logger.info("")
 
-        var e164 = e164
-        switch mode {
-        case .reRegistering(let reregState):
-            if e164 != reregState.e164 {
-                logger.debug("Tried to submit a changed e164 during rereg; ignoring and submitting the fixed e164 instead.")
-                e164 = reregState.e164
-            }
-        case .registering, .changingNumber:
-            break
-        }
-
         let pathway = getPathway()
         db.write { tx in
             updatePersistedState(tx) {
@@ -1365,7 +1354,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         switch mode {
         case .reRegistering(let reregState):
-            if let persistedE164 = persistedState.e164, reregState.e164 != persistedE164 {
+            if let persistedE164 = persistedState.e164, let reregPhoneNumber = reregState.phoneNumber, reregPhoneNumber != persistedE164.stringValue {
                 // This exists to catch a bug released in version 6.19, where
                 // the phone number view controller would incorrectly inject a
                 // leading 0 into phone numbers from certain national codes.
@@ -3938,7 +3927,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) async -> RegistrationStep? {
         logger.info("")
 
-        guard accountIdentity.localIdentifiers.hasPhoneNumber else {
+        guard let phoneNumber = accountIdentity.localIdentifiers.phoneNumber else {
             return nil
         }
 
@@ -3957,7 +3946,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return await nextStep()
             }
 
-            if self.reglockToken(for: accountIdentity.e164) != nil {
+            if let phoneNumber = E164(phoneNumber), self.reglockToken(for: phoneNumber) != nil {
                 if !inMemoryState.hasSetReglock {
                     markRegistrationLockEnabled()
                     inMemoryState.hasSetReglock = true
@@ -4329,12 +4318,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         logger.info("")
 
         switch mode {
-        case .reRegistering(let state):
+        case .reRegistering(let localIdentifiers):
             if !persistedState.hasResetForReRegistration {
                 db.write { tx in
                     deps.registrationStateChangeManager.resetForReregistration(
-                        aci: state.aci,
-                        phoneNumber: state.e164,
+                        localIdentifiers: localIdentifiers,
                         isPrimaryDevice: true,
                         tx: tx,
                     )
@@ -4702,10 +4690,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         await deps.registrationWebSocketManager.releaseRestrictedWebSocket(isRegistered: false)
         inMemoryState.hasOpenedConnection = false
 
-        return .showErrorSheet(.becameDeregistered(reregParams: .init(
-            aci: accountIdentity.aci,
-            e164: accountIdentity.e164,
-        )))
+        return .showErrorSheet(.becameDeregistered(localIdentifiers: EquatableReregisteringLocalIdentifiers(accountIdentity.localIdentifiers.asReregisteringLocalIdentifiers)))
     }
 
     // MARK: - Account objects
@@ -4827,8 +4812,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 canExitRegistration: canExitRegistrationFlow().canExit,
             )))
         case .reRegistering(let state):
-            return .registration(.reregistration(.init(
-                e164: state.e164,
+            return .registration(.reregistration(RegistrationPhoneNumberViewState.Reregistration(
+                localPhoneNumber: state.phoneNumber,
                 validationError: validationError?.asViewStateError(),
                 canExitRegistration: canExitRegistrationFlow().canExit,
             )))
