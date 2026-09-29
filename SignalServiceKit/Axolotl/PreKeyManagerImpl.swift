@@ -97,13 +97,22 @@ public class PreKeyManagerImpl: PreKeyManager {
         return lastSuccessDate.addingTimeInterval(Constants.SignedPreKeyMaxRotationDuration) < Date()
     }
 
-    public func isAppLockedDueToPreKeyUpdateFailures(tx: DBReadTransaction) -> Bool {
-        return
-            needsSignedPreKeyRotation(identity: .aci, tx: tx)
-                || needsSignedPreKeyRotation(identity: .pni, tx: tx)
-                || needsLastResortPreKeyRotation(identity: .aci, tx: tx)
-                || needsLastResortPreKeyRotation(identity: .pni, tx: tx)
-
+    public func isAppLockedDueToPreKeyUpdateFailures(registeredState: RegisteredState, tx: DBReadTransaction) -> Bool {
+        if needsSignedPreKeyRotation(identity: .aci, tx: tx) {
+            return true
+        }
+        if needsLastResortPreKeyRotation(identity: .aci, tx: tx) {
+            return true
+        }
+        if registeredState.localIdentifiers.phoneNumber != nil {
+            if needsSignedPreKeyRotation(identity: .pni, tx: tx) {
+                return true
+            }
+            if needsLastResortPreKeyRotation(identity: .pni, tx: tx) {
+                return true
+            }
+        }
+        return false
     }
 
     private func refreshOneTimePreKeysCheckDidSucceed() {
@@ -157,7 +166,7 @@ public class PreKeyManagerImpl: PreKeyManager {
             try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
             try Task.checkCancellation()
             try await taskManager.refresh(identity: .aci, targets: targets, auth: .implicit())
-            if shouldCheckPniPreKeys {
+            if shouldCheckPniPreKeys, try tsAccountManager.registeredStateWithMaybeSneakyTransaction().localIdentifiers.phoneNumber != nil {
                 try Task.checkCancellation()
                 try await self.waitUntilNotChangingNumberIfNeeded(targets: targets)
                 try await taskManager.refresh(identity: .pni, targets: targets, auth: .implicit())

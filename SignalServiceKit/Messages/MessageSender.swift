@@ -411,21 +411,22 @@ public class MessageSenderImpl: MessageSender, DeviceMessageBuilder {
         return try await preparedOutgoingMessage.send(self.sendPreparedMessage(_:))
     }
 
-    private func waitForPreKeyRotationIfNeeded() async throws {
-        while let taskToWaitFor = preKeyRotationTaskIfNeeded() {
+    private func waitForPreKeyRotationIfNeeded(registeredState: RegisteredState) async throws {
+        while let taskToWaitFor = preKeyRotationTaskIfNeeded(registeredState: registeredState) {
             try await taskToWaitFor.value
         }
     }
 
     private let pendingPreKeyRotation = AtomicValue<Task<Void, Error>?>(nil, lock: .init())
 
-    private func preKeyRotationTaskIfNeeded() -> Task<Void, Error>? {
+    private func preKeyRotationTaskIfNeeded(registeredState: RegisteredState) -> Task<Void, Error>? {
         return pendingPreKeyRotation.map { existingTask in
             if let existingTask {
                 return existingTask
             }
-            let shouldRunPreKeyRotation = SSKEnvironment.shared.databaseStorageRef.read { tx in
-                preKeyManager.isAppLockedDueToPreKeyUpdateFailures(tx: tx)
+            let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+            let shouldRunPreKeyRotation = databaseStorage.read { tx in
+                preKeyManager.isAppLockedDueToPreKeyUpdateFailures(registeredState: registeredState, tx: tx)
             }
             if shouldRunPreKeyRotation {
                 Logger.info("Rotating signed pre-key before sending message.")
@@ -580,7 +581,7 @@ public class MessageSenderImpl: MessageSender, DeviceMessageBuilder {
             throw AppExpiredError()
         }
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        _ = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+        var registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
         if let message = message as? TSOutgoingMessage, !(message is TransientOutgoingMessage) {
             let databaseStorage = SSKEnvironment.shared.databaseStorageRef
             let latestCopy = databaseStorage.read { tx in
@@ -593,10 +594,10 @@ public class MessageSenderImpl: MessageSender, DeviceMessageBuilder {
         if DebugFlags.messageSendsFail.get() {
             throw OWSGenericError("failure toggle is enabled")
         }
-        try await waitForPreKeyRotationIfNeeded()
+        try await waitForPreKeyRotationIfNeeded(registeredState: registeredState)
         let udManager = SSKEnvironment.shared.udManagerRef
         let senderCertificates = try await udManager.fetchSenderCertificates()
-        let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
+        registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
         guard let localDeviceId = tsAccountManager.storedDeviceIdWithMaybeTransaction.ifValid else {
             throw OWSGenericError("missing local device id")
         }

@@ -9,7 +9,7 @@ import LibSignalClient
 #if TESTABLE_BUILD
 
 class MockPreKeyManager: PreKeyManager {
-    func isAppLockedDueToPreKeyUpdateFailures(tx: SignalServiceKit.DBReadTransaction) -> Bool { false }
+    func isAppLockedDueToPreKeyUpdateFailures(registeredState: RegisteredState, tx: SignalServiceKit.DBReadTransaction) -> Bool { false }
     func refreshOneTimePreKeysCheckDidSucceed() { }
     func checkPreKeysIfNecessary() async throws { }
     var attemptedRefreshes: [(OWSIdentity, Bool)] = []

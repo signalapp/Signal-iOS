@@ -7,7 +7,7 @@ import Foundation
 public import LibSignalClient
 
 public protocol PreKeyManager {
-    func isAppLockedDueToPreKeyUpdateFailures(tx: DBReadTransaction) -> Bool
+    func isAppLockedDueToPreKeyUpdateFailures(registeredState: RegisteredState, tx: DBReadTransaction) -> Bool
 
     func checkPreKeysIfNecessary() async throws
 

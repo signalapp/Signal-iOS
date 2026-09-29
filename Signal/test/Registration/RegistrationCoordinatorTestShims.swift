@@ -165,7 +165,7 @@ public class _RegistrationCoordinator_PreKeyManagerMock: PreKeyManager {
         self.run = run
     }
 
-    public func isAppLockedDueToPreKeyUpdateFailures(tx: DBReadTransaction) -> Bool { fatalError() }
+    public func isAppLockedDueToPreKeyUpdateFailures(registeredState: RegisteredState, tx: DBReadTransaction) -> Bool { fatalError() }
     public func checkPreKeysIfNecessary() async throws { fatalError() }
     public func createPreKeysForProvisioning(forIdentity identity: OWSIdentity, keyPair: IdentityKeyPair) async -> RegistrationPreKeyUploadBundle { fatalError() }
     public func rotateSignedPreKeysIfNeeded() async throws { fatalError() }
