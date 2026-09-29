@@ -8,21 +8,74 @@ import SignalServiceKit
 import SignalUI
 import SwiftUI
 
-class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
+class MemberLabelViewController: OWSViewController, UITextFieldDelegate, CVComponentDelegate {
     private let initialEmoji: String?
     private let initialMemberLabel: String?
     private var updatedMemberLabel: String?
     private var updatedEmoji: String?
-    private var addEmojiButton = UIButton(type: .system)
-    private var previewContainer: UIStackView?
-    private let stackView = UIStackView()
-    private let textField = UITextField()
-    private var characterCountLabel = UILabel()
-    private var clearButton = UIButton(type: .system)
+
+    private lazy var addEmojiButton: UIButton = {
+        let button = UIButton(
+            configuration: .plain(),
+            primaryAction: UIAction { [weak self] _ in self?.didTapEmojiPicker() },
+        )
+        button.configuration?.baseForegroundColor = .Signal.secondaryLabel
+        button.configuration?.titleTextAttributesTransformer = .defaultFont(.dynamicTypeTitle3Clamped)
+        button.setContentHuggingHorizontalHigh()
+        button.setCompressionResistanceHorizontalHigh()
+        return button
+    }()
+
+    private var previewSectionHeader: UIView?
+    private var previewContainer: UIView?
+    private let stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        return stackView
+    }()
+
+    private lazy var textField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = OWSLocalizedString(
+            "MEMBER_LABEL_VIEW_PLACEHOLDER_TEXT",
+            comment: "Placeholder text in text field where user can edit their member label.",
+        )
+        textField.font = .dynamicTypeBodyClamped
+        textField.addAction(
+            UIAction { [weak self] action in
+                guard let self, let textField = action.sender as? UITextField else { return }
+                self.textDidChange(textField)
+            },
+            for: .editingChanged,
+        )
+        textField.delegate = self
+        return textField
+    }()
+
+    private var characterCountLabel: UILabel = {
+        let label = UILabel()
+        label.font = .dynamicTypeBody
+        label.textColor = UIColor.Signal.tertiaryLabel.withAlphaComponent(0.3)
+        label.setContentHuggingHorizontalHigh()
+        label.setCompressionResistanceHigh()
+        return label
+    }()
+
+    private lazy var clearButton: UIButton = {
+        let button = UIButton(
+            configuration: .plain(),
+            primaryAction: UIAction { [weak self] _ in self?.clearButtonTapped() },
+        )
+        button.configuration?.image = UIImage(resource: .xCircleFillCompact)
+        button.tintColor = UIColor.Signal.tertiaryLabel
+        button.setContentHuggingHorizontalHigh()
+        button.setCompressionResistanceHorizontalHigh()
+        return button
+    }()
 
     // Views that may be updated when thread info changes
-    private var contactListStackView: UIStackView?
-    private var noOtherMembersLabelContainer: UIView?
+    private var contactListView: UIView?
+    private var noOtherMembersView: UIView?
 
     private var groupNameColors: GroupNameColors
     private var groupMemberLabelsWithoutLocalUser: [SignalServiceAddress: MemberLabelForRendering]
@@ -55,7 +108,6 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         self.updatedEmoji = emoji
         self.groupNameColors = groupNameColors
         self.groupModel = groupModel
-        textField.text = memberLabel
         self.groupMemberLabelsWithoutLocalUser = groupMemberLabelsWithoutLocalUser
         self.db = db
         self.contactManager = contactManager
@@ -68,6 +120,8 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         addNavigationTitleView(groupName: groupModel.groupNameOrDefault)
 
         navigationItem.rightBarButtonItem = .doneButton { [weak self] in self?.didTapDone() }
+        navigationItem.rightBarButtonItem?.isEnabled = false
+
         navigationItem.leftBarButtonItem = .cancelButton(
             dismissingFrom: self,
             hasUnsavedChanges: { [weak self] in
@@ -79,8 +133,7 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
             },
         )
 
-        navigationItem.rightBarButtonItem?.tintColor = UIColor.Signal.ultramarine
-        navigationItem.rightBarButtonItem?.isEnabled = false
+        textField.text = memberLabel
     }
 
     func updateWithNewThreadInfo(
@@ -95,12 +148,7 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         addNavigationTitleView(groupName: groupModel.groupNameOrDefault)
         reloadMessagePreview()
 
-        // The group member labels section is the only thing that needs updating if the thread is reloaded.
-        noOtherMembersLabelContainer?.removeFromSuperview()
-        contactListStackView?.removeFromSuperview()
-        contactListStackView = nil
-        noOtherMembersLabelContainer = nil
-        buildGroupMembershipSection()
+        reloadGroupMembershipSection()
     }
 
     func addNavigationTitleView(groupName: String) {
@@ -122,7 +170,6 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         let stackView = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         stackView.axis = .vertical
         stackView.alignment = .center
-        stackView.spacing = 0
 
         navigationItem.titleView = stackView
     }
@@ -131,144 +178,123 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         super.viewDidLoad()
 
         let scrollView = UIScrollView()
-        view.addSubview(scrollView)
+        scrollView.keyboardDismissMode = .onDrag
+        scrollView.preservesSuperviewLayoutMargins = true
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
 
-        createInitialViews()
-
-        scrollView.addSubview(stackView)
         stackView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(stackView)
         NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: -16),
+            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 20),
+            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
             stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-            stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, constant: -32),
+            stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
         ])
-        scrollView.keyboardDismissMode = .onDrag
 
-        // Group Section label
-        let sectionLabel = UILabel()
-        sectionLabel.text = OWSLocalizedString(
+        // Text field row.
+        createInputUI()
+
+        // Message Preview.
+        reloadMessagePreview()
+
+        // Group Members.
+        // Section header is always there and is therefore added just once.
+        stackView.addArrangedSubview(createSectionHeaderView(OWSLocalizedString(
             "MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE",
             comment: "Section header for a list of group member labels",
-        )
-        sectionLabel.font = .dynamicTypeBodyClamped.semibold()
-        stackView.addArrangedSubview(sectionLabel)
-        stackView.setCustomSpacing(8, after: sectionLabel)
-
-        buildGroupMembershipSection()
+        )))
+        reloadGroupMembershipSection()
 
         textField.becomeFirstResponder()
 
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        view.addGestureRecognizer(tapGesture)
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
     }
 
-    private func createInitialViews() {
-        stackView.axis = .vertical
-        stackView.spacing = 20
+    @discardableResult
+    private func createSectionHeaderView(_ title: String, at index: Int? = nil) -> UIView {
+        // This creates a header view that looks the same as the one OWSTableViewController2
+        // creates - see `buildHeaderTextView()` methods.
+        let sectionTitle = UILabel()
+        sectionTitle.text = title
+        sectionTitle.font = OWSTableViewController2.defaultHeaderFont
+        sectionTitle.textColor = OWSTableViewController2.defaultHeaderTextColor
+        sectionTitle.translatesAutoresizingMaskIntoConstraints = false
+        let sectionTitleContainer = UIView()
+        sectionTitleContainer.directionalLayoutMargins = .init(
+            top: 24,
+            leading: OWSTableViewController2.defaultHeaderTextHorizontalInset,
+            bottom: 12,
+            trailing: OWSTableViewController2.defaultHeaderTextHorizontalInset,
+        )
+        sectionTitleContainer.addSubview(sectionTitle)
+        NSLayoutConstraint.activate([
+            sectionTitle.topAnchor.constraint(equalTo: sectionTitleContainer.layoutMarginsGuide.topAnchor),
+            sectionTitle.leadingAnchor.constraint(equalTo: sectionTitleContainer.layoutMarginsGuide.leadingAnchor),
+            sectionTitle.trailingAnchor.constraint(equalTo: sectionTitleContainer.layoutMarginsGuide.trailingAnchor),
+            sectionTitle.bottomAnchor.constraint(equalTo: sectionTitleContainer.layoutMarginsGuide.bottomAnchor),
+        ])
+        return sectionTitleContainer
+    }
 
+    private func createInputUI() {
+        // Helper text at the top.
         let subtitleLabel = UILabel()
         subtitleLabel.text = OWSLocalizedString(
             "MEMBER_LABEL_VIEW_SUBTITLE",
             comment: "Subtitle for a view where users can edit and preview their member label.",
         )
         subtitleLabel.numberOfLines = 0
-        subtitleLabel.font = .dynamicTypeCaption1Clamped
-        subtitleLabel.textColor = UIColor.Signal.secondaryLabel
+        subtitleLabel.font = OWSTableViewController2.defaultFooterFont
+        subtitleLabel.textColor = OWSTableViewController2.defaultFooterTextColor
         subtitleLabel.textAlignment = .center
-
         stackView.addArrangedSubview(subtitleLabel)
+        stackView.setCustomSpacing(24, after: subtitleLabel)
 
-        let textFieldStack = UIStackView()
-        textFieldStack.layer.cornerRadius = 27
+        // Input field row.
+        let textFieldStack = UIStackView(arrangedSubviews: [addEmojiButton, textField, characterCountLabel, clearButton])
         textFieldStack.backgroundColor = UIColor.Signal.tertiaryBackground
-        textFieldStack.axis = .horizontal
         textFieldStack.alignment = .center
-        textFieldStack.distribution = .fill
         textFieldStack.spacing = 8
+        textFieldStack.setCustomSpacing(0, after: addEmojiButton) // button has horizontal padding in it.
         textFieldStack.isLayoutMarginsRelativeArrangement = true
-        textFieldStack.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        textFieldStack.directionalLayoutMargins = .init(hMargin: 8, vMargin: 0)
+        if #available(iOS 26, *) {
+            textFieldStack.cornerConfiguration = .capsule()
+        } else {
+            textFieldStack.layer.cornerRadius = OWSTableViewController2.cellRounding
+        }
 
         if let initialEmoji {
-            addEmojiButton.setImage(nil, for: .normal)
-            addEmojiButton.setTitle(initialEmoji, for: .normal)
-            addEmojiButton.titleLabel?.font = .dynamicTypeTitle3Clamped
+            addEmojiButton.configuration?.image = nil
+            addEmojiButton.configuration?.title = initialEmoji
         } else {
-            addEmojiButton.setImage(UIImage(named: "emoji-plus"), for: .normal)
-            addEmojiButton.tintColor = UIColor.Signal.secondaryLabel
+            addEmojiButton.configuration?.title = nil
+            addEmojiButton.configuration?.image = UIImage(resource: .emojiPlus)
         }
-        addEmojiButton.setContentHuggingPriority(.required, for: .horizontal)
-        addEmojiButton.setContentCompressionResistancePriority(.required, for: .horizontal)
-        addEmojiButton.addAction(
-            UIAction { [weak self] _ in self?.didTapEmojiPicker() },
-            for: .primaryActionTriggered,
-        )
-
-        textField.placeholder = OWSLocalizedString(
-            "MEMBER_LABEL_VIEW_PLACEHOLDER_TEXT",
-            comment: "Placeholder text in text field where user can edit their member label.",
-        )
-        textField.font = .dynamicTypeBodyClamped
-        textField.addAction(
-            UIAction { [weak self] action in
-                guard let self, let textField = action.sender as? UITextField else { return }
-                self.textDidChange(textField)
-            },
-            for: .editingChanged,
-        )
-        textField.delegate = self
 
         characterCountLabel.isHidden = true
         if let count = initialMemberLabel?.count {
             characterCountLabel.text = String(Self.maxCharCount - count)
-            characterCountLabel.font = .dynamicTypeBody
-            characterCountLabel.textColor = UIColor.Signal.tertiaryLabel.withAlphaComponent(0.3)
-            characterCountLabel.isHidden = Self.maxCharCount - count > Self.showCharacterCountMax
-            characterCountLabel.setContentHuggingHorizontalHigh()
-            characterCountLabel.setCompressionResistanceHigh()
+            characterCountLabel.isHidden = (Self.maxCharCount - count) > Self.showCharacterCountMax
         }
 
-        clearButton.setImage(UIImage(named: "x-circle-fill-compact"), for: .normal)
-        clearButton.tintColor = UIColor.Signal.tertiaryLabel
-        clearButton.addAction(
-            UIAction { [weak self] _ in self?.clearButtonTapped() },
-            for: .primaryActionTriggered,
-        )
-        clearButton.autoSetDimensions(to: .square(16))
         if initialMemberLabel == nil, initialEmoji == nil {
             clearButton.isHidden = true
         }
 
-        textFieldStack.addArrangedSubview(addEmojiButton)
-        textFieldStack.addArrangedSubview(textField)
-        textFieldStack.addArrangedSubview(characterCountLabel)
-        textFieldStack.addArrangedSubview(clearButton)
-
-        clearButton.autoPinEdge(.trailing, to: .trailing, of: textFieldStack, withOffset: -16)
-        characterCountLabel.autoPinEdge(.trailing, to: .leading, of: clearButton, withOffset: -8)
+        // min height for text field row
+        textFieldStack.translatesAutoresizingMaskIntoConstraints = false
+        textFieldStack.heightAnchor.constraint(greaterThanOrEqualToConstant: 52).isActive = true
 
         stackView.addArrangedSubview(textFieldStack)
-        stackView.setCustomSpacing(34, after: textFieldStack)
-
-        textFieldStack.translatesAutoresizingMaskIntoConstraints = false
-        textFieldStack.heightAnchor.constraint(equalToConstant: 52).isActive = true
-
-        guard
-            let mockConversationItem = buildMockConversationItem(),
-            let previewContainer = messageBubblePreviewContainer(renderItem: mockConversationItem)
-        else {
-            return
-        }
-
-        stackView.addArrangedSubview(previewContainer)
     }
 
     private func buildMockConversationItem() -> CVRenderItem? {
@@ -305,9 +331,9 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
 
         let renderItem = db.read { tx in
             let conversationStyle = ConversationStyle(
-                type: .`default`,
+                type: .default,
                 thread: mockGroupThread,
-                viewWidth: view.width - 44, // stack view padding
+                viewWidth: view.layoutMarginsGuide.layoutFrame.width,
                 hasWallpaper: false,
                 shouldDimWallpaperInDarkMode: false,
                 chatColor: PaletteChatColor.ultramarine.colorSetting,
@@ -325,45 +351,44 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         return renderItem
     }
 
-    func messageBubblePreviewContainer(renderItem: CVRenderItem) -> UIStackView? {
-        let previewTitle = UILabel()
-        previewTitle.text = OWSLocalizedString(
-            "MEMBER_LABEL_PREVIEW_HEADING",
-            comment: "Heading shown above the preview of a message bubble with the edited member label.",
+    func messageBubblePreviewContainer(renderItem: CVRenderItem) -> UIView {
+        let cellContainer = UIView()
+        cellContainer.clipsToBounds = true
+        cellContainer.directionalLayoutMargins = .init(
+            hMargin: 0,
+            vMargin: OWSTableViewController2.cellVInnerMargin,
         )
-        previewTitle.font = .dynamicTypeBodyClamped.semibold()
+        if #available(iOS 26, *) {
+            cellContainer.cornerConfiguration = .uniformCorners(radius: .fixed(OWSTableViewController2.cellRounding))
+        } else {
+            cellContainer.layer.cornerRadius = OWSTableViewController2.cellRounding
+        }
+        cellContainer.backgroundColor = .Signal.secondaryGroupedBackground
 
         let cellView = CVCellView()
         cellView.configure(renderItem: renderItem, componentDelegate: self)
         cellView.isCellVisible = true
-        cellView.autoSetDimension(.height, toSize: renderItem.cellMeasurement.cellSize.height)
-        cellView.autoSetDimension(.width, toSize: renderItem.cellMeasurement.cellSize.width)
-
-        let cellContainer = UIView()
-        cellContainer.layer.cornerRadius = 27
-        cellContainer.layer.masksToBounds = true
-        cellContainer.backgroundColor = UIColor.Signal.tertiaryBackground
-
+        cellView.translatesAutoresizingMaskIntoConstraints = false
         cellContainer.addSubview(cellView)
-        cellView.autoPinEdge(toSuperviewEdge: .top, withInset: 20)
-        cellView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 20)
+        NSLayoutConstraint.activate([
+            cellView.heightAnchor.constraint(equalToConstant: renderItem.cellMeasurement.cellSize.height),
+            cellView.widthAnchor.constraint(equalToConstant: renderItem.cellMeasurement.cellSize.width),
 
-        previewContainer = UIStackView()
-        previewContainer?.axis = .vertical
-        previewContainer?.spacing = 8
-        previewContainer?.addArrangedSubview(previewTitle)
-        previewContainer?.addArrangedSubview(cellContainer)
+            cellView.topAnchor.constraint(equalTo: cellContainer.layoutMarginsGuide.topAnchor),
+            cellView.leadingAnchor.constraint(equalTo: cellContainer.layoutMarginsGuide.leadingAnchor),
+            cellView.trailingAnchor.constraint(lessThanOrEqualTo: cellContainer.layoutMarginsGuide.trailingAnchor),
+            cellView.bottomAnchor.constraint(equalTo: cellContainer.layoutMarginsGuide.bottomAnchor),
+        ])
 
-        return previewContainer
+        return cellContainer
     }
 
     private func clearButtonTapped() {
         textField.text = ""
         updatedMemberLabel = nil
         updatedEmoji = nil
-        addEmojiButton.setImage(UIImage(named: "emoji-plus"), for: .normal)
-        addEmojiButton.setTitle(nil, for: .normal)
-        addEmojiButton.tintColor = UIColor.Signal.secondaryLabel
+        addEmojiButton.configuration?.title = nil
+        addEmojiButton.configuration?.image = UIImage(resource: .emojiPlus)
 
         reloadMessagePreview()
         reloadDoneButtonStatus()
@@ -388,9 +413,8 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
                 return
             }
             self?.updatedEmoji = emojiString
-            self?.addEmojiButton.setImage(nil, for: .normal)
-            self?.addEmojiButton.setTitle(emojiString, for: .normal)
-            self?.addEmojiButton.titleLabel?.font = .dynamicTypeTitle3Clamped
+            self?.addEmojiButton.configuration?.image = nil
+            self?.addEmojiButton.configuration?.title = emojiString
             self?.reloadDoneButtonStatus()
             self?.reloadMessagePreview()
         }
@@ -401,14 +425,31 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         if let previewContainer {
             stackView.removeArrangedSubview(previewContainer)
             previewContainer.removeFromSuperview()
+            self.previewContainer = nil
         }
-        previewContainer = nil
-        if
-            let mockRenderItem = buildMockConversationItem(),
+
+        if let mockRenderItem = buildMockConversationItem() {
+            if previewSectionHeader == nil {
+                let previewSectionHeader = createSectionHeaderView(
+                    OWSLocalizedString(
+                        "MEMBER_LABEL_PREVIEW_HEADING",
+                        comment: "Heading shown above the preview of a message bubble with the edited member label.",
+                    ),
+                    at: 2,
+                )
+                stackView.insertArrangedSubview(previewSectionHeader, at: 2)
+                self.previewSectionHeader = previewSectionHeader
+            }
+
             let previewContainer = messageBubblePreviewContainer(renderItem: mockRenderItem)
-        {
-            stackView.insertArrangedSubview(previewContainer, at: 2)
+            stackView.insertArrangedSubview(previewContainer, at: 3)
+            self.previewContainer = previewContainer
+        } else {
+            if let previewSectionHeader {
+                stackView.removeArrangedSubview(previewSectionHeader)
+            }
         }
+
         let count = textField.text?.count ?? 0
         let charsRemaining = Self.maxCharCount - count
         characterCountLabel.text = String(charsRemaining)
@@ -491,83 +532,123 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         return membersToRender.map { (key: $0, value: groupMemberLabelsWithoutLocalUser[$0]!) }
     }
 
-    private func buildGroupMembershipSection() {
-        let contactListStackView = UIStackView()
-        contactListStackView.spacing = 5
-        contactListStackView.axis = .vertical
-        contactListStackView.backgroundColor = UIColor.Signal.tertiaryBackground
-        contactListStackView.layer.masksToBounds = true
-        contactListStackView.layer.cornerRadius = 26
-        contactListStackView.layoutMargins = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
-        contactListStackView.isLayoutMarginsRelativeArrangement = true
+    private func reloadGroupMembershipSection() {
+        if let noOtherMembersView {
+            stackView.removeArrangedSubview(noOtherMembersView)
+            noOtherMembersView.removeFromSuperview()
+            self.noOtherMembersView = nil
+        }
+
+        if let contactListView {
+            stackView.removeArrangedSubview(contactListView)
+            contactListView.removeFromSuperview()
+            self.contactListView = nil
+        }
 
         let sortedNonLocalMembers = sortedMembers()
-        var cellCount = 0
+
+        // No other member labels - show helper text.
+        guard sortedNonLocalMembers.isEmpty == false else {
+            let cellContainer = UIView()
+            cellContainer.clipsToBounds = true
+            cellContainer.backgroundColor = .Signal.secondaryGroupedBackground
+            cellContainer.directionalLayoutMargins = .init(
+                hMargin: OWSTableViewController2.cellHInnerMargin,
+                vMargin: OWSTableViewController2.cellVInnerMargin,
+            )
+            cellContainer.translatesAutoresizingMaskIntoConstraints = false
+            if #available(iOS 26, *) {
+                cellContainer.cornerConfiguration = .uniformCorners(radius: .fixed(OWSTableViewController2.cellRounding))
+            } else {
+                cellContainer.layer.cornerRadius = OWSTableViewController2.cellRounding
+            }
+
+            let noOtherMembersLabel = UILabel()
+            noOtherMembersLabel.text = OWSLocalizedString(
+                "MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS",
+                comment: "Text for section that shows other group member labels, when there are none",
+            )
+            noOtherMembersLabel.font = .dynamicTypeSubheadlineClamped
+            noOtherMembersLabel.textColor = .Signal.secondaryLabel
+            noOtherMembersLabel.textAlignment = .center
+            noOtherMembersLabel.numberOfLines = 0
+            noOtherMembersLabel.translatesAutoresizingMaskIntoConstraints = false
+            cellContainer.addSubview(noOtherMembersLabel)
+            NSLayoutConstraint.activate([
+                noOtherMembersLabel.topAnchor.constraint(equalTo: cellContainer.layoutMarginsGuide.topAnchor),
+                noOtherMembersLabel.leadingAnchor.constraint(equalTo: cellContainer.layoutMarginsGuide.leadingAnchor),
+                noOtherMembersLabel.trailingAnchor.constraint(equalTo: cellContainer.layoutMarginsGuide.trailingAnchor),
+                noOtherMembersLabel.bottomAnchor.constraint(equalTo: cellContainer.layoutMarginsGuide.bottomAnchor),
+
+                cellContainer.heightAnchor.constraint(greaterThanOrEqualToConstant: 96),
+            ])
+            stackView.addArrangedSubview(cellContainer)
+
+            self.noOtherMembersView = cellContainer
+
+            return
+        }
+
+        let vSpacing: CGFloat = 5
+        let contactListStackView = UIStackView()
+        contactListStackView.spacing = vSpacing
+        contactListStackView.axis = .vertical
+        contactListStackView.backgroundColor = .Signal.secondaryGroupedBackground
+        contactListStackView.clipsToBounds = true
+        contactListStackView.isLayoutMarginsRelativeArrangement = true
+        contactListStackView.directionalLayoutMargins = .init(
+            top: vSpacing,
+            leading: OWSTableViewController2.cellHInnerMargin,
+            bottom: vSpacing,
+            trailing: 0, // separaators should go all way to trailing edge. cell will be put in a container.
+        )
+        if #available(iOS 26, *) {
+            contactListStackView.cornerConfiguration = .uniformCorners(radius: .fixed(OWSTableViewController2.cellRounding))
+        } else {
+            contactListStackView.layer.cornerRadius = OWSTableViewController2.cellRounding
+        }
+
         for (memberAddress, memberLabel) in sortedNonLocalMembers {
+            if contactListStackView.arrangedSubviews.isEmpty == false {
+                let separator = UIView()
+                separator.backgroundColor = .Signal.opaqueSeparator
+                separator.translatesAutoresizingMaskIntoConstraints = false
+                separator.heightAnchor.constraint(equalToConstant: hairlineWidth).isActive = true
+                contactListStackView.addArrangedSubview(separator)
+            }
+
             let cell = ContactCellView()
             SSKEnvironment.shared.databaseStorageRef.read { tx in
-                var configuration = ContactCellView.Configuration(address: memberAddress, localUserDisplayMode: .asLocalUser)
-
-                configuration.memberLabel = memberLabel
-
                 let isSystemContact = SSKEnvironment.shared.contactManagerRef.fetchSignalAccount(
                     for: memberAddress,
                     transaction: tx,
                 ) != nil
 
+                var configuration = ContactCellView.Configuration(address: memberAddress, localUserDisplayMode: .asLocalUser)
+                configuration.memberLabel = memberLabel
                 configuration.shouldShowContactIcon = isSystemContact
                 cell.configure(configuration: configuration, transaction: tx)
 
-                if cellCount > 0 {
-                    let separator = UIView()
-                    separator.backgroundColor = UIColor.Signal.tertiaryLabel
-                    contactListStackView.addArrangedSubview(separator)
-                    NSLayoutConstraint.activate([
-                        separator.heightAnchor.constraint(equalToConstant: hairlineWidth),
-                    ])
-                    contactListStackView.setCustomSpacing(6, after: separator)
-                }
+                // We need trailing margin, but only for cells, not separators.
+                let cellContainer = UIView()
+                cell.translatesAutoresizingMaskIntoConstraints = false
+                cellContainer.addSubview(cell)
+                NSLayoutConstraint.activate([
+                    cell.topAnchor.constraint(equalTo: cellContainer.topAnchor),
+                    cell.leadingAnchor.constraint(equalTo: cellContainer.leadingAnchor),
+                    cell.trailingAnchor.constraint(
+                        equalTo: cellContainer.trailingAnchor,
+                        constant: -OWSTableViewController2.cellHInnerMargin,
+                    ),
+                    cell.bottomAnchor.constraint(equalTo: cellContainer.bottomAnchor),
+                ])
 
-                contactListStackView.addArrangedSubview(cell)
-                cellCount += 1
+                contactListStackView.addArrangedSubview(cellContainer)
             }
         }
 
-        if cellCount > 0 {
-            contactListStackView.translatesAutoresizingMaskIntoConstraints = false
-            stackView.addArrangedSubview(contactListStackView)
-            NSLayoutConstraint.activate([
-                contactListStackView.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
-                contactListStackView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor),
-            ])
-            self.contactListStackView = contactListStackView
-        } else {
-            let cellContainer = UIView()
-            cellContainer.layer.cornerRadius = 27
-            cellContainer.layer.masksToBounds = true
-            cellContainer.backgroundColor = UIColor.Signal.tertiaryBackground
-
-            let noOtherMembersLabel = UILabel()
-            noOtherMembersLabel.text = OWSLocalizedString("MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS", comment: "Text for section that shows other group member labels, when there are none")
-            noOtherMembersLabel.font = .dynamicTypeFootnoteClamped
-            noOtherMembersLabel.textColor = UIColor.Signal.secondaryLabel
-            noOtherMembersLabel.textAlignment = .center
-            noOtherMembersLabel.numberOfLines = 0
-            cellContainer.addSubview(noOtherMembersLabel)
-            noOtherMembersLabel.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                noOtherMembersLabel.centerXAnchor.constraint(equalTo: cellContainer.centerXAnchor),
-                noOtherMembersLabel.centerYAnchor.constraint(equalTo: cellContainer.centerYAnchor),
-            ])
-            stackView.addArrangedSubview(cellContainer)
-            cellContainer.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                cellContainer.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
-                cellContainer.trailingAnchor.constraint(equalTo: stackView.trailingAnchor),
-                cellContainer.heightAnchor.constraint(greaterThanOrEqualToConstant: 96),
-            ])
-            self.noOtherMembersLabelContainer = cellContainer
-        }
+        stackView.addArrangedSubview(contactListStackView)
+        self.contactListView = contactListStackView
     }
 
     // MARK: -
@@ -576,11 +657,9 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
     private func dismissKeyboard() {
         view.endEditing(true)
     }
-}
 
-// MARK: -
+    // MARK: - CVComponentDelegate
 
-extension MemberLabelViewController: CVComponentDelegate {
     var spoilerState: SignalUI.SpoilerRenderState {
         return SpoilerRenderState()
     }
