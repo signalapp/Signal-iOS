@@ -145,6 +145,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         self.deviceSleepManager = deviceSleepManager
         self.tsAccountManager = tsAccountManager
         self.callManager.delegate = self
+        self.callServiceState.delegate = self
         self.callServiceState.addObserver(self)
 
         notificationObservers.append(NotificationCenter.default.addObserver(forName: .OWSApplicationDidEnterBackground, object: nil, queue: .main) { [weak self] _ in
