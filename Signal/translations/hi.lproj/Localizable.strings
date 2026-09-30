@@ -886,6 +886,9 @@
 /* Text describing that the user's paid backup plan did not correspond to a App Store subscription on this device. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_IAP_NOT_FOUND_LOCALLY_DESCRIPTION" = "इस डिवाइस पर आपका सब्सक्रिप्शन नहीं मिला। Signal बैकअप इस्तेमाल करना जारी रखने के लिए रिन्यू करें।";
 
+/* Text on the landing page describing that the user's backup plan is paid, but free for them as a tester. */
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_COMPLIMENTARY_DESCRIPTION" = "Your backup plan is paid (complimentary for TestFlight users)";
+
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "टेक्स्ट + पूरे मीडिया का बैकअप";
 
@@ -2371,6 +2374,12 @@
 /* Label for the 'name suffix' field of a contact. */
 "CONTACT_FIELD_NAME_SUFFIX" = "सफ़िक्स";
 
+/* Label for the 'nickname' field of a contact. */
+"CONTACT_FIELD_NICKNAME" = "Nickname";
+
+/* Label for the 'notes' field of a contact. */
+"CONTACT_FIELD_NOTES" = "Notes";
+
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "संस्था";
 
@@ -2714,7 +2723,7 @@
 "CONVERSATION_SETTINGS_MUTE_BUTTON" = "म्यूट करे";
 
 /* Label for button to mute a thread until a date the user picks. */
-"CONVERSATION_SETTINGS_MUTE_CUSTOM_ACTION" = "Mute until…";
+"CONVERSATION_SETTINGS_MUTE_CUSTOM_ACTION" = "इस समय तक म्यूट करें…";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 घंटे";
@@ -2841,6 +2850,9 @@
 
 /* Button on truncated text messages that they can be tapped to download the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "पूरा मैसेज पाएं";
+
+/* Label for a button in a message bubble that opens a sticker pack */
+"CONVERSATION_VIEW_VIEW_STICKER_PACK" = "View Pack";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "क्लिपबोर्ड पर कॉपी किया गया";
@@ -3789,6 +3801,9 @@
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "किसी को इनवाइट भेजकर देखना है?";
+
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to turn on backups. */
+"ENABLE_BACKUPS_AUTHENTICATION_REASON" = "Authenticate to turn on backups";
 
 /* Label for a toast that confirms that local backups are enabled. */
 "ENABLE_LOCAL_FILE_BACKUPS_TOAST_CONFIRM" = "ऑन-डिवाइस बैकअप चालू है";
@@ -5134,7 +5149,7 @@
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
 "INFO_MESSAGE_CONTACT_REMOVED" = "आपने इस व्यक्ति को अपनी Signal कॉन्टैक्ट लिस्ट से हटा दिया है। उसे मैसेज भेजने पर वह वापस लिस्ट में जुड़ जाएगा।";
 
-/* When you start a chat with someone and then later learn their profile name, we insert an in-chat message with this string to record the identifier you originally used to contact them. Embeds {{ the identifier, either a phone number or a username }}. */
+/* When you start a chat with someone and then later learn their profile name, we insert an in-chat message with this string to record the identifier you originally used to contact them. Embeds {{ the identifier, either a phone number, a username, or a name someone else shared }}. */
 "INFO_MESSAGE_LEARNED_PROFILE_KEY" = "आपने %1$@ के साथ यह चैट शुरू की है।";
 
 /* Shown when a user activates payments from a chat */
@@ -6179,13 +6194,13 @@
 "MUTE_CONFIRMATION_TOAST_LABEL" = "माइक बंद है";
 
 /* Label next to the selected date and time on the sheet for muting a chat's notifications until a custom date. */
-"MUTE_UNTIL_SHEET_MUTE_UNTIL_LABEL" = "Mute Until";
+"MUTE_UNTIL_SHEET_MUTE_UNTIL_LABEL" = "इस समय तक म्यूट करें";
 
 /* Footer on the sheet for muting a chat's notifications until a custom date, clarifying which time zone the selected date and time are in. Embeds {{the name of the current time zone}}. */
-"MUTE_UNTIL_SHEET_TIME_ZONE_FOOTER_FORMAT" = "All times in %1$@";
+"MUTE_UNTIL_SHEET_TIME_ZONE_FOOTER_FORMAT" = "सभी समय %1$@ में";
 
 /* Title for the sheet for muting a chat's notifications until a custom date. */
-"MUTE_UNTIL_SHEET_TITLE" = "Mute Notifications";
+"MUTE_UNTIL_SHEET_TITLE" = "नोटिफ़िकेशन म्यूट करें";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "म्यूट किया गया";
@@ -7798,6 +7813,9 @@
 /* Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL. */
 "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "इस अकाउंट को किसी नए डिवाइस पर ट्रांसफ़र करने के लिए, ‘जारी रखें’ पर टैप करें और Signal कैमरे की मदद से QR कोड स्कैन करें। यह ध्यान रखें कि सिर्फ़ वे ही QR कोड स्कैन करें जो सीधे Signal से मिले हों।";
 
+/* Label to show above a sticker used to reply to a message */
+"QUOTE_REPLY_STICKER" = "Reply";
+
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }} {{ original message }}. */
 "QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "इन्हें जवाब दिया जा रहा है: %1$@। %2$@";
 
@@ -7924,6 +7942,9 @@
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_TITLE" = "Signal पर आने के लिए इनवाइट भेजें";
 
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode during a periodic reminder to record your recovery key. */
+"RECOVERY_KEY_REMINDER_AUTHENTICATION_REASON" = "Authenticate to view your recovery key";
+
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "क्या आपको मदद चाहिए?";
 
@@ -7947,6 +7968,9 @@
 
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_ERROR" = "आपने कई बार कोशिश कर ली है। दोबारा कोशिश करने से पहले, थोड़ी देर इंतज़ार करें।";
+
+/* A button in registration that allows the user to register by purchasing a Signal Login rather than providing their phone number. */
+"REGISTER_WITHOUT_NUMBER" = "Register Without Number";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
 "REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "हो सकता है कि आपने अपनी 'रिकवरी की' गलत डाली हो। \n\nरजिस्ट्रेशन करते समय वही फ़ोन नंबर और 'रिकवरी की' इस्तेमाल करें, जो आपने Signal सिक्योर बैकअप चालू करते समय सेव की थी।";
@@ -8181,6 +8205,69 @@
 
 /* Tutorial text describing the second step to scanning the restore/transfer QR code with your old phone: tap the camera icon */
 "REGISTRATION_SCAN_QR_CODE_TUTORIAL_TAP_CAMERA" = "कैमरा आइकन पर टैप करें";
+
+/* Description for the 'Signal Login' screen. */
+"REGISTRATION_SIGNAL_LOGIN_BODY" = "Enter your account ID followed by your recovery key to restore your account.";
+
+/* Label above the partially hidden account ID on the 'Signal Login details' screen. */
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_ACCOUNT_LABEL" = "Account";
+
+/* Description for the 'Signal Login details' screen shown after purchasing a Signal Login. */
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_BODY" = "Thanks for your purchase. Use your Signal Login to register and restore your account. If you forget your keys, you will not be able to recover your account.";
+
+/* Accessibility label for a partially hidden value on the Signal Login card. */
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_MASKED_VALUE_ACCESSIBILITY_FORMAT" = "Ending in %1$@";
+
+/* Label above the partially hidden recovery key on the 'Signal Login details' screen. */
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_RECOVERY_LABEL" = "Recovery";
+
+/* Button on the 'Signal Login details' screen to save the Signal Login manually. */
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_MANUALLY_BUTTON" = "Save Manually";
+
+/* Button on the 'Signal Login details' screen to save the Signal Login to a password manager. */
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_TO_PASSWORD_MANAGER_BUTTON" = "Save to Password Manager";
+
+/* Title text for the 'Signal Login details' screen shown after purchasing a Signal Login. */
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_TITLE" = "Your Signal Login";
+
+/* Button on the Signal Login card on the 'Signal Login details' screen to show the full account ID and recovery key. */
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_VIEW_DETAILS_BUTTON" = "View Details";
+
+/* Toast shown after copying the account ID on the 'Signal Login' details sheet. */
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_COPIED_TOAST" = "Account ID copied";
+
+/* Header above the account ID on the 'Signal Login' details sheet. */
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_HEADER" = "Account ID";
+
+/* Accessibility label for the button that copies the account ID on the 'Signal Login' details sheet. */
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_COPY_ACCOUNT_ID_ACCESSIBILITY" = "Copy account ID";
+
+/* Accessibility label for the button that copies the recovery key on the 'Signal Login' details sheet. */
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_COPY_RECOVERY_KEY_ACCESSIBILITY" = "Copy recovery key";
+
+/* Button on the 'Signal Login' details sheet to save login to a password manager. */
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_PASSWORD_MANAGER_BUTTON" = "Save to Password Manager";
+
+/* Toast shown after copying the recovery key on the 'Signal Login' details sheet. */
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_RECOVERY_KEY_COPIED_TOAST" = "Recovery Key copied";
+
+/* Header above the recovery key on the 'Signal Login' details sheet. */
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_RECOVERY_KEY_HEADER" = "Recovery Key";
+
+/* Button on the 'Signal Login' details sheet to save the login details as a PDF. */
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_SAVE_AS_PDF_BUTTON" = "Save as PDF";
+
+/* Title for the sheet showing the accountID and recovery key of a Signal Login. */
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_TITLE" = "Signal Login";
+
+/* Title for help button for the 'Signal Login' screen. */
+"REGISTRATION_SIGNAL_LOGIN_HELP_BODY" = "Your Signal Login contains a 32-character Account ID along with a 64-character Recovery Key. \n\nIf you’ve lost your Signal Login, Signal can’t help restore your account. If you have your old device you can view your Signal Login in Settings > Account.";
+
+/* Title for help button for the 'Signal Login' screen. */
+"REGISTRATION_SIGNAL_LOGIN_NEED_HELP_TITLE" = "Need Help?";
+
+/* Title text for the 'Signal Login' screen. */
+"REGISTRATION_SIGNAL_LOGIN_TITLE" = "Signal Login";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
 "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "वॉइस कॉल";
@@ -8552,7 +8639,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "स्क्रीन लॉक की सुविधा का इस्तेमाल करने के लिए आपको अपनी iOS सेटिंग में पासकोड चालू करना होगा।";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to confirm a change to the 'screen lock' settings. */
-"SCREEN_LOCK_REASON_CHANGE_SCREEN_LOCK_SETTINGS" = "Authenticate to change Screen Lock settings.";
+"SCREEN_LOCK_REASON_CHANGE_SCREEN_LOCK_SETTINGS" = "स्क्रीन लॉक सेटिंग बदलने के लिए ऑथेंटिकेट करें।";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Signal खोलने के लिए ऑथेंटिकेशन की प्रक्रिया पूरी करें।";
@@ -8670,6 +8757,36 @@
 
 /* Button text to select all in any list selection mode */
 "SELECT_ALL" = "सभी चुनें";
+
+/* Shown on the 'Select Contact' view when access to the user's contacts is restricted, for example by Screen Time or device management. */
+"SELECT_CONTACT_FOR_SHARING_ACCESS_RESTRICTED" = "Access to phone contacts is restricted on this device.";
+
+/* Shown on the 'Select Contact' view after the user has dismissed the contacts permission prompt without deciding. The text inside the <link> tags is tappable and asks iOS for access to the user's contacts. */
+"SELECT_CONTACT_FOR_SHARING_ALLOW_ACCESS" = "To see your phone contacts here, <link>allow access</link>.";
+
+/* Shown on the 'Select Contact' view when the user has denied access to their contacts. Followed by a 'Learn More' link. */
+"SELECT_CONTACT_FOR_SHARING_ALLOW_ACCESS_IN_SETTINGS_FOOTER" = "To see your phone contacts here, allow access in your device settings.";
+
+/* Subtitle shown on the 'Select Contact' view when the user has no contacts. */
+"SELECT_CONTACT_FOR_SHARING_NO_CONTACTS_SUBTITLE" = "Your contacts will appear here.";
+
+/* Title shown on the 'Select Contact' view when the user has no contacts. */
+"SELECT_CONTACT_FOR_SHARING_NO_CONTACTS_TITLE" = "No Contacts";
+
+/* Title shown on the 'Select Contact' view when no contacts match the user's search. */
+"SELECT_CONTACT_FOR_SHARING_NO_SEARCH_RESULTS_TITLE" = "No Results";
+
+/* Button on the 'Select Contact' view's contacts permission prompt that asks iOS for access to the user's contacts. */
+"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_ALLOW_BUTTON" = "Allow Access";
+
+/* Body of the prompt on the 'Select Contact' view that asks the user to allow access to their contacts. */
+"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_BODY" = "Allow access to your contacts. Your contacts are encrypted and not visible to the Signal service.";
+
+/* Button on the 'Select Contact' view's contacts permission prompt that hides the prompt. */
+"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_DISMISS_BUTTON" = "No Thanks";
+
+/* Title of the prompt on the 'Select Contact' view that asks the user to allow access to their contacts. */
+"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_TITLE" = "Find people you know on Signal";
 
 /* Placeholder text for the search bar on the 'Select Contact' view */
 "SELECT_CONTACT_FOR_SHARING_SEARCH_BAR_PLACEHOLDER" = "खोजें";
@@ -9934,6 +10051,12 @@
 /* Shown in the header when the user hasn't provided a custom name for a call. */
 "SIGNAL_CALL" = "Signal कॉल";
 
+/* Placeholder of the 'Account ID' username field. */
+"SIGNAL_LOGIN_ACCOUNT_ID_PLACEHOLDER_TITLE" = "Account ID";
+
+/* Placeholder of the 'Recovery Key' password field. */
+"SIGNAL_LOGIN_RECOVERY_KEY_PLACEHOLDER_TITLE" = "Recovery Key";
+
 /* Title for the sheet presented when user taps on Signal Proxy link in chat. */
 "SIGNAL_PROXY" = "Signal प्रॉक्सी सर्वर";
 
@@ -10564,6 +10687,9 @@
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@ ह.";
 
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to transfer your account to a new device. */
+"TRANSFER_ACCOUNT_AUTHENTICATION_REASON" = "Authenticate to transfer your account";
+
 /* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
 "TRANSFER_COMPLETE_SHEET_BUTTON" = "Signal बंद करें";
 
@@ -10890,6 +11016,9 @@
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "फ़ोटो देखें";
+
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to view your recovery key. */
+"VIEW_RECOVERY_KEY_AUTHENTICATION_REASON" = "Authenticate to view your recovery key";
 
 /* View the story of a group or user */
 "VIEW_STORY" = "स्टोरी देखें";

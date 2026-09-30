@@ -1,1 +1,1 @@
-• This update introduces a new custom mute option so you can easily specify the exact date and time when you would like to end your moment of silence for notifications in a specific chat.
+• एक नवीन कस्टम म्युटचा पर्याय तुम्हाला विशिष्ट चॅटच्या अधिसूचना कधीपासून मिळणे परत चालू व्हावे याचा नेमका दिनांक व वेळ ठरवून देतो.

@@ -1,1 +1,1 @@
-• This update introduces a new custom mute option so you can easily specify the exact date and time when you would like to end your moment of silence for notifications in a specific chat.
+• В этом обновлении появилась новая настраиваемая функция отключения уведомлений: теперь можно точно указать дату и время, когда вы хотите возобновить получение уведомлений в конкретном чате.
