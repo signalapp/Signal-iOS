@@ -210,7 +210,6 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
     }
 
     public func changeLocalNumber(
-        aci: Aci,
         phoneNumber: LocalIdentifiers.PhoneNumber,
         tx: DBWriteTransaction,
     ) {
@@ -218,10 +217,6 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
             let oldNumber = kvStore.fetchValue(String.self, forKey: Keys.localPhoneNumber, tx: tx)
             Self.regStateLogger.info("local number \(oldNumber as Optional) -> \(phoneNumber.e164.stringValue)")
             kvStore.writeValue(phoneNumber.e164.stringValue, forKey: Keys.localPhoneNumber, tx: tx)
-
-            let oldAci = kvStore.fetchValue(String.self, forKey: Keys.localAci, tx: tx)
-            Self.regStateLogger.info("local aci \(oldAci as Optional) -> \(aci)")
-            kvStore.writeValue(aci.serviceIdUppercaseString, forKey: Keys.localAci, tx: tx)
 
             let oldPni = kvStore.fetchValue(String.self, forKey: Keys.localPni, tx: tx)
             Self.regStateLogger.info("local pni \(oldPni as Optional) -> \(phoneNumber.pni)")

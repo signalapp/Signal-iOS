@@ -86,7 +86,7 @@ final class IdentityKeyMismatchManagerTest: XCTestCase {
     func testUnlinkedIfDecryptionErrorAndMismatchedIdentityKey() async {
         let localIdentifiers = LocalIdentifiers.mock
         messageProcessorMock.waitForFetchingAndProcessingMock = {}
-        whoAmIManagerMock.whoAmIResponse = .value(.forUnitTest(localIdentifiers: localIdentifiers))
+        whoAmIManagerMock.whoAmIResponse = .value(AccountIdentityResponse(localIdentifiers: localIdentifiers))
         tsAccountManagerMock.localIdentifiersMock = { localIdentifiers }
         var serverHasSameKeyResponses = [false]
         identityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _, _ in serverHasSameKeyResponses.popFirst()! }
@@ -101,7 +101,7 @@ final class IdentityKeyMismatchManagerTest: XCTestCase {
     func testNotUnlinkedIfIdentityKeyCheckingFails() async {
         let localIdentifiers = LocalIdentifiers.mock
         messageProcessorMock.waitForFetchingAndProcessingMock = {}
-        whoAmIManagerMock.whoAmIResponse = .value(.forUnitTest(localIdentifiers: localIdentifiers))
+        whoAmIManagerMock.whoAmIResponse = .value(AccountIdentityResponse(localIdentifiers: localIdentifiers))
         tsAccountManagerMock.localIdentifiersMock = { localIdentifiers }
         var serverHasSameKeyResponses = [OWSGenericError("")]
         identityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _, _ in throw serverHasSameKeyResponses.popFirst()! }
@@ -116,7 +116,7 @@ final class IdentityKeyMismatchManagerTest: XCTestCase {
     func testNotUnlinkedIfIdentityKeyMatches() async {
         let localIdentifiers = LocalIdentifiers.mock
         messageProcessorMock.waitForFetchingAndProcessingMock = {}
-        whoAmIManagerMock.whoAmIResponse = .value(.forUnitTest(localIdentifiers: localIdentifiers))
+        whoAmIManagerMock.whoAmIResponse = .value(AccountIdentityResponse(localIdentifiers: localIdentifiers))
         tsAccountManagerMock.localIdentifiersMock = { localIdentifiers }
         var serverHasSameKeyResponses = [true]
         identityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _, _ in serverHasSameKeyResponses.popFirst()! }
@@ -159,7 +159,7 @@ final class IdentityKeyMismatchManagerTest: XCTestCase {
             }
         }
         let localIdentifiers = LocalIdentifiers.mock
-        whoAmIManagerMock.whoAmIResponse = .value(.forUnitTest(localIdentifiers: localIdentifiers))
+        whoAmIManagerMock.whoAmIResponse = .value(AccountIdentityResponse(localIdentifiers: localIdentifiers))
         tsAccountManagerMock.localIdentifiersMock = { localIdentifiers }
         var serverHasSameKeyResponses = [false]
         identityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _, _ in serverHasSameKeyResponses.popFirst()! }

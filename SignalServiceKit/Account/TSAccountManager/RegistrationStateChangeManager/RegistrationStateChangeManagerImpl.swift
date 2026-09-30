@@ -110,7 +110,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         phoneNumber: LocalIdentifiers.PhoneNumber,
         tx: DBWriteTransaction,
     ) {
-        tsAccountManager.changeLocalNumber(aci: aci, phoneNumber: phoneNumber, tx: tx)
+        tsAccountManager.changeLocalNumber(phoneNumber: phoneNumber, tx: tx)
 
         didUpdateLocalIdentifiers(
             LocalIdentifiers(aci: aci, accountType: .forPhoneNumber(phoneNumber)),

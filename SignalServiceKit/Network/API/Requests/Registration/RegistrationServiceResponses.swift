@@ -4,7 +4,7 @@
 //
 
 import Foundation
-public import LibSignalClient
+import LibSignalClient
 
 public enum RegistrationServiceResponses {
 
@@ -272,35 +272,6 @@ public enum RegistrationServiceResponses {
         case unexpectedError = -1
 
         public static var unknown: Self { .unexpectedError }
-    }
-
-    public struct AccountIdentityResponse: Codable, Equatable {
-        /// The users account identifier.
-        @AciUuid public var aci: Aci
-        /// The user's phone number identifier.
-        @PniUuid public var pni: Pni
-        /// The phone number associated with the PNI.
-        public let e164: E164
-        /// The username associated with the ACI.
-        public let username: String?
-        /// Whether the account has any data in SVR.
-        public let hasPreviouslyUsedSVR: Bool
-
-        public init(aci: Aci, pni: Pni, e164: E164, username: String?, hasPreviouslyUsedSVR: Bool) {
-            self._aci = aci.codableUuid
-            self._pni = pni.codableUuid
-            self.e164 = e164
-            self.username = username
-            self.hasPreviouslyUsedSVR = hasPreviouslyUsedSVR
-        }
-
-        public enum CodingKeys: String, CodingKey {
-            case aci = "uuid"
-            case pni
-            case e164 = "number"
-            case username
-            case hasPreviouslyUsedSVR = "storageCapable"
-        }
     }
 
     public struct RegistrationLockFailureResponse: Decodable {

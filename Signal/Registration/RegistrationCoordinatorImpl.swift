@@ -573,7 +573,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 unitCount: 100,
             )
 
-            let backupKey = MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: identity.aci)
+            let backupKey = MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: identity.localIdentifiers.aci)
             let fileUrl: URL
             switch type {
             case .local:
@@ -1566,7 +1566,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 availableBackups = dates.suffix(2).map { .local($0) }
             } else {
                 // For manual restore, fetch the backup info
-                let backupKey = MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: accountIdentity.aci)
+                let backupKey = MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: accountIdentity.localIdentifiers.aci)
                 let backupServiceAuth = try await self.fetchBackupServiceAuth(
                     accountEntropyPool: accountEntropyPool,
                     accountIdentity: accountIdentity,
@@ -1621,13 +1621,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         accountEntropyPool: SignalServiceKit.AccountEntropyPool,
         accountIdentity: AccountIdentity,
     ) async throws -> BackupServiceAuth {
-        let backupKey = MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: accountIdentity.aci)
+        let backupKey = MessageRootBackupKey(accountEntropyPool: accountEntropyPool, aci: accountIdentity.localIdentifiers.aci)
         logger.info("Fetching backup auth [\(accountEntropyPool.getLoggingKey())]")
 
         func fetchBackupServiceAuth() async throws -> BackupServiceAuth {
             return try await self.deps.backupRequestManager.fetchBackupServiceAuthForRegistration(
                 key: backupKey,
-                localAci: accountIdentity.aci,
+                localAci: accountIdentity.localIdentifiers.aci,
                 chatServiceAuth: accountIdentity.chatServiceAuth,
                 logger: logger,
             )
@@ -3599,10 +3599,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         case .changingNumber(let changeNumberState):
             if let pniState = changeNumberState.pniState {
+                guard
+                    let newPhoneNumber = E164(accountIdentity.localIdentifiers.phoneNumber),
+                    let newPni = accountIdentity.localIdentifiers.pni
+                else {
+                    owsFailDebug("can't change number without E164/PNI")
+                    return .showErrorSheet(.genericError)
+                }
                 await finalizeChangeNumberPniState(
                     changeNumberState: changeNumberState,
                     pniState: pniState,
-                    accountIdentity: accountIdentity,
+                    aci: accountIdentity.localIdentifiers.aci,
+                    newPhoneNumber: LocalIdentifiers.PhoneNumber(e164: newPhoneNumber, pni: newPni),
                 )
             }
             await finish(accountIdentity: accountIdentity)
@@ -4248,7 +4256,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func finalizeChangeNumberPniState(
         changeNumberState: Mode.ChangeNumberState,
         pniState: Mode.ChangeNumberState.PendingPniState,
-        accountIdentity: AccountIdentity,
+        aci: Aci,
+        newPhoneNumber: LocalIdentifiers.PhoneNumber,
     ) async {
         logger.info("")
 
@@ -4271,16 +4280,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 Recording new phone number
                 localAci: \(changeNumberState.localAci),
                 localE164: \(changeNumberState.oldE164.stringValue),
-                serviceAci: \(accountIdentity.aci),
-                servicePni: \(accountIdentity.pni),
-                serviceE164: \(accountIdentity.e164.stringValue)")
+                serviceAci: \(aci),
+                serviceE164: \(newPhoneNumber.e164),
+                servicePni: \(newPhoneNumber.pni)")
                 """,
             )
 
             // TODO: Maybe move this to the "export state" method.
             self.deps.registrationStateChangeManager.didUpdateLocalPhoneNumber(
-                aci: accountIdentity.aci,
-                phoneNumber: LocalIdentifiers.PhoneNumber(e164: accountIdentity.e164, pni: accountIdentity.pni),
+                aci: aci,
+                phoneNumber: newPhoneNumber,
                 tx: tx,
             )
         }
@@ -4616,16 +4625,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .networkError, .genericError:
             return .showErrorSheet(.genericError)
         case .success(let whoAmIResponse):
-            if whoAmIResponse.e164 == pniState.newE164 {
+            if whoAmIResponse.localIdentifiers.phoneNumber == pniState.newE164.stringValue {
                 // Success! Fake us getting the success response.
                 db.write { tx in
                     handleSuccessfulAccountResponse(
                         identity: AccountIdentity(
-                            aci: whoAmIResponse.aci,
-                            pni: whoAmIResponse.pni,
-                            e164: whoAmIResponse.e164,
-                            hasPreviouslyUsedSVR: inMemoryState.didHaveSVRBackupsPriorToReg,
+                            localIdentifiers: whoAmIResponse.localIdentifiers,
                             authPassword: changeNumberState.oldAuthToken,
+                            hasPreviouslyUsedSVR: inMemoryState.didHaveSVRBackupsPriorToReg,
                         ),
                         tx,
                     )
@@ -4669,14 +4676,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         switch mode {
         case .registering, .reRegistering:
             break
-        case .changingNumber(let changeNumberState):
-            if let pniState = changeNumberState.pniState {
-                await finalizeChangeNumberPniState(
-                    changeNumberState: changeNumberState,
-                    pniState: pniState,
-                    accountIdentity: accountIdentity,
-                )
-            }
+        case .changingNumber:
+            owsFail("not supported for change number")
         }
 
         logger.warn("Got deregistered while completing registration; starting over with re-registration.")
@@ -4736,18 +4737,64 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     struct AccountIdentity: Codable {
-        @AciUuid var aci: Aci
-        @PniUuid var pni: Pni
-        let e164: E164
-        let hasPreviouslyUsedSVR: Bool
-
+        let localIdentifiers: LocalIdentifiers
         /// The auth token used to communicate with the server.
         /// We create this locally and include it in the create account request,
         /// then use it to authenticate subsequent requests.
         let authPassword: String
+        let hasPreviouslyUsedSVR: Bool
+
+        init(
+            localIdentifiers: LocalIdentifiers,
+            authPassword: String,
+            hasPreviouslyUsedSVR: Bool,
+        ) {
+            self.localIdentifiers = localIdentifiers
+            self.authPassword = authPassword
+            self.hasPreviouslyUsedSVR = hasPreviouslyUsedSVR
+        }
+
+        enum CodingKeys: String, CodingKey {
+            case aci
+            case e164
+            case pni
+            case authCredentialSalt
+            case authPassword
+            case hasPreviouslyUsedSVR
+        }
+
+        init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            let aci = Aci(fromUUID: try container.decode(UUID.self, forKey: .aci))
+            let accountType: LocalIdentifiers.AccountType
+            if let phoneNumber = try container.decodeIfPresent(E164.self, forKey: .e164) {
+                let pni = Pni(fromUUID: try container.decode(UUID.self, forKey: .pni))
+                accountType = .phoneNumberfull(phoneNumber: phoneNumber.stringValue, pni: pni)
+            } else {
+                let authCredentialSalt = try container.decode(AuthCredentialSalt.self, forKey: .authCredentialSalt)
+                accountType = .phoneNumberless(authCredentialSalt)
+            }
+            self.localIdentifiers = LocalIdentifiers(aci: aci, accountType: accountType)
+            self.authPassword = try container.decode(String.self, forKey: .authPassword)
+            self.hasPreviouslyUsedSVR = try container.decode(Bool.self, forKey: .hasPreviouslyUsedSVR)
+        }
+
+        func encode(to encoder: any Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(self.localIdentifiers.aci.rawUUID, forKey: .aci)
+            switch self.localIdentifiers.accountType {
+            case .phoneNumberfull(let phoneNumber, let pni):
+                try container.encode(phoneNumber, forKey: .e164)
+                try container.encode(pni.owsFailUnwrap("must be present").rawUUID, forKey: .pni)
+            case .phoneNumberless(let authCredentialSalt):
+                try container.encode(authCredentialSalt, forKey: .authCredentialSalt)
+            }
+            try container.encode(self.authPassword, forKey: .authPassword)
+            try container.encode(self.hasPreviouslyUsedSVR, forKey: .hasPreviouslyUsedSVR)
+        }
 
         var authUsername: String {
-            return aci.serviceIdString
+            return self.localIdentifiers.aci.serviceIdString
         }
 
         var authedAccount: AuthedAccount {
@@ -4756,19 +4803,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         var authedAccountExplicit: AuthedAccount.Explicit {
             return AuthedAccount.Explicit(
-                aci: aci,
-                accountType: .forPhoneNumber(LocalIdentifiers.PhoneNumber(e164: e164, pni: pni)),
+                aci: self.localIdentifiers.aci,
+                accountType: self.localIdentifiers.accountType,
                 deviceId: .primary,
-                authPassword: authPassword,
+                authPassword: self.authPassword,
             )
         }
 
         var chatServiceAuth: ChatServiceAuth {
             return authedAccount.chatServiceAuth
-        }
-
-        var localIdentifiers: LocalIdentifiers {
-            return authedAccountExplicit.localIdentifiers
         }
     }
 

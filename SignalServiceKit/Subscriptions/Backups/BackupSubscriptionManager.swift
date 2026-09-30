@@ -436,7 +436,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     /// for the upgrade case.
     private func downgradeBackupPlanIfNecessary(
         fetchedSubscription subscription: Subscription?,
-        backupEntitlement: WhoAmIRequestFactory.Responses.WhoAmI.Entitlements.BackupEntitlement?,
+        backupEntitlement: AccountIdentityResponse.Entitlements.BackupEntitlement?,
         tx: DBWriteTransaction,
     ) {
         let currentBackupPlan = backupPlanManager.backupPlan(tx: tx)

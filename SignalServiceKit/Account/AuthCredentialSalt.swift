@@ -5,7 +5,7 @@
 
 import Foundation
 
-public struct AuthCredentialSalt {
+public struct AuthCredentialSalt: Codable {
     public let rawValue: Data
 
     public init(rawValue: Data) throws {
@@ -13,5 +13,15 @@ public struct AuthCredentialSalt {
             throw OWSGenericError("auth credential salt must be 16 bytes")
         }
         self.rawValue = rawValue
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        try self.init(rawValue: container.decode(Data.self))
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.rawValue)
     }
 }

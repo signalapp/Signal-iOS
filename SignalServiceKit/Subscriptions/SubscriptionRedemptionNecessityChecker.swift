@@ -28,7 +28,7 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobContext> {
     ) async throws -> (subscriberID: Data, subscription: Subscription)?
 
     typealias ParseEntitlementExpirationBlock = (
-        _ entitlements: WhoAmIRequestFactory.Responses.WhoAmI.Entitlements,
+        _ entitlements: AccountIdentityResponse.Entitlements,
         _ subscription: Subscription,
     ) -> TimeInterval?
 

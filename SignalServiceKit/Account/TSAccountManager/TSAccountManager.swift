@@ -168,7 +168,6 @@ public protocol LocalIdentifiersSetter {
     /// ACI provided for convenience; it should be unchanged.
     /// Server auth token is also assumed to be unchanged.
     func changeLocalNumber(
-        aci: Aci,
         phoneNumber: LocalIdentifiers.PhoneNumber,
         tx: DBWriteTransaction,
     )

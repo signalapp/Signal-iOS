@@ -259,22 +259,13 @@ final class UsernameValidationManagerTest: XCTestCase {
     }
 }
 
-private extension WhoAmIManager.WhoAmIResponse {
-    static let noRemoteUsername: Self = .init(
-        aci: Aci.randomForTesting(),
-        pni: Pni.randomForTesting(),
-        e164: E164("+16125550101")!,
-        usernameHash: nil,
-        entitlements: Entitlements(backup: nil, badges: []),
-    )
+private extension AccountIdentityResponse {
+    static let noRemoteUsername = AccountIdentityResponse(localIdentifiers: .forUnitTests)
 
-    static func withRemoteUsername(_ remoteUsername: String) -> Self {
-        return .init(
-            aci: Aci.randomForTesting(),
-            pni: Pni.randomForTesting(),
-            e164: E164("+16125550101")!,
+    static func withRemoteUsername(_ remoteUsername: String) -> AccountIdentityResponse {
+        return AccountIdentityResponse(
+            localIdentifiers: .forUnitTests,
             usernameHash: try! Usernames.HashedUsername(forUsername: remoteUsername).hashString,
-            entitlements: Entitlements(backup: nil, badges: []),
         )
     }
 }

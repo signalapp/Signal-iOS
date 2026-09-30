@@ -111,20 +111,18 @@ extension RegistrationCoordinatorImpl {
             let statusCode = RegistrationServiceResponses.AccountCreationResponseCodes(rawValue: statusCode)
             switch statusCode {
             case .success:
-                guard let bodyData else {
-                    Logger.warn("Got empty create account response")
+                let response: AccountIdentityResponse
+                do {
+                    response = try JSONDecoder().decode(AccountIdentityResponse.self, from: bodyData ?? Data())
+                } catch {
+                    owsFailDebug("couldn't parse account identity response: \(error)")
                     return .genericError
-                }
-                guard let response = try? JSONDecoder().decode(RegistrationServiceResponses.AccountIdentityResponse.self, from: bodyData) else {
-                    Logger.warn("Unable to parse Account identity from response")
-                    return .genericError
+
                 }
                 return .success(AccountIdentity(
-                    aci: response.aci,
-                    pni: response.pni,
-                    e164: response.e164,
-                    hasPreviouslyUsedSVR: response.hasPreviouslyUsedSVR,
+                    localIdentifiers: response.localIdentifiers,
                     authPassword: authPassword,
+                    hasPreviouslyUsedSVR: response.storageCapable,
                 ))
 
             case .deviceTransferPossible:
@@ -205,20 +203,17 @@ extension RegistrationCoordinatorImpl {
             let statusCode = RegistrationServiceResponses.ChangeNumberResponseCodes(rawValue: statusCode)
             switch statusCode {
             case .success:
-                guard let bodyData else {
-                    Logger.warn("Got empty create account response")
-                    return .genericError
-                }
-                guard let response = try? JSONDecoder().decode(RegistrationServiceResponses.AccountIdentityResponse.self, from: bodyData) else {
-                    Logger.warn("Unable to parse Account identity from response")
+                let response: AccountIdentityResponse
+                do {
+                    response = try JSONDecoder().decode(AccountIdentityResponse.self, from: bodyData ?? Data())
+                } catch {
+                    owsFailDebug("couldn't parse account identity response: \(error)")
                     return .genericError
                 }
                 return .success(AccountIdentity(
-                    aci: response.aci,
-                    pni: response.pni,
-                    e164: response.e164,
-                    hasPreviouslyUsedSVR: response.hasPreviouslyUsedSVR,
+                    localIdentifiers: response.localIdentifiers,
                     authPassword: authPassword,
+                    hasPreviouslyUsedSVR: response.storageCapable,
                 ))
 
             case .reglockFailed:
@@ -262,7 +257,7 @@ extension RegistrationCoordinatorImpl {
         }
 
         enum WhoAmIResponse {
-            case success(WhoAmIRequestFactory.Responses.WhoAmI)
+            case success(AccountIdentityResponse)
             case networkError
             case genericError
         }
@@ -279,19 +274,12 @@ extension RegistrationCoordinatorImpl {
                     let request = WhoAmIRequestFactory.whoAmIRequest(auth: auth)
                     let response = try await networkManager.asyncRequest(request)
                     guard response.responseStatusCode >= 200, response.responseStatusCode < 300 else {
-                        return .genericError
+                        throw response.asError()
                     }
-                    guard let bodyData = response.responseBodyData else {
-                        Logger.error("Got empty whoami response")
-                        return .genericError
-                    }
-                    guard let response = try? JSONDecoder().decode(WhoAmIRequestFactory.Responses.WhoAmI.self, from: bodyData) else {
-                        Logger.error("Unable to parse whoami response from response")
-                        return .genericError
-                    }
-                    return .success(response)
+                    return .success(try JSONDecoder().decode(AccountIdentityResponse.self, from: response.responseBodyData ?? Data()))
                 }
             } catch {
+                Logger.warn("couldn't make whoami request: \(error)")
                 return error.isNetworkFailureOrTimeout ? .networkError : .genericError
             }
         }

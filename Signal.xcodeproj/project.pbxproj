@@ -895,6 +895,7 @@
 		50C38CAD2A8EB2610030A731 /* TimeGatedBatchTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */; };
 		50C4AEFC2CE6766B005609F6 /* GroupSendEndorsements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C4AEFB2CE6766B005609F6 /* GroupSendEndorsements.swift */; };
 		50C4AEFE2CE6767C005609F6 /* GroupSendFullTokenBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C4AEFD2CE6767C005609F6 /* GroupSendFullTokenBuilder.swift */; };
+		50C4ECB630663F9D00D0508C /* AccountIdentityResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C4ECB530663F9D00D0508C /* AccountIdentityResponse.swift */; };
 		50C55EB12F1ACCD700BA8309 /* OutgoingBlockedSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C55EB02F1ACCD700BA8309 /* OutgoingBlockedSyncMessage.swift */; };
 		50C55EB62F1ADCE300BA8309 /* OutgoingConfigurationSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C55EB52F1ADCE300BA8309 /* OutgoingConfigurationSyncMessage.swift */; };
 		50C55EB82F1B0EFC00BA8309 /* OutgoingFetchLatestSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C55EB72F1B0EFC00BA8309 /* OutgoingFetchLatestSyncMessage.swift */; };
@@ -5286,6 +5287,7 @@
 		50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeGatedBatchTest.swift; sourceTree = "<group>"; };
 		50C4AEFB2CE6766B005609F6 /* GroupSendEndorsements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupSendEndorsements.swift; sourceTree = "<group>"; };
 		50C4AEFD2CE6767C005609F6 /* GroupSendFullTokenBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupSendFullTokenBuilder.swift; sourceTree = "<group>"; };
+		50C4ECB530663F9D00D0508C /* AccountIdentityResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountIdentityResponse.swift; sourceTree = "<group>"; };
 		50C55EB02F1ACCD700BA8309 /* OutgoingBlockedSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingBlockedSyncMessage.swift; sourceTree = "<group>"; };
 		50C55EB52F1ADCE300BA8309 /* OutgoingConfigurationSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingConfigurationSyncMessage.swift; sourceTree = "<group>"; };
 		50C55EB72F1B0EFC00BA8309 /* OutgoingFetchLatestSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingFetchLatestSyncMessage.swift; sourceTree = "<group>"; };
@@ -15553,6 +15555,7 @@
 				661170BF2ABA458800A1B16D /* TSAccountManager */,
 				C18D6FDF2D4D8FB40085E3B9 /* AccountEntropyPool.swift */,
 				D9EDF2772E4D2A1E001D4BEC /* AccountEntropyPoolManager.swift */,
+				50C4ECB530663F9D00D0508C /* AccountIdentityResponse.swift */,
 				C14D49CD2D667F830033BA69 /* AccountKeyStore.swift */,
 				50E458AD3059B7320074446D /* AuthCredentialSalt.swift */,
 				504474D4304621050058016E /* DeregisteredLocalIdentifiers.swift */,
@@ -19472,6 +19475,7 @@
 				F915A76E29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift in Sources */,
 				C18D6FE02D4D8FB40085E3B9 /* AccountEntropyPool.swift in Sources */,
 				D9EDF2782E4D2A2F001D4BEC /* AccountEntropyPoolManager.swift in Sources */,
+				50C4ECB630663F9D00D0508C /* AccountIdentityResponse.swift in Sources */,
 				C14D49CE2D667F830033BA69 /* AccountKeyStore.swift in Sources */,
 				E0F3FAC8EA6929CE788DCD6E /* AciContactShareName.swift in Sources */,
 				B6F24A41BD86EE73D70735FD /* AciContactShareNameManager.swift in Sources */,

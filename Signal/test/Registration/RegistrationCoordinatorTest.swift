@@ -382,7 +382,7 @@ public class RegistrationCoordinatorTest {
 
         func expectedAuth() -> ChatServiceAuth {
             return ChatServiceAuth.explicit(
-                aci: identityResponse.aci,
+                aci: identityResponse.localIdentifiers.aci,
                 deviceId: .primary,
                 password: authPassword,
             )
@@ -417,7 +417,7 @@ public class RegistrationCoordinatorTest {
         localUsernameManagerMock.startingUsernameState = .available(username: "boba.42", usernameLink: mockUsernameLink)
         usernameApiClientMock.confirmReservedUsernameMocks = [{ _, _, chatServiceAuth in
             #expect(chatServiceAuth == .explicit(
-                aci: identityResponse.aci,
+                aci: identityResponse.localIdentifiers.aci,
                 deviceId: .primary,
                 password: authPassword,
             ))
@@ -511,7 +511,7 @@ public class RegistrationCoordinatorTest {
 
         func expectedAuth() -> ChatServiceAuth {
             return ChatServiceAuth.explicit(
-                aci: identityResponse.aci,
+                aci: identityResponse.localIdentifiers.aci,
                 deviceId: .primary,
                 password: authPassword,
             )
@@ -878,7 +878,7 @@ public class RegistrationCoordinatorTest {
 
         func expectedAuth() -> ChatServiceAuth {
             return ChatServiceAuth.explicit(
-                aci: identityResponse.aci,
+                aci: identityResponse.localIdentifiers.aci,
                 deviceId: .primary,
                 password: authPassword,
             )
@@ -919,7 +919,7 @@ public class RegistrationCoordinatorTest {
         usernameApiClientMock.confirmReservedUsernameMocks = [{ _, _, chatServiceAuth in
             self.testRun.addObservedStep(.confirmReservedUsername)
             #expect(chatServiceAuth == .explicit(
-                aci: identityResponse.aci,
+                aci: identityResponse.localIdentifiers.aci,
                 deviceId: .primary,
                 password: authPassword,
             ))
@@ -1217,7 +1217,7 @@ public class RegistrationCoordinatorTest {
 
         func expectedAuth() -> ChatServiceAuth {
             return ChatServiceAuth.explicit(
-                aci: accountIdentityResponse.aci,
+                aci: accountIdentityResponse.localIdentifiers.aci,
                 deviceId: .primary,
                 password: authPassword,
             )
@@ -1250,7 +1250,7 @@ public class RegistrationCoordinatorTest {
         localUsernameManagerMock.startingUsernameState = .available(username: "boba.42", usernameLink: mockUsernameLink)
         usernameApiClientMock.confirmReservedUsernameMocks = [{ _, _, chatServiceAuth in
             #expect(chatServiceAuth == .explicit(
-                aci: accountIdentityResponse.aci,
+                aci: accountIdentityResponse.localIdentifiers.aci,
                 deviceId: .primary,
                 password: authPassword,
             ))
@@ -1536,7 +1536,7 @@ public class RegistrationCoordinatorTest {
 
         func expectedAuth() -> ChatServiceAuth {
             return ChatServiceAuth.explicit(
-                aci: accountIdentityResponse.aci,
+                aci: accountIdentityResponse.localIdentifiers.aci,
                 deviceId: .primary,
                 password: authPassword,
             )
@@ -1576,7 +1576,7 @@ public class RegistrationCoordinatorTest {
         usernameApiClientMock.confirmReservedUsernameMocks = [{ _, _, chatServiceAuth in
             self.testRun.addObservedStep(.confirmReservedUsername)
             #expect(chatServiceAuth == .explicit(
-                aci: accountIdentityResponse.aci,
+                aci: accountIdentityResponse.localIdentifiers.aci,
                 deviceId: .primary,
                 password: authPassword,
             ))
@@ -1802,7 +1802,7 @@ public class RegistrationCoordinatorTest {
 
         func expectedAuth() -> ChatServiceAuth {
             return ChatServiceAuth.explicit(
-                aci: accountIdentityResponse.aci,
+                aci: accountIdentityResponse.localIdentifiers.aci,
                 deviceId: .primary,
                 password: authPassword,
             )
@@ -1841,7 +1841,7 @@ public class RegistrationCoordinatorTest {
         localUsernameManagerMock.startingUsernameState = .available(username: "boba.42", usernameLink: mockUsernameLink)
         usernameApiClientMock.confirmReservedUsernameMocks = [{ _, _, chatServiceAuth in
             #expect(chatServiceAuth == .explicit(
-                aci: accountIdentityResponse.aci,
+                aci: accountIdentityResponse.localIdentifiers.aci,
                 deviceId: .primary,
                 password: authPassword,
             ))
@@ -2838,7 +2838,7 @@ public class RegistrationCoordinatorTest {
 
         func expectedAuth() -> ChatServiceAuth {
             return ChatServiceAuth.explicit(
-                aci: accountIdentityResponse.aci,
+                aci: accountIdentityResponse.localIdentifiers.aci,
                 deviceId: .primary,
                 password: authPassword,
             )
@@ -2949,7 +2949,7 @@ public class RegistrationCoordinatorTest {
 
         func expectedAuth() -> ChatServiceAuth {
             return ChatServiceAuth.explicit(
-                aci: accountIdentityResponse.aci,
+                aci: accountIdentityResponse.localIdentifiers.aci,
                 deviceId: .primary,
                 password: authPassword,
             )
@@ -3316,13 +3316,13 @@ public class RegistrationCoordinatorTest {
 
         static func accountIdentityResponse(
             hasPreviouslyUsedSVR: Bool = false,
-        ) -> RegistrationServiceResponses.AccountIdentityResponse {
-            return RegistrationServiceResponses.AccountIdentityResponse(
-                aci: Stubs.aci,
-                pni: Pni.randomForTesting(),
-                e164: Stubs.e164,
-                username: nil,
-                hasPreviouslyUsedSVR: hasPreviouslyUsedSVR,
+        ) -> AccountIdentityResponse {
+            return AccountIdentityResponse(
+                localIdentifiers: LocalIdentifiers(
+                    aci: Stubs.aci,
+                    accountType: .phoneNumberfull(phoneNumber: Stubs.e164.stringValue, pni: .randomForTesting()),
+                ),
+                storageCapable: hasPreviouslyUsedSVR,
             )
         }
 
@@ -3610,6 +3610,29 @@ struct EncodableRegistrationLockFailureResponse: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(response.timeRemainingMs, forKey: .timeRemainingMs)
         try container.encodeIfPresent(response.svr2AuthCredential.credential, forKey: .svr2AuthCredential)
+    }
+}
+
+extension AccountIdentityResponse: @retroactive Encodable {
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.localIdentifiers.aci.rawUUID, forKey: .aci)
+        switch self.localIdentifiers.accountType {
+        case .phoneNumberfull(let phoneNumber, let pni):
+            try container.encode(phoneNumber, forKey: .number)
+            try container.encode(pni?.rawUUID, forKey: .pni)
+        case .phoneNumberless(let authCredentialSalt):
+            try container.encode(authCredentialSalt, forKey: .authCredentialSalt)
+        }
+        try container.encode(self.usernameHash, forKey: .usernameHash)
+        try container.encode(self.usernameLinkHandle, forKey: .usernameLinkHandle)
+        try container.encode(self.storageCapable, forKey: .storageCapable)
+        // Omit entitlements because they're not needed here.
+        struct FakeEntitlements: Encodable {
+            var badges: [Int]
+            var backup: Int?
+        }
+        try container.encode(FakeEntitlements(badges: [], backup: nil), forKey: .entitlements)
     }
 }
 
