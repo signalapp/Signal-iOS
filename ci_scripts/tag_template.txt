@@ -1,1 +1,1 @@
-8.32.0.{build_number}-internal
+8.32.0.{build_number}-beta
