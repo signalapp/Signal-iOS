@@ -24,14 +24,11 @@ extension BackupArchive {
  */
 class BackupArchiveProtoInputStream {
     private let inputStream: TransformingInputStream
-    private let inputStreamDelegate: StreamDelegate
 
     init(
         inputStream: TransformingInputStream,
-        inputStreamDelegate: StreamDelegate,
     ) {
         self.inputStream = inputStream
-        self.inputStreamDelegate = inputStreamDelegate
     }
 
     /// Read the single header object at the start of every backup file.

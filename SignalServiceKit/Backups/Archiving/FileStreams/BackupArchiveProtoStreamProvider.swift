@@ -243,14 +243,13 @@ private class GenericStreamProvider {
             fileExtension: nil,
             isAvailableWhileDeviceLocked: true,
         )
+
         guard let outputStream = OutputStream(url: fileUrl, append: false) else {
             return .unableToOpenFileStream
         }
-        let outputStreamDelegate = StreamDelegate()
-        outputStream.delegate = outputStreamDelegate
-        let streamRunloop = RunLoop.current
-        outputStream.schedule(in: streamRunloop, forMode: .default)
+
         outputStream.open()
+
         guard outputStream.streamStatus == .open else {
             return .unableToOpenFileStream
         }
@@ -258,9 +257,7 @@ private class GenericStreamProvider {
         let transformingOutputStream = TransformingOutputStream(
             transforms: transforms,
             outputStream: outputStream,
-            runLoop: streamRunloop,
         )
-
         let backupOutputStream = BackupArchiveProtoOutputStream(
             outputStream: transformingOutputStream,
             exportProgress: exportProgress,
@@ -279,14 +276,13 @@ private class GenericStreamProvider {
         guard OWSFileSystem.fileOrFolderExists(url: fileUrl) else {
             return .fileNotFound
         }
+
         guard let inputStream = InputStream(url: fileUrl) else {
             return .unableToOpenFileStream
         }
-        let inputStreamDelegate = StreamDelegate()
-        inputStream.delegate = inputStreamDelegate
-        let streamRunloop = RunLoop.current
-        inputStream.schedule(in: streamRunloop, forMode: .default)
+
         inputStream.open()
+
         guard inputStream.streamStatus == .open else {
             return .unableToOpenFileStream
         }
@@ -298,22 +294,9 @@ private class GenericStreamProvider {
 
         let backupInputStream = BackupArchiveProtoInputStream(
             inputStream: transformableInputStream,
-            inputStreamDelegate: inputStreamDelegate,
         )
 
         return .success(backupInputStream, rawStream: transformableInputStream)
-    }
-
-    private class StreamDelegate: NSObject, Foundation.StreamDelegate {
-        private let _hadError = AtomicBool(false, lock: .sharedGlobal)
-        var hadError: Bool { _hadError.get() }
-
-        @objc
-        func stream(_ stream: Stream, handle eventCode: Stream.Event) {
-            if eventCode == .errorOccurred {
-                _hadError.set(true)
-            }
-        }
     }
 }
 

@@ -12,16 +12,13 @@ public final class TransformingOutputStream: OutputStreamable {
 
     private let transforms: [any StreamTransform]
     private let outputStream: OutputStreamable
-    private let runLoop: RunLoop?
 
     public init(
         transforms: [any StreamTransform],
         outputStream: OutputStreamable,
-        runLoop: RunLoop? = nil,
     ) {
         self.transforms = transforms
         self.outputStream = outputStream
-        self.runLoop = runLoop
     }
 
     public func write(data: Data) throws {
@@ -54,10 +51,6 @@ public final class TransformingOutputStream: OutputStreamable {
 
     public func close() throws {
         try finalizeAndWriteFooter()
-
-        if let runLoop {
-            outputStream.remove(from: runLoop, forMode: .default)
-        }
         try outputStream.close()
     }
 
