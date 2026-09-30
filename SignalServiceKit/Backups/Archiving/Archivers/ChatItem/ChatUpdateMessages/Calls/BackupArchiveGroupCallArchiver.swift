@@ -192,7 +192,8 @@ final class BackupArchiveGroupCallArchiver {
 
         let expirationDetails = BackupArchive.ChatItemExpirationDetails(
             chatItem: chatItem,
-            wasRead: groupCall.read,
+            editState: .none,
+            shouldStartUnstartedTimer: groupCall.read,
             restoreStartTimestamp: context.startDate.ows_millisecondsSince1970,
         )
         guard let expirationDetails else {

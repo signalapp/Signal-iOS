@@ -293,15 +293,6 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             return .messageFailure([.restoreFrameError(.invalidProtoData(.incomingMessageNotFromAciOrE164))])
         }
 
-        let expirationDetails = BackupArchive.ChatItemExpirationDetails(
-            chatItem: chatItem,
-            wasRead: incomingDetails.read,
-            restoreStartTimestamp: context.startDate.ows_millisecondsSince1970,
-        )
-        guard let expirationDetails else {
-            return .messageFailure([.restoreFrameError(.invalidProtoData(.expirationTimerOverflowedLocalType))])
-        }
-
         let editState: TSEditState
         let wasReadForInteraction: Bool
         switch revisionType {
@@ -316,6 +307,16 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             // Past revisions always have their interaction "read", and track
             // read state instead via an EditRecord.
             wasReadForInteraction = true
+        }
+
+        let expirationDetails = BackupArchive.ChatItemExpirationDetails(
+            chatItem: chatItem,
+            editState: editState,
+            shouldStartUnstartedTimer: wasReadForInteraction,
+            restoreStartTimestamp: context.startDate.ows_millisecondsSince1970,
+        )
+        guard let expirationDetails else {
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.expirationTimerOverflowedLocalType))])
         }
 
         var partialErrors = [RestoreFrameError]()

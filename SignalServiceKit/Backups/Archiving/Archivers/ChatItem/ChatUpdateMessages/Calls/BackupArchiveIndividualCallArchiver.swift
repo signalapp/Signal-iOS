@@ -248,7 +248,8 @@ final class BackupArchiveIndividualCallArchiver {
 
         let expirationDetails = BackupArchive.ChatItemExpirationDetails(
             chatItem: chatItem,
-            wasRead: individualCall.read,
+            editState: .none,
+            shouldStartUnstartedTimer: individualCall.read,
             restoreStartTimestamp: context.startDate.ows_millisecondsSince1970,
         )
         guard let expirationDetails else {

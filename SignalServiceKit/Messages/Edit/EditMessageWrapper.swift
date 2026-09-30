@@ -144,6 +144,9 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             editState: editState,
             // Prior revisions don't expire (timer=0); instead they
             // are cascade-deleted when the latest revision expires.
+            //
+            // Note that this has implications for Backups; if you're changing
+            // this, please refer to ChatItemExpirationDetails.
             expiresInSeconds: isLatestRevision ? message.expiresInSeconds : 0,
             expireTimerVersion: isLatestRevision ? message.expireTimerVersion?.uint32Value : nil,
             expireStartedAt: message.expireStartedAt,

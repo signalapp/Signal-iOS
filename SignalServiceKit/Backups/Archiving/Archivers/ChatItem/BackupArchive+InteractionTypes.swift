@@ -52,11 +52,25 @@ extension BackupArchive {
             self.expiresInMs = UInt64(expiresInSeconds) * 1000
         }
 
+        /// - Parameter shouldStartUnstartedTimer
+        /// Whether to start an expire timer that's set but hasn't started, as
+        /// of `restoreStartTimestamp`.
         init?(
             chatItem: BackupProto_ChatItem,
-            wasRead: Bool,
+            editState: TSEditState,
+            shouldStartUnstartedTimer: Bool,
             restoreStartTimestamp: UInt64,
         ) {
+            switch editState {
+            case .none, .latestRevisionRead, .latestRevisionUnread:
+                break
+            case .pastRevision:
+                // Past revisions don't have their own expire timer; they're
+                // deleted alongside the latest revision.
+                self.init(expireStartedAt: 0, expiresInSeconds: 0)
+                return
+            }
+
             let expiresInSeconds: UInt32
             if chatItem.hasExpiresInMs {
                 guard let _expiresInSeconds: UInt32 = .msToSecs(chatItem.expiresInMs) else {
@@ -71,10 +85,10 @@ extension BackupArchive {
             let expireStartedAt: UInt64
             if chatItem.hasExpireStartDate {
                 expireStartedAt = chatItem.expireStartDate
-            } else if expiresInSeconds > 0, wasRead {
-                // If marked as read but the chat timer hasn't started,
-                // thats a bug on the export side but we can recover
-                // from it now by starting the timer now.
+            } else if expiresInSeconds > 0, shouldStartUnstartedTimer {
+                // If the timer should have started but hasn't, that's a bug
+                // on the export side, but we can recover from it now by
+                // starting the timer now.
                 expireStartedAt = restoreStartTimestamp
             } else {
                 // 0 == hasn't started expiring.
