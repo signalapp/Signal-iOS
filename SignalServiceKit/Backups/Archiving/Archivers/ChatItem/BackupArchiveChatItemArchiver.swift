@@ -189,9 +189,6 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
     ) -> ArchiveMultiFrameResult {
         var partialErrors = [ArchiveFrameError]()
 
-        let chatId = context[interaction.uniqueThreadIdentifier]
-        let threadInfo = chatId.map { context[$0] } ?? nil
-
         if context.gv1ThreadIds.contains(interaction.uniqueThreadIdentifier) {
             /// We are knowingly dropping GV1 data from backups, so we'll skip
             /// archiving any interactions for GV1 threads without errors.
@@ -203,20 +200,36 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
             return .success
         }
 
-        guard let chatId, let threadInfo else {
+        if
+            let message = interaction as? TSMessage,
+            message.isGroupStoryReply
+        {
+            // Stories aren't backed up, and group story replies are only shown
+            // in the context of the stories UX, so we don't back them up either.
+            return .success
+        }
+
+        if
+            let message = interaction as? ExpiringInteraction,
+            context.includedContentFilter.shouldSkipMessage(
+                message,
+                currentTimestamp: context.startDate.ows_millisecondsSince1970,
+            )
+        {
+            // This message is excluded based on our content filter; don't archive!
+            return .success
+        }
+
+        guard
+            let chatId = context[interaction.uniqueThreadIdentifier],
+            let threadInfo = context[chatId]
+        else {
             partialErrors.append(.archiveFrameError(.referencedThreadIdMissing(interaction.uniqueThreadIdentifier)))
             return .partialSuccess(partialErrors)
         }
 
         let archiveInteractionResult: BackupArchive.ArchiveInteractionResult<BackupArchive.InteractionArchiveDetails>
-        if
-            let message = interaction as? TSMessage,
-            message.isGroupStoryReply
-        {
-            // We skip group story reply messages, as stories
-            // aren't backed up so neither should their replies.
-            return .success
-        } else if let incomingMessage = interaction as? TSIncomingMessage {
+        if let incomingMessage = interaction as? TSIncomingMessage {
             archiveInteractionResult = incomingMessageArchiver.archiveIncomingMessage(
                 incomingMessage,
                 threadInfo: threadInfo,
@@ -274,19 +287,6 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
             return .partialSuccess(partialErrors)
         case .completeFailure(let error):
             return .completeFailure(error)
-        }
-
-        // We may skip archiving messages based on their expiration
-        // (disappearing message) details.
-        if
-            context.includedContentFilter.shouldSkipMessageBasedOnExpiration(
-                expireStartDate: details.expireStartDate,
-                expiresInMs: details.expiresInMs,
-                currentTimestamp: context.startDate.ows_millisecondsSince1970,
-            )
-        {
-            // Skip, but treat as a success.
-            return .success
         }
 
         // A bug on iOS allowed us to create edits of voice notes that contained

@@ -65,15 +65,18 @@ extension BackupArchive {
             self.shouldIncludePin = true
         }
 
-        func shouldSkipMessageBasedOnExpiration(
-            expireStartDate: UInt64?,
-            expiresInMs: UInt64?,
+        func shouldSkipMessage(
+            _ message: ExpiringInteraction,
             currentTimestamp: UInt64,
         ) -> Bool {
-            guard
-                let expiresInMs,
-                expiresInMs > 0
-            else {
+            let expirationDetails = ChatItemExpirationDetails(
+                expireStartedAt: message.expireStartedAt,
+                expiresInSeconds: message.expiresInSeconds,
+            )
+            let expiresInMs = expirationDetails.expiresInMs
+            let expireStartDate = expirationDetails.expireStartDate
+
+            guard expiresInMs > 0 else {
                 // If the message isn't expiring, no reason to skip.
                 return false
             }
@@ -100,9 +103,8 @@ extension BackupArchive {
             currentTimestamp: UInt64,
         ) -> Bool {
             if
-                shouldSkipMessageBasedOnExpiration(
-                    expireStartDate: owningMessage.expireStartedAt,
-                    expiresInMs: UInt64(owningMessage.expiresInSeconds) * 1000,
+                shouldSkipMessage(
+                    owningMessage,
                     currentTimestamp: currentTimestamp,
                 )
             {
