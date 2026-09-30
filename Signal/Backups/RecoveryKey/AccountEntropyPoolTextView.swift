@@ -31,6 +31,7 @@ class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
     private lazy var textViewHeightConstraint = textView.autoSetDimension(.height, toSize: 400)
 
     private let mode: Mode
+    private let lineSpacing: CGFloat
 
     var aepContents: AEPContents {
         switch mode {
@@ -53,8 +54,9 @@ class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
         return .valid(displayableAEP)
     }
 
-    init(mode: Mode) {
+    init(mode: Mode, lineSpacing: CGFloat? = nil) {
         self.mode = mode
+        self.lineSpacing = lineSpacing ?? Utils.FormatConstants.lineSpacing
 
         _ = Constants.aepLengthPrecondition
 
@@ -145,7 +147,7 @@ class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
         return Self.Utils.attributedString(
             for: sizingString,
             font: textView.editorFont,
-            lineSpacing: Utils.FormatConstants.lineSpacing,
+            lineSpacing: lineSpacing,
         ).boundingRect(
             with: CGSize(width: width, height: .greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
@@ -183,7 +185,7 @@ class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
             shouldChangeTextIn: range,
             replacementText: text,
             font: textView.editorFont,
-            lineSpacing: Utils.FormatConstants.lineSpacing,
+            lineSpacing: lineSpacing,
         )
 
         return false
@@ -317,9 +319,14 @@ class AccountEntropyPoolTextView: UIView, TextViewWithPlaceholderDelegate {
 
 private class AEPPreviewViewController: UIViewController {
     let mode: AccountEntropyPoolTextView.Mode
+    let spacing: CGFloat?
 
-    init(mode: AccountEntropyPoolTextView.Mode) {
+    init(
+        mode: AccountEntropyPoolTextView.Mode,
+        spacing: CGFloat? = nil,
+    ) {
         self.mode = mode
+        self.spacing = spacing
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -330,7 +337,10 @@ private class AEPPreviewViewController: UIViewController {
 
         view.backgroundColor = .Signal.groupedBackground
 
-        let textView = AccountEntropyPoolTextView(mode: mode)
+        let textView = AccountEntropyPoolTextView(
+            mode: mode,
+            lineSpacing: spacing,
+        )
         textView.backgroundColor = .Signal.background
         view.addSubview(textView)
         textView.autoPinEdge(toSuperviewMargin: .leading)
@@ -345,8 +355,24 @@ private class AEPPreviewViewController: UIViewController {
 }
 
 @available(iOS 17, *)
+#Preview("Display (4pt spacing)") {
+    AEPPreviewViewController(
+        mode: .display(AccountEntropyPool().forDisplay),
+        spacing: 4,
+    )
+}
+
+@available(iOS 17, *)
 #Preview("Entry") {
     AEPPreviewViewController(mode: .entry(onTextViewChanged: {}))
+}
+
+@available(iOS 17, *)
+#Preview("Entry (4pt spacing)") {
+    AEPPreviewViewController(
+        mode: .entry(onTextViewChanged: {}),
+        spacing: 4,
+    )
 }
 
 #endif
