@@ -130,7 +130,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
     /// ``ArchiveMultiFrameResult.completeFailure``, on the other hand, will stop the entire backup,
     /// and should be used if some critical or category-wide failure occurs.
     func archiveInteractions(
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         context: BackupArchive.ChatArchivingContext,
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var completeFailureError: BackupArchive.FatalArchivingError?
@@ -183,7 +183,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
 
     private func archiveInteraction(
         _ interaction: TSInteraction,
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveMultiFrameResult {

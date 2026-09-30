@@ -48,7 +48,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let db: any DB
     private let disappearingMessagesExpirationJob: DisappearingMessagesExpirationJob
     private let distributionListRecipientArchiver: BackupArchiveDistributionListRecipientArchiver
-    private let encryptedStreamProvider: BackupArchiveEncryptedProtoStreamProvider
+    private let encryptedProtoStreamProvider: BackupArchiveEncryptedProtoStreamProvider
     private let fullTextSearchIndexer: BackupArchiveFullTextSearchIndexer
     private let groupRecipientArchiver: BackupArchiveGroupRecipientArchiver
     private let kvStore: KeyValueStore
@@ -58,7 +58,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let logger: PrefixedLogger
     private let messagePipelineSupervisor: MessagePipelineSupervisor
     private let oversizeTextArchiver: BackupArchiveInlinedOversizeTextArchiver
-    private let plaintextStreamProvider: BackupArchivePlaintextProtoStreamProvider
+    private let plaintextProtoStreamProvider: BackupArchivePlaintextProtoStreamProvider
     private let postFrameRestoreActionManager: BackupArchivePostFrameRestoreActionManager
     private let releaseNotesRecipientArchiver: BackupArchiveReleaseNotesRecipientArchiver
     private let remoteConfigManager: RemoteConfigManager
@@ -90,7 +90,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         db: any DB,
         disappearingMessagesExpirationJob: DisappearingMessagesExpirationJob,
         distributionListRecipientArchiver: BackupArchiveDistributionListRecipientArchiver,
-        encryptedStreamProvider: BackupArchiveEncryptedProtoStreamProvider,
+        encryptedProtoStreamProvider: BackupArchiveEncryptedProtoStreamProvider,
         fullTextSearchIndexer: BackupArchiveFullTextSearchIndexer,
         groupRecipientArchiver: BackupArchiveGroupRecipientArchiver,
         libsignalNet: LibSignalClient.Net,
@@ -98,7 +98,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         localRecipientArchiver: BackupArchiveLocalRecipientArchiver,
         messagePipelineSupervisor: MessagePipelineSupervisor,
         oversizeTextArchiver: BackupArchiveInlinedOversizeTextArchiver,
-        plaintextStreamProvider: BackupArchivePlaintextProtoStreamProvider,
+        plaintextProtoStreamProvider: BackupArchivePlaintextProtoStreamProvider,
         postFrameRestoreActionManager: BackupArchivePostFrameRestoreActionManager,
         releaseNotesRecipientArchiver: BackupArchiveReleaseNotesRecipientArchiver,
         remoteConfigManager: RemoteConfigManager,
@@ -128,7 +128,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.db = db
         self.disappearingMessagesExpirationJob = disappearingMessagesExpirationJob
         self.distributionListRecipientArchiver = distributionListRecipientArchiver
-        self.encryptedStreamProvider = encryptedStreamProvider
+        self.encryptedProtoStreamProvider = encryptedProtoStreamProvider
         self.fullTextSearchIndexer = fullTextSearchIndexer
         self.groupRecipientArchiver = groupRecipientArchiver
         self.kvStore = KeyValueStore(collection: Constants.keyValueStoreCollectionName)
@@ -138,7 +138,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.logger = PrefixedLogger(prefix: "[Backups]")
         self.messagePipelineSupervisor = messagePipelineSupervisor
         self.oversizeTextArchiver = oversizeTextArchiver
-        self.plaintextStreamProvider = plaintextStreamProvider
+        self.plaintextProtoStreamProvider = plaintextProtoStreamProvider
         self.postFrameRestoreActionManager = postFrameRestoreActionManager
         self.releaseNotesRecipientArchiver = releaseNotesRecipientArchiver
         self.remoteConfigManager = remoteConfigManager
@@ -318,12 +318,20 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             localFileBackupAttachmentCollector: localFileBackupAttachmentCollector,
             benchTitle: "Export encrypted Backup",
             openOutputStreamBlock: { exportProgress, tx in
-                return encryptedStreamProvider.openEncryptedOutputFileStream(
+                let (
+                    protoOutputStream,
+                    streamMetadataProvider,
+                ) = try encryptedProtoStreamProvider.openEncryptedOutputFileStream(
                     startDate: startDate,
                     encryptionMetadata: encryptionMetadata,
                     exportProgress: exportProgress,
                     attachmentByteCounter: attachmentByteCounter,
                     tx: tx,
+                )
+
+                return (
+                    outputStream: protoOutputStream,
+                    streamMetadataProvider: streamMetadataProvider,
                 )
             },
         )
@@ -361,8 +369,16 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             localFileBackupAttachmentCollector: nil,
             benchTitle: "Export plaintext Backup",
             openOutputStreamBlock: { exportProgress, tx in
-                return plaintextStreamProvider.openPlaintextOutputFileStream(
+                let (
+                    outputProtoStream,
+                    fileUrl,
+                ) = try plaintextProtoStreamProvider.openPlaintextOutputFileStream(
                     exportProgress: exportProgress,
+                )
+
+                return (
+                    outputStream: outputProtoStream,
+                    streamMetadataProvider: { fileUrl },
                 )
             },
         )
@@ -381,7 +397,10 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         openOutputStreamBlock: (
             BackupArchiveExportProgress?,
             DBReadTransaction,
-        ) -> BackupArchive.ProtoStream.OpenOutputStreamResult<OutputStreamMetadata>,
+        ) throws -> (
+            outputStream: BackupArchiveOutputStream,
+            streamMetadataProvider: () throws -> OutputStreamMetadata,
+        ),
     ) async throws -> OutputStreamMetadata {
         let prepareOversizeTextAttachmentsProgressSink: OWSProgressSink?
         let exportProgress: BackupArchiveExportProgress?
@@ -416,14 +435,16 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 memorySamplerRatio: Constants.memorySamplerFrameRatio,
                 logInProduction: true,
             ) { memorySampler -> OutputStreamMetadata in
-                let outputStream: BackupArchiveProtoOutputStream
+                let outputStream: BackupArchiveOutputStream
                 let outputStreamMetadataProvider: () throws -> OutputStreamMetadata
-                switch openOutputStreamBlock(exportProgress, tx) {
-                case .success(let _outputStream, let _outputStreamMetadataProvider):
-                    outputStream = _outputStream
-                    outputStreamMetadataProvider = _outputStreamMetadataProvider
-                case .unableToOpenFileStream:
-                    throw OWSAssertionError("Unable to open output file stream!")
+                do {
+                    (
+                        outputStream,
+                        outputStreamMetadataProvider,
+                    ) = try openOutputStreamBlock(exportProgress, tx)
+                } catch {
+                    logger.error("Failed to open output stream! \(error)")
+                    throw error
                 }
 
                 try self._exportBackup(
@@ -448,7 +469,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     }
 
     private func _exportBackup(
-        outputStream stream: BackupArchiveProtoOutputStream,
+        outputStream stream: BackupArchiveOutputStream,
         localIdentifiers: LocalIdentifiers,
         backupPurpose: MessageBackupPurpose,
         startDate: Date,
@@ -719,7 +740,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     }
 
     private func writeHeader(
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         backupVersion: UInt64,
         startDate: Date,
         currentAppVersion: String,
@@ -735,12 +756,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
 
         backupInfo.mediaRootBackupKey = mediaRootBackupKey.serialize()
 
-        switch stream.writeHeader(backupInfo) {
-        case .success:
-            break
-        case .fileIOError(let error):
-            throw error
-        }
+        try stream.writeHeader(backupInfo)
     }
 
     // MARK: - Import
@@ -783,7 +799,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             benchTitle: "Import encrypted Backup",
             backupPurpose: source.libsignalPurpose,
             openInputStreamBlock: { fileUrl, frameRestoreProgress, tx in
-                return encryptedStreamProvider.openEncryptedInputFileStream(
+                return try encryptedProtoStreamProvider.openEncryptedInputFileStream(
                     fileUrl: fileUrl,
                     source: source,
                     backupEncryptionKey: backupEncryptionKey,
@@ -807,7 +823,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             benchTitle: "Import plaintext Backup",
             backupPurpose: .remoteBackup,
             openInputStreamBlock: { fileUrl, frameRestoreProgress, _ in
-                return plaintextStreamProvider.openPlaintextInputFileStream(
+                return try plaintextProtoStreamProvider.openPlaintextInputFileStream(
                     fileUrl: fileUrl,
                     frameRestoreProgress: frameRestoreProgress,
                 )
@@ -853,7 +869,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             URL,
             BackupArchiveImportFramesProgress?,
             DBReadTransaction,
-        ) -> BackupArchive.ProtoStream.OpenInputStreamResult,
+        ) throws -> BackupArchiveProtoInputStream,
     ) async throws {
         let frameRestoreProgress: BackupArchiveImportFramesProgress?
         let recreateIndexesProgress: BackupArchiveImportRecreateIndexesProgress?
@@ -890,18 +906,18 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             ) { memorySampler -> BackupProto_BackupInfo in
                 return try self.databaseChangeObserver.disable(tx: tx) { tx in
                     let inputStream: BackupArchiveProtoInputStream
-                    switch openInputStreamBlock(fileUrl, frameRestoreProgress, tx) {
-                    case .success(let protoStream, _):
-                        inputStream = protoStream
-                    case .fileNotFound:
-                        throw OWSAssertionError("File not found!")
-                    case .unableToOpenFileStream:
-                        throw OWSAssertionError("Unable to open input stream!")
-                    case .hmacValidationFailedOnEncryptedFile:
-                        throw OWSAssertionError("HMAC validation failed!")
+                    let inputFileSize: UInt64
+                    do {
+                        inputStream = try openInputStreamBlock(
+                            fileUrl,
+                            frameRestoreProgress,
+                            tx,
+                        )
+                        inputFileSize = try OWSFileSystem.fileSize(of: fileUrl)
+                    } catch {
+                        logger.error("Failed to open input stream! \(error)")
+                        throw error
                     }
-
-                    let inputFileSize = try OWSFileSystem.fileSize(of: fileUrl)
 
                     return try self._importBackup(
                         inputStream: inputStream,

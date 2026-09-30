@@ -20,7 +20,7 @@ public class BackupArchiveReleaseNotesRecipientArchiver: BackupArchiveProtoStrea
     // MARK: -
 
     func archiveReleaseNotesRecipient(
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         context: BackupArchive.RecipientArchivingContext,
     ) -> ArchiveFrameResult {
         return context.bencher.processFrame { frameBencher in

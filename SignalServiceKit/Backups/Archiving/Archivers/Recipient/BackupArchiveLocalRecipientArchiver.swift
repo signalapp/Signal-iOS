@@ -33,7 +33,7 @@ public class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter
 
     /// Archive the local recipient.
     func archiveLocalRecipient(
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         bencher: BackupArchive.Bencher,
         localIdentifiers: LocalIdentifiers,
         tx: DBReadTransaction,

@@ -44,7 +44,7 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
     /// ``ArchiveMultiFrameResult.completeFailure``, on the other hand, will stop the entire backup,
     /// and should be used if some critical or category-wide failure occurs.
     func archiveChats(
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         context: BackupArchive.ChatArchivingContext,
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var completeFailureError: BackupArchive.FatalArchivingError?
@@ -88,7 +88,7 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
 
     private func archiveThread(
         thread: TSThread,
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveMultiFrameResult {
@@ -136,7 +136,7 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
     private func archiveNoteToSelfThread(
         _ thread: TSContactThread,
         threadRowId: TSThread.RowId,
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveMultiFrameResult {
@@ -152,7 +152,7 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
     private func archiveContactThread(
         _ thread: TSContactThread,
         threadRowId: TSThread.RowId,
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveMultiFrameResult {
@@ -198,7 +198,7 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
     private func archiveGroupV2Thread(
         _ thread: TSGroupThread,
         threadRowId: TSThread.RowId,
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveMultiFrameResult {
@@ -224,7 +224,7 @@ public class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
     private func archiveThread(
         _ thread: BackupArchive.ChatThread,
         recipientId: BackupArchive.RecipientId,
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveMultiFrameResult {

@@ -106,7 +106,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
     // MARK: -
 
     func archiveAccountData(
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         context: BackupArchive.CustomChatColorArchivingContext,
     ) -> BackupArchive.ArchiveAccountDataResult {
         return context.bencher.processFrame { frameBencher in

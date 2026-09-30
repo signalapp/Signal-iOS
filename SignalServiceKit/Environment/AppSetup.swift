@@ -1646,7 +1646,7 @@ extension AppSetup.GlobalsContinuation {
                 storyStore: backupStoryStore,
                 threadStore: backupThreadStore,
             ),
-            encryptedStreamProvider: BackupArchiveEncryptedProtoStreamProvider(),
+            encryptedProtoStreamProvider: BackupArchiveEncryptedProtoStreamProvider(),
             fullTextSearchIndexer: BackupArchiveFullTextSearchIndexerImpl(
                 appReadiness: appReadiness,
                 dateProvider: dateProviderMonotonic,
@@ -1673,7 +1673,7 @@ extension AppSetup.GlobalsContinuation {
             ),
             messagePipelineSupervisor: messagePipelineSupervisor,
             oversizeTextArchiver: backupsOversizeTextArchiver,
-            plaintextStreamProvider: BackupArchivePlaintextProtoStreamProvider(),
+            plaintextProtoStreamProvider: BackupArchivePlaintextProtoStreamProvider(),
             postFrameRestoreActionManager: BackupArchivePostFrameRestoreActionManager(
                 avatarFetcher: backupArchiveAvatarFetcher,
                 dateProvider: dateProvider,

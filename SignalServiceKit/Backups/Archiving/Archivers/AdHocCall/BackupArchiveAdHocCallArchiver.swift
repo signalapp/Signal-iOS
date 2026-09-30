@@ -63,7 +63,7 @@ public class BackupArchiveAdHocCallArchiver: BackupArchiveProtoStreamWriter {
     /// ``ArchiveMultiFrameResult.completeFailure``, on the other hand, will stop the entire backup,
     /// and should be used if some critical or category-wide failure occurs.
     func archiveAdHocCalls(
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         context: BackupArchive.ChatArchivingContext,
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var partialErrors = [ArchiveFrameError]()

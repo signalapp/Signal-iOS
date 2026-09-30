@@ -42,7 +42,7 @@ public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWri
     }
 
     func archiveAllCallLinkRecipients(
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         context: BackupArchive.RecipientArchivingContext,
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()

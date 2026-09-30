@@ -43,7 +43,7 @@ public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
     /// ``ArchiveMultiFrameResult.completeFailure``, on the other hand, will stop the entire backup,
     /// and should be used if some critical or category-wide failure occurs.
     func archiveStickerPacks(
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         context: BackupArchive.ArchivingContext,
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()

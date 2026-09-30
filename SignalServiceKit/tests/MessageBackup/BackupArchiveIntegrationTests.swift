@@ -324,22 +324,12 @@ class BackupArchiveIntegrationTests: XCTestCase {
     /// Read the `backupTimeMs` field from the header of the Backup file at the
     /// given local URL.
     private func readBackupTimeMs(testCaseFileUrl: URL) async throws -> UInt64 {
-        let plaintextStreamProvider = BackupArchivePlaintextProtoStreamProvider()
+        let plaintextProtoStreamProvider = BackupArchivePlaintextProtoStreamProvider()
 
-        let stream: BackupArchiveProtoInputStream
-        switch plaintextStreamProvider.openPlaintextInputFileStream(
+        let stream: BackupArchiveProtoInputStream = try plaintextProtoStreamProvider.openPlaintextInputFileStream(
             fileUrl: testCaseFileUrl,
             frameRestoreProgress: nil,
-        ) {
-        case .success(let _stream, _):
-            stream = _stream
-        case .fileNotFound:
-            throw TestError.failure("Missing test case backup file!")
-        case .unableToOpenFileStream:
-            throw TestError.failure("Failed to open test case backup file!")
-        case .hmacValidationFailedOnEncryptedFile:
-            throw TestError.failure("Impossible – this is a plaintext stream!")
-        }
+        )
 
         let backupInfo: BackupProto_BackupInfo
         switch stream.readHeader() {

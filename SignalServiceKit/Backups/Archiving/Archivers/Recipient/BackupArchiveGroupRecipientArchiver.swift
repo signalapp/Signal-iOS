@@ -53,7 +53,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
     }
 
     func archiveAllGroupRecipients(
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         context: BackupArchive.RecipientArchivingContext,
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
@@ -132,7 +132,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
     private func archiveGroupThread(
         _ groupRecord: GroupRecord,
         blockedGroupIds: Set<Data>,
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.RecipientArchivingContext,
         errors: inout [ArchiveFrameError],

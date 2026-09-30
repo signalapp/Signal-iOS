@@ -74,7 +74,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
     // MARK: -
 
     func archiveAllContactRecipients(
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         context: BackupArchive.RecipientArchivingContext,
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         let blockedRecipientIds = blockingManager.blockedRecipientIds(tx: context.tx)
@@ -403,7 +403,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
     /// corresponding recipient that we archived earlier.
     func archiveContactRecipientForOrphanedContactThread(
         address: BackupArchive.ContactAddress,
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.ChatArchivingContext,
     ) -> BackupArchive.ArchiveSingleFrameResult<RecipientId> {

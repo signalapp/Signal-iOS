@@ -69,16 +69,17 @@ extension BackupArchiveProtoStreamWriter {
      * with standard error handling.
      */
     static func writeFrameToStream(
-        _ stream: BackupArchiveProtoOutputStream,
+        _ stream: BackupArchiveOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         frameBuilder: () -> BackupProto_Frame,
     ) -> BackupArchive.ArchiveFrameError? {
         let frame = frameBuilder()
         frameBencher.didProcessFrame(frame)
-        switch stream.writeFrame(frame) {
-        case .success:
+
+        do {
+            try stream.writeFrame(frame)
             return nil
-        case .fileIOError(let error):
+        } catch {
             return .archiveFrameError(.fileIOError(error))
         }
     }

@@ -28,7 +28,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
     }
 
     func archiveAllDistributionListRecipients(
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         context: BackupArchive.RecipientArchivingContext,
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
@@ -77,7 +77,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
 
     private func archiveStoryThread(
         _ storyThread: TSPrivateStoryThread,
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.RecipientArchivingContext,
         errors: inout [ArchiveFrameError],
@@ -168,7 +168,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
 
     private func archiveDeletedStoryList(
         rawDistributionId: Data,
-        stream: BackupArchiveProtoOutputStream,
+        stream: BackupArchiveOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.RecipientArchivingContext,
         errors: inout [ArchiveFrameError],
