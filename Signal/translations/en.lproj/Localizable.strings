@@ -8209,6 +8209,30 @@
 /* Description for the 'Signal Login' screen. */
 "REGISTRATION_SIGNAL_LOGIN_BODY" = "Enter your account ID followed by your recovery key to restore your account.";
 
+/* Label above the partially hidden account ID on the 'Signal Login details' screen. */
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_ACCOUNT_LABEL" = "Account";
+
+/* Description for the 'Signal Login details' screen shown after purchasing a Signal Login. */
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_BODY" = "Thanks for your purchase. Use your Signal Login to register and restore your account. If you forget your keys, you will not be able to recover your account.";
+
+/* Accessibility label for a partially hidden value on the Signal Login card. */
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_MASKED_VALUE_ACCESSIBILITY_FORMAT" = "Ending in %@";
+
+/* Label above the partially hidden recovery key on the 'Signal Login details' screen. */
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_RECOVERY_LABEL" = "Recovery";
+
+/* Button on the 'Signal Login details' screen to save the Signal Login manually. */
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_MANUALLY_BUTTON" = "Save Manually";
+
+/* Button on the 'Signal Login details' screen to save the Signal Login to a password manager. */
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_TO_PASSWORD_MANAGER_BUTTON" = "Save to Password Manager";
+
+/* Title text for the 'Signal Login details' screen shown after purchasing a Signal Login. */
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_TITLE" = "Your Signal Login";
+
+/* Button on the Signal Login card on the 'Signal Login details' screen to show the full account ID and recovery key. */
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_VIEW_DETAILS_BUTTON" = "View Details";
+
 /* Title for help button for the 'Signal Login' screen. */
 "REGISTRATION_SIGNAL_LOGIN_HELP_BODY" = "Your Signal Login contains a 32-character Account ID along with a 64-character Recovery Key. \n\nIf you’ve lost your Signal Login, Signal can’t help restore your account. If you have your old device you can view your Signal Login in Settings > Account.";
 
