@@ -130,6 +130,7 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyPinnedMessage;
                    messageType:(TSInfoMessageType)messageType
             expireTimerVersion:(nullable NSNumber *)expireTimerVersion
               expiresInSeconds:(unsigned int)expiresInSeconds
+               expireStartedAt:(uint64_t)expireStartedAt
            infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
     NS_DESIGNATED_INITIALIZER;
 

@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
                    messageType:(TSInfoMessageType)messageType
             expireTimerVersion:(nullable NSNumber *)expireTimerVersion
               expiresInSeconds:(unsigned int)expiresInSeconds
+               expireStartedAt:(uint64_t)expireStartedAt
            infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo NS_UNAVAILABLE;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId

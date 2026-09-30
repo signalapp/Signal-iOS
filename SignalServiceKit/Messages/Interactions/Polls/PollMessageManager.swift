@@ -318,6 +318,8 @@ public class PollMessageManager {
             messageType: .typeEndPoll,
             expireTimerVersion: NSNumber(value: expireTimerVersion),
             expiresInSeconds: expireTimer,
+            // Started on insert, which also schedules the expiration job.
+            expireStartedAt: 0,
             infoMessageUserInfo: userInfoForNewMessage,
         )
 

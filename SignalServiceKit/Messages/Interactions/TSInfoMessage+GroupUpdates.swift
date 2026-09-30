@@ -51,6 +51,7 @@ extension TSInfoMessage {
             messageType: .typeGroupUpdate,
             expireTimerVersion: nil,
             expiresInSeconds: 0,
+            expireStartedAt: 0,
             infoMessageUserInfo: userInfoForNewMessage,
         )
         return infoMessage

@@ -66,6 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
                      messageType:TSInfoMessageTypeDisappearingMessagesUpdate
               expireTimerVersion:nil
                 expiresInSeconds:0
+                 expireStartedAt:0
              infoMessageUserInfo:nil];
     if (!self) {
         return self;

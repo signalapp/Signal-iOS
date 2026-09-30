@@ -16,6 +16,7 @@ extension TSInfoMessage {
         timestamp: UInt64 = MessageTimestampGenerator.sharedInstance.generateTimestamp(),
         expireTimerVersion: UInt32? = nil,
         expiresInSeconds: UInt32? = nil,
+        expireStartedAt: UInt64 = 0,
         infoMessageUserInfo: [InfoMessageUserInfoKey: Any]? = nil,
     ) {
         self.init(
@@ -25,6 +26,7 @@ extension TSInfoMessage {
             messageType: messageType,
             expireTimerVersion: expireTimerVersion as NSNumber?,
             expiresInSeconds: expiresInSeconds ?? 0,
+            expireStartedAt: expireStartedAt,
             infoMessageUserInfo: infoMessageUserInfo,
         )
     }

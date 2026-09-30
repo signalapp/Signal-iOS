@@ -114,6 +114,7 @@ const InfoMessageUserInfoKey InfoMessageUserInfoKeyPinnedMessage = @"InfoMessage
                    messageType:(TSInfoMessageType)messageType
             expireTimerVersion:(nullable NSNumber *)expireTimerVersion
               expiresInSeconds:(unsigned int)expiresInSeconds
+               expireStartedAt:(uint64_t)expireStartedAt
            infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
 {
     TSMessageBuilder *builder;
@@ -123,10 +124,9 @@ const InfoMessageUserInfoKey InfoMessageUserInfoKeyPinnedMessage = @"InfoMessage
         builder = [TSMessageBuilder messageBuilderWithThread:thread];
     }
 
-    if (expiresInSeconds > 0 && expireTimerVersion != nil) {
-        builder.expiresInSeconds = expiresInSeconds;
-        builder.expireTimerVersion = expireTimerVersion;
-    }
+    builder.expireTimerVersion = expireTimerVersion;
+    builder.expiresInSeconds = expiresInSeconds;
+    builder.expireStartedAt = expireStartedAt;
 
     self = [super initMessageWithBuilder:builder];
     if (!self) {

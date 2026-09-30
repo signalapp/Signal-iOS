@@ -481,6 +481,8 @@ public class PinnedMessageManager {
             messageType: .typePinnedMessage,
             expireTimerVersion: NSNumber(value: expireTimerVersion),
             expiresInSeconds: expireTimer,
+            // Started on insert, which also schedules the expiration job.
+            expireStartedAt: 0,
             infoMessageUserInfo: userInfoForNewMessage,
         )
 

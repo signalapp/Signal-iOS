@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
                      messageType:TSInfoMessageUnknownProtocolVersion
               expireTimerVersion:nil
                 expiresInSeconds:0
+                 expireStartedAt:0
              infoMessageUserInfo:nil];
 
     if (self) {

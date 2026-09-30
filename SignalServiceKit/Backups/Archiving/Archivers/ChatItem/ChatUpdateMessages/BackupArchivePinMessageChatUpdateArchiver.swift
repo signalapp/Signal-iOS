@@ -129,10 +129,26 @@ final class BackupArchivePinMessageChatUpdateArchiver {
             timestamp: Int64(pinMessageChatUpdateProto.targetSentTimestamp),
         )
 
+        let expirationDetails = BackupArchive.ChatItemExpirationDetails(
+            chatItem: chatItem,
+            editState: .none,
+            // Info messages start their expire timer as soon as they're
+            // inserted.
+            shouldStartUnstartedTimer: true,
+            restoreStartTimestamp: context.startDate.ows_millisecondsSince1970,
+        )
+        guard let expirationDetails else {
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.expirationTimerOverflowedLocalType))])
+        }
+
         let infoMessage = TSInfoMessage(
             thread: chatThread.tsThread,
             messageType: .typePinnedMessage,
             timestamp: chatItem.dateSent,
+            // Backed up messages don't set the chat timer; version is irrelevant.
+            expireTimerVersion: nil,
+            expiresInSeconds: expirationDetails.expiresInSeconds,
+            expireStartedAt: expirationDetails.expireStartedAt,
             infoMessageUserInfo: userInfoForNewMessage,
         )
 
