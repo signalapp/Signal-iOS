@@ -63,15 +63,8 @@ final class BackupArchiveGroupCallArchiver {
         /// earlier than we originally learned about it. If there's no call
         /// record, though, we can fall back to the interaction.
         let startedCallTimestamp: UInt64 = associatedCallRecord?.callBeganTimestamp ?? groupCallInteraction.timestamp
-
-        switch
-            BackupArchive.Timestamps.validateTimestamp(startedCallTimestamp)
-                .bubbleUp(Details.self, partialErrors: &partialErrors)
-        {
-        case .continue:
-            break
-        case .bubbleUpError(let error):
-            return error
+        guard BackupArchive.Timestamps.isValid(startedCallTimestamp) else {
+            return .skippableInteraction(.timestampTooLarge)
         }
 
         var groupCallUpdate = BackupProto_GroupCall()
@@ -118,18 +111,11 @@ final class BackupArchiveGroupCallArchiver {
         var chatUpdateMessage = BackupProto_ChatUpdateMessage()
         chatUpdateMessage.update = .groupCall(groupCallUpdate)
 
-        let expirationDetails = BackupArchive.ChatItemExpirationDetails(
-            expireStartedAt: groupCallInteraction.expireStartedAt,
-            expiresInSeconds: groupCallInteraction.expiresInSeconds,
-        )
-
         switch Details.validateAndBuild(
             interactionUniqueId: groupCallInteraction.uniqueInteractionId,
             author: .localUser,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: groupCallInteraction.timestamp,
-            expireStartDate: expirationDetails.expireStartDate,
-            expiresInMs: expirationDetails.expiresInMs,
             isSealedSender: false,
             chatItemType: .updateMessage(chatUpdateMessage),
             isSmsPreviouslyRestoredFromBackup: false,

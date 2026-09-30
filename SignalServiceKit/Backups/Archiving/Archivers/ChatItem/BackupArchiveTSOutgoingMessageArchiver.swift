@@ -171,13 +171,6 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
             return errorResult
         }
 
-        let expireStartDate: UInt64?
-        if outgoingMessage.expireStartedAt > 0 {
-            expireStartDate = outgoingMessage.expireStartedAt
-        } else {
-            expireStartDate = nil
-        }
-
         let pinMessageDetails = pinnedMessageManager.pinMessageDetails(
             interactionId: outgoingMessageRowId,
             tx: context.tx,
@@ -188,8 +181,6 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
             author: .localUser,
             directionalDetails: .outgoing(outgoingDetails),
             dateCreated: outgoingMessage.timestamp,
-            expireStartDate: expireStartDate,
-            expiresInMs: UInt64(outgoingMessage.expiresInSeconds) * 1000,
             isSealedSender: wasAnySendSealedSender,
             chatItemType: chatItemType,
             isSmsPreviouslyRestoredFromBackup: outgoingMessage.isSmsMessageRestoredFromBackup,

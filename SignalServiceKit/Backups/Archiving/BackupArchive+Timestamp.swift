@@ -18,16 +18,6 @@ extension BackupArchive {
             return timestamp <= maxTimestampValue
         }
 
-        /// We validate timestamps on _export_ of a backup and drop frames that would have
-        /// invalid timestamps. This is because invalid timestamps are rejected by the validator
-        /// and are never cases of valid, legitimate data that we shouldn't drop.
-        static func validateTimestamp(_ timestamp: UInt64?) -> BackupArchive.ArchiveInteractionResult<Void> {
-            guard isValid(timestamp) else {
-                return .skippableInteraction(.timestampTooLarge)
-            }
-            return .success(())
-        }
-
         static func setTimestampIfValid<Source, Proto>(
             from source: Source,
             _ sourceKeyPath: KeyPath<Source, UInt64>,

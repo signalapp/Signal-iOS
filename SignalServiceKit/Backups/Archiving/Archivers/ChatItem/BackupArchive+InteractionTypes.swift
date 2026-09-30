@@ -38,18 +38,25 @@ extension TSInteraction {
 
 extension BackupArchive {
     struct ChatItemExpirationDetails: Equatable {
-        /// `nil` if the timer hasn't started.
-        let expireStartDate: UInt64?
-        let expiresInMs: UInt64
+        /// 0 if not expiring.
         let expiresInSeconds: UInt32
-        /// `0` if the timer hasn't started.
+        /// 0 if not expiring.
+        var expiresInMs: UInt64 { UInt64(expiresInSeconds) * 1000 }
+        /// 0 if the timer hasn't started.
         let expireStartedAt: UInt64
+        /// nil if the timer hasn't started.
+        var expireStartDate: UInt64? { expireStartedAt > 0 ? expireStartedAt : nil }
 
-        init(expireStartedAt: UInt64, expiresInSeconds: UInt32) {
-            self.expireStartedAt = expireStartedAt
+        private init(expiresInSeconds: UInt32, expireStartedAt: UInt64) {
             self.expiresInSeconds = expiresInSeconds
-            self.expireStartDate = expireStartedAt > 0 ? expireStartedAt : nil
-            self.expiresInMs = UInt64(expiresInSeconds) * 1000
+            self.expireStartedAt = expireStartedAt
+        }
+
+        init(expiringInteraction: ExpiringInteraction) {
+            self.init(
+                expiresInSeconds: expiringInteraction.expiresInSeconds,
+                expireStartedAt: expiringInteraction.expireStartedAt,
+            )
         }
 
         /// - Parameter shouldStartUnstartedTimer
@@ -67,7 +74,10 @@ extension BackupArchive {
             case .pastRevision:
                 // Past revisions don't have their own expire timer; they're
                 // deleted alongside the latest revision.
-                self.init(expireStartedAt: 0, expiresInSeconds: 0)
+                self.init(
+                    expiresInSeconds: 0,
+                    expireStartedAt: 0,
+                )
                 return
             }
 
@@ -95,7 +105,10 @@ extension BackupArchive {
                 expireStartedAt = 0
             }
 
-            self.init(expireStartedAt: expireStartedAt, expiresInSeconds: expiresInSeconds)
+            self.init(
+                expiresInSeconds: expiresInSeconds,
+                expireStartedAt: expireStartedAt,
+            )
         }
     }
 }
@@ -111,8 +124,6 @@ extension BackupArchive {
         let author: RecipientId
         let directionalDetails: DirectionalDetails
         let dateCreated: UInt64
-        let expireStartDate: UInt64?
-        let expiresInMs: UInt64?
         let isSealedSender: Bool
         private(set) var chatItemType: ChatItemType
 
@@ -160,8 +171,6 @@ extension BackupArchive {
             author: RecipientId,
             directionalDetails: DirectionalDetails,
             dateCreated: UInt64,
-            expireStartDate: UInt64?,
-            expiresInMs: UInt64?,
             isSealedSender: Bool,
             chatItemType: ChatItemType,
             isSmsPreviouslyRestoredFromBackup: Bool,
@@ -171,8 +180,6 @@ extension BackupArchive {
             self.author = author
             self.directionalDetails = directionalDetails
             self.dateCreated = dateCreated
-            self.expireStartDate = expireStartDate
-            self.expiresInMs = expiresInMs
             self.isSealedSender = isSealedSender
             self.chatItemType = chatItemType
             self.isSmsPreviouslyRestoredFromBackup = isSmsPreviouslyRestoredFromBackup
@@ -185,8 +192,6 @@ extension BackupArchive {
             author: AuthorAddress,
             directionalDetails: DirectionalDetails,
             dateCreated: UInt64,
-            expireStartDate: UInt64?,
-            expiresInMs: UInt64?,
             isSealedSender: Bool,
             chatItemType: ChatItemType,
             isSmsPreviouslyRestoredFromBackup: Bool,
@@ -195,6 +200,12 @@ extension BackupArchive {
             pinMessageDetails: PinMessageDetails?,
             context: BackupArchive.RecipientArchivingContext,
         ) -> BackupArchive.ArchiveInteractionResult<Self> {
+            guard BackupArchive.Timestamps.isValid(dateCreated) else {
+                return .skippableInteraction(.timestampTooLarge)
+            }
+
+            var partialErrors = [BackupArchive.ArchiveFrameError]()
+
             var authorRecipientId: RecipientId
             var author = author
             switch author {
@@ -209,16 +220,6 @@ extension BackupArchive {
                 authorRecipientId = recipientId
                 if authorRecipientId == context.localRecipientId {
                     author = .localUser
-                }
-            }
-
-            var partialErrors = [BackupArchive.ArchiveFrameError]()
-            for timestamp in [dateCreated, expireStartDate, expiresInMs] {
-                switch BackupArchive.Timestamps.validateTimestamp(timestamp).bubbleUp(Self.self, partialErrors: &partialErrors) {
-                case .continue:
-                    break
-                case .bubbleUpError(let error):
-                    return error
                 }
             }
 
@@ -260,8 +261,6 @@ extension BackupArchive {
                 author: authorRecipientId,
                 directionalDetails: directionalDetails,
                 dateCreated: dateCreated,
-                expireStartDate: expireStartDate,
-                expiresInMs: expiresInMs,
                 isSealedSender: isSealedSender,
                 chatItemType: chatItemType,
                 isSmsPreviouslyRestoredFromBackup: isSmsPreviouslyRestoredFromBackup,

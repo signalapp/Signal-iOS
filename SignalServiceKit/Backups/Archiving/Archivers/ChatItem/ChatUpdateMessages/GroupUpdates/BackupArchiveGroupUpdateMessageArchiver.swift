@@ -102,8 +102,6 @@ final class BackupArchiveGroupUpdateMessageArchiver {
             author: .localUser,
             directionalDetails: .directionless(directionlessDetails),
             dateCreated: interaction.timestamp,
-            expireStartDate: nil,
-            expiresInMs: nil,
             isSealedSender: false,
             chatItemType: .updateMessage(chatUpdate),
             isSmsPreviouslyRestoredFromBackup: false,

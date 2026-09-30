@@ -95,15 +95,8 @@ final class BackupArchiveIndividualCallArchiver {
         /// 1:1 calls the call record takes the same "call started" timestamp as
         /// the interaction: when the call offer message arrives.)
         let startedCallTimestamp = associatedCallRecord?.callBeganTimestamp ?? individualCallInteraction.timestamp
-
-        switch
-            BackupArchive.Timestamps.validateTimestamp(startedCallTimestamp)
-                .bubbleUp(Details.self, partialErrors: &partialErrors)
-        {
-        case .continue:
-            break
-        case .bubbleUpError(let error):
-            return error
+        guard BackupArchive.Timestamps.isValid(startedCallTimestamp) else {
+            return .skippableInteraction(.timestampTooLarge)
         }
 
         individualCallUpdate.startedCallTimestamp = startedCallTimestamp
@@ -124,18 +117,11 @@ final class BackupArchiveIndividualCallArchiver {
         var chatUpdateMessage = BackupProto_ChatUpdateMessage()
         chatUpdateMessage.update = .individualCall(individualCallUpdate)
 
-        let expirationDetails = BackupArchive.ChatItemExpirationDetails(
-            expireStartedAt: individualCallInteraction.expireStartedAt,
-            expiresInSeconds: individualCallInteraction.expiresInSeconds,
-        )
-
         switch Details.validateAndBuild(
             interactionUniqueId: individualCallInteraction.uniqueInteractionId,
             author: .localUser,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: individualCallInteraction.timestamp,
-            expireStartDate: expirationDetails.expireStartDate,
-            expiresInMs: expirationDetails.expiresInMs,
             isSealedSender: false,
             chatItemType: .updateMessage(chatUpdateMessage),
             isSmsPreviouslyRestoredFromBackup: false,

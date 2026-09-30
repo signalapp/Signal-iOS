@@ -66,13 +66,9 @@ extension BackupArchive {
         }
 
         func shouldSkipMessage(
-            _ message: ExpiringInteraction,
+            expirationDetails: ChatItemExpirationDetails,
             currentTimestamp: UInt64,
         ) -> Bool {
-            let expirationDetails = ChatItemExpirationDetails(
-                expireStartedAt: message.expireStartedAt,
-                expiresInSeconds: message.expiresInSeconds,
-            )
             let expiresInMs = expirationDetails.expiresInMs
             let expireStartDate = expirationDetails.expireStartDate
 
@@ -104,7 +100,7 @@ extension BackupArchive {
         ) -> Bool {
             if
                 shouldSkipMessage(
-                    owningMessage,
+                    expirationDetails: ChatItemExpirationDetails(expiringInteraction: owningMessage),
                     currentTimestamp: currentTimestamp,
                 )
             {

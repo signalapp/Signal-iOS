@@ -209,15 +209,34 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
             return .success
         }
 
-        if
-            let message = interaction as? ExpiringInteraction,
-            context.includedContentFilter.shouldSkipMessage(
-                message,
-                currentTimestamp: context.startDate.ows_millisecondsSince1970,
+        let expirationDetails: BackupArchive.ChatItemExpirationDetails?
+        if let expiringInteraction = interaction as? ExpiringInteraction {
+            expirationDetails = BackupArchive.ChatItemExpirationDetails(
+                expiringInteraction: expiringInteraction,
             )
-        {
-            // This message is excluded based on our content filter; don't archive!
-            return .success
+        } else {
+            expirationDetails = nil
+        }
+
+        if let expirationDetails {
+            guard
+                BackupArchive.Timestamps.isValid(expirationDetails.expireStartedAt),
+                BackupArchive.Timestamps.isValid(expirationDetails.expiresInMs)
+            else {
+                // Skip messages with invalid timestamps, lest they be rejected
+                // by the validator.
+                return .success
+            }
+
+            if
+                context.includedContentFilter.shouldSkipMessage(
+                    expirationDetails: expirationDetails,
+                    currentTimestamp: context.startDate.ows_millisecondsSince1970,
+                )
+            {
+                // This message is excluded based on our content filter: don't archive!
+                return .success
+            }
         }
 
         guard
@@ -300,6 +319,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         ) {
             let chatItem = buildChatItem(
                 fromDetails: details,
+                expirationDetails: expirationDetails,
                 chatId: chatId,
             )
 
@@ -364,20 +384,30 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         }
     }
 
+    /// - Parameter expirationDetails
+    /// Expiration details for the latest revision, which are applied to all
+    /// revisions. (Past revisions don't have their own expire timer locally.)
     private func buildChatItem(
         fromDetails details: BackupArchive.InteractionArchiveDetails,
+        expirationDetails: BackupArchive.ChatItemExpirationDetails?,
         chatId: BackupArchive.ChatId,
     ) -> BackupProto_ChatItem {
         var chatItem = BackupProto_ChatItem()
         chatItem.chatID = chatId.value
         chatItem.authorID = details.author.value
         chatItem.dateSent = details.dateCreated
-        if let expiresInMs = details.expiresInMs, expiresInMs > 0 {
-            if let expireStartDate = details.expireStartDate {
+
+        if
+            let expirationDetails,
+            expirationDetails.expiresInMs > 0
+        {
+            chatItem.expiresInMs = expirationDetails.expiresInMs
+
+            if let expireStartDate = expirationDetails.expireStartDate {
                 chatItem.expireStartDate = expireStartDate
             }
-            chatItem.expiresInMs = expiresInMs
         }
+
         chatItem.sms = details.isSmsPreviouslyRestoredFromBackup
         chatItem.item = details.chatItemType
         chatItem.directionalDetails = details.directionalDetails
@@ -386,6 +416,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
             /// their own. (Their `pastRevisions` will all be empty.)
             return buildChatItem(
                 fromDetails: pastRevisionDetails,
+                expirationDetails: expirationDetails,
                 chatId: chatId,
             )
         }

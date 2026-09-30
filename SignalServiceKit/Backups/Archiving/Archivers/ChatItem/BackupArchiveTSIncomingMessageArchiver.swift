@@ -177,11 +177,6 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             detailsAuthor = .contact(authorAddress)
         }
 
-        let expirationDetails = BackupArchive.ChatItemExpirationDetails(
-            expireStartedAt: incomingMessage.expireStartedAt,
-            expiresInSeconds: incomingMessage.expiresInSeconds,
-        )
-
         let pinMessageDetails = pinnedMessageManager.pinMessageDetails(
             interactionId: incomingMessageRowId,
             tx: context.tx,
@@ -192,8 +187,6 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             author: detailsAuthor,
             directionalDetails: directionalDetails,
             dateCreated: incomingMessage.timestamp,
-            expireStartDate: expirationDetails.expireStartDate,
-            expiresInMs: expirationDetails.expiresInMs,
             isSealedSender: !incomingMessage.wasReceivedByUD,
             chatItemType: chatItemType,
             isSmsPreviouslyRestoredFromBackup: incomingMessage.isSmsMessageRestoredFromBackup,
