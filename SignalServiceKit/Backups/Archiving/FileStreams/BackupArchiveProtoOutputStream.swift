@@ -6,11 +6,7 @@
 extension BackupArchive {
     public enum ProtoOutputStreamWriteResult {
         case success
-        /// Unable to serialize the provided proto object.
-        /// Should never happen, and catastrophic if it does.
-        case protoSerializationError(Swift.Error)
-        /// Failure writing at file I/O level.
-        case fileIOError(Swift.Error)
+        case fileIOError(Error)
     }
 }
 
@@ -42,11 +38,8 @@ class BackupArchiveProtoOutputStream {
     /// It is the caller's responsibility to ensure this is always written, and
     /// is the first thing written, in order to produce a valid backup file.
     func writeHeader(_ header: BackupProto_BackupInfo) -> BackupArchive.ProtoOutputStreamWriteResult {
-        let bytes: Data
-        do {
-            bytes = try header.serializedData()
-        } catch {
-            return .protoSerializationError(error)
+        let bytes = failIfThrows {
+            try header.serializedData()
         }
         do {
             try outputStream.write(data: bytes)
@@ -59,11 +52,8 @@ class BackupArchiveProtoOutputStream {
 
     /// Write a frame to the backup file.
     func writeFrame(_ frame: BackupProto_Frame) -> BackupArchive.ProtoOutputStreamWriteResult {
-        let bytes: Data
-        do {
-            bytes = try frame.serializedData()
-        } catch {
-            return .protoSerializationError(error)
+        let bytes = failIfThrows {
+            try frame.serializedData()
         }
         do {
             try outputStream.write(data: bytes)

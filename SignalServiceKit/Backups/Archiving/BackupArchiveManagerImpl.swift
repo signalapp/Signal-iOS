@@ -738,7 +738,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         switch stream.writeHeader(backupInfo) {
         case .success:
             break
-        case .fileIOError(let error), .protoSerializationError(let error):
+        case .fileIOError(let error):
             throw error
         }
     }

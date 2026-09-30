@@ -80,8 +80,6 @@ extension BackupArchiveProtoStreamWriter {
             return nil
         case .fileIOError(let error):
             return .archiveFrameError(.fileIOError(error))
-        case .protoSerializationError(let error):
-            return .archiveFrameError(.protoSerializationError(error))
         }
     }
 }
