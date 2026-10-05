@@ -542,9 +542,9 @@ class MediaCaptionToolbar: UIView, UITextViewDelegate, BodyRangesTextViewDelegat
         // first line, this will make the text view appear blank; instead, put
         // the cursor at the front.
         let startTextPosition = textView.beginningOfDocument
+        textView.selectedTextRange = textView.textRange(from: startTextPosition, to: startTextPosition)
         textView.textContainer.lineBreakMode = .byTruncatingTail
         textView.textContainer.maximumNumberOfLines = 1
-        textView.selectedTextRange = textView.textRange(from: startTextPosition, to: startTextPosition)
 
         delegate?.mediaCaptionToolbarDidEndEditing(self)
         updateContent(animated: true)
