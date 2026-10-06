@@ -69,6 +69,41 @@ public extension UIImageView {
 // MARK: -
 
 public extension UIImage {
+    /// The average color of all the image's pixels, found by drawing the image
+    /// into a single pixel.
+    func averageColor() -> UIColor? {
+        guard let cgImage else { return nil }
+
+        var pixel = [UInt8](repeating: 0, count: 4)
+        let drewPixel = pixel.withUnsafeMutableBytes { buffer -> Bool in
+            guard
+                let context = CGContext(
+                    data: buffer.baseAddress,
+                    width: 1,
+                    height: 1,
+                    bitsPerComponent: 8,
+                    bytesPerRow: 4,
+                    space: CGColorSpaceCreateDeviceRGB(),
+                    bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+                )
+            else { return false }
+            context.interpolationQuality = .high
+            context.draw(cgImage, in: CGRect(x: 0, y: 0, width: 1, height: 1))
+            return true
+        }
+        guard drewPixel else { return nil }
+
+        let alpha = CGFloat(pixel[3]) / 255
+        guard alpha > 0 else { return nil }
+        // The context stores premultiplied components.
+        return UIColor(
+            red: CGFloat(pixel[0]) / 255 / alpha,
+            green: CGFloat(pixel[1]) / 255 / alpha,
+            blue: CGFloat(pixel[2]) / 255 / alpha,
+            alpha: alpha,
+        )
+    }
+
     /// Redraw the image into a new image, with an added background color, and inset the
     /// original image by the provided insets.
     func withBackgroundColor(_ color: UIColor, insets: UIEdgeInsets = .zero) -> UIImage? {

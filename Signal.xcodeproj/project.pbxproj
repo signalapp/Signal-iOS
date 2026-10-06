@@ -1772,6 +1772,7 @@
 		88D6E93F254CF712003142D9 /* group_call_leave.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 88D6E93D254CF712003142D9 /* group_call_leave.aiff */; };
 		88D6E940254CF712003142D9 /* group_call_join.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 88D6E93E254CF712003142D9 /* group_call_join.aiff */; };
 		88D6E94325535D49003142D9 /* CVTextTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D6E94125535482003142D9 /* CVTextTest.swift */; };
+		A1B2C3D4E5F60718293A4B5D /* CVWallpaperBlurViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5C /* CVWallpaperBlurViewTest.swift */; };
 		88DBDFB9263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBDFB8263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift */; };
 		88DBDFBB2638FFBD00C2101C /* audio-played-dot.json in Resources */ = {isa = PBXBuildFile; fileRef = 88DBDFBA2638FFBC00C2101C /* audio-played-dot.json */; };
 		88DF819528E1130900F8BA80 /* SignalProxy+RelayServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF819428E1130900F8BA80 /* SignalProxy+RelayServer.swift */; };
@@ -6145,6 +6146,7 @@
 		88D6E93D254CF712003142D9 /* group_call_leave.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = group_call_leave.aiff; sourceTree = "<group>"; };
 		88D6E93E254CF712003142D9 /* group_call_join.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = group_call_join.aiff; sourceTree = "<group>"; };
 		88D6E94125535482003142D9 /* CVTextTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVTextTest.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B5C /* CVWallpaperBlurViewTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVWallpaperBlurViewTest.swift; sourceTree = "<group>"; };
 		88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMessageRelay.swift; sourceTree = "<group>"; };
 		88DBDFB8263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultDisappearingMessageTimerInteraction.swift; sourceTree = "<group>"; };
 		88DBDFBA2638FFBC00C2101C /* audio-played-dot.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "audio-played-dot.json"; sourceTree = "<group>"; };
@@ -9716,6 +9718,7 @@
 				4C6E6C6824241C00009DE948 /* ConversationViewControllerTest.swift */,
 				3463532E256EA525003C5428 /* ConversationViewTest.swift */,
 				88D6E94125535482003142D9 /* CVTextTest.swift */,
+				A1B2C3D4E5F60718293A4B5C /* CVWallpaperBlurViewTest.swift */,
 				F96B66B22912B8B7004FFFAA /* DonateViewControllerTest.swift */,
 				F99D2C8A2926F0DD00748CCB /* DonationPaymentDetailsViewControllerTest.swift */,
 				45C845AE291467F7005F6EA5 /* JournalingOrderedDictionaryTests.swift */,
@@ -19412,6 +19415,7 @@
 				4C6E6C6924241C00009DE948 /* ConversationViewControllerTest.swift in Sources */,
 				34635330256EA52A003C5428 /* ConversationViewTest.swift in Sources */,
 				88D6E94325535D49003142D9 /* CVTextTest.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5D /* CVWallpaperBlurViewTest.swift in Sources */,
 				F93999F628C81F2100E34899 /* DataMessagePaddingTests.swift in Sources */,
 				3494BBE026E66FC30079B11B /* DateUtilTest.swift in Sources */,
 				C17A54962D7B3D9E00E1D267 /* DeviceProvisioningURLTest.swift in Sources */,
