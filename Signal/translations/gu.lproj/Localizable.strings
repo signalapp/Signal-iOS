@@ -887,7 +887,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_IAP_NOT_FOUND_LOCALLY_DESCRIPTION" = "આ ડિવાઇસ પર તમારું સબ્સ્ક્રિપ્શન મળ્યું ન હતું. Signal બેકઅપનો ઉપયોગ ચાલુ રાખવા માટે રિન્યૂ કરો.";
 
 /* Text on the landing page describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_COMPLIMENTARY_DESCRIPTION" = "Your backup plan is paid (complimentary for TestFlight users)";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_COMPLIMENTARY_DESCRIPTION" = "તમારો બેકઅપ પ્લાન પેઇડ (TestFlight વપરાશકર્તાઓ માટે મફત) છે";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "ટેક્સ્ટ + બધા મીડિયાનું બેકઅપ";
@@ -2375,10 +2375,10 @@
 "CONTACT_FIELD_NAME_SUFFIX" = "સફિક્સ";
 
 /* Label for the 'nickname' field of a contact. */
-"CONTACT_FIELD_NICKNAME" = "Nickname";
+"CONTACT_FIELD_NICKNAME" = "ઉપનામ";
 
 /* Label for the 'notes' field of a contact. */
-"CONTACT_FIELD_NOTES" = "Notes";
+"CONTACT_FIELD_NOTES" = "નોંધ";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "સંસ્થા";
@@ -2852,7 +2852,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "સંપૂર્ણ મેસેજ મેળવો";
 
 /* Label for a button in a message bubble that opens a sticker pack */
-"CONVERSATION_VIEW_VIEW_STICKER_PACK" = "View Pack";
+"CONVERSATION_VIEW_VIEW_STICKER_PACK" = "પેક જુઓ";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "ક્લિપબોર્ડ પર કોપી કરી";
@@ -3803,7 +3803,7 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "તમે કેમ કોઈને આમંત્રણ આપતા નથી?";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to turn on backups. */
-"ENABLE_BACKUPS_AUTHENTICATION_REASON" = "Authenticate to turn on backups";
+"ENABLE_BACKUPS_AUTHENTICATION_REASON" = "બેકઅપ ચાલુ કરવા માટે પ્રમાણીકૃત કરો";
 
 /* Label for a toast that confirms that local backups are enabled. */
 "ENABLE_LOCAL_FILE_BACKUPS_TOAST_CONFIRM" = "ઓન-ડિવાઇસ બેકઅપ ચાલુ કર્યું";
@@ -7814,7 +7814,7 @@
 "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "આ એકાઉન્ટને નવા ડિવાઇસમાં ટ્રાન્સફર કરવા માટે, \"ચાલુ રાખો\" પર ટેપ કરો અને Signal કેમેરાથી ફરીથી QR કોડ સ્કેન કરો. ખાતરી કરો કે તમે ફક્ત એવા QR કોડ સ્કેન કરો છો જે સીધા Signalમાંથી જ આવતા હોય.";
 
 /* Label to show above a sticker used to reply to a message */
-"QUOTE_REPLY_STICKER" = "Reply";
+"QUOTE_REPLY_STICKER" = "જવાબ આપો";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }} {{ original message }}. */
 "QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "%1$@ને જવાબ આપી રહ્યા છો. %2$@";
@@ -7943,7 +7943,7 @@
 "RECIPIENT_PICKER_INVITE_TITLE" = "Signal માટે આમંત્રણ આપો";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode during a periodic reminder to record your recovery key. */
-"RECOVERY_KEY_REMINDER_AUTHENTICATION_REASON" = "Authenticate to view your recovery key";
+"RECOVERY_KEY_REMINDER_AUTHENTICATION_REASON" = "તમારી રિકવરી કી જોવા માટે પ્રમાણીકૃત કરો";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "મદદ જોઈએ છે?";
@@ -7970,7 +7970,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "તમે ઘણી વાર પ્રયત્ન કર્યો છે. ફરી પ્રયાસ કરતાં પહેલાં એક મિનિટ રાહ જુઓ.";
 
 /* A button in registration that allows the user to register by purchasing a Signal Login rather than providing their phone number. */
-"REGISTER_WITHOUT_NUMBER" = "Register Without Number";
+"REGISTER_WITHOUT_NUMBER" = "નંબર વગર રજીસ્ટર કરો";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
 "REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "તમે તમારી રિકવરી કી ખોટી રીતે દાખલ કરી હોઈ શકે છે. \n\nખાતરી કરો કે તમે Signal સુરક્ષિત બેકઅપને સક્ષમ કરતી વખતે સેવ કરેલો હોય તે જ ફોન નંબર અને રિકવરી કી સાથે રજિસ્ટર કરી રહ્યાં છો.";
@@ -8207,64 +8207,64 @@
 "REGISTRATION_SCAN_QR_CODE_TUTORIAL_TAP_CAMERA" = "કેમેરા આઇકન પર ટેપ કરો";
 
 /* Description for the 'Signal Login' screen. */
-"REGISTRATION_SIGNAL_LOGIN_BODY" = "Enter your account ID followed by your recovery key to restore your account.";
+"REGISTRATION_SIGNAL_LOGIN_BODY" = "તમારા એકાઉન્ટને રિસ્ટોર કરવા માટે તમારા એકાઉન્ટ ID અને પછી તમારી રિકવરી કી દાખલ કરો.";
 
 /* Label above the partially hidden account ID on the 'Signal Login details' screen. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_ACCOUNT_LABEL" = "Account";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_ACCOUNT_LABEL" = "એકાઉન્ટ";
 
 /* Description for the 'Signal Login details' screen shown after purchasing a Signal Login. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_BODY" = "Thanks for your purchase. Use your Signal Login to register and restore your account. If you forget your keys, you will not be able to recover your account.";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_BODY" = "તમારી ખરીદી બદલ આભાર. તમારા એકાઉન્ટને રજિસ્ટર અને રિસ્ટોર કરવા તમારા Signal Loginનો ઉપયોગ કરો. જો તમે તમારી કી ભૂલી જાઓ, તો તમે તમારા એકાઉન્ટને રિકવર કરી શકશો નહીં.";
 
 /* Accessibility label for a partially hidden value on the Signal Login card. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_MASKED_VALUE_ACCESSIBILITY_FORMAT" = "Ending in %1$@";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_MASKED_VALUE_ACCESSIBILITY_FORMAT" = "%1$@થી સમાપ્ત થતું";
 
 /* Label above the partially hidden recovery key on the 'Signal Login details' screen. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_RECOVERY_LABEL" = "Recovery";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_RECOVERY_LABEL" = "રિકવરી";
 
 /* Button on the 'Signal Login details' screen to save the Signal Login manually. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_MANUALLY_BUTTON" = "Save Manually";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_MANUALLY_BUTTON" = "જાતે સેવ કરો";
 
 /* Button on the 'Signal Login details' screen to save the Signal Login to a password manager. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_TO_PASSWORD_MANAGER_BUTTON" = "Save to Password Manager";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_TO_PASSWORD_MANAGER_BUTTON" = "પાસવર્ડ મેનેજરમાં સેવ કરો";
 
 /* Title text for the 'Signal Login details' screen shown after purchasing a Signal Login. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_TITLE" = "Your Signal Login";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_TITLE" = "તમારું Signal Login";
 
 /* Button on the Signal Login card on the 'Signal Login details' screen to show the full account ID and recovery key. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_VIEW_DETAILS_BUTTON" = "View Details";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_VIEW_DETAILS_BUTTON" = "વિગતો જુઓ";
 
 /* Toast shown after copying the account ID on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_COPIED_TOAST" = "Account ID copied";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_COPIED_TOAST" = "એકાઉન્ટ ID કૉપિ કર્યું";
 
 /* Header above the account ID on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_HEADER" = "Account ID";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_HEADER" = "એકાઉન્ટ ID";
 
 /* Accessibility label for the button that copies the account ID on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_COPY_ACCOUNT_ID_ACCESSIBILITY" = "Copy account ID";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_COPY_ACCOUNT_ID_ACCESSIBILITY" = "એકાઉન્ટ ID કૉપિ કરો";
 
 /* Accessibility label for the button that copies the recovery key on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_COPY_RECOVERY_KEY_ACCESSIBILITY" = "Copy recovery key";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_COPY_RECOVERY_KEY_ACCESSIBILITY" = "રિકવરી કી કૉપિ કરો";
 
 /* Button on the 'Signal Login' details sheet to save login to a password manager. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_PASSWORD_MANAGER_BUTTON" = "Save to Password Manager";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_PASSWORD_MANAGER_BUTTON" = "પાસવર્ડ મેનેજરમાં સેવ કરો";
 
 /* Toast shown after copying the recovery key on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_RECOVERY_KEY_COPIED_TOAST" = "Recovery Key copied";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_RECOVERY_KEY_COPIED_TOAST" = "રિકવરી કી કૉપિ કરી";
 
 /* Header above the recovery key on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_RECOVERY_KEY_HEADER" = "Recovery Key";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_RECOVERY_KEY_HEADER" = "રિકવરી કી";
 
 /* Button on the 'Signal Login' details sheet to save the login details as a PDF. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_SAVE_AS_PDF_BUTTON" = "Save as PDF";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_SAVE_AS_PDF_BUTTON" = "PDF તરીક સેવ કરો";
 
 /* Title for the sheet showing the accountID and recovery key of a Signal Login. */
 "REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_TITLE" = "Signal Login";
 
 /* Title for help button for the 'Signal Login' screen. */
-"REGISTRATION_SIGNAL_LOGIN_HELP_BODY" = "Your Signal Login contains a 32-character Account ID along with a 64-character Recovery Key. \n\nIf you’ve lost your Signal Login, Signal can’t help restore your account. If you have your old device you can view your Signal Login in Settings > Account.";
+"REGISTRATION_SIGNAL_LOGIN_HELP_BODY" = "તમારા Signal Loginમાં 64-અક્ષરની રિકવરી કી સાથે 32-અક્ષરનું એકાઉન્ટ ID શામેલ છે.\n\nજો તમે તમારું Signal Login ગુમાવી દીધું હોય, તો Signal તમારું એકાઉન્ટ રિસ્ટોર કરવામાં મદદ કરી શકતું નથી. જો તમારી પાસે તમારું જૂનું ડિવાઇસ હોય, તો તમે સેટિંગ્સ > એકાઉન્ટમાં તમારું Signal Login જોઈ શકો છો.";
 
 /* Title for help button for the 'Signal Login' screen. */
-"REGISTRATION_SIGNAL_LOGIN_NEED_HELP_TITLE" = "Need Help?";
+"REGISTRATION_SIGNAL_LOGIN_NEED_HELP_TITLE" = "મદદ જોઈએ છે?";
 
 /* Title text for the 'Signal Login' screen. */
 "REGISTRATION_SIGNAL_LOGIN_TITLE" = "Signal Login";
@@ -8759,34 +8759,34 @@
 "SELECT_ALL" = "બધા પસંદ કરો";
 
 /* Shown on the 'Select Contact' view when access to the user's contacts is restricted, for example by Screen Time or device management. */
-"SELECT_CONTACT_FOR_SHARING_ACCESS_RESTRICTED" = "Access to phone contacts is restricted on this device.";
+"SELECT_CONTACT_FOR_SHARING_ACCESS_RESTRICTED" = "આ ડિવાઇસ પર ફોન સંપર્કોનો ઍક્સેસ મર્યાદિત છે.";
 
 /* Shown on the 'Select Contact' view after the user has dismissed the contacts permission prompt without deciding. The text inside the <link> tags is tappable and asks iOS for access to the user's contacts. */
-"SELECT_CONTACT_FOR_SHARING_ALLOW_ACCESS" = "To see your phone contacts here, <link>allow access</link>.";
+"SELECT_CONTACT_FOR_SHARING_ALLOW_ACCESS" = "અહીં તમારા ફોનના સંપર્કો જોવા માટે, <link>ઍક્સેસની મંજૂરી આપો</link>.";
 
 /* Shown on the 'Select Contact' view when the user has denied access to their contacts. Followed by a 'Learn More' link. */
-"SELECT_CONTACT_FOR_SHARING_ALLOW_ACCESS_IN_SETTINGS_FOOTER" = "To see your phone contacts here, allow access in your device settings.";
+"SELECT_CONTACT_FOR_SHARING_ALLOW_ACCESS_IN_SETTINGS_FOOTER" = "તમારા ફોન સંપર્કો અહીં જોવા માટે, તમારા ડિવાઇસ સેટિંગ્સમાં ઍક્સેસ મંજૂર કરો.";
 
 /* Subtitle shown on the 'Select Contact' view when the user has no contacts. */
-"SELECT_CONTACT_FOR_SHARING_NO_CONTACTS_SUBTITLE" = "Your contacts will appear here.";
+"SELECT_CONTACT_FOR_SHARING_NO_CONTACTS_SUBTITLE" = "તમારા સંપર્કો અહીં દેખાશે.";
 
 /* Title shown on the 'Select Contact' view when the user has no contacts. */
-"SELECT_CONTACT_FOR_SHARING_NO_CONTACTS_TITLE" = "No Contacts";
+"SELECT_CONTACT_FOR_SHARING_NO_CONTACTS_TITLE" = "કોઈ સંપર્કો નથી";
 
 /* Title shown on the 'Select Contact' view when no contacts match the user's search. */
-"SELECT_CONTACT_FOR_SHARING_NO_SEARCH_RESULTS_TITLE" = "No Results";
+"SELECT_CONTACT_FOR_SHARING_NO_SEARCH_RESULTS_TITLE" = "કોઈ પરિણામ નથી";
 
 /* Button on the 'Select Contact' view's contacts permission prompt that asks iOS for access to the user's contacts. */
-"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_ALLOW_BUTTON" = "Allow Access";
+"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_ALLOW_BUTTON" = "ઍક્સેસ આપો";
 
 /* Body of the prompt on the 'Select Contact' view that asks the user to allow access to their contacts. */
-"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_BODY" = "Allow access to your contacts. Your contacts are encrypted and not visible to the Signal service.";
+"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_BODY" = "તમારા સંપર્કો પર ઍક્સેસની મંજૂરી આપો. તમારા સંપર્કો એન્ક્રિપ્ટેડ છે અને Signal સેવાને જોઈ શકતા નથી.";
 
 /* Button on the 'Select Contact' view's contacts permission prompt that hides the prompt. */
-"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_DISMISS_BUTTON" = "No Thanks";
+"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_DISMISS_BUTTON" = "ના, આભાર";
 
 /* Title of the prompt on the 'Select Contact' view that asks the user to allow access to their contacts. */
-"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_TITLE" = "Find people you know on Signal";
+"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_TITLE" = "Signal પર તમે જાણતા હો તે લોકોને શોધો";
 
 /* Placeholder text for the search bar on the 'Select Contact' view */
 "SELECT_CONTACT_FOR_SHARING_SEARCH_BAR_PLACEHOLDER" = "શોધો";
@@ -10052,10 +10052,10 @@
 "SIGNAL_CALL" = "Signal કૉલ";
 
 /* Placeholder of the 'Account ID' username field. */
-"SIGNAL_LOGIN_ACCOUNT_ID_PLACEHOLDER_TITLE" = "Account ID";
+"SIGNAL_LOGIN_ACCOUNT_ID_PLACEHOLDER_TITLE" = "એકાઉન્ટ ID";
 
 /* Placeholder of the 'Recovery Key' password field. */
-"SIGNAL_LOGIN_RECOVERY_KEY_PLACEHOLDER_TITLE" = "Recovery Key";
+"SIGNAL_LOGIN_RECOVERY_KEY_PLACEHOLDER_TITLE" = "રિકવરી કી";
 
 /* Title for the sheet presented when user taps on Signal Proxy link in chat. */
 "SIGNAL_PROXY" = "Signal પ્રોક્સી સર્વર";
@@ -10688,7 +10688,7 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@અ";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to transfer your account to a new device. */
-"TRANSFER_ACCOUNT_AUTHENTICATION_REASON" = "Authenticate to transfer your account";
+"TRANSFER_ACCOUNT_AUTHENTICATION_REASON" = "તમારું એકાઉન્ટ ટ્રાન્સફર કરવા માટે પ્રમાણીકૃત કરો";
 
 /* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
 "TRANSFER_COMPLETE_SHEET_BUTTON" = "Signal બંધ કરો";
@@ -11018,7 +11018,7 @@
 "VIEW_PHOTO" = "ફોટો જુઓ";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to view your recovery key. */
-"VIEW_RECOVERY_KEY_AUTHENTICATION_REASON" = "Authenticate to view your recovery key";
+"VIEW_RECOVERY_KEY_AUTHENTICATION_REASON" = "તમારી રિકવરી કી જોવા માટે પ્રમાણીકૃત કરો";
 
 /* View the story of a group or user */
 "VIEW_STORY" = "સ્ટોરી જુઓ";

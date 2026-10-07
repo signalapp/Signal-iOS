@@ -887,7 +887,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_IAP_NOT_FOUND_LOCALLY_DESCRIPTION" = "이 기기에서 구독 정보를 찾지 못했습니다. Signal 백업을 계속 사용하려면 갱신하세요.";
 
 /* Text on the landing page describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_COMPLIMENTARY_DESCRIPTION" = "Your backup plan is paid (complimentary for TestFlight users)";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_COMPLIMENTARY_DESCRIPTION" = "백업 플랜은 유료(TestFlight 사용자에게는 무료)입니다.";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "텍스트 + 모든 미디어 백업";
@@ -2375,10 +2375,10 @@
 "CONTACT_FIELD_NAME_SUFFIX" = "접미사";
 
 /* Label for the 'nickname' field of a contact. */
-"CONTACT_FIELD_NICKNAME" = "Nickname";
+"CONTACT_FIELD_NICKNAME" = "별칭";
 
 /* Label for the 'notes' field of a contact. */
-"CONTACT_FIELD_NOTES" = "Notes";
+"CONTACT_FIELD_NOTES" = "메모";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "조직";
@@ -2852,7 +2852,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "전체 메시지 받기";
 
 /* Label for a button in a message bubble that opens a sticker pack */
-"CONVERSATION_VIEW_VIEW_STICKER_PACK" = "View Pack";
+"CONVERSATION_VIEW_VIEW_STICKER_PACK" = "팩 보기";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "클립보드에 복사됨";
@@ -3566,7 +3566,7 @@
 "DONATION_RECEIPT_AMOUNT" = "금액";
 
 /* Section title for donation date on receipts */
-"DONATION_RECEIPT_DATE_PAID" = "지불 날짜";
+"DONATION_RECEIPT_DATE_PAID" = "결제일";
 
 /* Title on the view where you can see a single receipt */
 "DONATION_RECEIPT_DETAILS" = "세부 정보";
@@ -3770,13 +3770,13 @@
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "활동";
 
 /* The name for the emoji category 'Animals & Nature' */
-"EMOJI_CATEGORY_ANIMALS_NAME" = "동물과 자연";
+"EMOJI_CATEGORY_ANIMALS_NAME" = "동물 & 자연";
 
 /* The name for the emoji category 'Flags' */
 "EMOJI_CATEGORY_FLAGS_NAME" = "국기";
 
 /* The name for the emoji category 'Food & Drink' */
-"EMOJI_CATEGORY_FOOD_NAME" = "음식과 음료";
+"EMOJI_CATEGORY_FOOD_NAME" = "음식 & 음료";
 
 /* The name for the emoji category 'Objects' */
 "EMOJI_CATEGORY_OBJECTS_NAME" = "사물";
@@ -3788,13 +3788,13 @@
 "EMOJI_CATEGORY_RECENTS_NAME" = "최근";
 
 /* The name for the emoji category 'Smileys & People' */
-"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "스마일리와 사람";
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "얼굴 표정 & 사람";
 
 /* The name for the emoji category 'Symbols' */
 "EMOJI_CATEGORY_SYMBOLS_NAME" = "부호";
 
 /* The name for the emoji category 'Travel & Places' */
-"EMOJI_CATEGORY_TRAVEL_NAME" = "여행과 장소";
+"EMOJI_CATEGORY_TRAVEL_NAME" = "여행 & 장소";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "내 연락처 중 Signal 사용자가 없습니다.";
@@ -3803,7 +3803,7 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "다른 사람들을 초대해보세요.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to turn on backups. */
-"ENABLE_BACKUPS_AUTHENTICATION_REASON" = "Authenticate to turn on backups";
+"ENABLE_BACKUPS_AUTHENTICATION_REASON" = "백업을 활성화하려면 인증을 진행해 주세요";
 
 /* Label for a toast that confirms that local backups are enabled. */
 "ENABLE_LOCAL_FILE_BACKUPS_TOAST_CONFIRM" = "기기 내 백업이 활성화되었습니다";
@@ -3881,7 +3881,7 @@
 "ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "네트워크 요청 시간이 초과되었습니다.";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "서비스에서 잘못된 응답을 받았습니다.";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "서비스 응답을 처리하지 못했습니다.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "서버에서 오류가 발생했습니다. 나중에 다시 시도해 주세요.";
@@ -4082,7 +4082,7 @@
 "GIF_PICKER_VIEW_TITLE" = "GIF 검색";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "오류가 발생했습니다. 탭하면 다시 시도합니다.";
+"GIF_VIEW_SEARCH_ERROR" = "오류가 발생했습니다. 탭하여 다시 시도하세요.";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "결과 없음";
@@ -4340,7 +4340,7 @@
 "GROUP_CREATION_FAILED" = "일부 멤버를 그룹에 추가하지 못했습니다. 다시 시도하려면 탭하세요.";
 
 /* Text indication the user can tap to view the full group description */
-"GROUP_DESCRIPTION_MORE" = "더";
+"GROUP_DESCRIPTION_MORE" = "더 보기";
 
 /* Placeholder text for 'group description' field. */
 "GROUP_DESCRIPTION_PLACEHOLDER" = "그룹 설명 추가하기";
@@ -4364,7 +4364,7 @@
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 그룹 링크를 껐습니다.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "그룹 링크가 켜졌습니다. (관리자 참가 승인 필요)";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "그룹 링크가 켜졌습니다. (관리자 승인 필요)";
 
 /* Message indicating that the group invite link was enabled by the local user. */
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "내가 그룹 링크를 켰습니다. (관리자 참가 승인 필요)";
@@ -4373,7 +4373,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 그룹 링크를 켰습니다. (관리자 참가 승인 필요)";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "그룹 링크가 켜졌습니다. (관리자 참가 승인 불필요)";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "그룹 링크가 켜졌습니다. (관리자 승인 불필요)";
 
 /* Message indicating that the group invite link was enabled by the local user. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "내가 그룹 링크를 켰습니다. (관리자 참가 승인 불필요)";
@@ -4433,7 +4433,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "관리자만 메시지를 전송할 수 있도록 그룹 설정을 변경했습니다.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ 님은 관리자만 메시지를 전송할 수 있도록 그룹 설정을 변경했습니다.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 관리자만 메시지를 전송할 수 있도록 그룹 설정을 변경했습니다.";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE" = "이 그룹에 참가하여 멤버들에게 이름과 사진을 공유하시겠어요?";
@@ -4445,7 +4445,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "관리자에 의해 그룹에서 제외되어, 그룹 링크를 사용할 수 없습니다. 그룹에 다시 참가하려면 관리자에게 문의해 주세요.";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "그룹에 참가할 수 없음";
+"GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "그룹에 참가할 수 없어요";
 
 /* Error message the attempt to request to join the group failed due to the group being ended. */
 "GROUP_LINK_ACTION_SHEET_VIEW_END_GROUP_MESSAGE" = "이 그룹에 참여할 수 없습니다.";
@@ -4466,13 +4466,13 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_BUTTON" = "참가 요청하기";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "온라인인지 확인한 후 다시 시도해 주세요.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "네트워크 연결 상태를 확인한 후 다시 시도해 주세요.";
 
 /* Error message the attempt to request to join the group failed. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "다시 시도해 주세요.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "그룹 링크가 올바르지 않습니다. 링크가 정확한지 확인해보세요.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "그룹 링크가 올바르지 않습니다. 링크 주소가 모두 제대로 입력되었는지 확인하고 다시 시도해 주세요.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "잘못된 링크";
@@ -4490,7 +4490,7 @@
 "GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "링크 공유";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "친구들과 링크를 공유해서 그룹에 빠르게 참가하도록 하세요.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "링크를 공유해 친구들을 그룹에 빠르게 초대해 보세요.";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "친구 초대";
@@ -4499,7 +4499,7 @@
 "GROUP_LINK_PROMOTION_UPDATE" = "그룹 링크로 그룹에 친구 추가";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "이 코드를 스캔한 사람들이 내 그룹에 참가할 수 있게 됩니다. 이 설정을 켠 경우 관리자는 멤버 참가를 일일이 승인해야 합니다.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "이 코드를 스캔한 사람들이 내 그룹에 참가할 수 있게 됩니다. 관리자 승인 설정이 켜져 있는 경우, 승인을 받아야 참가가 완료됩니다.";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "코드 공유";
@@ -4559,7 +4559,7 @@
 "GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "%1$@ 님이 보낸 그룹 초대를 수락했습니다.";
 
 /* Message indicating that the local user declined an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "내가 그룹 초대를 거절했습니다.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "그룹 초대를 거절했습니다.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
 "GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "내가 %1$@ 님이 보낸 그룹 초대를 거절했습니다.";
@@ -4574,13 +4574,13 @@
 "GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 나를 초대했습니다.";
 
 /* Message indicating that the local user was invited to the group. */
-"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "내가 그룹에 초대되었습니다.";
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "그룹에 초대되었습니다.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "내가 그룹에 참가했습니다.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "그룹에 참가했습니다.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "내가 그룹 링크로 그룹에 참가했습니다.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "그룹 링크로 그룹에 참가했습니다.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 나를 그룹에서 내보냈습니다.";
@@ -4697,7 +4697,7 @@
 "GROUP_REMOTE_USER_DECLINED_INVITE" = "1명이 그룹 초대를 거절했습니다.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1명이 %1$@ 님의 그룹 초대를 거절했습니다.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "%1$@ 님이 초대한 멤버 1명이 그룹 초대를 거절했습니다.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@ 님이 내 그룹 초대를 거절했습니다.";
@@ -4712,7 +4712,7 @@
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 %2$@ 님을 관리자로 지정했습니다.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "%1$@명의 그룹 초대가 취소되었습니다.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "%1$@ 님에게 보낸 그룹 초대가 취소되었습니다.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "내가 %1$@ 님을 그룹에 초대했습니다.";
@@ -4811,7 +4811,7 @@
 "GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "그룹이 종료되어 메시지를 보낼 수 없습니다.";
 
 /* Info message indicating that the group was updated by an unknown user. */
-"GROUP_UPDATED" = "그룹 업데이트됨.";
+"GROUP_UPDATED" = "그룹이 업데이트되었습니다.";
 
 /* Message indicating that the group's avatar was removed. */
 "GROUP_UPDATED_AVATAR_REMOVED" = "그룹 사진이 삭제되었습니다.";
@@ -4916,7 +4916,7 @@
 "GROUPS_INVITE_FRIENDS_BUTTON" = "친구 초대";
 
 /* Label indicating a legacy group. */
-"GROUPS_LEGACY_GROUP_INDICATOR" = "구형 그룹";
+"GROUPS_LEGACY_GROUP_INDICATOR" = "레거시 그룹";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "그룹에서 나가기 전에 새 관리자를 선택하세요.";
@@ -4928,7 +4928,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "새 관리자 선택";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "권장 멤버 수 한도에 도달했습니다.";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "권장 인원이 모두 찼습니다.";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
 "GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "그래도 멤버를 추가하시겠어요?";
@@ -5186,7 +5186,7 @@
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ 님이 전화번호를 변경했습니다.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ 님이 Signal에 가입했습니다!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ 님이 Signal에 가입했어요!";
 
 /* Label at the top of the input text when editing a message */
 "INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "메시지 수정";
@@ -5231,7 +5231,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "친구 초대";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "여러 사용자를 동시에 초대하게 된다면 수신자들이 서로를 볼 수 있는 그룹 메시지를 시작하게 됩니다.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "여러 명을 한 번에 초대하면 그룹 대화방이 생성되며, 참여자끼리 서로의 프로필을 확인할 수 있습니다.";
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "참여";
@@ -5252,7 +5252,7 @@
 "KEY_COMMAND_CONVERSATION_INFO" = "대화 정보로 이동";
 
 /* A keyboard command to focus the current conversation's input field. */
-"KEY_COMMAND_FOCUS_COMPOSER" = "입력 바 포커스";
+"KEY_COMMAND_FOCUS_COMPOSER" = "메시지 입력창으로 이동";
 
 /* A keyboard command to open the current conversations GIF picker. */
 "KEY_COMMAND_GIF_SEARCH" = "GIF 검색으로 이동";
@@ -5333,7 +5333,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "메시지 기록 이전";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "QR 코드가 올바르지 않습니다. 스캔하고자 하는 기기에 있는 QR 코드를 읽었는지 다시 한 번 확인하세요.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "올바른 QR 코드가 아닙니다. 연동하려는 기기 화면에 표시된 QR 코드를 스캔해 주세요.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "기기 연동 실패";
@@ -5594,10 +5594,10 @@
 "LOCATION_PICKER_TITLE" = "위치 선택";
 
 /* Title for the 'logging' help section. */
-"LOGGING_SECTION" = "로깅";
+"LOGGING_SECTION" = "디버그 로그";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "디버그 로그는 Signal이 문제 및 충돌을 해결하는 데 도움이 될 수 있습니다.";
+"LOGGING_SECTION_FOOTER" = "디버그 로그는 Signal의 오류나 비정상 종료 문제를 해결하는 데 큰 도움이 됩니다.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "메시지";
@@ -5882,7 +5882,7 @@
 "MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "수정 기록 보기";
 
 /* Title for the 'sent from' section on the 'message details' view. */
-"MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "받음";
+"MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "발신인";
 
 /* Label for file size of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "파일 용량";
@@ -5891,10 +5891,10 @@
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME 유형";
 
 /* Label for the 'disappears' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "사라짐";
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "자동 삭제까지 남은 시간";
 
 /* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "전달됨";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "전달 대상";
 
 /* Status label for messages which are failed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "실패";
@@ -5903,13 +5903,13 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "전송이 일시 중지됨";
 
 /* Status label for messages which are read. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "읽음";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "읽은 사람";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "보내기";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "전송 대상";
 
 /* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "보냄";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "받은 사람";
 
 /* Status label for messages which were skipped. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "건너뜀";
@@ -6068,7 +6068,7 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "차단 해제";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "요청 취소하기";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "요청 취소";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "그룹 참가 신청을 취소할까요?";
@@ -6077,7 +6077,7 @@
 "MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "내 참가 요청을 그룹 관리자에게 보냈습니다. 승인 여부가 결정되면 알림을 보내드립니다.";
 
 /* message status for message delivered to their recipient. */
-"MESSAGE_STATUS_DELIVERED" = "전송됨";
+"MESSAGE_STATUS_DELIVERED" = "전달됨";
 
 /* message status while message is downloading. */
 "MESSAGE_STATUS_DOWNLOADING" = "다운로드 중";
@@ -6113,7 +6113,7 @@
 "MESSAGE_STATUS_SENDING" = "보내는 중…";
 
 /* status message for sent messages */
-"MESSAGE_STATUS_SENT" = "보냄:";
+"MESSAGE_STATUS_SENT" = "보냄";
 
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "업로드 중…";
@@ -7814,7 +7814,7 @@
 "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "이 계정을 새 기기로 이전하려면 '계속'을 탭하고 Signal 카메라로 QR 코드를 스캔하세요. Signal에서 직접 제공한 QR 코드만 스캔하세요.";
 
 /* Label to show above a sticker used to reply to a message */
-"QUOTE_REPLY_STICKER" = "Reply";
+"QUOTE_REPLY_STICKER" = "답장";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }} {{ original message }}. */
 "QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "%1$@ 님에게 답장하는 중입니다. %2$@";
@@ -7943,7 +7943,7 @@
 "RECIPIENT_PICKER_INVITE_TITLE" = "Signal로 초대";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode during a periodic reminder to record your recovery key. */
-"RECOVERY_KEY_REMINDER_AUTHENTICATION_REASON" = "Authenticate to view your recovery key";
+"RECOVERY_KEY_REMINDER_AUTHENTICATION_REASON" = "복구 키를 확인하려면 인증을 진행해 주세요";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "도움이 필요하신가요?";
@@ -7970,7 +7970,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "너무 많이 시도하셨습니다. 몇 분 후 다시 시도해 주세요.";
 
 /* A button in registration that allows the user to register by purchasing a Signal Login rather than providing their phone number. */
-"REGISTER_WITHOUT_NUMBER" = "Register Without Number";
+"REGISTER_WITHOUT_NUMBER" = "전화번호 없이 등록하기";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
 "REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "복구 키를 잘못 입력하셨을 수 있습니다. \n\nSignal 안전 백업 활성화 시 저장한 전화번호와 복구 키가 맞는지 확인해 주세요. 이 키가 없으면 백업을 복구할 수 없습니다.";
@@ -8207,64 +8207,64 @@
 "REGISTRATION_SCAN_QR_CODE_TUTORIAL_TAP_CAMERA" = "카메라 아이콘을 탭합니다";
 
 /* Description for the 'Signal Login' screen. */
-"REGISTRATION_SIGNAL_LOGIN_BODY" = "Enter your account ID followed by your recovery key to restore your account.";
+"REGISTRATION_SIGNAL_LOGIN_BODY" = "계정을 복구하려면 복구 키와 함께 계정 ID를 입력하세요.";
 
 /* Label above the partially hidden account ID on the 'Signal Login details' screen. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_ACCOUNT_LABEL" = "Account";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_ACCOUNT_LABEL" = "계정";
 
 /* Description for the 'Signal Login details' screen shown after purchasing a Signal Login. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_BODY" = "Thanks for your purchase. Use your Signal Login to register and restore your account. If you forget your keys, you will not be able to recover your account.";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_BODY" = "구매해 주셔서 감사합니다! Signal Login을 사용해 계정을 등록하고 복구하세요. 키를 잊어버리면 계정을 복구할 수 없습니다.";
 
 /* Accessibility label for a partially hidden value on the Signal Login card. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_MASKED_VALUE_ACCESSIBILITY_FORMAT" = "Ending in %1$@";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_MASKED_VALUE_ACCESSIBILITY_FORMAT" = "끝자리 %1$@";
 
 /* Label above the partially hidden recovery key on the 'Signal Login details' screen. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_RECOVERY_LABEL" = "Recovery";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_RECOVERY_LABEL" = "복구";
 
 /* Button on the 'Signal Login details' screen to save the Signal Login manually. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_MANUALLY_BUTTON" = "Save Manually";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_MANUALLY_BUTTON" = "수동으로 저장";
 
 /* Button on the 'Signal Login details' screen to save the Signal Login to a password manager. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_TO_PASSWORD_MANAGER_BUTTON" = "Save to Password Manager";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_TO_PASSWORD_MANAGER_BUTTON" = "비밀번호 관리자에 저장";
 
 /* Title text for the 'Signal Login details' screen shown after purchasing a Signal Login. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_TITLE" = "Your Signal Login";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_TITLE" = "내 Signal Login";
 
 /* Button on the Signal Login card on the 'Signal Login details' screen to show the full account ID and recovery key. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_VIEW_DETAILS_BUTTON" = "View Details";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_VIEW_DETAILS_BUTTON" = "상세 정보 보기";
 
 /* Toast shown after copying the account ID on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_COPIED_TOAST" = "Account ID copied";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_COPIED_TOAST" = "계정 ID 복사됨";
 
 /* Header above the account ID on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_HEADER" = "Account ID";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_HEADER" = "계정 ID";
 
 /* Accessibility label for the button that copies the account ID on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_COPY_ACCOUNT_ID_ACCESSIBILITY" = "Copy account ID";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_COPY_ACCOUNT_ID_ACCESSIBILITY" = "계정 ID 복사하기";
 
 /* Accessibility label for the button that copies the recovery key on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_COPY_RECOVERY_KEY_ACCESSIBILITY" = "Copy recovery key";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_COPY_RECOVERY_KEY_ACCESSIBILITY" = "복구 키 복사하기";
 
 /* Button on the 'Signal Login' details sheet to save login to a password manager. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_PASSWORD_MANAGER_BUTTON" = "Save to Password Manager";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_PASSWORD_MANAGER_BUTTON" = "비밀번호 관리자에 저장";
 
 /* Toast shown after copying the recovery key on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_RECOVERY_KEY_COPIED_TOAST" = "Recovery Key copied";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_RECOVERY_KEY_COPIED_TOAST" = "복구 키 복사됨";
 
 /* Header above the recovery key on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_RECOVERY_KEY_HEADER" = "Recovery Key";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_RECOVERY_KEY_HEADER" = "복구 키";
 
 /* Button on the 'Signal Login' details sheet to save the login details as a PDF. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_SAVE_AS_PDF_BUTTON" = "Save as PDF";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_SAVE_AS_PDF_BUTTON" = "PDF로 저장하기";
 
 /* Title for the sheet showing the accountID and recovery key of a Signal Login. */
 "REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_TITLE" = "Signal Login";
 
 /* Title for help button for the 'Signal Login' screen. */
-"REGISTRATION_SIGNAL_LOGIN_HELP_BODY" = "Your Signal Login contains a 32-character Account ID along with a 64-character Recovery Key. \n\nIf you’ve lost your Signal Login, Signal can’t help restore your account. If you have your old device you can view your Signal Login in Settings > Account.";
+"REGISTRATION_SIGNAL_LOGIN_HELP_BODY" = "Signal Login에는 32자 계정 ID와 64자 복구 키가 포함됩니다.\n\nSignal Login 정보를 잊어버린 경우 Signal 측에서도 계정을 복구해드릴 수 없습니다. 이전 기기를 가지고 있는 경우 '설정 > 계정'에서 Signal Login 정보를 확인할 수 있습니다.";
 
 /* Title for help button for the 'Signal Login' screen. */
-"REGISTRATION_SIGNAL_LOGIN_NEED_HELP_TITLE" = "Need Help?";
+"REGISTRATION_SIGNAL_LOGIN_NEED_HELP_TITLE" = "도움이 필요하신가요?";
 
 /* Title text for the 'Signal Login' screen. */
 "REGISTRATION_SIGNAL_LOGIN_TITLE" = "Signal Login";
@@ -8759,34 +8759,34 @@
 "SELECT_ALL" = "모두 선택";
 
 /* Shown on the 'Select Contact' view when access to the user's contacts is restricted, for example by Screen Time or device management. */
-"SELECT_CONTACT_FOR_SHARING_ACCESS_RESTRICTED" = "Access to phone contacts is restricted on this device.";
+"SELECT_CONTACT_FOR_SHARING_ACCESS_RESTRICTED" = "이 기기에서는 연락처에 접근할 수 없습니다.";
 
 /* Shown on the 'Select Contact' view after the user has dismissed the contacts permission prompt without deciding. The text inside the <link> tags is tappable and asks iOS for access to the user's contacts. */
-"SELECT_CONTACT_FOR_SHARING_ALLOW_ACCESS" = "To see your phone contacts here, <link>allow access</link>.";
+"SELECT_CONTACT_FOR_SHARING_ALLOW_ACCESS" = "여기서 연락처를 보려면 <link>접근 권한을 허용</link>해 주세요.";
 
 /* Shown on the 'Select Contact' view when the user has denied access to their contacts. Followed by a 'Learn More' link. */
-"SELECT_CONTACT_FOR_SHARING_ALLOW_ACCESS_IN_SETTINGS_FOOTER" = "To see your phone contacts here, allow access in your device settings.";
+"SELECT_CONTACT_FOR_SHARING_ALLOW_ACCESS_IN_SETTINGS_FOOTER" = "여기에 휴대전화 연락처를 표시하려면 기기 설정에서 접근 권한을 허용해 주세요.";
 
 /* Subtitle shown on the 'Select Contact' view when the user has no contacts. */
-"SELECT_CONTACT_FOR_SHARING_NO_CONTACTS_SUBTITLE" = "Your contacts will appear here.";
+"SELECT_CONTACT_FOR_SHARING_NO_CONTACTS_SUBTITLE" = "연락처가 여기에 표시됩니다.";
 
 /* Title shown on the 'Select Contact' view when the user has no contacts. */
-"SELECT_CONTACT_FOR_SHARING_NO_CONTACTS_TITLE" = "No Contacts";
+"SELECT_CONTACT_FOR_SHARING_NO_CONTACTS_TITLE" = "연락처 없음";
 
 /* Title shown on the 'Select Contact' view when no contacts match the user's search. */
-"SELECT_CONTACT_FOR_SHARING_NO_SEARCH_RESULTS_TITLE" = "No Results";
+"SELECT_CONTACT_FOR_SHARING_NO_SEARCH_RESULTS_TITLE" = "결과 없음";
 
 /* Button on the 'Select Contact' view's contacts permission prompt that asks iOS for access to the user's contacts. */
-"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_ALLOW_BUTTON" = "Allow Access";
+"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_ALLOW_BUTTON" = "권한 허용";
 
 /* Body of the prompt on the 'Select Contact' view that asks the user to allow access to their contacts. */
-"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_BODY" = "Allow access to your contacts. Your contacts are encrypted and not visible to the Signal service.";
+"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_BODY" = "연락처 접근을 허용해 주세요. 연락처 정보는 암호화되며 Signal도 확인할 수 없습니다.";
 
 /* Button on the 'Select Contact' view's contacts permission prompt that hides the prompt. */
-"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_DISMISS_BUTTON" = "No Thanks";
+"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_DISMISS_BUTTON" = "괜찮아요";
 
 /* Title of the prompt on the 'Select Contact' view that asks the user to allow access to their contacts. */
-"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_TITLE" = "Find people you know on Signal";
+"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_TITLE" = "Signal에서 내가 아는 사람을 찾아보세요.";
 
 /* Placeholder text for the search bar on the 'Select Contact' view */
 "SELECT_CONTACT_FOR_SHARING_SEARCH_BAR_PLACEHOLDER" = "검색";
@@ -10052,10 +10052,10 @@
 "SIGNAL_CALL" = "Signal 통화";
 
 /* Placeholder of the 'Account ID' username field. */
-"SIGNAL_LOGIN_ACCOUNT_ID_PLACEHOLDER_TITLE" = "Account ID";
+"SIGNAL_LOGIN_ACCOUNT_ID_PLACEHOLDER_TITLE" = "계정 ID";
 
 /* Placeholder of the 'Recovery Key' password field. */
-"SIGNAL_LOGIN_RECOVERY_KEY_PLACEHOLDER_TITLE" = "Recovery Key";
+"SIGNAL_LOGIN_RECOVERY_KEY_PLACEHOLDER_TITLE" = "복구 키";
 
 /* Title for the sheet presented when user taps on Signal Proxy link in chat. */
 "SIGNAL_PROXY" = "Signal 프록시 서버";
@@ -10688,7 +10688,7 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@주";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to transfer your account to a new device. */
-"TRANSFER_ACCOUNT_AUTHENTICATION_REASON" = "Authenticate to transfer your account";
+"TRANSFER_ACCOUNT_AUTHENTICATION_REASON" = "계정을 이전하려면 인증을 진행해 주세요";
 
 /* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
 "TRANSFER_COMPLETE_SHEET_BUTTON" = "Signal 종료";
@@ -11018,7 +11018,7 @@
 "VIEW_PHOTO" = "사진 보기";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to view your recovery key. */
-"VIEW_RECOVERY_KEY_AUTHENTICATION_REASON" = "Authenticate to view your recovery key";
+"VIEW_RECOVERY_KEY_AUTHENTICATION_REASON" = "복구 키를 확인하려면 인증을 진행해 주세요";
 
 /* View the story of a group or user */
 "VIEW_STORY" = "스토리 보기";

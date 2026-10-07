@@ -887,7 +887,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_IAP_NOT_FOUND_LOCALLY_DESCRIPTION" = "在此裝置找不到你的定期贊助。請立即續期以繼續使用「Signal 備份」。";
 
 /* Text on the landing page describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_COMPLIMENTARY_DESCRIPTION" = "Your backup plan is paid (complimentary for TestFlight users)";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_COMPLIMENTARY_DESCRIPTION" = "你的備份計畫已付費（TestFlight 用戶免費）";
 
 /* Header describing what the paid backup plan includes. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "文字 + 所有媒體備份";
@@ -2375,10 +2375,10 @@
 "CONTACT_FIELD_NAME_SUFFIX" = "後綴";
 
 /* Label for the 'nickname' field of a contact. */
-"CONTACT_FIELD_NICKNAME" = "Nickname";
+"CONTACT_FIELD_NICKNAME" = "暱稱";
 
 /* Label for the 'notes' field of a contact. */
-"CONTACT_FIELD_NOTES" = "Notes";
+"CONTACT_FIELD_NOTES" = "筆記";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "機構";
@@ -2852,7 +2852,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_TO_DOWNLOAD" = "取得完整訊息";
 
 /* Label for a button in a message bubble that opens a sticker pack */
-"CONVERSATION_VIEW_VIEW_STICKER_PACK" = "View Pack";
+"CONVERSATION_VIEW_VIEW_STICKER_PACK" = "檢視貼圖包";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "已複製到剪貼簿";
@@ -3803,7 +3803,7 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "不如邀請其他人？";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to turn on backups. */
-"ENABLE_BACKUPS_AUTHENTICATION_REASON" = "Authenticate to turn on backups";
+"ENABLE_BACKUPS_AUTHENTICATION_REASON" = "驗證以啟用備份功能";
 
 /* Label for a toast that confirms that local backups are enabled. */
 "ENABLE_LOCAL_FILE_BACKUPS_TOAST_CONFIRM" = "已啟用裝置上備份";
@@ -7814,7 +7814,7 @@
 "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "要將此帳戶轉移至新裝置，輕按「繼續」並用 Signal 相機掃描二維碼。請確保只掃描直接來自 Signal 的二維碼。";
 
 /* Label to show above a sticker used to reply to a message */
-"QUOTE_REPLY_STICKER" = "Reply";
+"QUOTE_REPLY_STICKER" = "回覆";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }} {{ original message }}. */
 "QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "正在回覆 %1$@。 %2$@";
@@ -7943,7 +7943,7 @@
 "RECIPIENT_PICKER_INVITE_TITLE" = "邀請加入 Signal";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode during a periodic reminder to record your recovery key. */
-"RECOVERY_KEY_REMINDER_AUTHENTICATION_REASON" = "Authenticate to view your recovery key";
+"RECOVERY_KEY_REMINDER_AUTHENTICATION_REASON" = "驗證以檢視你的恢復金鑰";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "需要幫助？";
@@ -7970,7 +7970,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "嘗試次數超出上限。請等一分鐘後再試。";
 
 /* A button in registration that allows the user to register by purchasing a Signal Login rather than providing their phone number. */
-"REGISTER_WITHOUT_NUMBER" = "Register Without Number";
+"REGISTER_WITHOUT_NUMBER" = "免號碼註冊";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
 "REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "你可能輸入了錯誤的恢復金鑰。\n\n請確保你使用在啟用「Signal 安全備份」時儲存的電話號碼和恢復金鑰進行註冊。";
@@ -8207,64 +8207,64 @@
 "REGISTRATION_SCAN_QR_CODE_TUTORIAL_TAP_CAMERA" = "輕按相機圖示";
 
 /* Description for the 'Signal Login' screen. */
-"REGISTRATION_SIGNAL_LOGIN_BODY" = "Enter your account ID followed by your recovery key to restore your account.";
+"REGISTRATION_SIGNAL_LOGIN_BODY" = "請輸入你的帳戶 ID，接著輸入恢復金鑰，以還原你的帳戶。";
 
 /* Label above the partially hidden account ID on the 'Signal Login details' screen. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_ACCOUNT_LABEL" = "Account";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_ACCOUNT_LABEL" = "帳號";
 
 /* Description for the 'Signal Login details' screen shown after purchasing a Signal Login. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_BODY" = "Thanks for your purchase. Use your Signal Login to register and restore your account. If you forget your keys, you will not be able to recover your account.";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_BODY" = "感謝你的購買。請使用你的 Signal Login 進行註冊及帳戶還原。如果你忘記了金鑰，將會無法恢復帳戶。";
 
 /* Accessibility label for a partially hidden value on the Signal Login card. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_MASKED_VALUE_ACCESSIBILITY_FORMAT" = "Ending in %1$@";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_MASKED_VALUE_ACCESSIBILITY_FORMAT" = "結尾為 %1$@";
 
 /* Label above the partially hidden recovery key on the 'Signal Login details' screen. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_RECOVERY_LABEL" = "Recovery";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_RECOVERY_LABEL" = "恢復";
 
 /* Button on the 'Signal Login details' screen to save the Signal Login manually. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_MANUALLY_BUTTON" = "Save Manually";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_MANUALLY_BUTTON" = "手動儲存";
 
 /* Button on the 'Signal Login details' screen to save the Signal Login to a password manager. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_TO_PASSWORD_MANAGER_BUTTON" = "Save to Password Manager";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_TO_PASSWORD_MANAGER_BUTTON" = "儲存至密碼管理器";
 
 /* Title text for the 'Signal Login details' screen shown after purchasing a Signal Login. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_TITLE" = "Your Signal Login";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_TITLE" = "你的 Signal Login";
 
 /* Button on the Signal Login card on the 'Signal Login details' screen to show the full account ID and recovery key. */
-"REGISTRATION_SIGNAL_LOGIN_DETAILS_VIEW_DETAILS_BUTTON" = "View Details";
+"REGISTRATION_SIGNAL_LOGIN_DETAILS_VIEW_DETAILS_BUTTON" = "檢視詳情";
 
 /* Toast shown after copying the account ID on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_COPIED_TOAST" = "Account ID copied";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_COPIED_TOAST" = "已複製帳戶 ID";
 
 /* Header above the account ID on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_HEADER" = "Account ID";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_HEADER" = "帳戶 ID";
 
 /* Accessibility label for the button that copies the account ID on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_COPY_ACCOUNT_ID_ACCESSIBILITY" = "Copy account ID";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_COPY_ACCOUNT_ID_ACCESSIBILITY" = "複製帳戶 ID";
 
 /* Accessibility label for the button that copies the recovery key on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_COPY_RECOVERY_KEY_ACCESSIBILITY" = "Copy recovery key";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_COPY_RECOVERY_KEY_ACCESSIBILITY" = "複製恢復金鑰";
 
 /* Button on the 'Signal Login' details sheet to save login to a password manager. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_PASSWORD_MANAGER_BUTTON" = "Save to Password Manager";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_PASSWORD_MANAGER_BUTTON" = "儲存至密碼管理器";
 
 /* Toast shown after copying the recovery key on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_RECOVERY_KEY_COPIED_TOAST" = "Recovery Key copied";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_RECOVERY_KEY_COPIED_TOAST" = "已複製恢復金鑰";
 
 /* Header above the recovery key on the 'Signal Login' details sheet. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_RECOVERY_KEY_HEADER" = "Recovery Key";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_RECOVERY_KEY_HEADER" = "恢復金鑰";
 
 /* Button on the 'Signal Login' details sheet to save the login details as a PDF. */
-"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_SAVE_AS_PDF_BUTTON" = "Save as PDF";
+"REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_SAVE_AS_PDF_BUTTON" = "另存為 PDF";
 
 /* Title for the sheet showing the accountID and recovery key of a Signal Login. */
 "REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_TITLE" = "Signal Login";
 
 /* Title for help button for the 'Signal Login' screen. */
-"REGISTRATION_SIGNAL_LOGIN_HELP_BODY" = "Your Signal Login contains a 32-character Account ID along with a 64-character Recovery Key. \n\nIf you’ve lost your Signal Login, Signal can’t help restore your account. If you have your old device you can view your Signal Login in Settings > Account.";
+"REGISTRATION_SIGNAL_LOGIN_HELP_BODY" = "你的 Signal Login 包含一個 32 個字元的帳戶 ID 以及 64 個字元的恢復金鑰。\n\n如果你遺失了 Signal Login，Signal 將無法幫助你還原帳戶。如果你有舊裝置，則可以在「設定」 >「帳戶」中檢視你的 Signal Login。";
 
 /* Title for help button for the 'Signal Login' screen. */
-"REGISTRATION_SIGNAL_LOGIN_NEED_HELP_TITLE" = "Need Help?";
+"REGISTRATION_SIGNAL_LOGIN_NEED_HELP_TITLE" = "需要幫助？";
 
 /* Title text for the 'Signal Login' screen. */
 "REGISTRATION_SIGNAL_LOGIN_TITLE" = "Signal Login";
@@ -8759,34 +8759,34 @@
 "SELECT_ALL" = "選取全部";
 
 /* Shown on the 'Select Contact' view when access to the user's contacts is restricted, for example by Screen Time or device management. */
-"SELECT_CONTACT_FOR_SHARING_ACCESS_RESTRICTED" = "Access to phone contacts is restricted on this device.";
+"SELECT_CONTACT_FOR_SHARING_ACCESS_RESTRICTED" = "此裝置已限制存取電話通訊錄";
 
 /* Shown on the 'Select Contact' view after the user has dismissed the contacts permission prompt without deciding. The text inside the <link> tags is tappable and asks iOS for access to the user's contacts. */
-"SELECT_CONTACT_FOR_SHARING_ALLOW_ACCESS" = "To see your phone contacts here, <link>allow access</link>.";
+"SELECT_CONTACT_FOR_SHARING_ALLOW_ACCESS" = "若要在這裡查看電話通訊錄，請<link>允許存取權限</link>。";
 
 /* Shown on the 'Select Contact' view when the user has denied access to their contacts. Followed by a 'Learn More' link. */
-"SELECT_CONTACT_FOR_SHARING_ALLOW_ACCESS_IN_SETTINGS_FOOTER" = "To see your phone contacts here, allow access in your device settings.";
+"SELECT_CONTACT_FOR_SHARING_ALLOW_ACCESS_IN_SETTINGS_FOOTER" = "若要在這裡查看電話通訊錄，請在裝置設定中允許存取權限。";
 
 /* Subtitle shown on the 'Select Contact' view when the user has no contacts. */
-"SELECT_CONTACT_FOR_SHARING_NO_CONTACTS_SUBTITLE" = "Your contacts will appear here.";
+"SELECT_CONTACT_FOR_SHARING_NO_CONTACTS_SUBTITLE" = "你的聯絡人將顯示在此處。";
 
 /* Title shown on the 'Select Contact' view when the user has no contacts. */
-"SELECT_CONTACT_FOR_SHARING_NO_CONTACTS_TITLE" = "No Contacts";
+"SELECT_CONTACT_FOR_SHARING_NO_CONTACTS_TITLE" = "沒有聯絡人";
 
 /* Title shown on the 'Select Contact' view when no contacts match the user's search. */
-"SELECT_CONTACT_FOR_SHARING_NO_SEARCH_RESULTS_TITLE" = "No Results";
+"SELECT_CONTACT_FOR_SHARING_NO_SEARCH_RESULTS_TITLE" = "查無結果";
 
 /* Button on the 'Select Contact' view's contacts permission prompt that asks iOS for access to the user's contacts. */
-"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_ALLOW_BUTTON" = "Allow Access";
+"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_ALLOW_BUTTON" = "允許存取";
 
 /* Body of the prompt on the 'Select Contact' view that asks the user to allow access to their contacts. */
-"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_BODY" = "Allow access to your contacts. Your contacts are encrypted and not visible to the Signal service.";
+"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_BODY" = "允許存取你的通訊錄。你的聯絡人名單已加密，Signal 服務無法看到。";
 
 /* Button on the 'Select Contact' view's contacts permission prompt that hides the prompt. */
-"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_DISMISS_BUTTON" = "No Thanks";
+"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_DISMISS_BUTTON" = "不用了";
 
 /* Title of the prompt on the 'Select Contact' view that asks the user to allow access to their contacts. */
-"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_TITLE" = "Find people you know on Signal";
+"SELECT_CONTACT_FOR_SHARING_PERMISSION_PROMPT_TITLE" = "在 Signal 上尋找你認識的人";
 
 /* Placeholder text for the search bar on the 'Select Contact' view */
 "SELECT_CONTACT_FOR_SHARING_SEARCH_BAR_PLACEHOLDER" = "搜尋";
@@ -10052,10 +10052,10 @@
 "SIGNAL_CALL" = "Signal 通話";
 
 /* Placeholder of the 'Account ID' username field. */
-"SIGNAL_LOGIN_ACCOUNT_ID_PLACEHOLDER_TITLE" = "Account ID";
+"SIGNAL_LOGIN_ACCOUNT_ID_PLACEHOLDER_TITLE" = "帳戶 ID";
 
 /* Placeholder of the 'Recovery Key' password field. */
-"SIGNAL_LOGIN_RECOVERY_KEY_PLACEHOLDER_TITLE" = "Recovery Key";
+"SIGNAL_LOGIN_RECOVERY_KEY_PLACEHOLDER_TITLE" = "恢復金鑰";
 
 /* Title for the sheet presented when user taps on Signal Proxy link in chat. */
 "SIGNAL_PROXY" = "Signal 代理伺服器";
@@ -10688,7 +10688,7 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@ 星期";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to transfer your account to a new device. */
-"TRANSFER_ACCOUNT_AUTHENTICATION_REASON" = "Authenticate to transfer your account";
+"TRANSFER_ACCOUNT_AUTHENTICATION_REASON" = "驗證以轉移你的帳戶";
 
 /* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
 "TRANSFER_COMPLETE_SHEET_BUTTON" = "關閉 Signal";
@@ -11018,7 +11018,7 @@
 "VIEW_PHOTO" = "檢視照片";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to view your recovery key. */
-"VIEW_RECOVERY_KEY_AUTHENTICATION_REASON" = "Authenticate to view your recovery key";
+"VIEW_RECOVERY_KEY_AUTHENTICATION_REASON" = "驗證以檢視你的恢復金鑰";
 
 /* View the story of a group or user */
 "VIEW_STORY" = "瀏覽限時動態";
