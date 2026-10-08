@@ -289,7 +289,7 @@ public enum DebugFlags {
     )
 
     public static let voiceMessageSampleRate = TestableFlag<Int>(
-        44100,
+        24000,
         title: LocalizationNotNeeded("Sample Rate"),
         details: LocalizationNotNeeded("The sample rate to use for new voice message recordings."),
     )
