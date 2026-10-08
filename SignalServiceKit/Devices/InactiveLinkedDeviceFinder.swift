@@ -113,7 +113,7 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
         do {
             _ = try await deviceService.refreshDevices()
         } catch {
-            logger.warn("Failed to refresh devices!")
+            logger.warn("Failed to refresh devices! \(error)")
             throw error
         }
     }

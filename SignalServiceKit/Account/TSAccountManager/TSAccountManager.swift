@@ -65,7 +65,14 @@ public protocol TSAccountManager {
     func lastSetIsDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Date
 }
 
-public struct NotRegisteredError: Error {}
+public struct NotRegisteredError: Error, UserErrorDescriptionProvider {
+    public var localizedDescription: String {
+        return OWSLocalizedString(
+            "NOT_REGISTERED_ERROR_LOCALIZED_DESCRIPTION",
+            comment: "Description for an error indicating you are not registered.",
+        )
+    }
+}
 
 /// It's *possible* (but implausible) that the local user's "device ID"
 /// isn't valid. These "device IDs" aren't supported on the server, so these

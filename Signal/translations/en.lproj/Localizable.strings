@@ -6442,6 +6442,9 @@
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. This value is a tappable link embedded in a larger sentence. */
 "NOT_REGISTERED_BOTTOM_REREGISTER" = "Re-register";
 
+/* Description for an error indicating you are not registered. */
+"NOT_REGISTERED_ERROR_LOCALIZED_DESCRIPTION" = "You are not registered.";
+
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Note to Self";
 
