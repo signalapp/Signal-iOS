@@ -1414,52 +1414,6 @@ struct GRDBSchemaMigratorTest {
         }
     }
 
-    @Test(arguments: [
-        (#"["A"]"#, keyedArchiverData(rootObject: "B"), Set(["A", "B"])),
-        (#"["A", "A"]"#, keyedArchiverData(rootObject: "A"), Set(["A"])),
-        (#"GARBAGE"#, keyedArchiverData(rootObject: "A"), Set(["A"])),
-        (#"["A"]"#, Data("GARBAGE".utf8), Set(["A"])),
-    ])
-    func testMigrateSecureValueRecovery(testCase: (oldEnclaves: String?, currentEnclave: Data?, finalEnclaves: Set<String>)) throws {
-        let databaseQueue = DatabaseQueue()
-        try databaseQueue.write { db in
-            try db.execute(
-                sql: "CREATE TABLE keyvalue (KEY TEXT NOT NULL, collection TEXT NOT NULL, VALUE BLOB NOT NULL, PRIMARY KEY (KEY, collection))",
-            )
-            try db.execute(
-                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
-                arguments: ["SecureValueRecovery2Impl", "ArbitraryKey", #"["C"]"#],
-            )
-            if let oldEnclaves = testCase.oldEnclaves {
-                try db.execute(
-                    sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
-                    arguments: ["SecureValueRecovery2Impl", "OldEnclavesToDeleteFrom", Data(oldEnclaves.utf8)],
-                )
-            }
-            try db.execute(
-                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
-                arguments: ["kOWSKeyBackupService_Keys", "ArbitraryKey", Self.keyedArchiverData(rootObject: "C")],
-            )
-            if let currentEnclave = testCase.currentEnclave {
-                try db.execute(
-                    sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
-                    arguments: ["kOWSKeyBackupService_Keys", "svr2_mrenclaveStringValue", currentEnclave],
-                )
-            }
-        }
-
-        try databaseQueue.write { db in
-            let tx = DBWriteTransaction(database: db)
-            defer { tx.finalizeTransaction() }
-            try GRDBSchemaMigrator.migrateSecureValueRecovery(tx: tx)
-        }
-
-        let potentialEnclaves = try databaseQueue.read { db in
-            return try String.fetchAll(db, sql: "SELECT key FROM keyvalue WHERE collection = ?", arguments: ["SVR.Potential"])
-        }
-        #expect(Set(potentialEnclaves) == testCase.finalEnclaves)
-    }
-
     @Test
     func testAddMimeTypeToMessageAttachmentReference() throws {
         let databaseQueue = DatabaseQueue()

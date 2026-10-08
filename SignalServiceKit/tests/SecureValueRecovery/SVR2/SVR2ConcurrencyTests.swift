@@ -17,13 +17,15 @@ struct SVR2ConcurrencyTests {
     private let credentialManager: SVRAuthCredentialManager
     private let mockConnectionFactory: MockSgxWebsocketConnectionFactory
     private let mockConnection: MockSgxWebsocketConnection<SVR2WebsocketConfigurator>
+    private let mockTsConstants = TSConstantsMock()
 
     init() {
         self.db = InMemoryDB()
         self.credentialManager = SVRAuthCredentialManager.mock()
+        self.mockTsConstants.activeSvr2EnclaveCount = 1
 
         mockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
-        mockConnection.mockEnclave = TSConstants.shared.svr2Enclaves.first!
+        mockConnection.mockEnclave = mockTsConstants.svr2Enclaves.first!
         mockConnection.mockAuth = RemoteAttestationAuth(username: "username", password: "password")
         mockConnectionFactory = MockSgxWebsocketConnectionFactory()
 
@@ -41,7 +43,7 @@ struct SVR2ConcurrencyTests {
             remoteAttestationAuthFetcher: RemoteAttestationAuthFetcher(networkManager: MockNetworkManager()),
             storageServiceManager: FakeStorageServiceManager(),
             svrLocalStorage: localStorage,
-            tsConstants: TSConstants.shared,
+            tsConstants: mockTsConstants,
             twoFAManager: SVR2.TestMocks.OWS2FAManager(),
         )
     }
@@ -87,7 +89,7 @@ struct SVR2ConcurrencyTests {
 
         mockConnectionFactory.setOnConnectAndPerformHandshake { (_: SVR2WebsocketConfigurator) in
             let mockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
-            mockConnection.mockEnclave = TSConstants.shared.svr2Enclaves.first!
+            mockConnection.mockEnclave = mockTsConstants.svr2Enclaves.first!
             mockConnection.mockAuth = RemoteAttestationAuth(username: "username", password: "password")
             mockConnection.onSendRequestAndReadResponse = onSendRequestAndReadResponse
             return mockConnection
@@ -121,11 +123,11 @@ struct SVR2ConcurrencyTests {
     func testWebsocketConnectionFailure() async throws {
 
         let firstMockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
-        firstMockConnection.mockEnclave = TSConstants.shared.svr2Enclaves.first!
+        firstMockConnection.mockEnclave = mockTsConstants.svr2Enclaves.first!
         firstMockConnection.mockAuth = RemoteAttestationAuth(username: "username", password: "password")
 
         let secondMockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
-        secondMockConnection.mockEnclave = TSConstants.shared.svr2Enclaves.first!
+        secondMockConnection.mockEnclave = mockTsConstants.svr2Enclaves.first!
         secondMockConnection.mockAuth = RemoteAttestationAuth(username: "username2", password: "password2")
 
         var numOpenedConnections = 0
