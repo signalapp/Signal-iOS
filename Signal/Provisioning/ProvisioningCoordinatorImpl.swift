@@ -479,19 +479,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         authedAccount: AuthedAccount.Explicit,
         didLinkNSync: Bool,
     ) async throws(CompleteProvisioningError) {
-        // Linked devices don't have SVR backups.
-        let capabilities = AccountAttributes.Capabilities(hasSVRBackups: false)
-        do {
-            try await Service.makeUpdateSecondaryDeviceCapabilitiesRequest(
-                capabilities: capabilities,
-                auth: authedAccount.chatServiceAuth,
-                networkManager: self.networkManager,
-                tsAccountManager: self.tsAccountManager,
-            )
-        } catch {
-            throw .genericError(error)
-        }
-
         await self.db.awaitableWrite { tx in
             self.preKeyManager.resetOneTimePreKeyCheckTimestamp()
             self.registrationStateChangeManager.didRegisterOrProvision(account: authedAccount, tx: tx)

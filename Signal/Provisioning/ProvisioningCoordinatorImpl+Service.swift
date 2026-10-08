@@ -88,22 +88,5 @@ extension ProvisioningCoordinatorImpl {
                 return .genericError(OWSAssertionError("Unknown status code"))
             }
         }
-
-        static func makeUpdateSecondaryDeviceCapabilitiesRequest(
-            capabilities: AccountAttributes.Capabilities,
-            auth: ChatServiceAuth,
-            networkManager: any NetworkManagerProtocol,
-            tsAccountManager: TSAccountManager,
-        ) async throws {
-            let request = AccountAttributesRequestFactory(
-                tsAccountManager: tsAccountManager,
-            ).updateLinkedDeviceCapabilitiesRequest(
-                capabilities,
-                auth: auth,
-            )
-
-            // Don't care what the response is.
-            _ = try await networkManager.asyncRequest(request)
-        }
     }
 }
