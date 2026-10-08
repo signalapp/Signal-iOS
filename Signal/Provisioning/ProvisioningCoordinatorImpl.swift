@@ -29,7 +29,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private let syncManager: SyncManagerProtocol
     private let threadStore: ThreadStore
     private let tsAccountManager: TSAccountManager
-    private let udManager: OWSUDManager
 
     init(
         chatConnectionManager: ChatConnectionManager,
@@ -52,7 +51,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         syncManager: SyncManagerProtocol,
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager,
-        udManager: OWSUDManager,
     ) {
         self.chatConnectionManager = chatConnectionManager
         self.db = db
@@ -74,7 +72,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         self.syncManager = syncManager
         self.threadStore = threadStore
         self.tsAccountManager = tsAccountManager
-        self.udManager = udManager
     }
 
     func completeProvisioning(
@@ -592,16 +589,12 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     ) async throws(CompleteProvisioningError) -> AuthedAccount.Explicit {
         let serverAuthToken = generateServerAuthToken()
 
-        let accountAttributes = self.db.read { tx in
-            return self.makeAccountAttributes(
-                encryptedDeviceName: encryptedDeviceName,
-                isManualMessageFetchEnabled: apnRegistrationId == nil,
-                profileKey: provisionMessage.profileKey,
-                aciRegistrationId: aciRegistrationId,
-                pniRegistrationId: pniRegistrationId,
-                tx: tx,
-            )
-        }
+        let deviceAttributes = self.makeDeviceAttributes(
+            encryptedDeviceName: encryptedDeviceName,
+            isManualMessageFetchEnabled: apnRegistrationId == nil,
+            aciRegistrationId: aciRegistrationId,
+            pniRegistrationId: pniRegistrationId,
+        )
 
         let rawVerifyDeviceResponse = await Self.Service.makeVerifySecondaryDeviceRequest(
             verificationCode: provisionMessage.provisioningCode,
@@ -609,7 +602,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             aciPreKeyBundle: aciPreKeyBundle,
             pniPreKeyBundle: pniPreKeyBundle,
             authPassword: serverAuthToken,
-            accountAttributes: accountAttributes,
+            deviceAttributes: deviceAttributes,
             apnRegistrationId: apnRegistrationId,
             signalService: self.signalService,
         )
@@ -690,43 +683,19 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
 
     private typealias VerifySecondaryDeviceResponse = Service.VerifySecondaryDeviceResponse
 
-    private func makeAccountAttributes(
-        encryptedDeviceName encryptedDeviceNameRaw: Data,
+    private func makeDeviceAttributes(
+        encryptedDeviceName: Data,
         isManualMessageFetchEnabled: Bool,
-        profileKey: Aes256Key,
         aciRegistrationId: UInt32,
         pniRegistrationId: UInt32?,
-        tx: DBReadTransaction,
-    ) -> AccountAttributes {
-        let udAccessKey = SMKUDAccessKey(profileKey: profileKey).keyData.base64EncodedString()
-        let allowUnrestrictedUD = udManager.shouldAllowUnrestrictedAccessLocal(transaction: tx)
-
-        // Linked-device provisioning uses the same AccountAttributes object as
-        // primary-device registration; however, the reglock token is ignored by
-        // the server.
-        let reglockToken: String? = nil
-
-        let aep = accountKeyStore.getAccountEntropyPool(tx: tx)
-
-        let registrationRecoveryPassword = aep?.getMasterKey().deriveRegistrationRecoveryPassword()
-
-        let encryptedDeviceName = encryptedDeviceNameRaw.base64EncodedString()
-
-        let phoneNumberDiscoverability = tsAccountManager.phoneNumberDiscoverability(tx: tx)
-
+    ) -> DeviceAttributes {
         // Linked devices don't have SVR backups.
         let capabilities = AccountAttributes.Capabilities(hasSVRBackups: false)
-
-        return AccountAttributes(
-            isManualMessageFetchEnabled: isManualMessageFetchEnabled,
+        return DeviceAttributes(
+            fetchesMessages: isManualMessageFetchEnabled,
             registrationId: aciRegistrationId,
             pniRegistrationId: pniRegistrationId,
-            unidentifiedAccessKey: udAccessKey,
-            unrestrictedUnidentifiedAccess: allowUnrestrictedUD,
-            reglockToken: reglockToken,
-            registrationRecoveryPassword: registrationRecoveryPassword?.canonicalStringRepresentation,
-            encryptedDeviceName: encryptedDeviceName,
-            discoverableByPhoneNumber: phoneNumberDiscoverability,
+            name: encryptedDeviceName,
             capabilities: capabilities,
         )
     }

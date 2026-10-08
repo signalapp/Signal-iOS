@@ -827,6 +827,8 @@
 		507C6AF52ED10BD900A7C74C /* RegisteredState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507C6AF42ED10BD900A7C74C /* RegisteredState.swift */; };
 		507CD5E529660D5100E47DAC /* ServiceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507CD5E429660D5100E47DAC /* ServiceId.swift */; };
 		507F4F0E2F2A86F8000E6D7D /* StickerPackRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507F4F0D2F2A86F8000E6D7D /* StickerPackRecord.swift */; };
+		5083C9CC307856070031B25C /* DeviceAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5083C9CA307854130031B25C /* DeviceAttributes.swift */; };
+		5083C9CD307856C50031B25C /* ProvisioningRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CDB7622AFC5E24009A36EC /* ProvisioningRequestFactory.swift */; };
 		508622AD2D026F5200931BF9 /* CanonicalPhoneNumberTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508622AC2D026F5200931BF9 /* CanonicalPhoneNumberTest.swift */; };
 		5088330A2FE0AD4B00CE51AC /* AutoDownloadPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508833092FE0AD4B00CE51AC /* AutoDownloadPolicy.swift */; };
 		5088330C2FE0B1E500CE51AC /* AutoDownloadPolicyTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5088330B2FE0B1E500CE51AC /* AutoDownloadPolicyTest.swift */; };
@@ -1347,7 +1349,6 @@
 		66CDB7592AFC4232009A36EC /* ProvisioningCoordinator+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CDB7582AFC4232009A36EC /* ProvisioningCoordinator+Shims.swift */; };
 		66CDB75D2AFC42FC009A36EC /* ProvisioningCoordinatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CDB75B2AFC42C5009A36EC /* ProvisioningCoordinatorTest.swift */; };
 		66CDB7602AFC45CF009A36EC /* ProvisioningCoordinator+Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CDB75E2AFC45BF009A36EC /* ProvisioningCoordinator+Mocks.swift */; };
-		66CDB7632AFC5E24009A36EC /* ProvisioningRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CDB7622AFC5E24009A36EC /* ProvisioningRequestFactory.swift */; };
 		66CDB7652AFC5E74009A36EC /* ProvisioningServiceResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CDB7642AFC5E74009A36EC /* ProvisioningServiceResponses.swift */; };
 		66CDB7672AFC5FCD009A36EC /* ProvisioningCoordinatorImpl+Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CDB7662AFC5FCD009A36EC /* ProvisioningCoordinatorImpl+Service.swift */; };
 		66CDE5C42A58928000B7C607 /* SpoilerableTextViewAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CDE5C32A58928000B7C607 /* SpoilerableTextViewAnimator.swift */; };
@@ -5236,6 +5237,7 @@
 		507D614D2BE433EE00DA7BA3 /* be */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = be; path = translations/be.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		507F4F0D2F2A86F8000E6D7D /* StickerPackRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPackRecord.swift; sourceTree = "<group>"; };
 		508347052AABBF9900DD2EC0 /* ProfileManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManagerTest.swift; sourceTree = "<group>"; };
+		5083C9CA307854130031B25C /* DeviceAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAttributes.swift; sourceTree = "<group>"; };
 		508622AC2D026F5200931BF9 /* CanonicalPhoneNumberTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanonicalPhoneNumberTest.swift; sourceTree = "<group>"; };
 		508833092FE0AD4B00CE51AC /* AutoDownloadPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoDownloadPolicy.swift; sourceTree = "<group>"; };
 		5088330B2FE0B1E500CE51AC /* AutoDownloadPolicyTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoDownloadPolicyTest.swift; sourceTree = "<group>"; };
@@ -11184,6 +11186,7 @@
 			isa = PBXGroup;
 			children = (
 				50E7E1CD2BACBE7D00A94861 /* UserInterface */,
+				5083C9CA307854130031B25C /* DeviceAttributes.swift */,
 				5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */,
 				66CDB7582AFC4232009A36EC /* ProvisioningCoordinator+Shims.swift */,
 				66CDB7542AFC3F1F009A36EC /* ProvisioningCoordinator.swift */,
@@ -11191,6 +11194,7 @@
 				66CDB7562AFC40BE009A36EC /* ProvisioningCoordinatorImpl.swift */,
 				C17B31582D710DD80060664D /* ProvisioningManager+Shims.swift */,
 				C17B31542D710DBD0060664D /* ProvisioningManager.swift */,
+				66CDB7622AFC5E24009A36EC /* ProvisioningRequestFactory.swift */,
 				C18087892D76023400B16D1E /* ProvisioningSocketManager.swift */,
 			);
 			path = Provisioning;
@@ -11210,7 +11214,6 @@
 		66CDB7612AFC5E15009A36EC /* Provisioning */ = {
 			isa = PBXGroup;
 			children = (
-				66CDB7622AFC5E24009A36EC /* ProvisioningRequestFactory.swift */,
 				66CDB7642AFC5E74009A36EC /* ProvisioningServiceResponses.swift */,
 			);
 			path = Provisioning;
@@ -18942,6 +18945,7 @@
 				76E7A2112A01B6A500A8F538 /* DebugUITableViewController.swift in Sources */,
 				88DBDFB9263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift in Sources */,
 				887B6DC925F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift in Sources */,
+				5083C9CC307856070031B25C /* DeviceAttributes.swift in Sources */,
 				66F98DE22DB71220009F1A86 /* DeviceBatteryLevelManagerImpl.swift in Sources */,
 				C17A54982D7B3DCD00E1D267 /* DeviceProvisioningURL.swift in Sources */,
 				505347F92DA08548004AF0B5 /* DeviceSleepManagerImpl.swift in Sources */,
@@ -19239,6 +19243,7 @@
 				6659A0392A81933B00066AB7 /* ProvisioningPermissionsViewController.swift in Sources */,
 				4C30E224234F9F34009558B7 /* ProvisioningPrepViewController.swift in Sources */,
 				4C30E226234FB033009558B7 /* ProvisioningQRCodeViewController.swift in Sources */,
+				5083C9CD307856C50031B25C /* ProvisioningRequestFactory.swift in Sources */,
 				C1AE7C5D2D7B4538007A618D /* ProvisioningSocketManager.swift in Sources */,
 				34ACA7DB2733159600E47AD4 /* ProvisioningSplashViewController.swift in Sources */,
 				34ACA7D52733159600E47AD4 /* ProvisioningTransferChoiceViewController.swift in Sources */,
@@ -20383,7 +20388,6 @@
 				72901D2F2C9B1918000406DC /* ProtoUtils.swift in Sources */,
 				F9C5CC9D289453B300548EEE /* Provisioning.pb.swift in Sources */,
 				F9C5CD08289453B300548EEE /* ProvisioningCipher.swift in Sources */,
-				66CDB7632AFC5E24009A36EC /* ProvisioningRequestFactory.swift in Sources */,
 				66CDB7652AFC5E74009A36EC /* ProvisioningServiceResponses.swift in Sources */,
 				F9C5CD97289453B300548EEE /* ProxiedContentDownloader.swift in Sources */,
 				720547F72B9C98C600E2CF2F /* ProximityMonitoringManager.swift in Sources */,

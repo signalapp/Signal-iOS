@@ -24,7 +24,7 @@ extension ProvisioningCoordinatorImpl {
             aciPreKeyBundle: RegistrationPreKeyUploadBundle,
             pniPreKeyBundle: RegistrationPreKeyUploadBundle?,
             authPassword: String,
-            accountAttributes: AccountAttributes,
+            deviceAttributes: DeviceAttributes,
             apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
             signalService: OWSSignalServiceProtocol,
         ) async -> VerifySecondaryDeviceResponse {
@@ -34,7 +34,7 @@ extension ProvisioningCoordinatorImpl {
                 aciPreKeyBundle: aciPreKeyBundle,
                 pniPreKeyBundle: pniPreKeyBundle,
                 authPassword: authPassword,
-                attributes: accountAttributes,
+                attributes: deviceAttributes,
                 apnRegistrationId: apnRegistrationId,
             )
 

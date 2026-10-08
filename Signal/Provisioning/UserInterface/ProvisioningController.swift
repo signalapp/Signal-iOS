@@ -53,7 +53,6 @@ class ProvisioningController: NSObject {
             syncManager: SSKEnvironment.shared.syncManagerRef,
             threadStore: ThreadStoreImpl(),
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-            udManager: SSKEnvironment.shared.udManagerRef,
         )
     }()
 

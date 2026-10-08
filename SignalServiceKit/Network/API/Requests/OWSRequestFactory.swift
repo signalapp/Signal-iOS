@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public enum OWSRequestFactory {
 
@@ -376,10 +376,10 @@ public enum OWSRequestFactory {
         }
     }
 
-    struct SignedPreKey: Encodable {
+    public struct SignedPreKey: Encodable {
         let wrappedValue: LibSignalClient.SignedPreKeyRecord
 
-        init(_ wrappedValue: LibSignalClient.SignedPreKeyRecord) {
+        public init(_ wrappedValue: LibSignalClient.SignedPreKeyRecord) {
             self.wrappedValue = wrappedValue
         }
 
@@ -389,7 +389,7 @@ public enum OWSRequestFactory {
             case signature
         }
 
-        func encode(to encoder: any Encoder) throws {
+        public func encode(to encoder: any Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(self.wrappedValue.id, forKey: .keyId)
             try container.encode(self.wrappedValue.publicKey().serialize().base64EncodedStringWithoutPadding(), forKey: .publicKey)
@@ -397,10 +397,10 @@ public enum OWSRequestFactory {
         }
     }
 
-    struct KyberPreKey: Encodable {
+    public struct KyberPreKey: Encodable {
         let wrappedValue: LibSignalClient.KyberPreKeyRecord
 
-        init(_ wrappedValue: LibSignalClient.KyberPreKeyRecord) {
+        public init(_ wrappedValue: LibSignalClient.KyberPreKeyRecord) {
             self.wrappedValue = wrappedValue
         }
 
@@ -410,7 +410,7 @@ public enum OWSRequestFactory {
             case signature
         }
 
-        func encode(to encoder: any Encoder) throws {
+        public func encode(to encoder: any Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(self.wrappedValue.id, forKey: .keyId)
             try container.encode(self.wrappedValue.publicKey().serialize().base64EncodedStringWithoutPadding(), forKey: .publicKey)

@@ -31,7 +31,6 @@ public class ProvisioningCoordinatorTest: XCTestCase {
     private var syncManagerMock: OWSMockSyncManager!
     private var threadStoreMock: MockThreadStore!
     private var tsAccountManagerMock: MockTSAccountManager!
-    private var udManagerMock: OWSMockUDManager!
 
     override public func setUp() async throws {
 
@@ -64,7 +63,6 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         self.syncManagerMock = .init()
         self.threadStoreMock = .init()
         self.tsAccountManagerMock = .init()
-        self.udManagerMock = .init()
         let preKeyStore = PreKeyStore()
         let sessionStore = SignalServiceKit.SessionStore()
 
@@ -94,7 +92,6 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             syncManager: syncManagerMock,
             threadStore: threadStoreMock,
             tsAccountManager: tsAccountManagerMock,
-            udManager: udManagerMock,
         )
 
         tsAccountManagerMock.registrationStateMock = { .unregistered }

@@ -4,21 +4,22 @@
 //
 
 import Foundation
-public import LibSignalClient
+import LibSignalClient
+import SignalServiceKit
 
-public enum ProvisioningRequestFactory {
+enum ProvisioningRequestFactory {
 
-    public static func verifySecondaryDeviceRequest(
+    static func verifySecondaryDeviceRequest(
         verificationCode: String,
         aci: Aci,
         aciPreKeyBundle: RegistrationPreKeyUploadBundle,
         pniPreKeyBundle: RegistrationPreKeyUploadBundle?,
         authPassword: String,
-        attributes: AccountAttributes,
+        attributes: DeviceAttributes,
         apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
     ) -> TSRequest {
         owsAssertDebug(!verificationCode.isEmpty)
-        owsAssertDebug((apnRegistrationId != nil) != attributes.isManualMessageFetchEnabled)
+        owsAssertDebug((apnRegistrationId != nil) != attributes.fetchesMessages)
 
         let urlPathComponents = URLPathComponents(
             ["v1", "devices", "link"],
@@ -46,7 +47,7 @@ public enum ProvisioningRequestFactory {
 
     private struct LinkDeviceRequest: Encodable {
         var verificationCode: String
-        var accountAttributes: AccountAttributes
+        var accountAttributes: DeviceAttributes
         var aciSignedPreKey: OWSRequestFactory.SignedPreKey
         var aciPqLastResortPreKey: OWSRequestFactory.KyberPreKey
         var pniSignedPreKey: OWSRequestFactory.SignedPreKey?
