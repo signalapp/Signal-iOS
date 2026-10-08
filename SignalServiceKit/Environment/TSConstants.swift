@@ -211,11 +211,11 @@ public class TSConstantsProduction: TSConstantsProtocol {
     // `activeSvr2EnclaveCount` elements of this array. We typically set it to
     // two for a brief time after adding a new enclave.
     public let svr2Enclaves = [
+        MrEnclave("fdbbacdc0c043d0d53fe1440f62728de0386f45ab0a275bd8f99e03a02af355e"),
         MrEnclave("ced8217b26228e4b210c985786999d095c4958a94faf37b14acaf25c4cbb02a4"),
-        MrEnclave("1240acbd4aa26974184844c8a46b1022d3957ac8a76c1fd8f5b1a15141ee0708"),
     ]
 
-    public let activeSvr2EnclaveCount: Int = 1
+    public let activeSvr2EnclaveCount: Int = 2
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group"
 
@@ -262,12 +262,11 @@ public class TSConstantsStaging: TSConstantsProtocol {
     public let svr2CensorshipPrefix = "svr2-staging"
 
     public let svr2Enclaves = [
+        MrEnclave("0ff2d7d4efbe7cfc24ac069a16fba898928dbe6c40d500c8b6da55733c727d6e"),
         MrEnclave("3c699f4975aaa3d172c0aad042f94f031b2b03e10b9c19a45116a01693d83302"),
-        MrEnclave("97f151f6ed078edbbfd72fa9cae694dcc08353f1f5e8d9ccd79a971b10ffc535"),
-        MrEnclave("a75542d82da9f6914a1e31f8a7407053b99cc99a0e7291d8fbd394253e19b036"),
     ]
 
-    public let activeSvr2EnclaveCount: Int = 1
+    public let activeSvr2EnclaveCount: Int = 2
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group.staging"
 
