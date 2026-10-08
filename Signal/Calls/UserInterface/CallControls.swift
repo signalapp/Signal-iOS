@@ -159,6 +159,14 @@ class CallControls: UIView {
         updateControls()
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if traitCollection.horizontalSizeClass != previousTraitCollection?.horizontalSizeClass {
+            updateControls()
+        }
+    }
+
     func createTopStackView() -> UIStackView {
         let stackView = UIStackView()
         stackView.axis = .horizontal
@@ -193,8 +201,17 @@ class CallControls: UIView {
 
         // Sizing and spacing
         let controlCount = topStackView.arrangedSubviews.filter({ !$0.isHidden }).count
-        topStackView.spacing = viewModel.controlSpacing(controlCount: controlCount)
-        let shouldControlButtonsBeSmall = viewModel.shouldControlButtonsBeSmall(controlCount: controlCount)
+        var controlSpacing: CGFloat = 16
+        var shouldControlButtonsBeSmall = false
+        if traitCollection.horizontalSizeClass == .compact, controlCount > 4 {
+            // Tighter spacing on old devices narrower than iPhone 6.
+            if let windowWidth = window?.width, windowWidth < 375 {
+                controlSpacing = 12
+            }
+            // TODO: adjustable threshold number of controls depending on screen size.
+            shouldControlButtonsBeSmall = true
+        }
+        topStackView.spacing = controlSpacing
         for view in topStackView.arrangedSubviews {
             if let button = view as? CallButton {
                 button.isSmall = shouldControlButtonsBeSmall
@@ -601,14 +618,6 @@ private class CallControlsViewModel {
 
     var moreButtonIsSelected: Bool {
         return false
-    }
-
-    func controlSpacing(controlCount: Int) -> CGFloat {
-        return (UIDevice.current.isNarrowerThanIPhone6 && controlCount > 4) ? 12 : 16
-    }
-
-    func shouldControlButtonsBeSmall(controlCount: Int) -> Bool {
-        return UIDevice.current.isIPad ? false : controlCount > 4
     }
 }
 
