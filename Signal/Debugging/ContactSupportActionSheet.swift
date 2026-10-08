@@ -11,6 +11,7 @@ enum ContactSupportActionSheet {
         enum RegistrationPINMode: String {
             case v2NoReglock
             case v2WithReglock
+            case v2WithReglockRegRecovery
             case v2WithUnknownReglockState
         }
 
@@ -25,6 +26,7 @@ enum ContactSupportActionSheet {
             return switch self {
             case .registrationPINMode(.v2NoReglock): "Signal PIN - iOS (V2 PIN without RegLock)"
             case .registrationPINMode(.v2WithReglock): "Signal PIN - iOS (V2 PIN)"
+            case .registrationPINMode(.v2WithReglockRegRecovery): "Signal PIN - iOS (V2 PIN reg recovery)"
             case .registrationPINMode(.v2WithUnknownReglockState): "Signal PIN - iOS (V2 PIN with unknown reglock)"
             case .deviceTransfer: "Signal iOS Transfer"
             case .backupExportFailed: "iOS Backup Export Failed"

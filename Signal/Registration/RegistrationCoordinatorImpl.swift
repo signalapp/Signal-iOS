@@ -5210,7 +5210,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 let e164 = persistedState.e164,
                 e164 == persistedState.e164WithKnownReglockEnabled
             {
-                return .v2WithReglock
+                return .v2WithReglockRegRecovery
             }
             return .v2WithUnknownReglockState
         case .session:
