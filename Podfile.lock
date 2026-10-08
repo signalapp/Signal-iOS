@@ -1,5 +1,4 @@
 PODS:
-  - blurhash (0.0.1)
   - BonMot (6.0.0)
   - CocoaLumberjack (3.7.4):
     - CocoaLumberjack/Core (= 3.7.4)
@@ -46,7 +45,6 @@ PODS:
   - SwiftProtobuf (1.38.1)
 
 DEPENDENCIES:
-  - blurhash (from `./ThirdParty/blurhash.podspec`)
   - BonMot
   - CocoaLumberjack
   - GRDB.swift/SQLCipher
@@ -78,8 +76,6 @@ SPEC REPOS:
     - SwiftProtobuf
 
 EXTERNAL SOURCES:
-  blurhash:
-    :podspec: "./ThirdParty/blurhash.podspec"
   LibMobileCoin:
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts
     :submodules: true
@@ -101,9 +97,6 @@ EXTERNAL SOURCES:
     :tag: v4.6.1-f_barrierfsync
 
 CHECKOUT OPTIONS:
-  blurhash:
-    :commit: 890ffdab14207154819415da7e6c969e9dfff0e9
-    :git: https://github.com/signalapp/blurhash
   LibMobileCoin:
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts
     :submodules: true
@@ -125,7 +118,6 @@ CHECKOUT OPTIONS:
     :tag: v4.6.1-f_barrierfsync
 
 SPEC CHECKSUMS:
-  blurhash: f588a9d659f4c742a325bbbbd438d1ef3c34af19
   BonMot: fb2b6a2209cb3149aca37b7131d49c051c04ae86
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   GRDB.swift: 1395cb3556df6b16ed69dfc74c3886abc75d2825
@@ -143,6 +135,6 @@ SPEC CHECKSUMS:
   SQLCipher: ff2f045b20d675a73a70f7329395ddd4a2580063
   SwiftProtobuf: 409d3aaec90e51b1705b1dd8065b56893450e77c
 
-PODFILE CHECKSUM: 82986f86fbbb3963036c72169e896e6fa6252c9b
+PODFILE CHECKSUM: 9966f321020cdd29f10d0041515647ec8fe36daf
 
 COCOAPODS: 1.15.2
