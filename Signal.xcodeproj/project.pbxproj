@@ -975,6 +975,8 @@
 		63C24D4D306AF7A100D4C167 /* ContactSharingPermissionPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C24D4C306AF7A100D4C167 /* ContactSharingPermissionPromptView.swift */; };
 		63C24D53306C50FD00D4C167 /* ContactShareAvatarFieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C24D52306C50FD00D4C167 /* ContactShareAvatarFieldTests.swift */; };
 		63C24D55306C510200D4C167 /* ContactShareAvatarPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C24D54306C510200D4C167 /* ContactShareAvatarPickerSheet.swift */; };
+		63DC45303079AF9100119464 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC452F3079AF9100119464 /* Lottie */; };
+		63DC45323079AF9C00119464 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC45313079AF9C00119464 /* Lottie */; };
 		65D2854846F2127979853B12 /* ContactSharingPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE5380475512D4C3083EDC /* ContactSharingPickerViewController.swift */; };
 		6600BB1A2BA3A0930005A035 /* LinkPreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB192BA3A0930005A035 /* LinkPreviewManager.swift */; };
 		6600BB212BA3BC540005A035 /* LinkPreviewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB202BA3BC540005A035 /* LinkPreviewHelper.swift */; };
@@ -8722,6 +8724,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				632BFEC830785960005399C0 /* BonMot in Frameworks */,
+				63DC45303079AF9100119464 /* Lottie in Frameworks */,
 				616577F953D77424E32C7438 /* Pods_SignalUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -8760,6 +8763,7 @@
 				C109A87C2FDC906F0065225E /* DeviceDiscoveryUI.framework in Frameworks */,
 				D221A090169C9E5E00537ABF /* Foundation.framework in Frameworks */,
 				45847E871E4283C30080EAB3 /* Intents.framework in Frameworks */,
+				63DC45323079AF9C00119464 /* Lottie in Frameworks */,
 				76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */,
 				B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */,
 				455A16DD1F1FEA0000F86704 /* Metal.framework in Frameworks */,
@@ -16682,6 +16686,7 @@
 			packageReferences = (
 				632BFEC13077ED5F005399C0 /* XCLocalSwiftPackageReference "ThirdParty/blurhash" */,
 				632BFEC430785953005399C0 /* XCRemoteSwiftPackageReference "BonMot" */,
+				63DC452E3079AF9100119464 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
 			projectDirPath = "";
@@ -18232,7 +18237,6 @@
 				"${BUILT_PRODUCTS_DIR}/Logging/Logging.framework",
 				"${BUILT_PRODUCTS_DIR}/MobileCoin/MobileCoin.framework",
 				"${BUILT_PRODUCTS_DIR}/PureLayout/PureLayout.framework",
-				"${BUILT_PRODUCTS_DIR}/lottie-ios/Lottie.framework",
 				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/SignalRingRTC/WebRTC/WebRTC.framework/WebRTC",
 			);
@@ -18251,7 +18255,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Logging.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MobileCoin.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PureLayout.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Lottie.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
 			);
@@ -23615,6 +23618,14 @@
 				version = 6.0.0;
 			};
 		};
+		63DC452E3079AF9100119464 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			requirement = {
+				kind = exactVersion;
+				version = 4.4.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -23636,6 +23647,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 632BFEC430785953005399C0 /* XCRemoteSwiftPackageReference "BonMot" */;
 			productName = BonMot;
+		};
+		63DC452F3079AF9100119464 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC452E3079AF9100119464 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
+		};
+		63DC45313079AF9C00119464 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC452E3079AF9100119464 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

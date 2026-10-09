@@ -22,7 +22,6 @@ PODS:
   - libwebp/webp (1.5.0):
     - libwebp/sharpyuv
   - Logging (1.4.0)
-  - lottie-ios (4.4.3)
   - MobileCoin/CoreHTTP (6.0.3):
     - LibMobileCoin/CoreHTTP (~> 6.0.0-pre1)
     - Logging (~> 1.4)
@@ -51,7 +50,6 @@ DEPENDENCIES:
   - LibSignalClient (from `https://github.com/signalapp/libsignal.git`, tag `v0.105.0`)
   - LibSignalClient/Tests (from `https://github.com/signalapp/libsignal.git`, tag `v0.105.0`)
   - libwebp
-  - lottie-ios
   - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift`, tag `v6.0.3`)
   - PureLayout
   - SDWebImage
@@ -66,7 +64,6 @@ SPEC REPOS:
     - GRDB.swift
     - libwebp
     - Logging
-    - lottie-ios
     - PureLayout
     - SDWebImage
     - SDWebImageWebPCoder
@@ -122,7 +119,6 @@ SPEC CHECKSUMS:
   LibSignalClient: 2b65bad98bf695e2036871b7160598595a60ed45
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
-  lottie-ios: fcb5e73e17ba4c983140b7d21095c834b3087418
   MobileCoin: cd7f49d6eaa2d362e4c9f8324cae0cc3bc3c53b5
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   SDWebImage: 9f177d83116802728e122410fb25ad88f5c7608a
@@ -131,6 +127,6 @@ SPEC CHECKSUMS:
   SQLCipher: ff2f045b20d675a73a70f7329395ddd4a2580063
   SwiftProtobuf: 409d3aaec90e51b1705b1dd8065b56893450e77c
 
-PODFILE CHECKSUM: 841a6b2cbbeb504833df19072d628a50485dd3f1
+PODFILE CHECKSUM: 06be10a511e515455613d773f064267f616357c6
 
 COCOAPODS: 1.15.2

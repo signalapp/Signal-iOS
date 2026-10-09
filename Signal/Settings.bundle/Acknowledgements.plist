@@ -8610,10 +8610,8 @@ SOFTWARE.
    See the License for the specific language governing permissions and
    limitations under the License.
 </string>
-			<key>License</key>
-			<string>Apache</string>
 			<key>Title</key>
-			<string>lottie-ios</string>
+			<string>Lottie</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
