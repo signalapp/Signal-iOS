@@ -335,6 +335,8 @@ extension MockConversationView: CVComponentDelegate {
 
     func didDoubleTapTextViewItem(_ itemViewModel: CVItemViewModelImpl) {}
 
+    func didDoubleTapToReact(_ itemViewModel: CVItemViewModelImpl) {}
+
     func didLongPressTextViewItem(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,

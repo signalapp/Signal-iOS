@@ -42,6 +42,8 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate, CVPoll
 
     func didDoubleTapTextViewItem(_ itemViewModel: CVItemViewModelImpl)
 
+    func didDoubleTapToReact(_ itemViewModel: CVItemViewModelImpl)
+
     // MARK: - Long Press
 
     func didLongPressTextViewItem(

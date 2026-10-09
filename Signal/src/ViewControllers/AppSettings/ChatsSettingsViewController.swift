@@ -24,6 +24,11 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         )
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateTableContents()
+    }
+
     @objc
     private func updateTableContents() {
         let contents = OWSTableContents()
@@ -101,6 +106,102 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             comment: "When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings.",
         )
         contents.add(keepMutedChatsArchived)
+
+        let (othersAction, ownAction) = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            (
+                SSKPreferences.doubleTapOthersMessagesAction(transaction: tx),
+                SSKPreferences.doubleTapOwnMessagesAction(transaction: tx),
+            )
+        }
+
+        let doubleTapSection = OWSTableSection()
+        doubleTapSection.headerTitle = OWSLocalizedString(
+            "SETTINGS_DOUBLE_TAP_SECTION_TITLE",
+            comment: "Section title for double-tap message action settings.",
+        )
+        doubleTapSection.footerTitle = OWSLocalizedString(
+            "SETTINGS_DOUBLE_TAP_SECTION_FOOTER",
+            comment: "Footer explaining configurable double-tap actions on messages.",
+        )
+        doubleTapSection.add(.disclosureItem(
+            withText: OWSLocalizedString(
+                "SETTINGS_DOUBLE_TAP_OTHERS_MESSAGES",
+                comment: "Setting for double-tap action on messages from other people.",
+            ),
+            accessoryText: othersAction.displayName,
+            actionBlock: { [weak self] in
+                guard let self else { return }
+                let vc = DoubleTapActionSettingsViewController(
+                    title: OWSLocalizedString(
+                        "SETTINGS_DOUBLE_TAP_OTHERS_MESSAGES",
+                        comment: "Setting for double-tap action on messages from other people.",
+                    ),
+                    options: SSKPreferences.DoubleTapOthersMessagesAction.allCases.map { ($0.displayName, $0 == othersAction) },
+                ) { index in
+                    let action = SSKPreferences.DoubleTapOthersMessagesAction.allCases[index]
+                    SSKEnvironment.shared.databaseStorageRef.write {
+                        SSKPreferences.setDoubleTapOthersMessagesAction(action, transaction: $0)
+                    }
+                }
+                self.navigationController?.pushViewController(vc, animated: true)
+            },
+        ))
+        doubleTapSection.add(.disclosureItem(
+            withText: OWSLocalizedString(
+                "SETTINGS_DOUBLE_TAP_OWN_MESSAGES",
+                comment: "Setting for double-tap action on your own messages.",
+            ),
+            accessoryText: ownAction.displayName,
+            actionBlock: { [weak self] in
+                guard let self else { return }
+                let vc = DoubleTapActionSettingsViewController(
+                    title: OWSLocalizedString(
+                        "SETTINGS_DOUBLE_TAP_OWN_MESSAGES",
+                        comment: "Setting for double-tap action on your own messages.",
+                    ),
+                    options: SSKPreferences.DoubleTapOwnMessagesAction.allCases.map { ($0.displayName, $0 == ownAction) },
+                ) { index in
+                    let action = SSKPreferences.DoubleTapOwnMessagesAction.allCases[index]
+                    SSKEnvironment.shared.databaseStorageRef.write {
+                        SSKPreferences.setDoubleTapOwnMessagesAction(action, transaction: $0)
+                    }
+                }
+                self.navigationController?.pushViewController(vc, animated: true)
+            },
+        ))
+        doubleTapSection.add(.switch(
+            withText: OWSLocalizedString(
+                "SETTINGS_DOUBLE_TAP_REACT_STICKERS",
+                comment: "Toggle for allowing double-tap quick react on sticker messages.",
+            ),
+            isOn: {
+                SSKEnvironment.shared.databaseStorageRef.read {
+                    SSKPreferences.isDoubleTapReactEnabledForStickers(transaction: $0)
+                }
+            },
+            actionBlock: { sender in
+                SSKEnvironment.shared.databaseStorageRef.write {
+                    SSKPreferences.setDoubleTapReactEnabledForStickers(sender.isOn, transaction: $0)
+                }
+            },
+        ))
+        doubleTapSection.add(.switch(
+            withText: OWSLocalizedString(
+                "SETTINGS_DOUBLE_TAP_REACT_PHOTOS",
+                comment: "Toggle for allowing double-tap quick react on photo and video messages.",
+            ),
+            isOn: {
+                SSKEnvironment.shared.databaseStorageRef.read {
+                    SSKPreferences.isDoubleTapReactEnabledForPhotos(transaction: $0)
+                }
+            },
+            actionBlock: { sender in
+                SSKEnvironment.shared.databaseStorageRef.write {
+                    SSKPreferences.setDoubleTapReactEnabledForPhotos(sender.isOn, transaction: $0)
+                }
+            },
+        ))
+        contents.add(doubleTapSection)
 
         let clearHistorySection = OWSTableSection()
         clearHistorySection.add(.item(
@@ -253,5 +354,66 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         }
 
         AttachmentStream.deleteAllAttachmentFiles()
+    }
+}
+
+// MARK: -
+
+private final class DoubleTapActionSettingsViewController: OWSTableViewController2 {
+    private let options: [(title: String, isSelected: Bool)]
+    private let onSelect: (Int) -> Void
+
+    init(title: String, options: [(String, Bool)], onSelect: @escaping (Int) -> Void) {
+        self.options = options
+        self.onSelect = onSelect
+        super.init()
+        self.title = title
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        let section = OWSTableSection()
+        for (index, option) in options.enumerated() {
+            section.add(.init(
+                text: option.title,
+                actionBlock: { [weak self] in
+                    guard let self else { return }
+                    self.onSelect(index)
+                    self.navigationController?.popViewController(animated: true)
+                },
+                accessoryType: option.isSelected ? .checkmark : .none,
+            ))
+        }
+        contents = OWSTableContents(sections: [section])
+    }
+}
+
+private extension SSKPreferences.DoubleTapOthersMessagesAction {
+    var displayName: String {
+        switch self {
+        case .off:
+            return OWSLocalizedString("SETTINGS_DOUBLE_TAP_ACTION_OFF", comment: "Double-tap action: disabled.")
+        case .react:
+            return OWSLocalizedString(
+                "SETTINGS_DOUBLE_TAP_ACTION_REACT",
+                comment: "Double-tap action: react with the first quick-reaction emoji.",
+            )
+        case .reply:
+            return OWSLocalizedString("SETTINGS_DOUBLE_TAP_ACTION_REPLY", comment: "Double-tap action: reply to the message.")
+        }
+    }
+}
+
+private extension SSKPreferences.DoubleTapOwnMessagesAction {
+    var displayName: String {
+        switch self {
+        case .off:
+            return OWSLocalizedString("SETTINGS_DOUBLE_TAP_ACTION_OFF", comment: "Double-tap action: disabled.")
+        case .edit:
+            return OWSLocalizedString("SETTINGS_DOUBLE_TAP_ACTION_EDIT", comment: "Double-tap action: edit your message.")
+        case .reply:
+            return OWSLocalizedString("SETTINGS_DOUBLE_TAP_ACTION_REPLY", comment: "Double-tap action: reply to the message.")
+        }
     }
 }

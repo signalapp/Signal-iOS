@@ -9079,6 +9079,36 @@
 /* Title for the 'chats' link in settings. */
 "SETTINGS_CHATS" = "Chats";
 
+/* Section title for double-tap message action settings. */
+"SETTINGS_DOUBLE_TAP_SECTION_TITLE" = "Double-tap";
+
+/* Footer explaining configurable double-tap actions on messages. */
+"SETTINGS_DOUBLE_TAP_SECTION_FOOTER" = "Choose what double-tapping a message does. Long-press still opens the full action menu and reaction bar. Stickers and photos toggles apply when React is selected.";
+
+/* Setting for double-tap action on messages from other people. */
+"SETTINGS_DOUBLE_TAP_OTHERS_MESSAGES" = "Other Messages";
+
+/* Setting for double-tap action on your own messages. */
+"SETTINGS_DOUBLE_TAP_OWN_MESSAGES" = "Your Messages";
+
+/* Double-tap action: disabled. */
+"SETTINGS_DOUBLE_TAP_ACTION_OFF" = "Off";
+
+/* Double-tap action: react with the first quick-reaction emoji. */
+"SETTINGS_DOUBLE_TAP_ACTION_REACT" = "React";
+
+/* Double-tap action: reply to the message. */
+"SETTINGS_DOUBLE_TAP_ACTION_REPLY" = "Reply";
+
+/* Double-tap action: edit your message. */
+"SETTINGS_DOUBLE_TAP_ACTION_EDIT" = "Edit";
+
+/* Toggle for allowing double-tap quick react on sticker messages. */
+"SETTINGS_DOUBLE_TAP_REACT_STICKERS" = "React to Stickers";
+
+/* Toggle for allowing double-tap quick react on photo and video messages. */
+"SETTINGS_DOUBLE_TAP_REACT_PHOTOS" = "React to Photos";
+
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Clear Chat History";
 

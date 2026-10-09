@@ -185,6 +185,60 @@ extension CVItemViewModelImpl {
         return DependenciesBridge.shared.editManager.canShowEditMenu(interaction: interaction, thread: thread)
     }
 
+    enum DoubleTapAction {
+        case edit
+        case react
+        case reply
+    }
+
+    /// Resolved double-tap action for this message, if any.
+    var doubleTapAction: DoubleTapAction? {
+        guard let message = interaction as? TSMessage, !message.wasRemotelyDeleted else {
+            return nil
+        }
+
+        return SSKEnvironment.shared.databaseStorageRef.read { tx -> DoubleTapAction? in
+            if message is TSIncomingMessage {
+                switch SSKPreferences.doubleTapOthersMessagesAction(transaction: tx) {
+                case .off: return nil
+                case .react: return canDoubleTapReact(tx: tx) ? .react : nil
+                case .reply: return canDoubleTapReply ? .reply : nil
+                }
+            }
+            if message is TSOutgoingMessage {
+                switch SSKPreferences.doubleTapOwnMessagesAction(transaction: tx) {
+                case .off: return nil
+                case .edit: return canEditMessage ? .edit : nil
+                case .reply: return canDoubleTapReply ? .reply : nil
+                }
+            }
+            return nil
+        }
+    }
+
+    private func canDoubleTapReact(tx: DBReadTransaction) -> Bool {
+        guard thread.canSendReactionToThread, !thread.isTerminatedGroup else {
+            return false
+        }
+        if let groupThread = thread as? TSGroupThread,
+           !groupThread.groupModel.groupMembership.isLocalUserFullMember
+        {
+            return false
+        }
+        switch messageCellType {
+        case .stickerMessage:
+            return SSKPreferences.isDoubleTapReactEnabledForStickers(transaction: tx)
+        case .bodyMedia:
+            return SSKPreferences.isDoubleTapReactEnabledForPhotos(transaction: tx)
+        default:
+            return true
+        }
+    }
+
+    private var canDoubleTapReply: Bool {
+        !thread.isReleaseNotesThread && !thread.isTerminatedGroup && !thread.isBlockedByAnnouncementOnly
+    }
+
     var canCopyOrShareOrSpeakText: Bool {
         guard !isViewOnce else {
             return false

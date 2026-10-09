@@ -51,6 +51,51 @@ extension ConversationViewController: CVComponentDelegate {
         controller.beginEditing(animated: true)
     }
 
+    public func didDoubleTapToReact(_ viewModel: CVItemViewModelImpl) {
+        AssertIsOnMainThread()
+
+        guard
+            let message = viewModel.interaction as? TSMessage,
+            shouldShowReactionPickerForInteraction(message)
+        else {
+            return
+        }
+
+        let messageId = message.uniqueId
+        let quickEmoji = SSKEnvironment.shared.databaseStorageRef.read {
+            ReactionManager.preferredQuickReactionEmoji(transaction: $0)
+        }
+
+        // Optimistic UI from the render snapshot; the write re-checks under the lock.
+        let existing = viewModel.reactionState?.localUserEmojiVariant
+        if let existing, existing != quickEmoji {
+            return
+        }
+
+        ImpactHapticFeedback.impactOccurred(style: .light)
+
+        // Write only. Entrance: ReactionManager.pendingReactionEntrances → CVReactionCountsView.configure.
+        SSKEnvironment.shared.databaseStorageRef.asyncWrite { tx in
+            guard
+                let message = TSMessage.fetchMessageViaCache(uniqueId: messageId, transaction: tx),
+                !message.wasRemotelyDeleted,
+                let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci
+            else {
+                return
+            }
+            let latest = message.reaction(for: localAci, tx: tx)?.emoji
+            if let latest, latest != quickEmoji {
+                return
+            }
+            ReactionManager.localUserReacted(
+                to: messageId,
+                emoji: quickEmoji,
+                isRemoving: latest == quickEmoji,
+                tx: tx,
+            )
+        }
+    }
+
     // MARK: - Long Press
 
     public func didLongPressTextViewItem(

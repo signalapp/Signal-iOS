@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalServiceKit
 import SignalUI
 import UIKit
 
@@ -93,7 +94,11 @@ class CVReactionCountsView: ManualStackView {
 
     private static let measurementKey = "CVReactionCountsView"
 
-    func configure(state: State, cellMeasurement: CVCellMeasurement) {
+    /// Bound message for reuse-safe entrance playback.
+    private var messageId: String?
+
+    func configure(state: State, cellMeasurement: CVCellMeasurement, messageId: String) {
+        self.messageId = messageId
 
         layer.borderColor = Theme.backgroundColor.cgColor
 
@@ -115,6 +120,11 @@ class CVReactionCountsView: ManualStackView {
             measurementKey: Self.measurementKey,
             subviews: subviews,
         )
+
+        // One flow: local add marks pending in ReactionManager; pill plays when rendered.
+        if ReactionManager.pendingReactionEntrances.remove(messageId) {
+            playEntranceWhenReady(messageId: messageId, triesLeft: 60)
+        }
     }
 
     static func measure(
@@ -147,11 +157,24 @@ class CVReactionCountsView: ManualStackView {
     }
 
     override func reset() {
+        messageId = nil
         super.reset()
 
         pill1.reset()
         pill2.reset()
         pill3.reset()
+    }
+
+    private func playEntranceWhenReady(messageId: String, triesLeft: Int) {
+        guard self.messageId == messageId else { return }
+        if bounds.width > 0 {
+            pill1.playEntrancePop()
+            return
+        }
+        guard triesLeft > 0 else { return }
+        DispatchQueue.main.async { [weak self] in
+            self?.playEntranceWhenReady(messageId: messageId, triesLeft: triesLeft - 1)
+        }
     }
 
     // MARK: -
@@ -160,8 +183,12 @@ class CVReactionCountsView: ManualStackView {
 
         private let pillKey: String
 
+        /// Stack lays out the wrap (sets frame). Transform animates on the label inside.
+        private let emojiWrap = ManualLayoutView(name: "reaction emoji wrap")
         private let emojiLabel = CVLabel()
         private let countLabel = CVLabel()
+        /// Blocks configure/reset from killing in-flight pop (was the subtle snap).
+        private var isPlayingEntrance = false
 
         private static let pillBorderWidth: CGFloat = 1
 
@@ -171,6 +198,10 @@ class CVReactionCountsView: ManualStackView {
             super.init(name: pillKey)
 
             emojiLabel.clipsToBounds = true
+            emojiWrap.addSubview(emojiLabel)
+            emojiWrap.addLayoutBlock { [weak emojiLabel] view in
+                emojiLabel?.frame = view.bounds
+            }
             clipsToBounds = true
         }
 
@@ -228,6 +259,14 @@ class CVReactionCountsView: ManualStackView {
             pillState: PillState,
             cellMeasurement: CVCellMeasurement,
         ) {
+            if !isPlayingEntrance {
+                layer.removeAllAnimations()
+                transform = .identity
+                alpha = 1
+                emojiLabel.transform = .identity
+                emojiLabel.alpha = 1
+                clipsToBounds = true
+            }
 
             addLayoutBlock { view in
                 view.layer.borderWidth = Self.pillBorderWidth
@@ -246,7 +285,7 @@ class CVReactionCountsView: ManualStackView {
 
             if let emojiLabelConfig = Self.emojiLabelConfig(pillState: pillState) {
                 emojiLabelConfig.applyForRendering(label: emojiLabel)
-                subviews.append(emojiLabel)
+                subviews.append(emojiWrap)
             }
 
             if let countLabelConfig = Self.countLabelConfig(pillState: pillState) {
@@ -260,6 +299,61 @@ class CVReactionCountsView: ManualStackView {
                 measurementKey: pillKey,
                 subviews: subviews,
             )
+        }
+
+        override func reset() {
+            stopEntrancePop()
+            super.reset()
+        }
+
+        func playEntrancePop() {
+            guard !isPlayingEntrance else { return }
+            isPlayingEntrance = true
+
+            // Subtle fast chip appear (scale/alpha only — layout frame stays put).
+            alpha = 0
+            transform = CGAffineTransform(scaleX: 0.88, y: 0.88)
+            UIView.animate(
+                withDuration: 0.14,
+                delay: 0,
+                options: [.curveEaseOut, .allowUserInteraction],
+            ) {
+                self.alpha = 1
+                self.transform = .identity
+            }
+
+            // Emoji pop into the chip.
+            clipsToBounds = false
+            emojiLabel.alpha = 0
+            emojiLabel.transform = CGAffineTransform(translationX: 0, y: -40).scaledBy(x: 0.4, y: 0.4)
+
+            // Peak ~14pt emoji +5px ≈ 1.36 scale; land back to identity in the pill.
+            UIView.animateKeyframes(withDuration: 0.42, delay: 0, options: []) {
+                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.38) {
+                    self.emojiLabel.alpha = 1
+                    self.emojiLabel.transform = CGAffineTransform(translationX: 0, y: -40).scaledBy(x: 1.36, y: 1.36)
+                }
+                UIView.addKeyframe(withRelativeStartTime: 0.38, relativeDuration: 0.62) {
+                    self.emojiLabel.transform = .identity
+                }
+            } completion: { [weak self] _ in
+                self?.finishEntrancePop()
+            }
+        }
+
+        private func stopEntrancePop() {
+            layer.removeAllAnimations()
+            emojiLabel.layer.removeAllAnimations()
+            finishEntrancePop()
+        }
+
+        private func finishEntrancePop() {
+            isPlayingEntrance = false
+            transform = .identity
+            alpha = 1
+            emojiLabel.transform = .identity
+            emojiLabel.alpha = 1
+            clipsToBounds = true
         }
 
         static func measure(

@@ -11,6 +11,9 @@ public class ReactionManager: NSObject {
     public static let localUserReacted = Notification.Name("localUserReacted")
     public static let defaultEmojiSet = ["❤️", "👍", "👎", "😂", "😮", "😢"]
 
+    /// Message ids waiting for reaction-pill entrance after a local add.
+    public static let pendingReactionEntrances = AtomicSet<String>(lock: .init())
+
     private static let emojiSetKVS = KeyValueStore(collection: "EmojiSetKVS")
     private static let emojiSetKey = "EmojiSetKey"
 
@@ -20,6 +23,14 @@ public class ReactionManager: NSObject {
     /// This is important because we shouldn't ever send the default set of reactions over storage service.
     public class func customEmojiSet(transaction: DBReadTransaction) -> [String]? {
         return emojiSetKVS.getStringArray(emojiSetKey, transaction: transaction)
+    }
+
+    /// First emoji from the user's quick-reaction list (custom if set, otherwise default ❤️).
+    public class func preferredQuickReactionEmoji(transaction: DBReadTransaction) -> String {
+        if let customFirst = customEmojiSet(transaction: transaction)?.first?.strippedOrNil {
+            return customFirst
+        }
+        return defaultEmojiSet[0]
     }
 
     public class func setCustomEmojiSet(_ emojis: [String]?, transaction: DBWriteTransaction) {
@@ -41,7 +52,14 @@ public class ReactionManager: NSObject {
             owsFailDebug("Error: \(error)")
             return Promise(error: error)
         }
-        NotificationCenter.default.post(name: ReactionManager.localUserReacted, object: nil)
+        // Mark before commit so render can consume even if UI reloads in the same turn.
+        if !isRemoving {
+            pendingReactionEntrances.insert(messageUniqueId)
+        }
+        tx.addSyncCompletion {
+            // ChatList clears search on this name; entrance uses pendingReactionEntrances.
+            NotificationCenter.default.post(name: ReactionManager.localUserReacted, object: nil)
+        }
         let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: outgoingMessage)
         return SSKEnvironment.shared.messageSenderJobQueueRef.add(
             .promise,

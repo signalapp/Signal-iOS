@@ -124,6 +124,8 @@ public class CVViewState: NSObject {
     public var collectionViewActiveContextMenuInteraction: ChatHistoryContextMenuInteraction?
     public var longPressHandler: CVLongPressHandler?
     public var panHandler: CVPanHandler?
+    /// When a double-tap action exists, single-tap (e.g. open media) waits until the double-tap window closes.
+    public var deferredSingleTap: (() -> Bool)?
 
     // MARK: -
 

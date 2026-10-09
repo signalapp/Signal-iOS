@@ -47,6 +47,7 @@ public class CVComponentReactions: CVComponentBase, CVComponent, CVAccessibility
         reactionCountsView.configure(
             state: viewState,
             cellMeasurement: cellMeasurement,
+            messageId: interaction.uniqueId,
         )
     }
 

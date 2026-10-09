@@ -144,17 +144,32 @@ extension ConversationViewController: SingleOrDoubleTapGestureDelegate {
         finishRecordingVoiceMessage(sendImmediately: false)
 
         guard let cell = findCell(forGesture: sender) else {
+            viewState.deferredSingleTap = nil
             return false
         }
 
         if let interaction = collectionViewActiveContextMenuInteraction, interaction.contextMenuVisible {
+            viewState.deferredSingleTap = nil
             return false
         }
 
+        // Fast double-tap should react/reply/edit instead of opening media or sticker details.
+        // Defer single-tap until the double-tap window times out.
+        if cell.canHandleDoubleTap(sender: sender, componentDelegate: self) {
+            viewState.deferredSingleTap = { [weak self, weak cell] in
+                guard let self, let cell else { return false }
+                return cell.handleTap(sender: sender, componentDelegate: self)
+            }
+            return false
+        }
+
+        viewState.deferredSingleTap = nil
         return cell.handleTap(sender: sender, componentDelegate: self)
     }
 
     public func handleDoubleTap(_ sender: SingleOrDoubleTapGestureRecognizer) -> Bool {
+        viewState.deferredSingleTap = nil
+
         guard let cell = findCell(forGesture: sender) else {
             return false
         }
@@ -166,6 +181,15 @@ extension ConversationViewController: SingleOrDoubleTapGestureDelegate {
     }
 
     public func didEndGesture(_ sender: SingleOrDoubleTapGestureRecognizer, wasHandled: Bool) {
+        if !wasHandled, let deferredSingleTap = viewState.deferredSingleTap {
+            viewState.deferredSingleTap = nil
+            if deferredSingleTap() {
+                return
+            }
+        } else {
+            viewState.deferredSingleTap = nil
+        }
+
         if !wasHandled {
             dismissKeyboard()
         }

@@ -2013,22 +2013,40 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         componentDelegate: any CVComponentDelegate,
         renderItem: CVRenderItem,
     ) -> Bool {
-        if isShowingSelectionUI {
-            return false
-        }
-
-        let viewModel = CVItemViewModelImpl(renderItem: renderItem)
-        return viewModel.canEditMessage
+        doubleTapAction(componentDelegate: componentDelegate, renderItem: renderItem) != nil
     }
 
     override public func handleDoubleTap(sender: UIGestureRecognizer, componentDelegate: any CVComponentDelegate, renderItem: CVRenderItem) -> Bool {
-        guard canHandleDoubleTap(sender: sender, componentDelegate: componentDelegate, renderItem: renderItem) else {
+        guard let (viewModel, action) = doubleTapAction(componentDelegate: componentDelegate, renderItem: renderItem) else {
             return false
         }
-
-        let viewModel = CVItemViewModelImpl(renderItem: renderItem)
-        componentDelegate.didDoubleTapTextViewItem(viewModel)
+        switch action {
+        case .edit:
+            componentDelegate.didDoubleTapTextViewItem(viewModel)
+        case .react:
+            componentDelegate.didDoubleTapToReact(viewModel)
+        case .reply:
+            componentDelegate.didTapReplyToItem(viewModel)
+        }
         return true
+    }
+
+    private func doubleTapAction(
+        componentDelegate: any CVComponentDelegate,
+        renderItem: CVRenderItem,
+    ) -> (CVItemViewModelImpl, CVItemViewModelImpl.DoubleTapAction)? {
+        if isShowingSelectionUI {
+            return nil
+        }
+        let viewModel = CVItemViewModelImpl(renderItem: renderItem)
+        guard let action = viewModel.doubleTapAction else {
+            return nil
+        }
+        // Match reaction-picker eligibility so we don't consume the gesture as a no-op.
+        if action == .react, componentDelegate.hasPendingMessageRequest {
+            return nil
+        }
+        return (viewModel, action)
     }
 
     override public func findLongPressHandler(
@@ -2531,8 +2549,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         public func canHandleDoubleTapGesture(_ sender: UIGestureRecognizer) -> Bool {
-            // If we have a body text view, allow taps anywhere (incl. adjacent whitespace).
-            return bodyTextView != nil
+            // Text / media / stickers can take a double-tap action; component logic decides which.
+            return bodyTextView != nil || bodyMediaView != nil || stickerView != nil
         }
 
         public func contextMenuContentView() -> UIView? {

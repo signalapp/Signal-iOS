@@ -181,4 +181,78 @@ public class SSKPreferences: NSObject {
     public static func setShouldKeepMutedChatsArchived(_ newValue: Bool, transaction: DBWriteTransaction) {
         store.setBool(newValue, key: shouldKeepMutedChatsArchivedKey, transaction: transaction)
     }
+
+    // MARK: - Double Tap
+
+    public enum DoubleTapOthersMessagesAction: String, CaseIterable {
+        case react
+        case reply
+        case off
+    }
+
+    public enum DoubleTapOwnMessagesAction: String, CaseIterable {
+        case edit
+        case reply
+        case off
+    }
+
+    private static var doubleTapOthersMessagesActionKey: String { "doubleTapOthersMessagesAction" }
+    private static var doubleTapOwnMessagesActionKey: String { "doubleTapOwnMessagesAction" }
+
+    /// Default: react.
+    public static func doubleTapOthersMessagesAction(transaction: DBReadTransaction) -> DoubleTapOthersMessagesAction {
+        stringPref(DoubleTapOthersMessagesAction.self, key: doubleTapOthersMessagesActionKey, default: .react, transaction: transaction)
+    }
+
+    public static func setDoubleTapOthersMessagesAction(
+        _ action: DoubleTapOthersMessagesAction,
+        transaction: DBWriteTransaction,
+    ) {
+        store.setString(action.rawValue, key: doubleTapOthersMessagesActionKey, transaction: transaction)
+    }
+
+    /// Default: edit (existing double-tap-to-edit).
+    public static func doubleTapOwnMessagesAction(transaction: DBReadTransaction) -> DoubleTapOwnMessagesAction {
+        stringPref(DoubleTapOwnMessagesAction.self, key: doubleTapOwnMessagesActionKey, default: .edit, transaction: transaction)
+    }
+
+    public static func setDoubleTapOwnMessagesAction(
+        _ action: DoubleTapOwnMessagesAction,
+        transaction: DBWriteTransaction,
+    ) {
+        store.setString(action.rawValue, key: doubleTapOwnMessagesActionKey, transaction: transaction)
+    }
+
+    private static var doubleTapReactStickersEnabledKey: String { "doubleTapReactStickersEnabled" }
+    private static var doubleTapReactPhotosEnabledKey: String { "doubleTapReactPhotosEnabled" }
+
+    /// Default: true. When false, double-tap React skips sticker messages.
+    public static func isDoubleTapReactEnabledForStickers(transaction: DBReadTransaction) -> Bool {
+        store.getBool(doubleTapReactStickersEnabledKey, defaultValue: true, transaction: transaction)
+    }
+
+    public static func setDoubleTapReactEnabledForStickers(_ value: Bool, transaction: DBWriteTransaction) {
+        store.setBool(value, key: doubleTapReactStickersEnabledKey, transaction: transaction)
+    }
+
+    /// Default: true. When false, double-tap React skips photo/video (body media) messages.
+    public static func isDoubleTapReactEnabledForPhotos(transaction: DBReadTransaction) -> Bool {
+        store.getBool(doubleTapReactPhotosEnabledKey, defaultValue: true, transaction: transaction)
+    }
+
+    public static func setDoubleTapReactEnabledForPhotos(_ value: Bool, transaction: DBWriteTransaction) {
+        store.setBool(value, key: doubleTapReactPhotosEnabledKey, transaction: transaction)
+    }
+
+    private static func stringPref<T: RawRepresentable>(
+        _ type: T.Type,
+        key: String,
+        default defaultValue: T,
+        transaction: DBReadTransaction,
+    ) -> T where T.RawValue == String {
+        if let raw = store.getString(key, transaction: transaction), let value = T(rawValue: raw) {
+            return value
+        }
+        return defaultValue
+    }
 }
