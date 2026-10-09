@@ -36,13 +36,16 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
         return AVAudioSession.sharedInstance()
     }
 
+    private let audioSession: AudioSession
+
     // MARK: - Initializers
 
     init(audioSession: AudioSession) {
         // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
 
         // Configure audio session so we don't prompt user with Record permission until call is connected.
-        audioSession.configureRTCAudio()
+        self.audioSession = audioSession
+        self.audioSession.configureRTCAudio()
 
         observers.append(NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: avAudioSession, queue: nil) { [weak self, avAudioSession] note in
             let reason = (note.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt).flatMap(AVAudioSession.RouteChangeReason.init)
@@ -338,8 +341,31 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
         case .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
             handleAnsweredElsewhere(call: call)
 
-        case .idle, .answering, .connected, .reconnecting, .localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting:
+        case .connected:
+            ensureRTCAudioEnabled(call: call)
+
+        case .idle, .answering, .reconnecting, .localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting:
             break
+        }
+    }
+
+    /// Audio is normally enabled from CallKit's `didActivate`, which doesn't always
+    /// arrive. Enable it anyway if it hasn't once the call has been connected briefly.
+    private func ensureRTCAudioEnabled(call: IndividualCall) {
+        AssertIsOnMainThread()
+
+        guard !audioSession.isRTCAudioEnabled else { return }
+
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2.0) {
+            guard
+                [.connected, .reconnecting].contains(call.state),
+                !self.audioSession.isRTCAudioEnabled
+            else {
+                return
+            }
+
+            Logger.warn("Enabling audio without a CallKit activation")
+            self.audioSession.isRTCAudioEnabled = true
         }
     }
 
