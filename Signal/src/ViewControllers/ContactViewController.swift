@@ -12,7 +12,7 @@ import SignalUI
 class ContactViewController: OWSTableViewController2 {
 
     private enum ContactViewMode: Equatable {
-        case aciShare(aci: Aci, isInSystemContacts: Bool)
+        case aciShare(aci: Aci)
         case systemContactWithSignal
         case systemContactWithoutSignal
         case nonSystemContact
@@ -87,8 +87,7 @@ class ContactViewController: OWSTableViewController2 {
         phoneNumberPartition: OWSContact.PhoneNumberPartition,
     ) -> ContactViewMode {
         if let aci = contactShare.dbRecord.aci {
-            let isInSystemContacts = !phoneNumberPartition.sendablePhoneNumbers.isEmpty || !phoneNumberPartition.invitablePhoneNumbers.isEmpty
-            return .aciShare(aci: aci, isInSystemContacts: isInSystemContacts)
+            return .aciShare(aci: aci)
         }
         return phoneNumberPartition.map(
             ifSendablePhoneNumbers: { _ in .systemContactWithSignal },
@@ -116,17 +115,6 @@ class ContactViewController: OWSTableViewController2 {
         }
     }
 
-    private func showAddToContacts() -> Bool {
-        switch viewMode {
-        case .aciShare(_, let isInSystemContacts):
-            return !isInSystemContacts && !contactShare.dbRecord.e164PhoneNumbers().isEmpty
-        case .nonSystemContact:
-            return true
-        case .systemContactWithSignal, .systemContactWithoutSignal, .noPhoneNumber:
-            return false
-        }
-    }
-
     private var isLocalUser: Bool {
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             return false
@@ -146,7 +134,7 @@ class ContactViewController: OWSTableViewController2 {
 
     private var sharedAci: Aci? {
         switch viewMode {
-        case .aciShare(let aci, _):
+        case .aciShare(let aci):
             return aci
         case .systemContactWithSignal, .systemContactWithoutSignal, .nonSystemContact, .noPhoneNumber:
             return nil
@@ -176,19 +164,17 @@ class ContactViewController: OWSTableViewController2 {
             ))
         }
 
-        if showAddToContacts() {
-            actionsSection.add(.disclosureItem(
-                icon: .contactInfoAddToContacts,
-                withText: OWSLocalizedString(
-                    "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
-                    comment: "",
-                )
-                ,
-                actionBlock: { [weak self] in
-                    self?.didPressAddToContacts()
-                },
-            ))
-        }
+        actionsSection.add(.disclosureItem(
+            icon: .contactInfoAddToContacts,
+            withText: OWSLocalizedString(
+                "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
+                comment: "",
+            )
+            ,
+            actionBlock: { [weak self] in
+                self?.didPressAddToContacts()
+            },
+        ))
 
         if let sharedAci, !isLocalUser, canAddToGroup(aci: sharedAci) {
             actionsSection.add(.disclosureItem(
@@ -426,8 +412,6 @@ extension ContactViewController {
     }
 
     private func didPressAddToContacts() {
-        Logger.info("")
-
         contactShareViewHelper.showAddToContactsPrompt(contactShare: contactShare, from: self)
     }
 
@@ -477,8 +461,6 @@ extension ContactViewController {
     }
 
     private func callPhoneNumberWithSystemCall(phoneNumber: OWSContactPhoneNumber) {
-        Logger.info("")
-
         guard let url = NSURL(string: "tel:\(phoneNumber.phoneNumber)") else {
             owsFailDebug("could not open phone number.")
             return
@@ -502,8 +484,6 @@ extension ContactViewController {
     }
 
     private func openEmailInEmailApp(email: OWSContactEmail) {
-        Logger.info("")
-
         guard let url = NSURL(string: "mailto:\(email.email)") else {
             owsFailDebug("could not open email.")
             return
@@ -539,8 +519,6 @@ extension ContactViewController {
     }
 
     private func openAddressInMaps(address: OWSContactAddress) {
-        Logger.info("")
-
         let mapAddress = formatAddressForQuery(address: address)
         guard let escapedMapAddress = mapAddress.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
             owsFailDebug("could not open address.")
@@ -557,8 +535,6 @@ extension ContactViewController {
     }
 
     private func formatAddressForQuery(address: OWSContactAddress) -> String {
-        Logger.info("")
-
         // Open address in Apple Maps app.
         var addressParts = [String]()
         let addAddressPart: ((String?) -> Void) = { part in

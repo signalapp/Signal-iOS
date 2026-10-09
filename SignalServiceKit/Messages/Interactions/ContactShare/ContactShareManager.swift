@@ -34,7 +34,7 @@ public protocol ContactShareManager {
         from contactShare: OWSContact,
         parentMessage: TSMessage,
         tx: DBReadTransaction,
-    ) throws -> SSKProtoDataMessageContact
+    ) -> SSKProtoDataMessageContact
 }
 
 // MARK: -
@@ -182,7 +182,7 @@ class ContactShareManagerImpl: ContactShareManager {
         from contactShare: OWSContact,
         parentMessage: TSMessage,
         tx: DBReadTransaction,
-    ) throws -> SSKProtoDataMessageContact {
+    ) -> SSKProtoDataMessageContact {
 
         let contactBuilder = SSKProtoDataMessageContact.builder()
 
@@ -246,12 +246,6 @@ class ContactShareManagerImpl: ContactShareManager {
             contactBuilder.setAvatar(avatarBuilder.buildInfallibly())
         }
 
-        let contactProto = contactBuilder.buildInfallibly()
-
-        guard contactProto.aciBinary != nil || !contactProto.number.isEmpty || !contactProto.email.isEmpty || !contactProto.address.isEmpty else {
-            throw OWSAssertionError("contact has neither ACI, phone, email or address.")
-        }
-
-        return contactProto
+        return contactBuilder.buildInfallibly()
     }
 }

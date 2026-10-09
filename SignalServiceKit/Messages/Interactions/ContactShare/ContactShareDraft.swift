@@ -128,9 +128,9 @@ public class ContactShareDraft {
         selectedAvatarImageData: Data?,
     ) {
         self.name = name
-        self.addresses = addresses
-        self.emails = emails
-        self.phoneNumbers = phoneNumbers
+        self.addresses = addresses.filter(\.isValid)
+        self.emails = emails.filter(\.isValid)
+        self.phoneNumbers = phoneNumbers.filter(\.isValid)
         self.aci = aci
         self.signalNickname = signalNickname
         self.signalNote = signalNote
@@ -164,13 +164,7 @@ public class ContactShareDraft {
     }
 
     public var ows_isValid: Bool {
-        return OWSContact.isValid(
-            name: name,
-            phoneNumbers: phoneNumbers,
-            emails: emails,
-            addresses: addresses,
-            aci: aci,
-        )
+        return OWSContact.isValid(name: name)
     }
 
     public struct ForSending {

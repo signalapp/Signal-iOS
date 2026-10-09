@@ -117,7 +117,6 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
         }
 
         updateContent()
-        updateProceedButtonState()
     }
 
     override public func viewDidLayoutSubviews() {
@@ -140,19 +139,6 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
         footerView.delegate = self
         return footerView
     }()
-
-    private func canShare() -> Bool {
-        return contactShareDraft.aci != nil || isAtLeastOneFieldSelected()
-    }
-
-    private func isAtLeastOneFieldSelected() -> Bool {
-        for field in contactShareFields {
-            if field.isIncluded {
-                return true
-            }
-        }
-        return false
-    }
 
     private func updateContent() {
         var tableItems = [OWSTableItem]()
@@ -242,10 +228,6 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
         contents = OWSTableContents(sections: [section])
     }
 
-    private func updateProceedButtonState() {
-        footerView.isAllowedToProceed = canShare()
-    }
-
     private func toggleSelection(for contactShareField: ContactShareField) {
         contactShareField.isIncluded = !contactShareField.isIncluded
 
@@ -256,15 +238,11 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
             }) as? ContactShareFieldCell else { return }
 
         cell.updateCheckmarkState()
-
-        updateProceedButtonState()
     }
 
     // MARK: -
 
     private func didPressSendButton() {
-        guard canShare() else { return }
-
         guard contactShareDraft.ows_isValid else {
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "CONTACT_SHARE_INVALID_CONTACT",

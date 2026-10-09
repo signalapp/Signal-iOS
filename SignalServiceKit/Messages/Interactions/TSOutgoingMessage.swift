@@ -458,12 +458,7 @@ extension TSOutgoingMessage {
 
         // Contact Share
         if let contactShare {
-            do {
-                let contactProto = try self.buildContactShareProto(contactShare, tx: tx)
-                builder.addContact(contactProto)
-            } catch {
-                owsFailDebug("Could not build contact share protobuf: \(error)")
-            }
+            builder.addContact(self.buildContactShareProto(contactShare, tx: tx))
         }
 
         // Link Preview
@@ -676,8 +671,8 @@ extension TSOutgoingMessage {
     private func buildContactShareProto(
         _ contact: OWSContact,
         tx: DBReadTransaction,
-    ) throws -> SSKProtoDataMessageContact {
-        return try DependenciesBridge.shared.contactShareManager.buildProtoForSending(
+    ) -> SSKProtoDataMessageContact {
+        return DependenciesBridge.shared.contactShareManager.buildProtoForSending(
             from: contact,
             parentMessage: self,
             tx: tx,

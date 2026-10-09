@@ -83,46 +83,15 @@ public final class OWSContact: NSObject, NSSecureCoding, NSCopying {
     public var note: String?
 
     public var isValid: Bool {
-        return Self.isValid(
-            name: name,
-            phoneNumbers: phoneNumbers,
-            emails: emails,
-            addresses: addresses,
-            aci: aci,
-        )
+        Self.isValid(name: name)
     }
 
-    public static func isValid(
-        name: OWSContactName,
-        phoneNumbers: [OWSContactPhoneNumber],
-        emails: [OWSContactEmail],
-        addresses: [OWSContactAddress],
-        aci: Aci?,
-    ) -> Bool {
+    public static func isValid(name: OWSContactName) -> Bool {
         guard !name.displayName.stripped.isEmpty else {
             Logger.warn("invalid contact; no display name.")
             return false
         }
-        var hasValue = aci != nil
-        for phoneNumber in phoneNumbers {
-            guard phoneNumber.isValid else {
-                return false
-            }
-            hasValue = true
-        }
-        for email in emails {
-            guard email.isValid else {
-                return false
-            }
-            hasValue = true
-        }
-        for address in addresses {
-            guard address.isValid else {
-                return false
-            }
-            hasValue = true
-        }
-        return hasValue
+        return true
     }
 
     public init(name: OWSContactName) {
