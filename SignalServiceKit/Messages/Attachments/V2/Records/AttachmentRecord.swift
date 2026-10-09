@@ -334,6 +334,7 @@ extension Attachment {
             blurHash: String?,
             mimeType: String,
             contentType: ContentType,
+            audioDetails: Attachment.AudioDetails?,
         ) -> Record {
             return Record(
                 sqliteId: nil,
@@ -346,7 +347,7 @@ extension Attachment {
                 plaintextHash: nil,
                 localRelativeFilePathThumbnail: nil,
                 streamInfo: nil,
-                audioDetails: nil,
+                audioDetails: audioDetails,
                 latestTransitTierInfo: nil,
                 originalTransitTierInfo: nil,
                 mediaTierInfo: nil,

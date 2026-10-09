@@ -63,29 +63,11 @@ struct AttachmentAudioDetailsFromProtoTest {
         #expect(audioDetails(waveformSamples: waveformSamples, durationSeconds: durationSeconds) == nil)
     }
 
-    @Test
-    func dropsDetailsForOtherContentTypes() {
-        let waveformSamples = Data(repeating: 128, count: AudioWaveform.sampleCount)
-
-        // Not parameterized: `ContentType` isn't `Sendable` outside its module.
-        for contentType in [Attachment.ContentType.file, .image, .video] {
-            #expect(
-                audioDetails(
-                    waveformSamples: waveformSamples,
-                    durationSeconds: 12.5,
-                    contentType: contentType,
-                ) == nil,
-                "\(contentType)",
-            )
-        }
-    }
-
     // MARK: -
 
     private func audioDetails(
         waveformSamples: Data? = nil,
         durationSeconds: Float? = nil,
-        contentType: Attachment.ContentType = .audio,
     ) -> Attachment.AudioDetails? {
         let builder = SSKProtoAttachmentPointer.builder()
         waveformSamples.map(builder.setAudioWaveform(_:))
@@ -93,7 +75,6 @@ struct AttachmentAudioDetailsFromProtoTest {
 
         return Attachment.AudioDetails(
             pointerProto: builder.buildInfallibly(),
-            contentType: contentType,
         )
     }
 }

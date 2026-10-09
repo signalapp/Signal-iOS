@@ -217,38 +217,26 @@ public class Attachment {
 
         init?(
             pointerProto proto: SSKProtoAttachmentPointer,
-            contentType: Attachment.ContentType,
         ) {
             self.init(
                 waveformSamples: proto.hasAudioWaveform ? proto.audioWaveform : nil,
                 durationSeconds: proto.hasAudioDurationSeconds ? proto.audioDurationSeconds : nil,
-                contentType: contentType,
             )
         }
 
         init?(
             backupProto proto: BackupProto_FilePointer,
-            contentType: Attachment.ContentType,
         ) {
             self.init(
                 waveformSamples: proto.hasAudioWaveform ? proto.audioWaveform : nil,
                 durationSeconds: proto.hasAudioDurationSeconds ? proto.audioDurationSeconds : nil,
-                contentType: contentType,
             )
         }
 
         private init?(
             waveformSamples: Data?,
             durationSeconds: Float?,
-            contentType: Attachment.ContentType,
         ) {
-            switch contentType {
-            case .audio:
-                break
-            case .file, .image, .video:
-                return nil
-            }
-
             guard
                 let durationSeconds,
                 durationSeconds.isFinite,

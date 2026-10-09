@@ -199,10 +199,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             mimeType: mimeType,
             contentType: contentType,
             encryptionKey: transitTierInfo.encryptionKey,
-            audioDetails: Attachment.AudioDetails(
-                pointerProto: proto,
-                contentType: contentType,
-            ),
+            audioDetails: Attachment.AudioDetails(pointerProto: proto),
             latestTransitTierInfo: transitTierInfo,
         )
         let sourceMediaSizePixels: CGSize?
@@ -340,10 +337,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         }
 
         let contentType = Attachment.ContentType(mimeType: mimeType)
-        let audioDetails = Attachment.AudioDetails(
-            backupProto: proto,
-            contentType: contentType,
-        )
+        let audioDetails = Attachment.AudioDetails(backupProto: proto)
 
         var attachmentRecord: Attachment.Record
         if
@@ -406,6 +400,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                         blurHash: proto.blurHash.nilIfEmpty,
                         mimeType: mimeType,
                         contentType: contentType,
+                        audioDetails: audioDetails,
                     )
                 }
             }
@@ -414,6 +409,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 blurHash: proto.blurHash.nilIfEmpty,
                 mimeType: mimeType,
                 contentType: contentType,
+                audioDetails: audioDetails,
             )
         }
 
