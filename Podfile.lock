@@ -1,5 +1,4 @@
 PODS:
-  - BonMot (6.0.0)
   - CocoaLumberjack (3.7.4):
     - CocoaLumberjack/Core (= 3.7.4)
   - CocoaLumberjack/Core (3.7.4)
@@ -45,7 +44,6 @@ PODS:
   - SwiftProtobuf (1.38.1)
 
 DEPENDENCIES:
-  - BonMot
   - CocoaLumberjack
   - GRDB.swift/SQLCipher
   - LibMobileCoin/CoreHTTP (from `https://github.com/signalapp/libmobilecoin-ios-artifacts`, tag `signal/6.0.2`)
@@ -64,7 +62,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - BonMot
     - CocoaLumberjack
     - GRDB.swift
     - libwebp
@@ -118,7 +115,6 @@ CHECKOUT OPTIONS:
     :tag: v4.6.1-f_barrierfsync
 
 SPEC CHECKSUMS:
-  BonMot: fb2b6a2209cb3149aca37b7131d49c051c04ae86
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   GRDB.swift: 1395cb3556df6b16ed69dfc74c3886abc75d2825
   LibMobileCoin: 8503f567fa32184a5be7bc038fbd727747dd9991
@@ -135,6 +131,6 @@ SPEC CHECKSUMS:
   SQLCipher: ff2f045b20d675a73a70f7329395ddd4a2580063
   SwiftProtobuf: 409d3aaec90e51b1705b1dd8065b56893450e77c
 
-PODFILE CHECKSUM: 9966f321020cdd29f10d0041515647ec8fe36daf
+PODFILE CHECKSUM: 841a6b2cbbeb504833df19072d628a50485dd3f1
 
 COCOAPODS: 1.15.2

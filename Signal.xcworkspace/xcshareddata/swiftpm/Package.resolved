@@ -1,0 +1,15 @@
+{
+  "originHash" : "9a9cc238bc47e5ab41c0f827de52fcc3d9c370d7139ea49c8471c67097da1c3e",
+  "pins" : [
+    {
+      "identity" : "bonmot",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Rightpoint/BonMot",
+      "state" : {
+        "revision" : "69dd5eba11694421418edc9063f3c7c02d069634",
+        "version" : "6.0.0"
+      }
+    }
+  ],
+  "version" : 3
+}

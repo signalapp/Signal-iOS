@@ -969,6 +969,9 @@
 		616577F953D77424E32C7438 /* Pods_SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */; };
 		632BFEC030752A2E005399C0 /* GroupViewHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 632BFEBF30752A2E005399C0 /* GroupViewHelperTests.swift */; };
 		632BFEC33077ED5F005399C0 /* blurhash in Frameworks */ = {isa = PBXBuildFile; productRef = 632BFEC23077ED5F005399C0 /* blurhash */; };
+		632BFEC630785953005399C0 /* BonMot in Frameworks */ = {isa = PBXBuildFile; productRef = 632BFEC530785953005399C0 /* BonMot */; };
+		632BFEC830785960005399C0 /* BonMot in Frameworks */ = {isa = PBXBuildFile; productRef = 632BFEC730785960005399C0 /* BonMot */; };
+		632BFECA30787503005399C0 /* BonMot in Frameworks */ = {isa = PBXBuildFile; productRef = 632BFEC930787503005399C0 /* BonMot */; };
 		63C24D4D306AF7A100D4C167 /* ContactSharingPermissionPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C24D4C306AF7A100D4C167 /* ContactSharingPermissionPromptView.swift */; };
 		63C24D53306C50FD00D4C167 /* ContactShareAvatarFieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C24D52306C50FD00D4C167 /* ContactShareAvatarFieldTests.swift */; };
 		63C24D55306C510200D4C167 /* ContactShareAvatarPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C24D54306C510200D4C167 /* ContactShareAvatarPickerSheet.swift */; };
@@ -8718,6 +8721,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				632BFEC830785960005399C0 /* BonMot in Frameworks */,
 				616577F953D77424E32C7438 /* Pods_SignalUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -8745,6 +8749,7 @@
 			files = (
 				D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */,
 				D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */,
+				632BFEC630785953005399C0 /* BonMot in Frameworks */,
 				D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */,
 				347C37FF2526005800F3D941 /* CloudKit.framework in Frameworks */,
 				45BD60821DE9547E00A8F436 /* Contacts.framework in Frameworks */,
@@ -8779,6 +8784,7 @@
 			files = (
 				B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */,
 				D202868416DBE108009068E9 /* AVFoundation.framework in Frameworks */,
+				632BFECA30787503005399C0 /* BonMot in Frameworks */,
 				D202868116DBE0E7009068E9 /* CFNetwork.framework in Frameworks */,
 				A1A018531805C60D00A052A6 /* CoreGraphics.framework in Frameworks */,
 				D202868316DBE0FC009068E9 /* CoreTelephony.framework in Frameworks */,
@@ -16675,6 +16681,7 @@
 			mainGroup = D221A07E169C9E5E00537ABF;
 			packageReferences = (
 				632BFEC13077ED5F005399C0 /* XCLocalSwiftPackageReference "ThirdParty/blurhash" */,
+				632BFEC430785953005399C0 /* XCRemoteSwiftPackageReference "BonMot" */,
 			);
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
 			projectDirPath = "";
@@ -18221,7 +18228,6 @@
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 				"${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework",
-				"${BUILT_PRODUCTS_DIR}/BonMot/BonMot.framework",
 				"${BUILT_PRODUCTS_DIR}/LibMobileCoin/LibMobileCoin.framework",
 				"${BUILT_PRODUCTS_DIR}/Logging/Logging.framework",
 				"${BUILT_PRODUCTS_DIR}/MobileCoin/MobileCoin.framework",
@@ -18241,7 +18247,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BonMot.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LibMobileCoin.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Logging.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MobileCoin.framework",
@@ -23601,10 +23606,36 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		632BFEC430785953005399C0 /* XCRemoteSwiftPackageReference "BonMot" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Rightpoint/BonMot";
+			requirement = {
+				kind = exactVersion;
+				version = 6.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		632BFEC23077ED5F005399C0 /* blurhash */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = blurhash;
+		};
+		632BFEC530785953005399C0 /* BonMot */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 632BFEC430785953005399C0 /* XCRemoteSwiftPackageReference "BonMot" */;
+			productName = BonMot;
+		};
+		632BFEC730785960005399C0 /* BonMot */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 632BFEC430785953005399C0 /* XCRemoteSwiftPackageReference "BonMot" */;
+			productName = BonMot;
+		};
+		632BFEC930787503005399C0 /* BonMot */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 632BFEC430785953005399C0 /* XCRemoteSwiftPackageReference "BonMot" */;
+			productName = BonMot;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

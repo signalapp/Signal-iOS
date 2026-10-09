@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -8,6 +9,10 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_PATH = REPO_ROOT / "Signal/Settings.bundle/Acknowledgements.plist"
 PODS_PATH = REPO_ROOT / "Pods"
 THIRD_PARTY_PATH = REPO_ROOT / "ThirdParty"
+WORKSPACE_PATH = REPO_ROOT / "Signal.xcworkspace"
+PACKAGE_RESOLVED_PATH = WORKSPACE_PATH / "xcshareddata/swiftpm/Package.resolved"
+
+LICENSE_FILE_PATTERN = re.compile(r"^(LICEN[CS]E|COPYING)(\.(md|txt))?$", re.IGNORECASE)
 
 POD_TARGETS = [
     "Signal",
@@ -67,6 +72,66 @@ def get_third_party_specifiers():
     return specifiers
 
 
+def get_source_packages_path():
+    output = subprocess.run(
+        [
+            "xcodebuild",
+            "-workspace",
+            WORKSPACE_PATH,
+            "-scheme",
+            "Signal",
+            "-showBuildSettings",
+            "-json",
+            "-disableAutomaticPackageResolution",
+        ],
+        capture_output=True,
+        encoding="utf8",
+        check=True,
+    ).stdout
+    build_path = Path(json.loads(output)[0]["buildSettings"]["BUILD_DIR"])
+    return build_path.parent.parent / "SourcePackages"
+
+
+def get_swift_package_license_text(checkout_path):
+    license_paths = [
+        p for p in checkout_path.iterdir() if LICENSE_FILE_PATTERN.match(p.name)
+    ]
+    if len(license_paths) != 1:
+        raise Exception(f"Expected one license in {checkout_path}: {license_paths}")
+    return license_paths[0].read_text(encoding="utf8")
+
+
+def get_swift_package_specifiers():
+    with open(PACKAGE_RESOLVED_PATH, "r", encoding="utf8") as file:
+        pins = json.load(file)["pins"]
+
+    source_packages_path = get_source_packages_path()
+    workspace_state_path = source_packages_path / "workspace-state.json"
+    with open(workspace_state_path, "r", encoding="utf8") as file:
+        dependencies = {
+            dependency["packageRef"]["identity"]: dependency
+            for dependency in json.load(file)["object"]["dependencies"]
+        }
+
+    specifiers = []
+    for pin in pins:
+        identity = pin["identity"]
+        if pin["kind"] != "remoteSourceControl":
+            raise Exception(f"Unsupported kind for {identity}: {pin['kind']}")
+
+        dependency = dependencies[identity]
+        specifiers.append(
+            {
+                "Type": "PSGroupSpecifier",
+                "Title": dependency["packageRef"]["name"],
+                "FooterText": get_swift_package_license_text(
+                    source_packages_path / "checkouts" / dependency["subpath"]
+                ),
+            }
+        )
+    return specifiers
+
+
 def group_by_license(specifiers):
     titles_by_license = {}
     for specifier in specifiers:
@@ -99,6 +164,7 @@ def main():
 
     specifiers = [s for group in specifier_groups for s in group[1:-1]]
     specifiers += get_third_party_specifiers()
+    specifiers += get_swift_package_specifiers()
 
     final_specifiers = (
         [header_specifier] + group_by_license(specifiers) + [footer_specifier]

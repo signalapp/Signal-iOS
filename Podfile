@@ -41,7 +41,6 @@ pod 'libwebp'
 ####
 
 def ui_pods
-  pod 'BonMot', inhibit_warnings: true
   pod 'PureLayout', :inhibit_warnings => true
   pod 'lottie-ios', :inhibit_warnings => true
 
