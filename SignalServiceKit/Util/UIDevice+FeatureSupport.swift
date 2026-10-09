@@ -127,10 +127,6 @@ public extension UIDevice {
         }
     }
 
-    var isNarrowerThanIPhone6: Bool {
-        return CurrentAppContext().frame.width < 375
-    }
-
     @objc
     var isIPad: Bool {
         return userInterfaceIdiom == .pad
