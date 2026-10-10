@@ -40,6 +40,22 @@ class CVReactionCountsView: ManualStackView {
     private let pill2 = PillView(pillKey: CVReactionCountsView.pillKey2)
     private let pill3 = PillView(pillKey: CVReactionCountsView.pillKey3)
 
+    private static let visibleByMessageId = NSMapTable<NSString, CVReactionCountsView>.strongToWeakObjects()
+
+    private enum EntranceKind {
+        case local
+        case remote
+    }
+
+    private var messageId: String?
+    private var pendingEntrance: EntranceKind?
+    private var entranceScheduled = false
+    private var lastSaneSize: CGSize?
+
+    private var localPill: PillView {
+        [pill1, pill2, pill3].first(where: \.fromLocalUser) ?? pill1
+    }
+
     init() {
         super.init(name: "reaction counts")
     }
@@ -94,11 +110,12 @@ class CVReactionCountsView: ManualStackView {
 
     private static let measurementKey = "CVReactionCountsView"
 
-    /// Bound message for reuse-safe entrance playback.
-    private var messageId: String?
-
     func configure(state: State, cellMeasurement: CVCellMeasurement, messageId: String) {
+        if let previous = self.messageId, previous != messageId {
+            Self.visibleByMessageId.removeObject(forKey: previous as NSString)
+        }
         self.messageId = messageId
+        Self.visibleByMessageId.setObject(self, forKey: messageId as NSString)
 
         layer.borderColor = Theme.backgroundColor.cgColor
 
@@ -121,10 +138,115 @@ class CVReactionCountsView: ManualStackView {
             subviews: subviews,
         )
 
-        // One flow: local add marks pending in ReactionManager; pill plays when rendered.
-        if ReactionManager.pendingReactionEntrances.remove(messageId) {
-            playEntranceWhenReady(messageId: messageId, triesLeft: 60)
+        if ReactionLayoutPending.localEntrances.remove(messageId) {
+            pendingEntrance = .local
+            entranceScheduled = false
+            lastSaneSize = nil
+        } else if ReactionLayoutPending.remoteEntrances.remove(messageId) {
+            pendingEntrance = .remote
+            entranceScheduled = false
+            lastSaneSize = nil
         }
+        layer.removeAllAnimations()
+        transform = .identity
+        switch pendingEntrance {
+        case .local:
+            // Hidden until stable pill size; then dymek+heart overlap the expand.
+            alpha = 0
+            localPill.prepareForLocalEntranceFlight()
+            // Wait for flush after expand starts — avoids first-frame stretch glitch.
+        case .remote:
+            alpha = 0
+        case .none:
+            alpha = 1
+        }
+    }
+
+    static func flushPendingPops() {
+        AssertIsOnMainThread()
+        guard let views = visibleByMessageId.objectEnumerator()?.allObjects as? [CVReactionCountsView] else {
+            return
+        }
+        for view in views {
+            view.scheduleEntranceIfNeeded()
+        }
+    }
+
+    private func scheduleEntranceIfNeeded() {
+        guard pendingEntrance != nil, !entranceScheduled else { return }
+        entranceScheduled = true
+        lastSaneSize = nil
+        whenPillSized(triesLeft: 12) { [weak self] in
+            guard let self, let kind = self.pendingEntrance else { return }
+            guard self.hasSanePillBounds else {
+                self.entranceScheduled = false
+                return
+            }
+            self.pendingEntrance = nil
+            self.entranceScheduled = false
+            self.lastSaneSize = nil
+            switch kind {
+            case .local:
+                self.playLocalEntrance()
+            case .remote:
+                self.playRemoteEntrance()
+            }
+        }
+    }
+
+    private var hasSanePillBounds: Bool {
+        // Tight gate — stretched mid-layout frames must not pass (giant box).
+        abs(bounds.height - Self.height) < 1.5
+            && bounds.width > 18
+            && bounds.width < 72
+    }
+
+    private func whenPillSized(triesLeft: Int, play: @escaping () -> Void) {
+        layoutIfNeeded()
+        if hasSanePillBounds {
+            let size = bounds.size
+            // Two stable frames — kills one-frame teleport / giant flash on ProMotion.
+            if let last = lastSaneSize,
+               abs(last.width - size.width) < 0.5,
+               abs(last.height - size.height) < 0.5 {
+                play()
+                return
+            }
+            lastSaneSize = size
+        } else {
+            lastSaneSize = nil
+        }
+        guard triesLeft > 0 else {
+            entranceScheduled = false
+            lastSaneSize = nil
+            // Never show a stretched pill.
+            return
+        }
+        DispatchQueue.main.async { [weak self] in
+            self?.whenPillSized(triesLeft: triesLeft - 1, play: play)
+        }
+    }
+
+    private func playLocalEntrance() {
+        guard hasSanePillBounds else { return }
+        layer.removeAllAnimations()
+        // Dymek + heart together with expand (not after it).
+        alpha = 1
+        transform = .identity
+        localPill.playLocalEntrancePop()
+    }
+
+    private func playRemoteEntrance() {
+        guard hasSanePillBounds else { return }
+        layer.removeAllAnimations()
+        alpha = 0
+        transform = CGAffineTransform(scaleX: 0.86, y: 0.86)
+        let animator = UIViewPropertyAnimator(duration: 0.15, springDamping: 0.78, springResponse: 0.15)
+        animator.addAnimations {
+            self.alpha = 1
+            self.transform = .identity
+        }
+        animator.startAnimation()
     }
 
     static func measure(
@@ -157,24 +279,21 @@ class CVReactionCountsView: ManualStackView {
     }
 
     override func reset() {
+        if let messageId, Self.visibleByMessageId.object(forKey: messageId as NSString) === self {
+            Self.visibleByMessageId.removeObject(forKey: messageId as NSString)
+        }
         messageId = nil
+        pendingEntrance = nil
+        entranceScheduled = false
+        lastSaneSize = nil
+        layer.removeAllAnimations()
+        alpha = 1
+        transform = .identity
         super.reset()
 
         pill1.reset()
         pill2.reset()
         pill3.reset()
-    }
-
-    private func playEntranceWhenReady(messageId: String, triesLeft: Int) {
-        guard self.messageId == messageId else { return }
-        if bounds.width > 0 {
-            pill1.playEntrancePop()
-            return
-        }
-        guard triesLeft > 0 else { return }
-        DispatchQueue.main.async { [weak self] in
-            self?.playEntranceWhenReady(messageId: messageId, triesLeft: triesLeft - 1)
-        }
     }
 
     // MARK: -
@@ -183,12 +302,12 @@ class CVReactionCountsView: ManualStackView {
 
         private let pillKey: String
 
-        /// Stack lays out the wrap (sets frame). Transform animates on the label inside.
-        private let emojiWrap = ManualLayoutView(name: "reaction emoji wrap")
+        // WithLayer wrap so flying emoji isn't sliced by pill border.
+        private let emojiWrap = ManualLayoutViewWithLayer(name: "reaction emoji wrap")
         private let emojiLabel = CVLabel()
         private let countLabel = CVLabel()
-        /// Blocks configure/reset from killing in-flight pop (was the subtle snap).
-        private var isPlayingEntrance = false
+        private(set) var fromLocalUser = false
+        private var isPlayingPop = false
 
         private static let pillBorderWidth: CGFloat = 1
 
@@ -197,10 +316,15 @@ class CVReactionCountsView: ManualStackView {
 
             super.init(name: pillKey)
 
-            emojiLabel.clipsToBounds = true
+            emojiWrap.clipsToBounds = false
+            emojiWrap.backgroundColor = .clear
+            emojiWrap.isOpaque = false
+            emojiLabel.clipsToBounds = false
+            emojiLabel.backgroundColor = .clear
             emojiWrap.addSubview(emojiLabel)
-            emojiWrap.addLayoutBlock { [weak emojiLabel] view in
-                emojiLabel?.frame = view.bounds
+            emojiWrap.addLayoutBlock { [weak self, weak emojiLabel] view in
+                guard let self, let emojiLabel, emojiLabel.superview === self.emojiWrap else { return }
+                emojiLabel.frame = view.bounds
             }
             clipsToBounds = true
         }
@@ -259,7 +383,9 @@ class CVReactionCountsView: ManualStackView {
             pillState: PillState,
             cellMeasurement: CVCellMeasurement,
         ) {
-            if !isPlayingEntrance {
+            fromLocalUser = pillState.fromLocalUser
+
+            if !isPlayingPop {
                 layer.removeAllAnimations()
                 transform = .identity
                 alpha = 1
@@ -301,59 +427,65 @@ class CVReactionCountsView: ManualStackView {
             )
         }
 
-        override func reset() {
-            stopEntrancePop()
-            super.reset()
+        func prepareForLocalEntranceFlight() {
+            alpha = 1
+            transform = .identity
+            emojiLabel.alpha = 0
+            emojiLabel.transform = CGAffineTransform(translationX: 0, y: -36).scaledBy(x: 0.45, y: 0.45)
         }
 
-        func playEntrancePop() {
-            guard !isPlayingEntrance else { return }
-            isPlayingEntrance = true
-
-            // Subtle fast chip appear (scale/alpha only — layout frame stays put).
-            alpha = 0
-            transform = CGAffineTransform(scaleX: 0.88, y: 0.88)
-            UIView.animate(
-                withDuration: 0.14,
-                delay: 0,
-                options: [.curveEaseOut, .allowUserInteraction],
-            ) {
-                self.alpha = 1
-                self.transform = .identity
+        func playLocalEntrancePop() {
+            guard beginPop() else {
+                alpha = 1
+                emojiLabel.alpha = 1
+                emojiLabel.transform = .identity
+                return
             }
 
-            // Emoji pop into the chip.
-            clipsToBounds = false
+            // Pill already on-screen; only emoji flies in.
+            alpha = 1
+            transform = .identity
             emojiLabel.alpha = 0
-            emojiLabel.transform = CGAffineTransform(translationX: 0, y: -40).scaledBy(x: 0.4, y: 0.4)
+            emojiLabel.transform = CGAffineTransform(translationX: 0, y: -36).scaledBy(x: 0.45, y: 0.45)
 
-            // Peak ~14pt emoji +5px ≈ 1.36 scale; land back to identity in the pill.
-            UIView.animateKeyframes(withDuration: 0.42, delay: 0, options: []) {
-                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.38) {
+            UIView.animateKeyframes(withDuration: 0.28, delay: 0, options: [.allowUserInteraction]) {
+                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.35) {
                     self.emojiLabel.alpha = 1
-                    self.emojiLabel.transform = CGAffineTransform(translationX: 0, y: -40).scaledBy(x: 1.36, y: 1.36)
+                    self.emojiLabel.transform = CGAffineTransform(translationX: 0, y: -36).scaledBy(x: 1.32, y: 1.32)
                 }
-                UIView.addKeyframe(withRelativeStartTime: 0.38, relativeDuration: 0.62) {
+                UIView.addKeyframe(withRelativeStartTime: 0.35, relativeDuration: 0.65) {
                     self.emojiLabel.transform = .identity
                 }
             } completion: { [weak self] _ in
-                self?.finishEntrancePop()
+                self?.finishPop()
             }
         }
 
-        private func stopEntrancePop() {
-            layer.removeAllAnimations()
-            emojiLabel.layer.removeAllAnimations()
-            finishEntrancePop()
+        private func beginPop() -> Bool {
+            guard !isPlayingPop, let counts = superview else { return false }
+            // Only unclip the pill — never the message wrapper (giant layer flash).
+            isPlayingPop = true
+            clipsToBounds = false
+            counts.clipsToBounds = false
+            return true
         }
 
-        private func finishEntrancePop() {
-            isPlayingEntrance = false
-            transform = .identity
-            alpha = 1
+        func finishPop() {
+            isPlayingPop = false
             emojiLabel.transform = .identity
             emojiLabel.alpha = 1
+            transform = .identity
+            alpha = 1
             clipsToBounds = true
+            superview?.clipsToBounds = false
+        }
+
+        override func reset() {
+            isPlayingPop = false
+            fromLocalUser = false
+            emojiLabel.transform = .identity
+            emojiLabel.alpha = 1
+            super.reset()
         }
 
         static func measure(

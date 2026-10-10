@@ -285,7 +285,8 @@ public class NotificationActionHandler {
 
         do {
             try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-                ReactionManager.localUserReacted(
+                ReactionLayoutPending.markLocal(messageId: incomingMessage.uniqueId, isRemoving: false)
+                return ReactionManager.localUserReacted(
                     to: incomingMessage.uniqueId,
                     emoji: "👍",
                     isRemoving: false,

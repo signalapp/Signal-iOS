@@ -191,7 +191,6 @@ extension CVItemViewModelImpl {
         case reply
     }
 
-    /// Resolved double-tap action for this message, if any.
     var doubleTapAction: DoubleTapAction? {
         guard let message = interaction as? TSMessage, !message.wasRemotelyDeleted else {
             return nil

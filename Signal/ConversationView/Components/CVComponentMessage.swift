@@ -2042,7 +2042,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         guard let action = viewModel.doubleTapAction else {
             return nil
         }
-        // Match reaction-picker eligibility so we don't consume the gesture as a no-op.
         if action == .react, componentDelegate.hasPendingMessageRequest {
             return nil
         }
@@ -2549,7 +2548,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         public func canHandleDoubleTapGesture(_ sender: UIGestureRecognizer) -> Bool {
-            // Text / media / stickers can take a double-tap action; component logic decides which.
             return bodyTextView != nil || bodyMediaView != nil || stickerView != nil
         }
 

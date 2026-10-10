@@ -62,11 +62,16 @@ extension ConversationViewController: CVComponentDelegate {
         }
 
         let messageId = message.uniqueId
+        let now = CFAbsoluteTimeGetCurrent()
+        if let last = viewState.lastDoubleTapReactAtByMessageId[messageId], now - last < 0.3 {
+            return
+        }
+        viewState.lastDoubleTapReactAtByMessageId[messageId] = now
+
         let quickEmoji = SSKEnvironment.shared.databaseStorageRef.read {
             ReactionManager.preferredQuickReactionEmoji(transaction: $0)
         }
 
-        // Optimistic UI from the render snapshot; the write re-checks under the lock.
         let existing = viewModel.reactionState?.localUserEmojiVariant
         if let existing, existing != quickEmoji {
             return
@@ -74,7 +79,6 @@ extension ConversationViewController: CVComponentDelegate {
 
         ImpactHapticFeedback.impactOccurred(style: .light)
 
-        // Write only. Entrance: ReactionManager.pendingReactionEntrances → CVReactionCountsView.configure.
         SSKEnvironment.shared.databaseStorageRef.asyncWrite { tx in
             guard
                 let message = TSMessage.fetchMessageViaCache(uniqueId: messageId, transaction: tx),
@@ -87,10 +91,12 @@ extension ConversationViewController: CVComponentDelegate {
             if let latest, latest != quickEmoji {
                 return
             }
+            let isRemoving = latest == quickEmoji
+            ReactionLayoutPending.markLocal(messageId: messageId, isRemoving: isRemoving)
             ReactionManager.localUserReacted(
                 to: messageId,
                 emoji: quickEmoji,
-                isRemoving: latest == quickEmoji,
+                isRemoving: isRemoving,
                 tx: tx,
             )
         }

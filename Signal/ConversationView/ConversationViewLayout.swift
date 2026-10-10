@@ -781,6 +781,64 @@ public class ConversationViewLayout: UICollectionViewLayout {
     // Flag set before performBatchUpdates() and cleared after it _returns_.
     private var isPerformingBatchUpdates = false
 
+    /// Reaction reloadItems: hide old cell, grow new cell from captured pre-reload frame.
+    public var suppressReloadCrossfade = false
+    public var reactionReloadOldFrames = [IndexPath: CGRect]()
+    /// Index paths whose reaction is being removed — fade/scale out instead of hard hide.
+    public var reactionExitIndexPaths = Set<IndexPath>()
+
+    override public func initialLayoutAttributesForAppearingItem(
+        at itemIndexPath: IndexPath,
+    ) -> UICollectionViewLayoutAttributes? {
+        if suppressReloadCrossfade {
+            let source = layoutAttributesForItem(at: itemIndexPath)
+                ?? super.initialLayoutAttributesForAppearingItem(at: itemIndexPath)
+            guard let attributes = source?.copy() as? UICollectionViewLayoutAttributes else {
+                return nil
+            }
+            attributes.alpha = 1
+            attributes.isHidden = false
+            attributes.zIndex = 1
+            attributes.transform = .identity
+            attributes.transform3D = CATransform3DIdentity
+            // Start at pre-reload frame so height animates (final-frame snap killed rozsuwanie).
+            if let oldFrame = reactionReloadOldFrames[itemIndexPath] {
+                attributes.frame = oldFrame
+            }
+            // Avoid presentation-layer scale interpolation (looks like teleport on ProMotion).
+            attributes.center.x = attributes.frame.midX
+            attributes.center.y = attributes.frame.midY
+            return attributes
+        }
+        return super.initialLayoutAttributesForAppearingItem(at: itemIndexPath)
+    }
+
+    override public func finalLayoutAttributesForDisappearingItem(
+        at itemIndexPath: IndexPath,
+    ) -> UICollectionViewLayoutAttributes? {
+        guard let attributes = super.finalLayoutAttributesForDisappearingItem(at: itemIndexPath)?
+            .copy() as? UICollectionViewLayoutAttributes
+        else {
+            return nil
+        }
+        if suppressReloadCrossfade {
+            attributes.alpha = 0
+            attributes.zIndex = -1
+            attributes.transform = .identity
+            attributes.transform3D = CATransform3DIdentity
+            // Always hard-hide the outgoing reload cell — fade/scale left a ghost double.
+            attributes.isHidden = true
+            if reactionExitIndexPaths.contains(itemIndexPath),
+               let oldFrame = reactionReloadOldFrames[itemIndexPath]
+            {
+                // Collapse: keep outgoing cell sized to pre-reload frame so neighbors
+                // interpolate cleanly against a stable disappearing rect.
+                attributes.frame = oldFrame
+            }
+        }
+        return attributes
+    }
+
     private enum DelegateScrollContinuityMode: Equatable {
         case disabled
         case enabled(lastKnownDistanceFromBottom: CGFloat?)

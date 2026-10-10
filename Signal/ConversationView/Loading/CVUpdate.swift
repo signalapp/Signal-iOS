@@ -105,6 +105,18 @@ extension CVUpdate {
             case .stateChanged:
                 // The item changed, so we need to update it.
                 changedRenderItems.append(newRenderItem)
+                let oldReactions = oldRenderItem.componentState.reactions?.viewState
+                let newReactions = newRenderItem.componentState.reactions?.viewState
+                if oldReactions != newReactions,
+                   !ReactionLayoutPending.localEntrances.contains(itemId),
+                   !ReactionLayoutPending.exits.contains(itemId)
+                {
+                    if newReactions != nil, oldReactions == nil {
+                        ReactionLayoutPending.remoteEntrances.insert(itemId)
+                    } else if newReactions == nil, oldReactions != nil {
+                        ReactionLayoutPending.exits.insert(itemId)
+                    }
+                }
             case .appearanceChanged:
                 // Take note of the fact that only the _appearance_ of the
                 // item changed, not its state.
@@ -162,6 +174,21 @@ extension CVUpdate {
         var shouldAnimateUpdate = true
         var onlyAppearanceUpdateChanges = true
         var previousItemCount = oldItemCount
+        let batchHasStructuralChange = updateItems.contains {
+            switch $0.updateType {
+            case .insert, .delete, .move: return true
+            case .update: return false
+            }
+        }
+        // Pure reaction height reflow: always animate (bottom-message heuristic would kill it).
+        if !batchHasStructuralChange,
+           updateItems.contains(where: {
+               guard case .update = $0.updateType else { return false }
+               return ReactionLayoutPending.hasPending(for: $0.value.interactionUniqueId)
+           })
+        {
+            return true
+        }
         for updateItem in updateItems {
             guard shouldAnimateUpdate else {
                 // Exit early if we already know that we're not just
@@ -198,6 +225,10 @@ extension CVUpdate {
                 }
 
                 onlyAppearanceUpdateChanges = false
+                // Reaction height reflow - skip only when typing/insert/delete would teleport.
+                if !batchHasStructuralChange, ReactionLayoutPending.hasPending(for: itemId) {
+                    continue
+                }
                 switch renderItem.interactionType {
                 case .incomingMessage, .outgoingMessage, .typingIndicator:
                     // We skip animations for the last _two_

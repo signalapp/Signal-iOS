@@ -9079,17 +9079,23 @@
 /* Title for the 'chats' link in settings. */
 "SETTINGS_CHATS" = "Chats";
 
-/* Section title for double-tap message action settings. */
+/* Title for double-tap message action settings. */
 "SETTINGS_DOUBLE_TAP_SECTION_TITLE" = "Double-tap";
 
-/* Footer explaining configurable double-tap actions on messages. */
-"SETTINGS_DOUBLE_TAP_SECTION_FOOTER" = "Choose what double-tapping a message does. Long-press still opens the full action menu and reaction bar. Stickers and photos toggles apply when React is selected.";
+/* Footer under the Chats settings row that opens double-tap options. */
+"SETTINGS_DOUBLE_TAP_SECTION_FOOTER" = "Choose what happens when you double-tap a message.";
 
-/* Setting for double-tap action on messages from other people. */
-"SETTINGS_DOUBLE_TAP_OTHERS_MESSAGES" = "Other Messages";
+/* Section title for double-tap action on messages from other people. */
+"SETTINGS_DOUBLE_TAP_OTHERS_MESSAGES" = "Received Messages";
 
-/* Setting for double-tap action on your own messages. */
-"SETTINGS_DOUBLE_TAP_OWN_MESSAGES" = "Your Messages";
+/* Footer for double-tap action on messages from other people. */
+"SETTINGS_DOUBLE_TAP_OTHERS_FOOTER" = "Double-tap a received message to perform this action. Long press still opens the full menu.";
+
+/* Section title for double-tap action on your own messages. */
+"SETTINGS_DOUBLE_TAP_OWN_MESSAGES" = "Sent Messages";
+
+/* Footer for double-tap action on your own messages. */
+"SETTINGS_DOUBLE_TAP_OWN_FOOTER" = "Double-tap one of your sent messages to perform this action.";
 
 /* Double-tap action: disabled. */
 "SETTINGS_DOUBLE_TAP_ACTION_OFF" = "Off";
@@ -9104,10 +9110,13 @@
 "SETTINGS_DOUBLE_TAP_ACTION_EDIT" = "Edit";
 
 /* Toggle for allowing double-tap quick react on sticker messages. */
-"SETTINGS_DOUBLE_TAP_REACT_STICKERS" = "React to Stickers";
+"SETTINGS_DOUBLE_TAP_REACT_STICKERS" = "Stickers";
 
 /* Toggle for allowing double-tap quick react on photo and video messages. */
-"SETTINGS_DOUBLE_TAP_REACT_PHOTOS" = "React to Photos";
+"SETTINGS_DOUBLE_TAP_REACT_PHOTOS" = "Photos & Videos";
+
+/* Footer for toggles that allow double-tap react on stickers and photos. */
+"SETTINGS_DOUBLE_TAP_REACT_MEDIA_FOOTER" = "Allow double-tap to react on these message types. Opening the media still requires a single tap.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Clear Chat History";

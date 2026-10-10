@@ -171,8 +171,11 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         // Snapshot CVC layout state before we land the load;
         // we use this to ensure scroll continuity when landing the load.
+        // Reaction reflow: prefer anchoring on the bubble below so height change grows upward.
+        let preferredAnchor = update.loadRequest.preferredScrollContinuityAnchorInteractionId
+            ?? Self.preferredScrollAnchorBelowReaction(prevItems: update.prevRenderState.items)
         let scrollContinuityToken = layout.buildScrollContinuityToken(
-            preferredAnchorInteractionId: update.loadRequest.preferredScrollContinuityAnchorInteractionId,
+            preferredAnchorInteractionId: preferredAnchor,
         )
 
         // CVC will often use this state to ensure scroll continuity
@@ -569,6 +572,13 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         //
         // We prefer the second mechanism and only use the first mechanism to
         // handle special cases (ie. when shouldUseDelegateScrollContinuity is true).
+        // Stock path + thin reaction overlay: reload reacted cell, skip neighbors,
+        // suppress reload crossfade (ManualLayout), then pop the pill.
+        let isReactionLayout = items.contains { item in
+            guard case .update = item.updateType else { return false }
+            return ReactionLayoutPending.hasPending(for: item.value.interactionUniqueId)
+        }
+
         let scrollContinuity: ScrollContinuity = {
             guard let loadType = renderState.loadType else {
                 owsFailDebug("Missing loadType.")
@@ -578,6 +588,13 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             // TODO: We could extend the layout's invalidation-based approach
             // to scroll continuity to support more of these cases.
             if shouldUseDelegateScrollContinuity {
+                return .delegateScrollContinuity
+            }
+
+            // Reaction height change: never pre-bake contentOffsetAdjustment
+            // (instant offset + animated frames = micro-teleports). Keep offset
+            // in sync via targetContentOffset during the batch animation.
+            if isReactionLayout {
                 return .delegateScrollContinuity
             }
 
@@ -627,7 +644,14 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                     self.collectionView.moveItem(at: oldIndexPath, to: newIndexPath)
                 case .update(let oldIndex, _):
                     let indexPath = IndexPath(row: oldIndex, section: section)
-                    self.collectionView.reloadItems(at: [indexPath])
+                    let itemId = item.value.interactionUniqueId
+                    if ReactionLayoutPending.hasPending(for: itemId) {
+                        // Consume exit flag after old frame was captured (collapse anim).
+                        _ = ReactionLayoutPending.exits.remove(itemId)
+                        self.collectionView.reloadItems(at: [indexPath])
+                    } else if !isReactionLayout {
+                        self.collectionView.reloadItems(at: [indexPath])
+                    }
                 }
             }
         }
@@ -647,7 +671,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
             self.updateViewToReflectLoad(loadedRenderState: renderState)
 
-            if shouldAnimateUpdate {
+            if shouldAnimateUpdate || isReactionLayout {
                 self.loadDidLand()
             }
 
@@ -665,19 +689,71 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             }
         }
 
-        // We use an obj-c free function so that we can handle NSException.
+        // Reaction height reflow: expand/collapse old→new. Local dymek+heart start as soon as
+        // the pill has a real size (overlaps expand) — not only after completion.
+        self.layout.suppressReloadCrossfade = isReactionLayout
+        self.layout.reactionReloadOldFrames = [:]
+        self.layout.reactionExitIndexPaths = []
+        if isReactionLayout {
+            let section = Self.messageSection
+            for item in items {
+                guard case .update(let oldIndex, _) = item.updateType else { continue }
+                let itemId = item.value.interactionUniqueId
+                guard ReactionLayoutPending.hasPending(for: itemId) else { continue }
+                let indexPath = IndexPath(row: oldIndex, section: section)
+                if let frame = self.layout.layoutAttributesForItem(at: indexPath)?.frame {
+                    self.layout.reactionReloadOldFrames[indexPath] = frame
+                }
+                if ReactionLayoutPending.exits.contains(itemId) {
+                    self.layout.reactionExitIndexPaths.insert(indexPath)
+                }
+            }
+            CATransaction.begin()
+            CATransaction.setAnimationDuration(0.2)
+            CATransaction.setAnimationTimingFunction(
+                CAMediaTimingFunction(name: .easeInEaseOut),
+            )
+        }
+
         self.collectionView.cvc_performBatchUpdates(
             batchUpdatesBlock,
-            completion: completion,
-            animated: shouldAnimateUpdate,
+            completion: { finished in
+                self.layout.suppressReloadCrossfade = false
+                self.layout.reactionReloadOldFrames = [:]
+                self.layout.reactionExitIndexPaths = []
+                if isReactionLayout {
+                    CVReactionCountsView.flushPendingPops()
+                }
+                completion(finished)
+            },
+            animated: shouldAnimateUpdate || isReactionLayout,
             scrollContinuity: scrollContinuity,
             lastKnownDistanceFromBottom: updateToken.lastKnownDistanceFromBottom,
             cvc: self,
         )
 
-        if !shouldAnimateUpdate {
+        if isReactionLayout {
+            CATransaction.commit()
+            // Let the first ease-in frames land, then overlap dymek+heart with expand.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.03) {
+                CVReactionCountsView.flushPendingPops()
+            }
+        }
+
+        if !shouldAnimateUpdate, !isReactionLayout {
             self.loadDidLand()
         }
+    }
+
+    private static func preferredScrollAnchorBelowReaction(prevItems: [CVRenderItem]) -> String? {
+        for (idx, item) in prevItems.enumerated() {
+            guard ReactionLayoutPending.hasPending(for: item.interactionUniqueId) else { continue }
+            for next in prevItems.suffix(from: idx + 1) where next.canBeUsedForContinuity {
+                return next.interactionUniqueId
+            }
+            return nil
+        }
+        return nil
     }
 
     private var scrolledToEdgeTolerancePoints: CGFloat {

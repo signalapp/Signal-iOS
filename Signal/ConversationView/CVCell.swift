@@ -124,6 +124,12 @@ public class CVCell: UICollectionViewCell, CVRootComponentHost {
         if !isReusingDedicatedCell {
             layoutMargins = .zero
             contentView.layoutMargins = .zero
+            // reconfigureItems skips prepareForReuse — without this, configureForRendering
+            // hits addSubviewToFillSuperviewEdges on views that still have a superview.
+            if componentView != nil {
+                contentView.removeAllSubviews()
+                componentView?.reset()
+            }
         }
 
         configureForHosting(

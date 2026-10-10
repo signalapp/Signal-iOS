@@ -153,8 +153,7 @@ extension ConversationViewController: SingleOrDoubleTapGestureDelegate {
             return false
         }
 
-        // Fast double-tap should react/reply/edit instead of opening media or sticker details.
-        // Defer single-tap until the double-tap window times out.
+        // Defer single-tap until double-tap window times out.
         if cell.canHandleDoubleTap(sender: sender, componentDelegate: self) {
             viewState.deferredSingleTap = { [weak self, weak cell] in
                 guard let self, let cell else { return false }

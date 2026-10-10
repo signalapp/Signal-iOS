@@ -208,7 +208,14 @@ public class UserNotificationPresenter {
         do {
             try await Self.notificationCenter.add(request)
         } catch {
-            owsFailDebug("Error presenting notification with identifier \(notificationIdentifier): \(error)")
+            let nsError = error as NSError
+            // UN errors on simulator / denied perms / empty content — not worth TrapDebugger.
+            // 2003 = not authorized, 1401 = no user-visible content (empty title/body after intent).
+            if nsError.domain == UNErrorDomain {
+                Logger.warn("Skipping notification \(notificationIdentifier): \(error)")
+            } else {
+                owsFailDebug("Error presenting notification with identifier \(notificationIdentifier): \(error)")
+            }
         }
     }
 

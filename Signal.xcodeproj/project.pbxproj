@@ -1751,6 +1751,7 @@
 		88B2234A283F290400A25048 /* StoryPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B22349283F290400A25048 /* StoryPrivacySettingsViewController.swift */; };
 		88B2234C284FABE600A25048 /* StoryThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B2234B284FABE600A25048 /* StoryThumbnailView.swift */; };
 		88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */; };
+		E8F4A2022A3B4C5D6E7F8002 /* ReactionLayoutPending.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F4A2012A3B4C5D6E7F8001 /* ReactionLayoutPending.swift */; };
 		88B6D673280770C4005D86EC /* TextAttachmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885275BF27E26775003F2F9B /* TextAttachmentView.swift */; };
 		88B6D674280770C4005D86EC /* StoryMessage+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B6D67128076F37005D86EC /* StoryMessage+SignalUI.swift */; };
 		88B986F4287F5B6500F8C74D /* NewGroupStoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B986F3287F5B6500F8C74D /* NewGroupStoryViewController.swift */; };
@@ -6138,6 +6139,7 @@
 		88B22349283F290400A25048 /* StoryPrivacySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPrivacySettingsViewController.swift; sourceTree = "<group>"; };
 		88B2234B284FABE600A25048 /* StoryThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryThumbnailView.swift; sourceTree = "<group>"; };
 		88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionsDetailSheet.swift; sourceTree = "<group>"; };
+		E8F4A2012A3B4C5D6E7F8001 /* ReactionLayoutPending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionLayoutPending.swift; sourceTree = "<group>"; };
 		88B6D67128076F37005D86EC /* StoryMessage+SignalUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StoryMessage+SignalUI.swift"; sourceTree = "<group>"; };
 		88B986F3287F5B6500F8C74D /* NewGroupStoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewGroupStoryViewController.swift; sourceTree = "<group>"; };
 		88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionReactionState.swift; sourceTree = "<group>"; };
@@ -10347,6 +10349,7 @@
 				8855DF88238F2E690066D96F /* EmojiCountsCollectionView.swift */,
 				8855DF86238F1E0C0066D96F /* EmojiReactorsTableView.swift */,
 				88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */,
+				E8F4A2012A3B4C5D6E7F8001 /* ReactionLayoutPending.swift */,
 				88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */,
 			);
 			path = Reactions;
@@ -19254,6 +19257,7 @@
 				88863A56280CD04B00977F69 /* ReactionFlybyAnimation.swift in Sources */,
 				D9E43C0B2CC194140001536E /* ReactionsBurstView.swift in Sources */,
 				88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */,
+				E8F4A2022A3B4C5D6E7F8002 /* ReactionLayoutPending.swift in Sources */,
 				D9E43C0C2CC194140001536E /* ReactionsSink.swift in Sources */,
 				8809CE8A22F93C2200D38867 /* RecentPhotoCollectionView.swift in Sources */,
 				04E66D402DFC825B0059DBAC /* RecoveryKeyReminderMegaphone.swift in Sources */,

@@ -199,7 +199,6 @@ public class SSKPreferences: NSObject {
     private static var doubleTapOthersMessagesActionKey: String { "doubleTapOthersMessagesAction" }
     private static var doubleTapOwnMessagesActionKey: String { "doubleTapOwnMessagesAction" }
 
-    /// Default: react.
     public static func doubleTapOthersMessagesAction(transaction: DBReadTransaction) -> DoubleTapOthersMessagesAction {
         stringPref(DoubleTapOthersMessagesAction.self, key: doubleTapOthersMessagesActionKey, default: .react, transaction: transaction)
     }
@@ -211,7 +210,6 @@ public class SSKPreferences: NSObject {
         store.setString(action.rawValue, key: doubleTapOthersMessagesActionKey, transaction: transaction)
     }
 
-    /// Default: edit (existing double-tap-to-edit).
     public static func doubleTapOwnMessagesAction(transaction: DBReadTransaction) -> DoubleTapOwnMessagesAction {
         stringPref(DoubleTapOwnMessagesAction.self, key: doubleTapOwnMessagesActionKey, default: .edit, transaction: transaction)
     }
@@ -226,7 +224,6 @@ public class SSKPreferences: NSObject {
     private static var doubleTapReactStickersEnabledKey: String { "doubleTapReactStickersEnabled" }
     private static var doubleTapReactPhotosEnabledKey: String { "doubleTapReactPhotosEnabled" }
 
-    /// Default: true. When false, double-tap React skips sticker messages.
     public static func isDoubleTapReactEnabledForStickers(transaction: DBReadTransaction) -> Bool {
         store.getBool(doubleTapReactStickersEnabledKey, defaultValue: true, transaction: transaction)
     }
@@ -235,7 +232,6 @@ public class SSKPreferences: NSObject {
         store.setBool(value, key: doubleTapReactStickersEnabledKey, transaction: transaction)
     }
 
-    /// Default: true. When false, double-tap React skips photo/video (body media) messages.
     public static func isDoubleTapReactEnabledForPhotos(transaction: DBReadTransaction) -> Bool {
         store.getBool(doubleTapReactPhotosEnabledKey, defaultValue: true, transaction: transaction)
     }

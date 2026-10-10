@@ -171,6 +171,7 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
                 }
 
                 SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
+                    ReactionLayoutPending.markLocal(messageId: message.uniqueId, isRemoving: isRemoving)
                     ReactionManager.localUserReacted(
                         to: message.uniqueId,
                         emoji: reaction,

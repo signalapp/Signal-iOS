@@ -11,9 +11,6 @@ public class ReactionManager: NSObject {
     public static let localUserReacted = Notification.Name("localUserReacted")
     public static let defaultEmojiSet = ["❤️", "👍", "👎", "😂", "😮", "😢"]
 
-    /// Message ids waiting for reaction-pill entrance after a local add.
-    public static let pendingReactionEntrances = AtomicSet<String>(lock: .init())
-
     private static let emojiSetKVS = KeyValueStore(collection: "EmojiSetKVS")
     private static let emojiSetKey = "EmojiSetKey"
 
@@ -25,7 +22,6 @@ public class ReactionManager: NSObject {
         return emojiSetKVS.getStringArray(emojiSetKey, transaction: transaction)
     }
 
-    /// First emoji from the user's quick-reaction list (custom if set, otherwise default ❤️).
     public class func preferredQuickReactionEmoji(transaction: DBReadTransaction) -> String {
         if let customFirst = customEmojiSet(transaction: transaction)?.first?.strippedOrNil {
             return customFirst
@@ -52,12 +48,7 @@ public class ReactionManager: NSObject {
             owsFailDebug("Error: \(error)")
             return Promise(error: error)
         }
-        // Mark before commit so render can consume even if UI reloads in the same turn.
-        if !isRemoving {
-            pendingReactionEntrances.insert(messageUniqueId)
-        }
         tx.addSyncCompletion {
-            // ChatList clears search on this name; entrance uses pendingReactionEntrances.
             NotificationCenter.default.post(name: ReactionManager.localUserReacted, object: nil)
         }
         let preparedMessage = PreparedOutgoingMessage.preprepared(transientMessageWithoutAttachments: outgoingMessage)
