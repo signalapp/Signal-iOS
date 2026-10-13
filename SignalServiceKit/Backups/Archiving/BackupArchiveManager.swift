@@ -6,6 +6,8 @@
 import Foundation
 public import LibSignalClient
 
+public enum BackupArchive {}
+
 public enum BackupRestoreState: Int, Codable {
     /// Has never restored from a backup in this database's history
     case none = 0

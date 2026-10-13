@@ -8,7 +8,7 @@ import LibSignalClient
 
 /// In charge of fetching avatars for groups as well as avatars and updated profiles
 /// for contacts we restore from a backup.
-public class BackupArchiveAvatarFetcher {
+class BackupArchiveAvatarFetcher {
 
     private let db: any DB
     private let reachabilityManager: SSKReachabilityManager
@@ -16,7 +16,7 @@ public class BackupArchiveAvatarFetcher {
     private let taskQueue: TaskQueueLoader<TaskRunner>
     private let tsAccountManager: TSAccountManager
 
-    public init(
+    init(
         appReadiness: AppReadiness,
         dateProvider: @escaping DateProvider,
         db: any DB,
@@ -100,7 +100,7 @@ public class BackupArchiveAvatarFetcher {
         try record.insert(tx.database)
     }
 
-    public func runIfNeeded() async throws {
+    func runIfNeeded() async throws {
         guard tsAccountManager.localIdentifiersWithMaybeSneakyTransaction != nil else {
             return
         }

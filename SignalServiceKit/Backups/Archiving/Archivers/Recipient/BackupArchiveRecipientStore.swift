@@ -5,7 +5,7 @@
 
 import GRDB
 
-public class BackupArchiveRecipientStore {
+class BackupArchiveRecipientStore {
 
     private let recipientTable: RecipientDatabaseTable
     private let searchableNameIndexer: SearchableNameIndexer

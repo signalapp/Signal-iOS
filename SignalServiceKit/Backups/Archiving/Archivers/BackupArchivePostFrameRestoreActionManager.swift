@@ -5,7 +5,7 @@
 
 import LibSignalClient
 
-public class BackupArchivePostFrameRestoreActionManager {
+class BackupArchivePostFrameRestoreActionManager {
     typealias RecipientId = BackupArchive.RecipientId
     typealias RecipientActions = BackupArchive.RecipientRestoringContext.PostFrameRestoreActions
     typealias ChatId = BackupArchive.ChatId

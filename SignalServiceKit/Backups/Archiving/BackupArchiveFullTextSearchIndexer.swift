@@ -5,7 +5,7 @@
 
 import GRDB
 
-public protocol BackupArchiveFullTextSearchIndexer {
+protocol BackupArchiveFullTextSearchIndexer {
 
     /// Index all searchable threads.
     /// Does not cover message contents (or mentions in messages)
@@ -20,7 +20,7 @@ public protocol BackupArchiveFullTextSearchIndexer {
     func scheduleMessagesJob(tx: DBWriteTransaction) throws
 }
 
-public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearchIndexer {
+class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearchIndexer {
 
     private let appReadiness: AppReadiness
     private let dateProvider: DateProviderMonotonic
@@ -31,7 +31,7 @@ public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearch
     private let searchableNameIndexer: SearchableNameIndexer
     private let taskQueue: SerialTaskQueue
 
-    public init(
+    init(
         appReadiness: AppReadiness,
         dateProvider: @escaping DateProviderMonotonic,
         db: any DB,
@@ -54,11 +54,11 @@ public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearch
         }
     }
 
-    public func indexThreads(tx: DBWriteTransaction) {
+    func indexThreads(tx: DBWriteTransaction) {
         searchableNameIndexer.indexThreads(tx: tx)
     }
 
-    public func scheduleMessagesJob(tx: DBWriteTransaction) throws {
+    func scheduleMessagesJob(tx: DBWriteTransaction) throws {
         setMinInteractionRowIdExclusive(nil, tx: tx)
         let maxInteractionRowId = try Int64.fetchOne(
             tx.database,

@@ -6,12 +6,12 @@
 import LibSignalClient
 
 extension BackupArchive {
-    public typealias ArchiveAccountDataResult = ArchiveSingleFrameResult<Void>
-    public typealias RestoreAccountDataResult = RestoreFrameResult
+    typealias ArchiveAccountDataResult = ArchiveSingleFrameResult<Void>
+    typealias RestoreAccountDataResult = RestoreFrameResult
 }
 
 /// Archives the ``BackupProto_AccountData`` frame.
-public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
     private let adminDeleteManager: AdminDeleteManager
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupSettingsStore: BackupSettingsStore
@@ -43,7 +43,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
     private let udManager: BackupArchive.Shims.UDManager
     private let usernameEducationManager: UsernameEducationManager
 
-    public init(
+    init(
         adminDeleteManager: AdminDeleteManager,
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
         backupSettingsStore: BackupSettingsStore,

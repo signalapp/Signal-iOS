@@ -523,7 +523,7 @@ public class PollStore {
 // MARK: - Backups
 
 extension PollStore {
-    public func backupPollData(
+    func backupPollData(
         question: String,
         message: TSMessage,
         interactionId: Int64,

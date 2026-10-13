@@ -4,18 +4,18 @@
 //
 
 extension BackupArchive {
-    public struct InteractionUniqueId: Hashable {
+    struct InteractionUniqueId: Hashable {
         let value: String
         let timestamp: UInt64
 
-        public init(interaction: TSInteraction) {
+        init(interaction: TSInteraction) {
             self.value = interaction.uniqueId
             self.timestamp = interaction.timestamp
         }
 
         /// Constructs an ID for an `InteractionRecord` from which constructing
         /// a `TSInteraction` fails.
-        public init(invalidInteractionRecord: InteractionRecord) {
+        init(invalidInteractionRecord: InteractionRecord) {
             self.value = invalidInteractionRecord.uniqueId
             self.timestamp = invalidInteractionRecord.timestamp
         }

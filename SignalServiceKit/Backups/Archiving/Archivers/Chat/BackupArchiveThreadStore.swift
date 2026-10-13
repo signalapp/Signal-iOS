@@ -5,7 +5,7 @@
 
 import LibSignalClient
 
-public final class BackupArchiveThreadStore {
+final class BackupArchiveThreadStore {
 
     private let threadStore: ThreadStore
 

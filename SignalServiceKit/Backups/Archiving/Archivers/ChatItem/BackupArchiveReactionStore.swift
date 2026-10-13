@@ -6,9 +6,9 @@
 import GRDB
 import LibSignalClient
 
-public class BackupArchiveReactionStore {
+class BackupArchiveReactionStore {
 
-    public init() {}
+    init() {}
 
     // MARK: - Archiving
 

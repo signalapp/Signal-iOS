@@ -8,7 +8,7 @@ import LibSignalClient
 
 extension BackupArchive {
 
-    public class AccountDataRestoringContext: RestoringContext {
+    class AccountDataRestoringContext: RestoringContext {
         let backupPurpose: MessageBackupPurpose
         /// Will only be nil if there was no earier AccountData frame to set it, which
         /// should be treated as an error at read time when processing all subsequent frames.

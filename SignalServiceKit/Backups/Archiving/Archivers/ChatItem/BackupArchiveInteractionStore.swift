@@ -6,7 +6,7 @@
 import GRDB
 import LibSignalClient
 
-public final class BackupArchiveInteractionStore {
+final class BackupArchiveInteractionStore {
 
     private let interactionStore: InteractionStore
 

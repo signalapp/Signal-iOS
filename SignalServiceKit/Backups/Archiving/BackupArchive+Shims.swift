@@ -7,102 +7,100 @@ import Foundation
 import GRDB
 import LibSignalClient
 
-public enum BackupArchive {}
-
 extension BackupArchive {
-    public enum Shims {
-        public typealias BlockingManager = _MessageBackup_BlockingManagerShim
-        public typealias ContactManager = _MessageBackup_ContactManagerShim
-        public typealias DonationSubscriptionManager = _MessageBackup_DonationSubscriptionManagerShim
-        public typealias ImageQuality = _MessageBackup_ImageQualityShim
-        public typealias OWS2FAManager = _MessageBackup_OWS2FAManagerShim
-        public typealias Preferences = _MessageBackup_PreferencesShim
-        public typealias ProfileManager = _MessageBackup_ProfileManagerShim
-        public typealias ReactionManager = _MessageBackup_ReactionManagerShim
-        public typealias ReceiptManager = _MessageBackup_ReceiptManagerShim
-        public typealias ScreenLock = _MessageBackup_ScreenLockShim
-        public typealias SSKPreferences = _MessageBackup_SSKPreferencesShim
-        public typealias StoryManager = _MessageBackup_StoryManagerShim
-        public typealias SystemStoryManager = _MessageBackup_SystemStoryManagerShim
-        public typealias TypingIndicators = _MessageBackup_TypingIndicatorsShim
-        public typealias UDManager = _MessageBackup_UDManagerShim
+    enum Shims {
+        typealias BlockingManager = _MessageBackup_BlockingManagerShim
+        typealias ContactManager = _MessageBackup_ContactManagerShim
+        typealias DonationSubscriptionManager = _MessageBackup_DonationSubscriptionManagerShim
+        typealias ImageQuality = _MessageBackup_ImageQualityShim
+        typealias OWS2FAManager = _MessageBackup_OWS2FAManagerShim
+        typealias Preferences = _MessageBackup_PreferencesShim
+        typealias ProfileManager = _MessageBackup_ProfileManagerShim
+        typealias ReactionManager = _MessageBackup_ReactionManagerShim
+        typealias ReceiptManager = _MessageBackup_ReceiptManagerShim
+        typealias ScreenLock = _MessageBackup_ScreenLockShim
+        typealias SSKPreferences = _MessageBackup_SSKPreferencesShim
+        typealias StoryManager = _MessageBackup_StoryManagerShim
+        typealias SystemStoryManager = _MessageBackup_SystemStoryManagerShim
+        typealias TypingIndicators = _MessageBackup_TypingIndicatorsShim
+        typealias UDManager = _MessageBackup_UDManagerShim
     }
 
-    public enum Wrappers {
-        public typealias BlockingManager = _MessageBackup_BlockingManagerWrapper
-        public typealias ContactManager = _MessageBackup_ContactManagerWrapper
-        public typealias DonationSubscriptionManager = _MessageBackup_DonationSubscriptionManagerWrapper
-        public typealias ImageQuality = _MessageBackup_ImageQualityWrapper
-        public typealias OWS2FAManager = _MessageBackup_OWS2FAManagerWrapper
-        public typealias Preferences = _MessageBackup_PreferencesWrapper
-        public typealias ProfileManager = _MessageBackup_ProfileManagerWrapper
-        public typealias ReactionManager = _MessageBackup_ReactionManagerWrapper
-        public typealias ReceiptManager = _MessageBackup_ReceiptManagerWrapper
-        public typealias ScreenLock = _MessageBackup_ScreenLockWrapper
-        public typealias SSKPreferences = _MessageBackup_SSKPreferencesWrapper
-        public typealias StoryManager = _MessageBackup_StoryManagerWrapper
-        public typealias SystemStoryManager = _MessageBackup_SystemStoryManagerWrapper
-        public typealias TypingIndicators = _MessageBackup_TypingIndicatorsWrapper
-        public typealias UDManager = _MessageBackup_UDManagerWrapper
+    enum Wrappers {
+        typealias BlockingManager = _MessageBackup_BlockingManagerWrapper
+        typealias ContactManager = _MessageBackup_ContactManagerWrapper
+        typealias DonationSubscriptionManager = _MessageBackup_DonationSubscriptionManagerWrapper
+        typealias ImageQuality = _MessageBackup_ImageQualityWrapper
+        typealias OWS2FAManager = _MessageBackup_OWS2FAManagerWrapper
+        typealias Preferences = _MessageBackup_PreferencesWrapper
+        typealias ProfileManager = _MessageBackup_ProfileManagerWrapper
+        typealias ReactionManager = _MessageBackup_ReactionManagerWrapper
+        typealias ReceiptManager = _MessageBackup_ReceiptManagerWrapper
+        typealias ScreenLock = _MessageBackup_ScreenLockWrapper
+        typealias SSKPreferences = _MessageBackup_SSKPreferencesWrapper
+        typealias StoryManager = _MessageBackup_StoryManagerWrapper
+        typealias SystemStoryManager = _MessageBackup_SystemStoryManagerWrapper
+        typealias TypingIndicators = _MessageBackup_TypingIndicatorsWrapper
+        typealias UDManager = _MessageBackup_UDManagerWrapper
     }
 }
 
 // MARK: - BlockingManager
 
-public protocol _MessageBackup_BlockingManagerShim {
+protocol _MessageBackup_BlockingManagerShim {
 
     func addBlockedRecipient(_ recipient: inout SignalRecipient, blockedAt: BlockedTimestamp, tx: DBWriteTransaction)
     func addBlockedGroup(_ groupRecord: inout GroupRecord, blockedAt: BlockedTimestamp, tx: DBWriteTransaction)
 }
 
-public class _MessageBackup_BlockingManagerWrapper: _MessageBackup_BlockingManagerShim {
+class _MessageBackup_BlockingManagerWrapper: _MessageBackup_BlockingManagerShim {
 
     private let blockingManager: BlockingManager
 
-    public init(_ blockingManager: BlockingManager) {
+    init(_ blockingManager: BlockingManager) {
         self.blockingManager = blockingManager
     }
 
-    public func addBlockedRecipient(_ recipient: inout SignalRecipient, blockedAt: BlockedTimestamp, tx: DBWriteTransaction) {
+    func addBlockedRecipient(_ recipient: inout SignalRecipient, blockedAt: BlockedTimestamp, tx: DBWriteTransaction) {
         blockingManager.addBlockedRecipient(&recipient, blockedAt: blockedAt, blockMode: .backupRestore, tx: tx)
     }
 
-    public func addBlockedGroup(_ groupRecord: inout GroupRecord, blockedAt: BlockedTimestamp, tx: DBWriteTransaction) {
+    func addBlockedGroup(_ groupRecord: inout GroupRecord, blockedAt: BlockedTimestamp, tx: DBWriteTransaction) {
         blockingManager.addBlockedGroup(&groupRecord, blockedAt: blockedAt, blockMode: .backupRestore, tx: tx)
     }
 }
 
 // MARK: - ContactManager
 
-public protocol _MessageBackup_ContactManagerShim {
+protocol _MessageBackup_ContactManagerShim {
     func displayName(_ address: SignalServiceAddress, tx: DBWriteTransaction) -> String
     func fetchSignalAccount(_ address: SignalServiceAddress, tx: DBReadTransaction) -> SignalAccount?
     func insertSignalAccount(_ account: SignalAccount, tx: DBWriteTransaction)
 }
 
-public class _MessageBackup_ContactManagerWrapper: _MessageBackup_ContactManagerShim {
+class _MessageBackup_ContactManagerWrapper: _MessageBackup_ContactManagerShim {
     private let contactManager: any ContactManager
 
     init(_ contactManager: any ContactManager) {
         self.contactManager = contactManager
     }
 
-    public func displayName(_ address: SignalServiceAddress, tx: DBWriteTransaction) -> String {
+    func displayName(_ address: SignalServiceAddress, tx: DBWriteTransaction) -> String {
         return contactManager.displayName(for: address, tx: tx).resolvedValue()
     }
 
-    public func fetchSignalAccount(_ address: SignalServiceAddress, tx: DBReadTransaction) -> SignalAccount? {
+    func fetchSignalAccount(_ address: SignalServiceAddress, tx: DBReadTransaction) -> SignalAccount? {
         return contactManager.fetchSignalAccount(for: address, transaction: tx)
     }
 
-    public func insertSignalAccount(_ account: SignalAccount, tx: DBWriteTransaction) {
+    func insertSignalAccount(_ account: SignalAccount, tx: DBWriteTransaction) {
         account.anyInsert(transaction: tx)
     }
 }
 
 // MARK: - DonationSubscriptionManager
 
-public protocol _MessageBackup_DonationSubscriptionManagerShim {
+protocol _MessageBackup_DonationSubscriptionManagerShim {
     func displayBadgesOnProfile(tx: DBReadTransaction) -> Bool
     func setDisplayBadgesOnProfile(value: Bool, tx: DBWriteTransaction)
     func getSubscriberID(tx: DBReadTransaction) -> Data?
@@ -113,66 +111,66 @@ public protocol _MessageBackup_DonationSubscriptionManagerShim {
     func setUserManuallyCancelledSubscription(value: Bool, tx: DBWriteTransaction)
 }
 
-public class _MessageBackup_DonationSubscriptionManagerWrapper: _MessageBackup_DonationSubscriptionManagerShim {
+class _MessageBackup_DonationSubscriptionManagerWrapper: _MessageBackup_DonationSubscriptionManagerShim {
     private let donationSubscriptionManager: DonationSubscriptionManager
 
-    public init(_ donationSubscriptionManager: DonationSubscriptionManager) {
+    init(_ donationSubscriptionManager: DonationSubscriptionManager) {
         self.donationSubscriptionManager = donationSubscriptionManager
     }
 
-    public func displayBadgesOnProfile(tx: DBReadTransaction) -> Bool {
+    func displayBadgesOnProfile(tx: DBReadTransaction) -> Bool {
         donationSubscriptionManager.displayBadgesOnProfile(tx: tx)
     }
 
-    public func setDisplayBadgesOnProfile(value: Bool, tx: DBWriteTransaction) {
+    func setDisplayBadgesOnProfile(value: Bool, tx: DBWriteTransaction) {
         donationSubscriptionManager.setDisplayBadgesOnProfile(value, updateStorageService: false, tx: tx)
     }
 
-    public func getSubscriberID(tx: DBReadTransaction) -> Data? {
+    func getSubscriberID(tx: DBReadTransaction) -> Data? {
         donationSubscriptionManager.getSubscriberID(tx: tx)
     }
 
-    public func setSubscriberID(subscriberID: Data, tx: DBWriteTransaction) {
+    func setSubscriberID(subscriberID: Data, tx: DBWriteTransaction) {
         donationSubscriptionManager.setSubscriberID(subscriberID, tx: tx)
     }
 
-    public func getSubscriberCurrencyCode(tx: DBReadTransaction) -> String? {
+    func getSubscriberCurrencyCode(tx: DBReadTransaction) -> String? {
         donationSubscriptionManager.getSubscriberCurrencyCode(tx: tx)
     }
 
-    public func setSubscriberCurrencyCode(currencyCode: Currency.Code?, tx: DBWriteTransaction) {
+    func setSubscriberCurrencyCode(currencyCode: Currency.Code?, tx: DBWriteTransaction) {
         donationSubscriptionManager.setSubscriberCurrencyCode(currencyCode, tx: tx)
     }
 
-    public func userManuallyCancelledSubscription(tx: DBReadTransaction) -> Bool {
+    func userManuallyCancelledSubscription(tx: DBReadTransaction) -> Bool {
         donationSubscriptionManager.userManuallyCancelledSubscription(tx: tx)
     }
 
-    public func setUserManuallyCancelledSubscription(value: Bool, tx: DBWriteTransaction) {
+    func setUserManuallyCancelledSubscription(value: Bool, tx: DBWriteTransaction) {
         donationSubscriptionManager.setUserManuallyCancelledSubscription(value, updateStorageService: false, tx: tx)
     }
 }
 
 // MARK: - ImageQuality
 
-public protocol _MessageBackup_ImageQualityShim {
+protocol _MessageBackup_ImageQualityShim {
     func setValue(_ imageQuality: ImageQuality, tx: DBWriteTransaction)
     func fetchValue(tx: DBReadTransaction) -> ImageQuality
 }
 
-public class _MessageBackup_ImageQualityWrapper: _MessageBackup_ImageQualityShim {
-    public func setValue(_ imageQuality: ImageQuality, tx: DBWriteTransaction) {
+class _MessageBackup_ImageQualityWrapper: _MessageBackup_ImageQualityShim {
+    func setValue(_ imageQuality: ImageQuality, tx: DBWriteTransaction) {
         ImageQuality.setValue(imageQuality, tx: tx)
     }
 
-    public func fetchValue(tx: DBReadTransaction) -> ImageQuality {
+    func fetchValue(tx: DBReadTransaction) -> ImageQuality {
         return ImageQuality.fetchValue(tx: tx)
     }
 }
 
 // MARK: - OWS2FAManager
 
-public protocol _MessageBackup_OWS2FAManagerShim {
+protocol _MessageBackup_OWS2FAManagerShim {
     func getPin(tx: DBReadTransaction) -> String?
     func restorePinFromBackup(_ pin: String, tx: DBWriteTransaction)
     func areRemindersEnabled(tx: DBReadTransaction) -> Bool
@@ -183,30 +181,30 @@ public protocol _MessageBackup_OWS2FAManagerShim {
     )
 }
 
-public class _MessageBackup_OWS2FAManagerWrapper: _MessageBackup_OWS2FAManagerShim {
+class _MessageBackup_OWS2FAManagerWrapper: _MessageBackup_OWS2FAManagerShim {
     private let ows2FAManager: OWS2FAManager
 
     init(_ ows2FAManager: OWS2FAManager) {
         self.ows2FAManager = ows2FAManager
     }
 
-    public func getPin(tx: DBReadTransaction) -> String? {
+    func getPin(tx: DBReadTransaction) -> String? {
         ows2FAManager.pinCode(transaction: tx)
     }
 
-    public func restorePinFromBackup(_ pin: String, tx: DBWriteTransaction) {
+    func restorePinFromBackup(_ pin: String, tx: DBWriteTransaction) {
         ows2FAManager.restorePinFromBackup(pin, transaction: tx)
     }
 
-    public func areRemindersEnabled(tx: DBReadTransaction) -> Bool {
+    func areRemindersEnabled(tx: DBReadTransaction) -> Bool {
         ows2FAManager.areRemindersEnabled(transaction: tx)
     }
 
-    public func setAreRemindersEnabled(_ areRemindersEnabled: Bool, tx: DBWriteTransaction) {
+    func setAreRemindersEnabled(_ areRemindersEnabled: Bool, tx: DBWriteTransaction) {
         ows2FAManager.setAreRemindersEnabled(areRemindersEnabled, transaction: tx)
     }
 
-    public func recordReminderCompleted(
+    func recordReminderCompleted(
         repetitionIntervalAdjustment: OWS2FAManager.PinReminderRepetitionIntervalAdjustment?,
         tx: DBWriteTransaction,
     ) {
@@ -219,39 +217,39 @@ public class _MessageBackup_OWS2FAManagerWrapper: _MessageBackup_OWS2FAManagerSh
 
 // MARK: - Preferences
 
-public protocol _MessageBackup_PreferencesShim {
+protocol _MessageBackup_PreferencesShim {
     func shouldShowUnidentifiedDeliveryIndicators(tx: DBReadTransaction) -> Bool
     func setShouldShowUnidentifiedDeliveryIndicators(value: Bool, tx: DBWriteTransaction)
     func isSystemCallLogEnabled(tx: DBReadTransaction) -> Bool?
     func setIsSystemCallLogEnabled(_ value: Bool, tx: DBWriteTransaction)
 }
 
-public class _MessageBackup_PreferencesWrapper: _MessageBackup_PreferencesShim {
+class _MessageBackup_PreferencesWrapper: _MessageBackup_PreferencesShim {
     let preferences: Preferences
     init(preferences: Preferences) {
         self.preferences = preferences
     }
 
-    public func shouldShowUnidentifiedDeliveryIndicators(tx: DBReadTransaction) -> Bool {
+    func shouldShowUnidentifiedDeliveryIndicators(tx: DBReadTransaction) -> Bool {
         preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: tx)
     }
 
-    public func setShouldShowUnidentifiedDeliveryIndicators(value: Bool, tx: DBWriteTransaction) {
+    func setShouldShowUnidentifiedDeliveryIndicators(value: Bool, tx: DBWriteTransaction) {
         preferences.setShouldShowUnidentifiedDeliveryIndicators(value, transaction: tx)
     }
 
-    public func isSystemCallLogEnabled(tx: DBReadTransaction) -> Bool? {
+    func isSystemCallLogEnabled(tx: DBReadTransaction) -> Bool? {
         preferences.isSystemCallLogEnabled(tx: tx)
     }
 
-    public func setIsSystemCallLogEnabled(_ value: Bool, tx: DBWriteTransaction) {
+    func setIsSystemCallLogEnabled(_ value: Bool, tx: DBWriteTransaction) {
         preferences.setIsSystemCallLogEnabled(value, tx: tx)
     }
 }
 
 // MARK: - ProfileManager
 
-public protocol _MessageBackup_ProfileManagerShim {
+protocol _MessageBackup_ProfileManagerShim {
 
     func enumerateUserProfiles(
         tx: DBReadTransaction,
@@ -287,14 +285,14 @@ public protocol _MessageBackup_ProfileManagerShim {
     )
 }
 
-public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManagerShim {
+class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManagerShim {
     private let profileManager: ProfileManager
 
-    public init(_ profileManager: ProfileManager) {
+    init(_ profileManager: ProfileManager) {
         self.profileManager = profileManager
     }
 
-    public func enumerateUserProfiles(
+    func enumerateUserProfiles(
         tx: DBReadTransaction,
         block: (OWSUserProfile) throws(CancellationError) -> Bool,
     ) throws(CancellationError) {
@@ -305,19 +303,19 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         while let profile = cursor.next(), try block(profile) {}
     }
 
-    public func getUserProfile(for address: SignalServiceAddress, tx: DBReadTransaction) -> OWSUserProfile? {
+    func getUserProfile(for address: SignalServiceAddress, tx: DBReadTransaction) -> OWSUserProfile? {
         profileManager.userProfile(for: address, tx: tx)
     }
 
-    public func getUserProfileForLocalUser(tx: DBReadTransaction) -> OWSUserProfile? {
+    func getUserProfileForLocalUser(tx: DBReadTransaction) -> OWSUserProfile? {
         return OWSUserProfile.getUserProfileForLocalUser(tx: tx)
     }
 
-    public func isGroupId(inProfileWhitelist groupId: Data, tx: DBReadTransaction) -> Bool {
+    func isGroupId(inProfileWhitelist groupId: Data, tx: DBReadTransaction) -> Bool {
         profileManager.isGroupId(inProfileWhitelist: groupId, transaction: tx)
     }
 
-    public func addRecipientToProfileWhitelist(_ recipient: inout SignalRecipient, tx: DBWriteTransaction) {
+    func addRecipientToProfileWhitelist(_ recipient: inout SignalRecipient, tx: DBWriteTransaction) {
         profileManager.addRecipientToProfileWhitelist(
             &recipient,
             userProfileWriter: .backupRestore,
@@ -325,7 +323,7 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         )
     }
 
-    public func addGroupToWhitelist(_ groupRecord: inout GroupRecord, tx: DBWriteTransaction) {
+    func addGroupToWhitelist(_ groupRecord: inout GroupRecord, tx: DBWriteTransaction) {
         profileManager.addGroupToProfileWhitelist(
             &groupRecord,
             userProfileWriter: .backupRestore,
@@ -333,7 +331,7 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         )
     }
 
-    public func insertLocalUserProfile(
+    func insertLocalUserProfile(
         givenName: String,
         familyName: String?,
         avatarUrlPath: String?,
@@ -362,7 +360,7 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         )
     }
 
-    public func upsertOtherUserProfile(
+    func upsertOtherUserProfile(
         insertableAddress: OWSUserProfile.InsertableAddress,
         givenName: String?,
         familyName: String?,
@@ -396,73 +394,73 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
 
 // MARK: - ReactionManager
 
-public protocol _MessageBackup_ReactionManagerShim {
+protocol _MessageBackup_ReactionManagerShim {
     func customEmojiSet(tx: DBReadTransaction) -> [String]?
     func setCustomEmojiSet(emojis: [String]?, tx: DBWriteTransaction)
 }
 
-public class _MessageBackup_ReactionManagerWrapper: _MessageBackup_ReactionManagerShim {
-    public func customEmojiSet(tx: DBReadTransaction) -> [String]? {
+class _MessageBackup_ReactionManagerWrapper: _MessageBackup_ReactionManagerShim {
+    func customEmojiSet(tx: DBReadTransaction) -> [String]? {
         ReactionManager.customEmojiSet(transaction: tx)
     }
 
-    public func setCustomEmojiSet(emojis: [String]?, tx: DBWriteTransaction) {
+    func setCustomEmojiSet(emojis: [String]?, tx: DBWriteTransaction) {
         ReactionManager.setCustomEmojiSet(emojis, transaction: tx)
     }
 }
 
 // MARK: - ReceiptManager
 
-public protocol _MessageBackup_ReceiptManagerShim {
+protocol _MessageBackup_ReceiptManagerShim {
     func areReadReceiptsEnabled(tx: DBReadTransaction) -> Bool
     func setAreReadReceiptsEnabled(value: Bool, tx: DBWriteTransaction)
 }
 
-public class _MessageBackup_ReceiptManagerWrapper: _MessageBackup_ReceiptManagerShim {
+class _MessageBackup_ReceiptManagerWrapper: _MessageBackup_ReceiptManagerShim {
     let receiptManager: OWSReceiptManager
     init(receiptManager: OWSReceiptManager) {
         self.receiptManager = receiptManager
     }
 
-    public func areReadReceiptsEnabled(tx: DBReadTransaction) -> Bool {
+    func areReadReceiptsEnabled(tx: DBReadTransaction) -> Bool {
         OWSReceiptManager.areReadReceiptsEnabled(transaction: tx)
     }
 
-    public func setAreReadReceiptsEnabled(value: Bool, tx: DBWriteTransaction) {
+    func setAreReadReceiptsEnabled(value: Bool, tx: DBWriteTransaction) {
         receiptManager.setAreReadReceiptsEnabled(value, transaction: tx)
     }
 }
 
 // MARK: - ScreenLock
 
-public protocol _MessageBackup_ScreenLockShim {
+protocol _MessageBackup_ScreenLockShim {
     func isScreenLockEnabled(tx: DBReadTransaction) -> Bool
     func setIsScreenLockEnabled(_ value: Bool, tx: DBWriteTransaction)
     func screenLockTimeout(tx: DBReadTransaction) -> TimeInterval
     func setScreenLockTimeout(_ timeout: TimeInterval, tx: DBWriteTransaction)
 }
 
-public class _MessageBackup_ScreenLockWrapper: _MessageBackup_ScreenLockShim {
-    public func isScreenLockEnabled(tx: DBReadTransaction) -> Bool {
+class _MessageBackup_ScreenLockWrapper: _MessageBackup_ScreenLockShim {
+    func isScreenLockEnabled(tx: DBReadTransaction) -> Bool {
         return ScreenLock.shared.isScreenLockEnabled(tx: tx)
     }
 
-    public func setIsScreenLockEnabled(_ value: Bool, tx: DBWriteTransaction) {
+    func setIsScreenLockEnabled(_ value: Bool, tx: DBWriteTransaction) {
         ScreenLock.shared.setIsScreenLockEnabled(value, tx: tx)
     }
 
-    public func screenLockTimeout(tx: DBReadTransaction) -> TimeInterval {
+    func screenLockTimeout(tx: DBReadTransaction) -> TimeInterval {
         return ScreenLock.shared.screenLockTimeout(tx: tx)
     }
 
-    public func setScreenLockTimeout(_ timeout: TimeInterval, tx: DBWriteTransaction) {
+    func setScreenLockTimeout(_ timeout: TimeInterval, tx: DBWriteTransaction) {
         ScreenLock.shared.setScreenLockTimeout(timeout, tx: tx)
     }
 }
 
 // MARK: - SSKPreferences
 
-public protocol _MessageBackup_SSKPreferencesShim {
+protocol _MessageBackup_SSKPreferencesShim {
     func preferContactAvatars(tx: DBReadTransaction) -> Bool
     func setPreferContactAvatars(value: Bool, tx: DBWriteTransaction)
 
@@ -471,31 +469,31 @@ public protocol _MessageBackup_SSKPreferencesShim {
     func setHasSavedThread(_ newValue: Bool, tx: DBWriteTransaction)
 }
 
-public class _MessageBackup_SSKPreferencesWrapper: _MessageBackup_SSKPreferencesShim {
-    public func preferContactAvatars(tx: DBReadTransaction) -> Bool {
+class _MessageBackup_SSKPreferencesWrapper: _MessageBackup_SSKPreferencesShim {
+    func preferContactAvatars(tx: DBReadTransaction) -> Bool {
         SSKPreferences.preferContactAvatars(transaction: tx)
     }
 
-    public func setPreferContactAvatars(value: Bool, tx: DBWriteTransaction) {
+    func setPreferContactAvatars(value: Bool, tx: DBWriteTransaction) {
         SSKPreferences.setPreferContactAvatars(value, updateStorageService: false, transaction: tx)
     }
 
-    public func shouldKeepMutedChatsArchived(tx: DBReadTransaction) -> Bool {
+    func shouldKeepMutedChatsArchived(tx: DBReadTransaction) -> Bool {
         SSKPreferences.shouldKeepMutedChatsArchived(transaction: tx)
     }
 
-    public func setShouldKeepMutedChatsArchived(value: Bool, tx: DBWriteTransaction) {
+    func setShouldKeepMutedChatsArchived(value: Bool, tx: DBWriteTransaction) {
         SSKPreferences.setShouldKeepMutedChatsArchived(value, transaction: tx)
     }
 
-    public func setHasSavedThread(_ newValue: Bool, tx: DBWriteTransaction) {
+    func setHasSavedThread(_ newValue: Bool, tx: DBWriteTransaction) {
         SSKPreferences.setHasSavedThread(newValue, transaction: tx)
     }
 }
 
 // MARK: - StoryManager
 
-public protocol _MessageBackup_StoryManagerShim {
+protocol _MessageBackup_StoryManagerShim {
     func hasSetMyStoriesPrivacy(tx: DBReadTransaction) -> Bool
     func setHasSetMyStoriesPrivacy(value: Bool, tx: DBWriteTransaction)
     func areStoriesEnabled(tx: DBReadTransaction) -> Bool
@@ -504,52 +502,52 @@ public protocol _MessageBackup_StoryManagerShim {
     func setAreViewReceiptsEnabled(value: Bool, tx: DBWriteTransaction)
 }
 
-public class _MessageBackup_StoryManagerWrapper: _MessageBackup_StoryManagerShim {
-    public func hasSetMyStoriesPrivacy(tx: DBReadTransaction) -> Bool {
+class _MessageBackup_StoryManagerWrapper: _MessageBackup_StoryManagerShim {
+    func hasSetMyStoriesPrivacy(tx: DBReadTransaction) -> Bool {
         StoryManager.hasSetMyStoriesPrivacy(transaction: tx)
     }
 
-    public func setHasSetMyStoriesPrivacy(value: Bool, tx: DBWriteTransaction) {
+    func setHasSetMyStoriesPrivacy(value: Bool, tx: DBWriteTransaction) {
         StoryManager.setHasSetMyStoriesPrivacy(value, shouldUpdateStorageService: false, transaction: tx)
     }
 
-    public func areStoriesEnabled(tx: DBReadTransaction) -> Bool {
+    func areStoriesEnabled(tx: DBReadTransaction) -> Bool {
         StoryManager.areStoriesEnabled(transaction: tx)
     }
 
-    public func setAreStoriesEnabled(value: Bool, tx: DBWriteTransaction) {
+    func setAreStoriesEnabled(value: Bool, tx: DBWriteTransaction) {
         StoryManager.setAreStoriesEnabled(value, shouldUpdateStorageService: false, transaction: tx)
     }
 
-    public func areViewReceiptsEnabled(tx: DBReadTransaction) -> Bool {
+    func areViewReceiptsEnabled(tx: DBReadTransaction) -> Bool {
         StoryManager.areViewReceiptsEnabled(transaction: tx)
     }
 
-    public func setAreViewReceiptsEnabled(value: Bool, tx: DBWriteTransaction) {
+    func setAreViewReceiptsEnabled(value: Bool, tx: DBWriteTransaction) {
         StoryManager.setAreViewReceiptsEnabled(value, shouldUpdateStorageService: false, transaction: tx)
     }
 }
 
 // MARK: - SystemStoryManager
 
-public protocol _MessageBackup_SystemStoryManagerShim {
+protocol _MessageBackup_SystemStoryManagerShim {
     func isOnboardingStoryViewed(tx: DBReadTransaction) -> Bool
     func setHasViewedOnboardingStory(value: Bool, tx: DBWriteTransaction)
     func hasSeenGroupStoryEducationSheet(tx: DBReadTransaction) -> Bool
     func setHasSeenGroupStoryEducationSheet(value: Bool, tx: DBWriteTransaction)
 }
 
-public class _MessageBackup_SystemStoryManagerWrapper: _MessageBackup_SystemStoryManagerShim {
+class _MessageBackup_SystemStoryManagerWrapper: _MessageBackup_SystemStoryManagerShim {
     let systemStoryManager: SystemStoryManagerProtocol
     init(systemStoryManager: SystemStoryManagerProtocol) {
         self.systemStoryManager = systemStoryManager
     }
 
-    public func isOnboardingStoryViewed(tx: DBReadTransaction) -> Bool {
+    func isOnboardingStoryViewed(tx: DBReadTransaction) -> Bool {
         systemStoryManager.isOnboardingStoryViewed(transaction: tx)
     }
 
-    public func setHasViewedOnboardingStory(value: Bool, tx: DBWriteTransaction) {
+    func setHasViewedOnboardingStory(value: Bool, tx: DBWriteTransaction) {
         guard value else {
             /// This is a one-way setting, so there's no way to set `false`. If
             /// it's `false`, simply set nothing.
@@ -563,11 +561,11 @@ public class _MessageBackup_SystemStoryManagerWrapper: _MessageBackup_SystemStor
         try? systemStoryManager.setHasViewedOnboardingStory(source: source, transaction: tx)
     }
 
-    public func hasSeenGroupStoryEducationSheet(tx: DBReadTransaction) -> Bool {
+    func hasSeenGroupStoryEducationSheet(tx: DBReadTransaction) -> Bool {
         systemStoryManager.isGroupStoryEducationSheetViewed(tx: tx)
     }
 
-    public func setHasSeenGroupStoryEducationSheet(value: Bool, tx: DBWriteTransaction) {
+    func setHasSeenGroupStoryEducationSheet(value: Bool, tx: DBWriteTransaction) {
         guard value else {
             /// This is a one-way setting, so there's no way to set `false`. If
             /// it's `false`, simply set nothing.
@@ -580,54 +578,54 @@ public class _MessageBackup_SystemStoryManagerWrapper: _MessageBackup_SystemStor
 
 // MARK: - TypingIndicators
 
-public protocol _MessageBackup_TypingIndicatorsShim {
+protocol _MessageBackup_TypingIndicatorsShim {
     func areTypingIndicatorsEnabled() -> Bool
     func setTypingIndicatorsEnabled(value: Bool, tx: DBWriteTransaction)
 }
 
-public class _MessageBackup_TypingIndicatorsWrapper: _MessageBackup_TypingIndicatorsShim {
+class _MessageBackup_TypingIndicatorsWrapper: _MessageBackup_TypingIndicatorsShim {
     let typingIndicators: TypingIndicators
     init(typingIndicators: TypingIndicators) {
         self.typingIndicators = typingIndicators
     }
 
-    public func areTypingIndicatorsEnabled() -> Bool {
+    func areTypingIndicatorsEnabled() -> Bool {
         typingIndicators.areTypingIndicatorsEnabled()
     }
 
-    public func setTypingIndicatorsEnabled(value: Bool, tx: DBWriteTransaction) {
+    func setTypingIndicatorsEnabled(value: Bool, tx: DBWriteTransaction) {
         typingIndicators.setTypingIndicatorsEnabled(value: value, transaction: tx)
     }
 }
 
 // MARK: - UDManager
 
-public protocol _MessageBackup_UDManagerShim {
+protocol _MessageBackup_UDManagerShim {
     func phoneNumberSharingMode(tx: DBReadTransaction) -> PhoneNumberSharingMode?
     func setPhoneNumberSharingMode(mode: PhoneNumberSharingMode, tx: DBWriteTransaction)
     func shouldAllowUnrestrictedAccessLocal(tx: DBReadTransaction) -> Bool
     func setShouldAllowUnrestrictedAccessLocal(_ value: Bool, tx: DBWriteTransaction)
 }
 
-public class _MessageBackup_UDManagerWrapper: _MessageBackup_UDManagerShim {
+class _MessageBackup_UDManagerWrapper: _MessageBackup_UDManagerShim {
     let udManager: OWSUDManager
     init(udManager: OWSUDManager) {
         self.udManager = udManager
     }
 
-    public func phoneNumberSharingMode(tx: DBReadTransaction) -> PhoneNumberSharingMode? {
+    func phoneNumberSharingMode(tx: DBReadTransaction) -> PhoneNumberSharingMode? {
         udManager.phoneNumberSharingMode(tx: tx)
     }
 
-    public func setPhoneNumberSharingMode(mode: PhoneNumberSharingMode, tx: DBWriteTransaction) {
+    func setPhoneNumberSharingMode(mode: PhoneNumberSharingMode, tx: DBWriteTransaction) {
         udManager.setPhoneNumberSharingMode(mode, updateStorageServiceAndProfile: false, tx: tx)
     }
 
-    public func shouldAllowUnrestrictedAccessLocal(tx: DBReadTransaction) -> Bool {
+    func shouldAllowUnrestrictedAccessLocal(tx: DBReadTransaction) -> Bool {
         udManager.shouldAllowUnrestrictedAccessLocal(transaction: tx)
     }
 
-    public func setShouldAllowUnrestrictedAccessLocal(_ value: Bool, tx: DBWriteTransaction) {
+    func setShouldAllowUnrestrictedAccessLocal(_ value: Bool, tx: DBWriteTransaction) {
         udManager.setShouldAllowUnrestrictedAccessLocal(value, tx: tx)
     }
 }

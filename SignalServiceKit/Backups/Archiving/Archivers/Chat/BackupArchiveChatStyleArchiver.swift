@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
@@ -14,7 +14,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
     private let wallpaperStore: WallpaperStore
     private let localFileBackupStore: LocalFileBackupStore
 
-    public init(
+    init(
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         backupAttachmentDownloadScheduler: BackupAttachmentDownloadScheduler,

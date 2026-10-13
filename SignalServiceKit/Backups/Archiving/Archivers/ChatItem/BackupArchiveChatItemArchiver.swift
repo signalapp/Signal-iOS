@@ -6,17 +6,17 @@
 import Foundation
 import LibSignalClient
 
-public extension BackupArchive {
+extension BackupArchive {
 
     /// An identifier for a ``BackupProto_ChatItem`` backup frame.
     struct ChatItemId: Hashable {
         let value: UInt64
 
-        public init(backupProtoChatItem: BackupProto_ChatItem) {
+        init(backupProtoChatItem: BackupProto_ChatItem) {
             self.value = backupProtoChatItem.dateSent
         }
 
-        public init(interaction: TSInteraction) {
+        init(interaction: TSInteraction) {
             self.value = interaction.timestamp
         }
     }
@@ -24,7 +24,7 @@ public extension BackupArchive {
 
 // MARK: -
 
-public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
     typealias ChatItemId = BackupArchive.ChatItemId
     typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult
     typealias RestoreFrameResult = BackupArchive.RestoreFrameResult

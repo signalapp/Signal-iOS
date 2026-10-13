@@ -5,7 +5,7 @@
 
 import GRDB
 
-public extension BackupArchive {
+extension BackupArchive {
     /// An identifier for a ``BackupProto_StickerPack`` backup frame.
     struct StickerPackId {
         let value: Data
@@ -18,7 +18,7 @@ public extension BackupArchive {
 
 // MARK: -
 
-public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
     typealias StickerPackId = BackupArchive.StickerPackId
     typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult
     typealias ArchiveFrameError = BackupArchive.ArchiveFrameError

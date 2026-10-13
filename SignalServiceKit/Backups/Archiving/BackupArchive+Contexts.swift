@@ -16,7 +16,7 @@ extension BackupArchive {
     /// But only exposes a read tx, because we explicitly do not want
     /// archiving to be updating the database, just reading from it.
     /// (The exception to this is enqueuing attachment uploads.)
-    open class ArchivingContext {
+    class ArchivingContext {
         /// `LocalIdentifiers` for the user doing the archiving.
         let localIdentifiers: LocalIdentifiers
         /// The timestamp at which the archiving process started.
@@ -61,19 +61,19 @@ extension BackupArchive {
     }
 
     /// Base context class used for restoring from a backup.
-    open class RestoringContext {
+    class RestoringContext {
         /// `LocalIdentifiers` for the user doing the restore.
-        public let localIdentifiers: LocalIdentifiers
+        let localIdentifiers: LocalIdentifiers
         /// The timestamp at which we began restoring.
-        public let startDate: Date
+        let startDate: Date
         /// The remote config at the start of restoring.
-        public let remoteConfig: RemoteConfig
+        let remoteConfig: RemoteConfig
         /// Counts restored attachment bytes for future progress reporting.
-        public let attachmentByteCounter: BackupArchiveAttachmentByteCounter
+        let attachmentByteCounter: BackupArchiveAttachmentByteCounter
         /// Are we restoring onto a primary?
-        public let isPrimaryDevice: Bool
+        let isPrimaryDevice: Bool
         /// The single transaction used to restore the archive.
-        public let tx: DBWriteTransaction
+        let tx: DBWriteTransaction
 
         init(
             localIdentifiers: LocalIdentifiers,

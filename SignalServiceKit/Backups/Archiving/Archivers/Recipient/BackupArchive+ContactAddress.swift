@@ -4,20 +4,20 @@
 //
 
 import Foundation
-public import LibSignalClient
+import LibSignalClient
 
 extension BackupArchive {
 
     /// An address to refer to a contact in a backup.
     /// At least one of the three fields is guaranteed to be present.
-    public struct ContactAddress {
-        public let aci: Aci?
-        public let pni: Pni?
-        public let e164: E164?
+    struct ContactAddress {
+        let aci: Aci?
+        let pni: Pni?
+        let e164: E164?
 
         // MARK: - Failable Initializers
 
-        public init?(aci: Aci?, pni: Pni?, e164: E164?) {
+        init?(aci: Aci?, pni: Pni?, e164: E164?) {
             guard aci != nil || pni != nil || e164 != nil else {
                 return nil
             }
@@ -26,7 +26,7 @@ extension BackupArchive {
             self.e164 = e164
         }
 
-        public init?(aci: Aci?, pni: Pni?) {
+        init?(aci: Aci?, pni: Pni?) {
             guard aci != nil || pni != nil else {
                 return nil
             }
@@ -35,7 +35,7 @@ extension BackupArchive {
             self.e164 = nil
         }
 
-        public init?(aci: Aci?, e164: E164?) {
+        init?(aci: Aci?, e164: E164?) {
             guard aci != nil || e164 != nil else {
                 return nil
             }
@@ -44,7 +44,7 @@ extension BackupArchive {
             self.e164 = e164
         }
 
-        public init?(pni: Pni?, e164: E164?) {
+        init?(pni: Pni?, e164: E164?) {
             guard pni != nil || e164 != nil else {
                 return nil
             }
@@ -55,43 +55,43 @@ extension BackupArchive {
 
         // MARK: - Non-Failable Initializers
 
-        public init(aci: Aci, pni: Pni?, e164: E164?) {
+        init(aci: Aci, pni: Pni?, e164: E164?) {
             self.aci = aci
             self.pni = pni
             self.e164 = e164
         }
 
-        public init(aci: Aci, pni: Pni) {
+        init(aci: Aci, pni: Pni) {
             self.aci = aci
             self.pni = pni
             self.e164 = nil
         }
 
-        public init(aci: Aci, e164: E164) {
+        init(aci: Aci, e164: E164) {
             self.aci = aci
             self.pni = nil
             self.e164 = e164
         }
 
-        public init(pni: Pni, e164: E164) {
+        init(pni: Pni, e164: E164) {
             self.aci = nil
             self.pni = pni
             self.e164 = e164
         }
 
-        public init(aci: Aci) {
+        init(aci: Aci) {
             self.aci = aci
             self.pni = nil
             self.e164 = nil
         }
 
-        public init(pni: Pni) {
+        init(pni: Pni) {
             self.aci = nil
             self.pni = pni
             self.e164 = nil
         }
 
-        public init(e164: E164) {
+        init(e164: E164) {
             self.aci = nil
             self.pni = nil
             self.e164 = e164
@@ -99,13 +99,13 @@ extension BackupArchive {
 
         // MARK: - ServiceId convenience
 
-        public init?(serviceId: ServiceId?, e164: E164?) {
+        init?(serviceId: ServiceId?, e164: E164?) {
             let aci = serviceId as? Aci
             let pni = serviceId as? Pni
             self.init(aci: aci, pni: pni, e164: e164)
         }
 
-        public init(serviceId: ServiceId, e164: E164) {
+        init(serviceId: ServiceId, e164: E164) {
             switch serviceId.concreteType {
             case .aci(let aci):
                 self.aci = aci
@@ -117,7 +117,7 @@ extension BackupArchive {
             self.e164 = e164
         }
 
-        public init(serviceId: ServiceId) {
+        init(serviceId: ServiceId) {
             switch serviceId.concreteType {
             case .aci(let aci):
                 self.aci = aci

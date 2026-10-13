@@ -8,10 +8,10 @@ import LibSignalClient
 
 extension BackupArchive {
 
-    public struct ChatId: Hashable {
+    struct ChatId: Hashable {
         let value: UInt64
 
-        public init(value: UInt64) {
+        init(value: UInt64) {
             self.value = value
         }
 
@@ -25,18 +25,18 @@ extension BackupArchive {
     }
 
     /// Chats only exist for group (v2) and contact threads, not story threads.
-    public struct ChatThread {
-        public enum ThreadType {
+    struct ChatThread {
+        enum ThreadType {
             /// Also covers Note to Self.
             case contact(TSContactThread)
             /// Instantiators are expected to validate the group is GV2.
             case groupV2(TSGroupThread)
         }
 
-        public let threadType: ThreadType
-        public let threadRowId: TSThread.RowId
+        let threadType: ThreadType
+        let threadRowId: TSThread.RowId
 
-        public var tsThread: TSThread {
+        var tsThread: TSThread {
             switch threadType {
             case .contact(let thread):
                 return thread
@@ -46,18 +46,18 @@ extension BackupArchive {
         }
     }
 
-    public struct ThreadUniqueId: Hashable {
+    struct ThreadUniqueId: Hashable {
         let value: String
 
-        public init(value: String) {
+        init(value: String) {
             self.value = value
         }
 
-        public init(thread: TSThread) {
+        init(thread: TSThread) {
             self.init(value: thread.uniqueId)
         }
 
-        public init(chatThread: ChatThread) {
+        init(chatThread: ChatThread) {
             self.init(thread: chatThread.tsThread)
         }
 
@@ -75,16 +75,16 @@ extension BackupArchive {
      * we will need to add the corresponding ``BackupArchive/ChatId``, which we look up using the thread id
      * this context keeps.
      */
-    public class ChatArchivingContext: ArchivingContext {
+    class ChatArchivingContext: ArchivingContext {
 
-        public let customChatColorContext: CustomChatColorArchivingContext
-        public let recipientContext: RecipientArchivingContext
+        let customChatColorContext: CustomChatColorArchivingContext
+        let recipientContext: RecipientArchivingContext
 
         private var currentChatId = ChatId(value: 1)
         private var map = [ThreadUniqueId: ChatId]()
-        public var gv1ThreadIds = Set<ThreadUniqueId>()
+        var gv1ThreadIds = Set<ThreadUniqueId>()
 
-        public enum CachedThreadInfo {
+        enum CachedThreadInfo {
             case groupThread
             // Contact threads may be _missing_ their address, which
             // will likely cause partial failures downstream.
@@ -157,10 +157,10 @@ extension BackupArchive {
         }
     }
 
-    public class ChatRestoringContext: RestoringContext {
+    class ChatRestoringContext: RestoringContext {
 
-        public let customChatColorContext: CustomChatColorRestoringContext
-        public let recipientContext: RecipientRestoringContext
+        let customChatColorContext: CustomChatColorRestoringContext
+        let recipientContext: RecipientRestoringContext
 
         private var recipientToChatMap = [RecipientId: ChatId]()
 
@@ -230,7 +230,7 @@ extension BackupArchive {
 
         // MARK: Post-Frame Restore
 
-        public struct PostFrameRestoreActions {
+        struct PostFrameRestoreActions {
             var pinnedOrder: UInt32?
             var lastVisibleInteractionRowId: Int64?
             var hadAnyUnreadMessages: Bool = false
@@ -286,10 +286,10 @@ extension BackupArchive {
 
     // MARK: Custom Chat Colors
 
-    public struct CustomChatColorId: Hashable {
+    struct CustomChatColorId: Hashable {
         let value: UInt64
 
-        public init(value: UInt64) {
+        init(value: UInt64) {
             self.value = value
         }
 
@@ -307,7 +307,7 @@ extension BackupArchive {
      * ``CustomChatColor``, we will need to add the corresponding ``BackupArchive/CustomChatColorId``,
      * which we look up using the custom chat color id this context keeps.
      */
-    public class CustomChatColorArchivingContext: ArchivingContext {
+    class CustomChatColorArchivingContext: ArchivingContext {
 
         private var currentCustomChatColorId = CustomChatColorId(value: 1)
         private var map = [CustomChatColor.Key: CustomChatColorId]()
@@ -325,7 +325,7 @@ extension BackupArchive {
         }
     }
 
-    public class CustomChatColorRestoringContext: RestoringContext {
+    class CustomChatColorRestoringContext: RestoringContext {
 
         private var map = [CustomChatColorId: CustomChatColor.Key]()
 
@@ -366,28 +366,28 @@ extension BackupArchive {
 
 extension BackupProto_Chat {
 
-    public var chatId: BackupArchive.ChatId {
+    var chatId: BackupArchive.ChatId {
         return BackupArchive.ChatId(chat: self)
     }
 }
 
 extension BackupProto_ChatItem {
 
-    public var typedChatId: BackupArchive.ChatId {
+    var typedChatId: BackupArchive.ChatId {
         return BackupArchive.ChatId(chatItem: self)
     }
 }
 
 extension TSThread {
 
-    public var uniqueThreadIdentifier: BackupArchive.ThreadUniqueId {
+    var uniqueThreadIdentifier: BackupArchive.ThreadUniqueId {
         return BackupArchive.ThreadUniqueId(thread: self)
     }
 }
 
 extension TSInteraction {
 
-    public var uniqueThreadIdentifier: BackupArchive.ThreadUniqueId {
+    var uniqueThreadIdentifier: BackupArchive.ThreadUniqueId {
         return BackupArchive.ThreadUniqueId(interaction: self)
     }
 }

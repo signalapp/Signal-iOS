@@ -6,14 +6,14 @@
 import SignalRingRTC
 
 extension BackupArchive {
-    public struct CallLinkRecordId: Hashable {
+    struct CallLinkRecordId: Hashable {
         let rowId: Int64
 
-        public init(_ callLinkRecord: CallLinkRecord) {
+        init(_ callLinkRecord: CallLinkRecord) {
             self.rowId = callLinkRecord.id
         }
 
-        public init?(callRecordConversationId: CallRecord.ConversationID) {
+        init?(callRecordConversationId: CallRecord.ConversationID) {
             switch callRecordConversationId {
             case .thread:
                 return nil
@@ -24,7 +24,7 @@ extension BackupArchive {
     }
 }
 
-public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWriter {
     typealias CallLinkRecordId = BackupArchive.CallLinkRecordId
     typealias RecipientAppId = BackupArchive.RecipientArchivingContext.Address
     typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult

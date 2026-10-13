@@ -5,13 +5,13 @@
 
 extension BackupArchive {
 
-    public class ChatItemRestoringContext: RestoringContext {
+    class ChatItemRestoringContext: RestoringContext {
 
         let accountDataContext: AccountDataRestoringContext
         let chatContext: ChatRestoringContext
         let recipientContext: RecipientRestoringContext
 
-        public var uploadEra: String? { chatContext.customChatColorContext.accountDataContext.uploadEra }
+        var uploadEra: String? { chatContext.customChatColorContext.accountDataContext.uploadEra }
 
         init(
             accountDataContext: AccountDataRestoringContext,

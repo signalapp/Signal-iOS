@@ -5,7 +5,7 @@
 
 import LibSignalClient
 
-public final class BackupArchiveStoryStore {
+final class BackupArchiveStoryStore {
 
     private let storyStore: StoryStore
     private let storyRecipientStore: StoryRecipientStore

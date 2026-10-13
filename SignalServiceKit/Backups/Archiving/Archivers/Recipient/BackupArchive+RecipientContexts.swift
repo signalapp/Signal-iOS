@@ -8,10 +8,10 @@ import LibSignalClient
 
 extension BackupArchive {
 
-    public struct RecipientId: Hashable {
+    struct RecipientId: Hashable {
         let value: UInt64
 
-        public init(value: UInt64) {
+        init(value: UInt64) {
             self.value = value
         }
 
@@ -44,7 +44,7 @@ extension BackupArchive {
         }
     }
 
-    public struct GroupId: Hashable {
+    struct GroupId: Hashable {
         let value: Data
 
         init(groupId: Data) {
@@ -52,7 +52,7 @@ extension BackupArchive {
         }
     }
 
-    public struct DistributionId: Hashable {
+    struct DistributionId: Hashable {
 
         let value: UUID
         let isMyStoryId: Bool
@@ -98,8 +98,8 @@ extension BackupArchive {
      * for that recipient, we will need to add the corresponding ``BackupRecipientId``, which we look up
      * using the contact's Aci/Pni/e164, from the map this context keeps.
      */
-    public class RecipientArchivingContext: ArchivingContext {
-        public enum Address {
+    class RecipientArchivingContext: ArchivingContext {
+        enum Address {
             case releaseNotesChannel
             case contact(ContactAddress)
             case group(GroupId)
@@ -260,8 +260,8 @@ extension BackupArchive {
         }
     }
 
-    public class RecipientRestoringContext: RestoringContext {
-        public enum Address {
+    class RecipientRestoringContext: RestoringContext {
+        enum Address {
             case localAddress
             case releaseNotesChannel
             case contact(ContactAddress)
@@ -322,7 +322,7 @@ extension BackupArchive {
 
         // MARK: Post-Frame Restore
 
-        public struct PostFrameRestoreActions {
+        struct PostFrameRestoreActions {
             /// A `TSInfoMessage` indicating a contact is hidden should be
             /// inserted for the `SignalRecipient` with the given proto ID.
             ///
@@ -359,49 +359,49 @@ extension BackupArchive {
 
 extension BackupProto_Recipient {
 
-    public var recipientId: BackupArchive.RecipientId {
+    var recipientId: BackupArchive.RecipientId {
         return BackupArchive.RecipientId(recipient: self)
     }
 }
 
 extension BackupProto_Chat {
 
-    public var typedRecipientId: BackupArchive.RecipientId {
+    var typedRecipientId: BackupArchive.RecipientId {
         return BackupArchive.RecipientId(chat: self)
     }
 }
 
 extension BackupProto_ChatItem {
 
-    public var authorRecipientId: BackupArchive.RecipientId {
+    var authorRecipientId: BackupArchive.RecipientId {
         return BackupArchive.RecipientId(chatItem: self)
     }
 }
 
 extension BackupProto_Reaction {
 
-    public var authorRecipientId: BackupArchive.RecipientId {
+    var authorRecipientId: BackupArchive.RecipientId {
         return BackupArchive.RecipientId(reaction: self)
     }
 }
 
 extension BackupProto_Quote {
 
-    public var authorRecipientId: BackupArchive.RecipientId {
+    var authorRecipientId: BackupArchive.RecipientId {
         return BackupArchive.RecipientId(quote: self)
     }
 }
 
 extension BackupProto_SendStatus {
 
-    public var destinationRecipientId: BackupArchive.RecipientId {
+    var destinationRecipientId: BackupArchive.RecipientId {
         return BackupArchive.RecipientId(sendStatus: self)
     }
 }
 
 extension BackupProto_AdHocCall {
 
-    public var callLinkRecipientId: BackupArchive.RecipientId {
+    var callLinkRecipientId: BackupArchive.RecipientId {
         return BackupArchive.RecipientId(adHocCall: self)
     }
 }

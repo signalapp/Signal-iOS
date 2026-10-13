@@ -16,7 +16,7 @@ import LibSignalClient
 /// "frames", or individual proto objects that we read or write individually.
 ///
 /// - SeeAlso: ``BackupArchiveEncryptedProtoStreamProvider``
-public class BackupArchivePlaintextProtoStreamProvider {
+class BackupArchivePlaintextProtoStreamProvider {
     private let genericProtoStreamProvider: GenericProtoStreamProvider
 
     init() {
@@ -68,7 +68,7 @@ public class BackupArchivePlaintextProtoStreamProvider {
 /// "frames", or individual proto objects that we read or write individually.
 ///
 /// - SeeAlso: ``BackupArchivePlaintextProtoStreamProvider``
-public class BackupArchiveEncryptedProtoStreamProvider {
+class BackupArchiveEncryptedProtoStreamProvider {
     private let genericProtoStreamProvider: GenericProtoStreamProvider
     private let logger = PrefixedLogger(prefix: "[Backups]")
 

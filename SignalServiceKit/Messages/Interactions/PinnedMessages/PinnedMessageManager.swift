@@ -528,7 +528,7 @@ public class PinnedMessageManager {
         }
     }
 
-    public func applyPinMessageFromBackup(
+    func applyPinMessageFromBackup(
         message: TSMessage,
         threadId: Int64,
         pinDetails: PinMessageDetails,

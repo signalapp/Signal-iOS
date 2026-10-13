@@ -9,14 +9,14 @@ import GRDB
 /// a backup, but whose full data has not been downloaded.
 /// Post-restore, items listed here will be asynchronously passed to
 /// StickerManager, downloaded, and persisted as usable StickerPack objects.
-public struct BackupStickerPackDownloadStore {
+struct BackupStickerPackDownloadStore {
 
     private typealias Record = QueuedBackupStickerPackDownload
 
     /// "Enqueue" a sticker pack from a backup for download.
     /// Doesn't actually trigger a download; this is delegated to the TaskQueueLoader
     /// in StickerManager
-    public func enqueue(packId: Data, packKey: Data, tx: DBWriteTransaction) {
+    func enqueue(packId: Data, packKey: Data, tx: DBWriteTransaction) {
         failIfThrows {
             // If this record is already in the queue, don't insert a second copy
             if
@@ -36,7 +36,7 @@ public struct BackupStickerPackDownloadStore {
     /// - Parameter block
     /// A block executed for each enumerated record. Returns `true` if
     /// enumeration should continue, and `false` otherwise.
-    public func iterateAllEnqueued(
+    func iterateAllEnqueued(
         tx: DBReadTransaction,
         block: (QueuedBackupStickerPackDownload) throws(CancellationError) -> Bool,
     ) throws(CancellationError) {
@@ -50,7 +50,7 @@ public struct BackupStickerPackDownloadStore {
     }
 
     /// Return the top `count` rows of the download queue.
-    public func peek(
+    func peek(
         count: UInt,
         tx: DBReadTransaction,
     ) -> [QueuedBackupStickerPackDownload] {
@@ -63,7 +63,7 @@ public struct BackupStickerPackDownloadStore {
     }
 
     /// Remove the record from the download queue.
-    public func removeRecordFromQueue(
+    func removeRecordFromQueue(
         recordId: QueuedBackupStickerPackDownload.IDType,
         tx: DBWriteTransaction,
     ) {

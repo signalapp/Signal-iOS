@@ -33,9 +33,9 @@ public enum BackupNonce {
     /// This data can be (and is) exposed to the server, as it is in plaintext at the front
     /// of the backup file we upload to CDN.
     public struct MetadataHeader {
-        public let data: Data
+        let data: Data
 
-        public init(data: Data) {
+        init(data: Data) {
             self.data = data
         }
     }
@@ -48,9 +48,9 @@ public enum BackupNonce {
     /// when we upload the next nonce to SVRB is it Nonce {N+1} and can be used
     /// to decrypt the prior backup, in case the next backup's upload fails.
     public struct NextSecretMetadata {
-        public let data: Data
+        let data: Data
 
-        public init(data: Data) {
+        init(data: Data) {
             self.data = data
         }
     }
@@ -58,7 +58,7 @@ public enum BackupNonce {
 
 extension BackupNonce.MetadataHeader {
 
-    public enum ParsingError: Error {
+    enum ParsingError: Error {
         case unrecognizedFileSignature
         case dataMissingOrEmpty
         case headerTooLarge
@@ -69,7 +69,7 @@ extension BackupNonce.MetadataHeader {
     /// Parse a MetadataHeader from the first N bytes of a backup file.
     /// If the provided bytes do not cover the complete header, throws a ``ParsingError/moreDataNeeded(_:)`` error
     /// with the minimum necessary bytes to try parsing again.
-    public static func from(prefixBytes: Data?) throws(ParsingError) -> BackupNonce.MetadataHeader {
+    static func from(prefixBytes: Data?) throws(ParsingError) -> BackupNonce.MetadataHeader {
         guard var rawData = prefixBytes?.nilIfEmpty else {
             owsFailDebug("Missing prefix data")
             throw .dataMissingOrEmpty
@@ -108,7 +108,7 @@ extension BackupNonce.MetadataHeader {
 
     /// Produce the full serialized prefix we should add to the backup file, including the file signature,
     /// varint header length, and header itself.
-    public func serializedBackupFilePrefix() -> Data {
+    func serializedBackupFilePrefix() -> Data {
         let headerData = self.data
         let varint = ChunkedOutputStreamTransform.writeVariableLengthUInt32(UInt32(headerData.count))
         return BackupNonce.magicFileSignature + varint + headerData
@@ -146,7 +146,7 @@ public class BackupNonceMetadataStore {
     /// StoreBackupResponse as this BackupForwardSecrecyToken.
     ///
     /// - parameter backupKey: The message backup key used to encrypt the just-created backup.
-    public func setLastForwardSecrecyToken(
+    func setLastForwardSecrecyToken(
         _ token: BackupForwardSecrecyToken,
         for backupKey: MessageRootBackupKey,
         tx: DBWriteTransaction,
@@ -199,7 +199,7 @@ public class BackupNonceMetadataStore {
         kvStore.writeValue(metadata.data, forKey: Keys.nextSecretMetadata, tx: tx)
     }
 
-    public func deleteNextSecretMetadata(tx: DBWriteTransaction) {
+    func deleteNextSecretMetadata(tx: DBWriteTransaction) {
         kvStore.removeValue(forKey: Keys.nextSecretMetadata, tx: tx)
         kvStore.removeValue(forKey: Keys.nextSecretMetadataAssociatedBackupKeyHash, tx: tx)
     }

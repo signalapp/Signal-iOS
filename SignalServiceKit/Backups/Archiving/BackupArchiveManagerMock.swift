@@ -6,10 +6,10 @@
 #if TESTABLE_BUILD
 
 import Foundation
-public import LibSignalClient
+import LibSignalClient
 
-open class BackupArchiveManagerMock: BackupArchiveManager {
-    public func backupCdnInfo(
+class BackupArchiveManagerMock: BackupArchiveManager {
+    func backupCdnInfo(
         backupKey: MessageRootBackupKey,
         backupAuth: BackupServiceAuth,
         logger: PrefixedLogger,
@@ -20,7 +20,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         )
     }
 
-    public func downloadEncryptedBackup(
+    func downloadEncryptedBackup(
         backupKey: MessageRootBackupKey,
         backupAuth: BackupServiceAuth,
         progress: OWSProgressSink?,
@@ -29,7 +29,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         return URL(string: "file://")!
     }
 
-    public func uploadEncryptedBackup(
+    func uploadEncryptedBackup(
         backupKey: MessageRootBackupKey,
         metadata: Upload.EncryptedBackupUploadMetadata,
         auth: ChatServiceAuth,
@@ -45,7 +45,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         )
     }
 
-    public func exportEncryptedBackup(
+    func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
         backupPurpose: BackupExportPurpose,
         progress: OWSProgressSink?,
@@ -65,17 +65,17 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         )
     }
 
-    public func exportPlaintextBackupForTests(
+    func exportPlaintextBackupForTests(
         localIdentifiers: LocalIdentifiers,
     ) async throws -> URL {
         return URL(string: "file://")!
     }
 
-    public func backupRestoreState(tx: DBReadTransaction) -> BackupRestoreState {
+    func backupRestoreState(tx: DBReadTransaction) -> BackupRestoreState {
         return .none
     }
 
-    public func importEncryptedBackup(
+    func importEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
         isPrimaryDevice: Bool,
@@ -87,17 +87,17 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         source?.incrementCompletedUnitCount(by: 1)
     }
 
-    public func importPlaintextBackupForTests(
+    func importPlaintextBackupForTests(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
     ) async throws {}
 
-    public func finalizeBackupImport(progress: OWSProgressSink?) async throws {
+    func finalizeBackupImport(progress: OWSProgressSink?) async throws {
         let source = progress?.addSource(withLabel: "", unitCount: 1)
         source?.incrementCompletedUnitCount(by: 1)
     }
 
-    public func scheduleRestoreFromSVRBBeforeNextExport(tx: DBWriteTransaction) {
+    func scheduleRestoreFromSVRBBeforeNextExport(tx: DBWriteTransaction) {
         // Do Nothing
     }
 }

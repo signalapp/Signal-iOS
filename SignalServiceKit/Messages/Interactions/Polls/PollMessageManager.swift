@@ -492,7 +492,7 @@ public struct BackupsPollData {
 }
 
 extension PollMessageManager {
-    public func buildPollForBackup(
+    func buildPollForBackup(
         message: TSMessage,
         messageRowId: Int64,
         tx: DBReadTransaction,
@@ -509,7 +509,7 @@ extension PollMessageManager {
         )
     }
 
-    public func restorePollFromBackup(
+    func restorePollFromBackup(
         pollBackupData: BackupsPollData,
         message: TSMessage,
         tx: DBWriteTransaction,

@@ -8,7 +8,7 @@ import GRDB
 import LibSignalClient
 
 /// Archives ``SignalRecipient``s as ``BackupProto_Contact`` recipients.
-public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWriter {
     typealias RecipientId = BackupArchive.RecipientId
     typealias RecipientAppId = BackupArchive.RecipientArchivingContext.Address
 
@@ -35,7 +35,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
     private let tsAccountManager: TSAccountManager
     private let usernameLookupManager: UsernameLookupManager
 
-    public init(
+    init(
         aciContactShareNameManager: AciContactShareNameManager,
         avatarDefaultColorManager: AvatarDefaultColorManager,
         avatarFetcher: BackupArchiveAvatarFetcher,

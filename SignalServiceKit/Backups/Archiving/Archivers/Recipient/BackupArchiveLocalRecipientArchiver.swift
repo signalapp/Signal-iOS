@@ -6,22 +6,22 @@
 import GRDB
 
 extension BackupArchive {
-    public struct LocalRecipientId {}
+    struct LocalRecipientId {}
 
-    public typealias ArchiveLocalRecipientResult = ArchiveSingleFrameResult<RecipientId>
-    public typealias RestoreLocalRecipientResult = RestoreFrameResult
+    typealias ArchiveLocalRecipientResult = ArchiveSingleFrameResult<RecipientId>
+    typealias RestoreLocalRecipientResult = RestoreFrameResult
 }
 
 /// Archiver for the ``BackupProto_Self`` recipient, a.k.a. the local
 /// user author/recipient.  Used as the recipient for the Note To Self chat.
-public class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter {
     private static let localRecipientId = BackupArchive.RecipientId(value: 1)
 
     private let avatarDefaultColorManager: AvatarDefaultColorManager
     private let profileManager: BackupArchive.Shims.ProfileManager
     private let recipientStore: BackupArchiveRecipientStore
 
-    public init(
+    init(
         avatarDefaultColorManager: AvatarDefaultColorManager,
         profileManager: BackupArchive.Shims.ProfileManager,
         recipientStore: BackupArchiveRecipientStore,
@@ -85,7 +85,7 @@ public class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter
     }
 
     /// Restore a single ``BackupProto/Recipient`` frame for the local recipient.
-    public func restoreSelfRecipient(
+    func restoreSelfRecipient(
         _ selfRecipientProto: BackupProto_Self,
         recipient: BackupProto_Recipient,
         context: BackupArchive.RecipientRestoringContext,
