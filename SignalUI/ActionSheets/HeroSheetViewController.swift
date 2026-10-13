@@ -152,7 +152,9 @@ open class HeroSheetViewController: StackSheetViewController {
                 return .largePrimary(title: title)
 
             case .secondary:
-                return .largeSecondary(title: title)
+                var config: UIButton.Configuration = .largeSecondary(title: title)
+                config.baseBackgroundColor = .Signal.secondaryFill
+                return config
 
             case .secondaryDestructive:
                 var config: UIButton.Configuration = .largeSecondary(title: title)
