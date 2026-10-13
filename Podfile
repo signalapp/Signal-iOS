@@ -32,10 +32,6 @@ pod 'SQLCipher', git: 'https://github.com/signalapp/sqlcipher.git', tag: 'v4.6.1
 pod 'libPhoneNumber-iOS', git: 'https://github.com/signalapp/libPhoneNumber-iOS', branch: 'signal-master'
 # pod 'libPhoneNumber-iOS', path: '../libPhoneNumber-iOS'
 
-pod 'SDWebImage'
-pod 'SDWebImageWebPCoder'
-pod 'libwebp' 
-
 ###
 # third party pods
 ####

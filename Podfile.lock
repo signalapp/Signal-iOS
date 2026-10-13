@@ -9,28 +9,10 @@ PODS:
   - libPhoneNumber-iOS (1.2.0)
   - LibSignalClient (0.105.0)
   - LibSignalClient/Tests (0.105.0)
-  - libwebp (1.5.0):
-    - libwebp/demux (= 1.5.0)
-    - libwebp/mux (= 1.5.0)
-    - libwebp/sharpyuv (= 1.5.0)
-    - libwebp/webp (= 1.5.0)
-  - libwebp/demux (1.5.0):
-    - libwebp/webp
-  - libwebp/mux (1.5.0):
-    - libwebp/demux
-  - libwebp/sharpyuv (1.5.0)
-  - libwebp/webp (1.5.0):
-    - libwebp/sharpyuv
   - Logging (1.4.0)
   - MobileCoin/CoreHTTP (6.0.3):
     - LibMobileCoin/CoreHTTP (~> 6.0.0-pre1)
     - Logging (~> 1.4)
-  - SDWebImage (5.21.2):
-    - SDWebImage/Core (= 5.21.2)
-  - SDWebImage/Core (5.21.2)
-  - SDWebImageWebPCoder (0.14.6):
-    - libwebp (~> 1.0)
-    - SDWebImage/Core (~> 5.17)
   - SignalRingRTC (2.72.1):
     - SignalRingRTC/WebRTC (= 2.72.1)
   - SignalRingRTC/WebRTC (2.72.1)
@@ -48,10 +30,7 @@ DEPENDENCIES:
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
   - LibSignalClient (from `https://github.com/signalapp/libsignal.git`, tag `v0.105.0`)
   - LibSignalClient/Tests (from `https://github.com/signalapp/libsignal.git`, tag `v0.105.0`)
-  - libwebp
   - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift`, tag `v6.0.3`)
-  - SDWebImage
-  - SDWebImageWebPCoder
   - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.72.1`)
   - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, tag `v4.6.1-f_barrierfsync`)
   - SwiftProtobuf (= 1.38.1)
@@ -60,10 +39,7 @@ SPEC REPOS:
   trunk:
     - CocoaLumberjack
     - GRDB.swift
-    - libwebp
     - Logging
-    - SDWebImage
-    - SDWebImageWebPCoder
     - SwiftProtobuf
 
 EXTERNAL SOURCES:
@@ -114,15 +90,12 @@ SPEC CHECKSUMS:
   LibMobileCoin: 8503f567fa32184a5be7bc038fbd727747dd9991
   libPhoneNumber-iOS: 1a34106b49dc6e12a7f37eb9aee7c64011509547
   LibSignalClient: 2b65bad98bf695e2036871b7160598595a60ed45
-  libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   MobileCoin: cd7f49d6eaa2d362e4c9f8324cae0cc3bc3c53b5
-  SDWebImage: 9f177d83116802728e122410fb25ad88f5c7608a
-  SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SignalRingRTC: 9de104b1e42eaa1e542e6da40a3c4e75f434e473
   SQLCipher: ff2f045b20d675a73a70f7329395ddd4a2580063
   SwiftProtobuf: 409d3aaec90e51b1705b1dd8065b56893450e77c
 
-PODFILE CHECKSUM: 981325b1f7fcd54d681925f51a597c88228c7d5a
+PODFILE CHECKSUM: fc96f413bea9ff9c4fea4962dced1dc2d9a34311
 
 COCOAPODS: 1.15.2

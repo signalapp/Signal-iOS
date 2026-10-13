@@ -92,10 +92,28 @@ def get_source_packages_path():
     return build_path.parent.parent / "SourcePackages"
 
 
+def get_license_paths(directory):
+    return [p for p in directory.iterdir() if LICENSE_FILE_PATTERN.match(p.name)]
+
+
+def get_submodule_paths(checkout_path):
+    gitmodules_path = checkout_path / ".gitmodules"
+    if not gitmodules_path.exists():
+        return []
+    output = subprocess.run(
+        ["git", "config", "--file", gitmodules_path, "--get-regexp", r"\.path$"],
+        capture_output=True,
+        encoding="utf8",
+        check=True,
+    ).stdout
+    return [checkout_path / line.split(" ", 1)[1] for line in output.splitlines()]
+
+
 def get_swift_package_license_text(checkout_path):
-    license_paths = [
-        p for p in checkout_path.iterdir() if LICENSE_FILE_PATTERN.match(p.name)
-    ]
+    license_paths = get_license_paths(checkout_path)
+    if not license_paths:
+        for submodule_path in get_submodule_paths(checkout_path):
+            license_paths += get_license_paths(submodule_path)
     if len(license_paths) != 1:
         raise Exception(f"Expected one license in {checkout_path}: {license_paths}")
     return license_paths[0].read_text(encoding="utf8")

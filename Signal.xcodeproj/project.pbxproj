@@ -980,6 +980,21 @@
 		63DC45353079BACE00119464 /* PureLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC45343079BACE00119464 /* PureLayout */; };
 		63DC45373079BADA00119464 /* PureLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC45363079BADA00119464 /* PureLayout */; };
 		63DC45393079BCC100119464 /* PureLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC45383079BCC100119464 /* PureLayout */; };
+		63DC453C307E7C5E00119464 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC453B307E7C5E00119464 /* SDWebImage */; };
+		63DC453F307E7CAA00119464 /* libwebp in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC453E307E7CAA00119464 /* libwebp */; };
+		63DC4542307E7CD300119464 /* SDWebImageWebPCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4541307E7CD300119464 /* SDWebImageWebPCoder */; };
+		63DC4544307E7D0300119464 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4543307E7D0300119464 /* SDWebImage */; };
+		63DC4546307E7D0300119464 /* SDWebImageWebPCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4545307E7D0300119464 /* SDWebImageWebPCoder */; };
+		63DC4548307E7D4E00119464 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4547307E7D4E00119464 /* SDWebImage */; };
+		63DC454A307E7D4E00119464 /* SDWebImageWebPCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4549307E7D4E00119464 /* SDWebImageWebPCoder */; };
+		63DC454C307E7D6400119464 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC454B307E7D6400119464 /* SDWebImage */; };
+		63DC454E307E7D6400119464 /* SDWebImageWebPCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC454D307E7D6400119464 /* SDWebImageWebPCoder */; };
+		63DC4550307E7D7000119464 /* libwebp in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC454F307E7D7000119464 /* libwebp */; };
+		63DC4552307E7D7700119464 /* libwebp in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4551307E7D7700119464 /* libwebp */; };
+		63DC4554307E7D8700119464 /* libwebp in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4553307E7D8700119464 /* libwebp */; };
+		63DC4556307E7DBB00119464 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4555307E7DBB00119464 /* SDWebImage */; };
+		63DC4558307E7DBB00119464 /* libwebp in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4557307E7DBB00119464 /* libwebp */; };
+		63DC455A307E7DBB00119464 /* SDWebImageWebPCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4559307E7DBB00119464 /* SDWebImageWebPCoder */; };
 		65D2854846F2127979853B12 /* ContactSharingPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE5380475512D4C3083EDC /* ContactSharingPickerViewController.swift */; };
 		6600BB1A2BA3A0930005A035 /* LinkPreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB192BA3A0930005A035 /* LinkPreviewManager.swift */; };
 		6600BB212BA3BC540005A035 /* LinkPreviewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB202BA3BC540005A035 /* LinkPreviewHelper.swift */; };
@@ -8718,7 +8733,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				342FFEA227245A07000AC89F /* Intents.framework in Frameworks */,
+				63DC4552307E7D7700119464 /* libwebp in Frameworks */,
 				46B99B83D9513F2B8641EAB1 /* Pods_SignalNSE.framework in Frameworks */,
+				63DC4548307E7D4E00119464 /* SDWebImage in Frameworks */,
+				63DC454A307E7D4E00119464 /* SDWebImageWebPCoder in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8727,9 +8745,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				632BFEC830785960005399C0 /* BonMot in Frameworks */,
+				63DC4550307E7D7000119464 /* libwebp in Frameworks */,
 				63DC45303079AF9100119464 /* Lottie in Frameworks */,
 				616577F953D77424E32C7438 /* Pods_SignalUI.framework in Frameworks */,
 				63DC45373079BADA00119464 /* PureLayout in Frameworks */,
+				63DC454C307E7D6400119464 /* SDWebImage in Frameworks */,
+				63DC454E307E7D6400119464 /* SDWebImageWebPCoder in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8746,8 +8767,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63DC4558307E7DBB00119464 /* libwebp in Frameworks */,
 				9FDF89F65C026F8F33FD38C1 /* Pods_SignalShareExtension.framework in Frameworks */,
 				63DC45393079BCC100119464 /* PureLayout in Frameworks */,
+				63DC4556307E7DBB00119464 /* SDWebImage in Frameworks */,
+				63DC455A307E7DBB00119464 /* SDWebImageWebPCoder in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8768,6 +8792,7 @@
 				C109A87C2FDC906F0065225E /* DeviceDiscoveryUI.framework in Frameworks */,
 				D221A090169C9E5E00537ABF /* Foundation.framework in Frameworks */,
 				45847E871E4283C30080EAB3 /* Intents.framework in Frameworks */,
+				63DC453F307E7CAA00119464 /* libwebp in Frameworks */,
 				63DC45323079AF9C00119464 /* Lottie in Frameworks */,
 				76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */,
 				B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */,
@@ -8778,6 +8803,8 @@
 				63DC45353079BACE00119464 /* PureLayout in Frameworks */,
 				B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */,
 				A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */,
+				63DC453C307E7C5E00119464 /* SDWebImage in Frameworks */,
+				63DC4542307E7CD300119464 /* SDWebImageWebPCoder in Frameworks */,
 				A163E8AB16F3F6AA0094D68B /* Security.framework in Frameworks */,
 				F9C5C8AA289451B900548EEE /* SignalServiceKit.framework in Frameworks */,
 				34A954BD271A471300B05242 /* SignalUI.framework in Frameworks */,
@@ -8815,7 +8842,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				632BFEC33077ED5F005399C0 /* blurhash in Frameworks */,
+				63DC4554307E7D8700119464 /* libwebp in Frameworks */,
 				C26296B4BDCEDADBDA01DDD2 /* Pods_SignalServiceKit.framework in Frameworks */,
+				63DC4544307E7D0300119464 /* SDWebImage in Frameworks */,
+				63DC4546307E7D0300119464 /* SDWebImageWebPCoder in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16694,6 +16724,9 @@
 				632BFEC430785953005399C0 /* XCRemoteSwiftPackageReference "BonMot" */,
 				63DC452E3079AF9100119464 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 				63DC45333079BACE00119464 /* XCRemoteSwiftPackageReference "PureLayout" */,
+				63DC453A307E7C5E00119464 /* XCRemoteSwiftPackageReference "SDWebImage" */,
+				63DC453D307E7CAA00119464 /* XCRemoteSwiftPackageReference "libwebp-Xcode" */,
+				63DC4540307E7CD300119464 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */,
 			);
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
 			projectDirPath = "";
@@ -18233,13 +18266,10 @@
 				"${PODS_ROOT}/Target Support Files/Pods-Signal/Pods-Signal-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/GRDB.swift/GRDB.framework",
 				"${BUILT_PRODUCTS_DIR}/LibSignalClient/LibSignalClient.framework",
-				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
-				"${BUILT_PRODUCTS_DIR}/SDWebImageWebPCoder/SDWebImageWebPCoder.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalRingRTC/SignalRingRTC.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
-				"${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework",
 				"${BUILT_PRODUCTS_DIR}/LibMobileCoin/LibMobileCoin.framework",
 				"${BUILT_PRODUCTS_DIR}/Logging/Logging.framework",
 				"${BUILT_PRODUCTS_DIR}/MobileCoin/MobileCoin.framework",
@@ -18250,13 +18280,10 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GRDB.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LibSignalClient.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImageWebPCoder.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalRingRTC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LibMobileCoin.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Logging.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MobileCoin.framework",
@@ -18299,13 +18326,10 @@
 				"${PODS_ROOT}/Target Support Files/Pods-SignalTests/Pods-SignalTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/GRDB.swift/GRDB.framework",
 				"${BUILT_PRODUCTS_DIR}/LibSignalClient/LibSignalClient.framework",
-				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
-				"${BUILT_PRODUCTS_DIR}/SDWebImageWebPCoder/SDWebImageWebPCoder.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalRingRTC/SignalRingRTC.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
-				"${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework",
 				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/SignalRingRTC/WebRTC/WebRTC.framework/WebRTC",
 			);
@@ -18313,13 +18337,10 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GRDB.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LibSignalClient.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImageWebPCoder.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalRingRTC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
 			);
@@ -23639,6 +23660,30 @@
 				version = 3.1.9;
 			};
 		};
+		63DC453A307E7C5E00119464 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImage.git";
+			requirement = {
+				kind = exactVersion;
+				version = 5.21.2;
+			};
+		};
+		63DC453D307E7CAA00119464 /* XCRemoteSwiftPackageReference "libwebp-Xcode" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/libwebp-Xcode.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.5.0;
+			};
+		};
+		63DC4540307E7CD300119464 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageWebPCoder.git";
+			requirement = {
+				kind = exactVersion;
+				version = 0.14.6;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -23685,6 +23730,81 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 63DC45333079BACE00119464 /* XCRemoteSwiftPackageReference "PureLayout" */;
 			productName = PureLayout;
+		};
+		63DC453B307E7C5E00119464 /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC453A307E7C5E00119464 /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
+		};
+		63DC453E307E7CAA00119464 /* libwebp */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC453D307E7CAA00119464 /* XCRemoteSwiftPackageReference "libwebp-Xcode" */;
+			productName = libwebp;
+		};
+		63DC4541307E7CD300119464 /* SDWebImageWebPCoder */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC4540307E7CD300119464 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */;
+			productName = SDWebImageWebPCoder;
+		};
+		63DC4543307E7D0300119464 /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC453A307E7C5E00119464 /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
+		};
+		63DC4545307E7D0300119464 /* SDWebImageWebPCoder */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC4540307E7CD300119464 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */;
+			productName = SDWebImageWebPCoder;
+		};
+		63DC4547307E7D4E00119464 /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC453A307E7C5E00119464 /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
+		};
+		63DC4549307E7D4E00119464 /* SDWebImageWebPCoder */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC4540307E7CD300119464 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */;
+			productName = SDWebImageWebPCoder;
+		};
+		63DC454B307E7D6400119464 /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC453A307E7C5E00119464 /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
+		};
+		63DC454D307E7D6400119464 /* SDWebImageWebPCoder */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC4540307E7CD300119464 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */;
+			productName = SDWebImageWebPCoder;
+		};
+		63DC454F307E7D7000119464 /* libwebp */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC453D307E7CAA00119464 /* XCRemoteSwiftPackageReference "libwebp-Xcode" */;
+			productName = libwebp;
+		};
+		63DC4551307E7D7700119464 /* libwebp */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC453D307E7CAA00119464 /* XCRemoteSwiftPackageReference "libwebp-Xcode" */;
+			productName = libwebp;
+		};
+		63DC4553307E7D8700119464 /* libwebp */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC453D307E7CAA00119464 /* XCRemoteSwiftPackageReference "libwebp-Xcode" */;
+			productName = libwebp;
+		};
+		63DC4555307E7DBB00119464 /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC453A307E7C5E00119464 /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
+		};
+		63DC4557307E7DBB00119464 /* libwebp */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC453D307E7CAA00119464 /* XCRemoteSwiftPackageReference "libwebp-Xcode" */;
+			productName = libwebp;
+		};
+		63DC4559307E7DBB00119464 /* SDWebImageWebPCoder */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC4540307E7CD300119464 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */;
+			productName = SDWebImageWebPCoder;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
