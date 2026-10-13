@@ -7,7 +7,8 @@ import SignalServiceKit
 import SignalUI
 
 class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegate, StickerPackCollectionViewDelegate,
-    SendMessageDelegate
+    SendMessageDelegate,
+    OWSNavigationChildController
 {
 
     // MARK: Properties
@@ -27,13 +28,16 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
         )
     }
 
-    init(stickerPackInfo: StickerPackInfo, db: DB) {
+    init(
+        stickerPackInfo: StickerPackInfo,
+        db: DB,
+    ) {
         self.stickerPackInfo = stickerPackInfo
+        self.db = db
         self.dataSource = TransientStickerPackDataSource(
             stickerPackInfo: stickerPackInfo,
             shouldDownloadAllStickers: true,
         )
-        self.db = db
 
         super.init()
 
@@ -49,75 +53,63 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
         )
     }
 
+    var navbarBackgroundColorOverride: UIColor? {
+        .Signal.secondaryBackground
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.overrideUserInterfaceStyle = .dark
-        view.backgroundColor = .Signal.background
+        view.backgroundColor = .Signal.secondaryBackground
 
-        // Toolbar at the top.
-        let toolbar: UIToolbar = if #available(iOS 26, *) { UIToolbar() } else { UIToolbar.clear() }
-        toolbar.items = [
-            .closeButton { [weak self] in
-                self?.dismissButtonPressed()
-            },
-            UIBarButtonItem.flexibleSpace(),
-            shareBarButtonItem,
-        ]
-        if #unavailable(iOS 26) {
-            toolbar.tintColor = Theme.darkThemeLegacyPrimaryIconColor
+        let titleView = UIStackView(arrangedSubviews: [navBarTitleLabel, navBarDefaultPackImage])
+        titleView.spacing = 4
+        titleView.axis = .horizontal
+        titleView.alignment = .center
+        navigationItem.titleView = titleView
+        navigationItem.leftBarButtonItem = .closeButton { [weak self] in
+            self?.dismissButtonPressed()
         }
 
-        // Header: Cover, Text.
-        let textRowsView = UIStackView(arrangedSubviews: [titleLabel])
-        textRowsView.axis = .vertical
-        textRowsView.alignment = .leading
+        navBarDefaultPackImage.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            navBarDefaultPackImage.widthAnchor.constraint(equalToConstant: 17),
+            navBarDefaultPackImage.heightAnchor.constraint(equalToConstant: 17),
+        ])
 
-        // Default Pack icon, Author
-        let bottomRow = UIStackView(arrangedSubviews: [defaultPackIconView, authorLabel])
-        bottomRow.axis = .horizontal
-        bottomRow.alignment = .center
-        bottomRow.spacing = 6
-        textRowsView.addArrangedSubview(bottomRow)
+        stickerCollectionView.registerStickerPackHeaderAndSetConfigure { [weak self] header in
+            guard let self else { return }
+            guard let stickerPack = self.dataSource.getStickerPack() else {
+                header.setContentHidden(true)
+                return
+            }
+            let isInstalled = StickerManager.isStickerPackInstalled(stickerPackInfo: stickerPack.info)
+            header.configure(
+                stickerPack: stickerPack,
+                dataSource: self.dataSource,
+                stickerCount: self.stickerCollectionView.stickerCount,
+                isInstalled: isInstalled,
+                onTapSend: { [weak self] in self?.shareButtonPressed() },
+                onTapLink: { [weak self] in self?.linkButtonPressed() },
+                onTapUninstall: { [weak self] in self?.didTapUninstall() },
+            )
+        }
 
-        let packInfoView = UIStackView(arrangedSubviews: [coverView, textRowsView])
-        packInfoView.axis = .horizontal
-        packInfoView.alignment = .center
-        packInfoView.spacing = 12
-        packInfoView.isLayoutMarginsRelativeArrangement = true
-        packInfoView.preservesSuperviewLayoutMargins = true
-        self.stickerPackInfoView = packInfoView
+        // Hide the title in the nav bar until the user scrolls
+        navigationItem.titleView?.alpha = 0
+        contentOffsetObservation = stickerCollectionView.observe(\.contentOffset, options: [.new]) { [weak self] _, _ in
+            self?.updateNavigationTitleVisibility()
+        }
 
-        let headerView = UIStackView(arrangedSubviews: [toolbar, packInfoView])
-        headerView.axis = .vertical
-        headerView.spacing = 16
-        headerView.preservesSuperviewLayoutMargins = true
-        view.addSubview(headerView)
-        self.headerView = headerView
-
-        // Sticker Collection View
-        view.insertSubview(stickerCollectionView, belowSubview: headerView)
-
-        // Install / Uninstall at the bottom
+        view.addSubview(stickerCollectionView)
         view.addSubview(bottomButtonContainer)
 
-        coverView.translatesAutoresizingMaskIntoConstraints = false
-        headerView.translatesAutoresizingMaskIntoConstraints = false
         stickerCollectionView.translatesAutoresizingMaskIntoConstraints = false
         bottomButtonContainer.translatesAutoresizingMaskIntoConstraints = false
 
-        // This will be adjusted in `viewLayoutMarginsDidChange` so that top and leading margins are equal
-        // and close button is in perfect corner position.
-        headerViewTopEdgeConstraint = headerView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor)
-
         NSLayoutConstraint.activate([
-            coverView.widthAnchor.constraint(equalToConstant: 64),
-            coverView.heightAnchor.constraint(equalToConstant: 64),
-
-            headerViewTopEdgeConstraint!,
-            headerView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            headerView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-
+            stickerCollectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            stickerCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             stickerCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             stickerCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
 
@@ -126,32 +118,11 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
             bottomButtonContainer.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
         ])
 
-        // iOS 26: collection view goes from top to bottom,
-        // content underneath header and footer is obscured via UIScrollEdgeElementContainerInteraction.
-        // Collection view insets (top and bottom) are adjusted in `viewDidLayoutSubviews`.
         if #available(iOS 26, *) {
-            NSLayoutConstraint.activate([
-                stickerCollectionView.topAnchor.constraint(equalTo: view.topAnchor),
-                stickerCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            ])
-
-            // Scroll Edge Interactions
-            let topEdgeInteraction = UIScrollEdgeElementContainerInteraction()
-            topEdgeInteraction.edge = .top
-            topEdgeInteraction.scrollView = stickerCollectionView
-            packInfoView.addInteraction(topEdgeInteraction)
-
             let bottomEdgeInteraction = UIScrollEdgeElementContainerInteraction()
             bottomEdgeInteraction.edge = .bottom
             bottomEdgeInteraction.scrollView = stickerCollectionView
             bottomButtonContainer.addInteraction(bottomEdgeInteraction)
-        }
-        // iOS 15-18: collection view is simply placed between header and footer.
-        else {
-            NSLayoutConstraint.activate([
-                stickerCollectionView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 16),
-                stickerCollectionView.bottomAnchor.constraint(equalTo: bottomButtonContainer.topAnchor, constant: -16),
-            ])
         }
 
         // Loading indicator
@@ -200,11 +171,6 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
     override func viewLayoutMarginsDidChange() {
         super.viewLayoutMarginsDidChange()
 
-        if let headerViewTopEdgeConstraint {
-            let leadingInset = view.layoutMargins.leading - view.safeAreaInsets.leading
-            headerViewTopEdgeConstraint.constant = leadingInset
-        }
-
         updateCollectionViewContentInset()
     }
 
@@ -221,7 +187,8 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
     func present(from fromViewController: UIViewController, animated: Bool) {
         AssertIsOnMainThread()
 
-        fromViewController.presentFormSheet(self, animated: animated) {
+        let navController = OWSNavigationController(rootViewController: self)
+        fromViewController.presentFormSheet(navController, animated: animated) {
             // ensure any presented keyboard is dismissed, this seems to be
             // an issue only when opening signal from a universal link in
             // an external app
@@ -231,62 +198,52 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
 
     // MARK: Layout
 
-    private lazy var shareBarButtonItem = UIBarButtonItem.button(image: .forward) { [weak self] in
-        self?.shareButtonPressed()
-    }
+    private var contentOffsetObservation: NSKeyValueObservation?
 
-    private let coverView = StickerReusableView()
-
-    private var headerView: UIView!
-    private var stickerPackInfoView: UIView!
-
-    // This is adjusted to match leading view inset.
-    private var headerViewTopEdgeConstraint: NSLayoutConstraint?
-
-    private let titleLabel: UILabel = {
+    private let navBarTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .Signal.label
-        label.font = .dynamicTypeTitle1.semibold()
-        label.numberOfLines = 2
+        label.font = .dynamicTypeBody.semibold()
+        label.numberOfLines = 1
         label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .center
         return label
     }()
 
-    private let authorLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .Signal.secondaryLabel
-        label.font = .dynamicTypeBody
-        return label
-    }()
-
-    private let defaultPackIconView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "check-circle-fill-compact"))
-        imageView.tintColor = .Signal.accent
-        imageView.setContentHuggingHigh()
-        imageView.setCompressionResistanceHigh()
-        return imageView
-    }()
+    private let navBarDefaultPackImage = UIImageView(image: .official)
 
     private let stickerCollectionView = StickerPackCollectionView(placeholderColor: .ows_blackAlpha60)
 
     private func updateCollectionViewContentInset() {
+        stickerCollectionView.layoutIfNeeded()
+
         var contentInset = stickerCollectionView.contentInset
 
-        if #available(iOS 26, *) {
-            // On iOS 26 collection view extends underneath header and footer.
-            contentInset.top = headerView.frame.maxY + 16
-            contentInset.bottom = bottomButtonContainer.frame.height + 16
+        contentInset.top = 16
+        contentInset.bottom = bottomButtonContainer.frame.height + 16
 
-            stickerCollectionView.verticalScrollIndicatorInsets.top = contentInset.top
-            stickerCollectionView.verticalScrollIndicatorInsets.bottom = contentInset.bottom
-        }
+        stickerCollectionView.verticalScrollIndicatorInsets.top = view.safeAreaInsets.top + contentInset.top
+        stickerCollectionView.verticalScrollIndicatorInsets.bottom = contentInset.bottom
+
         contentInset.leading = view.layoutMargins.leading - view.safeAreaInsets.leading
         contentInset.trailing = view.layoutMargins.trailing - view.safeAreaInsets.trailing
 
         guard contentInset != stickerCollectionView.contentInset else { return }
 
         stickerCollectionView.contentInset = contentInset
-        stickerCollectionView.contentOffset.y = -contentInset.top
+        stickerCollectionView.contentOffset.y = -stickerCollectionView.adjustedContentInset.top
+    }
+
+    /// Helper to ensure the navigation title only appears when the user starts scrolling
+    private func updateNavigationTitleVisibility() {
+        let restOffset = -stickerCollectionView.adjustedContentInset.top
+        let scrolled = stickerCollectionView.contentOffset.y - restOffset
+        let shouldShow = scrolled > 60
+        let targetAlpha: CGFloat = shouldShow ? 1 : 0
+        guard navigationItem.titleView?.alpha != targetAlpha else { return }
+        UIView.animate(withDuration: 0.2) {
+            self.navigationItem.titleView?.alpha = targetAlpha
+        }
     }
 
     private lazy var installButton: UIButton = {
@@ -301,22 +258,8 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
         )
     }()
 
-    private lazy var uninstallButton: UIButton = {
-        let button = UIButton(
-            configuration: .largePrimary(title: OWSLocalizedString(
-                "STICKERS_UNINSTALL_BUTTON",
-                comment: "Label for the 'uninstall sticker pack' button.",
-            )),
-            primaryAction: UIAction { [weak self] _ in
-                self?.didTapUninstall()
-            },
-        )
-        button.configuration?.baseBackgroundColor = .Signal.red
-        return button
-    }()
-
     private lazy var bottomButtonContainer: UIView = {
-        UIStackView.verticalButtonStack(buttons: [installButton, uninstallButton], isFullWidthButtons: true)
+        UIStackView.verticalButtonStack(buttons: [installButton], isFullWidthButtons: true)
     }()
 
     private var loadingIndicator = UIActivityIndicatorView(style: .large)
@@ -346,17 +289,9 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
     private func updateContent() {
         guard !isDismissing else { return }
 
-        updateCover()
-
         guard let stickerPack = dataSource.getStickerPack() else {
-            stickerPackInfoView.isHidden = true
+            stickerCollectionView.reconfigureCustomHeader()
             bottomButtonContainer.isHidden = true
-
-            if #available(iOS 16, *) {
-                shareBarButtonItem.isHidden = true
-            } else {
-                shareBarButtonItem.isEnabled = false
-            }
 
             if StickerManager.isStickerPackMissing(stickerPackInfo: stickerPackInfo) {
                 loadFailedLabel.isHidden = false
@@ -374,58 +309,32 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
             return
         }
 
-        // Update visibility of UI elements.
-        stickerPackInfoView.isHidden = false
         bottomButtonContainer.isHidden = false
-        if #available(iOS 16, *) {
-            shareBarButtonItem.isHidden = false
-        } else {
-            shareBarButtonItem.isEnabled = true
-        }
 
         loadFailedLabel.isHidden = true
         loadingIndicator.isHidden = true
         loadingIndicator.stopAnimating()
 
-        // Title and author
+        // Nav bar title / default-pack icon
         let defaultTitle = OWSLocalizedString(
             "STICKERS_PACK_VIEW_DEFAULT_TITLE",
             comment: "The default title for the 'sticker pack' view.",
         )
         if let title = stickerPack.title?.ows_stripped(), !title.isEmpty {
-            titleLabel.text = title.filterForDisplay
+            navBarTitleLabel.text = title.filterForDisplay
         } else {
-            titleLabel.text = defaultTitle
+            navBarTitleLabel.text = defaultTitle
         }
-
         let isDefaultStickerPack = StickerManager.isDefaultStickerPack(packId: stickerPack.info.packId)
-        authorLabel.text = stickerPack.author?.filterForDisplay
-        authorLabel.textColor = isDefaultStickerPack ? .Signal.accent : .Signal.label
-        defaultPackIconView.isHidden = !isDefaultStickerPack
+        navBarDefaultPackImage.isHidden = !isDefaultStickerPack
 
         // We need to consult StickerManager for the latest "isInstalled"
         // state, since the data source may be caching stale state.
         let isInstalled = StickerManager.isStickerPackInstalled(stickerPackInfo: stickerPack.info)
         installButton.isHidden = isInstalled
-        uninstallButton.isHidden = !isInstalled
-    }
 
-    private func updateCover() {
-        guard !coverView.hasStickerView else { return }
-
-        guard let stickerPack = dataSource.getStickerPack() else { return }
-        let coverInfo = stickerPack.coverInfo
-        guard
-            let stickerView = StickerView.stickerView(
-                forStickerInfo: coverInfo,
-                dataSource: dataSource,
-            )
-        else {
-            coverView.showPlaceholder(color: .ows_blackAlpha60)
-            return
-        }
-
-        coverView.configure(with: stickerView)
+        // Pack info header (title, author, count/size, cover, buttons)
+        stickerCollectionView.reconfigureCustomHeader()
     }
 
     // MARK: Events
@@ -440,28 +349,57 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
             return
         }
 
-        ModalActivityIndicatorViewController.present(
-            fromViewController: self,
-            canCancel: false,
-            presentationDelay: 0,
-            backgroundBlock: { modal in
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    StickerManager.installStickerPack(
-                        stickerPack: stickerPack,
-                        wasLocallyInitiated: true,
-                        transaction: transaction,
-                    )
-                }
-                DispatchQueue.main.async {
-                    modal.dismiss {
-                        self.dismiss(animated: true)
-                    }
-                }
-            },
-        )
+        var config = installButton.configuration
+        config?.showsActivityIndicator = true
+        config?.title = nil
+        installButton.configuration = config
+
+        Task { [weak self] in
+            guard let self else { return }
+            await db.awaitableWrite { transaction in
+                StickerManager.installStickerPack(
+                    stickerPack: stickerPack,
+                    wasLocallyInitiated: true,
+                    transaction: transaction,
+                )
+            }
+            DispatchQueue.main.async {
+                var config = self.installButton.configuration
+                config?.showsActivityIndicator = false
+                config?.title = OWSLocalizedString(
+                    "STICKERS_INSTALL_BUTTON",
+                    comment: "Label for the 'install sticker pack' button.",
+                )
+                self.installButton.configuration = config
+
+                self.dismiss(animated: true)
+            }
+        }
     }
 
     private func didTapUninstall() {
+        let confirmUninstallSheet = ActionSheetController(
+            title: OWSLocalizedString("STICKER_PACK_CONFIRM_REMOVE_TITLE", comment: "Title for a sheet asking the user to confirm they want to remove a sticker pack"),
+            message: OWSLocalizedString("STICKER_PACK_CONFIRM_REMOVE_MESSAGE", comment: "Message for a sheet asking the user to confirm they want to remove a sticker pack"),
+        )
+
+        confirmUninstallSheet.addAction(
+            ActionSheetAction(
+                title: OWSLocalizedString(
+                    "STICKER_PACK_CONFIRM_REMOVE_BUTTON",
+                    comment: "Button to confirm a user wants to remove a sticker pack",
+                ),
+                style: .destructive,
+                handler: { [weak self] _ in
+                    self?.didConfirmUninstall()
+                },
+            ),
+        )
+        confirmUninstallSheet.addAction(.cancel)
+        presentActionSheet(confirmUninstallSheet)
+    }
+
+    private func didConfirmUninstall() {
         isDismissing = true
 
         let stickerPackInfo = self.stickerPackInfo
@@ -469,8 +407,8 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
             fromViewController: self,
             canCancel: false,
             presentationDelay: 0,
-            backgroundBlock: { modal in
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
+            backgroundBlock: { [db] modal in
+                db.write { transaction in
                     StickerManager.uninstallStickerPack(
                         stickerPackInfo: stickerPackInfo,
                         wasLocallyInitiated: true,
@@ -496,6 +434,17 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
 
     // We need to retain a link to the send flow during the send flow.
     private var sendMessageFlow: SendMessageFlow?
+
+    private func linkButtonPressed() {
+        let url = stickerPackInfo.shareUrl()
+        UIPasteboard.general.string = url
+        presentToast(
+            text: OWSLocalizedString(
+                "COPIED_TO_CLIPBOARD",
+                comment: "Indicator that a value has been copied to the clipboard.",
+            ),
+        )
+    }
 
     private func shareButtonPressed() {
         guard let stickerPack = dataSource.getStickerPack() else {

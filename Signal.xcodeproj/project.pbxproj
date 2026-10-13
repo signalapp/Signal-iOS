@@ -99,6 +99,8 @@
 		0477BE322FA4FC41002F9B47 /* TSReleaseNotesThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477BE312FA4FC38002F9B47 /* TSReleaseNotesThread.swift */; };
 		047800FA306426D50060E725 /* StickerDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047800F9306426D50060E725 /* StickerDetailSheet.swift */; };
 		047800FE306473D00060E725 /* SendStickerFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047800FD306473B80060E725 /* SendStickerFlow.swift */; };
+		0478EC4A307E790A00281959 /* StickerPackInfoHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047800FF306BFAAD0060E725 /* StickerPackInfoHeaderView.swift */; };
+		0478EC4B307E7ABD00281959 /* SettingsHeaderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */; };
 		047DBEE42FFD491E009F457F /* LocalFileBackupManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047DBEE32FFD4918009F457F /* LocalFileBackupManagerTests.swift */; };
 		0480F0002E57C51A006CBB29 /* BackupsEnabledRecentlyNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledRecentlyNotificationMegaphone.swift */; };
 		0484CECE2F44B7BE009AB2CB /* AdminDeleteRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0484CECD2F44B7BB009AB2CB /* AdminDeleteRecord.swift */; };
@@ -3434,7 +3436,6 @@
 		D9DB37F92B72A770007B16C8 /* CallRecordDeleteAllJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DB37F82B72A770007B16C8 /* CallRecordDeleteAllJobQueue.swift */; };
 		D9DB37FB2B72A85C007B16C8 /* CallRecordDeleteAllJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DB37FA2B72A85C007B16C8 /* CallRecordDeleteAllJobRecord.swift */; };
 		D9DCFDA52A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */; };
-		D9DCFDAB2A39402F00C73C0B /* SettingsHeaderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */; };
 		D9DCFDB02A3BC4A400C73C0B /* QRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAF2A3BC4A400C73C0B /* QRCodeGenerator.swift */; };
 		D9DD708E2E67BC53003E1A45 /* URL+Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DD708D2E67BC48003E1A45 /* URL+Support.swift */; };
 		D9DE34FD2DEE7765005099D7 /* BackupOnboardingIntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DE34FC2DEE775D005099D7 /* BackupOnboardingIntroViewController.swift */; };
@@ -4449,6 +4450,7 @@
 		0477BE312FA4FC38002F9B47 /* TSReleaseNotesThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSReleaseNotesThread.swift; sourceTree = "<group>"; };
 		047800F9306426D50060E725 /* StickerDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerDetailSheet.swift; sourceTree = "<group>"; };
 		047800FD306473B80060E725 /* SendStickerFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendStickerFlow.swift; sourceTree = "<group>"; };
+		047800FF306BFAAD0060E725 /* StickerPackInfoHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPackInfoHeaderView.swift; sourceTree = "<group>"; };
 		047DBEE32FFD4918009F457F /* LocalFileBackupManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileBackupManagerTests.swift; sourceTree = "<group>"; };
 		0480EFFF2E57C513006CBB29 /* BackupsEnabledRecentlyNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledRecentlyNotificationMegaphone.swift; sourceTree = "<group>"; };
 		0484CECD2F44B7BB009AB2CB /* AdminDeleteRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDeleteRecord.swift; sourceTree = "<group>"; };
@@ -9612,6 +9614,7 @@
 				45A6DAD51EBBF85500893231 /* ReminderView.swift */,
 				766BCA7C29FB049400046016 /* RTLEnabledCollectionViewFlowLayout.swift */,
 				76964AFA2FB4034C007130BE /* SelectionIndicatorView.swift */,
+				D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */,
 				885275BF27E26775003F2F9B /* TextAttachmentView.swift */,
 				764FE0402A2EF3A7004D2804 /* TextFieldFormatting.swift */,
 				34A9553E271B510400B05242 /* TextViewWithPlaceholder.swift */,
@@ -9747,6 +9750,7 @@
 				34A95572271B510500B05242 /* StickerHorizontalListView.swift */,
 				34A95570271B510500B05242 /* StickerPackCollectionView.swift */,
 				34A95571271B510500B05242 /* StickerPackDataSource.swift */,
+				047800FF306BFAAD0060E725 /* StickerPackInfoHeaderView.swift */,
 				7638499D2ED258CA00D0E43E /* StickerPicker.swift */,
 				B91ACD9D2A797698000CFBC7 /* StickerPickerKeyboard.swift */,
 				B9F2155C2A93C9E8002DCAE0 /* StickerPickerSheet.swift */,
@@ -11662,7 +11666,6 @@
 				3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */,
 				4C1885D1218F8E1C00B67051 /* PhotoGridViewCell.swift */,
 				88863A55280CD04A00977F69 /* ReactionFlybyAnimation.swift */,
-				D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */,
 				88A4CC0F246CE2760082211F /* TransferProgressView.swift */,
 				34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */,
 				88928A7426418904009C9B30 /* VoiceMessageTooltip.swift */,
@@ -18681,6 +18684,7 @@
 				76964AFB2FB4035D007130BE /* SelectionIndicatorView.swift in Sources */,
 				66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */,
 				504861AA2EEB4D0D00B13C49 /* SendableAttachment.swift in Sources */,
+				0478EC4B307E7ABD00281959 /* SettingsHeaderButton.swift in Sources */,
 				D9791BB92EAA84830016AA5A /* SheetDisplayableError.swift in Sources */,
 				E1A0C5D12B647E780095C4DF /* SheetNavigationController.swift in Sources */,
 				B9A53B932CF7928A0000578B /* SheetPreviewViewController.swift in Sources */,
@@ -18699,6 +18703,7 @@
 				3402AA47271D9DCD0084CBAE /* StickerHorizontalListView.swift in Sources */,
 				3402AA5B271D9DCD0084CBAE /* StickerPackCollectionView.swift in Sources */,
 				3402AA3E271D9DCD0084CBAE /* StickerPackDataSource.swift in Sources */,
+				0478EC4A307E790A00281959 /* StickerPackInfoHeaderView.swift in Sources */,
 				7638499E2ED258CF00D0E43E /* StickerPicker.swift in Sources */,
 				B91ACD9E2A797698000CFBC7 /* StickerPickerKeyboard.swift in Sources */,
 				B9F2155D2A93C9E8002DCAE0 /* StickerPickerSheet.swift in Sources */,
@@ -19522,7 +19527,6 @@
 				3497972125DAA86100E99FA4 /* SendPaymentViewController.swift in Sources */,
 				047800FE306473D00060E725 /* SendStickerFlow.swift in Sources */,
 				8876CE4A26A914B8002217ED /* SentMediaQualitySettingsViewController.swift in Sources */,
-				D9DCFDAB2A39402F00C73C0B /* SettingsHeaderButton.swift in Sources */,
 				886BB3D325BA0CA400079781 /* SetWallpaperViewController.swift in Sources */,
 				F915A77029CB6D4C00EB6F68 /* ShareActivityUtil.swift in Sources */,
 				880D90302481E617003D2B14 /* SignalApp.swift in Sources */,

@@ -34,6 +34,34 @@ public class StickerPackCollectionView: UICollectionView {
 
     public weak var stickerDelegate: StickerPackCollectionViewDelegate?
 
+    private lazy var sizingHeaderView = StickerPackInfoHeaderView()
+    private var stickerPackHeaderConfigure: ((StickerPackInfoHeaderView) -> Void)?
+    private let stickerPackHeaderReuseIdentifier = "StickerPackCustomHeader"
+
+    public func registerStickerPackHeaderAndSetConfigure(_ configure: @escaping (StickerPackInfoHeaderView) -> Void) {
+        stickerPackHeaderConfigure = configure
+        register(
+            StickerPackInfoHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: stickerPackHeaderReuseIdentifier,
+        )
+        collectionViewLayout.invalidateLayout()
+    }
+
+    public func reconfigureCustomHeader() {
+        guard let stickerPackHeaderConfigure else { return }
+
+        // Configure the sizing header view so we can get the right measurements.
+        stickerPackHeaderConfigure(sizingHeaderView)
+
+        for view in visibleSupplementaryViews(ofKind: UICollectionView.elementKindSectionHeader) {
+            if let header = view as? StickerPackInfoHeaderView {
+                stickerPackHeaderConfigure(header)
+            }
+        }
+        collectionViewLayout.invalidateLayout()
+    }
+
     private var shouldShowStoryStickers: Bool {
         if case .showWithDelegate = storyStickerConfiguration {
             // Story sticker configuration must be `showWithDelegate`
@@ -454,18 +482,37 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
         viewForSupplementaryElementOfKind kind: String,
         at indexPath: IndexPath,
     ) -> UICollectionReusableView {
-        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerReuseIdentifier, for: indexPath)
-
-        guard
-            kind == UICollectionView.elementKindSectionHeader,
-            let headerLabel = headerView as? StickerPickerHeaderView
-        else {
-            return headerView
+        guard kind == UICollectionView.elementKindSectionHeader else {
+            return UICollectionReusableView()
         }
 
-        headerLabel.label.text = self.headerText(for: indexPath.section)
+        if
+            let stickerPackHeaderConfigure,
+            let header = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: stickerPackHeaderReuseIdentifier,
+                for: indexPath,
+            ) as? StickerPackInfoHeaderView
+        {
+            guard indexPath.section == 0 else {
+                owsFailDebug("Only first section should have sticker pack header")
+                return UICollectionReusableView()
+            }
+            stickerPackHeaderConfigure(header)
+            return header
+        }
 
-        return headerLabel
+        let headerView = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: headerReuseIdentifier,
+            for: indexPath,
+        )
+
+        if let headerLabel = headerView as? StickerPickerHeaderView {
+            headerLabel.label.text = self.headerText(for: indexPath.section)
+        }
+
+        return headerView
     }
 
     private func headerText(for section: Int) -> String? {
@@ -491,6 +538,12 @@ extension StickerPackCollectionView: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         referenceSizeForHeaderInSection section: Int,
     ) -> CGSize {
+        if stickerPackHeaderConfigure != nil {
+            let availableWidth = collectionView.safeAreaLayoutGuide.layoutFrame.size.width - collectionView.contentInset.totalWidth
+            let targetSize = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
+            return sizingHeaderView.sizeThatFits(targetSize)
+        }
+
         guard let headerText = headerText(for: section) else { return .zero }
 
         let headerView = StickerPickerHeaderView()

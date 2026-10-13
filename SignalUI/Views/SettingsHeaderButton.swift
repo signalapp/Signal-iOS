@@ -4,17 +4,16 @@
 //
 
 import Foundation
-import SignalUI
 import UIKit
 
-class SettingsHeaderButton: UIView {
+public class SettingsHeaderButton: UIView {
 
     private static let buttonConfiguration: UIButton.Configuration = if #available(iOS 26, *) { .glass() } else { .gray() }
     private let button = UIButton(configuration: SettingsHeaderButton.buttonConfiguration)
     private let titleLabel = UILabel()
     private let stackView = UIStackView()
 
-    init(title: String, icon: ThemeIcon, actionHandler: (() -> Void)? = nil) {
+    public init(title: String, icon: ThemeIcon, actionHandler: (() -> Void)? = nil) {
         super.init(frame: .zero)
 
         // Stack View
@@ -72,17 +71,19 @@ class SettingsHeaderButton: UIView {
         super.init(coder: coder)
     }
 
-    func addActionHandler(_ handler: @escaping () -> Void) {
-        button.addAction(UIAction { _ in handler() }, for: .primaryActionTriggered)
+    private static let actionIdentifier = UIAction.Identifier("SettingsHeaderButton.primary")
+
+    public func addActionHandler(_ handler: @escaping () -> Void) {
+        button.addAction(UIAction(identifier: Self.actionIdentifier) { _ in handler() }, for: .primaryActionTriggered)
     }
 
-    var minimumWidth: CGFloat {
+    public var minimumWidth: CGFloat {
         return intrinsicContentSize.width
     }
 
     // MARK: - Properties
 
-    var menu: UIMenu? {
+    public var menu: UIMenu? {
         get {
             return button.menu
         }
@@ -92,13 +93,13 @@ class SettingsHeaderButton: UIView {
         }
     }
 
-    var buttonBackgroundColor: UIColor = Theme.tableCell2BackgroundColor {
+    public var buttonBackgroundColor: UIColor = Theme.tableCell2BackgroundColor {
         didSet {
             updateButtonBackgroundColorTransformer()
         }
     }
 
-    var selectedButtonBackgroundColor: UIColor = Theme.tableCell2SelectedBackgroundColor {
+    public var selectedButtonBackgroundColor: UIColor = Theme.tableCell2SelectedBackgroundColor {
         didSet {
             updateButtonBackgroundColorTransformer()
         }
@@ -114,7 +115,7 @@ class SettingsHeaderButton: UIView {
         }
     }
 
-    var isEnabled: Bool {
+    public var isEnabled: Bool {
         get {
             button.isEnabled
         }
@@ -125,7 +126,7 @@ class SettingsHeaderButton: UIView {
 
     // MARK: Accessibility
 
-    override func accessibilityActivate() -> Bool {
+    override public func accessibilityActivate() -> Bool {
         if #available(iOS 17.4, *) {
             button.performPrimaryAction()
         } else {
