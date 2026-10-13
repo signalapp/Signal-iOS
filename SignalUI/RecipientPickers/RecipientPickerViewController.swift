@@ -86,7 +86,7 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         view.addSubview(noSignalContactsView)
         noSignalContactsView.autoPinWidthToSuperview()
         noSignalContactsView.autoPinEdge(toSuperviewEdge: .top)
-        noSignalContactsView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        noSignalContactsView.autoPinEdge(toSuperviewSafeArea: .bottom)
 
         // Pull to Refresh
         let refreshControl = UIRefreshControl()

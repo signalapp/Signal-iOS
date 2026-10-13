@@ -977,6 +977,9 @@
 		63C24D55306C510200D4C167 /* ContactShareAvatarPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C24D54306C510200D4C167 /* ContactShareAvatarPickerSheet.swift */; };
 		63DC45303079AF9100119464 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC452F3079AF9100119464 /* Lottie */; };
 		63DC45323079AF9C00119464 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC45313079AF9C00119464 /* Lottie */; };
+		63DC45353079BACE00119464 /* PureLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC45343079BACE00119464 /* PureLayout */; };
+		63DC45373079BADA00119464 /* PureLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC45363079BADA00119464 /* PureLayout */; };
+		63DC45393079BCC100119464 /* PureLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC45383079BCC100119464 /* PureLayout */; };
 		65D2854846F2127979853B12 /* ContactSharingPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE5380475512D4C3083EDC /* ContactSharingPickerViewController.swift */; };
 		6600BB1A2BA3A0930005A035 /* LinkPreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB192BA3A0930005A035 /* LinkPreviewManager.swift */; };
 		6600BB212BA3BC540005A035 /* LinkPreviewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB202BA3BC540005A035 /* LinkPreviewHelper.swift */; };
@@ -8726,6 +8729,7 @@
 				632BFEC830785960005399C0 /* BonMot in Frameworks */,
 				63DC45303079AF9100119464 /* Lottie in Frameworks */,
 				616577F953D77424E32C7438 /* Pods_SignalUI.framework in Frameworks */,
+				63DC45373079BADA00119464 /* PureLayout in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8743,6 +8747,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9FDF89F65C026F8F33FD38C1 /* Pods_SignalShareExtension.framework in Frameworks */,
+				63DC45393079BCC100119464 /* PureLayout in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8770,6 +8775,7 @@
 				455A16DE1F1FEA0000F86704 /* MetalKit.framework in Frameworks */,
 				4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */,
 				0CE014267EDFBD2538E940A0 /* Pods_Signal.framework in Frameworks */,
+				63DC45353079BACE00119464 /* PureLayout in Frameworks */,
 				B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */,
 				A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */,
 				A163E8AB16F3F6AA0094D68B /* Security.framework in Frameworks */,
@@ -16687,6 +16693,7 @@
 				632BFEC13077ED5F005399C0 /* XCLocalSwiftPackageReference "ThirdParty/blurhash" */,
 				632BFEC430785953005399C0 /* XCRemoteSwiftPackageReference "BonMot" */,
 				63DC452E3079AF9100119464 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				63DC45333079BACE00119464 /* XCRemoteSwiftPackageReference "PureLayout" */,
 			);
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
 			projectDirPath = "";
@@ -18236,7 +18243,6 @@
 				"${BUILT_PRODUCTS_DIR}/LibMobileCoin/LibMobileCoin.framework",
 				"${BUILT_PRODUCTS_DIR}/Logging/Logging.framework",
 				"${BUILT_PRODUCTS_DIR}/MobileCoin/MobileCoin.framework",
-				"${BUILT_PRODUCTS_DIR}/PureLayout/PureLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/SignalRingRTC/WebRTC/WebRTC.framework/WebRTC",
 			);
@@ -18254,7 +18260,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LibMobileCoin.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Logging.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MobileCoin.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PureLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
 			);
@@ -23626,6 +23631,14 @@
 				version = 4.4.3;
 			};
 		};
+		63DC45333079BACE00119464 /* XCRemoteSwiftPackageReference "PureLayout" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/PureLayout/PureLayout";
+			requirement = {
+				kind = exactVersion;
+				version = 3.1.9;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -23657,6 +23670,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 63DC452E3079AF9100119464 /* XCRemoteSwiftPackageReference "lottie-ios" */;
 			productName = Lottie;
+		};
+		63DC45343079BACE00119464 /* PureLayout */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC45333079BACE00119464 /* XCRemoteSwiftPackageReference "PureLayout" */;
+			productName = PureLayout;
+		};
+		63DC45363079BADA00119464 /* PureLayout */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC45333079BACE00119464 /* XCRemoteSwiftPackageReference "PureLayout" */;
+			productName = PureLayout;
+		};
+		63DC45383079BCC100119464 /* PureLayout */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC45333079BACE00119464 /* XCRemoteSwiftPackageReference "PureLayout" */;
+			productName = PureLayout;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

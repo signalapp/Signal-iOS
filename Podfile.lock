@@ -25,7 +25,6 @@ PODS:
   - MobileCoin/CoreHTTP (6.0.3):
     - LibMobileCoin/CoreHTTP (~> 6.0.0-pre1)
     - Logging (~> 1.4)
-  - PureLayout (3.1.4)
   - SDWebImage (5.21.2):
     - SDWebImage/Core (= 5.21.2)
   - SDWebImage/Core (5.21.2)
@@ -51,7 +50,6 @@ DEPENDENCIES:
   - LibSignalClient/Tests (from `https://github.com/signalapp/libsignal.git`, tag `v0.105.0`)
   - libwebp
   - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift`, tag `v6.0.3`)
-  - PureLayout
   - SDWebImage
   - SDWebImageWebPCoder
   - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.72.1`)
@@ -64,7 +62,6 @@ SPEC REPOS:
     - GRDB.swift
     - libwebp
     - Logging
-    - PureLayout
     - SDWebImage
     - SDWebImageWebPCoder
     - SwiftProtobuf
@@ -120,13 +117,12 @@ SPEC CHECKSUMS:
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   MobileCoin: cd7f49d6eaa2d362e4c9f8324cae0cc3bc3c53b5
-  PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   SDWebImage: 9f177d83116802728e122410fb25ad88f5c7608a
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SignalRingRTC: 9de104b1e42eaa1e542e6da40a3c4e75f434e473
   SQLCipher: ff2f045b20d675a73a70f7329395ddd4a2580063
   SwiftProtobuf: 409d3aaec90e51b1705b1dd8065b56893450e77c
 
-PODFILE CHECKSUM: 06be10a511e515455613d773f064267f616357c6
+PODFILE CHECKSUM: 981325b1f7fcd54d681925f51a597c88228c7d5a
 
 COCOAPODS: 1.15.2

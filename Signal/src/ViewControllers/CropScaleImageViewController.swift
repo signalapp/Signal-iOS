@@ -198,7 +198,7 @@ class CropScaleImageViewController: OWSViewController {
         contentView.addSubview(titleLabel)
         titleLabel.autoPinWidthToSuperview()
         let titleLabelMargin = CGFloat.scaleFromIPhone5(16)
-        titleLabel.autoPin(toTopLayoutGuideOf: self, withInset: titleLabelMargin)
+        titleLabel.autoPinEdge(toSuperviewSafeArea: .top, withInset: titleLabelMargin)
 
         createButtonRow(contentView: contentView)
 

@@ -38,7 +38,7 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
         qrCodeScanViewController.delegate = self
         view.addSubview(qrCodeScanViewController.view)
         qrCodeScanViewController.view.autoPinWidthToSuperview()
-        qrCodeScanViewController.view.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        qrCodeScanViewController.view.autoPinEdge(toSuperviewSafeArea: .top)
         addChild(qrCodeScanViewController)
 
         let footerView = UIView()
@@ -61,7 +61,7 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
         footerView.addSubview(cameraInstructionLabel)
         cameraInstructionLabel.autoPinWidthToSuperview(withMargin: .scaleFromIPhone5To7Plus(16, 30))
         let instructionsVMargin = CGFloat.scaleFromIPhone5To7Plus(10, 20)
-        cameraInstructionLabel.autoPin(toBottomLayoutGuideOf: self, withInset: instructionsVMargin)
+        cameraInstructionLabel.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: instructionsVMargin)
         cameraInstructionLabel.autoPinEdge(toSuperviewEdge: .top, withInset: instructionsVMargin)
     }
 

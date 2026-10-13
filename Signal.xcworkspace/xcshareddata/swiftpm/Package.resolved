@@ -1,5 +1,5 @@
 {
-  "originHash" : "ff4b7536c1e864f25f6d60444eb7cac8fa05de94a6e1c414f1be5a7332bae261",
+  "originHash" : "ca20df195b4ad69984256082c88a7259e1d7af635afb93ce673f9297208a7e39",
   "pins" : [
     {
       "identity" : "bonmot",
@@ -17,6 +17,15 @@
       "state" : {
         "revision" : "769b88d83a42ca8d5572b020c96f47e3690b3796",
         "version" : "4.4.3"
+      }
+    },
+    {
+      "identity" : "purelayout",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/PureLayout/PureLayout",
+      "state" : {
+        "revision" : "5561683c96dc49b023c1299bfe4f6fbeed5f8199",
+        "version" : "3.1.9"
       }
     }
   ],

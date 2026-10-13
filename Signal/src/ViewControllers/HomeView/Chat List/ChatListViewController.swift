@@ -75,7 +75,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         // First Conversation Cue
         view.addSubview(firstConversationCueView)
-        firstConversationCueView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        firstConversationCueView.autoPinEdge(toSuperviewSafeArea: .top)
         // This inset bakes in assumptions about UINavigationBar layout, but I'm not sure
         // there's a better way to do it, since it isn't safe to use iOS auto layout with
         // UINavigationBar contents.
