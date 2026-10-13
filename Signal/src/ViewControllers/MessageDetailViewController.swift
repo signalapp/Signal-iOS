@@ -1230,6 +1230,8 @@ extension MessageDetailViewController: CVComponentDelegate {
         packView.present(from: self, animated: true)
     }
 
+    func didTapSticker(_ stickerMetadata: any StickerMetadata) {}
+
     func didTapPayment(_ payment: PaymentsHistoryItem) {}
 
     func didTapGroupInviteLink(url: PossibleGroupInviteLinkUrl) {

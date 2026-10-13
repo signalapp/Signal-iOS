@@ -714,6 +714,45 @@ extension ConversationViewController: CVComponentDelegate {
         packView.present(from: self, animated: true)
     }
 
+    public func didTapSticker(_ stickerMetadata: any StickerMetadata) {
+        AssertIsOnMainThread()
+
+        let db = DependenciesBridge.shared.db
+
+        // TODO: [KC] add "Favorites" action once implemented
+        let stickerDetailsSheet = StickerDetailSheet(
+            db: db,
+            stickerMetadata: stickerMetadata,
+            actions: [
+                StickerDetailSheet.Action(
+                    icon: .buttonForward,
+                    title: OWSLocalizedString(
+                        "SEND_BUTTON_TITLE",
+                        comment: "Label for the button to send a message",
+                    ),
+                    handler: { [weak self] in
+                        guard let self else { return }
+
+                        self.sendStickerFlow = SendStickerFlow(stickerMetadata: stickerMetadata, db: db)
+                        self.sendStickerFlow?.present(from: self)
+                    },
+                ),
+                .init(
+                    icon: .stickerPack,
+                    title: OWSLocalizedString(
+                        "STICKER_BUTTON_VIEW_PACK",
+                        comment: "Title for a button to view a sticker pack",
+                    ),
+                    handler: { [weak self] in
+                        let vc = StickerPackViewController(stickerPackInfo: stickerMetadata.packInfo)
+                        self?.present(vc, animated: true)
+                    },
+                ),
+            ],
+        )
+        present(stickerDetailsSheet, animated: true)
+    }
+
     public func didTapPayment(_ payment: PaymentsHistoryItem) {
         AssertIsOnMainThread()
 

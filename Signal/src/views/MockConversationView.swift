@@ -443,6 +443,8 @@ extension MockConversationView: CVComponentDelegate {
 
     func didTapStickerPack(_ stickerPackInfo: StickerPackInfo) {}
 
+    func didTapSticker(_ stickerMetadata: any StickerMetadata) {}
+
     func didTapGroupInviteLink(url: PossibleGroupInviteLinkUrl) {}
 
     func didTapProxyLink(url: URL) {}

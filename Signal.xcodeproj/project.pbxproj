@@ -97,6 +97,8 @@
 		046266DD304B122000E36EE4 /* BackupSubscriptionLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046266DC304B121B00E36EE4 /* BackupSubscriptionLoader.swift */; };
 		046926092E8EBAAE00B1FC74 /* TSInfoMessage+Polls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */; };
 		0477BE322FA4FC41002F9B47 /* TSReleaseNotesThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0477BE312FA4FC38002F9B47 /* TSReleaseNotesThread.swift */; };
+		047800FA306426D50060E725 /* StickerDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047800F9306426D50060E725 /* StickerDetailSheet.swift */; };
+		047800FE306473D00060E725 /* SendStickerFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047800FD306473B80060E725 /* SendStickerFlow.swift */; };
 		047DBEE42FFD491E009F457F /* LocalFileBackupManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047DBEE32FFD4918009F457F /* LocalFileBackupManagerTests.swift */; };
 		0480F0002E57C51A006CBB29 /* BackupsEnabledRecentlyNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledRecentlyNotificationMegaphone.swift */; };
 		0484CECE2F44B7BE009AB2CB /* AdminDeleteRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0484CECD2F44B7BB009AB2CB /* AdminDeleteRecord.swift */; };
@@ -4440,6 +4442,8 @@
 		046266DC304B121B00E36EE4 /* BackupSubscriptionLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSubscriptionLoader.swift; sourceTree = "<group>"; };
 		046926082E8EBAA800B1FC74 /* TSInfoMessage+Polls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+Polls.swift"; sourceTree = "<group>"; };
 		0477BE312FA4FC38002F9B47 /* TSReleaseNotesThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSReleaseNotesThread.swift; sourceTree = "<group>"; };
+		047800F9306426D50060E725 /* StickerDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerDetailSheet.swift; sourceTree = "<group>"; };
+		047800FD306473B80060E725 /* SendStickerFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendStickerFlow.swift; sourceTree = "<group>"; };
 		047DBEE32FFD4918009F457F /* LocalFileBackupManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileBackupManagerTests.swift; sourceTree = "<group>"; };
 		0480EFFF2E57C513006CBB29 /* BackupsEnabledRecentlyNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledRecentlyNotificationMegaphone.swift; sourceTree = "<group>"; };
 		0484CECD2F44B7BB009AB2CB /* AdminDeleteRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDeleteRecord.swift; sourceTree = "<group>"; };
@@ -9385,6 +9389,8 @@
 			isa = PBXGroup;
 			children = (
 				349767E025B8744700ECE1B0 /* ManageStickersViewController.swift */,
+				047800FD306473B80060E725 /* SendStickerFlow.swift */,
+				047800F9306426D50060E725 /* StickerDetailSheet.swift */,
 				349767E125B8744700ECE1B0 /* StickerPackViewController.swift */,
 			);
 			path = Stickers;
@@ -19508,6 +19514,7 @@
 				3497972325DAAE3800E99FA4 /* SendPaymentHelper.swift in Sources */,
 				34EEECF225E846ED00574F0D /* SendPaymentMemoViewController.swift in Sources */,
 				3497972125DAA86100E99FA4 /* SendPaymentViewController.swift in Sources */,
+				047800FE306473D00060E725 /* SendStickerFlow.swift in Sources */,
 				8876CE4A26A914B8002217ED /* SentMediaQualitySettingsViewController.swift in Sources */,
 				D9DCFDAB2A39402F00C73C0B /* SettingsHeaderButton.swift in Sources */,
 				886BB3D325BA0CA400079781 /* SetWallpaperViewController.swift in Sources */,
@@ -19528,6 +19535,7 @@
 				66B943812A6F217600DCF2FF /* SpoilerParticleShader.metal in Sources */,
 				45069FC829D3A7E700D0DD14 /* SquareMediaTileViewLayout.swift in Sources */,
 				50423CA42BBF427900DCB8F5 /* StaleProfileFetcher.swift in Sources */,
+				047800FA306426D50060E725 /* StickerDetailSheet.swift in Sources */,
 				349767E425B8744700ECE1B0 /* StickerPackViewController.swift in Sources */,
 				8852572927DD366D0032073C /* StoriesViewController.swift in Sources */,
 				884DB94727DD754700C6A309 /* StoryCell.swift in Sources */,

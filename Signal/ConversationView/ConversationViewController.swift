@@ -45,6 +45,7 @@ public final class ConversationViewController: OWSViewController {
     public let searchController: ConversationSearchController
     public var pinnedMessageIndex: Int
     var memberLabelCoordinator: MemberLabelCoordinator?
+    var sendStickerFlow: SendStickerFlow?
 
     weak var threadActionProviderDelegate: ThreadContextualActionProvider?
 

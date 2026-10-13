@@ -15,6 +15,6 @@ public enum StoryStickerConfiguration {
 }
 
 public protocol StickerPickerDelegate: AnyObject {
-    func didSelectSticker(_ stickerInfo: StickerInfo)
+    func didSelectSticker(_ stickerMetadata: any StickerMetadata)
     func shouldShowStickerPreview() -> Bool
 }

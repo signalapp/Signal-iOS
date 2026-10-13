@@ -8,7 +8,7 @@ public import SignalServiceKit
 public protocol StickerPackCollectionViewDelegate: StickerPickerDelegate {
     func stickerPreviewHostView() -> UIView?
     func stickerPreviewHasOverlay() -> Bool
-    func didRequestQuoteReplyPreview(for stickerInfo: StickerInfo, stickerView: UIView)
+    func didRequestQuoteReplyPreview(for stickerMetadata: any StickerMetadata, stickerView: UIView)
 }
 
 public class StickerPackCollectionView: UICollectionView {
@@ -387,7 +387,10 @@ extension StickerPackCollectionView: UICollectionViewDelegate {
             return
         }
 
-        guard let stickerInfo = stickerInfos[safe: indexPath.row] else {
+        guard
+            let stickerInfo = stickerInfos[safe: indexPath.row],
+            let stickerMetadata = stickerPackDataSource?.metadata(forSticker: stickerInfo)
+        else {
             owsFailDebug("Invalid index path: \(indexPath)")
             return
         }
@@ -397,9 +400,9 @@ extension StickerPackCollectionView: UICollectionViewDelegate {
                 Logger.warn("Couldn't load sticker for display")
                 return
             }
-            stickerDelegate.didRequestQuoteReplyPreview(for: stickerInfo, stickerView: stickerView)
+            stickerDelegate.didRequestQuoteReplyPreview(for: stickerMetadata, stickerView: stickerView)
         } else {
-            self.stickerDelegate?.didSelectSticker(stickerInfo)
+            self.stickerDelegate?.didSelectSticker(stickerMetadata)
         }
     }
 }

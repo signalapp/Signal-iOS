@@ -184,6 +184,8 @@ public enum ThemeIcon: UInt {
     case unpin
 
     case memberLabel
+
+    case stickerPack
 }
 
 // MARK: -
@@ -543,6 +545,8 @@ public extension Theme {
             return "pin-slash"
         case .memberLabel:
             return "tag"
+        case .stickerPack:
+            return "stickerpack"
         }
     }
 }

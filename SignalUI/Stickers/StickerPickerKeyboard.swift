@@ -79,7 +79,7 @@ extension StickerKeyboard: StickerPickerViewDelegate {
         delegate?.stickerKeyboardDidRequestPresentManageStickersView(self)
     }
 
-    public func didSelectSticker(_ stickerInfo: StickerInfo) {
-        delegate?.stickerKeyboard(self, didSelect: stickerInfo)
+    public func didSelectSticker(_ stickerMetadata: any StickerMetadata) {
+        delegate?.stickerKeyboard(self, didSelect: stickerMetadata.stickerInfo)
     }
 }

@@ -25,8 +25,8 @@ extension ImageEditorViewController {
 
     // MARK: - StickerPickerDelegate
 
-    func didSelectSticker(_ stickerInfo: StickerInfo) {
-        let stickerItem = imageEditorView.createNewStickerItem(with: .regular(stickerInfo))
+    func didSelectSticker(_ stickerMetadata: any StickerMetadata) {
+        let stickerItem = imageEditorView.createNewStickerItem(with: .regular(stickerMetadata.stickerInfo))
         selectStickerItem(stickerItem)
         dismiss(animated: true)
     }

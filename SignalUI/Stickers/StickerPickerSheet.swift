@@ -99,7 +99,7 @@ extension StickerPickerSheet: StickerPickerViewDelegate {
         presentFormSheet(manageStickersViewController, animated: true)
     }
 
-    public func didSelectSticker(_ stickerInfo: StickerInfo) {
-        pickerDelegate?.didSelectSticker(stickerInfo)
+    public func didSelectSticker(_ stickerMetadata: any StickerMetadata) {
+        pickerDelegate?.didSelectSticker(stickerMetadata)
     }
 }

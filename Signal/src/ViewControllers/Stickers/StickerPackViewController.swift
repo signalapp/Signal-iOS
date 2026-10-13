@@ -13,17 +13,27 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
     // MARK: Properties
 
     private let stickerPackInfo: StickerPackInfo
-
     private let dataSource: StickerPackDataSource
+    private let db: DB
+
+    private var sendStickerFlow: SendStickerFlow?
 
     // MARK: UIViewController
 
-    init(stickerPackInfo: StickerPackInfo) {
+    convenience init(stickerPackInfo: StickerPackInfo) {
+        self.init(
+            stickerPackInfo: stickerPackInfo,
+            db: DependenciesBridge.shared.db,
+        )
+    }
+
+    init(stickerPackInfo: StickerPackInfo, db: DB) {
         self.stickerPackInfo = stickerPackInfo
         self.dataSource = TransientStickerPackDataSource(
             stickerPackInfo: stickerPackInfo,
             shouldDownloadAllStickers: true,
         )
+        self.db = db
 
         super.init()
 
@@ -528,8 +538,26 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
 
     // MARK: - StickerPackCollectionViewDelegate
 
-    func didSelectSticker(_: StickerInfo) {
-        // This view controller does nothing.
+    func didSelectSticker(_ stickerMetadata: any StickerMetadata) {
+        let stickerDetailsSheet = StickerDetailSheet(
+            db: db,
+            stickerMetadata: stickerMetadata,
+            actions: [
+                StickerDetailSheet.Action(
+                    icon: .buttonForward,
+                    title: OWSLocalizedString(
+                        "SEND_BUTTON_TITLE",
+                        comment: "Label for the button to send a message",
+                    ),
+                    handler: { [weak self] in
+                        guard let self else { return }
+                        self.sendStickerFlow = SendStickerFlow(stickerMetadata: stickerMetadata, db: db)
+                        self.sendStickerFlow?.present(from: self)
+                    },
+                ),
+            ],
+        )
+        present(stickerDetailsSheet, animated: true)
     }
 
     func stickerPreviewHostView() -> UIView? {
@@ -540,7 +568,7 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
         return true
     }
 
-    func didRequestQuoteReplyPreview(for stickerInfo: StickerInfo, stickerView: UIView) {
+    func didRequestQuoteReplyPreview(for stickerMetadata: any StickerMetadata, stickerView: UIView) {
         owsFailDebug("")
     }
 

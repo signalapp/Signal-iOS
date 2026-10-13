@@ -158,6 +158,8 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate, CVPoll
 
     func didTapStickerPack(_ stickerPackInfo: StickerPackInfo)
 
+    func didTapSticker(_ stickerMetadata: any StickerMetadata)
+
     func didTapPayment(_ payment: PaymentsHistoryItem)
 
     func didTapGroupInviteLink(url: PossibleGroupInviteLinkUrl)

@@ -794,6 +794,8 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate, CVCompo
 
     func didTapStickerPack(_ stickerPackInfo: StickerPackInfo) {}
 
+    func didTapSticker(_ stickerMetadata: any StickerMetadata) {}
+
     func didTapGroupInviteLink(url: PossibleGroupInviteLinkUrl) {}
 
     func didTapProxyLink(url: URL) {}
