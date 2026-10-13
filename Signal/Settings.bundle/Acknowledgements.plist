@@ -7067,10 +7067,8 @@ copy of the Program in return for a fee.
 
    END OF TERMS AND CONDITIONS
 </string>
-			<key>License</key>
-			<string>Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0)</string>
 			<key>Title</key>
-			<string>libPhoneNumber-iOS</string>
+			<string>libPhoneNumber</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>

@@ -6,7 +6,6 @@ PODS:
     - SQLCipher (>= 3.4.0)
   - LibMobileCoin/CoreHTTP (6.0.2):
     - SwiftProtobuf (~> 1.5)
-  - libPhoneNumber-iOS (1.2.0)
   - LibSignalClient (0.105.0)
   - LibSignalClient/Tests (0.105.0)
   - Logging (1.4.0)
@@ -27,7 +26,6 @@ DEPENDENCIES:
   - CocoaLumberjack
   - GRDB.swift/SQLCipher
   - LibMobileCoin/CoreHTTP (from `https://github.com/signalapp/libmobilecoin-ios-artifacts`, tag `signal/6.0.2`)
-  - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
   - LibSignalClient (from `https://github.com/signalapp/libsignal.git`, tag `v0.105.0`)
   - LibSignalClient/Tests (from `https://github.com/signalapp/libsignal.git`, tag `v0.105.0`)
   - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift`, tag `v6.0.3`)
@@ -47,9 +45,6 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts
     :submodules: true
     :tag: signal/6.0.2
-  libPhoneNumber-iOS:
-    :branch: signal-master
-    :git: https://github.com/signalapp/libPhoneNumber-iOS
   LibSignalClient:
     :git: https://github.com/signalapp/libsignal.git
     :tag: v0.105.0
@@ -68,9 +63,6 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts
     :submodules: true
     :tag: signal/6.0.2
-  libPhoneNumber-iOS:
-    :commit: 60482f7c0341e7c13e037ae1edbe8b359de7e6f3
-    :git: https://github.com/signalapp/libPhoneNumber-iOS
   LibSignalClient:
     :git: https://github.com/signalapp/libsignal.git
     :tag: v0.105.0
@@ -88,7 +80,6 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   GRDB.swift: 1395cb3556df6b16ed69dfc74c3886abc75d2825
   LibMobileCoin: 8503f567fa32184a5be7bc038fbd727747dd9991
-  libPhoneNumber-iOS: 1a34106b49dc6e12a7f37eb9aee7c64011509547
   LibSignalClient: 2b65bad98bf695e2036871b7160598595a60ed45
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   MobileCoin: cd7f49d6eaa2d362e4c9f8324cae0cc3bc3c53b5
@@ -96,6 +87,6 @@ SPEC CHECKSUMS:
   SQLCipher: ff2f045b20d675a73a70f7329395ddd4a2580063
   SwiftProtobuf: 409d3aaec90e51b1705b1dd8065b56893450e77c
 
-PODFILE CHECKSUM: fc96f413bea9ff9c4fea4962dced1dc2d9a34311
+PODFILE CHECKSUM: a6cdaa73628925b29325db7323e21c3ac1288979
 
 COCOAPODS: 1.15.2

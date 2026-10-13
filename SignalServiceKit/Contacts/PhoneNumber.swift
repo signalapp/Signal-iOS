@@ -4,7 +4,7 @@
 //
 
 import Foundation
-public import libPhoneNumber_iOS
+public import libPhoneNumber
 
 /// PhoneNumber is used to deal with the nitty details of parsing/canonicalizing phone numbers.
 public struct PhoneNumber {

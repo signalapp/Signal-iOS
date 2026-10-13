@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import libPhoneNumber_iOS
+import libPhoneNumber
 
 // MARK: -
 

@@ -997,6 +997,11 @@
 		63DC4556307E7DBB00119464 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4555307E7DBB00119464 /* SDWebImage */; };
 		63DC4558307E7DBB00119464 /* libwebp in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4557307E7DBB00119464 /* libwebp */; };
 		63DC455A307E7DBB00119464 /* SDWebImageWebPCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4559307E7DBB00119464 /* SDWebImageWebPCoder */; };
+		63DC455D307EA24D00119464 /* libPhoneNumber in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC455C307EA24D00119464 /* libPhoneNumber */; };
+		63DC455F307EA31400119464 /* libPhoneNumber in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC455E307EA31400119464 /* libPhoneNumber */; };
+		63DC4561307EA32800119464 /* libPhoneNumber in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4560307EA32800119464 /* libPhoneNumber */; };
+		63DC4563307EA45C00119464 /* libPhoneNumber in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4562307EA45C00119464 /* libPhoneNumber */; };
+		63DC4565307EA5DA00119464 /* libPhoneNumber in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4564307EA5DA00119464 /* libPhoneNumber */; };
 		65D2854846F2127979853B12 /* ContactSharingPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE5380475512D4C3083EDC /* ContactSharingPickerViewController.swift */; };
 		6600BB1A2BA3A0930005A035 /* LinkPreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB192BA3A0930005A035 /* LinkPreviewManager.swift */; };
 		6600BB212BA3BC540005A035 /* LinkPreviewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB202BA3BC540005A035 /* LinkPreviewHelper.swift */; };
@@ -8735,6 +8740,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				342FFEA227245A07000AC89F /* Intents.framework in Frameworks */,
+				63DC4561307EA32800119464 /* libPhoneNumber in Frameworks */,
 				63DC4552307E7D7700119464 /* libwebp in Frameworks */,
 				46B99B83D9513F2B8641EAB1 /* Pods_SignalNSE.framework in Frameworks */,
 				63DC4548307E7D4E00119464 /* SDWebImage in Frameworks */,
@@ -8747,6 +8753,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				632BFEC830785960005399C0 /* BonMot in Frameworks */,
+				63DC455F307EA31400119464 /* libPhoneNumber in Frameworks */,
 				63DC4550307E7D7000119464 /* libwebp in Frameworks */,
 				63DC45303079AF9100119464 /* Lottie in Frameworks */,
 				616577F953D77424E32C7438 /* Pods_SignalUI.framework in Frameworks */,
@@ -8769,6 +8776,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63DC4563307EA45C00119464 /* libPhoneNumber in Frameworks */,
 				63DC4558307E7DBB00119464 /* libwebp in Frameworks */,
 				9FDF89F65C026F8F33FD38C1 /* Pods_SignalShareExtension.framework in Frameworks */,
 				63DC45393079BCC100119464 /* PureLayout in Frameworks */,
@@ -8794,6 +8802,7 @@
 				C109A87C2FDC906F0065225E /* DeviceDiscoveryUI.framework in Frameworks */,
 				D221A090169C9E5E00537ABF /* Foundation.framework in Frameworks */,
 				45847E871E4283C30080EAB3 /* Intents.framework in Frameworks */,
+				63DC4565307EA5DA00119464 /* libPhoneNumber in Frameworks */,
 				63DC453F307E7CAA00119464 /* libwebp in Frameworks */,
 				63DC45323079AF9C00119464 /* Lottie in Frameworks */,
 				76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */,
@@ -8844,6 +8853,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				632BFEC33077ED5F005399C0 /* blurhash in Frameworks */,
+				63DC455D307EA24D00119464 /* libPhoneNumber in Frameworks */,
 				63DC4554307E7D8700119464 /* libwebp in Frameworks */,
 				C26296B4BDCEDADBDA01DDD2 /* Pods_SignalServiceKit.framework in Frameworks */,
 				63DC4544307E7D0300119464 /* SDWebImage in Frameworks */,
@@ -16730,6 +16740,7 @@
 				63DC453A307E7C5E00119464 /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				63DC453D307E7CAA00119464 /* XCRemoteSwiftPackageReference "libwebp-Xcode" */,
 				63DC4540307E7CD300119464 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */,
+				63DC455B307EA24D00119464 /* XCRemoteSwiftPackageReference "libPhoneNumber-iOS" */,
 			);
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
 			projectDirPath = "";
@@ -18272,7 +18283,6 @@
 				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalRingRTC/SignalRingRTC.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
-				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 				"${BUILT_PRODUCTS_DIR}/LibMobileCoin/LibMobileCoin.framework",
 				"${BUILT_PRODUCTS_DIR}/Logging/Logging.framework",
 				"${BUILT_PRODUCTS_DIR}/MobileCoin/MobileCoin.framework",
@@ -18286,7 +18296,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalRingRTC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LibMobileCoin.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Logging.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MobileCoin.framework",
@@ -18332,7 +18341,6 @@
 				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalRingRTC/SignalRingRTC.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
-				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/SignalRingRTC/WebRTC/WebRTC.framework/WebRTC",
 			);
@@ -18343,7 +18351,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalRingRTC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
 			);
@@ -23688,6 +23695,14 @@
 				version = 0.14.6;
 			};
 		};
+		63DC455B307EA24D00119464 /* XCRemoteSwiftPackageReference "libPhoneNumber-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/signalapp/libPhoneNumber-iOS";
+			requirement = {
+				kind = exactVersion;
+				version = "1.2.0-signal.1";
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -23809,6 +23824,31 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 63DC4540307E7CD300119464 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */;
 			productName = SDWebImageWebPCoder;
+		};
+		63DC455C307EA24D00119464 /* libPhoneNumber */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC455B307EA24D00119464 /* XCRemoteSwiftPackageReference "libPhoneNumber-iOS" */;
+			productName = libPhoneNumber;
+		};
+		63DC455E307EA31400119464 /* libPhoneNumber */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC455B307EA24D00119464 /* XCRemoteSwiftPackageReference "libPhoneNumber-iOS" */;
+			productName = libPhoneNumber;
+		};
+		63DC4560307EA32800119464 /* libPhoneNumber */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC455B307EA24D00119464 /* XCRemoteSwiftPackageReference "libPhoneNumber-iOS" */;
+			productName = libPhoneNumber;
+		};
+		63DC4562307EA45C00119464 /* libPhoneNumber */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC455B307EA24D00119464 /* XCRemoteSwiftPackageReference "libPhoneNumber-iOS" */;
+			productName = libPhoneNumber;
+		};
+		63DC4564307EA5DA00119464 /* libPhoneNumber */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63DC455B307EA24D00119464 /* XCRemoteSwiftPackageReference "libPhoneNumber-iOS" */;
+			productName = libPhoneNumber;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

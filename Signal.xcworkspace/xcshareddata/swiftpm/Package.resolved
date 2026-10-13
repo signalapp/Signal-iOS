@@ -1,5 +1,5 @@
 {
-  "originHash" : "36fe75e64b1128fb0f3d33dabdc7e7cf8cb8335ed8dfd94a1ae714081e38d5fb",
+  "originHash" : "0eae941b71d442ea8e87730bb7588207298b193887302402b42be4bdd33984a7",
   "pins" : [
     {
       "identity" : "bonmot",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "69dd5eba11694421418edc9063f3c7c02d069634",
         "version" : "6.0.0"
+      }
+    },
+    {
+      "identity" : "libphonenumber-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/signalapp/libPhoneNumber-iOS",
+      "state" : {
+        "revision" : "ef6c41b834aeb38821a9c46d213e3dc4e08bc791",
+        "version" : "1.2.0-signal.1"
       }
     },
     {

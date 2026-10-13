@@ -26,13 +26,6 @@ pod 'SQLCipher', git: 'https://github.com/signalapp/sqlcipher.git', tag: 'v4.6.1
 # pod 'SQLCipher', path: '../sqlcipher'
 
 ###
-# forked third party pods
-###
-
-pod 'libPhoneNumber-iOS', git: 'https://github.com/signalapp/libPhoneNumber-iOS', branch: 'signal-master'
-# pod 'libPhoneNumber-iOS', path: '../libPhoneNumber-iOS'
-
-###
 # third party pods
 ####
 
