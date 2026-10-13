@@ -165,7 +165,7 @@ class WADeviceTransferIncomingConnection: DeviceTransfer.IncomingConnection {
                 case .waiting(let error):
                     logger.info("Connection: waiting: \(error)")
                 @unknown default:
-                    logger.info("Connection: unknown")
+                    logger.info("Connection: unhandled state: \(state)")
                 }
             }.onServiceRegistrationUpdate { _, change in
                 switch change {
@@ -174,7 +174,7 @@ class WADeviceTransferIncomingConnection: DeviceTransfer.IncomingConnection {
                 case .remove:
                     logger.info("Connection: remove service")
                 @unknown default:
-                    logger.info("Connection: unknown")
+                    logger.info("Connection: unhandled service registration: \(change)")
                 }
             }.run { connection in
                 logger.info("Connection from endpoint")
@@ -189,7 +189,7 @@ class WADeviceTransferIncomingConnection: DeviceTransfer.IncomingConnection {
         } onCancel: {
             listenerTask.swap(nil)?.cancel()
         }
-        logger.debug("Returning new session")
+        logger.info("Returning new session")
         return session
     }
 

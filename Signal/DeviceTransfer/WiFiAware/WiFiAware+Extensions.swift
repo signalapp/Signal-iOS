@@ -45,16 +45,19 @@ enum WiFiAware {
             let pairedDevices = newDevices.reduce(into: [String: WADeviceTransferPeer]()) { devices, device in
                 let peer = WADeviceTransferPeer(pairedDevice: device)
                 if let existingPeer = devices[peer.displayName] {
-                    logger.debug("Discovered existing peer \(device)")
+                    logger.info("Discovered existing peer \(peer), already have \(existingPeer)")
                     if peer.pairedDevice.id > existingPeer.pairedDevice.id {
                         devices[peer.displayName] = peer
                     }
                 } else {
-                    logger.debug("Discovered new peer \(device)")
+                    logger.info("Discovered new peer \(peer)")
                     devices[peer.displayName] = peer
                 }
             }
-            logger.info("Discovered \(pairedDevices.count) peers")
+            // Log the raw count alongside the de-duplicated one. These differ when
+            // the OS is holding more than one pairing record for the same device --
+            // typically stale records left behind by earlier transfer attempts.
+            logger.info("Discovered \(pairedDevices.count) peers (\(updatedDeviceList.count) pairing records)")
             return pairedDevices.values.sorted { $0.pairedDevice.id > $1.pairedDevice.id }
         }
 
@@ -62,7 +65,7 @@ enum WiFiAware {
             state.enqueueUpdate { _state in
                 guard let updatedDevices = try? await WAPairedDevice.allDevices.current() else { return }
                 let deviceList = reduceDevicesList(updatedDevices)
-                logger.debug("Known devices on foreground \(updatedDevices)")
+                logger.info("Known devices on foreground \(updatedDevices.keys.sorted())")
                 _state.knownDeviceSet = Set(deviceList)
                 _state.sink.yield(deviceList)
             }
@@ -77,7 +80,7 @@ enum WiFiAware {
                 if (currentDeviceSnapshot ?? [:]).isEmpty {
                     // If the current device snapshot is empty, send an initial value since the
                     // loop below won't initially fire.
-                    logger.debug("No peers found")
+                    logger.info("No peers found")
                     state.enqueueUpdate { _state in
                         _state.knownDeviceSet.removeAll()
                         _state.sink.yield([])
@@ -90,7 +93,7 @@ enum WiFiAware {
                     state.enqueueUpdate { _state in
                         let differences = pairedDeviceSet.symmetricDifference(_state.knownDeviceSet)
                         if !differences.isEmpty {
-                            logger.debug("Devices after update \(pairedDevices)")
+                            logger.info("Devices after update \(pairedDevices)")
                             _state.knownDeviceSet = pairedDeviceSet
                             _state.sink.yield(pairedDevices)
                         }

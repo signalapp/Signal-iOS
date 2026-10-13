@@ -57,7 +57,7 @@ class WADeviceTransferOutgoingConnection: DeviceTransfer.OutgoingConnection {
             case .waiting(let error):
                 self?.logger.info("Connection: failed: \(error)")
             @unknown default:
-                self?.logger.info("Connection: unknown")
+                self?.logger.info("Connection: unhandled state: \(state)")
             }
         }
 
@@ -66,11 +66,10 @@ class WADeviceTransferOutgoingConnection: DeviceTransfer.OutgoingConnection {
             for endpoint in waEndpoints {
                 let discoveredPeer = WADeviceTransferPeer(pairedDevice: endpoint.device)
                 if discoveredPeer.id == peer.id {
-                    self?.logger.debug("Found endpoint to connect to: \(discoveredPeer)")
+                    self?.logger.info("Found endpoint to connect to: \(discoveredPeer)")
                     return .finish(endpoint)
                 } else {
-                    self?.logger.debug("Found endpoint other than the selected one")
-                    self?.logger.debug("\(discoveredPeer) != \(peer)")
+                    self?.logger.info("Found endpoint other than the selected one: \(discoveredPeer) != \(peer)")
                 }
             }
             return .continue
@@ -114,7 +113,7 @@ class WADeviceTransferOutgoingConnection: DeviceTransfer.OutgoingConnection {
             .serviceClass(WiFiAware.Constants.appServiceClass),
         )
 
-        logger.debug("Connected to endpoint")
+        logger.info("Connected to endpoint")
         return WADeviceTransferSession(connection: connection)
     }
 
