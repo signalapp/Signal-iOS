@@ -247,10 +247,17 @@ public class OWSReceiptManager: NSObject {
     }
 
     public func setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration(_ value: Bool) {
+        let db = DependenciesBridge.shared.db
+        let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
+        let syncManager = SSKEnvironment.shared.syncManagerRef
         Logger.info("setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration: \(value)")
-        SSKEnvironment.shared.databaseStorageRef.write { self.setAreReadReceiptsEnabled(value, transaction: $0) }
-        SSKEnvironment.shared.syncManagerRef.sendConfigurationSyncMessage()
-        SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
+
+        db.write { tx in
+            self.setAreReadReceiptsEnabled(value, transaction: tx)
+            syncManager.sendConfigurationSyncMessage(tx: tx)
+        }
+
+        storageServiceManager.recordPendingLocalAccountUpdates()
     }
 
     public func setAreReadReceiptsEnabled(_ value: Bool, transaction: DBWriteTransaction) {

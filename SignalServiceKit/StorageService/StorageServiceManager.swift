@@ -1148,12 +1148,14 @@ class StorageServiceOperation {
         Logger.info("Successfully updated to manifest version: \(state.manifestVersion)")
 
         // Successfully updated, store our changes.
-        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-            state.save(clearConsecutiveConflicts: true, transaction: transaction)
-        }
+        let db = DependenciesBridge.shared.db
+        let syncManager = SSKEnvironment.shared.syncManagerRef
+        await db.awaitableWrite { tx in
+            state.save(clearConsecutiveConflicts: true, transaction: tx)
 
-        // Notify our other devices that the storage manifest has changed.
-        await SSKEnvironment.shared.syncManagerRef.sendFetchLatestStorageManifestSyncMessage()
+            // Notify our other devices that the storage manifest has changed.
+            syncManager.sendFetchLatestStorageManifestSyncMessage(tx: tx)
+        }
     }
 
     private func buildManifestRecord(
@@ -1445,13 +1447,15 @@ class StorageServiceOperation {
                 masterKey: masterKey,
                 chatServiceAuth: authedAccount.chatServiceAuth,
             )
-            /// We created a new manifest, so let's tell our other devices to go
-            /// fetch it.
-            await SSKEnvironment.shared.syncManagerRef.sendFetchLatestStorageManifestSyncMessage()
 
-            /// Store our changes.
-            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-                state.save(clearConsecutiveConflicts: true, transaction: transaction)
+            let db = DependenciesBridge.shared.db
+            let syncManager = SSKEnvironment.shared.syncManagerRef
+            await db.awaitableWrite { tx in
+                state.save(clearConsecutiveConflicts: true, transaction: tx)
+
+                // We created a new manifest, so let's tell our other devices to
+                // go fetch it.
+                syncManager.sendFetchLatestStorageManifestSyncMessage(tx: tx)
             }
 
             return nil

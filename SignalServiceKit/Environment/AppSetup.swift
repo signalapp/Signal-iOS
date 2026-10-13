@@ -102,7 +102,7 @@ extension AppSetup {
         let remoteConfigManager: (any RemoteConfigManager)?
         let signalService: (any OWSSignalServiceProtocol)?
         let storageServiceManager: (any StorageServiceManager)?
-        let syncManager: (any SyncManagerProtocol)?
+        let syncManager: (any SyncManager)?
         let systemStoryManager: (any SystemStoryManagerProtocol)?
         let versionedProfiles: (any VersionedProfiles)?
         let webSocketFactory: (any WebSocketFactory)?
@@ -123,7 +123,7 @@ extension AppSetup {
             remoteConfigManager: (any RemoteConfigManager)? = nil,
             signalService: (any OWSSignalServiceProtocol)? = nil,
             storageServiceManager: (any StorageServiceManager)? = nil,
-            syncManager: (any SyncManagerProtocol)? = nil,
+            syncManager: (any SyncManager)? = nil,
             systemStoryManager: (any SystemStoryManagerProtocol)? = nil,
             versionedProfiles: (any VersionedProfiles)? = nil,
             webSocketFactory: (any WebSocketFactory)? = nil,
@@ -328,7 +328,7 @@ extension AppSetup.GlobalsContinuation {
         let storageServiceManager = testDependencies.storageServiceManager ?? StorageServiceManagerImpl(
             appReadiness: appReadiness,
         )
-        let syncManager = testDependencies.syncManager ?? OWSSyncManager(appReadiness: appReadiness)
+        let syncManager = testDependencies.syncManager ?? SyncManagerImpl(appReadiness: appReadiness)
         let udManager = OWSUDManagerImpl(
             cron: cron,
             db: databaseStorage,

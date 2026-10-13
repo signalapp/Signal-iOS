@@ -26,7 +26,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private let signalService: OWSSignalServiceProtocol
     private let storageServiceManager: StorageServiceManager
     private let svr: SecureValueRecovery
-    private let syncManager: SyncManagerProtocol
+    private let syncManager: SyncManager
     private let threadStore: ThreadStore
     private let tsAccountManager: TSAccountManager
 
@@ -48,7 +48,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         signalService: OWSSignalServiceProtocol,
         storageServiceManager: StorageServiceManager,
         svr: SecureValueRecovery,
-        syncManager: SyncManagerProtocol,
+        syncManager: SyncManager,
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager,
     ) {

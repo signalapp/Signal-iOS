@@ -14,7 +14,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
     private let kvStore: NewKeyValueStore
     private let networkManager: NetworkManager
     private let profileManager: ProfileManager
-    private let syncManager: SyncManagerProtocol
+    private let syncManager: SyncManager
     private let tsAccountManager: TSAccountManager
     private let twoFactorManager: OWS2FAManager
 
@@ -33,7 +33,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         db: any DB,
         networkManager: NetworkManager,
         profileManager: ProfileManager,
-        syncManager: SyncManagerProtocol,
+        syncManager: SyncManager,
         tsAccountManager: TSAccountManager,
         twoFactorManager: OWS2FAManager,
     ) {
@@ -198,6 +198,12 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             {
                 self.kvStore.removeValue(forKey: Keys.latestUpdateRequestToken, tx: tx)
             }
+
+            // Primary devices should sync their configuration whenever they
+            // update their account attributes.
+            if updateConfig.registrationState.isRegisteredPrimaryDevice {
+                self.syncManager.sendConfigurationSyncMessage(tx: tx)
+            }
         }
 
         // Best-effort fetch our own profile, in case we now have new
@@ -205,12 +211,6 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         // result of our account attributes update (which includes device-level
         // capabilities).
         _ = try? await profileManager.fetchLocalUsersProfile(authedAccount: authedAccount)
-
-        // Primary devices should sync their configuration whenever they
-        // update their account attributes.
-        if updateConfig.registrationState.isRegisteredPrimaryDevice {
-            self.syncManager.sendConfigurationSyncMessage()
-        }
     }
 
     private enum Keys {

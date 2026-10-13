@@ -16,12 +16,12 @@ public protocol LinkPreviewSettingManager {
 class LinkPreviewSettingManagerImpl: LinkPreviewSettingManager {
     private let linkPreviewSettingStore: LinkPreviewSettingStore
     private let storageServiceManager: any StorageServiceManager
-    private let syncManager: any SyncManagerProtocol
+    private let syncManager: any SyncManager
 
     init(
         linkPreviewSettingStore: LinkPreviewSettingStore,
         storageServiceManager: any StorageServiceManager,
-        syncManager: any SyncManagerProtocol,
+        syncManager: any SyncManager,
     ) {
         self.linkPreviewSettingStore = linkPreviewSettingStore
         self.storageServiceManager = storageServiceManager
@@ -32,7 +32,7 @@ class LinkPreviewSettingManagerImpl: LinkPreviewSettingManager {
         self.linkPreviewSettingStore.setAreLinkPreviewsEnabled(newValue, tx: tx)
 
         if shouldSendSyncMessage {
-            self.syncManager.sendConfigurationSyncMessage()
+            self.syncManager.sendConfigurationSyncMessage(tx: tx)
             self.storageServiceManager.recordPendingLocalAccountUpdates()
         }
     }

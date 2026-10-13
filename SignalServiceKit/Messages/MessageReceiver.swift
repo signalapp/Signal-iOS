@@ -881,10 +881,18 @@ public final class MessageReceiver {
     }
 
     private func handleIncomingSyncRequest(_ request: SSKProtoSyncMessageRequest, tx: DBWriteTransaction) {
-        guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice else {
+        let blockingManager = SSKEnvironment.shared.blockingManagerRef
+        let syncManager = SSKEnvironment.shared.syncManagerRef
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+        guard
+            let registeredState = try? tsAccountManager.registeredState(tx: tx),
+            registeredState.isPrimary
+        else {
             // Don't respond to sync requests from a linked device.
             return
         }
+
         switch request.type {
         case .contacts:
             // We respond asynchronously because populating the sync message will
@@ -897,7 +905,6 @@ public final class MessageReceiver {
             tx.addSyncCompletion {
                 Task {
                     defer { pendingTask.complete() }
-                    let syncManager = SSKEnvironment.shared.syncManagerRef
                     do {
                         try await syncManager.syncAllContacts()
                     } catch {
@@ -911,7 +918,7 @@ public final class MessageReceiver {
             Task {
                 defer { pendingTask.complete() }
                 do {
-                    try await SSKEnvironment.shared.blockingManagerRef.syncBlockListIfNecessary(force: true)
+                    try await blockingManager.syncBlockListIfNecessary(force: true)
                 } catch {
                     Logger.warn("Failed to send block list sync message! \(error)")
                 }
@@ -919,11 +926,11 @@ public final class MessageReceiver {
 
         case .configuration:
             // We send _two_ responses to the "configuration request".
-            SSKEnvironment.shared.syncManagerRef.sendConfigurationSyncMessage()
+            syncManager.sendConfigurationSyncMessage(tx: tx)
             StickerManager.syncAllInstalledPacks(transaction: tx)
 
         case .keys:
-            SSKEnvironment.shared.syncManagerRef.sendKeysSyncMessage()
+            syncManager.sendKeysSyncMessage(tx: tx)
 
         case .unknown, .none:
             owsFailDebug("Ignoring sync request with unexpected type")

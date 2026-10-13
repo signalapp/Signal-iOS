@@ -38,7 +38,7 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
     private let logger: PrefixedLogger
     private let storageServiceManager: StorageServiceManager
     private let svr: SecureValueRecovery
-    private let syncManager: SyncManagerProtocol
+    private let syncManager: SyncManager
     private let tsAccountManager: TSAccountManager
     private let localFileBackupStore: LocalFileBackupStore
 
@@ -50,7 +50,7 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
         db: DB,
         storageServiceManager: StorageServiceManager,
         svr: SecureValueRecovery,
-        syncManager: SyncManagerProtocol,
+        syncManager: SyncManager,
         tsAccountManager: TSAccountManager,
         localFileBackupStore: LocalFileBackupStore,
     ) {
@@ -200,7 +200,9 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
             //
             // Regardless, things should eventually recover regardless of what
             // succeeds and in what order.
-            syncManager.sendKeysSyncMessage()
+            await db.awaitableWrite { tx in
+                syncManager.sendKeysSyncMessage(tx: tx)
+            }
         }
     }
 }

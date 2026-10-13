@@ -113,7 +113,7 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         profileManager: any ProfileManager,
         reachabilityManager: any SSKReachabilityManager,
         recipientDatabaseTable: RecipientDatabaseTable,
-        syncManager: any SyncManagerProtocol,
+        syncManager: any SyncManager,
         threadStore: any ThreadStore,
         tsAccountManager: any TSAccountManager,
         udManager: any OWSUDManager,

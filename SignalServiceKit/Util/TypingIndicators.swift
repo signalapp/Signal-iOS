@@ -61,20 +61,24 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     }
 
     public func setTypingIndicatorsEnabledAndSendSyncMessage(value: Bool) {
+        let db = DependenciesBridge.shared.db
+        let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
+        let syncManager = SSKEnvironment.shared.syncManagerRef
+
         Logger.info("\(_areTypingIndicatorsEnabled.get()) -> \(value)")
         _areTypingIndicatorsEnabled.set(value)
 
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
+        db.write { tx in
             self.keyValueStore.setBool(
                 value,
                 key: self.kDatabaseKey_TypingIndicatorsEnabled,
-                transaction: transaction,
+                transaction: tx,
             )
+
+            syncManager.sendConfigurationSyncMessage(tx: tx)
         }
 
-        SSKEnvironment.shared.syncManagerRef.sendConfigurationSyncMessage()
-
-        SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
+        storageServiceManager.recordPendingLocalAccountUpdates()
 
         NotificationCenter.default.postOnMainThread(name: TypingIndicatorsImpl.typingIndicatorStateDidChange, object: nil)
     }

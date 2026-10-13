@@ -51,7 +51,7 @@ public class SSKEnvironment: NSObject {
     @objc
     public let receiptSenderRef: ReceiptSender
     public let reachabilityManagerRef: SSKReachabilityManager
-    public let syncManagerRef: SyncManagerProtocol
+    public let syncManagerRef: SyncManager
     public let typingIndicatorsRef: TypingIndicators
     public let stickerManagerRef: StickerManager
     @objc
@@ -115,7 +115,7 @@ public class SSKEnvironment: NSObject {
         receiptManager: OWSReceiptManager,
         receiptSender: ReceiptSender,
         reachabilityManager: SSKReachabilityManager,
-        syncManager: SyncManagerProtocol,
+        syncManager: SyncManager,
         typingIndicators: TypingIndicators,
         stickerManager: StickerManager,
         databaseStorage: SDSDatabaseStorage,

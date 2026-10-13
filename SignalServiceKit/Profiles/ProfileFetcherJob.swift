@@ -31,7 +31,7 @@ public class ProfileFetcherJob {
     private let paymentsHelper: any PaymentsHelper
     private let profileManager: any ProfileManager
     private let recipientDatabaseTable: RecipientDatabaseTable
-    private let syncManager: any SyncManagerProtocol
+    private let syncManager: any SyncManager
     private let threadStore: any ThreadStore
     private let tsAccountManager: any TSAccountManager
     private let udManager: any OWSUDManager
@@ -53,7 +53,7 @@ public class ProfileFetcherJob {
         paymentsHelper: any PaymentsHelper,
         profileManager: any ProfileManager,
         recipientDatabaseTable: RecipientDatabaseTable,
-        syncManager: any SyncManagerProtocol,
+        syncManager: any SyncManager,
         threadStore: any ThreadStore,
         tsAccountManager: any TSAccountManager,
         udManager: any OWSUDManager,

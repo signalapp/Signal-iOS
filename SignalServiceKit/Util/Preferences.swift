@@ -158,9 +158,14 @@ public class Preferences {
     }
 
     public func setShouldShowUnidentifiedDeliveryIndicatorsAndSendSyncMessage(_ value: Bool) {
-        setBool(value, forKey: .shouldShowUnidentifiedDeliveryIndicators)
+        let db = DependenciesBridge.shared.db
+        let syncManager = SSKEnvironment.shared.syncManagerRef
 
-        SSKEnvironment.shared.syncManagerRef.sendConfigurationSyncMessage()
+        db.write { tx in
+            setBool(value, forKey: .shouldShowUnidentifiedDeliveryIndicators, tx: tx)
+            syncManager.sendConfigurationSyncMessage(tx: tx)
+        }
+
         SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
     }
 
