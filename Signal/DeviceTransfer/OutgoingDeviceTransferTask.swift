@@ -123,7 +123,7 @@ class OutgoingDeviceTransferTask {
                     case .message(let message):
                         try await processMessage(message: message, session: session)
                     case .startResource(_, let size, let progress):
-                        guard let progress, let size else { return }
+                        guard let progress, let size else { continue }
                         self.throughputMonitor?.progress.addChild(
                             progress,
                             withPendingUnitCount: Int64(clamping: size),
