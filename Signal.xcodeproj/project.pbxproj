@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -970,7 +970,6 @@
 		61475E7AED76A77DD11F9968 /* RegistrationSignalLoginDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4F92E120FC707A4CBFF39 /* RegistrationSignalLoginDetailsViewController.swift */; };
 		616577F953D77424E32C7438 /* Pods_SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */; };
 		632BFEC030752A2E005399C0 /* GroupViewHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 632BFEBF30752A2E005399C0 /* GroupViewHelperTests.swift */; };
-		632BFEC33077ED5F005399C0 /* blurhash in Frameworks */ = {isa = PBXBuildFile; productRef = 632BFEC23077ED5F005399C0 /* blurhash */; };
 		632BFEC630785953005399C0 /* BonMot in Frameworks */ = {isa = PBXBuildFile; productRef = 632BFEC530785953005399C0 /* BonMot */; };
 		632BFEC830785960005399C0 /* BonMot in Frameworks */ = {isa = PBXBuildFile; productRef = 632BFEC730785960005399C0 /* BonMot */; };
 		632BFECA30787503005399C0 /* BonMot in Frameworks */ = {isa = PBXBuildFile; productRef = 632BFEC930787503005399C0 /* BonMot */; };
@@ -1002,6 +1001,7 @@
 		63DC4561307EA32800119464 /* libPhoneNumber in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4560307EA32800119464 /* libPhoneNumber */; };
 		63DC4563307EA45C00119464 /* libPhoneNumber in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4562307EA45C00119464 /* libPhoneNumber */; };
 		63DC4565307EA5DA00119464 /* libPhoneNumber in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4564307EA5DA00119464 /* libPhoneNumber */; };
+		63DC4567307EC00A00119464 /* blurhash in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC4566307EC00A00119464 /* blurhash */; };
 		65D2854846F2127979853B12 /* ContactSharingPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAE5380475512D4C3083EDC /* ContactSharingPickerViewController.swift */; };
 		6600BB1A2BA3A0930005A035 /* LinkPreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB192BA3A0930005A035 /* LinkPreviewManager.swift */; };
 		6600BB212BA3BC540005A035 /* LinkPreviewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600BB202BA3BC540005A035 /* LinkPreviewHelper.swift */; };
@@ -8852,7 +8852,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				632BFEC33077ED5F005399C0 /* blurhash in Frameworks */,
+				63DC4567307EC00A00119464 /* blurhash in Frameworks */,
 				63DC455D307EA24D00119464 /* libPhoneNumber in Frameworks */,
 				63DC4554307E7D8700119464 /* libwebp in Frameworks */,
 				C26296B4BDCEDADBDA01DDD2 /* Pods_SignalServiceKit.framework in Frameworks */,
@@ -16733,7 +16733,6 @@
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			packageReferences = (
-				632BFEC13077ED5F005399C0 /* XCLocalSwiftPackageReference "ThirdParty/blurhash" */,
 				632BFEC430785953005399C0 /* XCRemoteSwiftPackageReference "BonMot" */,
 				63DC452E3079AF9100119464 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 				63DC45333079BACE00119464 /* XCRemoteSwiftPackageReference "PureLayout" */,
@@ -23639,13 +23638,6 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		632BFEC13077ED5F005399C0 /* XCLocalSwiftPackageReference "ThirdParty/blurhash" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ThirdParty/blurhash;
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCRemoteSwiftPackageReference section */
 		632BFEC430785953005399C0 /* XCRemoteSwiftPackageReference "BonMot" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -23706,10 +23698,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		632BFEC23077ED5F005399C0 /* blurhash */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = blurhash;
-		};
 		632BFEC530785953005399C0 /* BonMot */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 632BFEC430785953005399C0 /* XCRemoteSwiftPackageReference "BonMot" */;
@@ -23849,6 +23837,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 63DC455B307EA24D00119464 /* XCRemoteSwiftPackageReference "libPhoneNumber-iOS" */;
 			productName = libPhoneNumber;
+		};
+		63DC4566307EC00A00119464 /* blurhash */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = blurhash;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
