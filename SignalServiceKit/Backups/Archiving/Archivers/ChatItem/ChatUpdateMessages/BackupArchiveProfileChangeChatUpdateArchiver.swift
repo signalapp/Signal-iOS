@@ -85,7 +85,7 @@ final class BackupArchiveProfileChangeChatUpdateArchiver {
             thread: chatThread.tsThread,
             timestamp: chatItem.dateSent,
             profileChanges: ProfileChanges(
-                address: profileChangeAuthorContactAddress.asInteropAddress(),
+                address: profileChangeAuthorContactAddress.asSignalServiceAddress(),
                 oldNameLiteral: oldName,
                 newNameLiteral: newName,
             ),

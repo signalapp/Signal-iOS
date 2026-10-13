@@ -129,27 +129,12 @@ extension BackupArchive {
             self.e164 = nil
         }
     }
-
-    /// SignalServiceAddress has all kinds of problems with caching and such.
-    ///
-    /// _All_ usages in backups code make no use of this caching, and assumes
-    /// caching isn't doing anything because archiving occurs in a single write
-    /// transaction (nothing else can apply mutations) and restoring occurs during registration
-    /// (no existing state and nothing else can apply mutations).
-    ///
-    /// This typealias serves no functional purpose, but:
-    /// 1) implicitly documents this non-reliance on the cache
-    /// 2) makes it easy to track down backup's usages of SignalServiceAddress
-    ///
-    /// Both of which make it easier to one day remove usages of SignalServiceAddresses
-    /// from backup code once all the things it depends on stop taking them as input.
-    public typealias InteropAddress = SignalServiceAddress
 }
 
 extension BackupArchive.ContactAddress {
 
-    func asInteropAddress() -> BackupArchive.InteropAddress {
-        return .init(serviceId: aci ?? pni, e164: e164)
+    func asSignalServiceAddress() -> SignalServiceAddress {
+        return SignalServiceAddress(serviceId: aci ?? pni, e164: e164)
     }
 
     func asArchivingAddress() -> BackupArchive.RecipientArchivingContext.Address {
@@ -161,7 +146,7 @@ extension BackupArchive.ContactAddress {
     }
 }
 
-extension BackupArchive.InteropAddress {
+extension SignalServiceAddress {
 
     /// Warning: when using this method, you will get an aci or a pni but not both, even if we
     /// know both. This is because the SignalServiceAddress only keeps one.

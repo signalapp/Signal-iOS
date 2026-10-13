@@ -35,7 +35,7 @@ public class BackupArchiveRecipientStore {
         for address: BackupArchive.ContactAddress,
         tx: DBReadTransaction,
     ) -> SignalRecipient? {
-        return recipientTable.fetchRecipient(address: address.asInteropAddress(), tx: tx)
+        return recipientTable.fetchRecipient(address: address.asSignalServiceAddress(), tx: tx)
     }
 
     func fetchRecipient(

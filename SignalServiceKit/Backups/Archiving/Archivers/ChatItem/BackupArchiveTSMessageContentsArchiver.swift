@@ -1618,7 +1618,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         thread: BackupArchive.ChatThread,
         context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreInteractionResult<(TSQuotedMessage, BackupProto_MessageAttachment?)> {
-        let authorAddress: BackupArchive.InteropAddress
+        let authorAddress: SignalServiceAddress
         switch context.recipientContext[quote.authorRecipientId] {
         case .none:
             return .messageFailure([.restoreFrameError(
@@ -1633,7 +1633,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             guard contactAddress.aci != nil || contactAddress.e164 != nil else {
                 return .messageFailure([.restoreFrameError(.invalidProtoData(.incomingMessageNotFromAciOrE164))])
             }
-            authorAddress = contactAddress.asInteropAddress()
+            authorAddress = contactAddress.asSignalServiceAddress()
         }
 
         var partialErrors = [RestoreFrameError]()

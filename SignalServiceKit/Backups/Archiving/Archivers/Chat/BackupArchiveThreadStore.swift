@@ -54,7 +54,7 @@ public final class BackupArchiveThreadStore {
         with address: BackupArchive.ContactAddress,
         context: BackupArchive.ChatRestoringContext,
     ) throws -> TSContactThread {
-        let thread = TSContactThread(contactAddress: address.asInteropAddress())
+        let thread = TSContactThread(contactAddress: address.asSignalServiceAddress())
         try thread.insert(context.tx.database)
         return thread
     }

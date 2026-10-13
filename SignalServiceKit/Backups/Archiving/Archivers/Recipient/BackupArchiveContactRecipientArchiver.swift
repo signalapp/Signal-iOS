@@ -371,7 +371,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                     identity: nil,
                     signalAccount: nil,
                     defaultAvatarColor: self.avatarDefaultColorManager.defaultColor(
-                        useCase: .contactWithoutRecipient(address: contactAddress.asInteropAddress()),
+                        useCase: .contactWithoutRecipient(address: contactAddress.asSignalServiceAddress()),
                         tx: context.tx,
                     ),
                     keyTransparencyBlob: nil, // Can't do Key Transparency without a recipient
@@ -441,7 +441,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
             identity: nil,
             signalAccount: nil,
             defaultAvatarColor: avatarDefaultColorManager.defaultColor(
-                useCase: .contactWithoutRecipient(address: address.asInteropAddress()),
+                useCase: .contactWithoutRecipient(address: address.asSignalServiceAddress()),
                 tx: context.tx,
             ),
             keyTransparencyBlob: nil,

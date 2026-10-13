@@ -444,13 +444,13 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
 
         var partialErrors = [RestoreFrameError]()
 
-        var recipientAddressStates = [BackupArchive.InteropAddress: TSOutgoingMessageRecipientState]()
+        var recipientAddressStates = [SignalServiceAddress: TSOutgoingMessageRecipientState]()
         for sendStatus in outgoingDetails.sendStatus {
-            let recipientAddress: BackupArchive.InteropAddress
+            let recipientAddress: SignalServiceAddress
             let recipientID = sendStatus.destinationRecipientId
             switch context.recipientContext[recipientID] {
             case .contact(let address):
-                recipientAddress = address.asInteropAddress()
+                recipientAddress = address.asSignalServiceAddress()
             case .localAddress:
                 recipientAddress = context.recipientContext.localIdentifiers.aciAddress
             case .none:

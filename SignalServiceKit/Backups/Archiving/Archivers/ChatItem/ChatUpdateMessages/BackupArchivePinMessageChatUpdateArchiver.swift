@@ -82,7 +82,7 @@ final class BackupArchivePinMessageChatUpdateArchiver {
         func aciForRecipientId(recipientId: BackupArchive.RecipientId, partialErrors: inout [BackupArchive.RestoreFrameError]) -> Aci? {
             var partialErrors = [BackupArchive.RestoreFrameError]()
 
-            let authorAddress: BackupArchive.InteropAddress
+            let authorAddress: SignalServiceAddress
             switch context.recipientContext[recipientId] {
             case .localAddress:
                 authorAddress = context.recipientContext.localIdentifiers.aciAddress
@@ -95,7 +95,7 @@ final class BackupArchivePinMessageChatUpdateArchiver {
                     partialErrors.append(.restoreFrameError(.invalidProtoData(.incomingMessageNotFromAciOrE164)))
                     return nil
                 }
-                authorAddress = contactAddress.asInteropAddress()
+                authorAddress = contactAddress.asSignalServiceAddress()
             }
             guard let authorAci = authorAddress.aci else {
                 partialErrors.append(.restoreFrameError(.invalidProtoData(.recipientIdNotFound(recipientId))))

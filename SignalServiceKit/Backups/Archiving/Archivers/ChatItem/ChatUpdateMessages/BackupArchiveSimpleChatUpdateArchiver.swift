@@ -335,12 +335,12 @@ final class BackupArchiveSimpleChatUpdateArchiver {
             guard let verificationRecipient = context.recipientContext[chatItem.authorRecipientId] else {
                 return invalidProtoData(.recipientIdNotFound(chatItem.authorRecipientId))
             }
-            let contactAddress: BackupArchive.InteropAddress
+            let authorAddress: SignalServiceAddress
             switch verificationRecipient {
-            case .contact(let _contactAddress):
-                contactAddress = _contactAddress.asInteropAddress()
+            case .contact(let contactAddress):
+                authorAddress = contactAddress.asSignalServiceAddress()
             case .localAddress:
-                contactAddress = context.recipientContext.localIdentifiers.aciAddress
+                authorAddress = context.recipientContext.localIdentifiers.aciAddress
             case .releaseNotesChannel, .callLink, .distributionList, .group:
                 return invalidProtoData(.verificationStateChangeNotFromContact)
             }
@@ -350,7 +350,7 @@ final class BackupArchiveSimpleChatUpdateArchiver {
                 timestamp: chatItem.dateSent,
                 // We'll use the author of this chat item as the user whose
                 // identity key changed.
-                address: contactAddress,
+                address: authorAddress,
                 // We'll fudge and conservatively say that the identity was not
                 // previously verified since we don't have it tracked in the
                 // backup and it only affects the action shown for the message.
@@ -360,12 +360,12 @@ final class BackupArchiveSimpleChatUpdateArchiver {
             guard let verificationRecipient = context.recipientContext[chatItem.authorRecipientId] else {
                 return invalidProtoData(.recipientIdNotFound(chatItem.authorRecipientId))
             }
-            let contactAddress: BackupArchive.InteropAddress
+            let authorAddress: SignalServiceAddress
             switch verificationRecipient {
-            case .contact(let _contactAddress):
-                contactAddress = _contactAddress.asInteropAddress()
+            case .contact(let contactAddress):
+                authorAddress = contactAddress.asSignalServiceAddress()
             case .localAddress:
-                contactAddress = context.recipientContext.localIdentifiers.aciAddress
+                authorAddress = context.recipientContext.localIdentifiers.aciAddress
             case .releaseNotesChannel, .callLink, .distributionList, .group:
                 return invalidProtoData(.verificationStateChangeNotFromContact)
             }
@@ -381,7 +381,7 @@ final class BackupArchiveSimpleChatUpdateArchiver {
                 timestamp: chatItem.dateSent,
                 // We'll use the author of this chat item as the user whose
                 // verification state changed.
-                recipientAddress: contactAddress,
+                recipientAddress: authorAddress,
                 verificationState: verificationState,
                 // We don't know which device this update originated on, so
                 // we'll pretend it was the local. This only affects the way the
@@ -433,12 +433,12 @@ final class BackupArchiveSimpleChatUpdateArchiver {
             guard let senderRecipient = context.recipientContext[chatItem.authorRecipientId] else {
                 return invalidProtoData(.recipientIdNotFound(chatItem.authorRecipientId))
             }
-            let contactAddress: BackupArchive.InteropAddress
+            let authorAddress: SignalServiceAddress
             switch senderRecipient {
             case .localAddress:
-                contactAddress = context.recipientContext.localIdentifiers.aciAddress
-            case .contact(let _contactAddress):
-                contactAddress = _contactAddress.asInteropAddress()
+                authorAddress = context.recipientContext.localIdentifiers.aciAddress
+            case .contact(let contactAddress):
+                authorAddress = contactAddress.asSignalServiceAddress()
             case .releaseNotesChannel, .group, .distributionList, .callLink:
                 return invalidProtoData(.decryptionErrorNotFromContact)
             }
@@ -446,7 +446,7 @@ final class BackupArchiveSimpleChatUpdateArchiver {
             simpleChatUpdateInteraction = .errorMessage(.failedDecryption(
                 thread: thread,
                 timestamp: chatItem.dateSent,
-                sender: contactAddress,
+                sender: authorAddress,
             ))
         case .paymentsActivated:
             let senderAci: Aci
@@ -494,7 +494,7 @@ final class BackupArchiveSimpleChatUpdateArchiver {
             case .localAddress:
                 senderAddress = nil
             case .contact(let contactAddress):
-                senderAddress = contactAddress.asInteropAddress()
+                senderAddress = contactAddress.asSignalServiceAddress()
             case .releaseNotesChannel, .group, .distributionList, .callLink:
                 return invalidProtoData(.unsupportedProtocolVersionNotFromContact)
             }

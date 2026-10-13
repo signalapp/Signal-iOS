@@ -91,7 +91,7 @@ final class BackupArchivePollTerminateChatUpdateArchiver {
         }
 
         let recipientId = BackupArchive.RecipientId(value: chatItem.authorID)
-        let authorAddress: BackupArchive.InteropAddress
+        let authorAddress: SignalServiceAddress
         switch context.recipientContext[recipientId] {
         case .localAddress:
             authorAddress = context.recipientContext.localIdentifiers.aciAddress
@@ -102,7 +102,7 @@ final class BackupArchivePollTerminateChatUpdateArchiver {
             guard contactAddress.aci != nil || contactAddress.e164 != nil else {
                 return invalidProtoData(.incomingMessageNotFromAciOrE164)
             }
-            authorAddress = contactAddress.asInteropAddress()
+            authorAddress = contactAddress.asSignalServiceAddress()
         }
         guard let aci = authorAddress.aci else {
             return invalidProtoData(.recipientIdNotFound(recipientId))
