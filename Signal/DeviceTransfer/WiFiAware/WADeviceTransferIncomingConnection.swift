@@ -12,6 +12,11 @@ import WiFiAware
 class WADeviceTransferIncomingConnection: DeviceTransfer.IncomingConnection {
     private let logger = PrefixedLogger(prefix: "[DeviceTransfer][WiFiAware][Incoming]")
 
+    private enum Constants {
+        /// How long to wait for a cancelled listener to actually unwind.
+        static let listenerStopTimeout: TimeInterval = 5
+    }
+
     private var discoveredPeerTask: Task<Void, Never>?
     private let listenerTask = AtomicValue<Task<Void, any Error>?>(nil, lock: .init())
 
@@ -70,16 +75,28 @@ class WADeviceTransferIncomingConnection: DeviceTransfer.IncomingConnection {
 
     func waitForConnection(peer: (any DeviceTransfer.Peer)?) async throws -> any DeviceTransfer.Session {
         logger.info("Wait for connection")
-        let allowedConnections: WAPublisherListener.Devices = if let waPeer = peer as? WADeviceTransferPeer {
-            .selected([waPeer.pairedDevice])
+        let allowedConnections: WAPublisherListener.Devices
+        if let waPeer = peer as? WADeviceTransferPeer {
+            logger.info("Accepting connections from \(waPeer)")
+            allowedConnections = .selected([waPeer.pairedDevice])
         } else {
-            .allPairedDevices
+            logger.info("Accepting connections from all paired devices")
+            allowedConnections = .allPairedDevices
         }
 
         // Subscribe and wait for the first list of peers
         for try await peerList in peers.subscribe() {
-            // Wait for at least one peer to be paired
-            guard !peerList.isEmpty else { continue }
+            // Open the listener even when nothing is paired yet. The old device can
+            // discover and connect to us through the service published by
+            // `DevicePairingView` before any pairing record exists on this side, and
+            // if no listener is up when it does, it connects, starts sending, and
+            // stalls with nothing in either log to say why. In a perfect world, this behavior
+            // should be avoided by steering the user away from `DevicePairingView` through
+            // hints in the UI, but the user should always have the option to enter the
+            // `DevicePairingView` to pair new devices, even when there are known paired devices.
+            if peerList.isEmpty {
+                logger.info("No paired devices yet, listening for the first pairing")
+            }
 
             // Set up two tasks - one to open a connection, and one to listen for any new peers.
             let session = try await withThrowingTaskGroup(of: (any DeviceTransfer.Session)?.self) { group in
@@ -92,8 +109,18 @@ class WADeviceTransferIncomingConnection: DeviceTransfer.IncomingConnection {
                     try await Task.sleep(nanoseconds: 1.clampedNanoseconds)
 
                     try Task.checkCancellation()
-                    // Try to connect and build a session
-                    return try await self?.listenForConnection(allowedDevices: allowedConnections)
+                    do {
+                        // Try to connect and build a session
+                        return try await self?.listenForConnection(allowedDevices: allowedConnections)
+                    } catch is CancellationError {
+                        throw CancellationError()
+                    } catch {
+                        // Before anything is paired there may be nothing for the listener
+                        // to bind to and an error is expected. Returning nil drops back to the
+                        // loop above to wait for a pairing and try again, rather than failing the transfer.
+                        guard peerList.isEmpty else { throw error }
+                        return nil
+                    }
                 }
                 group.addTask { @MainActor [weak self] in
                     guard let self else { return nil }
@@ -127,7 +154,7 @@ class WADeviceTransferIncomingConnection: DeviceTransfer.IncomingConnection {
         allowedDevices: WAPublisherListener.Devices,
     ) async throws -> DeviceTransfer.Session {
         let continuation = CancellableContinuation<DeviceTransfer.Session>()
-        listenerTask.set(Task { [logger, secIdentity] in
+        listenerTask.swap(Task { [logger, secIdentity] in
             logger.info("Open connection")
             try await NetworkListener(
                 for: .wifiAware(
@@ -165,7 +192,7 @@ class WADeviceTransferIncomingConnection: DeviceTransfer.IncomingConnection {
                 case .waiting(let error):
                     logger.info("Connection: waiting: \(error)")
                 @unknown default:
-                    logger.info("Connection: unhandled state: \(state)")
+                    logger.warn("Connection: unhandled state: \(state)")
                 }
             }.onServiceRegistrationUpdate { _, change in
                 switch change {
@@ -174,7 +201,7 @@ class WADeviceTransferIncomingConnection: DeviceTransfer.IncomingConnection {
                 case .remove:
                     logger.info("Connection: remove service")
                 @unknown default:
-                    logger.info("Connection: unhandled service registration: \(change)")
+                    logger.warn("Connection: unhandled service registration: \(change)")
                 }
             }.run { connection in
                 logger.info("Connection from endpoint")
@@ -182,7 +209,7 @@ class WADeviceTransferIncomingConnection: DeviceTransfer.IncomingConnection {
                 continuation.resume(with: .success(session))
                 try await session.waitForCompletion()
             }
-        })
+        })?.cancel()
 
         let session = try await withTaskCancellationHandler {
             try await continuation.wait()
@@ -193,8 +220,21 @@ class WADeviceTransferIncomingConnection: DeviceTransfer.IncomingConnection {
         return session
     }
 
-    func stop(error: Error?) {
-        listenerTask.swap(nil)?.cancel()
+    func stop(error: Error?) async {
+        guard let task = listenerTask.swap(nil) else {
+            logger.info("Stop: no listener to tear down")
+            return
+        }
+        logger.info("Stop: cancelling listener")
+        task.cancel()
+        do {
+            try await withCooperativeTimeout(seconds: Constants.listenerStopTimeout) {
+                _ = await task.result
+            }
+            logger.info("Stop: listener torn down")
+        } catch {
+            logger.warn("Stop: listener still running after \(Constants.listenerStopTimeout)s: \(error)")
+        }
     }
 }
 
