@@ -201,14 +201,10 @@ class AudioWaveformManagerImpl: AudioWaveformManager {
         )
         assetReader.add(trackOutput)
 
-        let decibelSamples = try readDecibels(from: assetReader)
-
-        return try AudioWaveform(
-            levels: decibelSamples.map { AudioWaveform.level(fromDecibels: $0) },
-        )
+        return try readWaveform(from: assetReader)
     }
 
-    private func readDecibels(from assetReader: AVAssetReader) throws -> [Float] {
+    private func readWaveform(from assetReader: AVAssetReader) throws -> AudioWaveform {
         let sampler = AudioWaveformSampler(
             inputCount: sampleCount(from: assetReader),
             outputCount: AudioWaveform.sampleCount,
@@ -259,7 +255,7 @@ class AudioWaveformManagerImpl: AudioWaveformManager {
             CMSampleBufferInvalidate(nextSampleBuffer)
         }
 
-        return sampler.finalize()
+        return try sampler.finalizeWaveform()
     }
 
     private func sampleCount(from assetReader: AVAssetReader) -> Int {

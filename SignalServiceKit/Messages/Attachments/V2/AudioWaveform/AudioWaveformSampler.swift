@@ -6,20 +6,14 @@
 import Accelerate
 import Foundation
 
+/// Responsible for ingesting audio samples and producing an `AudioWaveform`.
 class AudioWaveformSampler {
     private let inputCount: Int
     private let outputCount: Int
 
-    /// The number of input samples that feed each output sample (rounded down).
+    /// The number of input samples that feed each output sample (rounded up).
+    /// The last segment may be shorter.
     private let segmentLength: Int
-
-    /// The number of samples that don't evenly divide into `outputCount`. These
-    /// extra samples are spread across the output samples.
-    private let segmentRemainder: Int
-
-    /// The number of samples in this segment. Either `segmentLength` or
-    /// `segmentLength + 1`.
-    private var currentSegmentCount: Int
 
     /// The number of samples remaining in this segment.
     private var currentSegmentRemainingCount: Int
@@ -27,29 +21,24 @@ class AudioWaveformSampler {
     /// Tracks the cumulative average when a segment spans multiple batches.
     private var currentSegmentAverage: Float
 
-    /// Tracks when a segment needs an extra sample (because outputCount may not
-    /// evenly divide inputCount).
-    private var overflowCounter: Int
-
     private var buffer = [Float]()
-    private var output = [Float]()
+    private var output = [UInt8]()
 
+    /// Construct an `AudioWaveformSampler` for ingesting `inputCount` samples,
+    /// and producing an `AudioWaveform` with at most `outputCount` bars.
     init(inputCount: Int, outputCount: Int) {
         self.inputCount = inputCount
         self.outputCount = outputCount
         if inputCount < outputCount {
             // If we don't have enough samples, just use every sample that's provided.
             // This will result in fewer than outputCount samples, but that is fine.
-            (self.segmentLength, self.segmentRemainder) = (1, 0)
+            self.segmentLength = 1
         } else {
-            (self.segmentLength, self.segmentRemainder) = inputCount.quotientAndRemainder(dividingBy: outputCount)
+            let (quotient, remainder) = inputCount.quotientAndRemainder(dividingBy: outputCount)
+            self.segmentLength = remainder > 0 ? quotient + 1 : quotient
         }
         self.currentSegmentAverage = 0
-        // The first segment is always segmentLength because segmentRemainder is
-        // less than outputCount (it's the remainder when dividing by outputCount).
-        self.currentSegmentCount = self.segmentLength
         self.currentSegmentRemainingCount = self.segmentLength
-        self.overflowCounter = self.outputCount - self.segmentRemainder
     }
 
     /// Whether every output sample has been produced. Further calls to
@@ -58,30 +47,41 @@ class AudioWaveformSampler {
         return self.output.count >= self.outputCount
     }
 
+    /// Update the sampler by ingesting the given 16-bit samples.
     func update(_ samples: UnsafeBufferPointer<Int16>) {
         let sampleCount = samples.count
-        if self.buffer.count < sampleCount {
-            self.buffer.append(contentsOf: Array(repeating: 0, count: sampleCount - self.buffer.count))
-        }
+        self.growBuffer(toCount: sampleCount)
 
         // convert UInt16 amplitudes to Float representation
         vDSP_vflt16(samples.baseAddress!, 1, &self.buffer, 1, vDSP_Length(sampleCount))
 
-        // take the absolute amplitude value
-        vDSP_vabs(self.buffer, 1, &self.buffer, 1, vDSP_Length(sampleCount))
+        // normalize into [-1, 1]
+        var scale = 1 / -Float(Int16.min)
+        vDSP_vsmul(self.buffer, 1, &scale, &self.buffer, 1, vDSP_Length(sampleCount))
 
-        // convert to dB
-        // maximum amplitude storable in Int16 = 0 dB (loudest)
-        // (remember decibels are often negative)
-        var zeroDecibelEquivalent: Float = Float(Int16.max)
-        vDSP_vdbcon(self.buffer, 1, &zeroDecibelEquivalent, &self.buffer, 1, vDSP_Length(sampleCount), 1)
-
-        // clip between loudest + quietest
-        var loudestClipValue: Float = 0.0
-        var quietestClipValue = AudioWaveform.silenceThreshold
-        vDSP_vclip(self.buffer, 1, &quietestClipValue, &loudestClipValue, &self.buffer, 1, vDSP_Length(sampleCount))
+        // square, so we average the mean square of each segment
+        vDSP_vsq(self.buffer, 1, &self.buffer, 1, vDSP_Length(sampleCount))
 
         self.reduce(sampleCount: sampleCount)
+    }
+
+#if TESTABLE_BUILD
+    /// Update the sampler by ingesting the given normalized samples in the
+    /// range [-1, 1].
+    func update(normalizedSamples samples: UnsafeBufferPointer<Float>) {
+        let sampleCount = samples.count
+        self.growBuffer(toCount: sampleCount)
+
+        vDSP_vsq(samples.baseAddress!, 1, &self.buffer, 1, vDSP_Length(sampleCount))
+
+        self.reduce(sampleCount: sampleCount)
+    }
+#endif
+
+    private func growBuffer(toCount count: Int) {
+        if self.buffer.count < count {
+            self.buffer.append(contentsOf: Array(repeating: 0, count: count - self.buffer.count))
+        }
     }
 
     private func reduce(sampleCount: Int) {
@@ -103,7 +103,7 @@ class AudioWaveformSampler {
                 self.currentSegmentRemainingCount -= chunkCount
 
                 // Add the new average to the running average for this segment.
-                let totalChunkCount = self.currentSegmentCount - self.currentSegmentRemainingCount
+                let totalChunkCount = self.segmentLength - self.currentSegmentRemainingCount
                 assert(totalChunkCount > 0) // because chunkCount > 0
                 let newChunkWeight = Float(chunkCount) / Float(totalChunkCount)
                 let oldChunkWeight = 1 - newChunkWeight
@@ -112,23 +112,41 @@ class AudioWaveformSampler {
 
                 // If we reached the end of the chunk, add it to the output.
                 if self.currentSegmentRemainingCount <= 0 {
-                    self.output.append(self.currentSegmentAverage)
-                    self.currentSegmentAverage = 0 // technically redundant
-
-                    self.currentSegmentCount = self.segmentLength
-                    self.overflowCounter -= self.segmentRemainder
-                    if self.overflowCounter <= 0 {
-                        self.currentSegmentCount += 1
-                        self.overflowCounter += self.segmentLength
-                    }
-                    self.currentSegmentRemainingCount = self.currentSegmentCount
+                    self.finishSegment()
                 }
             }
         }
     }
 
-    func finalize() -> [Float] {
-        assert(self.output.count <= self.outputCount)
-        return self.output
+    /// Finalize the sampler, producing an `AudioWaveform` from the ingested
+    /// samples.
+    func finalizeWaveform() throws -> AudioWaveform {
+        // Flush the last segment, which may be short.
+        if self.currentSegmentRemainingCount < self.segmentLength, !self.isComplete {
+            self.finishSegment()
+        }
+        owsAssertDebug(self.output.count <= self.outputCount)
+
+        do {
+            return try AudioWaveform(waveformData: Data(self.output))
+        } catch {
+            owsFailDebug("How did we sample such that we produced an invalid waveform? \(error)")
+            throw error
+        }
+    }
+
+    private func finishSegment() {
+        self.output.append(Self.waveformByte(meanSquare: self.currentSegmentAverage))
+        self.currentSegmentAverage = 0 // technically redundant
+        self.currentSegmentRemainingCount = self.segmentLength
+    }
+
+    /// Anything below this decibel level is considered silent.
+    private static let noiseFloor: Float = -60
+
+    private static func waveformByte(meanSquare: Float) -> UInt8 {
+        let decibels = 10 * log10(meanSquare)
+        let level = min(1, max(0, decibels - noiseFloor) / -noiseFloor)
+        return UInt8((Float(UInt8.max) * level).rounded())
     }
 }

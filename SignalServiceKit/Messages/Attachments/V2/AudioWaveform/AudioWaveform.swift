@@ -113,7 +113,8 @@ public struct AudioWaveform: Equatable, Sendable {
 
     // MARK: - Constants
 
-    /// Anything below this decibel level is considered silent and clipped.
+    /// Decibel range used to render legacy archived waveforms. Anything below
+    /// `silenceThreshold` is considered silent and clipped.
     static let silenceThreshold: Float = -50
     static let clippingThreshold: Float = -20
 
