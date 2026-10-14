@@ -455,7 +455,6 @@ extension OWSProfileManager: ProfileManager {
 
     private func rotateProfileKeyIfNecessary() async {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-        let groupsV2 = SSKEnvironment.shared.groupsV2Ref
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         if CurrentAppContext().isNSE {
@@ -474,18 +473,6 @@ extension OWSProfileManager: ProfileManager {
         let triggerTokenData = databaseStorage.read { tx in self.triggerToken(tx: tx) }
 
         guard let triggerTokenData else {
-            // No need to rotate the profile key.
-            let lastGroupProfileKeyCheckTimestamp = databaseStorage.read { tx in
-                return self.lastGroupProfileKeyCheckTimestamp(tx: tx) ?? .distantPast
-            }
-            // But if it's been more than a week since we checked that our groups are up to date, schedule that.
-            if -lastGroupProfileKeyCheckTimestamp.timeIntervalSinceNow > .week {
-                await databaseStorage.awaitableWrite { tx in
-                    // These updates will be processed the next time Cron runs.
-                    groupsV2.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: tx)
-                    self.setLastGroupProfileKeyCheckTimestamp(tx: tx)
-                }
-            }
             return
         }
 
@@ -1206,16 +1193,6 @@ extension OWSProfileManager: ProfileManager {
     }
 
     // MARK: - Profile Key Rotation Metadata
-
-    private static let kLastGroupProfileKeyCheckTimestampKey = "lastGroupProfileKeyCheckTimestamp"
-
-    private func lastGroupProfileKeyCheckTimestamp(tx: DBReadTransaction) -> Date? {
-        return self.metadataStore.getDate(Self.kLastGroupProfileKeyCheckTimestampKey, transaction: tx)
-    }
-
-    private func setLastGroupProfileKeyCheckTimestamp(tx: DBWriteTransaction) {
-        return self.metadataStore.setDate(Date(), key: Self.kLastGroupProfileKeyCheckTimestampKey, transaction: tx)
-    }
 
     private static let leaveGroupTriggerTokenKey = "leaveGroupTriggerTimestampKey"
     private static let deprecated_recipientHidingTriggerTokenKey = "recipientHidingTriggerTimestampKey"
