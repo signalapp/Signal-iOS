@@ -52,7 +52,7 @@ extension ThreadUtil {
                     )
                 }
             } catch {
-                owsFailDebug("Failed to build message")
+                owsFailDebug("couldn't build message: \(error)")
                 return
             }
 
@@ -98,7 +98,7 @@ extension ThreadUtil {
                     editTarget: editTarget,
                 )
             } catch {
-                owsFailDebug("Failed to build message")
+                owsFailDebug("couldn't build message: \(error)")
                 return
             }
 
