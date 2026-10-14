@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Check Xcode version
-        if: ${{ matrix.xcode != 'Xcode_26.6' }}
+        if: ${{ matrix.xcode != 'Xcode_27.0' }}
         run: |
           Scripts/check_xcode_version.py --relaxed
 
