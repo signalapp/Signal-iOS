@@ -30,6 +30,7 @@ public class MessageAction: NSObject {
         case endPoll
         case pin
         case unpin
+        case viewStickerPack
 
         /// Lower priority numbers indicate an action should be shown earlier.
         var priority: Int {
@@ -41,14 +42,15 @@ public class MessageAction: NSObject {
             case .share: 4
             case .save: 5
             case .endPoll: 6
-            case .select: 7
-            case .showPaymentDetails: 8
-            case .speak: 9
-            case .stopSpeaking: 10
-            case .info: 11
-            case .pin: 12
-            case .unpin: 13
-            case .delete: 14
+            case .viewStickerPack: 7
+            case .select: 8
+            case .showPaymentDetails: 9
+            case .speak: 10
+            case .stopSpeaking: 11
+            case .info: 12
+            case .pin: 13
+            case .unpin: 14
+            case .delete: 15
             }
         }
     }
@@ -105,6 +107,8 @@ public class MessageAction: NSObject {
                 return .pin
             case .unpin:
                 return .unpin
+            case .viewStickerPack:
+                return .stickerPack
             }
         }()
         return Theme.iconImage(icon)

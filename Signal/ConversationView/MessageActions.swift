@@ -18,6 +18,7 @@ protocol MessageActionsDelegate: AnyObject {
     func messageActionsShowPaymentDetails(_ itemViewModel: CVItemViewModelImpl)
     func messageActionsEndPoll(_ itemViewModel: CVItemViewModelImpl)
     func messageActionsChangePinStatus(_ itemViewModel: CVItemViewModelImpl, pin: Bool)
+    func messageActionsViewStickerPack(_ itemViewModel: CVItemViewModelImpl)
 }
 
 // MARK: -
@@ -228,6 +229,23 @@ enum MessageActionBuilder {
             },
         )
     }
+
+    static func viewStickerPack(
+        itemViewModel: CVItemViewModelImpl,
+        delegate: MessageActionsDelegate,
+    ) -> MessageAction {
+        return MessageAction(
+            .viewStickerPack,
+            accessibilityLabel: OWSLocalizedString("STICKER_BUTTON_VIEW_PACK", comment: "Title for a button to view a sticker pack"),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "view_pack"),
+            contextMenuTitle: OWSLocalizedString("STICKER_BUTTON_VIEW_PACK", comment: "Title for a button to view a sticker pack"),
+            contextMenuAttributes: [],
+            block: { [weak delegate] _ in
+                delegate?.messageActionsViewStickerPack(itemViewModel)
+            },
+        )
+    }
+
 }
 
 class MessageActions {
@@ -331,6 +349,10 @@ class MessageActions {
 
         if itemViewModel.canForwardMessage {
             actions.append(MessageActionBuilder.forwardMessage(itemViewModel: itemViewModel, delegate: delegate))
+        }
+
+        if itemViewModel.stickerMetadata != nil {
+            actions.append(MessageActionBuilder.viewStickerPack(itemViewModel: itemViewModel, delegate: delegate))
         }
 
         if itemViewModel.canEditMessage, shouldAllowMessageSendActions {

@@ -568,4 +568,14 @@ extension ConversationViewController: MessageActionsDelegate {
         }
         handleActionUnpin(message: message, modalDelegate: self)
     }
+
+    func messageActionsViewStickerPack(_ itemViewModel: CVItemViewModelImpl) {
+        guard let stickerMetadata = itemViewModel.stickerMetadata else {
+            owsFailDebug("shouldn't show 'view pack' action on a sticker with no metadata")
+            return
+        }
+
+        let stickerPackViewController = StickerPackViewController(stickerPackInfo: stickerMetadata.packInfo)
+        stickerPackViewController.present(from: self, animated: true)
+    }
 }
