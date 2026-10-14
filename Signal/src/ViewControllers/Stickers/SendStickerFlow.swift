@@ -71,7 +71,9 @@ final class SendStickerFlow: ConversationPickerDelegate {
         return true
     }
 
-    func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController) {}
+    func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController) {
+        self.navigationController?.dismiss(animated: true)
+    }
 
     func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode {
         return .send
