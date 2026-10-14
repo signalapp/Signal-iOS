@@ -1016,7 +1016,6 @@ nonisolated struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
     set {_uniqueStorage()._notifyForRepliesIfMuted = newValue}
   }
 
-  /// If unset, consider this on
   var showUnreadReminders: StorageServiceProtos_OptionalBool {
     get {_storage._showUnreadReminders}
     set {_uniqueStorage()._showUnreadReminders = newValue}

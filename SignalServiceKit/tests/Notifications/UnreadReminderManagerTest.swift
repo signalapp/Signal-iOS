@@ -153,18 +153,18 @@ class UnreadReminderPreferenceTest: SSKBaseTest {
         let unreadReminderManager = DependenciesBridge.shared.unreadReminderManager
         write { tx in
             let thread = ContactThreadFactory().create(transaction: tx)
-            XCTAssertTrue(notificationPreferencesManager.showUnreadReminders(thread: thread, tx: tx))
-
-            unreadReminderManager.setGlobalShowUnreadReminders(false, updateStorageService: false, tx: tx)
             XCTAssertFalse(notificationPreferencesManager.showUnreadReminders(thread: thread, tx: tx))
 
-            // A per-chat preference overrides the global setting.
-            unreadReminderManager.setShowUnreadReminders(true, thread: thread, updateStorageService: false, tx: tx)
+            unreadReminderManager.setGlobalShowUnreadReminders(true, updateStorageService: false, tx: tx)
             XCTAssertTrue(notificationPreferencesManager.showUnreadReminders(thread: thread, tx: tx))
+
+            // A per-chat preference overrides the global setting.
+            unreadReminderManager.setShowUnreadReminders(false, thread: thread, updateStorageService: false, tx: tx)
+            XCTAssertFalse(notificationPreferencesManager.showUnreadReminders(thread: thread, tx: tx))
 
             // Clearing it restores the global setting.
             unreadReminderManager.setShowUnreadReminders(nil, thread: thread, updateStorageService: false, tx: tx)
-            XCTAssertFalse(notificationPreferencesManager.showUnreadReminders(thread: thread, tx: tx))
+            XCTAssertTrue(notificationPreferencesManager.showUnreadReminders(thread: thread, tx: tx))
         }
     }
 }
