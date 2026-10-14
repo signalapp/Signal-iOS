@@ -840,6 +840,10 @@ public extension GroupV2UpdatesImpl {
             newlyLearnedPniToAciAssociations = [:]
             // Snapshots don't have a single author, so we don't know the source.
             groupUpdateSource = .unknown
+            groupRecord.setLastSnapshotAt(
+                GroupRecord.addingSnapshotJitter(toDate: Date()),
+                tx: transaction,
+            )
         } else {
             // We had a group change proto with no snapshot, but the change was
             // not a single revision update.
@@ -936,6 +940,10 @@ public extension GroupV2UpdatesImpl {
             // author(s) of changes reflected in the snapshot.
             let groupUpdateSource: GroupUpdateSource = .unknown
             var groupRecord = GroupStore().fetchGroupOrInsert(secretParams: secretParams, tx: transaction)
+            groupRecord.setLastSnapshotAt(
+                GroupRecord.addingSnapshotJitter(toDate: Date()),
+                tx: transaction,
+            )
             _ = GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
                 secretParams: secretParams,
                 groupRecord: &groupRecord,

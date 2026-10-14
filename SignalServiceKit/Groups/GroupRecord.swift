@@ -13,8 +13,20 @@ public struct GroupRecord: Codable, FetchableRecord, PersistableRecord {
     public static let databaseTableName: String = "GroupRecord"
 
     enum Constants {
+        /// How frequently groups should be automatically refreshed.
         static let refreshInterval: TimeInterval = .week
         static let refreshJitter: TimeInterval = refreshInterval / 7
+
+        /// How frequently groups should be refreshed via a snapshot. (This is a
+        /// fallback and shouldn't be load bearing in practice.)
+        static let snapshotInterval: TimeInterval = 45 * .day
+        static let snapshotJitter: TimeInterval = snapshotInterval / 15
+
+        /// This should be bumped whenever changeProtoEpoch changes (which happens
+        /// automatically due to its inclusion in this value), but it can also be
+        /// bumped manually by incrementing snapshotVersionCounter.
+        static let snapshotVersion: Int64 = Int64(safeCast: GroupManager.changeProtoEpoch) + snapshotVersionCounter
+        private static let snapshotVersionCounter: Int64 = 0
     }
 
     enum Status: Int64, Codable {
@@ -55,6 +67,14 @@ public struct GroupRecord: Codable, FetchableRecord, PersistableRecord {
     private(set) var status: Status
     public private(set) var blockedAt: BlockedTimestamp
 
+    private(set) var lastSnapshotAt: Int64
+
+    var lastSnapshotAtDate: Date {
+        return Date(timeIntervalSince1970: TimeInterval(self.lastSnapshotAt))
+    }
+
+    private(set) var lastSnapshotVersion: Int64
+
     enum CodingKeys: String, CodingKey {
         case rowId
         case groupId
@@ -64,6 +84,8 @@ public struct GroupRecord: Codable, FetchableRecord, PersistableRecord {
         case lastVerifiedGroupNameHash
         case status
         case blockedAt = "blockedAtMs"
+        case lastSnapshotAt
+        case lastSnapshotVersion
     }
 
     enum Columns {
@@ -75,6 +97,8 @@ public struct GroupRecord: Codable, FetchableRecord, PersistableRecord {
         static let lastVerifiedGroupNameHash = Column(CodingKeys.lastVerifiedGroupNameHash.rawValue)
         static let status = Column(CodingKeys.status.rawValue)
         static let blockedAt = Column(CodingKeys.blockedAt.rawValue)
+        static let lastSnapshotAt = Column(CodingKeys.lastSnapshotAt.rawValue)
+        static let lastSnapshotVersion = Column(CodingKeys.lastSnapshotVersion.rawValue)
     }
 
     public init(from decoder: any Decoder) throws {
@@ -87,6 +111,8 @@ public struct GroupRecord: Codable, FetchableRecord, PersistableRecord {
         self.lastVerifiedGroupNameHash = try container.decodeIfPresent(Data.self, forKey: .lastVerifiedGroupNameHash)
         self.status = try container.decode(Status.self, forKey: .status)
         self.blockedAt = try container.decode(BlockedTimestamp.self, forKey: .blockedAt)
+        self.lastSnapshotAt = try container.decode(Int64.self, forKey: .lastSnapshotAt)
+        self.lastSnapshotVersion = try container.decode(Int64.self, forKey: .lastSnapshotVersion)
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -99,6 +125,8 @@ public struct GroupRecord: Codable, FetchableRecord, PersistableRecord {
         try container.encode(self.lastVerifiedGroupNameHash, forKey: .lastVerifiedGroupNameHash)
         try container.encode(self.status, forKey: .status)
         try container.encode(self.blockedAt, forKey: .blockedAt)
+        try container.encode(self.lastSnapshotAt, forKey: .lastSnapshotAt)
+        try container.encode(self.lastSnapshotVersion, forKey: .lastSnapshotVersion)
     }
 
     static func insertRecord(
@@ -166,6 +194,31 @@ public struct GroupRecord: Codable, FetchableRecord, PersistableRecord {
     public static func addingRefreshJitter(toDate date: Date) -> Date {
         let jitter = TimeInterval.random(in: -Constants.refreshJitter...Constants.refreshJitter)
         return date.addingTimeInterval(jitter)
+    }
+
+    mutating func setLastSnapshotAt(_ lastSnapshotAt: Date, tx: DBWriteTransaction) {
+        self.lastSnapshotAt = Int64(lastSnapshotAt.timeIntervalSince1970)
+        self.lastSnapshotVersion = Constants.snapshotVersion
+        failIfThrows { try self.update(tx.database) }
+    }
+
+    public static func addingSnapshotJitter(toDate date: Date) -> Date {
+        let jitter = TimeInterval.random(in: -Constants.snapshotJitter...Constants.snapshotJitter)
+        return date.addingTimeInterval(jitter)
+    }
+
+    /// True if we should fetch a snapshot instead of change actions.
+    ///
+    /// There may be other reasons (e.g., we were just added to a group) that
+    /// also necessitate fetching change actions.
+    func shouldFetchSnapshot(now: Date = Date()) -> Bool {
+        if self.lastSnapshotVersion != Constants.snapshotVersion {
+            return true
+        }
+        if abs(now.timeIntervalSince(self.lastSnapshotAtDate)) > Constants.snapshotInterval {
+            return true
+        }
+        return false
     }
 
     mutating func setLastVerifiedGroupNameHash(_ lastVerifiedGroupNameHash: Data?, tx: DBWriteTransaction) {

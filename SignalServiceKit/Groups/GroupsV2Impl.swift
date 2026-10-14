@@ -673,15 +673,21 @@ public class GroupsV2Impl: GroupsV2 {
         let groupV2Params = try GroupV2Params(groupSecretParams: secretParams)
         let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
 
+        let groupRecord: GroupRecord?
         let groupModel: TSGroupModelV2?
         let gseExpiration: UInt64
 
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-        (groupModel, gseExpiration) = databaseStorage.read { tx in
-            let groupThread = TSGroupThread.fetchThread(forGroupId: groupId, tx: tx)
-            let groupRowId = GroupStore().fetchRowId(forGroupId: groupId, tx: tx)
-            let endorsementRecord = groupRowId.flatMap({ groupSendEndorsementStore.fetchCombinedEndorsement(groupRowId: $0, tx: tx) })
+        (groupRecord, groupModel, gseExpiration) = databaseStorage.read { tx in
+            let groupRecord = GroupStore().fetchGroup(forGroupId: groupId, tx: tx)
+            let groupThread = groupRecord?.threadId.flatMap {
+                return TSGroupThread.threadUniqueId(forThreadId: $0, tx: tx)
+            }.flatMap {
+                return TSGroupThread.fetchViaCache(uniqueId: $0, transaction: tx)
+            }
+            let endorsementRecord = groupRecord.flatMap({ groupSendEndorsementStore.fetchCombinedEndorsement(groupRowId: $0.rowId, tx: tx) })
             return (
+                groupRecord,
                 groupThread?.groupModel as? TSGroupModelV2,
                 endorsementRecord?.expirationTimestamp ?? 0,
             )
@@ -722,22 +728,31 @@ public class GroupsV2Impl: GroupsV2 {
             // from local data.
             let startingAtRevision: UInt32
             let includeFirstState: Bool
+            let dropFirstRevision: Bool
             switch source {
             case .groupMessage:
                 startingAtRevision = groupModel.revision + 1
                 includeFirstState = false
+                dropFirstRevision = false
             case .other:
                 startingAtRevision = groupModel.revision
-                includeFirstState = true
+                includeFirstState = groupRecord.owsFailUnwrap("must exist if group model exists").shouldFetchSnapshot()
+                // We always fetch at least one revision (even if we drop it) to ensure the
+                // response contains GSEs.
+                dropFirstRevision = !includeFirstState
             }
             do {
-                return try await _fetchSomeGroupChangeActions(
+                var response = try await _fetchSomeGroupChangeActions(
                     secretParams: secretParams,
                     startingAtRevision: startingAtRevision,
                     upThroughRevision: upThroughRevision,
                     includeFirstState: includeFirstState,
                     gseExpiration: gseExpiration,
                 )
+                if dropFirstRevision {
+                    response.groupChanges = Array(response.groupChanges.dropFirst())
+                }
+                return response
             } catch GroupsV2Error.localUserNotInGroup {
                 // If we can't fetch starting at the next version, we might have been
                 // removed and re-added, so we should figure out if we're back in the group

@@ -372,6 +372,7 @@ public class GRDBSchemaMigrator {
         case migrateBlocked
         case addBlockedAt
         case migrateLegacyMentionNotificationMode
+        case addLastSnapshotAt
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5712,6 +5713,14 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.migrateLegacyMentionNotificationMode) { tx in
             try migrateLegacyMentionNotificationMode(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addLastSnapshotAt) { tx in
+            try tx.database.alter(table: "GroupRecord") {
+                $0.add(column: "lastSnapshotAt", .integer).notNull().defaults(to: 0)
+                $0.add(column: "lastSnapshotVersion", .integer).notNull().defaults(to: 0)
+            }
             return .success(())
         }
 

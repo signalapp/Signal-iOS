@@ -679,6 +679,7 @@
 		500FB6182915B86D00257951 /* UITableView+ReusableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */; };
 		500FE4E0288A11B000FA090C /* ConversationViewController+GiftBadges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */; };
 		500FE4E2288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */; };
+		5010000E307EDEDB001B9098 /* GroupRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5010000D307EDEDB001B9098 /* GroupRecordTest.swift */; };
 		50101FB22B083C8100C648E4 /* ChatListSettingsButtonState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50101FB12B083C8100C648E4 /* ChatListSettingsButtonState.swift */; };
 		50101FB42B08447000C648E4 /* ChatListProxyButtonCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50101FB32B08447000C648E4 /* ChatListProxyButtonCreator.swift */; };
 		501050BB2EB959A4005161CA /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501050BA2EB959A4005161CA /* SessionStore.swift */; };
@@ -5142,6 +5143,7 @@
 		500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+ReusableCell.swift"; sourceTree = "<group>"; };
 		500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+GiftBadges.swift"; sourceTree = "<group>"; };
 		500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingAlreadyRedeemedSheet.swift; sourceTree = "<group>"; };
+		5010000D307EDEDB001B9098 /* GroupRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupRecordTest.swift; sourceTree = "<group>"; };
 		50101FB12B083C8100C648E4 /* ChatListSettingsButtonState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListSettingsButtonState.swift; sourceTree = "<group>"; };
 		50101FB32B08447000C648E4 /* ChatListProxyButtonCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListProxyButtonCreator.swift; sourceTree = "<group>"; };
 		501050BA2EB959A4005161CA /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
@@ -15023,6 +15025,7 @@
 				50FA17113006F244007529C6 /* GroupInviteLinkTest.swift */,
 				5090B1A02F8D7239003F029D /* GroupMembershipTest.swift */,
 				F94261E3289B1B5400460798 /* GroupModelsTest.swift */,
+				5010000D307EDEDB001B9098 /* GroupRecordTest.swift */,
 				50498C6B3037574400BD86EB /* GroupStoreTest.swift */,
 			);
 			name = Groups;
@@ -21059,6 +21062,7 @@
 				5075C21729CA1EE700A260D2 /* GroupMemberUpdaterTest.swift in Sources */,
 				50925DEC2DA87AEF00DAB484 /* GroupMessageProcessorJobTest.swift in Sources */,
 				F9426251289B1B5500460798 /* GroupModelsTest.swift in Sources */,
+				5010000E307EDEDB001B9098 /* GroupRecordTest.swift in Sources */,
 				50498C6C3037574400BD86EB /* GroupStoreTest.swift in Sources */,
 				F9426243289B1B5500460798 /* HttpHeadersTest.swift in Sources */,
 				50A0B3D0301015050053607C /* HydratedMessageBodyTest.swift in Sources */,
