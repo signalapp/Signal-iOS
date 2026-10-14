@@ -1253,6 +1253,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                     topSectionItem: lastSectionItem,
                     bottomSectionItem: nextSectionItem,
                 )
+            } else if lastSectionItem.componentKey == .bodyText {
+                // If this is the last section stack and it ends with body text,
+                // it should use the outer margin for body text.
+                bottomMargin = .bottomMarginBelowBodyText
             } else {
                 // If this is the last section stack, it should use the outer margin.
                 bottomMargin = .bottomMargin
@@ -3040,6 +3044,7 @@ private extension CVComponentMessage {
         case none
         case topMargin
         case bottomMargin
+        case bottomMarginBelowBodyText
         case spacingDefault
         case spacingCustom(spacing: CGFloat)
     }
@@ -3056,6 +3061,8 @@ private extension CVComponentMessage {
                 return conversationStyle.textInsetTop
             case .bottomMargin:
                 return conversationStyle.textInsetBottom
+            case .bottomMarginBelowBodyText:
+                return conversationStyle.textInsetBottomBelowBodyText
             case .spacingDefault:
                 return Self.textViewVSpacing
             case .spacingCustom(let spacing):
