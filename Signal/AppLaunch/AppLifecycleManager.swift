@@ -60,7 +60,10 @@ final class AppLifecycleManager: NSObject, UNUserNotificationCenterDelegate {
         // The disk may have filled while we were suspended, during which the
         // periodic check can't run. Check before notifying observers, which
         // may write to disk.
-        if !mainAppContext.isRunningTests {
+        if
+            appReadiness.isAppReady,
+            !mainAppContext.isRunningTests
+        {
             AppEnvironment.shared.lowDiskSpaceMonitoringManager.checkDiskSpaceNow()
         }
 

@@ -45,6 +45,7 @@ class LowDiskSpaceMonitoringManager {
         }
     }
 
+    @concurrent
     private func continuouslyMonitorDiskSpace() async {
         while true {
             checkDiskSpaceNow()
