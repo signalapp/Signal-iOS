@@ -1,1 +1,1 @@
-• 新的自定义静音选项让您可以指定在聊天中恢复接收通知的具体日期和时间。
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.

@@ -1,1 +1,1 @@
-• 本次更新新增了一項自訂靜音選項，讓您可以輕鬆指定在特定聊天室中，希望何時結束通知靜音的具體日期和時間。
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.

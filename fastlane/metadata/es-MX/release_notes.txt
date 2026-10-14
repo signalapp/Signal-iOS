@@ -1,1 +1,1 @@
-• Esta actualización introduce una nueva opción personalizada para silenciar la aplicación. Puedes configurar fácilmente la fecha y hora exactas en las que quieres volver a recibir notificaciones de un chat concreto.
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.

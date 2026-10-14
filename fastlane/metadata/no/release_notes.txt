@@ -1,1 +1,1 @@
-• En ny innstilling lar deg deaktivere varsler og så velge hvilken dato og hvilket klokkeslett du vil at de skal aktiveres igjen i samtalen.
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.

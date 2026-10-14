@@ -1,1 +1,1 @@
-• Una nova opció personalitzada per silenciar et permet especificar el dia i hora exactes en què t'agradaria tornar a rebre notificacions en un xat.
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.

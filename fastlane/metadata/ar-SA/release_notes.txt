@@ -1,1 +1,1 @@
-• يُقدِّم هذا التحديث خيار كتم صوت مُخصَّص جديد لتتمكن من تحديد التاريخ والوقت المُحدَّدين بدقة لإنهاء فترة الهدوء وإيقاف كتم الإشعارات في دردشة معينة.
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.

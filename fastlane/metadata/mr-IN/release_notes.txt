@@ -1,1 +1,1 @@
-• एक नवीन कस्टम म्युटचा पर्याय तुम्हाला विशिष्ट चॅटच्या अधिसूचना कधीपासून मिळणे परत चालू व्हावे याचा नेमका दिनांक व वेळ ठरवून देतो.
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.

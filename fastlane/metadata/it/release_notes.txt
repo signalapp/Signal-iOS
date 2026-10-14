@@ -1,1 +1,1 @@
-• Questo aggiornamento introduce una nuova opzione ad hoc per silenziare le chat, così puoi specificare nel dettaglio quando interrompere la tua meritata pausa dalle notifiche di una determinata chat.
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.

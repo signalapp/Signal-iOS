@@ -1,1 +1,1 @@
-• Nová volba pro ztlumení umožní nastavit přesné datum a čas, od kdy chcete oznámení z chatu obnovit.
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.

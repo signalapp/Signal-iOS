@@ -1,1 +1,1 @@
-• เพิ่มตัวเลือกการแจ้งเตือนแบบใหม่ที่ให้คุณระบุวันที่และเวลาได้ตามใจว่าจะปิดการแจ้งเตือนแชทนั้นถึงเมื่อไหร่
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.

@@ -1,1 +1,1 @@
-• Med denne opdatering får du en ny funktion til tilpasset lydløs tilstand, så du nemt kan angive den dato og det tidspunkt, hvor du vil have notifikationer slået til igen i en bestemt chat.
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.

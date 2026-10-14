@@ -1,1 +1,1 @@
-• Yeni sessize alma seçeneği, sohbette bildirim almaya devam etmek istediğin tam tarihi ve saati belirtmeni sağlar.
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.

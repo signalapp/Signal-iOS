@@ -1,1 +1,1 @@
-• Uuden mukautetun mykistysvaihtoehdon avulla voit määrittää tarkan päivämäärän ja kellonajan, ilmoitusten vastaanottaminen keskustelussa jatkuu.
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.

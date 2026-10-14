@@ -1,1 +1,1 @@
-• В этом обновлении появилась новая настраиваемая функция отключения уведомлений: теперь можно точно указать дату и время, когда вы хотите возобновить получение уведомлений в конкретном чате.
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.

@@ -1,1 +1,1 @@
-• એક નવો 'કસ્ટમ મ્યૂટ' વિકલ્પ તમને તે ચોક્કસ તારીખ અને સમય નક્કી કરવાની સુવિધા આપે છે કે જ્યારે તમે ચેટમાં ફરીથી નોટિફિકેશન મેળવવાનું શરૂ કરવા માંગો છો.
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.

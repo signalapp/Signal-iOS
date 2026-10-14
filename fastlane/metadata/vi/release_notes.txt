@@ -1,1 +1,1 @@
-• Một tùy chọn tắt thông báo tùy chỉnh mới cho phép bạn chỉ định chính xác ngày và giờ muốn tiếp tục nhận thông báo trong cuộc trò chuyện.
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.

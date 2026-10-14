@@ -1,1 +1,1 @@
-• Această actualizare introduce o nouă opțiune personalizată de dezactivare a notificărilor, astfel încât să poți specifica cu ușurință data și ora exactă la care dorești să închei perioada de dezactivare a notificărilor într-un anumit chat.
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.

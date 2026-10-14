@@ -1,1 +1,1 @@
-• This update introduces a new custom mute option so you can easily specify the exact date and time when you would like to end your moment of silence for notifications in a specific chat.
+• This update introduces several improvements to the sticker experience, including a convenient shortcut to share a sticker pack link.
