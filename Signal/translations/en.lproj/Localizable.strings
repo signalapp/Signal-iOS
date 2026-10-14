@@ -5564,7 +5564,7 @@
 "LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "Select Your Backup Folder";
 
 /* Message for an action sheet informing the user we were unable to save their local backup location */
-"LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_MESSAGE" = "Something went wrong and the folder location you selected couldn’t be saved. Try again. If this problem persists, please contact support.";
+"LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_MESSAGE" = "Something went wrong and the folder location you selected couldn’t be saved. Try again.";
 
 /* Title for an action sheet informing the user we were unable to save their local backup location */
 "LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_TITLE" = "Couldn’t Save Folder Location";

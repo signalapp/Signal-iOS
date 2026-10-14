@@ -27,12 +27,6 @@ class LocalFileBackupChooseFolderErrorActionSheet: ActionSheetController {
                 },
             ),
         )
-        addAction(
-            .contactSupport(
-                emailFilter: .custom("iOS Local Backup Choose Backup Location Failed"),
-                fromViewController: fromViewController,
-            ),
-        )
         addAction(.cancel)
     }
 }
