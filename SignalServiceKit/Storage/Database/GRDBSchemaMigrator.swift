@@ -5687,7 +5687,8 @@ public class GRDBSchemaMigrator {
         }
 
         migrator.registerMigration(.disableUnreadRemindersForExistingUsers) { tx in
-            try disableUnreadRemindersForExistingUsers(tx: tx)
+            // This used to disable unread reminders for existing installs,
+            // but now it's disabled by default for all users.
             return .success(())
         }
 
@@ -8584,17 +8585,6 @@ public class GRDBSchemaMigrator {
         try tx.database.alter(table: "model_TSThread") {
             $0.add(column: "shouldNotifyForUnreadRemindersWhenMuted", .boolean)
         }
-    }
-
-    // We don't want existing users to start getting notifications unexpectedly,
-    // but the product intention is for this feature to be on by default
-    static func disableUnreadRemindersForExistingUsers(tx: DBWriteTransaction) throws {
-        guard try hasAnyAccountManagerState(tx: tx) else { return }
-
-        try tx.database.execute(sql: """
-        INSERT OR IGNORE INTO keyvalue (key, collection, value)
-        VALUES ('ShowUnreadReminders', 'NotificationPreferences', 0)
-        """)
     }
 
     static func addGroupStatus(tx: DBWriteTransaction) throws {

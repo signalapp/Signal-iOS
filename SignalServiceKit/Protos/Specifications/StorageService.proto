@@ -304,7 +304,7 @@ message AccountRecord {
   OptionalBool notifyForCallsIfMuted = 56; // If unset, consider this off
   OptionalBool notifyForMentionsIfMuted = 57; // If unset, consider this on
   OptionalBool notifyForRepliesIfMuted = 58; // If unset, consider this on
-  OptionalBool showUnreadReminders = 59; // If unset, consider this on
+  OptionalBool showUnreadReminders = 59;
   OptionalBool notifyWhenContactJoins = 60; // If unset, consider this off
 }
 

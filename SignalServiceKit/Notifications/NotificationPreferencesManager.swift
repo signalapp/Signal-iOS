@@ -53,7 +53,7 @@ public struct NotificationPreferencesManager {
         static let notifyForCallsWhenMuted = false
         static let notifyForRepliesWhenMuted = true
         static let areReactionNotificationsEnabled = true
-        static let showUnreadReminders = true
+        static let showUnreadReminders = false
     }
 
     private enum Key {
