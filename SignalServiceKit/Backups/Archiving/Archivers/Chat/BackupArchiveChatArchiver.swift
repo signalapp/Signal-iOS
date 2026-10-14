@@ -50,6 +50,15 @@ class BackupArchiveChatArchiver {
         var completeFailureError: BackupArchive.FatalArchivingError?
         var partialErrors = [ArchiveFrameError]()
 
+        context.pinnedThreadRowIds = Set(
+            pinnedThreadManager.pinnedThreads(
+                filterToVisible: false,
+                tx: context.tx,
+            ).map { thread in
+                thread.sqliteRowId.owsFailUnwrap("must have row ID to be fetched")
+            },
+        )
+
         try context.wrapEnumeration(
             enumerationBlock: { tx, block throws(CancellationError) in
                 try threadStore.enumerateNonStoryThreads(tx: tx, block: block)
@@ -229,10 +238,15 @@ class BackupArchiveChatArchiver {
     ) -> ArchiveMultiFrameResult {
         var partialErrors = [ArchiveFrameError]()
 
-        let pinnedThreadOrder = pinnedThreadManager.pinnedThreadOrder(
-            forThread: thread.tsThread,
-            tx: context.tx,
-        )
+        let pinnedThreadOrder: Int64?
+        if context.pinnedThreadRowIds.contains(thread.threadRowId) {
+            pinnedThreadOrder = pinnedThreadManager.pinnedThreadOrder(
+                forThread: thread.tsThread,
+                tx: context.tx,
+            )
+        } else {
+            pinnedThreadOrder = nil
+        }
 
         let versionedExpireTimerToken = dmConfigurationStore.fetchOrBuildDefault(
             for: .thread(thread.tsThread),
@@ -243,7 +257,7 @@ class BackupArchiveChatArchiver {
         chat.id = context.assignChatId(to: thread.tsThread).value
         chat.recipientID = recipientId.value
         chat.archived = thread.tsThread.isArchived
-        if let pinnedThreadOrder = pinnedThreadOrder.flatMap(UInt32.init(exactly:)) {
+        if let pinnedThreadOrder = pinnedThreadOrder.flatMap({ UInt32(exactly: $0) }) {
             chat.pinnedOrder = pinnedThreadOrder
         }
         if versionedExpireTimerToken.isEnabled {

@@ -279,7 +279,10 @@ public class StoryManager {
 
         // See if the context has been recently active
 
-        let pinnedThreads = DependenciesBridge.shared.pinnedThreadManager.pinnedThreads(tx: transaction)
+        let pinnedThreads = DependenciesBridge.shared.pinnedThreadManager.pinnedThreads(
+            filterToVisible: true,
+            tx: transaction,
+        )
         let recentlyInteractedThreads = ThreadFinder().threadsWithRecentInteractions(limit: recentContextAutomaticDownloadLimit, transaction: transaction)
         let recentlyViewedContexts = StoryFinder.associatedDatasWithRecentlyViewedStories(
             limit: Int(recentContextAutomaticDownloadLimit),

@@ -114,15 +114,23 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
         return thread.shouldThreadBeVisible && !thread.isArchived
     }
 
-    public func pinnedThreads(tx: DBReadTransaction) -> [TSThread] {
+    public func pinnedThreads(
+        filterToVisible: Bool,
+        tx: DBReadTransaction,
+    ) -> [TSThread] {
         return pinnedThreadStore.fetchPinnedThreadRecords(tx: tx).compactMap {
             guard let thread = _pinnedThread(forThreadId: $0.threadId, tx: tx) else {
                 return nil
             }
-            guard _isVisiblePinnedThread(thread) else {
+
+            if
+                filterToVisible,
+                !_isVisiblePinnedThread(thread)
+            {
                 Logger.warn("Ignoring deleted or archived pinned thread \(thread.uniqueId)")
                 return nil
             }
+
             return thread
         }
     }

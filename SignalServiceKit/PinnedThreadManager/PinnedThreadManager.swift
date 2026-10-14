@@ -14,6 +14,8 @@ public enum PinnedThreads {
     }
 }
 
+// MARK: -
+
 public protocol PinnedThreadManager {
     /// A value used for sorting pinned threads.
     ///
@@ -28,7 +30,10 @@ public protocol PinnedThreadManager {
     ///
     /// - Warning: If a pinned thread doesn't yet exist (e.g., a group that's
     /// still being restored), it's omitted from the result.
-    func pinnedThreads(tx: DBReadTransaction) -> [TSThread]
+    ///
+    /// - Parameter filterToVisible: if true, omits threads that are "pinned"
+    /// but also archived or otherwise not visible.
+    func pinnedThreads(filterToVisible: Bool, tx: DBReadTransaction) -> [TSThread]
 
     func setPinnedThreads(
         _ threads: [TSThread],
@@ -54,6 +59,8 @@ public protocol PinnedThreadManager {
         tx: DBWriteTransaction,
     )
 }
+
+// MARK: -
 
 protocol PinnedThreadMerger {
     func mergeRecipientId(

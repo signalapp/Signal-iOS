@@ -83,6 +83,10 @@ extension BackupArchive {
         private var currentChatId = ChatId(value: 1)
         private var map = [ThreadUniqueId: ChatId]()
         var gv1ThreadIds = Set<ThreadUniqueId>()
+        /// IDs of our pinned threads. A single pinned recipient may map to
+        /// multiple contact threads; this set disambiguates which of those
+        /// threads is canonical and actually "pinned".
+        var pinnedThreadRowIds = Set<TSThread.RowId>()
 
         enum CachedThreadInfo {
             case groupThread
