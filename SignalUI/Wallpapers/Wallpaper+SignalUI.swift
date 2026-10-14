@@ -181,6 +181,9 @@ public class WallpaperBlurState: NSObject {
     public let referenceView: UIView
     fileprivate let token: WallpaperBlurToken
 
+    /// The average color of `image`, for filling areas the image doesn't reach.
+    public private(set) lazy var averageColor: UIColor? = image.averageColor()
+
     private static let idCounter = AtomicUInt(0, lock: .sharedGlobal)
     public let id: UInt = WallpaperBlurState.idCounter.increment()
 
