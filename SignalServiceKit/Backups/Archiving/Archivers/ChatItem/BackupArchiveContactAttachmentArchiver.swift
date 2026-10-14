@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveContactAttachmentArchiver {
     private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
     typealias RestoreInteractionResult = BackupArchive.RestoreInteractionResult
     private typealias RestoreFrameError = BackupArchive.RestoreFrameError

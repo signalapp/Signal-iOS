@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-class BackupArchivePollArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchivePollArchiver {
     private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
 
     private let pollManager: PollMessageManager

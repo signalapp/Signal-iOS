@@ -11,7 +11,7 @@ extension BackupArchive {
 }
 
 /// Archives the ``BackupProto_AccountData`` frame.
-class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveAccountDataArchiver {
     private let adminDeleteManager: AdminDeleteManager
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
     private let backupSettingsStore: BackupSettingsStore
@@ -112,7 +112,7 @@ class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         stream: BackupArchiveOutputStream,
         context: BackupArchive.CustomChatColorArchivingContext,
     ) -> BackupArchive.ArchiveAccountDataResult {
-        return context.bencher.processFrame { frameBencher in
+        return context.processFrame { frameBencher in
             guard let localProfile = profileManager.getUserProfileForLocalUser(tx: context.tx) else {
                 return .failure(.archiveFrameError(.missingLocalProfile))
             }
@@ -174,8 +174,8 @@ class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
                 accountData.iosSpecificSettings = iosSpecificSettings
             }
 
-            let error: BackupArchive.ArchiveFrameError? = Self.writeFrameToStream(
-                stream,
+            let error: BackupArchive.ArchiveFrameError? = context.writeFrame(
+                toStream: stream,
                 flush: .afterWrite,
                 frameBencher: frameBencher,
             ) {

@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveMessageAttachmentArchiver {
     private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
 
     private let attachmentManager: AttachmentManager
@@ -432,11 +432,14 @@ extension ReferencedAttachment {
             proto.height = UInt32(pixelSize.height)
         }
 
-        proto.locatorInfo = self.asBackupFilePointerLocatorInfo(context: context, localFileBackupStore: localFileBackupStore)
+        proto.locatorInfo = self.asBackupFilePointerLocatorInfo(
+            context: context,
+            localFileBackupStore: localFileBackupStore,
+        )
 
         if proto.locatorInfo.hasLocalKey {
-            context.attachmentByteCounter.addToLocalByteCount(
-                attachmentID: attachment.id,
+            context.addToLocalAttachmentByteCount(
+                attachmentId: attachment.id,
                 byteCount: Cryptography.localBackupEncryptedSize(unencryptedSize: UInt64(safeCast: proto.locatorInfo.size)) ?? .max,
             )
         } else if
@@ -447,8 +450,8 @@ extension ReferencedAttachment {
                 unencryptedSize: UInt64(safeCast: mediaTierInfo.unencryptedByteCount),
             ) ?? UInt64(UInt32.max)
 
-            context.attachmentByteCounter.addToRemoteByteCount(
-                attachmentID: attachment.id,
+            context.addToRemoteAttachmentByteCount(
+                attachmentId: attachment.id,
                 byteCount: estimatedMediaTierSize,
             )
         }
@@ -505,19 +508,16 @@ extension ReferencedAttachment {
         // the local file backup. Check streamInfo because we may have a local key from a
         // past restore for an attachment that has since been offloaded.
         if
-            let localFileBackupAttachmentCollector = context.localFileBackupAttachmentCollector,
-            attachment.streamInfo != nil
+            context.isCollectingLocalFileBackupAttachments,
+            let attachmentStream = attachment.asStream(),
+            let localKey = localFileBackupStore.metadataRecord(
+                attachmentId: attachment.id,
+                failIfNotExists: false,
+                tx: context.tx,
+            )?.localKey
         {
-            if
-                let localKeyForAttachment = localFileBackupStore.metadataRecord(
-                    attachmentId: attachment.id,
-                    failIfNotExists: false,
-                    tx: context.tx,
-                )?.localKey
-            {
-                localFileBackupAttachmentCollector.append(id: attachment.id)
-                locatorInfo.localKey = localKeyForAttachment
-            }
+            context.collectLocalFileBackupAttachment(attachmentStream: attachmentStream)
+            locatorInfo.localKey = localKey
         }
 
         if let mediaTierInfo = attachment.mediaTierInfo {

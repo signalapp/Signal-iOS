@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveReactionArchiver {
     private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
 
     private let reactionStore: BackupArchiveReactionStore

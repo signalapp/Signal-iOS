@@ -18,7 +18,7 @@ extension BackupArchive {
 
 // MARK: -
 
-class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveStickerPackArchiver {
     typealias StickerPackId = BackupArchive.StickerPackId
     typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult
     typealias ArchiveFrameError = BackupArchive.ArchiveFrameError
@@ -50,8 +50,7 @@ class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
         var handledPacks = Set<Data>()
 
         // Iterate over installed sticker packs...
-        try context.bencher.wrapEnumeration(
-            tx: context.tx,
+        try context.wrapEnumeration(
             enumerationBlock: { tx, block throws(CancellationError) in
                 var cursor = FailIfThrowsRecordCursor {
                     try StickerPackRecord
@@ -66,8 +65,8 @@ class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
                     return true
                 }
 
-                let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
-                    stream,
+                let maybeError: ArchiveFrameError? = context.writeFrame(
+                    toStream: stream,
                     flush: .none,
                     frameBencher: frameBencher,
                 ) {
@@ -92,8 +91,7 @@ class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
         )
 
         // Iterate over any restored sticker packs that have yet to be downloaded via StickerManager.
-        try context.bencher.wrapEnumeration(
-            tx: context.tx,
+        try context.wrapEnumeration(
             enumerationBlock: { tx, block throws(CancellationError) in
                 try backupStickerPackDownloadStore.iterateAllEnqueued(tx: tx, block: block)
             },
@@ -102,8 +100,8 @@ class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
                     return true
                 }
 
-                let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
-                    stream,
+                let maybeError: ArchiveFrameError? = context.writeFrame(
+                    toStream: stream,
                     flush: .none,
                     frameBencher: frameBencher,
                 ) {

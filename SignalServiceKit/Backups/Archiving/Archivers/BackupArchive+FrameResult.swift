@@ -57,31 +57,3 @@ extension BackupArchive {
         var logLevel: BackupArchive.LogLevel { .warning }
     }
 }
-
-// MARK: -
-
-protocol BackupArchiveProtoStreamWriter {}
-
-extension BackupArchiveProtoStreamWriter {
-
-    /**
-     * Helper function to build a frame and write the proto to the backup file in one action
-     * with standard error handling.
-     */
-    static func writeFrameToStream(
-        _ stream: BackupArchiveOutputStream,
-        flush: BackupArchiveFlushBehavior,
-        frameBencher: BackupArchive.Bencher.FrameBencher,
-        frameBuilder: () -> BackupProto_Frame,
-    ) -> BackupArchive.ArchiveFrameError? {
-        let frame = frameBuilder()
-        frameBencher.didProcessFrame(frame)
-
-        do {
-            try stream.writeFrame(frame, flush: flush)
-            return nil
-        } catch {
-            return .archiveFrameError(.fileIOError(error))
-        }
-    }
-}

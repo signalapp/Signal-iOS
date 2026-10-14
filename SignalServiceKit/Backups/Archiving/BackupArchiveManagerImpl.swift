@@ -502,6 +502,10 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             dateProviderMonotonic: dateProviderMonotonic,
             memorySampler: memorySampler,
         )
+        let perFrameAccumulator = BackupArchive.ArchivingContext.PerFrameAccumulator(
+            attachmentByteCounter: attachmentByteCounter,
+            localFileBackupAttachmentCollector: localFileBackupAttachmentCollector,
+        )
         let remoteConfig = remoteConfigManager.currentConfig()
         let currentUploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: tx)
         let backupVersion = Constants.supportedBackupVersion
@@ -540,9 +544,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 remoteConfig: remoteConfig,
                 currentUploadEra: currentUploadEra,
                 bencher: bencher,
-                attachmentByteCounter: attachmentByteCounter,
                 includedContentFilter: includedContentFilter,
-                localFileBackupAttachmentCollector: localFileBackupAttachmentCollector,
+                perFrameAccumulator: perFrameAccumulator,
                 tx: tx,
             )
             try autoreleasepool {
@@ -560,11 +563,19 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             }
             try Task.checkCancellation()
 
+            let archivingContext = BackupArchive.ArchivingContext(
+                localIdentifiers: localIdentifiers,
+                startDate: startDate,
+                remoteConfig: remoteConfig,
+                currentUploadEra: currentUploadEra,
+                bencher: bencher,
+                includedContentFilter: includedContentFilter,
+                perFrameAccumulator: perFrameAccumulator,
+                tx: tx,
+            )
             let localRecipientResult = localRecipientArchiver.archiveLocalRecipient(
                 stream: stream,
-                bencher: bencher,
-                localIdentifiers: localIdentifiers,
-                tx: tx,
+                context: archivingContext,
             )
 
             try Task.checkCancellation()
@@ -595,9 +606,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 remoteConfig: remoteConfig,
                 currentUploadEra: currentUploadEra,
                 bencher: bencher,
-                attachmentByteCounter: attachmentByteCounter,
                 includedContentFilter: includedContentFilter,
-                localFileBackupAttachmentCollector: localFileBackupAttachmentCollector,
+                perFrameAccumulator: perFrameAccumulator,
                 tx: tx,
             )
 
@@ -675,9 +685,8 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 remoteConfig: remoteConfig,
                 currentUploadEra: currentUploadEra,
                 bencher: bencher,
-                attachmentByteCounter: attachmentByteCounter,
                 includedContentFilter: includedContentFilter,
-                localFileBackupAttachmentCollector: localFileBackupAttachmentCollector,
+                perFrameAccumulator: perFrameAccumulator,
                 tx: tx,
             )
             let chatArchiveResult = try chatArchiver.archiveChats(
@@ -694,17 +703,6 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 throw BackupError()
             }
 
-            let archivingContext = BackupArchive.ArchivingContext(
-                localIdentifiers: localIdentifiers,
-                startDate: startDate,
-                remoteConfig: remoteConfig,
-                currentUploadEra: currentUploadEra,
-                bencher: bencher,
-                attachmentByteCounter: attachmentByteCounter,
-                includedContentFilter: includedContentFilter,
-                localFileBackupAttachmentCollector: localFileBackupAttachmentCollector,
-                tx: tx,
-            )
             let stickerPackArchiveResult = try stickerPackArchiver.archiveStickerPacks(
                 stream: stream,
                 context: archivingContext,

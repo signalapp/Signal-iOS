@@ -136,9 +136,8 @@ extension BackupArchive {
             remoteConfig: RemoteConfig,
             currentUploadEra: String,
             bencher: BackupArchive.ArchiveBencher,
-            attachmentByteCounter: BackupArchiveAttachmentByteCounter,
             includedContentFilter: IncludedContentFilter,
-            localFileBackupAttachmentCollector: LocalFileBackupAttachmentCollector?,
+            perFrameAccumulator: PerFrameAccumulator,
             tx: DBReadTransaction,
         ) {
             self.localRecipientId = localRecipientId
@@ -163,9 +162,8 @@ extension BackupArchive {
                 remoteConfig: remoteConfig,
                 currentUploadEra: currentUploadEra,
                 bencher: bencher,
-                attachmentByteCounter: attachmentByteCounter,
                 includedContentFilter: includedContentFilter,
-                localFileBackupAttachmentCollector: localFileBackupAttachmentCollector,
+                perFrameAccumulator: perFrameAccumulator,
                 tx: tx,
             )
         }

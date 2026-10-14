@@ -12,7 +12,7 @@ import LibSignalClient
 /// ``BackupProto_Chat``, and there will in fact _also_ be a chat for the group
 /// thread. Its just that our group thread contains all the metadata
 /// corresponding to both the Chat and Recipient parts of the Backup proto.
-class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveGroupRecipientArchiver {
     typealias GroupId = BackupArchive.GroupId
     typealias RecipientId = BackupArchive.RecipientId
     typealias RecipientAppId = BackupArchive.RecipientArchivingContext.Address
@@ -59,8 +59,7 @@ class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter {
         var errors = [ArchiveFrameError]()
 
         do {
-            try context.bencher.wrapEnumeration(
-                tx: context.tx,
+            try context.wrapEnumeration(
                 enumerationBlock: { tx, block throws(CancellationError) in
                     try enumerateGroups(tx: tx, block: block)
                 },
@@ -278,8 +277,8 @@ class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter {
             return
         }
 
-        let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
-            stream,
+        let maybeError: ArchiveFrameError? = context.writeFrame(
+            toStream: stream,
             flush: .afterWrite,
             frameBencher: frameBencher,
             frameBuilder: {

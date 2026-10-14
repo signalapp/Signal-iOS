@@ -25,11 +25,8 @@ extension BackupArchive {
                 case adminDeletedMessage
             }
 
-            /// An error occurred during file IO.
-            /// - Note
-            /// Logging the raw error is safe, as we generate the file we stream
-            /// without user input.
-            case fileIOError(RawError)
+            /// An error occurred writing to the archive output stream.
+            case streamWriteError(RawError)
 
             /// The object we are archiving references a recipient that should already have an id assigned
             /// from having been archived, but does not.
@@ -305,7 +302,7 @@ extension BackupArchive {
                 .messageFromOtherRecipientInContactThread:
                 return typeLogString
             case
-                .fileIOError,
+                .streamWriteError,
                 .groupMasterKeyError,
                 .groupMasterKeyWarning,
                 .themedCustomChatColor,
@@ -381,11 +378,11 @@ extension BackupArchive {
         var logLevel: BackupArchive.LogLevel {
             switch type {
             case
+                .streamWriteError,
                 .referencedRecipientIdMissing,
                 .referencedThreadIdMissing,
                 .referencedCustomChatColorMissing,
                 .unableToFetchRecipientIdentity,
-                .fileIOError,
                 .groupMasterKeyError,
                 .themedCustomChatColor,
                 .distributionListMissingDistributionId,

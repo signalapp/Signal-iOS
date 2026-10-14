@@ -1360,7 +1360,7 @@
 		66C7952D2C9B78E900C13937 /* BackupAttachmentUploadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C7952C2C9B78E200C13937 /* BackupAttachmentUploadStore.swift */; };
 		66C795302C9B83A200C13937 /* BackupAttachmentUploadStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C7952E2C9B837500C13937 /* BackupAttachmentUploadStoreTests.swift */; };
 		66CA4CE62B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CA4CE52B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift */; };
-		66CD25592B0685E000139E17 /* BackupArchiveProtoStreamWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25582B0685E000139E17 /* BackupArchiveProtoStreamWriter.swift */; };
+		66CD25592B0685E000139E17 /* BackupArchive+FrameResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25582B0685E000139E17 /* BackupArchive+FrameResult.swift */; };
 		66CD25642B06949C00139E17 /* BackupArchiveAccountDataArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25632B06949C00139E17 /* BackupArchiveAccountDataArchiver.swift */; };
 		66CD25662B0695F400139E17 /* BackupArchiveChatArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25652B0695F400139E17 /* BackupArchiveChatArchiver.swift */; };
 		66CD256A2B06963200139E17 /* BackupArchiveStickerPackArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD25692B06963200139E17 /* BackupArchiveStickerPackArchiver.swift */; };
@@ -2998,6 +2998,7 @@
 		D9538E412F3FF7FC002C887E /* UITableView+RowHeights.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9538E402F3FF7F3002C887E /* UITableView+RowHeights.swift */; };
 		D954276F2F49240E006F78FB /* NewPollViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D954276E2F4923FC006F78FB /* NewPollViewController2.swift */; };
 		D954A5AE2D7BA9B200F61C36 /* AttachmentSharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762EBBCF2A2FB759002FD28F /* AttachmentSharing.swift */; };
+		D956BEE6306EF45C001E03D7 /* BackupArchivePerFrameAccumulatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D956BEE5306EF45C001E03D7 /* BackupArchivePerFrameAccumulatorTests.swift */; };
 		D95787772C6D2A080051AC74 /* TSInfoMessage+GroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95787762C6D2A080051AC74 /* TSInfoMessage+GroupUpdates.swift */; };
 		D95787792C6D2ADE0051AC74 /* TSInfoMessage+Payments.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95787782C6D2ADE0051AC74 /* TSInfoMessage+Payments.swift */; };
 		D957877B2C6D2B690051AC74 /* TSInfoMessage+LearnedProfileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D957877A2C6D2B690051AC74 /* TSInfoMessage+LearnedProfileName.swift */; };
@@ -5805,7 +5806,7 @@
 		66C7952C2C9B78E200C13937 /* BackupAttachmentUploadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadStore.swift; sourceTree = "<group>"; };
 		66C7952E2C9B837500C13937 /* BackupAttachmentUploadStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadStoreTests.swift; sourceTree = "<group>"; };
 		66CA4CE52B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+RenderingFlag.swift"; sourceTree = "<group>"; };
-		66CD25582B0685E000139E17 /* BackupArchiveProtoStreamWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveProtoStreamWriter.swift; sourceTree = "<group>"; };
+		66CD25582B0685E000139E17 /* BackupArchive+FrameResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackupArchive+FrameResult.swift"; sourceTree = "<group>"; };
 		66CD25632B06949C00139E17 /* BackupArchiveAccountDataArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveAccountDataArchiver.swift; sourceTree = "<group>"; };
 		66CD25652B0695F400139E17 /* BackupArchiveChatArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveChatArchiver.swift; sourceTree = "<group>"; };
 		66CD25692B06963200139E17 /* BackupArchiveStickerPackArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveStickerPackArchiver.swift; sourceTree = "<group>"; };
@@ -7458,6 +7459,7 @@
 		D9538E402F3FF7F3002C887E /* UITableView+RowHeights.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+RowHeights.swift"; sourceTree = "<group>"; };
 		D954276E2F4923FC006F78FB /* NewPollViewController2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPollViewController2.swift; sourceTree = "<group>"; };
 		D954A5AC2D7BA7DA00F61C36 /* AttachmentSaving.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentSaving.swift; sourceTree = "<group>"; };
+		D956BEE5306EF45C001E03D7 /* BackupArchivePerFrameAccumulatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchivePerFrameAccumulatorTests.swift; sourceTree = "<group>"; };
 		D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallPeekClient.swift; sourceTree = "<group>"; };
 		D95787762C6D2A080051AC74 /* TSInfoMessage+GroupUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdates.swift"; sourceTree = "<group>"; };
 		D95787782C6D2ADE0051AC74 /* TSInfoMessage+Payments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+Payments.swift"; sourceTree = "<group>"; };
@@ -10386,6 +10388,7 @@
 			isa = PBXGroup;
 			children = (
 				50DAF7E22FD87C7000BE7430 /* Attachments */,
+				D956BEE5306EF45C001E03D7 /* BackupArchivePerFrameAccumulatorTests.swift */,
 				04B285063022409400BCF018 /* LocalFileBackupExportJobRunnerTests.swift */,
 				047DBEE32FFD4918009F457F /* LocalFileBackupManagerTests.swift */,
 			);
@@ -11233,8 +11236,8 @@
 				66CD255A2B06884700139E17 /* Recipient */,
 				66CD255F2B06888800139E17 /* StickerPack */,
 				662590D02B5B525E001FDCDD /* BackupArchive+Errors.swift */,
+				66CD25582B0685E000139E17 /* BackupArchive+FrameResult.swift */,
 				D94D67CC2C9DEF6E0091B485 /* BackupArchivePostFrameRestoreActionManager.swift */,
-				66CD25582B0685E000139E17 /* BackupArchiveProtoStreamWriter.swift */,
 			);
 			path = Archivers;
 			sourceTree = "<group>";
@@ -19826,6 +19829,7 @@
 				6619A1CB2B2D176E004B38FE /* BackupArchive+ContactAddress.swift in Sources */,
 				66FFDADC2C823C270079C0E7 /* BackupArchive+Contexts.swift in Sources */,
 				662590D12B5B525E001FDCDD /* BackupArchive+Errors.swift in Sources */,
+				66CD25592B0685E000139E17 /* BackupArchive+FrameResult.swift in Sources */,
 				663AAF262E0225E100B9C4B8 /* BackupArchive+IncludedContentFilter.swift in Sources */,
 				66CD258D2B0EB3A700139E17 /* BackupArchive+InteractionTypes.swift in Sources */,
 				66CD257D2B0C1DAA00139E17 /* BackupArchive+RecipientContexts.swift in Sources */,
@@ -19869,7 +19873,6 @@
 				66CD25752B0807BC00139E17 /* BackupArchiveProtoInputStream.swift in Sources */,
 				66CD25772B0807C700139E17 /* BackupArchiveProtoOutputStream.swift in Sources */,
 				665C0D622AE0552900539A37 /* BackupArchiveProtoStreamProvider.swift in Sources */,
-				66CD25592B0685E000139E17 /* BackupArchiveProtoStreamWriter.swift in Sources */,
 				6605B9822B19547C00E8A68A /* BackupArchiveReactionArchiver.swift in Sources */,
 				664A4D312CE2A27C00AC26F3 /* BackupArchiveReactionStore.swift in Sources */,
 				664A4D2F2CE2747B00AC26F3 /* BackupArchiveRecipientStore.swift in Sources */,
@@ -20991,6 +20994,7 @@
 				5088330C2FE0B1E500CE51AC /* AutoDownloadPolicyTest.swift in Sources */,
 				D93F4D5D2D801D750042926C /* AvatarDefaultColorManagerTest.swift in Sources */,
 				D90AA6192CC961ED00021CB0 /* BackupArchiveIntegrationTests.swift in Sources */,
+				D956BEE6306EF45C001E03D7 /* BackupArchivePerFrameAccumulatorTests.swift in Sources */,
 				66681CDF2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift in Sources */,
 				66C795302C9B83A200C13937 /* BackupAttachmentUploadStoreTests.swift in Sources */,
 				66A1F4EB2E07CEA50095DE4B /* BackupListMediaManagerTests.swift in Sources */,

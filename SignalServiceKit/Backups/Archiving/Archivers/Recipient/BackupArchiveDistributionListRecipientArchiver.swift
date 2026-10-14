@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveDistributionListRecipientArchiver {
     typealias RecipientId = BackupArchive.RecipientId
     typealias RecipientAppId = BackupArchive.RecipientArchivingContext.Address
 
@@ -39,7 +39,7 @@ class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoStreamWr
             }
 
             autoreleasepool {
-                context.bencher.processFrame { frameBencher in
+                context.processFrame { frameBencher in
                     archiveDeletedStoryList(
                         rawDistributionId: item,
                         stream: stream,
@@ -51,8 +51,7 @@ class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoStreamWr
             }
         }
 
-        try context.bencher.wrapEnumeration(
-            tx: context.tx,
+        try context.wrapEnumeration(
             enumerationBlock: { tx, block throws(CancellationError) in
                 try threadStore.enumerateStoryThreads(tx: tx, block: block)
             },
@@ -149,8 +148,8 @@ class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoStreamWr
 
         let recipientId = context.assignRecipientId(to: distributionListAppId)
 
-        let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
-            stream,
+        let maybeError: ArchiveFrameError? = context.writeFrame(
+            toStream: stream,
             flush: .afterWrite,
             frameBencher: frameBencher,
         ) {
@@ -206,8 +205,8 @@ class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoStreamWr
         distributionList.distributionID = distributionId.value.data
         distributionList.item = .deletionTimestamp(deletionTimestamp)
 
-        let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
-            stream,
+        let maybeError: ArchiveFrameError? = context.writeFrame(
+            toStream: stream,
             flush: .afterWrite,
             frameBencher: frameBencher,
         ) {

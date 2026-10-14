@@ -24,7 +24,7 @@ extension BackupArchive {
 
 // MARK: -
 
-class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveChatItemArchiver {
     typealias ChatItemId = BackupArchive.ChatItemId
     typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult
     typealias RestoreFrameResult = BackupArchive.RestoreFrameResult
@@ -136,8 +136,7 @@ class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         var completeFailureError: BackupArchive.FatalArchivingError?
         var partialFailures = [ArchiveFrameError]()
 
-        try context.bencher.wrapEnumeration(
-            tx: context.tx,
+        try context.wrapEnumeration(
             enumerationBlock: { tx, block throws(CancellationError) in
                 var cursor = FailIfThrowsRecordCursor {
                     try InteractionRecord.fetchCursor(tx.database)
@@ -313,8 +312,8 @@ class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         // writing that disallowed content to the stream.
         sanitizeVoiceNotesWithText(details: &details)
 
-        let error: ArchiveFrameError? = Self.writeFrameToStream(
-            stream,
+        let error: ArchiveFrameError? = context.writeFrame(
+            toStream: stream,
             flush: .afterInterval,
             frameBencher: frameBencher,
         ) {

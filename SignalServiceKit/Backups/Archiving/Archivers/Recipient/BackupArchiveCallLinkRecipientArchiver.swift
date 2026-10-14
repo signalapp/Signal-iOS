@@ -24,7 +24,7 @@ extension BackupArchive {
     }
 }
 
-class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveCallLinkRecipientArchiver {
     typealias CallLinkRecordId = BackupArchive.CallLinkRecordId
     typealias RecipientAppId = BackupArchive.RecipientArchivingContext.Address
     typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult
@@ -47,8 +47,7 @@ class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWriter {
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
 
-        try context.bencher.wrapEnumeration(
-            tx: context.tx,
+        try context.wrapEnumeration(
             enumerationBlock: { tx, block throws(CancellationError) in
                 try callLinkStore.enumerateAll(tx: tx, block: block)
             },
@@ -94,8 +93,8 @@ class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWriter {
                 owsAssertDebug(record.revoked != true, "call links should be deleted, not revoked")
 
                 let recipientId = context.assignRecipientId(to: callLinkAppId)
-                let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
-                    stream,
+                let maybeError: ArchiveFrameError? = context.writeFrame(
+                    toStream: stream,
                     flush: .afterWrite,
                     frameBencher: frameBencher,
                 ) {

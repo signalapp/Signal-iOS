@@ -8,7 +8,7 @@
 /// - Important
 /// The Release Notes Channel has yet to be built on iOS, and consequently this
 /// class is implemented with stubs.
-class BackupArchiveReleaseNotesRecipientArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveReleaseNotesRecipientArchiver {
     typealias RecipientId = BackupArchive.RecipientId
     typealias RecipientAppId = BackupArchive.RecipientArchivingContext.Address
 
@@ -23,12 +23,12 @@ class BackupArchiveReleaseNotesRecipientArchiver: BackupArchiveProtoStreamWriter
         stream: BackupArchiveOutputStream,
         context: BackupArchive.RecipientArchivingContext,
     ) -> ArchiveFrameResult {
-        return context.bencher.processFrame { frameBencher in
+        return context.processFrame { frameBencher in
             let releaseNotesAppId: RecipientAppId = .releaseNotesChannel
             let recipientId = context.assignRecipientId(to: releaseNotesAppId)
 
-            let maybeError: BackupArchive.ArchiveFrameError? = Self.writeFrameToStream(
-                stream,
+            let maybeError: BackupArchive.ArchiveFrameError? = context.writeFrame(
+                toStream: stream,
                 flush: .afterWrite,
                 frameBencher: frameBencher,
                 frameBuilder: {

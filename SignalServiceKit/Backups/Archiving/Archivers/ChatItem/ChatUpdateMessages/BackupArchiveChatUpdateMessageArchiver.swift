@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWriter {
+final class BackupArchiveChatUpdateMessageArchiver {
     typealias Details = BackupArchive.InteractionArchiveDetails
     typealias ArchiveChatUpdateMessageResult = BackupArchive.ArchiveInteractionResult<Details>
     typealias RestoreChatUpdateMessageResult = BackupArchive.RestoreInteractionResult<Void>

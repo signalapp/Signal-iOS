@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveChatArchiver {
     typealias ChatId = BackupArchive.ChatId
     typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult
     typealias RestoreFrameResult = BackupArchive.RestoreFrameResult
@@ -50,8 +50,7 @@ class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
         var completeFailureError: BackupArchive.FatalArchivingError?
         var partialErrors = [ArchiveFrameError]()
 
-        try context.bencher.wrapEnumeration(
-            tx: context.tx,
+        try context.wrapEnumeration(
             enumerationBlock: { tx, block throws(CancellationError) in
                 try threadStore.enumerateNonStoryThreads(tx: tx, block: block)
             },
@@ -298,8 +297,8 @@ class BackupArchiveChatArchiver: BackupArchiveProtoStreamWriter {
             partialErrors.append(error)
         }
 
-        let error: ArchiveFrameError? = Self.writeFrameToStream(
-            stream,
+        let error: ArchiveFrameError? = context.writeFrame(
+            toStream: stream,
             flush: .none,
             frameBencher: frameBencher,
         ) {

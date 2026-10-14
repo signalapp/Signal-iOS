@@ -5,7 +5,7 @@
 
 import Foundation
 
-class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveChatStyleArchiver {
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore

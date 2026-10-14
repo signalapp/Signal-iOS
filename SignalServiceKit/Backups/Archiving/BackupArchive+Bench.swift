@@ -13,6 +13,9 @@ extension BackupArchive {
         /// Wrap the given enumeration method to facilitate measurement of the
         /// time spent.
         ///
+        /// - Important
+        /// Callers should prefer `ArchivingContext/wrapEnumeration`.
+        ///
         /// - Parameter enumerationBlock
         /// A block that enumerates models and calls the block it is passed for
         /// each model.
@@ -163,6 +166,9 @@ extension BackupArchive {
         ///
         /// The provided block takes a ``FrameBencher`` which can itself be provided the
         /// ``BackupProto_Frame``; this is done so the return type doesn't have to be a frame.
+        ///
+        /// - Important
+        /// Callers doing archiving should prefer `ArchivingContext/processFrame`.
         func processFrame<T>(_ block: (FrameBencher) throws -> T) rethrows -> T {
             let frameBencher = FrameBencher(
                 bencher: self,

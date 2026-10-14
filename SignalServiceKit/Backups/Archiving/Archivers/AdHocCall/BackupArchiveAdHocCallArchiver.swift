@@ -30,7 +30,7 @@ extension BackupArchive {
 
 // MARK: -
 
-class BackupArchiveAdHocCallArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveAdHocCallArchiver {
     typealias AdHocCallAppId = BackupArchive.AdHocCallAppId
     typealias AdHocCallId = BackupArchive.AdHocCallId
     typealias ArchiveMultiFrameResult = BackupArchive.ArchiveMultiFrameResult
@@ -68,8 +68,7 @@ class BackupArchiveAdHocCallArchiver: BackupArchiveProtoStreamWriter {
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var partialErrors = [ArchiveFrameError]()
 
-        try context.bencher.wrapEnumeration(
-            tx: context.tx,
+        try context.wrapEnumeration(
             enumerationBlock: { tx, block throws(CancellationError) in
                 try callRecordStore.enumerateAdHocCallRecords(tx: tx, block: block)
             },
@@ -103,8 +102,8 @@ class BackupArchiveAdHocCallArchiver: BackupArchiveProtoStreamWriter {
                 }
                 adHocCallProto.recipientID = recipientId.value
 
-                let error: ArchiveFrameError? = Self.writeFrameToStream(
-                    stream,
+                let error: ArchiveFrameError? = context.writeFrame(
+                    toStream: stream,
                     flush: .none,
                     frameBencher: frameBencher,
                 ) {

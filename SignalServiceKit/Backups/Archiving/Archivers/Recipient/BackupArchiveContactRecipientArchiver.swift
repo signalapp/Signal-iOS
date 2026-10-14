@@ -8,7 +8,7 @@ import GRDB
 import LibSignalClient
 
 /// Archives ``SignalRecipient``s as ``BackupProto_Contact`` recipients.
-class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveContactRecipientArchiver {
     typealias RecipientId = BackupArchive.RecipientId
     typealias RecipientAppId = BackupArchive.RecipientArchivingContext.Address
 
@@ -85,8 +85,8 @@ class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWriter {
             contactDbRowId: SignalRecipient.RowId?,
             frameBencher: BackupArchive.Bencher.FrameBencher,
         ) {
-            let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
-                stream,
+            let maybeError: ArchiveFrameError? = context.writeFrame(
+                toStream: stream,
                 flush: .afterWrite,
                 frameBencher: frameBencher,
                 frameBuilder: {
@@ -122,8 +122,7 @@ class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWriter {
         /// key" for contacts. They directly contain many of the fields we store
         /// in a `Contact` recipient, with the other fields keyed off data in
         /// the recipient.
-        try context.bencher.wrapEnumeration(
-            tx: context.tx,
+        try context.wrapEnumeration(
             enumerationBlock: { tx, block throws(CancellationError) in
                 try recipientStore.enumerateAllSignalRecipients(tx: tx, block: block)
             },
@@ -298,8 +297,7 @@ class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWriter {
         /// like `OWSUserProfile`. If, in the future, we have an enforced 1:1
         /// relationship between `SignalRecipient` and `OWSUserProfile`, we can
         /// remove this code.
-        try context.bencher.wrapEnumeration(
-            tx: context.tx,
+        try context.wrapEnumeration(
             enumerationBlock: { tx, block throws(CancellationError) in
                 try profileManager.enumerateUserProfiles(tx: tx, block: block)
             },
@@ -451,8 +449,8 @@ class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWriter {
         let recipientId = context.recipientContext.assignRecipientId(to: recipientAddress)
 
         let maybeError: BackupArchive.ArchiveFrameError?
-        maybeError = Self.writeFrameToStream(
-            stream,
+        maybeError = context.writeFrame(
+            toStream: stream,
             flush: .afterWrite,
             frameBencher: frameBencher,
             frameBuilder: {

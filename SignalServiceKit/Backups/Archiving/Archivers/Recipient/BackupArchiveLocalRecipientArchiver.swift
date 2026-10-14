@@ -14,7 +14,7 @@ extension BackupArchive {
 
 /// Archiver for the ``BackupProto_Self`` recipient, a.k.a. the local
 /// user author/recipient.  Used as the recipient for the Note To Self chat.
-class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveLocalRecipientArchiver {
     private static let localRecipientId = BackupArchive.RecipientId(value: 1)
 
     private let avatarDefaultColorManager: AvatarDefaultColorManager
@@ -34,11 +34,12 @@ class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter {
     /// Archive the local recipient.
     func archiveLocalRecipient(
         stream: BackupArchiveOutputStream,
-        bencher: BackupArchive.Bencher,
-        localIdentifiers: LocalIdentifiers,
-        tx: DBReadTransaction,
+        context: BackupArchive.ArchivingContext,
     ) -> BackupArchive.ArchiveLocalRecipientResult {
-        return bencher.processFrame { frameBencher in
+        let localIdentifiers = context.localIdentifiers
+        let tx = context.tx
+
+        return context.processFrame { frameBencher in
             let defaultAvatarColor: AvatarTheme
             if let localRecipient = recipientStore.fetchRecipient(localIdentifiers: localIdentifiers, tx: tx) {
                 defaultAvatarColor = avatarDefaultColorManager.defaultColor(
@@ -52,8 +53,8 @@ class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter {
                 )
             }
 
-            let error: BackupArchive.ArchiveFrameError? = Self.writeFrameToStream(
-                stream,
+            let error: BackupArchive.ArchiveFrameError? = context.writeFrame(
+                toStream: stream,
                 flush: .afterWrite,
                 frameBencher: frameBencher,
             ) {
