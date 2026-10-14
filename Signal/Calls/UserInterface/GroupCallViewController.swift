@@ -317,7 +317,7 @@ final class GroupCallViewController: UIViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(didBecomeActive),
-            name: UIApplication.didBecomeActiveNotification,
+            name: .OWSApplicationDidBecomeActive,
             object: nil,
         )
 

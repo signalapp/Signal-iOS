@@ -317,7 +317,7 @@ public class CircularProgressView: UIView {
         }
 
         didBecomeActiveObservation = NotificationCenter.default.addObserver(
-            name: UIApplication.didBecomeActiveNotification,
+            name: .OWSApplicationDidBecomeActive,
         ) { [weak self] notification in
             MainActor.assumeIsolated {
                 self?.restartAnimationsIfNeeded()

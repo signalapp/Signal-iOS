@@ -12,7 +12,7 @@ struct AppActivePrecondition: Precondition {
 
     init(appContext: AppContext) {
         self._precondition = NotificationPrecondition(
-            notificationName: UIApplication.didBecomeActiveNotification,
+            notificationName: .OWSApplicationDidBecomeActive,
             isSatisfied: { appContext.isAppForegroundAndActive() },
         )
     }

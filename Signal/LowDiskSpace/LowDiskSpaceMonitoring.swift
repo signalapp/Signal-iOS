@@ -38,11 +38,16 @@ class LowDiskSpaceMonitoringManager {
         }
     }
 
+    /// Checks disk space immediately, terminating the process if critically low.
+    func checkDiskSpaceNow() {
+        if lowDiskSpaceManager.isDiskSpaceCriticallyLow() {
+            owsFail("Disk space is critically low; crashing.")
+        }
+    }
+
     private func continuouslyMonitorDiskSpace() async {
         while true {
-            if lowDiskSpaceManager.isDiskSpaceCriticallyLow() {
-                owsFail("Disk space is critically low; crashing.")
-            }
+            checkDiskSpaceNow()
 
             do {
                 try await Task.sleep(nanoseconds: monitoringInterval.clampedNanoseconds)

@@ -56,10 +56,20 @@ final class AppLifecycleManager: NSObject, UNUserNotificationCenterDelegate {
 
     func willEnterForeground() {
         Logger.info("")
+
+        // The disk may have filled while we were suspended, during which the
+        // periodic check can't run. Check before notifying observers, which
+        // may write to disk.
+        if !mainAppContext.isRunningTests {
+            AppEnvironment.shared.lowDiskSpaceMonitoringManager.checkDiskSpaceNow()
+        }
+
+        mainAppContext.applicationWillEnterForeground()
     }
 
     func didBecomeActive() {
-        AssertIsOnMainThread()
+        mainAppContext.applicationDidBecomeActive()
+
         if CurrentAppContext().isRunningTests {
             return
         }
@@ -92,6 +102,8 @@ final class AppLifecycleManager: NSObject, UNUserNotificationCenterDelegate {
 
         Logger.warn("")
 
+        mainAppContext.applicationWillResignActive()
+
         if didAppLaunchFail {
             return
         }
@@ -111,6 +123,8 @@ final class AppLifecycleManager: NSObject, UNUserNotificationCenterDelegate {
 
     func didEnterBackground() {
         Logger.info("")
+
+        mainAppContext.applicationDidEnterBackground()
 
         if shouldKillAppWhenBackgrounded {
             owsFail("")
@@ -190,6 +204,14 @@ final class AppLifecycleManager: NSObject, UNUserNotificationCenterDelegate {
             appReadiness: appReadiness,
             deviceTransferRestore: deviceTransferRestore,
         ))
+
+        // Check before opening the database, which may itself write to disk.
+        if let additionalBytesRequiredToLaunch = LowDiskSpaceManager.additionalBytesRequiredToLaunch() {
+            handleLaunchFailure(.preflight(.lowStorageSpaceAvailable(
+                bytesRequired: additionalBytesRequiredToLaunch,
+            )))
+            return true
+        }
 
         // This *must* happen before we try and access or verify the database,
         // since we may be in a state where the database has been partially
@@ -1177,10 +1199,6 @@ final class AppLifecycleManager: NSObject, UNUserNotificationCenterDelegate {
         appVersion: AppVersion,
         didDeviceTransferRestoreSucceed: Bool,
     ) -> LaunchPreflightError? {
-        if let additionalBytesRequiredToLaunch = LowDiskSpaceManager.additionalBytesRequiredToLaunch() {
-            return .lowStorageSpaceAvailable(bytesRequired: additionalBytesRequiredToLaunch)
-        }
-
         guard didDeviceTransferRestoreSucceed else {
             return .couldNotRestoreTransferredData
         }

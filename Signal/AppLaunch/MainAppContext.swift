@@ -20,33 +20,6 @@ class MainAppContext: NSObject, AppContext {
         _mainApplicationStateOnLaunch = UIApplication.shared.applicationState
 
         super.init()
-
-        let notificationCenter = NotificationCenter.default
-
-        notificationCenter.addObserver(
-            self,
-            selector: #selector(applicationWillEnterForeground),
-            name: UIApplication.willEnterForegroundNotification,
-            object: nil,
-        )
-        notificationCenter.addObserver(
-            self,
-            selector: #selector(applicationDidEnterBackground),
-            name: UIApplication.didEnterBackgroundNotification,
-            object: nil,
-        )
-        notificationCenter.addObserver(
-            self,
-            selector: #selector(applicationWillResignActive),
-            name: UIApplication.willResignActiveNotification,
-            object: nil,
-        )
-        notificationCenter.addObserver(
-            self,
-            selector: #selector(applicationDidBecomeActive),
-            name: UIApplication.didBecomeActiveNotification,
-            object: nil,
-        )
     }
 
     private let _mainApplicationStateOnLaunch: UIApplication.State
@@ -61,8 +34,13 @@ class MainAppContext: NSObject, AppContext {
         }
     }
 
-    @objc
-    private func applicationWillEnterForeground(_ notification: Notification) {
+    // MARK: - Lifecycle
+
+    // These are driven by AppLifecycleManager, rather than by observing
+    // UIApplication notifications, so it can control what happens before
+    // observers are notified.
+
+    func applicationWillEnterForeground() {
         AssertIsOnMainThread()
 
         self.reportedApplicationState = .inactive
@@ -72,8 +50,7 @@ class MainAppContext: NSObject, AppContext {
         }
     }
 
-    @objc
-    private func applicationDidEnterBackground(_ notification: Notification) {
+    func applicationDidEnterBackground() {
         AssertIsOnMainThread()
 
         self.reportedApplicationState = .background
@@ -83,8 +60,7 @@ class MainAppContext: NSObject, AppContext {
         }
     }
 
-    @objc
-    private func applicationWillResignActive(_ notification: Notification) {
+    func applicationWillResignActive() {
         AssertIsOnMainThread()
 
         self.reportedApplicationState = .inactive
@@ -94,8 +70,7 @@ class MainAppContext: NSObject, AppContext {
         }
     }
 
-    @objc
-    private func applicationDidBecomeActive(_ notification: Notification) {
+    func applicationDidBecomeActive() {
         AssertIsOnMainThread()
 
         self.reportedApplicationState = .active
@@ -106,6 +81,8 @@ class MainAppContext: NSObject, AppContext {
 
         runAppActiveBlocks()
     }
+
+    // MARK: -
 
     var isMainAppAndActive: Bool { UIApplication.shared.applicationState == .active }
 

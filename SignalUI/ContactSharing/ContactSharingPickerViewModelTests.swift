@@ -521,7 +521,7 @@ struct ContactSharingPickerViewModelTests {
         viewModel.loadData()
         providers.contactsAuthorizationStatus = .authorized
         providers.systemContacts = [makeSystemContact(givenName: "Dave", phoneNumber: "+16505550199")]
-        notificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil)
+        notificationCenter.post(name: .OWSApplicationDidBecomeActive, object: nil)
 
         let displayedRows = try await displayedRows(of: viewModel)
         #expect(displayedRows.contactsAccessPrompt == nil)
@@ -532,7 +532,7 @@ struct ContactSharingPickerViewModelTests {
     func testBecomingActiveDoesNotReloadWhenContactsAuthorizationIsUnchanged() {
         let viewModel = makeViewModel()
         viewModel.loadData()
-        notificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil)
+        notificationCenter.post(name: .OWSApplicationDidBecomeActive, object: nil)
 
         #expect(providers.fetchSystemContactsCount == 1)
     }
@@ -573,7 +573,7 @@ struct ContactSharingPickerViewModelTests {
 
         let notificationCenter = notificationCenter
         providers.onRequestContactsAccess = {
-            notificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil)
+            notificationCenter.post(name: .OWSApplicationDidBecomeActive, object: nil)
         }
 
         let viewModel = makeViewModel()

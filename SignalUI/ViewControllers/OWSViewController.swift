@@ -215,25 +215,25 @@ open class OWSViewController: UIViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(appWillEnterForeground),
-            name: UIApplication.willEnterForegroundNotification,
+            name: .OWSApplicationWillEnterForeground,
             object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(appDidBecomeActive),
-            name: UIApplication.didBecomeActiveNotification,
+            name: .OWSApplicationDidBecomeActive,
             object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(appWillResignActive),
-            name: UIApplication.willResignActiveNotification,
+            name: .OWSApplicationWillResignActive,
             object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(appDidEnterBackground),
-            name: UIApplication.didEnterBackgroundNotification,
+            name: .OWSApplicationDidEnterBackground,
             object: nil,
         )
         NotificationCenter.default.addObserver(

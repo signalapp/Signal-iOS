@@ -202,7 +202,7 @@ class StoryPageViewController: UIPageViewController {
         didSet {
             if muteStatus != nil, muteStatusObserver == nil {
                 muteStatusObserver = NotificationCenter.default.addObserver(
-                    forName: UIApplication.willEnterForegroundNotification,
+                    forName: .OWSApplicationWillEnterForeground,
                     object: nil,
                     queue: nil,
                     using: { _ in muteStatus = nil },

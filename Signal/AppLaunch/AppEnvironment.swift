@@ -42,7 +42,7 @@ public class AppEnvironment: NSObject {
     private(set) var experienceUpgradeManager: ExperienceUpgradeManager!
     private(set) var groupSendEndorsementExpirationJob: GroupSendEndorsementExpirationJob!
     private(set) var lowDiskSpaceManager: LowDiskSpaceManager!
-    private var lowDiskSpaceMonitoringManager: LowDiskSpaceMonitoringManager!
+    private(set) var lowDiskSpaceMonitoringManager: LowDiskSpaceMonitoringManager!
     private(set) var outgoingDeviceRestorePresenter: OutgoingDeviceRestorePresenter!
     private(set) var passwordManagerManager: PasswordManagerManager!
     private(set) var provisioningManager: ProvisioningManager!

@@ -153,7 +153,7 @@ final class ContactSharingPickerViewModel {
             profileManager.userProfile(for: recipient.address, tx: tx)
         }
 
-        notificationCenter.publisher(for: UIApplication.didBecomeActiveNotification)
+        notificationCenter.publisher(for: .OWSApplicationDidBecomeActive)
             .sink { [weak self] _ in
                 MainActor.assumeIsolated {
                     self?.reloadIfContactsAuthorizationChanged()

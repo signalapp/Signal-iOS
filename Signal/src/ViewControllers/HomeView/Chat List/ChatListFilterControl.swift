@@ -287,7 +287,7 @@ final class ChatListFilterControl: UIView {
         // view controller disappears, so we need to properly clean up our
         // UIViewPropertyAnimator or the UI will be in an invalid state even if the
         // animator is recreated.
-        NotificationCenter.default.addObserver(self, selector: #selector(cancelFilterIconAnimator), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(cancelFilterIconAnimator), name: .OWSApplicationDidEnterBackground, object: nil)
     }
 
     @available(*, unavailable)
