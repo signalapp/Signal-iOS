@@ -101,6 +101,7 @@
 		047800FE306473D00060E725 /* SendStickerFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047800FD306473B80060E725 /* SendStickerFlow.swift */; };
 		0478EC4A307E790A00281959 /* StickerPackInfoHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047800FF306BFAAD0060E725 /* StickerPackInfoHeaderView.swift */; };
 		0478EC4B307E7ABD00281959 /* SettingsHeaderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */; };
+		0478EC4D307E917A00281959 /* StickerPackShareSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0478EC4C307E917A00281959 /* StickerPackShareSheetViewController.swift */; };
 		047DBEE42FFD491E009F457F /* LocalFileBackupManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047DBEE32FFD4918009F457F /* LocalFileBackupManagerTests.swift */; };
 		0480F0002E57C51A006CBB29 /* BackupsEnabledRecentlyNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledRecentlyNotificationMegaphone.swift */; };
 		0484CECE2F44B7BE009AB2CB /* AdminDeleteRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0484CECD2F44B7BB009AB2CB /* AdminDeleteRecord.swift */; };
@@ -4452,6 +4453,7 @@
 		047800F9306426D50060E725 /* StickerDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerDetailSheet.swift; sourceTree = "<group>"; };
 		047800FD306473B80060E725 /* SendStickerFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendStickerFlow.swift; sourceTree = "<group>"; };
 		047800FF306BFAAD0060E725 /* StickerPackInfoHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPackInfoHeaderView.swift; sourceTree = "<group>"; };
+		0478EC4C307E917A00281959 /* StickerPackShareSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPackShareSheetViewController.swift; sourceTree = "<group>"; };
 		047DBEE32FFD4918009F457F /* LocalFileBackupManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileBackupManagerTests.swift; sourceTree = "<group>"; };
 		0480EFFF2E57C513006CBB29 /* BackupsEnabledRecentlyNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsEnabledRecentlyNotificationMegaphone.swift; sourceTree = "<group>"; };
 		0484CECD2F44B7BB009AB2CB /* AdminDeleteRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDeleteRecord.swift; sourceTree = "<group>"; };
@@ -9405,6 +9407,7 @@
 				349767E025B8744700ECE1B0 /* ManageStickersViewController.swift */,
 				047800FD306473B80060E725 /* SendStickerFlow.swift */,
 				047800F9306426D50060E725 /* StickerDetailSheet.swift */,
+				0478EC4C307E917A00281959 /* StickerPackShareSheetViewController.swift */,
 				349767E125B8744700ECE1B0 /* StickerPackViewController.swift */,
 			);
 			path = Stickers;
@@ -19549,6 +19552,7 @@
 				45069FC829D3A7E700D0DD14 /* SquareMediaTileViewLayout.swift in Sources */,
 				50423CA42BBF427900DCB8F5 /* StaleProfileFetcher.swift in Sources */,
 				047800FA306426D50060E725 /* StickerDetailSheet.swift in Sources */,
+				0478EC4D307E917A00281959 /* StickerPackShareSheetViewController.swift in Sources */,
 				349767E425B8744700ECE1B0 /* StickerPackViewController.swift in Sources */,
 				8852572927DD366D0032073C /* StoriesViewController.swift in Sources */,
 				884DB94727DD754700C6A309 /* StoryCell.swift in Sources */,

@@ -436,8 +436,30 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
     private var sendMessageFlow: SendMessageFlow?
 
     private func linkButtonPressed() {
-        let url = stickerPackInfo.shareUrl()
-        UIPasteboard.general.string = url
+        guard let stickerPack = dataSource.getStickerPack() else {
+            owsFailDebug("Missing sticker pack.")
+            return
+        }
+
+        let sheet = StickerPackShareSheetViewController(
+            stickerPack: stickerPack,
+            stickerPackDataSource: dataSource,
+            onSendInSignal: { [weak self] in self?.shareButtonPressed() },
+            onCopyLink: { [weak self] in self?.copyLinkToPasteboard() },
+            onShare: { [weak self] in
+                guard let self else { return }
+                ShareActivityUtil.present(
+                    activityItems: [stickerPack.info.shareUrl()],
+                    from: self,
+                    sourceView: self.view,
+                )
+            },
+        )
+        present(sheet, animated: true)
+    }
+
+    private func copyLinkToPasteboard() {
+        UIPasteboard.general.string = stickerPackInfo.shareUrl()
         presentToast(
             text: OWSLocalizedString(
                 "COPIED_TO_CLIPBOARD",
