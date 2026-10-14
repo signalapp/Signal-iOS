@@ -81,6 +81,9 @@ public struct ConversationStyle {
 
     public let textInsetTop: CGFloat
     public let textInsetBottom: CGFloat
+    // The bottom inset to use when body text is the last component of the
+    // message bubble.
+    public let textInsetBottomBelowBodyText: CGFloat
     public let textInsetHorizontal: CGFloat
     public var textInsets: UIEdgeInsets {
         UIEdgeInsets(
@@ -156,6 +159,10 @@ public struct ConversationStyle {
         // (e.g. the descender) in the top margin. Note that UIFont.descender is a
         // negative value.
         textInsetBottom = max(0, round(baseFontOffset - abs(messageTextFont.descender)))
+        // The body text label also extends below the descender by the font's
+        // leading, which TextKit adds to each line fragment. Don't include that
+        // in the bottom margin either.
+        textInsetBottomBelowBodyText = max(0, round(baseFontOffset - abs(messageTextFont.descender) - messageTextFont.leading))
 
         textInsetHorizontal = 12
 
@@ -438,6 +445,7 @@ extension ConversationStyle: Equatable {
             lhs.fullWidthGutterLeading == rhs.fullWidthGutterLeading &&
             lhs.fullWidthGutterTrailing == rhs.fullWidthGutterTrailing &&
             lhs.textInsets == rhs.textInsets &&
+            lhs.textInsetBottomBelowBodyText == rhs.textInsetBottomBelowBodyText &&
             lhs.lastTextLineAxis == rhs.lastTextLineAxis &&
             lhs.chatColorSetting == rhs.chatColorSetting
     }
@@ -459,6 +467,7 @@ extension ConversationStyle: CustomDebugStringConvertible {
             "fullWidthGutterLeading: \(fullWidthGutterLeading), " +
             "fullWidthGutterTrailing: \(fullWidthGutterTrailing), " +
             "textInsets: \(textInsets), " +
+            "textInsetBottomBelowBodyText: \(textInsetBottomBelowBodyText), " +
             "lastTextLineAxis: \(lastTextLineAxis), " +
             "chatColor: \(chatColorSetting), " +
             "]"
