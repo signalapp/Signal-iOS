@@ -1687,9 +1687,9 @@ Försök igen om %1$d timmar.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+ %1$ld inbjuden)</string>
 			<key>other</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+ %1$ld inbjudna)</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld</key>
@@ -1815,9 +1815,9 @@ Försök igen om %1$d timmar.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and others</string>
+			<string>%1$d omnämnanden av dig från %2$@ och annan</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d omnämnanden av dig från %2$@ och andra</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__mentions_two</key>
@@ -1831,9 +1831,9 @@ Försök igen om %1$d timmar.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and %3$@</string>
+			<string>%1$d omnämnanden av dig från %2$@ och %3$@</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d omnämnanden av dig från %2$@ och %3$@</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__messages</key>
@@ -1847,9 +1847,9 @@ Försök igen om %1$d timmar.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d unread message</string>
+			<string>%1$d oläst meddelande</string>
 			<key>other</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d olästa meddelanden</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_many</key>
@@ -1863,9 +1863,9 @@ Försök igen om %1$d timmar.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and others</string>
+			<string>%1$d svar från %2$@ och annan</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d svar från %2$@ och andra</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_two</key>
@@ -1879,9 +1879,9 @@ Försök igen om %1$d timmar.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and %3$@</string>
+			<string>%1$d svar från %2$@ och %3$@</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d svar från %2$@ och %3$@</string>
 		</dict>
 	</dict>
 </dict>

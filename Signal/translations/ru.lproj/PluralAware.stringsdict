@@ -2111,13 +2111,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld приглашён)</string>
 			<key>few</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld приглашены)</string>
 			<key>many</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld приглашены)</string>
 			<key>other</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld приглашены)</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld</key>
@@ -2271,13 +2271,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and others</string>
+			<string>%1$d упоминание вас от %2$@ и других</string>
 			<key>few</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d упоминания вас от %2$@ и других</string>
 			<key>many</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d упоминаний вас от %2$@ и других</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d упоминания вас от %2$@ и других</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__mentions_two</key>
@@ -2291,13 +2291,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and %3$@</string>
+			<string>%1$d упоминание вас от %2$@ и %3$@</string>
 			<key>few</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d упоминания вас от %2$@ и %3$@</string>
 			<key>many</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d упоминаний вас от %2$@ и %3$@</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d упоминания вас от %2$@ и %3$@</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__messages</key>
@@ -2311,13 +2311,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d unread message</string>
+			<string>%1$d непрочитанное сообщение</string>
 			<key>few</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d непрочитанных сообщения</string>
 			<key>many</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d непрочитанных сообщений</string>
 			<key>other</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d непрочитанного сообщения</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_many</key>
@@ -2331,13 +2331,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and others</string>
+			<string>%1$d ответ от %2$@ и других</string>
 			<key>few</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d ответа от %2$@ и других</string>
 			<key>many</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d ответов от %2$@ и других</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d ответа от %2$@ и других</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_two</key>
@@ -2351,13 +2351,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and %3$@</string>
+			<string>%1$d ответ от %2$@ и %3$@</string>
 			<key>few</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d ответа от %2$@ и %3$@</string>
 			<key>many</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d ответов от %2$@ и %3$@</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d ответа от %2$@ и %3$@</string>
 		</dict>
 	</dict>
 </dict>

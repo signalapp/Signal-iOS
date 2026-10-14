@@ -1463,7 +1463,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "משתמשים חסומים לא יוכלו להתקשר או לשלוח לך הודעות.";
 
 /* Shown as a subtitle for recipients & groups you've blocked to indicate when you blocked them. The replacement is a formatted date. */
-"BLOCKED_AT" = "Blocked on %1$@";
+"BLOCKED_AT" = "נחסמ/ה ב–%1$@";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "הכנסת סכום מותאם אישית";
@@ -2441,31 +2441,31 @@
 "CONTACT_PICKER_TITLE" = "בחר איש קשר";
 
 /* Button on a shared contact in a group conversation that adds the contact to that group. It can share a row with other buttons, so a short label is preferred. */
-"CONTACT_SHARE_ADD_TO_GROUP_BUTTON" = "Add to Group";
+"CONTACT_SHARE_ADD_TO_GROUP_BUTTON" = "הוסף אל הקבוצה";
 
 /* Button in the confirmation shown before adding a shared contact to the current group that adds the contact. */
-"CONTACT_SHARE_ADD_TO_GROUP_CONFIRMATION_BUTTON" = "Add to Group";
+"CONTACT_SHARE_ADD_TO_GROUP_CONFIRMATION_BUTTON" = "הוסף אל הקבוצה";
 
 /* Confirmation shown before adding a shared contact to the current group. Embeds {{ %1$@ contact name, %2$@ group name }}. */
-"CONTACT_SHARE_ADD_TO_GROUP_CONFIRMATION_FORMAT" = "Add %1$@ to “%2$@”?";
+"CONTACT_SHARE_ADD_TO_GROUP_CONFIRMATION_FORMAT" = "להוסיף את %1$@ אל ״%2$@״?";
 
 /* Title for the 'Approve contact share' view. */
 "CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "שיתוף איש קשר";
 
 /* Name of the option to share a contact without a photo, which shows their initials instead. Read by VoiceOver on the option, and as the current value of the photo row when it's selected. */
-"CONTACT_SHARE_AVATAR_NO_PHOTO" = "No photo";
+"CONTACT_SHARE_AVATAR_NO_PHOTO" = "ללא תמונה";
 
 /* Title for the sheet for choosing which photo to include when sharing a contact. */
-"CONTACT_SHARE_AVATAR_PICKER_TITLE" = "Select a photo to share";
+"CONTACT_SHARE_AVATAR_PICKER_TITLE" = "בחירת תמונה לשיתוף";
 
 /* Accessibility label for the row that chooses which photo to include when sharing a contact. */
-"CONTACT_SHARE_AVATAR_ROW_LABEL" = "Photo";
+"CONTACT_SHARE_AVATAR_ROW_LABEL" = "תמונה";
 
 /* Name of the option to share a contact's Signal profile photo. Read by VoiceOver on the option, and as the current value of the photo row when it's selected. */
-"CONTACT_SHARE_AVATAR_SIGNAL_PHOTO" = "Signal profile photo";
+"CONTACT_SHARE_AVATAR_SIGNAL_PHOTO" = "תמונת פרופיל של Signal";
 
 /* Name of the option to share a contact's photo from the phone's contacts. Read by VoiceOver on the option, and as the current value of the photo row when it's selected. */
-"CONTACT_SHARE_AVATAR_SYSTEM_CONTACT_PHOTO" = "Contacts photo";
+"CONTACT_SHARE_AVATAR_SYSTEM_CONTACT_PHOTO" = "תמונת איש קשר";
 
 /* Title for the 'edit contact share name' view. */
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "ערוך שם";
@@ -2474,10 +2474,10 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "איש קשר בלתי תקף.";
 
 /* Button on a shared contact that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred. */
-"CONTACT_SHARE_MESSAGE_BUTTON" = "Message";
+"CONTACT_SHARE_MESSAGE_BUTTON" = "שליחת הודעה";
 
 /* Notice at the top of the 'Share Contact' view when the shared contact includes their Signal account. Embeds {{ contact name }}. */
-"CONTACT_SHARE_SIGNAL_ACCOUNT_NOTICE_FORMAT" = "Anyone you share this profile with will be able to message %1$@ on Signal.";
+"CONTACT_SHARE_SIGNAL_ACCOUNT_NOTICE_FORMAT" = "כל מי שהפרופיל הזה ישותף איתו יוכל לשלוח הודעה אל %1$@ ב–Signal.";
 
 /* Alert body when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_BODY" = "Signal זקוקה לגישה לאנשי הקשר שלך. צריך ללכת להגדרות iOS ולהפעיל גישה לאנשי קשר. אנשי הקשר שלך מוצפנים ואינם גלויים לשירות Signal.";
@@ -8036,7 +8036,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_BODY" = "אירעה שגיאה ולא ניתן היה להעביר את החשבון שלך.";
 
 /* Title for a sheet warning users about an error during backup restore. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_CANT_RESTORE_TITLE" = "Can't Restore Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_CANT_RESTORE_TITLE" = "לא ניתן לשחזר גיבוי";
 
 /* Body for a sheet warning users about a generic backup restore failure. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_BODY" = "אירעה שגיאה ולא ניתן היה להעביר את החשבון שלך. יש לנסות שוב באמצעות סריקה של קוד ה–QR ובחירת שיטת ההעברה שלך.";
@@ -8063,7 +8063,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_LOCAL_BACKUP_LOCATION_TITLE" = "לא ניתן לשחזר גיבוי";
 
 /* Message for a sheet telling the user that their phone number is mismatched with their recovery key used for making a local backup */
-"REGISTRATION_BACKUP_RESTORE_ERROR_MISMATCHED_LOCAL_BACKUP_MESSAGE" = "The backup you are attempting to restore was created using a different Signal account. To restore this backup you must use the same phone number and recovery key you saved when enabling on-device backups.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_MISMATCHED_LOCAL_BACKUP_MESSAGE" = "הגיבוי שניסית לשחזר נוצר באמצעות חשבון Signal אחר. כדי לשחזר את הגיבוי הזה, יש להשתמש באותו מספר טלפון ואותו מפתח גיבוי ששמרת כשהפעלת גיבויים במכשיר.";
 
 /* Body for a sheet warning users about a network error during backup restore. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "לא ניתן לשחזר את הגיבוי שלך כרגע. יש לבדוק את חיבור האינטרנט שלך ולנסות שוב.";
@@ -8273,7 +8273,7 @@
 "REGISTRATION_SIGNAL_LOGIN_DETAILS_VIEW_DETAILS_BUTTON" = "הצגת פרטים";
 
 /* Explanation text for the 'Signal Login' screen. */
-"REGISTRATION_SIGNAL_LOGIN_EXPLANATION" = "Register without a phone number using Signal Login. With a one-time purchase, you’ll receive an account ID to get started.";
+"REGISTRATION_SIGNAL_LOGIN_EXPLANATION" = "אפשר להתחבר בלי מספר טלפון עם Signal Login. ברכישה חד–פעמית, ניתן לך מזהה חשבון כדי להתחיל.";
 
 /* Toast shown after copying the account ID on the 'Signal Login' details sheet. */
 "REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_COPIED_TOAST" = "מזהה חשבון הועתק";
@@ -8309,7 +8309,7 @@
 "REGISTRATION_SIGNAL_LOGIN_NEED_HELP_TITLE" = "צריך עזרה?";
 
 /* Button to initiate a purchase on the 'Signal Login' screen. The replacement is a localized cost (e.g., $2.99). */
-"REGISTRATION_SIGNAL_LOGIN_PAY" = "Pay %1$@";
+"REGISTRATION_SIGNAL_LOGIN_PAY" = "תשלום %1$@";
 
 /* Title text for the 'Signal Login' screen. */
 "REGISTRATION_SIGNAL_LOGIN_TITLE" = "Signal Login";
@@ -9354,13 +9354,13 @@
 
 /* Label for the switch controlling whether reminders about unread messages are shown.
    Label for the switch controlling whether reminders about unread messages in muted chats are shown. */
-"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS" = "Unread Reminders";
+"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS" = "תזכורות על הודעות שלא נקראו";
 
 /* Explanation for the switch controlling whether reminders about unread messages are shown in this chat while it is muted. */
-"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS_CHAT_FOOTER" = "Occasionally notify when there are unread messages while this chat is muted.";
+"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS_CHAT_FOOTER" = "התראות מזדמנות על הודעות שלא נקראו בזמן שהצ׳אט הזה מושתק.";
 
 /* Explanation for the switch controlling whether reminders about unread messages in muted chats are shown. */
-"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS_FOOTER" = "Occasionally notify when there are unread messages in muted chats.";
+"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS_FOOTER" = "התראה מדי פעם על הודעות שלא נקראו בצ'אטים מושתקים.";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "הפעל";
@@ -10848,31 +10848,31 @@
 "UNREAD_ACTION" = "לא נקרא";
 
 /* Notification placeholder for three or more recipients who sent unread messages */
-"UnreadReminderJob__authors_many" = "%1$@ and others";
+"UnreadReminderJob__authors_many" = "%1$@ ואחרים";
 
 /* Notification placeholder for a single recipient who sent unread messages */
 "UnreadReminderJob__authors_one" = "%1$@";
 
 /* Notification placeholder for two recipients who sent unread messages */
-"UnreadReminderJob__authors_two" = "%1$@ and %2$@";
+"UnreadReminderJob__authors_two" = "%1$@ ומאת %2$@";
 
 /* Notification body for unread reminders. First placeholder is unread messages or unread calls */
-"UnreadReminderJob__calls_or_unread" = "You have %1$@.";
+"UnreadReminderJob__calls_or_unread" = "יש לך %1$@.";
 
 /* Notification body for unread reminders. First placeholder is unread messages, second is a list of people who sent them */
-"UnreadReminderJob__calls_or_unread_author" = "You have %1$@ from %2$@.";
+"UnreadReminderJob__calls_or_unread_author" = "יש לך %1$@ מאת %2$@.";
 
 /* Notification placeholder that sums up a single unread mention. Placeholder is the name of the person who sent the message */
-"UnreadReminderJob__mentions_one" = "a mention of you by %1$@";
+"UnreadReminderJob__mentions_one" = "אזכור שלך על ידי %1$@";
 
 /* Notification placeholder that sums up a single unread reply. Placeholder is the name of the person who sent the message */
-"UnreadReminderJob__replies_one" = "a reply from %1$@";
+"UnreadReminderJob__replies_one" = "תשובה מאת %1$@";
 
 /* Notification body for unread reminders. First placeholder is unread messages, second is a summary of unread mentions, third replies */
-"UnreadReminderJob__unread_both_summary" = "You have %1$@, including %2$@ and %3$@.";
+"UnreadReminderJob__unread_both_summary" = "יש לך %1$@, כולל %2$@ ו–%3$@.";
 
 /* Notification body for unread reminders. First placeholder is unread messages, second is a summary of either unread mentions or replies */
-"UnreadReminderJob__unread_one_summary" = "You have %1$@, including %2$@.";
+"UnreadReminderJob__unread_one_summary" = "יש לך %1$@, כולל %2$@.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "התקבל סוג בלתי נתמך של צרופה.";

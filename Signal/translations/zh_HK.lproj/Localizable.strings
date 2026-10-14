@@ -1463,7 +1463,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "被封鎖的用戶將無法與你通話或傳送訊息。";
 
 /* Shown as a subtitle for recipients & groups you've blocked to indicate when you blocked them. The replacement is a formatted date. */
-"BLOCKED_AT" = "Blocked on %1$@";
+"BLOCKED_AT" = "已於 %1$@封鎖";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "請輸入自訂金額";
@@ -2441,31 +2441,31 @@
 "CONTACT_PICKER_TITLE" = "選取聯絡人";
 
 /* Button on a shared contact in a group conversation that adds the contact to that group. It can share a row with other buttons, so a short label is preferred. */
-"CONTACT_SHARE_ADD_TO_GROUP_BUTTON" = "Add to Group";
+"CONTACT_SHARE_ADD_TO_GROUP_BUTTON" = "新增至群組";
 
 /* Button in the confirmation shown before adding a shared contact to the current group that adds the contact. */
-"CONTACT_SHARE_ADD_TO_GROUP_CONFIRMATION_BUTTON" = "Add to Group";
+"CONTACT_SHARE_ADD_TO_GROUP_CONFIRMATION_BUTTON" = "新增至群組";
 
 /* Confirmation shown before adding a shared contact to the current group. Embeds {{ %1$@ contact name, %2$@ group name }}. */
-"CONTACT_SHARE_ADD_TO_GROUP_CONFIRMATION_FORMAT" = "Add %1$@ to “%2$@”?";
+"CONTACT_SHARE_ADD_TO_GROUP_CONFIRMATION_FORMAT" = "要新增 %1$@ 至「%2$@」嗎？";
 
 /* Title for the 'Approve contact share' view. */
 "CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "分享聯絡人";
 
 /* Name of the option to share a contact without a photo, which shows their initials instead. Read by VoiceOver on the option, and as the current value of the photo row when it's selected. */
-"CONTACT_SHARE_AVATAR_NO_PHOTO" = "No photo";
+"CONTACT_SHARE_AVATAR_NO_PHOTO" = "沒有相片";
 
 /* Title for the sheet for choosing which photo to include when sharing a contact. */
-"CONTACT_SHARE_AVATAR_PICKER_TITLE" = "Select a photo to share";
+"CONTACT_SHARE_AVATAR_PICKER_TITLE" = "選擇一張相片來分享";
 
 /* Accessibility label for the row that chooses which photo to include when sharing a contact. */
-"CONTACT_SHARE_AVATAR_ROW_LABEL" = "Photo";
+"CONTACT_SHARE_AVATAR_ROW_LABEL" = "照片";
 
 /* Name of the option to share a contact's Signal profile photo. Read by VoiceOver on the option, and as the current value of the photo row when it's selected. */
-"CONTACT_SHARE_AVATAR_SIGNAL_PHOTO" = "Signal profile photo";
+"CONTACT_SHARE_AVATAR_SIGNAL_PHOTO" = "Signal 個人檔案相片";
 
 /* Name of the option to share a contact's photo from the phone's contacts. Read by VoiceOver on the option, and as the current value of the photo row when it's selected. */
-"CONTACT_SHARE_AVATAR_SYSTEM_CONTACT_PHOTO" = "Contacts photo";
+"CONTACT_SHARE_AVATAR_SYSTEM_CONTACT_PHOTO" = "聯絡人相片";
 
 /* Title for the 'edit contact share name' view. */
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "編輯姓名";
@@ -2474,10 +2474,10 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "無效的聯絡人。";
 
 /* Button on a shared contact that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred. */
-"CONTACT_SHARE_MESSAGE_BUTTON" = "Message";
+"CONTACT_SHARE_MESSAGE_BUTTON" = "訊息";
 
 /* Notice at the top of the 'Share Contact' view when the shared contact includes their Signal account. Embeds {{ contact name }}. */
-"CONTACT_SHARE_SIGNAL_ACCOUNT_NOTICE_FORMAT" = "Anyone you share this profile with will be able to message %1$@ on Signal.";
+"CONTACT_SHARE_SIGNAL_ACCOUNT_NOTICE_FORMAT" = "任何你與其分享此個人檔案的人，都能夠在 Signal 上向 %1$@ 傳送訊息。";
 
 /* Alert body when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_BODY" = "Signal 需要存取你的聯絡人資料。前往 iOS 設定，然後開啟通訊錄。你的聯絡人名單已加密，Signal 服務無法看到。";
@@ -8036,7 +8036,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_BODY" = "發生錯誤，無法轉移你的帳戶。";
 
 /* Title for a sheet warning users about an error during backup restore. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_CANT_RESTORE_TITLE" = "Can't Restore Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_CANT_RESTORE_TITLE" = "無法還原備份";
 
 /* Body for a sheet warning users about a generic backup restore failure. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_BODY" = "發生錯誤，無法轉移你的帳戶。重新掃描二維碼和選擇你的轉移方式再試一次。";
@@ -8063,7 +8063,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_LOCAL_BACKUP_LOCATION_TITLE" = "無法還原備份";
 
 /* Message for a sheet telling the user that their phone number is mismatched with their recovery key used for making a local backup */
-"REGISTRATION_BACKUP_RESTORE_ERROR_MISMATCHED_LOCAL_BACKUP_MESSAGE" = "The backup you are attempting to restore was created using a different Signal account. To restore this backup you must use the same phone number and recovery key you saved when enabling on-device backups.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_MISMATCHED_LOCAL_BACKUP_MESSAGE" = "你正在嘗試還原的備份是使用另一個 Signal 帳戶建立的。要還原這個備份，你必須使用在啟用裝置上備份時儲存的電話號碼和 64 個字元的恢復金鑰。";
 
 /* Body for a sheet warning users about a network error during backup restore. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "現在無法還原你的備份。請檢查你的網路連線，然後重試。";
@@ -8273,7 +8273,7 @@
 "REGISTRATION_SIGNAL_LOGIN_DETAILS_VIEW_DETAILS_BUTTON" = "檢視詳情";
 
 /* Explanation text for the 'Signal Login' screen. */
-"REGISTRATION_SIGNAL_LOGIN_EXPLANATION" = "Register without a phone number using Signal Login. With a one-time purchase, you’ll receive an account ID to get started.";
+"REGISTRATION_SIGNAL_LOGIN_EXPLANATION" = "使用 Signal Login，無需電話號碼即可註冊。只需付款一次，即可獲得帳戶 ID，立即開始使用。";
 
 /* Toast shown after copying the account ID on the 'Signal Login' details sheet. */
 "REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_COPIED_TOAST" = "已複製帳戶 ID";
@@ -8309,7 +8309,7 @@
 "REGISTRATION_SIGNAL_LOGIN_NEED_HELP_TITLE" = "需要幫助？";
 
 /* Button to initiate a purchase on the 'Signal Login' screen. The replacement is a localized cost (e.g., $2.99). */
-"REGISTRATION_SIGNAL_LOGIN_PAY" = "Pay %1$@";
+"REGISTRATION_SIGNAL_LOGIN_PAY" = "支付 %1$@";
 
 /* Title text for the 'Signal Login' screen. */
 "REGISTRATION_SIGNAL_LOGIN_TITLE" = "Signal Login";
@@ -9354,13 +9354,13 @@
 
 /* Label for the switch controlling whether reminders about unread messages are shown.
    Label for the switch controlling whether reminders about unread messages in muted chats are shown. */
-"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS" = "Unread Reminders";
+"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS" = "未讀提示";
 
 /* Explanation for the switch controlling whether reminders about unread messages are shown in this chat while it is muted. */
-"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS_CHAT_FOOTER" = "Occasionally notify when there are unread messages while this chat is muted.";
+"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS_CHAT_FOOTER" = "當此聊天設為靜音時，若有未讀訊息，系統會偶爾通知。";
 
 /* Explanation for the switch controlling whether reminders about unread messages in muted chats are shown. */
-"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS_FOOTER" = "Occasionally notify when there are unread messages in muted chats.";
+"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS_FOOTER" = "當靜音聊天中有未讀訊息時偶爾通知。";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "啟用";
@@ -10848,31 +10848,31 @@
 "UNREAD_ACTION" = "標記為未讀";
 
 /* Notification placeholder for three or more recipients who sent unread messages */
-"UnreadReminderJob__authors_many" = "%1$@ and others";
+"UnreadReminderJob__authors_many" = "%1$@ 及其他人";
 
 /* Notification placeholder for a single recipient who sent unread messages */
 "UnreadReminderJob__authors_one" = "%1$@";
 
 /* Notification placeholder for two recipients who sent unread messages */
-"UnreadReminderJob__authors_two" = "%1$@ and %2$@";
+"UnreadReminderJob__authors_two" = "%1$@ 及 %2$@";
 
 /* Notification body for unread reminders. First placeholder is unread messages or unread calls */
-"UnreadReminderJob__calls_or_unread" = "You have %1$@.";
+"UnreadReminderJob__calls_or_unread" = "你有 %1$@。";
 
 /* Notification body for unread reminders. First placeholder is unread messages, second is a list of people who sent them */
-"UnreadReminderJob__calls_or_unread_author" = "You have %1$@ from %2$@.";
+"UnreadReminderJob__calls_or_unread_author" = "你有來自%2$@的 %1$@。";
 
 /* Notification placeholder that sums up a single unread mention. Placeholder is the name of the person who sent the message */
-"UnreadReminderJob__mentions_one" = "a mention of you by %1$@";
+"UnreadReminderJob__mentions_one" = "%1$@提及你";
 
 /* Notification placeholder that sums up a single unread reply. Placeholder is the name of the person who sent the message */
-"UnreadReminderJob__replies_one" = "a reply from %1$@";
+"UnreadReminderJob__replies_one" = "%1$@的回覆";
 
 /* Notification body for unread reminders. First placeholder is unread messages, second is a summary of unread mentions, third replies */
-"UnreadReminderJob__unread_both_summary" = "You have %1$@, including %2$@ and %3$@.";
+"UnreadReminderJob__unread_both_summary" = "你有 %1$@，包括 %2$@ 及 %3$@。";
 
 /* Notification body for unread reminders. First placeholder is unread messages, second is a summary of either unread mentions or replies */
-"UnreadReminderJob__unread_one_summary" = "You have %1$@, including %2$@.";
+"UnreadReminderJob__unread_one_summary" = "你有 %1$@，包括 %2$@。";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "收到不支援的附件格式";

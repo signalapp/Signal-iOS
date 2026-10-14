@@ -2111,13 +2111,13 @@ Bandykite vėl po %1$d val.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld pakviestas žmogus)</string>
 			<key>few</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld pakviesti žmonės)</string>
 			<key>many</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld pakviestų žmonių)</string>
 			<key>other</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld pakviestų žmonių)</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld</key>
@@ -2271,13 +2271,13 @@ Bandykite vėl po %1$d val.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and others</string>
+			<string>%1$d paminėjimą iš %2$@ ir kitų</string>
 			<key>few</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d paminėjimus iš %2$@ ir kitų</string>
 			<key>many</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d paminėjimo iš %2$@ ir kitų</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d paminėjimų iš %2$@ ir kitų</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__mentions_two</key>
@@ -2291,13 +2291,13 @@ Bandykite vėl po %1$d val.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and %3$@</string>
+			<string>%1$d paminėjimą iš %2$@ ir %3$@</string>
 			<key>few</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d paminėjimus iš %2$@ ir %3$@</string>
 			<key>many</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d paminėjimo iš %2$@ ir %3$@</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d paminėjimų iš %2$@ ir %3$@</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__messages</key>
@@ -2311,13 +2311,13 @@ Bandykite vėl po %1$d val.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d unread message</string>
+			<string>%1$d neskaitytą žinutę</string>
 			<key>few</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d neskaitytas žinutes</string>
 			<key>many</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d neskaitytos žinutės</string>
 			<key>other</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d neskaitytų žinučių</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_many</key>
@@ -2331,13 +2331,13 @@ Bandykite vėl po %1$d val.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and others</string>
+			<string>%1$d atsakymą iš %2$@ ir kitų</string>
 			<key>few</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d atsakymus iš %2$@ ir kitų</string>
 			<key>many</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d atsakymo iš %2$@ ir kitų</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d atsakymų iš %2$@ ir kitų</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_two</key>
@@ -2351,13 +2351,13 @@ Bandykite vėl po %1$d val.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and %3$@</string>
+			<string>%1$d atsakymą iš %2$@ ir %3$@</string>
 			<key>few</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d atsakymus iš %2$@ ir %3$@</string>
 			<key>many</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d atsakymo iš %2$@ ir %3$@</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d atsakymų iš %2$@ ir %3$@</string>
 		</dict>
 	</dict>
 </dict>

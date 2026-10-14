@@ -1899,11 +1899,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld invitat)</string>
 			<key>few</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld invitați)</string>
 			<key>other</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld de invitați)</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld</key>
@@ -2043,11 +2043,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and others</string>
+			<string>%2$@ și alte persoane te-au menționat o dată</string>
 			<key>few</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%2$@ și alte persoane te-au menționat de %1$d ori</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%2$@ și alte persoane te-au menționat de %1$d de ori</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__mentions_two</key>
@@ -2061,11 +2061,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and %3$@</string>
+			<string>%2$@ și %3$@ te-au menționat o dată</string>
 			<key>few</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%2$@ și %3$@ te-au menționat de %1$d ori</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%2$@ și %3$@ te-au menționat de %1$d de ori</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__messages</key>
@@ -2079,11 +2079,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d unread message</string>
+			<string>%1$d mesaj necitit</string>
 			<key>few</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d mesaje necitite</string>
 			<key>other</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d de mesaje necitite</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_many</key>
@@ -2097,11 +2097,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and others</string>
+			<string>%1$d răspuns de la %2$@ și alte persoane</string>
 			<key>few</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d răspunsuri de la %2$@ și alte persoane</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d de răspunsuri de la %2$@ și alte persoane</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_two</key>
@@ -2115,11 +2115,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and %3$@</string>
+			<string>%1$d răspuns de la %2$@ și %3$@</string>
 			<key>few</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d răspunsuri de la %2$@ și %3$@</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d de răspunsuri de la %2$@ și %3$@</string>
 		</dict>
 	</dict>
 </dict>

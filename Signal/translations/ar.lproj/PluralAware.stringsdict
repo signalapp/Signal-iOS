@@ -2535,17 +2535,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>zero</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld مدعوون)</string>
 			<key>one</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld مدعو)</string>
 			<key>two</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld مدعوان)</string>
 			<key>few</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld مدعوون)</string>
 			<key>many</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld مدعوًا)</string>
 			<key>other</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld مدعوٍ)</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld</key>
@@ -2727,17 +2727,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d إشارة إليك من طرف %2$@ وآخرين</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and others</string>
+			<string>%1$d إشارة إليك من طرف %2$@ وآخرين</string>
 			<key>two</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d إشارتان إليك من طرف %2$@ وآخرين</string>
 			<key>few</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d إشارات إليك من طرف %2$@ وآخرين</string>
 			<key>many</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d إشارة إليك من طرف %2$@ وآخرين</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d إشارة إليك من طرف %2$@ وآخرين</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__mentions_two</key>
@@ -2751,17 +2751,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d إشارة إليك من طرف %2$@ و%3$@</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and %3$@</string>
+			<string>%1$d إشارة إليك من طرف %2$@ و%3$@</string>
 			<key>two</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d إشارتان إليك من طرف %2$@ و%3$@</string>
 			<key>few</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d إشارات إليك من طرف %2$@ و%3$@</string>
 			<key>many</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d إشارة إليك من طرف %2$@ و%3$@</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d إشارة إليك من طرف %2$@ و%3$@</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__messages</key>
@@ -2775,17 +2775,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d رسالة غير مقروءة</string>
 			<key>one</key>
-			<string>%1$d unread message</string>
+			<string>%1$d رسالة غير مقروءة</string>
 			<key>two</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d رسالتين غير مقروءتين</string>
 			<key>few</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d رسائل غير مقروءة</string>
 			<key>many</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d رسالة غير مقروءة</string>
 			<key>other</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d رسالة غير مقروءة</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_many</key>
@@ -2799,17 +2799,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d ردّ من طرف %2$@ وآخرين</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and others</string>
+			<string>%1$d ردّ من طرف %2$@ وآخرين</string>
 			<key>two</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d ردّان من طرف %2$@ وآخرين</string>
 			<key>few</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d ردود من طرف %2$@ وآخرين</string>
 			<key>many</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d ردّ من طرف %2$@ وآخرين</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d ردّ من طرف %2$@ وآخرين</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_two</key>
@@ -2823,17 +2823,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d ردّ من طرف %2$@ و%3$@</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and %3$@</string>
+			<string>%1$d ردّ من طرف %2$@ و%3$@</string>
 			<key>two</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d ردّان من طرف %2$@ و%3$@</string>
 			<key>few</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d ردود من طرف %2$@ و%3$@</string>
 			<key>many</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d ردّ من طرف %2$@ و%3$@</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d ردّ من طرف %2$@ و%3$@</string>
 		</dict>
 	</dict>
 </dict>

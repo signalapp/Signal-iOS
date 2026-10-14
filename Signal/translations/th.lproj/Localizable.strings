@@ -1463,7 +1463,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "ผู้ใช้ที่ถูกบล็อกจะไม่สามารถโทรหรือส่งข้อความหาคุณได้";
 
 /* Shown as a subtitle for recipients & groups you've blocked to indicate when you blocked them. The replacement is a formatted date. */
-"BLOCKED_AT" = "Blocked on %1$@";
+"BLOCKED_AT" = "บล็อกเมื่อ %1$@";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "กรอกจำนวนเอง";
@@ -2441,31 +2441,31 @@
 "CONTACT_PICKER_TITLE" = "เลือกผู้ติดต่อ";
 
 /* Button on a shared contact in a group conversation that adds the contact to that group. It can share a row with other buttons, so a short label is preferred. */
-"CONTACT_SHARE_ADD_TO_GROUP_BUTTON" = "Add to Group";
+"CONTACT_SHARE_ADD_TO_GROUP_BUTTON" = "เพิ่มเข้ากลุ่ม";
 
 /* Button in the confirmation shown before adding a shared contact to the current group that adds the contact. */
-"CONTACT_SHARE_ADD_TO_GROUP_CONFIRMATION_BUTTON" = "Add to Group";
+"CONTACT_SHARE_ADD_TO_GROUP_CONFIRMATION_BUTTON" = "เพิ่มเข้ากลุ่ม";
 
 /* Confirmation shown before adding a shared contact to the current group. Embeds {{ %1$@ contact name, %2$@ group name }}. */
-"CONTACT_SHARE_ADD_TO_GROUP_CONFIRMATION_FORMAT" = "Add %1$@ to “%2$@”?";
+"CONTACT_SHARE_ADD_TO_GROUP_CONFIRMATION_FORMAT" = "เพิ่ม %1$@ เข้า “%2$@” ใช่หรือไม่";
 
 /* Title for the 'Approve contact share' view. */
 "CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "แบ่งปันผู้ติดต่อ";
 
 /* Name of the option to share a contact without a photo, which shows their initials instead. Read by VoiceOver on the option, and as the current value of the photo row when it's selected. */
-"CONTACT_SHARE_AVATAR_NO_PHOTO" = "No photo";
+"CONTACT_SHARE_AVATAR_NO_PHOTO" = "ไม่มีรูป";
 
 /* Title for the sheet for choosing which photo to include when sharing a contact. */
-"CONTACT_SHARE_AVATAR_PICKER_TITLE" = "Select a photo to share";
+"CONTACT_SHARE_AVATAR_PICKER_TITLE" = "เลือกรูปภาพเพื่อแชร์";
 
 /* Accessibility label for the row that chooses which photo to include when sharing a contact. */
-"CONTACT_SHARE_AVATAR_ROW_LABEL" = "Photo";
+"CONTACT_SHARE_AVATAR_ROW_LABEL" = "รูปถ่าย";
 
 /* Name of the option to share a contact's Signal profile photo. Read by VoiceOver on the option, and as the current value of the photo row when it's selected. */
-"CONTACT_SHARE_AVATAR_SIGNAL_PHOTO" = "Signal profile photo";
+"CONTACT_SHARE_AVATAR_SIGNAL_PHOTO" = "รูปโปรไฟล์ Signal";
 
 /* Name of the option to share a contact's photo from the phone's contacts. Read by VoiceOver on the option, and as the current value of the photo row when it's selected. */
-"CONTACT_SHARE_AVATAR_SYSTEM_CONTACT_PHOTO" = "Contacts photo";
+"CONTACT_SHARE_AVATAR_SYSTEM_CONTACT_PHOTO" = "รูปของผู้ติดต่อ";
 
 /* Title for the 'edit contact share name' view. */
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "แก้ชื่อ";
@@ -2474,10 +2474,10 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "ข้อมูลติดต่อผิดรูปแบบ";
 
 /* Button on a shared contact that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred. */
-"CONTACT_SHARE_MESSAGE_BUTTON" = "Message";
+"CONTACT_SHARE_MESSAGE_BUTTON" = "ข้อความ";
 
 /* Notice at the top of the 'Share Contact' view when the shared contact includes their Signal account. Embeds {{ contact name }}. */
-"CONTACT_SHARE_SIGNAL_ACCOUNT_NOTICE_FORMAT" = "Anyone you share this profile with will be able to message %1$@ on Signal.";
+"CONTACT_SHARE_SIGNAL_ACCOUNT_NOTICE_FORMAT" = "ผู้ใช้ที่คุณแชร์โปรไฟล์นี้ให้จะสามารถส่งข้อความหา %1$@ บน Signal";
 
 /* Alert body when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_BODY" = "Signal ต้องการเข้าถึงรายชื่อผู้ติดต่อของคุณ โปรดไปที่การตั้งค่า iOS แล้วเปิดการเข้าถึงผู้ติดต่อ โดยรายชื่อผู้ติดต่อของคุณจะได้รับการเข้ารหัสและไม่ถูกเปิดเผยต่อบริการของ Signal";
@@ -8036,7 +8036,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_BODY" = "เกิดข้อผิดพลาดที่ทำให้ไม่สามารถถ่ายโอนบัญชีของคุณได้";
 
 /* Title for a sheet warning users about an error during backup restore. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_CANT_RESTORE_TITLE" = "Can't Restore Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_CANT_RESTORE_TITLE" = "ไม่สามารถกู้คืนข้อมูลสำรอง";
 
 /* Body for a sheet warning users about a generic backup restore failure. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_BODY" = "เกิดข้อผิดพลาดที่ทำให้ไม่สามารถถ่ายโอนบัญชีของคุณได้ โปรดลองใหม่ด้วยการสแกนคิวอาร์โค้ดและเลือกวิธีการถ่ายโอน";
@@ -8063,7 +8063,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_LOCAL_BACKUP_LOCATION_TITLE" = "ไม่สามารถกู้คืนข้อมูลสำรอง";
 
 /* Message for a sheet telling the user that their phone number is mismatched with their recovery key used for making a local backup */
-"REGISTRATION_BACKUP_RESTORE_ERROR_MISMATCHED_LOCAL_BACKUP_MESSAGE" = "The backup you are attempting to restore was created using a different Signal account. To restore this backup you must use the same phone number and recovery key you saved when enabling on-device backups.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_MISMATCHED_LOCAL_BACKUP_MESSAGE" = "ข้อมูลสำรองที่คุณกำลังพยายามกู้คืนถูกสร้างขึ้นด้วยบัญชี Signal อีกบัญชี การกู้คืนข้อมูลสำรองนี้จะต้องใช้หมายเลขโทรศัพท์และกุญแจกู้คืนเดียวกันกับที่คุณบันทึกไว้ในตอนที่เปิดใช้งานการสำรองข้อมูลไว้บนอุปกรณ์";
 
 /* Body for a sheet warning users about a network error during backup restore. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "ไม่สามารถกู้คืนข้อมูลสำรองของคุณได้ในขณะนี้ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง";
@@ -8273,7 +8273,7 @@
 "REGISTRATION_SIGNAL_LOGIN_DETAILS_VIEW_DETAILS_BUTTON" = "ดูรายละเอียด";
 
 /* Explanation text for the 'Signal Login' screen. */
-"REGISTRATION_SIGNAL_LOGIN_EXPLANATION" = "Register without a phone number using Signal Login. With a one-time purchase, you’ll receive an account ID to get started.";
+"REGISTRATION_SIGNAL_LOGIN_EXPLANATION" = "Signal Login ให้คุณลงทะเบียนได้โดยไม่ต้องใช้หมายเลขโทรศัพท์ ซื้อ Signal Login เพื่อรับไอดีบัญชีสำหรับเริ่มต้นใช้งาน";
 
 /* Toast shown after copying the account ID on the 'Signal Login' details sheet. */
 "REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_COPIED_TOAST" = "คัดลอกไอดีบัญชีแล้ว";
@@ -8309,7 +8309,7 @@
 "REGISTRATION_SIGNAL_LOGIN_NEED_HELP_TITLE" = "ต้องการความช่วยเหลือหรือไม่";
 
 /* Button to initiate a purchase on the 'Signal Login' screen. The replacement is a localized cost (e.g., $2.99). */
-"REGISTRATION_SIGNAL_LOGIN_PAY" = "Pay %1$@";
+"REGISTRATION_SIGNAL_LOGIN_PAY" = "ชำระ %1$@";
 
 /* Title text for the 'Signal Login' screen. */
 "REGISTRATION_SIGNAL_LOGIN_TITLE" = "Signal Login";
@@ -9354,13 +9354,13 @@
 
 /* Label for the switch controlling whether reminders about unread messages are shown.
    Label for the switch controlling whether reminders about unread messages in muted chats are shown. */
-"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS" = "Unread Reminders";
+"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS" = "เตือนความจำสำหรับข้อความที่ยังไม่ได้อ่าน";
 
 /* Explanation for the switch controlling whether reminders about unread messages are shown in this chat while it is muted. */
-"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS_CHAT_FOOTER" = "Occasionally notify when there are unread messages while this chat is muted.";
+"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS_CHAT_FOOTER" = "เตือนความจำเป็นครั้งคราวเมื่อคุณมีข้อความที่ยังไม่ได้อ่านในระหว่างที่แชทนี้ถูกปิดการแจ้งเตือน";
 
 /* Explanation for the switch controlling whether reminders about unread messages in muted chats are shown. */
-"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS_FOOTER" = "Occasionally notify when there are unread messages in muted chats.";
+"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS_FOOTER" = "เตือนความจำเป็นครั้งคราวเมื่อคุณมีข้อความที่ยังไม่ได้อ่านในแชทที่ปิดการแจ้งเตือนไว้";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "เปิดใช้";
@@ -10848,31 +10848,31 @@
 "UNREAD_ACTION" = "ตั้งเป็นยังไม่อ่าน";
 
 /* Notification placeholder for three or more recipients who sent unread messages */
-"UnreadReminderJob__authors_many" = "%1$@ and others";
+"UnreadReminderJob__authors_many" = "%1$@ และคนอื่นๆ";
 
 /* Notification placeholder for a single recipient who sent unread messages */
 "UnreadReminderJob__authors_one" = "%1$@";
 
 /* Notification placeholder for two recipients who sent unread messages */
-"UnreadReminderJob__authors_two" = "%1$@ and %2$@";
+"UnreadReminderJob__authors_two" = "%1$@ และ %2$@";
 
 /* Notification body for unread reminders. First placeholder is unread messages or unread calls */
-"UnreadReminderJob__calls_or_unread" = "You have %1$@.";
+"UnreadReminderJob__calls_or_unread" = "คุณมี %1$@";
 
 /* Notification body for unread reminders. First placeholder is unread messages, second is a list of people who sent them */
-"UnreadReminderJob__calls_or_unread_author" = "You have %1$@ from %2$@.";
+"UnreadReminderJob__calls_or_unread_author" = "คุณมี %1$@ จาก %2$@";
 
 /* Notification placeholder that sums up a single unread mention. Placeholder is the name of the person who sent the message */
-"UnreadReminderJob__mentions_one" = "a mention of you by %1$@";
+"UnreadReminderJob__mentions_one" = "การกล่าวถึงคุณจาก %1$@";
 
 /* Notification placeholder that sums up a single unread reply. Placeholder is the name of the person who sent the message */
-"UnreadReminderJob__replies_one" = "a reply from %1$@";
+"UnreadReminderJob__replies_one" = "การตอบกลับจาก %1$@";
 
 /* Notification body for unread reminders. First placeholder is unread messages, second is a summary of unread mentions, third replies */
-"UnreadReminderJob__unread_both_summary" = "You have %1$@, including %2$@ and %3$@.";
+"UnreadReminderJob__unread_both_summary" = "คุณมี %1$@ รวมทั้ง%2$@ และ %3$@";
 
 /* Notification body for unread reminders. First placeholder is unread messages, second is a summary of either unread mentions or replies */
-"UnreadReminderJob__unread_one_summary" = "You have %1$@, including %2$@.";
+"UnreadReminderJob__unread_one_summary" = "คุณมี %1$@ รวมทั้ง%2$@";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "ได้รับประเภทแฟ้มแนบที่ไม่รองรับ";

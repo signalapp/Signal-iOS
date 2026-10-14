@@ -1687,9 +1687,9 @@ Versuche es in %1$d Stunden erneut.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld eingeladen)</string>
 			<key>other</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld eingeladen)</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld</key>
@@ -1815,9 +1815,9 @@ Versuche es in %1$d Stunden erneut.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and others</string>
+			<string>%1$d Erwähnung über dich von %2$@</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d Erwähnungen über dich von %2$@ und anderen</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__mentions_two</key>
@@ -1831,9 +1831,9 @@ Versuche es in %1$d Stunden erneut.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and %3$@</string>
+			<string>%1$d Erwähnung über dich von %2$@ und %3$@</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d Erwähnungen über dich von %2$@ und %3$@</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__messages</key>
@@ -1847,9 +1847,9 @@ Versuche es in %1$d Stunden erneut.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d unread message</string>
+			<string>%1$d ungelesene Nachricht</string>
 			<key>other</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d ungelesene Nachrichten</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_many</key>
@@ -1863,9 +1863,9 @@ Versuche es in %1$d Stunden erneut.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and others</string>
+			<string>%1$d Antwort von %2$@</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d Antworten von %2$@ und anderen</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_two</key>
@@ -1879,9 +1879,9 @@ Versuche es in %1$d Stunden erneut.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and %3$@</string>
+			<string>%1$d Antwort von %2$@ und %3$@</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d Antworten von %2$@ und %3$@</string>
 		</dict>
 	</dict>
 </dict>

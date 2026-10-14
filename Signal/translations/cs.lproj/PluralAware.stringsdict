@@ -2111,13 +2111,13 @@ Zkuste to znovu za %1$d hodin.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+ %1$ld pozvaný/á)</string>
 			<key>few</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+ %1$ld pozvaní)</string>
 			<key>many</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+ %1$ld pozvaných)</string>
 			<key>other</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+ %1$ld pozvaných)</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld</key>
@@ -2271,13 +2271,13 @@ Zkuste to znovu za %1$d hodin.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and others</string>
+			<string>%1$d zmínka o vás od %2$@ a dalších</string>
 			<key>few</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d zmínky o vás od %2$@ a dalších</string>
 			<key>many</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d zmínek o vás od %2$@ a dalších</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d zmínek o vás od %2$@ a dalších</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__mentions_two</key>
@@ -2291,13 +2291,13 @@ Zkuste to znovu za %1$d hodin.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and %3$@</string>
+			<string>%1$d zmínka o vás od %2$@ a %3$@</string>
 			<key>few</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d zmínky o vás od %2$@ a %3$@</string>
 			<key>many</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d zmínek o vás od %2$@ a %3$@</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d zmínek o vás od %2$@ a %3$@</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__messages</key>
@@ -2311,13 +2311,13 @@ Zkuste to znovu za %1$d hodin.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d unread message</string>
+			<string>%1$d nepřečtená zpráva</string>
 			<key>few</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d nepřečtené zprávy</string>
 			<key>many</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d nepřečtených zpráv</string>
 			<key>other</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d nepřečtených zpráv</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_many</key>
@@ -2331,13 +2331,13 @@ Zkuste to znovu za %1$d hodin.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and others</string>
+			<string>%1$d odpověď od %2$@ a dalších</string>
 			<key>few</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d odpovědi od %2$@ a dalších</string>
 			<key>many</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d odpovědí od %2$@ a dalších</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d odpovědí od %2$@ a dalších</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_two</key>
@@ -2351,13 +2351,13 @@ Zkuste to znovu za %1$d hodin.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and %3$@</string>
+			<string>%1$d odpověď od %2$@ a %3$@</string>
 			<key>few</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d odpovědi od %2$@ a %3$@</string>
 			<key>many</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d odpovědí od %2$@ a %3$@</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d odpovědí od %2$@ a %3$@</string>
 		</dict>
 	</dict>
 </dict>

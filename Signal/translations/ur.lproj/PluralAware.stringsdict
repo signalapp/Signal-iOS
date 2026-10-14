@@ -1687,9 +1687,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld کو مدعو کیا گیا)</string>
 			<key>other</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld مدعو کیے گئے)</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld</key>
@@ -1815,9 +1815,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and others</string>
+			<string>%2$@ اور دیگر افراد کی جانب سے آپ کو %1$d بار مینشن کیا گیا</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%2$@ اور دیگر افراد کی جانب سے آپ کو %1$d بار مینشن کیا گیا</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__mentions_two</key>
@@ -1831,9 +1831,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and %3$@</string>
+			<string>%2$@ اور %3$@ کی جانب سے آپ کو %1$d بار مینشن کیا گیا</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%2$@ اور %3$@ کی جانب سے آپ کو %1$d بار مینشن کیا گیا</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__messages</key>
@@ -1847,9 +1847,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d unread message</string>
+			<string>%1$dنہ پڑھا ہوا پیغام</string>
 			<key>other</key>
-			<string>%1$d unread messages</string>
+			<string>%1$dنہ پڑھے ہوئے پیغامات</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_many</key>
@@ -1863,9 +1863,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and others</string>
+			<string>%2$@ اور دیگر افراد کی طرف سے %1$d جوابات</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%2$@ اور دیگر افراد کی طرف سے %1$d جوابات</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_two</key>
@@ -1879,9 +1879,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and %3$@</string>
+			<string>%2$@ اور %3$@ کی طرف سے %1$d جوابات</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%2$@ اور %3$@ کی طرف سے %1$d جوابات</string>
 		</dict>
 	</dict>
 </dict>

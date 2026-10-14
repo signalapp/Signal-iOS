@@ -1463,7 +1463,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "બ્લૉક કરેલા ઉપયોગકર્તાઓ તમને કૉલ કે મેસેજ કરી શકશે નહીં.";
 
 /* Shown as a subtitle for recipients & groups you've blocked to indicate when you blocked them. The replacement is a formatted date. */
-"BLOCKED_AT" = "Blocked on %1$@";
+"BLOCKED_AT" = "%1$@ના રોજ બ્લૉક કર્યા";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "અનિર્દેશિત રકમ દાખલ કરો";
@@ -2441,31 +2441,31 @@
 "CONTACT_PICKER_TITLE" = "સંપર્ક પસંદ કરો";
 
 /* Button on a shared contact in a group conversation that adds the contact to that group. It can share a row with other buttons, so a short label is preferred. */
-"CONTACT_SHARE_ADD_TO_GROUP_BUTTON" = "Add to Group";
+"CONTACT_SHARE_ADD_TO_GROUP_BUTTON" = "ગ્રૂપમાં ઉમેરો";
 
 /* Button in the confirmation shown before adding a shared contact to the current group that adds the contact. */
-"CONTACT_SHARE_ADD_TO_GROUP_CONFIRMATION_BUTTON" = "Add to Group";
+"CONTACT_SHARE_ADD_TO_GROUP_CONFIRMATION_BUTTON" = "ગ્રૂપમાં ઉમેરો";
 
 /* Confirmation shown before adding a shared contact to the current group. Embeds {{ %1$@ contact name, %2$@ group name }}. */
-"CONTACT_SHARE_ADD_TO_GROUP_CONFIRMATION_FORMAT" = "Add %1$@ to “%2$@”?";
+"CONTACT_SHARE_ADD_TO_GROUP_CONFIRMATION_FORMAT" = "%1$@ને \"%2$@\" પર ઉમેરવા છે?";
 
 /* Title for the 'Approve contact share' view. */
 "CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "સંપર્ક શેર કરો";
 
 /* Name of the option to share a contact without a photo, which shows their initials instead. Read by VoiceOver on the option, and as the current value of the photo row when it's selected. */
-"CONTACT_SHARE_AVATAR_NO_PHOTO" = "No photo";
+"CONTACT_SHARE_AVATAR_NO_PHOTO" = "કોઈ ફોટો નહીં";
 
 /* Title for the sheet for choosing which photo to include when sharing a contact. */
-"CONTACT_SHARE_AVATAR_PICKER_TITLE" = "Select a photo to share";
+"CONTACT_SHARE_AVATAR_PICKER_TITLE" = "શેર કરવા માટે ફોટો પસંદ કરો";
 
 /* Accessibility label for the row that chooses which photo to include when sharing a contact. */
-"CONTACT_SHARE_AVATAR_ROW_LABEL" = "Photo";
+"CONTACT_SHARE_AVATAR_ROW_LABEL" = "ફોટો";
 
 /* Name of the option to share a contact's Signal profile photo. Read by VoiceOver on the option, and as the current value of the photo row when it's selected. */
-"CONTACT_SHARE_AVATAR_SIGNAL_PHOTO" = "Signal profile photo";
+"CONTACT_SHARE_AVATAR_SIGNAL_PHOTO" = "Signal પ્રોફાઇલ ફોટો";
 
 /* Name of the option to share a contact's photo from the phone's contacts. Read by VoiceOver on the option, and as the current value of the photo row when it's selected. */
-"CONTACT_SHARE_AVATAR_SYSTEM_CONTACT_PHOTO" = "Contacts photo";
+"CONTACT_SHARE_AVATAR_SYSTEM_CONTACT_PHOTO" = "સંપર્ક ફોટો";
 
 /* Title for the 'edit contact share name' view. */
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "નામમાં ફેરફાર કરો";
@@ -2474,10 +2474,10 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "અમાન્ય સંપર્ક.";
 
 /* Button on a shared contact that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred. */
-"CONTACT_SHARE_MESSAGE_BUTTON" = "Message";
+"CONTACT_SHARE_MESSAGE_BUTTON" = "મેસેજ";
 
 /* Notice at the top of the 'Share Contact' view when the shared contact includes their Signal account. Embeds {{ contact name }}. */
-"CONTACT_SHARE_SIGNAL_ACCOUNT_NOTICE_FORMAT" = "Anyone you share this profile with will be able to message %1$@ on Signal.";
+"CONTACT_SHARE_SIGNAL_ACCOUNT_NOTICE_FORMAT" = "તમે જેમની પણ સાથે આ પ્રોફાઇલ શેર કરશો તે %1$@ને Signal પર મેસેજ કરી શકશે.";
 
 /* Alert body when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_BODY" = "Signalને તમારા સંપર્કો પરના ઍક્સેસની જરૂર છે. iOS સેટિંગ્સ પર જાઓ અને સંપર્કો ચાલુ કરો. તમારા સંપર્કો એન્ક્રિપ્ટેડ છે અને Signal સેવાને જોઈ શકતા નથી.";
@@ -8036,7 +8036,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_BODY" = "એક એરર આવી અને તમારું એકાઉન્ટ ટ્રાન્સફર કરી શકાયું નથી.";
 
 /* Title for a sheet warning users about an error during backup restore. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_CANT_RESTORE_TITLE" = "Can't Restore Backup";
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_CANT_RESTORE_TITLE" = "બેકઅપ રિસ્ટોર કરી શકતા નથી";
 
 /* Body for a sheet warning users about a generic backup restore failure. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_BODY" = "એક એરર આવી અને તમારું એકાઉન્ટ ટ્રાન્સફર કરી શકાયું નથી. QR કોડ સ્કેન કરી અને તમારી ટ્રાન્સફર પદ્ધતિ પસંદ કરીને ફરી પ્રયાસ કરો.";
@@ -8063,7 +8063,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_LOCAL_BACKUP_LOCATION_TITLE" = "બેકઅપ રિસ્ટોર કરી શકતા નથી";
 
 /* Message for a sheet telling the user that their phone number is mismatched with their recovery key used for making a local backup */
-"REGISTRATION_BACKUP_RESTORE_ERROR_MISMATCHED_LOCAL_BACKUP_MESSAGE" = "The backup you are attempting to restore was created using a different Signal account. To restore this backup you must use the same phone number and recovery key you saved when enabling on-device backups.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_MISMATCHED_LOCAL_BACKUP_MESSAGE" = "તમે જે બેકઅપને રિસ્ટોર કરવાનો પ્રયાસ કરી રહ્યા છો તે બેકઅપ કોઈ અલગ Signal એકાઉન્ટનો ઉપયોગ કરીને બનાવવામાં આવ્યું હતું. આ બેકઅપને રિસ્ટોર કરવા માટે, તમારે તે જ ફોન નંબર અને રિકવરી કીનો ઉપયોગ કરવો પડશે જે તમે ઓન-ડિવાઇસ બેકઅપ સક્રિય કરતી વખતે સાચવ્યા હતા.";
 
 /* Body for a sheet warning users about a network error during backup restore. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_NETWORK_BODY" = "તમારું બેકઅપ હમણાં રિસ્ટોર કરી શકાતું નથી. તમારું ઇન્ટરનેટ તપાસો અને ફરી પ્રયાસ કરો.";
@@ -8273,7 +8273,7 @@
 "REGISTRATION_SIGNAL_LOGIN_DETAILS_VIEW_DETAILS_BUTTON" = "વિગતો જુઓ";
 
 /* Explanation text for the 'Signal Login' screen. */
-"REGISTRATION_SIGNAL_LOGIN_EXPLANATION" = "Register without a phone number using Signal Login. With a one-time purchase, you’ll receive an account ID to get started.";
+"REGISTRATION_SIGNAL_LOGIN_EXPLANATION" = "Signal Loginનો ઉપયોગ કરીને ફોન નંબર વગર રજિસ્ટર કરો. એક-વખતની ખરીદી સાથે, શરૂઆત કરવા માટે તમે એક એકાઉન્ટ ID મેળવશો.";
 
 /* Toast shown after copying the account ID on the 'Signal Login' details sheet. */
 "REGISTRATION_SIGNAL_LOGIN_FULL_DETAILS_ACCOUNT_ID_COPIED_TOAST" = "એકાઉન્ટ ID કૉપિ કર્યું";
@@ -8309,7 +8309,7 @@
 "REGISTRATION_SIGNAL_LOGIN_NEED_HELP_TITLE" = "મદદ જોઈએ છે?";
 
 /* Button to initiate a purchase on the 'Signal Login' screen. The replacement is a localized cost (e.g., $2.99). */
-"REGISTRATION_SIGNAL_LOGIN_PAY" = "Pay %1$@";
+"REGISTRATION_SIGNAL_LOGIN_PAY" = "%1$@ ચૂકવો";
 
 /* Title text for the 'Signal Login' screen. */
 "REGISTRATION_SIGNAL_LOGIN_TITLE" = "Signal Login";
@@ -9354,13 +9354,13 @@
 
 /* Label for the switch controlling whether reminders about unread messages are shown.
    Label for the switch controlling whether reminders about unread messages in muted chats are shown. */
-"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS" = "Unread Reminders";
+"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS" = "ન વાંચેલ રિમાઇન્ડર";
 
 /* Explanation for the switch controlling whether reminders about unread messages are shown in this chat while it is muted. */
-"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS_CHAT_FOOTER" = "Occasionally notify when there are unread messages while this chat is muted.";
+"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS_CHAT_FOOTER" = "આ ચેટ મ્યૂટ હોય ત્યારે જો વાંચ્યા વગરના મેસેજ હોય ત્યારે ક્યારેક ક્યારેક સૂચના મેળવો.";
 
 /* Explanation for the switch controlling whether reminders about unread messages in muted chats are shown. */
-"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS_FOOTER" = "Occasionally notify when there are unread messages in muted chats.";
+"SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS_FOOTER" = "મ્યૂટ કરેલી ચેટમાં વાંચ્યા વગરના મેસેજ હોય ત્યારે ક્યારેક-ક્યારેક સૂચિત કરો.";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "સક્રિય કરો";
@@ -10848,31 +10848,31 @@
 "UNREAD_ACTION" = "ન વંચાયેલ";
 
 /* Notification placeholder for three or more recipients who sent unread messages */
-"UnreadReminderJob__authors_many" = "%1$@ and others";
+"UnreadReminderJob__authors_many" = "%1$@ અને અન્ય";
 
 /* Notification placeholder for a single recipient who sent unread messages */
 "UnreadReminderJob__authors_one" = "%1$@";
 
 /* Notification placeholder for two recipients who sent unread messages */
-"UnreadReminderJob__authors_two" = "%1$@ and %2$@";
+"UnreadReminderJob__authors_two" = "%1$@ અને %2$@";
 
 /* Notification body for unread reminders. First placeholder is unread messages or unread calls */
-"UnreadReminderJob__calls_or_unread" = "You have %1$@.";
+"UnreadReminderJob__calls_or_unread" = "તમારી પાસે %1$@ છે.";
 
 /* Notification body for unread reminders. First placeholder is unread messages, second is a list of people who sent them */
-"UnreadReminderJob__calls_or_unread_author" = "You have %1$@ from %2$@.";
+"UnreadReminderJob__calls_or_unread_author" = "તમારી પાસે %2$@ તરફથી %1$@ છે.";
 
 /* Notification placeholder that sums up a single unread mention. Placeholder is the name of the person who sent the message */
-"UnreadReminderJob__mentions_one" = "a mention of you by %1$@";
+"UnreadReminderJob__mentions_one" = "%1$@ તરફથી તમારો ઉલ્લેખ";
 
 /* Notification placeholder that sums up a single unread reply. Placeholder is the name of the person who sent the message */
-"UnreadReminderJob__replies_one" = "a reply from %1$@";
+"UnreadReminderJob__replies_one" = "%1$@ તરફથી જવાબ";
 
 /* Notification body for unread reminders. First placeholder is unread messages, second is a summary of unread mentions, third replies */
-"UnreadReminderJob__unread_both_summary" = "You have %1$@, including %2$@ and %3$@.";
+"UnreadReminderJob__unread_both_summary" = "તમને %2$@ અને %3$@ સહિત %1$@ છે.";
 
 /* Notification body for unread reminders. First placeholder is unread messages, second is a summary of either unread mentions or replies */
-"UnreadReminderJob__unread_one_summary" = "You have %1$@, including %2$@.";
+"UnreadReminderJob__unread_one_summary" = "તમારી પાસે %2$@ સહિત %1$@ છે.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "અસમર્થિત જોડાણ પ્રકાર પ્રાપ્ત થયો.";

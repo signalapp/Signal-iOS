@@ -2111,13 +2111,13 @@ Skúste to znova o %1$d hodín.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld pozvaný)</string>
 			<key>few</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld pozvaní)</string>
 			<key>many</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld pozvaného)</string>
 			<key>other</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld pozvaných)</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld</key>
@@ -2271,13 +2271,13 @@ Skúste to znova o %1$d hodín.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and others</string>
+			<string>%1$d zmienka od používateľa %2$@ a ďalších</string>
 			<key>few</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d zmienky od používateľa %2$@ a ďalších</string>
 			<key>many</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d zmienok od používateľa %2$@ a ďalších</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d zmienok od používateľa %2$@ a ďalších</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__mentions_two</key>
@@ -2291,13 +2291,13 @@ Skúste to znova o %1$d hodín.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and %3$@</string>
+			<string>%1$d zmienka od používateľov %2$@ a %3$@</string>
 			<key>few</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d zmienky od používateľov %2$@ a %3$@</string>
 			<key>many</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d zmienok od používateľov %2$@ a %3$@</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d zmienok od používateľov %2$@ a %3$@</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__messages</key>
@@ -2311,13 +2311,13 @@ Skúste to znova o %1$d hodín.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d unread message</string>
+			<string>%1$d neprečítaná správa</string>
 			<key>few</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d neprečítané správy</string>
 			<key>many</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d neprečítaných správ</string>
 			<key>other</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d neprečítaných správ</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_many</key>
@@ -2331,13 +2331,13 @@ Skúste to znova o %1$d hodín.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and others</string>
+			<string>%1$d odpoveď od používateľa %2$@ a ďalších</string>
 			<key>few</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d odpovede od používateľa %2$@ a ďalších</string>
 			<key>many</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d odpovedí od používateľa %2$@ a ďalších</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d odpovedí od používateľa %2$@ a ďalších</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_two</key>
@@ -2351,13 +2351,13 @@ Skúste to znova o %1$d hodín.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and %3$@</string>
+			<string>%1$d odpoveď od používateľov %2$@ a %3$@</string>
 			<key>few</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d odpovede od používateľov %2$@ a %3$@</string>
 			<key>many</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d odpovedí od používateľov %2$@ a %3$@</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d odpovedí od používateľov %2$@ a %3$@</string>
 		</dict>
 	</dict>
 </dict>

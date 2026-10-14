@@ -2111,13 +2111,13 @@ Spróbuj ponownie za %1$d godziny.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (oraz %1$ld zaproszona osoba)</string>
 			<key>few</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (oraz %1$ld zaproszone osoby)</string>
 			<key>many</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (oraz %1$ld zaproszonych osób)</string>
 			<key>other</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (oraz %1$ld zaproszonej osoby)</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld</key>
@@ -2271,13 +2271,13 @@ Spróbuj ponownie za %1$d godziny.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and others</string>
+			<string>%1$d wzmianka o Tobie od %2$@ i innych osób</string>
 			<key>few</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d wzmianki o Tobie od %2$@ i innych osób</string>
 			<key>many</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d wzmianek o Tobie od %2$@ i innych osób</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d wzmianek o Tobie od %2$@ i innych osób</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__mentions_two</key>
@@ -2291,13 +2291,13 @@ Spróbuj ponownie za %1$d godziny.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and %3$@</string>
+			<string>%1$d wzmianka o Tobie od %2$@ i %3$@</string>
 			<key>few</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d wzmianki o Tobie od %2$@ i %3$@</string>
 			<key>many</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d wzmianek o Tobie od %2$@ i %3$@</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d wzmianek o Tobie od %2$@ i %3$@</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__messages</key>
@@ -2311,13 +2311,13 @@ Spróbuj ponownie za %1$d godziny.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d unread message</string>
+			<string>%1$d nieodczytaną wiadomość</string>
 			<key>few</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d nieodczytane wiadomości</string>
 			<key>many</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d nieodczytanych wiadomości</string>
 			<key>other</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d nieodczytanej wiadomości</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_many</key>
@@ -2331,13 +2331,13 @@ Spróbuj ponownie za %1$d godziny.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and others</string>
+			<string>%1$d odpowiedź od %2$@ i innych osób</string>
 			<key>few</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d odpowiedzi od %2$@ i innych osób</string>
 			<key>many</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d odpowiedzi od %2$@ i innych osób</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d odpowiedzi od %2$@ i innych osób</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_two</key>
@@ -2351,13 +2351,13 @@ Spróbuj ponownie za %1$d godziny.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and %3$@</string>
+			<string>%1$d odpowiedź od %2$@ i %3$@</string>
 			<key>few</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d odpowiedzi od %2$@ i %3$@</string>
 			<key>many</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d odpowiedzi od %2$@ i %3$@</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d odpowiedzi od %2$@ i %3$@</string>
 		</dict>
 	</dict>
 </dict>
