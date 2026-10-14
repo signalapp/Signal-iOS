@@ -1580,6 +1580,22 @@
 %1$dतासांनी पुन्हा प्रयत्न करा.</string>
 		</dict>
 	</dict>
+	<key>STICKER_PACK_STICKER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d sticker</string>
+			<key>other</key>
+			<string>%1$d stickers</string>
+		</dict>
+	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1687,9 +1703,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld निमंत्रित)</string>
 			<key>other</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+%1$ld निमंत्रित)</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld</key>
@@ -1815,9 +1831,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and others</string>
+			<string>%2$@ आणि इतरांकडून तुमचा %1$d उल्लेख</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%2$@ आणि इतरांकडून तुमचे %1$d उल्लेख</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__mentions_two</key>
@@ -1831,9 +1847,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and %3$@</string>
+			<string>%2$@ आणि %3$@ यांकडून तुमचा %1$d उल्लेख</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%2$@ आणि %3$@ यांकडून तुमचे %1$d उल्लेख</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__messages</key>
@@ -1847,9 +1863,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d unread message</string>
+			<string>%1$d न वाचलेला संदेश</string>
 			<key>other</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d न वाचलेले संदेश</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_many</key>
@@ -1863,9 +1879,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and others</string>
+			<string>%2$@ आणि इतरांकडून तुम्हाला %1$d उत्तर</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%2$@ आणि इतरांकडून तुम्हाला %1$d उत्तरे</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_two</key>
@@ -1879,9 +1895,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and %3$@</string>
+			<string>%2$@ आणि %3$@ यांकडून तुम्हाला %1$d उत्तर</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%2$@ आणि %3$@ यांकडून तुम्हाला %1$d उत्तरे</string>
 		</dict>
 	</dict>
 </dict>

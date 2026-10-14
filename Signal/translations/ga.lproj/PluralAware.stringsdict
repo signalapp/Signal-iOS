@@ -2180,6 +2180,28 @@
  Triail arís i gceann %1$d uair an chloig.</string>
 		</dict>
 	</dict>
+	<key>STICKER_PACK_STICKER_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d sticker</string>
+			<key>two</key>
+			<string>%1$d stickers</string>
+			<key>few</key>
+			<string>%1$d stickers</string>
+			<key>many</key>
+			<string>%1$d stickers</string>
+			<key>other</key>
+			<string>%1$d stickers</string>
+		</dict>
+	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -2323,15 +2345,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+ %1$ld chuireadh seolta)</string>
 			<key>two</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+ %1$ld chuireadh seolta)</string>
 			<key>few</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+ %1$ld chuireadh seolta)</string>
 			<key>many</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+ %1$ld gcuireadh seolta)</string>
 			<key>other</key>
-			<string>%2$@ (+%1$ld invited)</string>
+			<string>%2$@ (+ %1$ld cuireadh seolta)</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld</key>
@@ -2499,15 +2521,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and others</string>
+			<string>%1$d trácht ort ag %2$@ agus ag daoine eile</string>
 			<key>two</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d thrácht ort ag %2$@ agus ag daoine eile</string>
 			<key>few</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d thrácht ort ag %2$@ agus ag daoine eile</string>
 			<key>many</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d dtrácht ort ag %2$@ agus ag daoine eile</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and others</string>
+			<string>%1$d trácht ort ag %2$@ agus ag daoine eile</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__mentions_two</key>
@@ -2521,15 +2543,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d mention of you by %2$@ and %3$@</string>
+			<string>%1$d trácht ort ag %2$@ agus %3$@</string>
 			<key>two</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d thrácht ort ag %2$@ agus %3$@</string>
 			<key>few</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d thrácht ort ag %2$@ agus %3$@</string>
 			<key>many</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d dtrácht ort ag %2$@ agus %3$@</string>
 			<key>other</key>
-			<string>%1$d mentions of you by %2$@ and %3$@</string>
+			<string>%1$d trácht ort ag %2$@ agus %3$@</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__messages</key>
@@ -2543,15 +2565,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d unread message</string>
+			<string>%1$d teachtaireacht neamhléite</string>
 			<key>two</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d theachtaireacht neamhléite</string>
 			<key>few</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d theachtaireacht neamhléite</string>
 			<key>many</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d dteachtaireacht neamhléite</string>
 			<key>other</key>
-			<string>%1$d unread messages</string>
+			<string>%1$d teachtaireacht neamhléite</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_many</key>
@@ -2565,15 +2587,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and others</string>
+			<string>%1$d fhreagra ón duine seo, %2$@, agus ó dhaoine eile</string>
 			<key>two</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d fhreagra ón duine seo, %2$@, agus ó dhaoine eile</string>
 			<key>few</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d fhreagra ón duine seo, %2$@, agus ó dhaoine eile</string>
 			<key>many</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d bhfreagra ón duine seo, %2$@, agus ó dhaoine eile</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and others</string>
+			<string>%1$d freagra ón duine seo, %2$@, agus ó dhaoine eile</string>
 		</dict>
 	</dict>
 	<key>UnreadReminderJob__replies_two</key>
@@ -2587,15 +2609,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d reply from %2$@ and %3$@</string>
+			<string>%1$d fhreagra ó na daoine seo, %2$@ agus %3$@</string>
 			<key>two</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d fhreagra ó na daoine seo, %2$@ agus %3$@</string>
 			<key>few</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d fhreagra ó na daoine seo, %2$@ agus %3$@</string>
 			<key>many</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d bhfreagra ó na daoine seo, %2$@ agus %3$@</string>
 			<key>other</key>
-			<string>%1$d replies from %2$@ and %3$@</string>
+			<string>%1$d freagra ó na daoine seo, %2$@ agus %3$@</string>
 		</dict>
 	</dict>
 </dict>
