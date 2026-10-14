@@ -426,6 +426,9 @@ public struct TypedItemProvider {
                 attachmentLimits: attachmentLimits,
                 sessionCallback: { exportSession in
                     guard let progress else { return }
+                    // The export may be retried at a lower quality tier with a
+                    // new session; stop polling the previous one.
+                    progressPoller?.stopPolling()
                     progressPoller = ProgressPoller(progress: progress, pollInterval: 0.1, fractionCompleted: { return exportSession.progress })
                     progressPoller?.startPolling()
                 },

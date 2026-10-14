@@ -149,9 +149,56 @@ public struct PreviewableAttachment {
         attachmentLimits: OutgoingAttachmentLimits,
         sessionCallback: (@MainActor (AVAssetExportSession) -> Void)? = nil,
     ) async throws -> Self {
+        let imageQuality = SSKEnvironment.shared.databaseStorageRef.read(block: ImageQuality.fetchValue(tx:))
+        let qualityLevel = ImageQualityLevel.resolvedValue(
+            imageQuality: imageQuality,
+            standardQualityLevel: attachmentLimits.standardQualityLevel,
+        )
+        let exportTiers = videoExportTiers(
+            forQualityLevel: qualityLevel,
+            videoDuration: asset.duration,
+            maxFileSize: attachmentLimits.maxPlaintextVideoBytes,
+        )
+
+        // Export at the highest acceptable quality. If the resulting file
+        // is too large to send, try again at the next tier down.
+        for exportTier in exportTiers.dropLast() {
+            do {
+                return try await compressVideoAsMp4(
+                    asset: asset,
+                    presetName: exportTier.presetName,
+                    baseFilename: baseFilename,
+                    attachmentLimits: attachmentLimits,
+                    sessionCallback: sessionCallback,
+                )
+            } catch SignalAttachmentError.fileSizeTooLarge {
+                Logger.warn("Video exported with \(exportTier.presetName) exceeded the attachment size limit; retrying at a lower quality.")
+            }
+        }
+
+        // The last tier is always attempted; if even it is too large, the
+        // error propagates to the caller (same as the historical behavior).
+        let lastResortTier = exportTiers[exportTiers.count - 1]
+        return try await compressVideoAsMp4(
+            asset: asset,
+            presetName: lastResortTier.presetName,
+            baseFilename: baseFilename,
+            attachmentLimits: attachmentLimits,
+            sessionCallback: sessionCallback,
+        )
+    }
+
+    @MainActor
+    private static func compressVideoAsMp4(
+        asset: AVAsset,
+        presetName: String,
+        baseFilename: String?,
+        attachmentLimits: OutgoingAttachmentLimits,
+        sessionCallback: (@MainActor (AVAssetExportSession) -> Void)?,
+    ) async throws -> Self {
         let startTime = MonotonicDate()
 
-        guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPreset640x480) else {
+        guard let exportSession = AVAssetExportSession(asset: asset, presetName: presetName) else {
             throw SignalAttachmentError.couldNotConvertToMpeg4
         }
 
@@ -201,9 +248,79 @@ public struct PreviewableAttachment {
 
         let endTime = MonotonicDate()
         let formattedDuration = OWSOperation.formattedNs((endTime - startTime).nanoseconds)
-        Logger.info("transcoded video in \(formattedDuration)s")
+        Logger.info("transcoded video in \(formattedDuration)s (preset: \(presetName))")
 
         return try videoAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Movie.identifier, attachmentLimits: attachmentLimits)
+    }
+
+    // MARK: Video Quality
+
+    /// An `AVAssetExportSession` preset paired with a conservative estimate
+    /// of the bitrate of the file it produces.
+    struct VideoExportTier {
+        let presetName: String
+
+        /// Estimated size of the exported output, in bytes per second of
+        /// video (video and audio combined). Deliberately conservative
+        /// (higher than typical output) so that tiers are only skipped when
+        /// their output would very likely exceed the attachment size limit.
+        /// Exported files are always re-validated against the size limit.
+        let estimatedBytesPerSecond: UInt64
+    }
+
+    /// The quality tiers to attempt when compressing a video, from highest
+    /// to lowest quality.
+    ///
+    /// Which tiers are offered depends on the user's "Sent Media Quality"
+    /// preference: standard quality exports at up to 720p and high quality
+    /// at up to 1080p. (Previously, all videos were crushed to 640x480,
+    /// regardless of the preference.) Tiers whose estimated output size
+    /// exceeds `maxFileSize` are omitted, unless no lower tier remains.
+    static func videoExportTiers(
+        forQualityLevel qualityLevel: ImageQualityLevel,
+        videoDuration: CMTime,
+        maxFileSize: UInt64,
+    ) -> [VideoExportTier] {
+        let tiers: [VideoExportTier]
+        switch qualityLevel {
+        case .one:
+            // Matches the historical behavior (640x480) for reduced-quality
+            // contexts (app extensions, regions with lowered standard quality).
+            tiers = [
+                VideoExportTier(presetName: AVAssetExportPreset640x480, estimatedBytesPerSecond: 160_000),
+            ]
+        case .two:
+            tiers = [
+                VideoExportTier(presetName: AVAssetExportPreset1280x720, estimatedBytesPerSecond: 640_000),
+                VideoExportTier(presetName: AVAssetExportPreset960x540, estimatedBytesPerSecond: 320_000),
+                VideoExportTier(presetName: AVAssetExportPreset640x480, estimatedBytesPerSecond: 160_000),
+            ]
+        case .three:
+            tiers = [
+                VideoExportTier(presetName: AVAssetExportPreset1920x1080, estimatedBytesPerSecond: 1_280_000),
+                VideoExportTier(presetName: AVAssetExportPreset1280x720, estimatedBytesPerSecond: 640_000),
+                VideoExportTier(presetName: AVAssetExportPreset960x540, estimatedBytesPerSecond: 320_000),
+                VideoExportTier(presetName: AVAssetExportPreset640x480, estimatedBytesPerSecond: 160_000),
+            ]
+        }
+
+        let durationSeconds = CMTimeGetSeconds(videoDuration)
+        guard durationSeconds.isFinite, durationSeconds > 0 else {
+            return tiers
+        }
+
+        // Skip tiers whose estimated output size exceeds the limit, but
+        // never drop the last tier: it serves as the last resort, and its
+        // output is validated against the limit after export.
+        var result = tiers
+        while
+            result.count > 1,
+            let firstTier = result.first,
+            UInt64(durationSeconds).multipliedReportingOverflow(by: firstTier.estimatedBytesPerSecond).partialValue > maxFileSize
+        {
+            result.removeFirst()
+        }
+        return result
     }
 
     // MARK: Audio Attachments

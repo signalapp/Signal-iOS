@@ -822,6 +822,7 @@
 		507AA5FA2FDDC3F10067C25E /* KeyValueStoreRenamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507AA5F92FDDC3F10067C25E /* KeyValueStoreRenamer.swift */; };
 		507AA5FD2FDDC4BA0067C25E /* KeyValueStoreRenamerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507AA5FC2FDDC4BA0067C25E /* KeyValueStoreRenamerTest.swift */; };
 		507B69112C503FA800F1C6D7 /* CallLinkTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50552C302BAC079A00815474 /* CallLinkTest.swift */; };
+		5AFEED0012A34B9C00D00001 /* PreviewableAttachmentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFEED0012A34B9C00D00002 /* PreviewableAttachmentTest.swift */; };
 		507B69122C5044F800F1C6D7 /* LinkPreviewGroupLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95517271B510400B05242 /* LinkPreviewGroupLink.swift */; };
 		507C07402F116E9200ECFEFA /* NormalizedImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507C073F2F116E9200ECFEFA /* NormalizedImage.swift */; };
 		507C6AF52ED10BD900A7C74C /* RegisteredState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507C6AF42ED10BD900A7C74C /* RegisteredState.swift */; };
@@ -5177,6 +5178,7 @@
 		50552C2B2BAB8E8500815474 /* AuthCredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthCredentialStore.swift; sourceTree = "<group>"; };
 		50552C2D2BAC066A00815474 /* CallLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLink.swift; sourceTree = "<group>"; };
 		50552C302BAC079A00815474 /* CallLinkTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkTest.swift; sourceTree = "<group>"; };
+		5AFEED0012A34B9C00D00002 /* PreviewableAttachmentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewableAttachmentTest.swift; sourceTree = "<group>"; };
 		5056B3BE2DEED72800F55320 /* MonotonicDateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonotonicDateTest.swift; sourceTree = "<group>"; };
 		50589CDD2E8C44D5003EF42A /* PreKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyStore.swift; sourceTree = "<group>"; };
 		50589CDF2E8C4AD5003EF42A /* PreKeyRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyRecord.swift; sourceTree = "<group>"; };
@@ -12200,6 +12202,7 @@
 			children = (
 				507C073F2F116E9200ECFEFA /* NormalizedImage.swift */,
 				5011C8D92ED77482005DF488 /* PreviewableAttachment.swift */,
+				5AFEED0012A34B9C00D00002 /* PreviewableAttachmentTest.swift */,
 				5011C8D72ED77478005DF488 /* SendableAttachment.swift */,
 				34D913491F62D4A500722898 /* SignalAttachment.swift */,
 				B99CD9432DA9AB530035C77B /* TypedItemProvider.swift */,
@@ -18581,6 +18584,7 @@
 				50BF510A2BB2031600C2C309 /* LinkPreviewFetchStateTest.swift in Sources */,
 				50BF510C2BB2032500C2C309 /* MobileCoinHelperSDKTest.swift in Sources */,
 				D9C5634F2EB438500001626A /* OWSByteCountFormatStyleTest.swift in Sources */,
+				5AFEED0012A34B9C00D00001 /* PreviewableAttachmentTest.swift in Sources */,
 				50BF510E2BB2033800C2C309 /* RecipientPickerViewControllerTest.swift in Sources */,
 				50BF51102BB2035400C2C309 /* UIStackView+SignalUITest.swift in Sources */,
 			);
