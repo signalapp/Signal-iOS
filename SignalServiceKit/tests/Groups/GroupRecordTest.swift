@@ -11,6 +11,25 @@ import Testing
 
 struct GroupRecordTest {
     @Test
+    func testSetMasterKey() throws {
+        let db = InMemoryDB()
+        let secretParams = try GroupSecretParams.generate()
+        let groupId = try secretParams.getPublicParams().getGroupIdentifier()
+        let masterKey = try secretParams.getMasterKey()
+        var groupRecord = db.write { tx in
+            return GroupStore().fetchGroupOrInsert(groupId: .V2(groupId), tx: tx)
+        }
+        db.write { tx in
+            groupRecord.setMasterKey(secretParams: secretParams, tx: tx)
+        }
+        try #require(groupRecord.masterKey != nil)
+        groupRecord = try db.read { tx in
+            return try #require(GroupStore().fetchGroup(forGroupId: groupId, tx: tx))
+        }
+        #expect(groupRecord.masterKey?.serialize() == masterKey.serialize())
+    }
+
+    @Test
     func testLastSnapshotAt() throws {
         let db = InMemoryDB()
         let now = Date()

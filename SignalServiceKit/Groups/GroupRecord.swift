@@ -167,6 +167,7 @@ public struct GroupRecord: Codable, FetchableRecord, PersistableRecord {
         let groupId = failIfThrows { try secretParams.getPublicParams().getGroupIdentifier() }
         owsPrecondition(groupId.serialize() == self.groupId, "can't change ID for a group")
         self.masterKey = failIfThrows { try secretParams.getMasterKey() }
+        failIfThrows { try self.update(tx.database) }
     }
 
     func deriveSecretParams() -> GroupSecretParams? {
