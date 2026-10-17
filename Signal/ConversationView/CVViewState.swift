@@ -116,6 +116,7 @@ public class CVViewState: NSObject {
 
     public var collectionViewGestureRecongnizersConfigured = false
     public let collectionViewTapGestureRecognizer = SingleOrDoubleTapGestureRecognizer()
+    var doubleTapReactionMessageId: String?
     public let collectionViewLongPressGestureRecognizer = UILongPressGestureRecognizer()
     public let collectionViewContextMenuGestureRecognizer = UILongPressGestureRecognizer()
     public var collectionViewContextMenuSecondaryClickRecognizer = UITapGestureRecognizer()
