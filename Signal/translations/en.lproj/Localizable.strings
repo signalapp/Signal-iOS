@@ -8884,6 +8884,9 @@
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
 "SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
 
+/* Label for the button to send a sticker message */
+"SEND_STICKER_BUTTON_TITLE" = "Send Sticker";
+
 /* String describing high quality sent media */
 "SENT_MEDIA_QUALITY_HIGH" = "High";
 

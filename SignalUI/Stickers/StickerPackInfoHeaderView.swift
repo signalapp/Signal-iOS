@@ -108,6 +108,7 @@ public class StickerPackInfoHeaderView: UICollectionReusableView {
         let textRowsView = UIStackView(arrangedSubviews: [topRow, authorLabel, countAndSizeLabel])
         textRowsView.axis = .vertical
         textRowsView.alignment = .center
+        textRowsView.setCustomSpacing(8, after: topRow)
 
         let buttonStackView = UIStackView(arrangedSubviews: [sendButton, linkButton, uninstallButton])
         buttonStackView.axis = .horizontal
@@ -116,6 +117,7 @@ public class StickerPackInfoHeaderView: UICollectionReusableView {
         stackView.addArrangedSubview(coverView)
         stackView.addArrangedSubview(textRowsView)
         stackView.addArrangedSubview(buttonStackView)
+        stackView.setCustomSpacing(20, after: textRowsView)
 
         coverView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([

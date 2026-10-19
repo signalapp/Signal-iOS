@@ -727,8 +727,8 @@ extension ConversationViewController: CVComponentDelegate {
                 StickerDetailSheet.Action(
                     icon: .buttonForward,
                     title: OWSLocalizedString(
-                        "SEND_BUTTON_TITLE",
-                        comment: "Label for the button to send a message",
+                        "SEND_STICKER_BUTTON_TITLE",
+                        comment: "Label for the button to send a sticker message",
                     ),
                     handler: { [weak self] in
                         guard let self else { return }
@@ -744,8 +744,9 @@ extension ConversationViewController: CVComponentDelegate {
                         comment: "Title for a button to view a sticker pack",
                     ),
                     handler: { [weak self] in
+                        guard let self else { return }
                         let vc = StickerPackViewController(stickerPackInfo: stickerMetadata.packInfo)
-                        self?.present(vc, animated: true)
+                        vc.present(from: self, animated: true)
                     },
                 ),
             ],
