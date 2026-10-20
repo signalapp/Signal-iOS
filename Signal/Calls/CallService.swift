@@ -570,7 +570,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         // support or emulation (http://goo.gl/rHAnC1) so don't bother
         // trying to open a local stream.
         guard !Platform.isSimulator else { return false }
-        guard UIApplication.shared.applicationState != .background else { return false }
+        guard !CurrentAppContext().isInBackground() else { return false }
 
         switch call.mode {
         case .individual(let individualCall):

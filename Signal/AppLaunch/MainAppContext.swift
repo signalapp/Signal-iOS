@@ -13,11 +13,12 @@ class MainAppContext: NSObject, AppContext {
     let appLaunchTime: Date
 
     override init() {
-        _reportedApplicationState = AtomicValue(.inactive, lock: .init())
+        let applicationState = UIApplication.shared.applicationState
+        _reportedApplicationState = AtomicValue(applicationState, lock: .init())
 
         let launchDate = Date()
         appLaunchTime = launchDate
-        _mainApplicationStateOnLaunch = UIApplication.shared.applicationState
+        _mainApplicationStateOnLaunch = applicationState
 
         super.init()
     }
@@ -84,10 +85,10 @@ class MainAppContext: NSObject, AppContext {
 
     // MARK: -
 
-    var isMainAppAndActive: Bool { UIApplication.shared.applicationState == .active }
+    var isMainAppAndActive: Bool { reportedApplicationState == .active }
 
     @MainActor
-    var isMainAppAndActiveIsolated: Bool { UIApplication.shared.applicationState == .active }
+    var isMainAppAndActiveIsolated: Bool { reportedApplicationState == .active }
 
     let isRTL: Bool = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
 

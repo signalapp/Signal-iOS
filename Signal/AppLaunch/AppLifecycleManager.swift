@@ -188,7 +188,7 @@ final class AppLifecycleManager: NSObject, UNUserNotificationCenterDelegate {
         DebugLogger.configureSwiftLogging()
 
         Logger.warn("Launching…")
-        Logger.warn("applicationState: \(UIApplication.shared.applicationState.logString)")
+        Logger.warn("applicationState: \(mainAppContext.reportedApplicationState.logString)")
         defer { Logger.info("Launched.") }
 
         BenchEventStart(title: "Presenting HomeView", eventId: "AppStart", logInProduction: true)
@@ -229,7 +229,7 @@ final class AppLifecycleManager: NSObject, UNUserNotificationCenterDelegate {
                 databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
                 keychainStorage: keychainStorage,
             )
-        } catch KeychainError.notAllowed where UIApplication.shared.applicationState == .background {
+        } catch KeychainError.notAllowed where mainAppContext.isInBackground() {
             notifyThatPhoneMustBeUnlocked()
         } catch {
             // It's so corrupt that we can't even try to repair it.
@@ -399,7 +399,7 @@ final class AppLifecycleManager: NSObject, UNUserNotificationCenterDelegate {
     /// this happens whenever a scene first connects, which may be long after
     /// the launch finished, or never.
     func connectUI(in windowScene: UIWindowScene) -> UIWindow {
-        Logger.info("applicationState: \(UIApplication.shared.applicationState.logString)")
+        Logger.info("applicationState: \(mainAppContext.reportedApplicationState.logString)")
 
         if let window {
             // Our scene was replaced with a new one. Keep the windows we have,

@@ -127,7 +127,7 @@ class ScreenLockUI {
     }
 
     func startObserving() {
-        appIsInactiveOrBackground = UIApplication.shared.applicationState != .active
+        appIsInactiveOrBackground = !CurrentAppContext().isMainAppAndActive
 
         NotificationCenter.default.addObserver(
             self,

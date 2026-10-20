@@ -1194,7 +1194,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             return
         }
         hasDismissed = true
-        if shouldDelay, UIApplication.shared.applicationState == .active {
+        if shouldDelay, CurrentAppContext().isMainAppAndActiveIsolated {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
                 self?.dismissImmediately()
             }
