@@ -67,7 +67,7 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
         titleView.axis = .horizontal
         titleView.alignment = .center
         navigationItem.titleView = titleView
-        navigationItem.rightBarButtonItem = .closeButton { [weak self] in
+        navigationItem.leftBarButtonItem = .closeButton { [weak self] in
             self?.dismissButtonPressed()
         }
 
@@ -218,6 +218,8 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
         stickerCollectionView.layoutIfNeeded()
 
         var contentInset = stickerCollectionView.contentInset
+
+        contentInset.top = 16
         contentInset.bottom = bottomButtonContainer.frame.height + 16
 
         stickerCollectionView.verticalScrollIndicatorInsets.top = view.safeAreaInsets.top + contentInset.top
@@ -515,8 +517,8 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
                 StickerDetailSheet.Action(
                     icon: .buttonForward,
                     title: OWSLocalizedString(
-                        "SEND_STICKER_BUTTON_TITLE",
-                        comment: "Label for the button to send a sticker message",
+                        "SEND_BUTTON_TITLE",
+                        comment: "Label for the button to send a message",
                     ),
                     handler: { [weak self] in
                         guard let self else { return }
