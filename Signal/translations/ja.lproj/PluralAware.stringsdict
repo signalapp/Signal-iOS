@@ -1391,7 +1391,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d stickers</string>
+			<string>%1$d個のステッカー</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

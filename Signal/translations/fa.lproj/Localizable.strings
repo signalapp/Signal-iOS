@@ -5141,19 +5141,19 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "با دریافت پیام جدید، گفتگوهای بایگانی‌شده به صندوق ورودی منتقل خواهند شد.";
 
 /* Title of action allowing user to connect to an existing device */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_EXITING_OLD_DEVICE_ACTION" = "Pair With Existing Device";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_EXITING_OLD_DEVICE_ACTION" = "جفت‌سازی با دستگاه موجود";
 
 /* Body of prompt asking user to select device transfer target. */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_BODY" = "Choose an existing or new device to pair with. Once paired, your account transfer will begin.";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_BODY" = "یک دستگاه موجود یا جدید را برای جفت‌سازی انتخاب کنید. پس از جفت‌سازی، انتقال حسابتان آغاز خواهد شد.";
 
 /* Title of action allowing user to pair a new device transfer peer. */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_PAIR_NEW_ACTION" = "Pair a New Device";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_PAIR_NEW_ACTION" = "جفت‌سازی دستگاه جدید";
 
 /* Title of prompt asking user to select device transfer target. */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_TITLE" = "Choose a Device to Pair With";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_TITLE" = "دستگاهی را برای جفت‌سازی انتخاب کنید";
 
 /* Title of action allowing user to connect to an existing device */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_SPECIFIC_OLD_DEVICE_ACTION" = "Pair With “%1$@”";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_SPECIFIC_OLD_DEVICE_ACTION" = "جفت‌سازی با «%1$@»";
 
 /* Body of prompt notifying device transfer will continue on other device. */
 "INCOMING_DEVICE_TRANSFER_CONTINUE_BODY" = "به انتقال حساب خود در دستگاه دیگرتان ادامه دهید.";
@@ -5579,7 +5579,7 @@
 "LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "پوشه پشتیبان خود را انتخاب کنید";
 
 /* Message for an action sheet informing the user we were unable to save their local backup location */
-"LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_MESSAGE" = "Something went wrong and the folder location you selected couldn’t be saved. Try again.";
+"LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_MESSAGE" = "مشکلی پیش آمد و مکان پوشه‌ای که انتخاب کرده‌اید ذخیره نشد. دوباره امتحان کنید.";
 
 /* Title for an action sheet informing the user we were unable to save their local backup location */
 "LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_TITLE" = "مکان پوشه ذخیره نشد";
@@ -6458,7 +6458,7 @@
 "NOT_REGISTERED_BOTTOM_REREGISTER" = "ثبت‌نام دوباره";
 
 /* Description for an error indicating you are not registered. */
-"NOT_REGISTERED_ERROR_LOCALIZED_DESCRIPTION" = "You are not registered.";
+"NOT_REGISTERED_ERROR_LOCALIZED_DESCRIPTION" = "ثبت‌نام نکرده‌اید.";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "یادداشت برای خود";
@@ -10176,7 +10176,7 @@
 "SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "بلندگو روشن شد";
 
 /* Title for a button to view a sticker pack */
-"STICKER_BUTTON_VIEW_PACK" = "View Pack";
+"STICKER_BUTTON_VIEW_PACK" = "مشاهده بسته";
 
 /* The name for the sticker category 'Featured' */
 "STICKER_CATEGORY_FEATURED_NAME" = "ویژه";
@@ -10194,31 +10194,31 @@
 "STICKER_MESSAGE_PREVIEW" = "استیکر";
 
 /* Button to confirm a user wants to remove a sticker pack */
-"STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "Remove";
+"STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "حذف";
 
 /* Message for a sheet asking the user to confirm they want to remove a sticker pack */
-"STICKER_PACK_CONFIRM_REMOVE_MESSAGE" = "This will remove the sticker pack. You can't add it again without a link or sticker message.";
+"STICKER_PACK_CONFIRM_REMOVE_MESSAGE" = "این کار بسته استیکر را حذف می‌کند. بدون داشتن لینک یا پیام حاوی استیکر، نمی‌توانید دوباره آن را اضافه کنید.";
 
 /* Title for a sheet asking the user to confirm they want to remove a sticker pack */
-"STICKER_PACK_CONFIRM_REMOVE_TITLE" = "Remove Sticker Pack?";
+"STICKER_PACK_CONFIRM_REMOVE_TITLE" = "بسته استیکر حذف شود؟";
 
 /* Label for a button to copy the link of a sticker pack */
-"STICKER_PACK_LINK" = "Link";
+"STICKER_PACK_LINK" = "لینک";
 
 /* Label for a button to uninstall a sticker pack */
-"STICKER_PACK_REMOVE" = "Remove";
+"STICKER_PACK_REMOVE" = "حذف";
 
 /* Label for a button to send a sticker pack */
-"STICKER_PACK_SEND" = "Send";
+"STICKER_PACK_SEND" = "ارسال";
 
 /* Label for a button on a sticker-pack share sheet that copies the pack's share link. */
-"STICKER_PACK_SHARE_SHEET_COPY_LINK" = "Copy Link";
+"STICKER_PACK_SHARE_SHEET_COPY_LINK" = "کپی کردن لینک";
 
 /* Text describing what you can do with a sticker pack link, on a sheet for sharing it. */
-"STICKER_PACK_SHARE_SHEET_HEADER" = "Anyone with this link can add and share this sticker pack.";
+"STICKER_PACK_SHARE_SHEET_HEADER" = "هر کسی که این لینک را داشته باشد، می‌تواند این بسته استیکر را اضافه کند و به اشتراک بگذارد.";
 
 /* Label for a button on a sticker-pack share sheet that sends the pack in Signal. */
-"STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Send in Signal";
+"STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "ارسال در سیگنال";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
 "STICKER_UNAVAILABLE_MESSAGE_LABEL" = "استیکر در دسترس نیست";
@@ -10227,7 +10227,7 @@
 "STICKER_UNAVAILABLE_SHEET_TITLE" = "استیکر در دسترس نیست";
 
 /* Label for the 'install sticker pack' button. */
-"STICKERS_INSTALL_BUTTON" = "Add Stickers";
+"STICKERS_INSTALL_BUTTON" = "افزودن استیکر";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "سری های هنرمند سیگنال";

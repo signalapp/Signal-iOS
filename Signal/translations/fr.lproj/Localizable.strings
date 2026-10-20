@@ -5141,19 +5141,19 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Les conversations archivées sont déplacées vers la boîte de réception à l'arrivée d'un nouveau message.";
 
 /* Title of action allowing user to connect to an existing device */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_EXITING_OLD_DEVICE_ACTION" = "Pair With Existing Device";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_EXITING_OLD_DEVICE_ACTION" = "Jumeler avec un appareil existant";
 
 /* Body of prompt asking user to select device transfer target. */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_BODY" = "Choose an existing or new device to pair with. Once paired, your account transfer will begin.";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_BODY" = "Sélectionnez un appareil existant ou un nouvel appareil à jumeler. Le transfert du compte démarrera une fois le jumelage effectué.";
 
 /* Title of action allowing user to pair a new device transfer peer. */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_PAIR_NEW_ACTION" = "Pair a New Device";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_PAIR_NEW_ACTION" = "Jumeler avec un nouvel appareil";
 
 /* Title of prompt asking user to select device transfer target. */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_TITLE" = "Choose a Device to Pair With";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_TITLE" = "Sélectionner un appareil à jumeler";
 
 /* Title of action allowing user to connect to an existing device */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_SPECIFIC_OLD_DEVICE_ACTION" = "Pair With “%1$@”";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_SPECIFIC_OLD_DEVICE_ACTION" = "Jumeler avec \"%1$@\"";
 
 /* Body of prompt notifying device transfer will continue on other device. */
 "INCOMING_DEVICE_TRANSFER_CONTINUE_BODY" = "Poursuivez le transfert du compte sur l'autre appareil.";
@@ -5579,7 +5579,7 @@
 "LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "Sélectionner le dossier de sauvegarde";
 
 /* Message for an action sheet informing the user we were unable to save their local backup location */
-"LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_MESSAGE" = "Something went wrong and the folder location you selected couldn’t be saved. Try again.";
+"LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_MESSAGE" = "Une erreur s'est produite : impossible d'enregistrer l'emplacement du dossier. Veuillez réessayer.";
 
 /* Title for an action sheet informing the user we were unable to save their local backup location */
 "LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_TITLE" = "Impossible d'enregistrer l'emplacement du dossier";
@@ -6458,7 +6458,7 @@
 "NOT_REGISTERED_BOTTOM_REREGISTER" = "Réinscrivez-vous";
 
 /* Description for an error indicating you are not registered. */
-"NOT_REGISTERED_ERROR_LOCALIZED_DESCRIPTION" = "You are not registered.";
+"NOT_REGISTERED_ERROR_LOCALIZED_DESCRIPTION" = "Vous n'avez pas de compte Signal.";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Notes perso";
@@ -10176,7 +10176,7 @@
 "SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "Haut-parleur activé";
 
 /* Title for a button to view a sticker pack */
-"STICKER_BUTTON_VIEW_PACK" = "View Pack";
+"STICKER_BUTTON_VIEW_PACK" = "Afficher le pack";
 
 /* The name for the sticker category 'Featured' */
 "STICKER_CATEGORY_FEATURED_NAME" = "À la une";
@@ -10194,31 +10194,31 @@
 "STICKER_MESSAGE_PREVIEW" = "Message – Sticker";
 
 /* Button to confirm a user wants to remove a sticker pack */
-"STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "Remove";
+"STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "Supprimer";
 
 /* Message for a sheet asking the user to confirm they want to remove a sticker pack */
-"STICKER_PACK_CONFIRM_REMOVE_MESSAGE" = "This will remove the sticker pack. You can't add it again without a link or sticker message.";
+"STICKER_PACK_CONFIRM_REMOVE_MESSAGE" = "Ce pack de stickers sera supprimé. Vous ne pourrez le rajouter que via un lien ou un message.";
 
 /* Title for a sheet asking the user to confirm they want to remove a sticker pack */
-"STICKER_PACK_CONFIRM_REMOVE_TITLE" = "Remove Sticker Pack?";
+"STICKER_PACK_CONFIRM_REMOVE_TITLE" = "Supprimer le pack de stickers ?";
 
 /* Label for a button to copy the link of a sticker pack */
-"STICKER_PACK_LINK" = "Link";
+"STICKER_PACK_LINK" = "Partager le lien";
 
 /* Label for a button to uninstall a sticker pack */
-"STICKER_PACK_REMOVE" = "Remove";
+"STICKER_PACK_REMOVE" = "Supprimer";
 
 /* Label for a button to send a sticker pack */
-"STICKER_PACK_SEND" = "Send";
+"STICKER_PACK_SEND" = "Envoyer";
 
 /* Label for a button on a sticker-pack share sheet that copies the pack's share link. */
-"STICKER_PACK_SHARE_SHEET_COPY_LINK" = "Copy Link";
+"STICKER_PACK_SHARE_SHEET_COPY_LINK" = "Copier le lien";
 
 /* Text describing what you can do with a sticker pack link, on a sheet for sharing it. */
-"STICKER_PACK_SHARE_SHEET_HEADER" = "Anyone with this link can add and share this sticker pack.";
+"STICKER_PACK_SHARE_SHEET_HEADER" = "Toute personne disposant de ce lien peut ajouter et partager ce pack de stickers.";
 
 /* Label for a button on a sticker-pack share sheet that sends the pack in Signal. */
-"STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Send in Signal";
+"STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Envoyer sur Signal";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
 "STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Sticker indisponible";
@@ -10227,7 +10227,7 @@
 "STICKER_UNAVAILABLE_SHEET_TITLE" = "Sticker indisponible";
 
 /* Label for the 'install sticker pack' button. */
-"STICKERS_INSTALL_BUTTON" = "Add Stickers";
+"STICKERS_INSTALL_BUTTON" = "Ajouter des stickers";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Stickers d'artistes pour Signal";

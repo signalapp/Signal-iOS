@@ -5141,19 +5141,19 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Conversațiile arhivate se vor muta în Inbox atunci când sosește un mesaj nou.";
 
 /* Title of action allowing user to connect to an existing device */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_EXITING_OLD_DEVICE_ACTION" = "Pair With Existing Device";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_EXITING_OLD_DEVICE_ACTION" = "Împerechează cu dispozitivul existent";
 
 /* Body of prompt asking user to select device transfer target. */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_BODY" = "Choose an existing or new device to pair with. Once paired, your account transfer will begin.";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_BODY" = "Alege un dispozitiv nou sau existent cu care să-l împerechezi. După împerechere, va începe transferul contului.";
 
 /* Title of action allowing user to pair a new device transfer peer. */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_PAIR_NEW_ACTION" = "Pair a New Device";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_PAIR_NEW_ACTION" = "Asociază un dispozitiv nou";
 
 /* Title of prompt asking user to select device transfer target. */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_TITLE" = "Choose a Device to Pair With";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_TITLE" = "Alege un dispozitiv pentru împerechere";
 
 /* Title of action allowing user to connect to an existing device */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_SPECIFIC_OLD_DEVICE_ACTION" = "Pair With “%1$@”";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_SPECIFIC_OLD_DEVICE_ACTION" = "Împerechează cu „%1$@“";
 
 /* Body of prompt notifying device transfer will continue on other device. */
 "INCOMING_DEVICE_TRANSFER_CONTINUE_BODY" = "Continuă să-ți transferi contul pe celălalt dispozitiv.";
@@ -5579,7 +5579,7 @@
 "LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "Selectează folderul de rezervă";
 
 /* Message for an action sheet informing the user we were unable to save their local backup location */
-"LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_MESSAGE" = "Something went wrong and the folder location you selected couldn’t be saved. Try again.";
+"LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_MESSAGE" = "A apărut o eroare și nu s-a putut salva locația folderului pe care ți l-ai ales. Încearcă din nou.";
 
 /* Title for an action sheet informing the user we were unable to save their local backup location */
 "LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_TITLE" = "Nu s-a putut salva locația fișierului";
@@ -6458,7 +6458,7 @@
 "NOT_REGISTERED_BOTTOM_REREGISTER" = "Înregistrează din nou";
 
 /* Description for an error indicating you are not registered. */
-"NOT_REGISTERED_ERROR_LOCALIZED_DESCRIPTION" = "You are not registered.";
+"NOT_REGISTERED_ERROR_LOCALIZED_DESCRIPTION" = "Nu ești înregistrat.";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Notă personală";
@@ -10176,7 +10176,7 @@
 "SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "Difuzor pornit";
 
 /* Title for a button to view a sticker pack */
-"STICKER_BUTTON_VIEW_PACK" = "View Pack";
+"STICKER_BUTTON_VIEW_PACK" = "Vezi pachetul";
 
 /* The name for the sticker category 'Featured' */
 "STICKER_CATEGORY_FEATURED_NAME" = "Promovate";
@@ -10194,31 +10194,31 @@
 "STICKER_MESSAGE_PREVIEW" = "Mesaj cu autocolant";
 
 /* Button to confirm a user wants to remove a sticker pack */
-"STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "Remove";
+"STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "Elimină";
 
 /* Message for a sheet asking the user to confirm they want to remove a sticker pack */
-"STICKER_PACK_CONFIRM_REMOVE_MESSAGE" = "This will remove the sticker pack. You can't add it again without a link or sticker message.";
+"STICKER_PACK_CONFIRM_REMOVE_MESSAGE" = "Acțiunea va elimina pachetul de abțibilduri. Nu poți să le adaugi din nou fără un link sau un mesaj de abțibilduri.";
 
 /* Title for a sheet asking the user to confirm they want to remove a sticker pack */
-"STICKER_PACK_CONFIRM_REMOVE_TITLE" = "Remove Sticker Pack?";
+"STICKER_PACK_CONFIRM_REMOVE_TITLE" = "Elimini pachetul de abțibilduri?";
 
 /* Label for a button to copy the link of a sticker pack */
 "STICKER_PACK_LINK" = "Link";
 
 /* Label for a button to uninstall a sticker pack */
-"STICKER_PACK_REMOVE" = "Remove";
+"STICKER_PACK_REMOVE" = "Elimină";
 
 /* Label for a button to send a sticker pack */
-"STICKER_PACK_SEND" = "Send";
+"STICKER_PACK_SEND" = "Trimite";
 
 /* Label for a button on a sticker-pack share sheet that copies the pack's share link. */
-"STICKER_PACK_SHARE_SHEET_COPY_LINK" = "Copy Link";
+"STICKER_PACK_SHARE_SHEET_COPY_LINK" = "Copiază Link";
 
 /* Text describing what you can do with a sticker pack link, on a sheet for sharing it. */
-"STICKER_PACK_SHARE_SHEET_HEADER" = "Anyone with this link can add and share this sticker pack.";
+"STICKER_PACK_SHARE_SHEET_HEADER" = "Oricine cu acest link poate adăuga și partaja pachetul de abțibilduri.";
 
 /* Label for a button on a sticker-pack share sheet that sends the pack in Signal. */
-"STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Send in Signal";
+"STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Trimite pe Signal";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
 "STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Autocolantul nu este disponibil";
@@ -10227,7 +10227,7 @@
 "STICKER_UNAVAILABLE_SHEET_TITLE" = "Autocolantul nu este disponibil";
 
 /* Label for the 'install sticker pack' button. */
-"STICKERS_INSTALL_BUTTON" = "Add Stickers";
+"STICKERS_INSTALL_BUTTON" = "Adaugă Abțibilduri";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Seria artistică Signal";

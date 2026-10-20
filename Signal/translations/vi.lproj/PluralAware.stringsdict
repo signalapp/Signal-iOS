@@ -1391,7 +1391,7 @@ Hãy thử lại sau %1$d giờ.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d stickers</string>
+			<string>%1$d nhãn dán</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

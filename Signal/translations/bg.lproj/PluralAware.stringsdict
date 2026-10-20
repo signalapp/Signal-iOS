@@ -1591,9 +1591,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d sticker</string>
+			<string>%1$d стикер</string>
 			<key>other</key>
-			<string>%1$d stickers</string>
+			<string>%1$d стикера</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

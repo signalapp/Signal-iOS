@@ -1593,7 +1593,7 @@ Riprova tra %1$d ore.</string>
 			<key>one</key>
 			<string>%1$d sticker</string>
 			<key>other</key>
-			<string>%1$d stickers</string>
+			<string>%1$d sticker</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

@@ -2474,7 +2474,7 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "Ongeldig contact.";
 
 /* Button on a shared contact that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred. */
-"CONTACT_SHARE_MESSAGE_BUTTON" = "Bericht";
+"CONTACT_SHARE_MESSAGE_BUTTON" = "Bericht sturen";
 
 /* Notice at the top of the 'Share Contact' view when the shared contact includes their Signal account. Embeds {{ contact name }}. */
 "CONTACT_SHARE_SIGNAL_ACCOUNT_NOTICE_FORMAT" = "Iedereen met wie je dit profiel deelt, kan via Signal berichten sturen naar %1$@.";
@@ -5141,19 +5141,19 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Gearchiveerde chats zullen uit het archief gaan als er een nieuw bericht binnenkomt.";
 
 /* Title of action allowing user to connect to an existing device */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_EXITING_OLD_DEVICE_ACTION" = "Pair With Existing Device";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_EXITING_OLD_DEVICE_ACTION" = "Verbinden met bestaand apparaat";
 
 /* Body of prompt asking user to select device transfer target. */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_BODY" = "Choose an existing or new device to pair with. Once paired, your account transfer will begin.";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_BODY" = "Kies een bestaand of nieuw apparaat om mee te verbinden. Zodra de apparaten zijn verbonden, wordt je account overgezet.";
 
 /* Title of action allowing user to pair a new device transfer peer. */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_PAIR_NEW_ACTION" = "Pair a New Device";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_PAIR_NEW_ACTION" = "Nieuw apparaat verbinden";
 
 /* Title of prompt asking user to select device transfer target. */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_TITLE" = "Choose a Device to Pair With";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_TITLE" = "Een apparaat kiezen om mee te verbinden";
 
 /* Title of action allowing user to connect to an existing device */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_SPECIFIC_OLD_DEVICE_ACTION" = "Pair With “%1$@”";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_SPECIFIC_OLD_DEVICE_ACTION" = "Verbinden met ‘%1$@’";
 
 /* Body of prompt notifying device transfer will continue on other device. */
 "INCOMING_DEVICE_TRANSFER_CONTINUE_BODY" = "Ga op je andere apparaat door met het overzetten van je account.";
@@ -5579,7 +5579,7 @@
 "LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "Selecteer je back-upmap";
 
 /* Message for an action sheet informing the user we were unable to save their local backup location */
-"LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_MESSAGE" = "Something went wrong and the folder location you selected couldn’t be saved. Try again.";
+"LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_MESSAGE" = "Er is een fout opgetreden en de door jou geselecteerde maplocatie kon niet worden opgeslagen. Probeer het opnieuw.";
 
 /* Title for an action sheet informing the user we were unable to save their local backup location */
 "LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_TITLE" = "De locatie van de map kon niet worden opgeslagen";
@@ -6458,7 +6458,7 @@
 "NOT_REGISTERED_BOTTOM_REREGISTER" = "Registreer opnieuw";
 
 /* Description for an error indicating you are not registered. */
-"NOT_REGISTERED_ERROR_LOCALIZED_DESCRIPTION" = "You are not registered.";
+"NOT_REGISTERED_ERROR_LOCALIZED_DESCRIPTION" = "Je bent niet geregistreerd.";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Notitie aan mezelf";
@@ -10176,7 +10176,7 @@
 "SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "Luidspreker aan";
 
 /* Title for a button to view a sticker pack */
-"STICKER_BUTTON_VIEW_PACK" = "View Pack";
+"STICKER_BUTTON_VIEW_PACK" = "Pakket bekijken";
 
 /* The name for the sticker category 'Featured' */
 "STICKER_CATEGORY_FEATURED_NAME" = "Uitgelicht";
@@ -10194,31 +10194,31 @@
 "STICKER_MESSAGE_PREVIEW" = "Stickerbericht";
 
 /* Button to confirm a user wants to remove a sticker pack */
-"STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "Remove";
+"STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "Verwijderen";
 
 /* Message for a sheet asking the user to confirm they want to remove a sticker pack */
-"STICKER_PACK_CONFIRM_REMOVE_MESSAGE" = "This will remove the sticker pack. You can't add it again without a link or sticker message.";
+"STICKER_PACK_CONFIRM_REMOVE_MESSAGE" = "Hiermee verwijder je het stickerpakket. Je kunt dit pakket niet opnieuw toevoegen zonder de link of een stickerbericht.";
 
 /* Title for a sheet asking the user to confirm they want to remove a sticker pack */
-"STICKER_PACK_CONFIRM_REMOVE_TITLE" = "Remove Sticker Pack?";
+"STICKER_PACK_CONFIRM_REMOVE_TITLE" = "Stickerpakket verwijderen?";
 
 /* Label for a button to copy the link of a sticker pack */
 "STICKER_PACK_LINK" = "Link";
 
 /* Label for a button to uninstall a sticker pack */
-"STICKER_PACK_REMOVE" = "Remove";
+"STICKER_PACK_REMOVE" = "Verwijderen";
 
 /* Label for a button to send a sticker pack */
-"STICKER_PACK_SEND" = "Send";
+"STICKER_PACK_SEND" = "Verzenden";
 
 /* Label for a button on a sticker-pack share sheet that copies the pack's share link. */
-"STICKER_PACK_SHARE_SHEET_COPY_LINK" = "Copy Link";
+"STICKER_PACK_SHARE_SHEET_COPY_LINK" = "Link kopiëren";
 
 /* Text describing what you can do with a sticker pack link, on a sheet for sharing it. */
-"STICKER_PACK_SHARE_SHEET_HEADER" = "Anyone with this link can add and share this sticker pack.";
+"STICKER_PACK_SHARE_SHEET_HEADER" = "Iedereen die deze link heeft, kan dit stickerpakket installeren en delen.";
 
 /* Label for a button on a sticker-pack share sheet that sends the pack in Signal. */
-"STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Send in Signal";
+"STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Versturen via Signal";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
 "STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Sticker niet beschikbaar";
@@ -10227,7 +10227,7 @@
 "STICKER_UNAVAILABLE_SHEET_TITLE" = "Sticker niet beschikbaar";
 
 /* Label for the 'install sticker pack' button. */
-"STICKERS_INSTALL_BUTTON" = "Add Stickers";
+"STICKERS_INSTALL_BUTTON" = "Stickers toevoegen";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal Artist stickerpakketten";

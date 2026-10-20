@@ -1591,9 +1591,9 @@ Yritä uudelleen %1$d tunnin kuluttua.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d sticker</string>
+			<string>%1$d tarra</string>
 			<key>other</key>
-			<string>%1$d stickers</string>
+			<string>%1$d tarraa</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

@@ -5141,19 +5141,19 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "سيتم تحويل الدردشات المؤرشفة إلى البريد الوارد عند وصول رسائل جديدة.";
 
 /* Title of action allowing user to connect to an existing device */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_EXITING_OLD_DEVICE_ACTION" = "Pair With Existing Device";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_EXITING_OLD_DEVICE_ACTION" = "الاقتران بالجهاز الحالي";
 
 /* Body of prompt asking user to select device transfer target. */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_BODY" = "Choose an existing or new device to pair with. Once paired, your account transfer will begin.";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_BODY" = "اختر جهازًا حاليًا أو جديدًا للإقران به. بمُجرَّد الاقتران، تبدأ عملية نقل الحساب فورًا.";
 
 /* Title of action allowing user to pair a new device transfer peer. */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_PAIR_NEW_ACTION" = "Pair a New Device";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_PAIR_NEW_ACTION" = "إقران جهاز جديد";
 
 /* Title of prompt asking user to select device transfer target. */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_TITLE" = "Choose a Device to Pair With";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_TITLE" = "اختر جهازًا للإقران معه";
 
 /* Title of action allowing user to connect to an existing device */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_SPECIFIC_OLD_DEVICE_ACTION" = "Pair With “%1$@”";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_SPECIFIC_OLD_DEVICE_ACTION" = "الاقتران بـ \"%1$@\"";
 
 /* Body of prompt notifying device transfer will continue on other device. */
 "INCOMING_DEVICE_TRANSFER_CONTINUE_BODY" = "تابِع نقل حسابك على جهازك الآخر.";
@@ -5579,7 +5579,7 @@
 "LOCAL_BACKUPS_SELECT_HERO_SHEET_TITLE" = "حدِّد مجلد النسخة الاحتياطية الخاص بك";
 
 /* Message for an action sheet informing the user we were unable to save their local backup location */
-"LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_MESSAGE" = "Something went wrong and the folder location you selected couldn’t be saved. Try again.";
+"LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_MESSAGE" = "حدث خطأ ما ولم يتم حفظ موقع المجلد المُحدَّد. حاوِل مرّة أخرى.";
 
 /* Title for an action sheet informing the user we were unable to save their local backup location */
 "LOCAL_FILE_BACKUP_CHOOSE_FOLDER_ERROR_TITLE" = "تعذَّر حفظ موقع المجلد";
@@ -6458,7 +6458,7 @@
 "NOT_REGISTERED_BOTTOM_REREGISTER" = "أعِد التسجيل";
 
 /* Description for an error indicating you are not registered. */
-"NOT_REGISTERED_ERROR_LOCALIZED_DESCRIPTION" = "You are not registered.";
+"NOT_REGISTERED_ERROR_LOCALIZED_DESCRIPTION" = "أنت غير مُسجِّل.";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "الملاحظات الشخصية";
@@ -10176,7 +10176,7 @@
 "SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "مكبر الصوت مُشغَّل";
 
 /* Title for a button to view a sticker pack */
-"STICKER_BUTTON_VIEW_PACK" = "View Pack";
+"STICKER_BUTTON_VIEW_PACK" = "عرض الحزمة";
 
 /* The name for the sticker category 'Featured' */
 "STICKER_CATEGORY_FEATURED_NAME" = "مُميَّزة";
@@ -10194,31 +10194,31 @@
 "STICKER_MESSAGE_PREVIEW" = "رسالة مُلصَق";
 
 /* Button to confirm a user wants to remove a sticker pack */
-"STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "Remove";
+"STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "إزالة";
 
 /* Message for a sheet asking the user to confirm they want to remove a sticker pack */
-"STICKER_PACK_CONFIRM_REMOVE_MESSAGE" = "This will remove the sticker pack. You can't add it again without a link or sticker message.";
+"STICKER_PACK_CONFIRM_REMOVE_MESSAGE" = "سيؤدي هذا إلى إزالة حزمة المُلصَقات. لا يمكنك إضافتها من جديد دون رابط أو رسالة مُلصَق.";
 
 /* Title for a sheet asking the user to confirm they want to remove a sticker pack */
-"STICKER_PACK_CONFIRM_REMOVE_TITLE" = "Remove Sticker Pack?";
+"STICKER_PACK_CONFIRM_REMOVE_TITLE" = "هل ترغبُ بإزالة حزمة المُلصَقات؟";
 
 /* Label for a button to copy the link of a sticker pack */
-"STICKER_PACK_LINK" = "Link";
+"STICKER_PACK_LINK" = "نسخ الرابط";
 
 /* Label for a button to uninstall a sticker pack */
-"STICKER_PACK_REMOVE" = "Remove";
+"STICKER_PACK_REMOVE" = "إزالة";
 
 /* Label for a button to send a sticker pack */
-"STICKER_PACK_SEND" = "Send";
+"STICKER_PACK_SEND" = "إرسال";
 
 /* Label for a button on a sticker-pack share sheet that copies the pack's share link. */
-"STICKER_PACK_SHARE_SHEET_COPY_LINK" = "Copy Link";
+"STICKER_PACK_SHARE_SHEET_COPY_LINK" = "نسخ الرابط";
 
 /* Text describing what you can do with a sticker pack link, on a sheet for sharing it. */
-"STICKER_PACK_SHARE_SHEET_HEADER" = "Anyone with this link can add and share this sticker pack.";
+"STICKER_PACK_SHARE_SHEET_HEADER" = "أي شخص لديه هذا الرابط يمكنه إضافة حزمة المُلصَقات هذه ومشاركتها.";
 
 /* Label for a button on a sticker-pack share sheet that sends the pack in Signal. */
-"STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Send in Signal";
+"STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "الإرسال على سيجنال";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
 "STICKER_UNAVAILABLE_MESSAGE_LABEL" = "المُلصَق غير مُتوفِّر";
@@ -10227,7 +10227,7 @@
 "STICKER_UNAVAILABLE_SHEET_TITLE" = "المُلصَق غير مُتوفِّر";
 
 /* Label for the 'install sticker pack' button. */
-"STICKERS_INSTALL_BUTTON" = "Add Stickers";
+"STICKERS_INSTALL_BUTTON" = "إضافة مُلصَقات";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "حزَم المُلصَقات الفنية على سيجنال";

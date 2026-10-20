@@ -1991,13 +1991,13 @@ Skúste to znova o %1$d hodín.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d sticker</string>
+			<string>%1$d nálepka</string>
 			<key>few</key>
-			<string>%1$d stickers</string>
+			<string>%1$d nálepky</string>
 			<key>many</key>
-			<string>%1$d stickers</string>
+			<string>%1$d nálepky</string>
 			<key>other</key>
-			<string>%1$d stickers</string>
+			<string>%1$d nálepiek</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

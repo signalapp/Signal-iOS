@@ -1391,7 +1391,7 @@ Coba lagi dalam %1$d jam.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d stickers</string>
+			<string>%1$d stiker</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

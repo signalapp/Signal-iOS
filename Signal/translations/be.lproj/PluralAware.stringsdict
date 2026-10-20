@@ -1991,13 +1991,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d sticker</string>
+			<string>%1$d стыкер</string>
 			<key>few</key>
-			<string>%1$d stickers</string>
+			<string>%1$d стыкеры</string>
 			<key>many</key>
-			<string>%1$d stickers</string>
+			<string>%1$d стыкераў</string>
 			<key>other</key>
-			<string>%1$d stickers</string>
+			<string>%1$d стыкераў</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

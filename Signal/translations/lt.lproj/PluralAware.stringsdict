@@ -1991,13 +1991,13 @@ Bandykite vėl po %1$d val.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d sticker</string>
+			<string>%1$d lipdukas</string>
 			<key>few</key>
-			<string>%1$d stickers</string>
+			<string>%1$d lipdukai</string>
 			<key>many</key>
-			<string>%1$d stickers</string>
+			<string>%1$d lipduko</string>
 			<key>other</key>
-			<string>%1$d stickers</string>
+			<string>%1$d lipdukų</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

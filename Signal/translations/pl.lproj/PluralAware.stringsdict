@@ -1991,13 +1991,13 @@ Spróbuj ponownie za %1$d godziny.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d sticker</string>
+			<string>%1$d naklejka</string>
 			<key>few</key>
-			<string>%1$d stickers</string>
+			<string>%1$d naklejki</string>
 			<key>many</key>
-			<string>%1$d stickers</string>
+			<string>%1$d naklejek</string>
 			<key>other</key>
-			<string>%1$d stickers</string>
+			<string>%1$d naklejki</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

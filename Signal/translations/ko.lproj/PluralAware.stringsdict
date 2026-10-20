@@ -955,7 +955,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d개 이상 항목을 공유할 수 없습니다.</string>
+			<string>항목은 최대 %1$d개까지 공유할 수 있습니다.</string>
 		</dict>
 	</dict>
 	<key>INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_BODY_%d</key>
@@ -1391,7 +1391,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d stickers</string>
+			<string>스티커 %1$d개</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
