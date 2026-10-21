@@ -1,1 +1,1 @@
-• 本次更新对贴纸体验进行了多项改进，包括新增分享贴纸包链接的快捷方式。
+• Initial optimizations for iPhone Duo, with more improvements on the way!

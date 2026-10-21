@@ -1,1 +1,1 @@
-• Ulepszyliśmy obsługę naklejek i dodaliśmy wygodny skrót, dzięki któremu szybko udostępnisz link do pakietu.
+• Initial optimizations for iPhone Duo, with more improvements on the way!

@@ -1,1 +1,1 @@
-• हे अद्यतन स्टिकर अनुभवामध्ये अनेक सुधारणा सादर करते, ज्यामध्ये स्टिकर पॅक लिंक शेअर करण्याचा एक सोयीचा शॉर्टकटसुद्धा समाविष्ट आहे.
+• Initial optimizations for iPhone Duo, with more improvements on the way!

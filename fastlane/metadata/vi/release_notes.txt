@@ -1,1 +1,1 @@
-• Bản cập nhật này mang đến một số cải tiến cho trải nghiệm sử dụng nhãn dán, bao gồm một lối tắt tiện lợi để chia sẻ đường dẫn đến gói nhãn dán.
+• Initial optimizations for iPhone Duo, with more improvements on the way!

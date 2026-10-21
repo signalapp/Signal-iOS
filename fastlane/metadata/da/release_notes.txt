@@ -1,1 +1,1 @@
-• Denne opdatering indeholder flere forbedringer af klistermærkeoplevelsen, herunder en nem genvej til at dele et link til en klistermærkepakke.
+• Initial optimizations for iPhone Duo, with more improvements on the way!

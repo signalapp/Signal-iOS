@@ -1,1 +1,1 @@
-• اس اپ ڈیٹ میں اسٹیکر کے استعمال کے تجربے کے حوالے سے کئی بہتریاں متعارف کروائی گئی ہیں، جن میں اسٹیکر پیک کا لنک شیئر کرنے کا آسان شارٹ کٹ بھی شامل ہے۔
+• Initial optimizations for iPhone Duo, with more improvements on the way!

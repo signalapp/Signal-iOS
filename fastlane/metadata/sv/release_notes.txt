@@ -1,1 +1,1 @@
-• Den här uppdateringen introducerar flera förbättringar av stickerupplevelsen, bland annat en smidig genväg för att dela en länk till ett stickerpaket.
+• Initial optimizations for iPhone Duo, with more improvements on the way!

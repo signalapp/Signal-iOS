@@ -1,1 +1,1 @@
-• Dieses Update bringt einige Verbesserungen für die Sticker-Funktion mit sich, darunter eine praktische Schnellfunktion, um den Link zu einem Sticker-Set zu teilen.
+• Initial optimizations for iPhone Duo, with more improvements on the way!

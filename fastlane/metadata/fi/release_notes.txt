@@ -1,1 +1,1 @@
-• Päivitys tuo useita parannuksia tarrapakettien käyttökokemukseen, mm. kätevän oikotien tarrapaketin linkin jakamiseksi.
+• Initial optimizations for iPhone Duo, with more improvements on the way!

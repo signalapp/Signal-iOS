@@ -1,1 +1,1 @@
-• พัฒนาในหลายๆ จุดเพื่อยกระดับการใช้งานสติกเกอร์ พร้อมทางลัดใหม่ที่ให้คุณแชร์ลิงก์ของชุดสติกเกอร์ได้ทันใจขึ้นอีก
+• Initial optimizations for iPhone Duo, with more improvements on the way!

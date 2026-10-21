@@ -1,1 +1,1 @@
-• Esta atualização traz várias melhorias na experiência com figurinhas, incluindo um atalho prático para compartilhar o link de um pacote de figurinhas.
+• Initial optimizations for iPhone Duo, with more improvements on the way!

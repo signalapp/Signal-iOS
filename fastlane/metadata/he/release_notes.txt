@@ -1,1 +1,1 @@
-• העדכון הזה מציג כמה עדכונים בחוויית הסטיקרים, כולל קיצור דרך נוח לשיתוף לינק לחבילת סטיקרים.
+• Initial optimizations for iPhone Duo, with more improvements on the way!

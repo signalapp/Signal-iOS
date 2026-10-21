@@ -1,1 +1,1 @@
-• يقدم هذا التحديث عدة تحسينات على تجربة المُلصَقات، بما في ذلك اختصار مناسب لمشاركة رابط حزمة المُلصَقات.
+• Initial optimizations for iPhone Duo, with more improvements on the way!

@@ -1,1 +1,1 @@
-• Această actualizare introduce câteva îmbunătățiri privind abțibildurile, inclusiv o scurtătură utilă pentru a trimite linkul pachetului de abțibilduri.
+• Initial optimizations for iPhone Duo, with more improvements on the way!

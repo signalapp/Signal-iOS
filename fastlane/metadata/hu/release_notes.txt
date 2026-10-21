@@ -1,1 +1,1 @@
-• Ez a frissítés számos fejlesztést vezet be a matricák használatában, beleértve egy kényelmes parancsikont a matricacsomag linkjének megosztásához.
+• Initial optimizations for iPhone Duo, with more improvements on the way!

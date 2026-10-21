@@ -1,1 +1,1 @@
-• Bu güncelleme, bir çıkartma paketi bağlantısı paylaşmak için pratik bir kısayol da dahil olmak üzere çıkartma deneyimine çeşitli iyileştirmeler getiriyor.
+• Initial optimizations for iPhone Duo, with more improvements on the way!

@@ -1,1 +1,1 @@
-• Esta actualización incluye diversas mejoras relacionadas con los stickers, como un práctico atajo para compartir un enlace a un paquete de stickers.
+• Initial optimizations for iPhone Duo, with more improvements on the way!

@@ -1,1 +1,1 @@
-• Esta atualização apresenta várias melhorias à experiência de autocolantes, incluindo um atalho conveniente para partilhar o link de um pacote de autocolantes.
+• Initial optimizations for iPhone Duo, with more improvements on the way!

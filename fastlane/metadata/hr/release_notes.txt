@@ -1,1 +1,1 @@
-• Uz ovo ažuriranje, korištenje naljepnica postaje još jednostavnije. Dodali smo praktičan prečac za dijeljenje poveznice na paket naljepnica.
+• Initial optimizations for iPhone Duo, with more improvements on the way!

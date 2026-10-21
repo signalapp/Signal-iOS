@@ -1,1 +1,1 @@
-• 本次更新推出了對貼圖使用體驗的多項優化，其中包括可直接分享貼圖包連結的方便捷徑。
+• Initial optimizations for iPhone Duo, with more improvements on the way!

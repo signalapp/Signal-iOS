@@ -1,1 +1,1 @@
-• Tato aktualizace přináší několik vylepšení nálepek, včetně praktické zkratky pro sdílení odkazu na balíček.
+• Initial optimizations for iPhone Duo, with more improvements on the way!

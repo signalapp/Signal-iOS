@@ -1,1 +1,1 @@
-• Pembaruan ini menghadirkan sejumlah peningkatan pada pengalaman penggunaan stiker, termasuk pintasan praktis untuk membagikan tautan paket stiker.
+• Initial optimizations for iPhone Duo, with more improvements on the way!
