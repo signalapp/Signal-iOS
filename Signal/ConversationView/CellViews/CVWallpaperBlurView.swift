@@ -45,10 +45,25 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer, CVDimmableView {
         }
     }
 
+    /// The blurred wallpaper image only spans the reference view, so a bubble
+    /// that extends beyond it (e.g. a very tall message in the context menu
+    /// preview) would be left unfilled where the image doesn't reach.
+    static func needsFallbackBackground(bubbleBounds: CGRect, imageFrame: CGRect) -> Bool {
+        return !imageFrame.contains(bubbleBounds)
+    }
+
     public func applyLayout() {
         guard bounds.size.isNonEmpty else { return }
 
         UIView.performWithoutAnimation {
+            if let state, !isPreview, !isReduceTransparencyMode {
+                // The image is opaque, so this is only visible where it doesn't reach.
+                backgroundColor = Self.needsFallbackBackground(
+                    bubbleBounds: bounds,
+                    imageFrame: imageViewFrame,
+                ) ? (state.averageColor ?? Theme.backgroundColor) : nil
+            }
+
             imageView.frame = imageViewFrame
             imageViewMaskLayer.frame = imageView.layer.bounds
             strokeLayer.frame = layer.bounds
