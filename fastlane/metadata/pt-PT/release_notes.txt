@@ -1,1 +1,1 @@
-• Initial optimizations for iPhone Duo, with more improvements on the way!
+• Signal is now optimized for iPhone Duo, so you can install one update to get ready for two screens. We will unfold additional improvements in the future too.
