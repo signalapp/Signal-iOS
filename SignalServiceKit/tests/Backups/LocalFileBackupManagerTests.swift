@@ -277,6 +277,62 @@ struct LocalFileBackupManagerTests {
     }
 
     @Test
+    func testCopyAttachmentsToDiskSkipsMissingFile() async throws {
+        let missingAttachment = try LocalFileBackupTestSupport.makeMockAttachmentWithRealFile()
+        let presentAttachment = try LocalFileBackupTestSupport.makeMockAttachmentWithRealFile()
+
+        let (missingId, presentId) = db.write { tx in
+            let missingId = LocalFileBackupTestSupport.insertMockAttachment(missingAttachment, tx: tx)
+            let presentId = LocalFileBackupTestSupport.insertMockAttachment(presentAttachment, tx: tx)
+            return (missingId, presentId)
+        }
+
+        try await localFileBackupAttachmentMetadataManager.ensureAttachmentMetadataExists(progressSink: nil)
+
+        let collector = LocalFileBackupAttachmentCollector()
+        collector.append(id: missingId)
+        collector.append(id: presentId)
+        try await localFileBackupManager.queueLocalBackupAttachmentsForExport(localFileBackupAttachmentCollector: collector)
+
+        try FileManager.default.removeItem(at: missingAttachment.asStream()!.fileURL)
+
+        let localBackupURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer {
+            try? FileManager.default.removeItem(at: localBackupURL)
+        }
+
+        let currentBackupDirectoryName = LocalFileBackupManager.FileStructure.backupDirectory(date: Date())
+        try FileManager.default.createDirectory(
+            at: localBackupURL.appendingPathComponent(currentBackupDirectoryName),
+            withIntermediateDirectories: true,
+        )
+
+        try await localFileBackupManager.writeQueuedAttachmentsToDisk(
+            backupsRootDirectory: localBackupURL,
+            currentBackupDirectoryName: currentBackupDirectoryName,
+            progress: nil,
+        )
+
+        let presentLocalKey = try db.read { tx in
+            try BackupLocalFileAttachmentMetadataRecord
+                .filter(key: presentId)
+                .fetchOne(tx.database)!.localKey
+        }
+        let presentMediaName = LocalFileBackupAttachmentNaming.mediaName(
+            localKey: presentLocalKey,
+            plaintextHash: presentAttachment.plaintextHash!,
+        )
+        let presentMediaPath = localBackupURL
+            .appendingPathComponent("files")
+            .appendingPathComponent(LocalFileBackupAttachmentNaming.subdirectoryName(mediaName: presentMediaName))
+            .appendingPathComponent(presentMediaName)
+
+        #expect(FileManager.default.fileExists(atPath: presentMediaPath.path))
+        #expect(db.read { tx in LocalFileBackupStore().exportRecords(batchSize: 10, tx: tx) }.isEmpty)
+    }
+
+    @Test
     func testWriteQueuedAttachmentsAcrossMultipleBatches() async throws {
         // Larger than batch count so it spans multiple manifestStream writes.
         let attachmentCount = await LocalFileBackupManager.attachmentBatchSize + 1

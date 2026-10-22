@@ -125,6 +125,8 @@ class LocalFileBackupExportJob {
 
             let backupsRootDirectory = LocalFileBackupManager.FileStructure.rootDirectoryInFileLocation(resolvedURL)
             let currentDirectoryName: String
+            let backupDate: Date
+            let backupSizeBytes: UInt64
 
             switch resumptionPoint {
             case nil:
@@ -153,23 +155,21 @@ class LocalFileBackupExportJob {
                     localBackupURL: resolvedURL,
                 )
                 currentDirectoryName = currentBackupDirectoryName
+                backupDate = metadata.exportStartDate
+                backupSizeBytes = UInt64(safeCast: metadata.encryptedDataLength) + metadata.localAttachmentByteSize
 
-                let backupFileSizeBytes = UInt64(safeCast: metadata.encryptedDataLength)
-                let backupMediaSizeBytes = metadata.localAttachmentByteSize
                 await db.awaitableWrite { tx in
-                    localFileBackupStore.setLastBackupDetails(
-                        date: metadata.exportStartDate,
-                        backupSizeBytes: backupFileSizeBytes + backupMediaSizeBytes,
+                    localFileBackupExportJobStore.setReachedResumptionPoint(
+                        .postBackupFileCopy(directoryName: currentDirectoryName, backupDate: backupDate, backupSizeBytes: backupSizeBytes),
                         tx: tx,
                     )
                 }
-                await db.awaitableWrite { tx in
-                    localFileBackupExportJobStore.setReachedResumptionPoint(.postBackupFileCopy(directoryName: currentDirectoryName), tx: tx)
-                }
-            case .postBackupFileCopy(let directoryName):
+            case .postBackupFileCopy(let directoryName, let resumedBackupDate, let resumedBackupSizeBytes):
                 await performWithDummyProgress(progress.child(for: .attachmentMetadataPrep), work: {})
                 await performWithDummyProgress(progress.child(for: .backupFileExport), work: {})
                 currentDirectoryName = directoryName
+                backupDate = resumedBackupDate
+                backupSizeBytes = resumedBackupSizeBytes
             }
 
             logger.info("Copying attachments to disk...")
@@ -183,6 +183,8 @@ class LocalFileBackupExportJob {
             try await localFileBackupManager.cleanUpOldBackupsAndOrphanedAttachments(backupsRootDirectory: backupsRootDirectory)
 
             await db.awaitableWrite { tx in
+                // Only record the backup once attachments are copied and old backups pruned.
+                localFileBackupStore.setLastBackupDetails(date: backupDate, backupSizeBytes: backupSizeBytes, tx: tx)
                 localFileBackupExportJobStore.setReachedResumptionPoint(nil, tx: tx)
             }
             logger.info("Done!")

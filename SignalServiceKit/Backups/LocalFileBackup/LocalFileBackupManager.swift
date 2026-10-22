@@ -339,6 +339,7 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
             localFileBackupStore.totalUnencryptedByteCountOfQueuedExports(tx: tx)
         }
         let source = progressSink?.addSource(withLabel: ProgressLabel.writeQueuedAttachment, unitCount: totalByteCount)
+        var skippedAttachmentCount = 0
 
         while true {
             try Task.checkCancellation()
@@ -402,13 +403,22 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
                     continue
                 }
 
-                let encryptedFileHandle = try Cryptography.encryptedAttachmentFileHandle(
-                    at: attachmentStream.fileURL,
-                    plaintextLength: UInt64(safeCast: attachmentStream.unencryptedByteCount),
-                    attachmentKey: AttachmentKey(combinedKey: attachmentStream.attachment.encryptionKey),
-                )
-
-                let attachmentKey = try AttachmentKey(combinedKey: localKey)
+                let encryptedFileHandle: EncryptedFileHandle
+                let attachmentKey: AttachmentKey
+                do {
+                    encryptedFileHandle = try Cryptography.encryptedAttachmentFileHandle(
+                        at: attachmentStream.fileURL,
+                        plaintextLength: UInt64(safeCast: attachmentStream.unencryptedByteCount),
+                        attachmentKey: AttachmentKey(combinedKey: attachmentStream.attachment.encryptionKey),
+                    )
+                    attachmentKey = try AttachmentKey(combinedKey: localKey)
+                } catch {
+                    // One unreadable attachment must not fail every backup; skip it.
+                    logger.error("Skipping attachment id \(attachmentWithMetadata.attachment.id), error: \(error)")
+                    skippedAttachmentCount += 1
+                    source?.incrementCompletedUnitCount(by: attachmentByteCount)
+                    continue
+                }
 
                 let attachmentSubDirectory = backupsRootDirectory
                     .appendingPathComponent(FileStructure.attachmentDirectory.rawValue)
@@ -450,6 +460,9 @@ public class LocalFileBackupManager: NSObject, UIDocumentPickerDelegate {
                     }
                 }
             }
+        }
+        if skippedAttachmentCount > 0 {
+            logger.warn("Skipped \(skippedAttachmentCount) unreadable attachments")
         }
         source?.complete()
     }

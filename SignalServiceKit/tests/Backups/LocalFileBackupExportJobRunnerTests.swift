@@ -114,7 +114,7 @@ struct LocalFileBackupExportJobRunnerTests {
 
         // Seed the store with a resumption point
         await db.awaitableWrite { tx in
-            localFileBackupExportJobStore.setReachedResumptionPoint(.postBackupFileCopy(directoryName: currentBackupDir), tx: tx)
+            localFileBackupExportJobStore.setReachedResumptionPoint(.postBackupFileCopy(directoryName: currentBackupDir, backupDate: Date(), backupSizeBytes: 0), tx: tx)
         }
 
         _ = await jobRunner.resumeIfNecessary()?.result
