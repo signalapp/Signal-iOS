@@ -46,6 +46,7 @@ public class CVViewState: NSObject {
     }
 
     public var scrollActionForSizeTransition: CVScrollAction?
+    var isHoldingScrollActionForSizeTransition = false
     public var scrollActionForUpdate: CVScrollAction?
     public var lastKnownDistanceFromBottom: CGFloat?
     public var lastSearchedText: String?

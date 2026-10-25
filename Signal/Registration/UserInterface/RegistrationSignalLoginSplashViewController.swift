@@ -267,8 +267,8 @@ final class RegistrationSignalLoginSplashViewController: OWSViewController {
         NSLayoutConstraint.activate([
             scrollView.frameLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            scrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.frameLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            scrollView.frameLayoutGuide.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
 
             stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
             stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
@@ -289,6 +289,13 @@ final class RegistrationSignalLoginSplashViewController: OWSViewController {
             buttonContainer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             buttonContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
         ])
+
+        if #available(iOS 26, *) {
+            let interaction = UIScrollEdgeElementContainerInteraction()
+            interaction.edge = .bottom
+            interaction.scrollView = scrollView
+            buttonContainer.addInteraction(interaction)
+        }
 
         navigationItem.hidesBackButton = true
         navigationItem.leftBarButtonItem = .cancelButton { [weak self] in

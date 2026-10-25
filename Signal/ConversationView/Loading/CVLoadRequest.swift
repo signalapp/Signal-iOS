@@ -259,6 +259,26 @@ struct CVLoadRequest {
             shouldLoad = true
         }
 
+        /// Adds a request that was built but never landed, as if it were
+        /// requested again now.
+        mutating func merge(_ request: CVLoadRequest) {
+            AssertIsOnMainThread()
+
+            reload(
+                updatedInteractionIds: request.updatedInteractionIds,
+                deletedInteractionIds: request.deletedInteractionIds,
+            )
+            reload(
+                canReuseInteractionModels: request.canReuseInteractionModels,
+                canReuseComponentStates: request.canReuseComponentStates,
+                didReset: request.didReset,
+            )
+            tryToUpdateLoadType(request.loadType)
+            if let anchorId = request.preferredScrollContinuityAnchorInteractionId {
+                preferredScrollContinuityAnchorInteractionId = anchorId
+            }
+        }
+
         func build() -> CVLoadRequest? {
             AssertIsOnMainThread()
 

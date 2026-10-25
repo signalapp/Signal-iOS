@@ -33,7 +33,7 @@ open class MediaTopBar: UIView {
     private func installConstraints() {
         addLayoutGuide(controlsLayoutGuide)
 
-        let otherLayoutGuide: UILayoutGuide = if #available(iOS 26, *) {
+        let verticalLayoutGuide: UILayoutGuide = if #available(iOS 26, *) {
             // Avoids stoplight buttons in windowed mode on iPad.
             layoutGuide(for: .margins(cornerAdaptation: .vertical))
         } else {
@@ -41,10 +41,12 @@ open class MediaTopBar: UIView {
         }
 
         NSLayoutConstraint.activate([
-            controlsLayoutGuide.topAnchor.constraint(equalTo: otherLayoutGuide.topAnchor),
-            controlsLayoutGuide.leadingAnchor.constraint(equalTo: otherLayoutGuide.leadingAnchor),
-            controlsLayoutGuide.trailingAnchor.constraint(equalTo: otherLayoutGuide.trailingAnchor),
-            controlsLayoutGuide.bottomAnchor.constraint(equalTo: otherLayoutGuide.bottomAnchor),
+            controlsLayoutGuide.topAnchor.constraint(equalTo: verticalLayoutGuide.topAnchor),
+            // Vertical corner adaptation leaves the sides at the plain margins, and
+            // the adapted guide reports invalid sides on iPhone Duo.
+            controlsLayoutGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+            controlsLayoutGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+            controlsLayoutGuide.bottomAnchor.constraint(equalTo: verticalLayoutGuide.bottomAnchor),
         ])
     }
 

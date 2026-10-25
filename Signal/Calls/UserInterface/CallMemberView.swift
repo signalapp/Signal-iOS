@@ -427,7 +427,7 @@ extension CallMemberView: UIGestureRecognizerDelegate {
     }
 
     private var enlargedPipSize: CGSize {
-        if UIDevice.current.isIPad {
+        if ignoresSupportedInterfaceOrientations {
             if self.frame.width > self.frame.height {
                 return CGSize(
                     width: Constants.enlargedPipWidthIpadLandscape,

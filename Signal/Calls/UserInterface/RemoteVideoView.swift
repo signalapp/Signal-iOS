@@ -98,8 +98,8 @@ extension RemoteVideoView: RTCVideoRenderer {
             // We only allow portrait orientation in the calling views on iPhone so we don't
             // get this for free.
             let shouldOverrideRotation: Bool
-            if UIDevice.current.isIPad || !isFullScreen {
-                // iPad allows all orientations so we can skip this.
+            if ignoresSupportedInterfaceOrientations || !isFullScreen {
+                // iPad and the inner display of iPhone Duo rotate the UI, so we can skip this.
                 // Non-full-screen views are part of a portrait-locked UI (e.g. the group call grid)
                 // and rotating the video without rotating the UI would look weird.
                 shouldOverrideRotation = false

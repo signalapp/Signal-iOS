@@ -264,7 +264,7 @@ public class PinReminderViewController: OWSViewController {
             dismissButton.widthAnchor.constraint(equalToConstant: 44),
             dismissButton.heightAnchor.constraint(equalToConstant: 44),
             dismissButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: dismissButtonMargin),
-            dismissButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -dismissButtonMargin),
+            dismissButton.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor, constant: -dismissButtonMargin),
             dismissButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
         ])
 
@@ -286,7 +286,7 @@ public class PinReminderViewController: OWSViewController {
         super.viewDidAppear(animated)
 
         // For now, the design only allows for portrait layout on non-iPads
-        if !UIDevice.current.isIPad, view.window?.windowScene?.interfaceOrientation != .portrait {
+        if !view.ignoresSupportedInterfaceOrientations, view.window?.windowScene?.interfaceOrientation != .portrait {
             UIDevice.current.ows_setOrientation(.portrait)
         }
     }

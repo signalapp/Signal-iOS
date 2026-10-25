@@ -166,10 +166,10 @@ class MediaCaptionToolbar: UIView, UITextViewDelegate, BodyRangesTextViewDelegat
     private enum LayoutMetrics {
         static let initialTextBoxHeight: CGFloat = 40
         static let minTextViewHeight: CGFloat = 35
-        static var maxTextViewHeight: CGFloat {
+        static func maxTextViewHeight(isLandscape: Bool) -> CGFloat {
             // About ~4 lines in portrait and ~3 lines in landscape.
             // Otherwise we risk obscuring too much of the content.
-            UIDevice.current.orientation.isPortrait ? 160 : 100
+            isLandscape ? 100 : 160
         }
 
         static let verticalPadding: CGFloat = 8
@@ -237,10 +237,11 @@ class MediaCaptionToolbar: UIView, UITextViewDelegate, BodyRangesTextViewDelegat
         let isEditing = isEditingText
 
         let contentSize = textView.sizeThatFits(CGSize(width: textView.frame.width, height: .greatestFiniteMagnitude))
+        let isLandscape = window?.windowScene?.interfaceOrientation.isLandscape == true
         let newHeight = CGFloat.clamp(
             contentSize.height.rounded(.up),
             min: LayoutMetrics.minTextViewHeight,
-            max: LayoutMetrics.maxTextViewHeight,
+            max: LayoutMetrics.maxTextViewHeight(isLandscape: isLandscape),
         )
         // Update height if:
         // • text view height changes.

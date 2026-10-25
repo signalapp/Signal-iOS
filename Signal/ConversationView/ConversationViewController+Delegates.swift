@@ -400,7 +400,17 @@ extension ConversationViewController: ConversationCollectionViewDelegate {
     public func collectionViewWillChangeSize(from oldSize: CGSize, to newSize: CGSize) {
         AssertIsOnMainThread()
 
-        // Do nothing.
+        // The width can also change outside a size transition, e.g. while
+        // iPhone Duo settles the safe area after switching displays. Keep the
+        // reader's place until the reload for the new width lands.
+        if
+            oldSize.width != newSize.width,
+            hasAppearedAndHasAppliedFirstLoad,
+            viewState.scrollActionForSizeTransition == nil
+        {
+            setScrollActionForSizeTransition()
+            viewState.isHoldingScrollActionForSizeTransition = true
+        }
     }
 
     public func collectionViewDidChangeSize(from oldSize: CGSize, to newSize: CGSize) {
@@ -408,6 +418,7 @@ extension ConversationViewController: ConversationCollectionViewDelegate {
 
         if oldSize.width != newSize.width {
             resetForSizeOrOrientationChange()
+            clearHeldScrollActionForSizeTransitionIfNeeded()
         }
 
         updateScrollingContent()

@@ -213,8 +213,14 @@ open class ActionSheetController: OWSViewController {
         widthLimitConstraint?.isActive = false
 
         backgroundView.autoPinEdge(toSuperviewEdge: .bottom, withInset: insetFromScreenEdge)
-        pinWidthConstraints = backgroundView.autoPinWidthToSuperview(withMargin: insetFromScreenEdge)
-        backgroundView.autoHCenterInSuperview()
+        // Stay out of side insets such as the iPhone Duo outer display's trailing strip.
+        let pinWidthConstraints = [
+            backgroundView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: insetFromScreenEdge),
+            backgroundView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -insetFromScreenEdge),
+        ]
+        NSLayoutConstraint.activate(pinWidthConstraints)
+        self.pinWidthConstraints = pinWidthConstraints
+        backgroundView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
 
         let topMargin: CGFloat = 18
         backgroundView.topAnchor.constraint(
@@ -268,7 +274,7 @@ open class ActionSheetController: OWSViewController {
     }
 
     private func updateWidthConstraints() {
-        if view.width > maxPreferredWidth + maxWidthWiggleRoom {
+        if view.safeAreaLayoutGuide.layoutFrame.width > maxPreferredWidth + maxWidthWiggleRoom {
             pinWidthConstraints?.forEach { $0.isActive = false }
             widthLimitConstraint?.isActive = true
             if #available(iOS 26.0, *) {

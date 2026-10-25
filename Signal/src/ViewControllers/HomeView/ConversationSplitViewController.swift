@@ -744,6 +744,9 @@ private class NoSelectedConversationViewController: OWSViewController {
         logoImageView.autoSetDimension(.height, toSize: 112)
         view.addSubview(logoImageView)
 
-        logoImageView.autoCenterInSuperview()
+        // This view can extend under the primary column, which is then part
+        // of its safe area.
+        logoImageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
+        logoImageView.autoVCenterInSuperview()
     }
 }

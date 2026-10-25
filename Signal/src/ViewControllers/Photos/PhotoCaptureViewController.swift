@@ -135,12 +135,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
 
         delegate?.photoCaptureViewControllerViewWillAppear(self)
 
-        let previewOrientation: AVCaptureVideoOrientation
-        if UIDevice.current.isIPad, let windowScene = view.window?.windowScene {
-            previewOrientation = AVCaptureVideoOrientation(interfaceOrientation: windowScene.interfaceOrientation) ?? .portrait
-        } else {
-            previewOrientation = .portrait
-        }
+        let previewOrientation = previewOrientationForCurrentWindow()
         UIViewController.attemptRotationToDeviceOrientation()
         cameraCaptureSession.updateVideoPreviewConnection(toOrientation: previewOrientation)
         updateButtonIconOrientations(isAnimated: false, captureOrientation: previewOrientation)
@@ -200,9 +195,8 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        guard UIDevice.current.isIPad else { return }
-
-        // Since we support iPad multitasking, we cannot *disable* rotation of our views.
+        // iPad multitasking and the inner display of iPhone Duo can resize or rotate
+        // our views, and opening or closing iPhone Duo moves us between displays.
         // Rotating the preview layer is really distracting, so we fade out the preview layer
         // while the rotation occurs.
         self.previewView.alpha = 0
@@ -211,11 +205,25 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
                 self.layout = self.layoutForCurrentViewState()
             },
             completion: { _ in
+                let previewOrientation = self.previewOrientationForCurrentWindow()
+                self.cameraCaptureSession.updateVideoPreviewConnection(toOrientation: previewOrientation)
+                // Undo any icon rotation from while the UI was locked to portrait.
+                if self.view.ignoresSupportedInterfaceOrientations {
+                    self.updateButtonIconOrientations(isAnimated: false, captureOrientation: .portrait)
+                }
                 UIView.animate(withDuration: 0.1) {
                     self.previewView.alpha = 1
                 }
             },
         )
+    }
+
+    /// The preview only follows the window where the UI isn't locked to portrait.
+    private func previewOrientationForCurrentWindow() -> AVCaptureVideoOrientation {
+        guard view.ignoresSupportedInterfaceOrientations, let windowScene = view.window?.windowScene else {
+            return .portrait
+        }
+        return AVCaptureVideoOrientation(interfaceOrientation: windowScene.interfaceOrientation) ?? .portrait
     }
 
     override func viewSafeAreaInsetsDidChange() {
@@ -875,11 +883,12 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     private func constraintsForLegacyPhoneLayout() -> [NSLayoutConstraint] {
         var constraints = [NSLayoutConstraint]()
 
-        // Full-screen content view.
+        // Full-screen content view, kept clear of side insets such as the
+        // trailing strip on the iPhone Duo outer display.
         constraints += [
             contentView.topAnchor.constraint(equalTo: view.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            contentView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ]
 
@@ -900,7 +909,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
             constraints += [
                 // CAMERA | TEXT control is pinned to the bottom of the screen with a fixed margin.
                 composerTypeSelectionControl.bottomAnchor.constraint(
-                    equalTo: contentView.bottomAnchor,
+                    equalTo: view.safeAreaLayoutGuide.bottomAnchor,
                     constant: -verticalSpacing,
                 ),
 
@@ -919,7 +928,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
             constraints += [
                 // Proceed button is pinned to the bottom of the screen with a fixed margin.
                 cameraModeProceedButton.bottomAnchor.constraint(
-                    equalTo: contentView.bottomAnchor,
+                    equalTo: view.safeAreaLayoutGuide.bottomAnchor,
                     constant: -verticalSpacing,
                 ),
 
@@ -1140,8 +1149,10 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     private func updateButtonIconOrientations(isAnimated: Bool, captureOrientation: AVCaptureVideoOrientation) {
         guard UIDevice.current.isIPad == false else { return }
 
+        // Icons only counter-rotate while the UI is locked to portrait.
+        let iconOrientation: AVCaptureVideoOrientation = view.ignoresSupportedInterfaceOrientations ? .portrait : captureOrientation
         let transformFromOrientation: CGAffineTransform
-        switch captureOrientation {
+        switch iconOrientation {
         case .portrait:
             transformFromOrientation = .identity
         case .portraitUpsideDown:

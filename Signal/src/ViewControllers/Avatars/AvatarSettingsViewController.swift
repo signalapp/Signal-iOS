@@ -74,7 +74,9 @@ class AvatarSettingsViewController: OWSTableViewController2, UIImagePickerContro
         // already in landscape we need to force the device to rotate.
         // TODO: There might be a better spot to do this, but generally
         // this should never be initialized unless about to be shown.
-        if !UIDevice.current.isIPad { UIDevice.current.ows_setOrientation(.portrait) }
+        if !UIDevice.current.isIPad, CurrentAppContext().mainWindow?.ignoresSupportedInterfaceOrientations != true {
+            UIDevice.current.ows_setOrientation(.portrait)
+        }
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {

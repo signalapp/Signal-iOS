@@ -205,6 +205,12 @@ extension ConversationViewController: UIScrollViewDelegate {
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         AssertIsOnMainThread()
 
+        if viewState.isHoldingScrollActionForSizeTransition {
+            // The user took over; don't move the content when the reload lands.
+            viewState.isHoldingScrollActionForSizeTransition = false
+            viewState.scrollActionForSizeTransition = nil
+        }
+
         self.userHasScrolled = true
         self.isUserScrolling = true
         scrollingAnimationDidStart()

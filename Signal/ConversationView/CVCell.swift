@@ -44,6 +44,11 @@ public class CVCell: UICollectionViewCell, CVRootComponentHost {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        // Components lay out from the cell edges. While the window moves
+        // between displays, UIKit can derive margins from stale safe area
+        // insets (e.g. a split view sidebar or a display's side strip).
+        insetsLayoutMarginsFromSafeArea = false
+        contentView.insetsLayoutMarginsFromSafeArea = false
         layoutMargins = .zero
         contentView.layoutMargins = .zero
     }

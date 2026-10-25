@@ -26,6 +26,9 @@ public extension UIDevice {
         case 1920, 2208:
             // iPhone 6+/6S+/7+/8+//
             return false
+        case 2034:
+            // iPhone Duo. UIScreen.main is its outer display, even when open.
+            return true
         case 2340:
             // iPhone 12 Mini
             return true

@@ -600,7 +600,10 @@ final class GroupCallViewController: UIViewController {
             self.videoGrid.reloadData()
             self.videoOverflow.reloadData()
             self.scrollView.contentOffset = wasOnSpeakerPage ? CGPoint(x: 0, y: size.height) : .zero
-        }, completion: nil)
+        }, completion: { _ in
+            // Opening or closing iPhone Duo can change whether the UI rotates.
+            self.videoOverflow.updateOrientationOverride()
+        })
     }
 
     private var hasAppeared = false

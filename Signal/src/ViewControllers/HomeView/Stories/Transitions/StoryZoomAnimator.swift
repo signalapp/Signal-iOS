@@ -220,23 +220,32 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     private func mediaFrame(in containerFrame: CGRect, containerView: UIView) -> CGRect {
         var mediaFrame = containerFrame
 
-        let heightScalar = UIDevice.current.isIPad
-            ? UIDevice.current.orientation.isLandscape ? 0.75 : 0.65
-            : 1
+        // Matches the layout choice in StoryContextViewController.applyConstraints().
+        let traits = containerView.traitCollection
+        let isRegularSize = traits.horizontalSizeClass == .regular && traits.verticalSizeClass == .regular
+        let isCentered = UIDevice.current.isIPad || isRegularSize
 
-        let maxHeight = mediaFrame.height * heightScalar
-        mediaFrame.size.height = min(maxHeight, mediaFrame.width * (16 / 9))
-        mediaFrame.size.width = mediaFrame.height * (9 / 16)
+        if isCentered {
+            let heightScalar = containerFrame.width > containerFrame.height ? 0.75 : 0.65
+            let maxHeight = mediaFrame.height * heightScalar
+            mediaFrame.size.height = min(maxHeight, mediaFrame.width * (16 / 9))
+            mediaFrame.size.width = mediaFrame.height * (9 / 16)
 
-        if UIDevice.current.isIPad {
             // Center in view
             mediaFrame.origin = CGPoint(
                 x: mediaFrame.origin.x + containerView.frame.midX - (mediaFrame.width / 2),
                 y: mediaFrame.origin.y + containerView.frame.midY - (mediaFrame.height / 2),
             )
         } else {
-            // Pin to top of view
-            mediaFrame.origin.y += containerView.safeAreaInsets.top
+            // Pin to top of the safe area and center horizontally, never taller
+            // than the safe area (e.g. the iPhone Duo outer display).
+            let safeFrame = containerFrame.inset(by: containerView.safeAreaInsets)
+            mediaFrame.size.height = min(safeFrame.height, safeFrame.width * (16 / 9))
+            mediaFrame.size.width = mediaFrame.height * (9 / 16)
+            mediaFrame.origin = CGPoint(
+                x: safeFrame.midX - (mediaFrame.width / 2),
+                y: safeFrame.minY,
+            )
         }
 
         return mediaFrame

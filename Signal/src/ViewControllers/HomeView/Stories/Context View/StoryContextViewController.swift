@@ -290,8 +290,6 @@ class StoryContextViewController: OWSViewController, DatabaseChangeDelegate,
         playbackProgressView.autoPinEdge(.leading, to: .leading, of: mediaViewContainer, withOffset: progressViewSideMargin)
         playbackProgressView.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer, withOffset: -progressViewSideMargin)
 
-        applyConstraints()
-
         let spinner = UIActivityIndicatorView(style: .medium)
         view.addSubview(spinner)
         spinner.autoCenterInSuperview()
@@ -300,23 +298,13 @@ class StoryContextViewController: OWSViewController, DatabaseChangeDelegate,
         closeButton.isPointerInteractionEnabled = true
         view.addSubview(closeButton)
         closeButton.translatesAutoresizingMaskIntoConstraints = false
-        if #available(iOS 26, *) {
-            // Button has a round glass background and needs padding around it.
-            let margin = OWSTableViewController2.defaultHOuterMargin
-            NSLayoutConstraint.activate([
-                closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: margin),
-                closeButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
-            ])
-        } else {
-            // Margins are baked into the button itself. The button has no background and can be placed flush along the edges.
+        if #unavailable(iOS 26) {
             closeButton.configuration?.contentInsets = .init(margin: 16)
             closeButton.setShadow()
-
-            NSLayoutConstraint.activate([
-                closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-                closeButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            ])
         }
+        closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: closeButtonMargin).isActive = true
+
+        applyConstraints()
 
         loadStoryItems { [weak self] storyItems in
             // If there are no stories for this context, dismiss.
@@ -763,14 +751,39 @@ class StoryContextViewController: OWSViewController, DatabaseChangeDelegate,
         }
     }
 
-    private lazy var iPhoneConstraints = [
-        mediaViewContainer.autoPinEdge(toSuperviewSafeArea: .top),
-        mediaViewContainer.autoPinEdge(toSuperviewSafeArea: .leading),
-        mediaViewContainer.autoPinEdge(toSuperviewSafeArea: .trailing),
-    ]
+    /// On iOS 26 the close button has a round glass background and needs
+    /// padding around it. Before that, the margins are baked into the button,
+    /// which has no background and can be placed flush along the edges.
+    private var closeButtonMargin: CGFloat {
+        if #available(iOS 26, *) { OWSTableViewController2.defaultHOuterMargin } else { 0 }
+    }
+
+    private lazy var iPhoneConstraints: [NSLayoutConstraint] = {
+        var constraints = [
+            mediaViewContainer.autoPinEdge(toSuperviewSafeArea: .top),
+            mediaViewContainer.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            mediaViewContainer.leadingAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.leadingAnchor),
+            // Stay on the card when it is narrower than the safe area.
+            closeButton.trailingAnchor.constraint(equalTo: mediaViewContainer.trailingAnchor, constant: -closeButtonMargin),
+        ]
+
+        // Fill the width unless the card and the replies button would not fit
+        // above the bottom safe area (e.g. the iPhone Duo outer display).
+        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
+            constraints.append(mediaViewContainer.autoPinEdge(toSuperviewSafeArea: .leading))
+        }
+        let repliesBottomConstraint = repliesAndViewsButton.bottomAnchor.constraint(
+            lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor,
+        )
+        repliesBottomConstraint.priority = .required - 1
+        constraints.append(repliesBottomConstraint)
+
+        return constraints
+    }()
 
     private lazy var iPadConstraints: [NSLayoutConstraint] = {
         var constraints = mediaViewContainer.autoCenterInSuperview()
+        constraints.append(closeButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -closeButtonMargin))
 
         // Prefer to be as big as possible.
         NSLayoutConstraint.autoSetPriority(.defaultHigh) {
@@ -811,22 +824,50 @@ class StoryContextViewController: OWSViewController, DatabaseChangeDelegate,
         ),
     ]
 
+    private enum MediaLayout {
+        case phone
+        case centeredPortrait
+        case centeredLandscape
+    }
+
+    private var appliedMediaLayout: MediaLayout?
+
     private func applyConstraints() {
+        // The iPhone Duo inner display is regular/regular but not an iPad, and
+        // can lie flat, so use size classes and bounds rather than the idiom
+        // and device orientation.
+        let isRegularSize = traitCollection.horizontalSizeClass == .regular && traitCollection.verticalSizeClass == .regular
+        let mediaLayout: MediaLayout
+        if UIDevice.current.isIPad || isRegularSize {
+            mediaLayout = view.bounds.width > view.bounds.height ? .centeredLandscape : .centeredPortrait
+        } else {
+            mediaLayout = .phone
+        }
+        // Called on every layout pass, and changing constraints invalidates layout.
+        guard mediaLayout != appliedMediaLayout else { return }
+        appliedMediaLayout = mediaLayout
+
         NSLayoutConstraint.deactivate(iPhoneConstraints)
         NSLayoutConstraint.deactivate(iPadConstraints)
         NSLayoutConstraint.deactivate(iPadPortraitConstraints)
         NSLayoutConstraint.deactivate(iPadLandscapeConstraints)
 
-        if UIDevice.current.isIPad {
-            NSLayoutConstraint.activate(iPadConstraints)
-            if UIDevice.current.orientation.isLandscape {
-                NSLayoutConstraint.activate(iPadLandscapeConstraints)
-            } else {
-                NSLayoutConstraint.activate(iPadPortraitConstraints)
-            }
-        } else {
+        switch mediaLayout {
+        case .phone:
             NSLayoutConstraint.activate(iPhoneConstraints)
+        case .centeredPortrait:
+            NSLayoutConstraint.activate(iPadConstraints)
+            NSLayoutConstraint.activate(iPadPortraitConstraints)
+        case .centeredLandscape:
+            NSLayoutConstraint.activate(iPadConstraints)
+            NSLayoutConstraint.activate(iPadLandscapeConstraints)
         }
+    }
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        // Opening or closing an iPhone Duo moves the app between displays.
+        applyConstraints()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

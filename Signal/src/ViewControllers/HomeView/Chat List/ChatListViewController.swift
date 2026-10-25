@@ -79,7 +79,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         // This inset bakes in assumptions about UINavigationBar layout, but I'm not sure
         // there's a better way to do it, since it isn't safe to use iOS auto layout with
         // UINavigationBar contents.
-        firstConversationCueView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 6)
+        firstConversationCueView.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 6)
         firstConversationCueView.autoPinEdge(toSuperviewEdge: .leading, withInset: 10, relation: .greaterThanOrEqual)
         firstConversationCueView.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
 

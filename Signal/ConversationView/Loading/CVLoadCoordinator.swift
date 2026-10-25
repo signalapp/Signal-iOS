@@ -579,6 +579,8 @@ public class CVLoadCoordinator: NSObject {
 
     // MARK: - Safe Landing
 
+    private var didSkipStaleLoad = false
+
     // Lands the load when it is safe, blocking on animations,
     // previous loads landing, etc.
     private func loadLandWhenSafePromise(update: CVUpdate) -> Promise<Void> {
@@ -638,6 +640,29 @@ public class CVLoadCoordinator: NSObject {
             }
             return
         }
+
+        // If the conversation style changed while this load was being built
+        // (e.g. the view was resized again), a reload with the new style is
+        // already queued. Landing this one would lay out every cell for the old
+        // width and then again for the new one. Only same-location loads are
+        // skipped because they're safe to repeat, and at most one in a row so
+        // that continuous resizing still updates the view.
+        if
+            case .loadSameLocation = loadRequest.loadType,
+            !didSkipStaleLoad,
+            update.renderState.conversationStyle != conversationStyle
+        {
+            didSkipStaleLoad = true
+            var builder = CVLoadRequest.Builder()
+            builder.merge(loadRequest)
+            if let newerRequest = loadRequestBuilder.build() {
+                builder.merge(newerRequest)
+            }
+            loadRequestBuilder = builder
+            loadFuture.resolve()
+            return
+        }
+        didSkipStaleLoad = false
 
         let renderState = update.renderState
         let updateToken = delegate.willUpdateWithNewRenderState(update)
