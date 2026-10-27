@@ -4007,7 +4007,7 @@
 "EXPIRATION_WARNING_TODAY" = "Signal เวอร์ชันนี้จะหมดอายุวันนี้ โปรดอัปเดตเพื่อการใช้งานอย่างต่อเนื่อง";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to export your chat history. */
-"EXPORT_CHATS_AUTHENTICATION_REASON" = "Authenticate to export your chat history";
+"EXPORT_CHATS_AUTHENTICATION_REASON" = "ยืนยันตัวตนเพื่อส่งออกประวัติการแชทของคุณ";
 
 /* action sheet header when re-sending message which failed because of an invalid key signature */
 "FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "ไม่สามารถส่งข้อความได้เนื่องจาก %1$@ จำเป็นต้องอัปเดตและเปิดแอป Signal";
@@ -5495,7 +5495,7 @@
 "LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "ดูเหมือนว่าคุณพยายามจะเชื่อมโยงอุปกรณ์ Signal แตะดำเนินการต่อ จากนั้นให้แตะ \"เชื่อมโยงอุปกรณ์เครื่องใหม่\" แล้วสแกนคิวอาร์โค้ดอีกครั้ง";
 
 /* Bullet point about a download link on the linked devices education sheet. Embeds {{ %1$@ download link }} */
-"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "On the device you want to link, visit %1$@ to install Signal";
+"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "ติดตั้ง Signal โดยไปที่ %1$@ จากอุปกรณ์เครื่องที่คุณต้องการเชื่อมโยง";
 
 /* Bullet point about message sync on the linked devices education sheet */
 "LINKED_DEVICES_EDUCATION_POINT_MESSAGES" = "ข้อความ Signal จะเริ่มซิงค์กับแอป Signal บนมือถือคุณหลังการเชื่อมโยงอุปกรณ์เสร็จสิ้น";
@@ -5504,13 +5504,13 @@
 "LINKED_DEVICES_EDUCATION_POINT_PRIVACY" = "ทุกการส่งและรับข้อความบนอุปกรณ์ที่เชื่อมโยงอยู่นั้นเป็นส่วนตัว";
 
 /* Title for the linked device education sheet */
-"LINKED_DEVICES_EDUCATION_TITLE" = "Signal on a linked device";
+"LINKED_DEVICES_EDUCATION_TITLE" = "การใช้งาน Signal บนอุปกรณ์ที่เชื่อมโยง";
 
 /* Text that appears where the linked device list would be indicating that there are no linked devices. */
 "LINKED_DEVICES_EMPTY_STATE" = "ไม่มีอุปกรณ์ที่เชื่อมโยงอยู่";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use this Signal account on another device.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "ใช้บัญชี Signal บัญชีนี้บนอุปกรณ์อีกเครื่อง";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "ปกป้องข้อความและข้อมูลการแชทด้วยการเข้ารหัสตั้งแต่ต้นทางถึงปลายทางบนอุปกรณ์ทุกเครื่อง";
@@ -6224,10 +6224,10 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal จำเป็นต้องเข้าถึงรูปภาพของคุณสำหรับการใช้งานนี้";
 
 /* Title for a progress modal shown after the user taps Cancel, while the work is being cancelled. */
-"MODAL_CIRCULAR_PROGRESS_CANCELLING_TITLE" = "Cancelling…";
+"MODAL_CIRCULAR_PROGRESS_CANCELLING_TITLE" = "กำลังยกเลิก…";
 
 /* Label on a progress modal indicating how far along some work is. Embeds {{ formatted percentage }}. */
-"MODAL_CIRCULAR_PROGRESS_PERCENT_COMPLETE" = "%1$@ complete";
+"MODAL_CIRCULAR_PROGRESS_PERCENT_COMPLETE" = "เสร็จสิ้น %1$@";
 
 /* Text on a blocking progress screen that indicates that there's a deletion in progress. */
 "MODAL_DELETING" = "กำลังลบ…";
@@ -8033,19 +8033,19 @@
 "REGISTER_WITHOUT_NUMBER" = "ลงทะเบียนโดยไม่ใช้หมายเลขโทรศัพท์";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "Make sure you’re registering with the same phone number and 64-character recovery key you saved when enabling Signal backups. Backups cannot be recovered without this key.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "โปรดตรวจสอบให้แน่ใจว่าคุณกำลังลงทะเบียนโดยใช้หมายเลขโทรศัพท์และกุญแจกู้คืน 64 ตัวเดียวกันกับที่บันทึกไว้ในตอนที่เปิดใช้งานการสำรองข้อมูลของ Signal หากไม่มีกุญแจนี้ คุณจะไม่สามารถกู้คืนข้อมูลสำรองได้";
 
 /* Title for a sheet warning users about an incorrect recovery key used for registration. */
 "REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "กุญแจกู้คืนไม่ถูกต้อง";
 
 /* Action label action allowing users to use PIN/SMS for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_ACTION" = "Register Another Way";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_ACTION" = "ลงทะเบียนด้วยวิธีอื่น";
 
 /* Message body for a sheet asking users if they would rather use PIN/SMS for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_MESSAGE" = "You can register your account by verifying via an SMS code Signal will send you, or by entering your PIN. After registering, you can try restoring your backup with your recovery key again.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_MESSAGE" = "คุณสามารถลงทะเบียนใช้งานบัญชีได้ด้วยการยืนยันผ่านรหัส SMS ที่ส่งโดย Signal หรือด้วยการใส่ PIN ของคุณ เมื่อลงทะเบียนแล้ว คุณจะสามารถลองกู้คืนข้อมูลสำรองอีกครั้งด้วยกุญแจกู้คืนของคุณ";
 
 /* Title for a sheet asking users if they would rather use PIN/SMS for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_TITLE" = "Verify with SMS or PIN?";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_TITLE" = "ยืนยันโดยใช้รหัส SMS หรือ PIN ใช่หรือไม่";
 
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "ไม่พบข้อมูลสำรองที่เชื่อมโยงกับกุญแจกู้คืนนี้ โปรดตรวจสอบให้แน่ใจว่ากุญแจนี้ถูกต้องแล้วลองอีกครั้ง";
@@ -8348,28 +8348,28 @@
 "REGISTRATION_SIGNAL_LOGIN_PAY" = "ชำระ %1$@";
 
 /* Text for a bullet point describing that an existing Signal Login can be used to log in and restore an account. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_RESTORE" = "Login and restore your account";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_RESTORE" = "ลงชื่อเข้าใช้และกู้คืนบัญชีของคุณ";
 
 /* Text for a bullet point thanking the user for supporting Signal by previously buying a Signal Login. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_THANKS" = "Thanks for supporting Signal";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_THANKS" = "ขอบคุณที่ร่วมสนับสนุน Signal";
 
 /* Subtitle for the option to register with a Signal Login the user already owns. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_SUBTITLE" = "Use your existing login info";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_SUBTITLE" = "ใช้ข้อมูลลงชื่อเข้าใช้ที่คุณมีอยู่แล้ว";
 
 /* Title for the option to register with a Signal Login the user already owns. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_TITLE" = "I have a Signal Login";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_TITLE" = "ฉันมี Signal Login แล้ว";
 
 /* Text for a bullet point describing that a Signal Login lets you register without a phone number. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NO_PHONE_NUMBER" = "No phone number needed";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NO_PHONE_NUMBER" = "ไม่จำเป็นต้องใช้หมายเลขโทรศัพท์";
 
 /* Text for a bullet point explaining that buying a Signal Login supports Signal, a non-profit. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NON_PROFIT" = "Signal is a non-profit — your purchase helps support our mission";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NON_PROFIT" = "Signal เป็นแอปที่ไม่แสวงผลกำไร การซื้อล็อกอินครั้งนี้เป็นแรงสนับสนุนที่ช่วยเหลือภารกิจของเรา";
 
 /* Text for a bullet point describing that a Signal Login comes with a username for messaging and calling. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_USERNAME" = "Username for messaging & calls";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_USERNAME" = "ใช้ชื่อผู้ใช้ในการส่งข้อความและโทร";
 
 /* Subtitle for the option to buy a new Signal Login. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_SUBTITLE" = "One-time purchase";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_SUBTITLE" = "ชำระเงินแบบครั้งเดียว";
 
 /* Title text for the 'Signal Login' screen. */
 "REGISTRATION_SIGNAL_LOGIN_TITLE" = "Signal Login";
@@ -8927,7 +8927,7 @@
 "SEND_MEDIA_TURN_OFF_MM_TITLE" = "ปิดโหมดแบบมัลติหรือไม่";
 
 /* Label for the button to send a sticker message */
-"SEND_STICKER_BUTTON_TITLE" = "Send Sticker";
+"SEND_STICKER_BUTTON_TITLE" = "ส่งสติกเกอร์";
 
 /* String describing high quality sent media */
 "SENT_MEDIA_QUALITY_HIGH" = "สูง";
@@ -9143,43 +9143,43 @@
 "SETTINGS_CHATS" = "แชท";
 
 /* Title for a button in Chats settings that starts exporting the user's chat history. */
-"SETTINGS_CHATS_EXPORT_BUTTON" = "Export Chats";
+"SETTINGS_CHATS_EXPORT_BUTTON" = "ส่งออกแชท";
 
 /* Title for a button in a sheet shown before the user chooses a folder to export their chat history into, which opens a folder picker. */
-"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_CHOOSE_BUTTON" = "Choose Folder";
+"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_CHOOSE_BUTTON" = "เลือกโฟลเดอร์";
 
 /* Message for a sheet shown before the user chooses a folder to export their chat history into. */
-"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_MESSAGE" = "Choose a folder in your device’s storage where your chat history will be stored.";
+"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_MESSAGE" = "เลือกโฟลเดอร์ในอุปกรณ์ซึ่งคุณต้องการใช้จัดเก็บประวัติการแชท";
 
 /* Title for a sheet shown before the user chooses a folder to export their chat history into. */
-"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_TITLE" = "Choose a Folder";
+"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_TITLE" = "เลือกโฟลเดอร์";
 
 /* Message for a sheet shown after the user's chat history has been exported. */
-"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_MESSAGE" = "BE CAREFUL where you store your chat export file and do not share it with anyone. Other apps on your device can access it depending on your device’s permissions.";
+"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_MESSAGE" = "โปรดระวังและจัดเก็บไฟล์ส่งออกประวัติการแชทของคุณไว้ในที่ปลอดภัย รวมถึงไม่แชร์ไฟล์นี้กับใคร แอปอื่นๆ ในอุปกรณ์คุณจะสามารถเข้าถึงไฟล์นี้ได้โดยขึ้นอยู่กับการอนุญาตสิทธิ์ของอุปกรณ์";
 
 /* Title for a sheet shown after the user's chat history has been exported. */
-"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_TITLE" = "Chat Export Complete";
+"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_TITLE" = "ส่งออกแชทเรียบร้อยแล้ว";
 
 /* Title for a button in a sheet shown after the user's chat history has been exported, which opens the exported folder in the Files app. */
-"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_VIEW_IN_FILES_BUTTON" = "View in Files";
+"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_VIEW_IN_FILES_BUTTON" = "ดูในแอปไฟล์";
 
 /* Message for a sheet shown when the user starts exporting their chat history from Chats settings. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_MESSAGE" = "BE CAREFUL! Do NOT share this file with anyone. Your chat history will be saved to your device and other apps can access it depending on your device’s permissions. Exporting with media will result in a larger file size.";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_MESSAGE" = "โปรดระวัง! อย่าแชร์ไฟล์นี้กับใคร ประวัติการแชทของคุณจะถูกบันทึกลงในอุปกรณ์คุณ และแอปอื่นๆ จะสามารถเข้าถึงไฟล์นี้ได้โดยขึ้นอยู่กับการอนุญาตสิทธิ์ของอุปกรณ์ การส่งออกที่รวมไฟล์สื่อจะทำให้ไฟล์มีขนาดใหญ่ขึ้น";
 
 /* Title for a sheet shown when the user starts exporting their chat history from Chats settings. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_TITLE" = "Export Chat History?";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_TITLE" = "ส่งออกประวัติการแชทใช่หรือไม่";
 
 /* Title for a button in a sheet shown when the user starts exporting their chat history, which exports their chat history including attachments. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITH_MEDIA_BUTTON" = "Export With Media";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITH_MEDIA_BUTTON" = "ส่งออกโดยรวมไฟล์สื่อ";
 
 /* Title for a button in a sheet shown when the user starts exporting their chat history, which exports their chat history excluding attachments. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITHOUT_MEDIA_BUTTON" = "Export Without Media";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITHOUT_MEDIA_BUTTON" = "ส่งออกโดยไม่รวมไฟล์สื่อ";
 
 /* Footer for the section in Chats settings containing a button to export the user's chat history. */
-"SETTINGS_CHATS_EXPORT_FOOTER" = "Export a machine-readable JSON copy of your chats. Disappearing messages will not be included.";
+"SETTINGS_CHATS_EXPORT_FOOTER" = "ส่งออกแชทของคุณเป็นไฟล์ที่คอมพิวเตอร์อ่านได้ (JSON) โดยการส่งออกจะไม่รวมข้อความที่จะหายไป";
 
 /* Title for a progress modal shown while the user's chat history is being exported. */
-"SETTINGS_CHATS_EXPORT_PROGRESS_TITLE" = "Exporting chats…";
+"SETTINGS_CHATS_EXPORT_PROGRESS_TITLE" = "กำลังส่งออกแชท…";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "ล้างประวัติแชท";

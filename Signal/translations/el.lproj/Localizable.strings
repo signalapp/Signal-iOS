@@ -4007,7 +4007,7 @@
 "EXPIRATION_WARNING_TODAY" = "Αυτή η έκδοση Signal θα λήξει σήμερα. Κάνε αναβάθμιση στην πιο πρόσφατη έκδοση.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to export your chat history. */
-"EXPORT_CHATS_AUTHENTICATION_REASON" = "Authenticate to export your chat history";
+"EXPORT_CHATS_AUTHENTICATION_REASON" = "Πραγματοποίησε έλεγχο ταυτότητας για εξαγωγή του ιστορικού συνομιλιών";
 
 /* action sheet header when re-sending message which failed because of an invalid key signature */
 "FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "Δεν ήταν δυνατή η αποστολή μηνύματος επειδή ο χρήστης %1$@ πρέπει να ενημερώσει και να ανοίξει το Signal.";
@@ -5495,7 +5495,7 @@
 "LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "Φαίνεται πως προσπαθείς να συνδέσεις μια συσκευή Signal. Πάτησε «Συνέχεια», μετά «Σύνδεση νέας συσκευής» και σκάναρε ξανά τον κωδικό QR.";
 
 /* Bullet point about a download link on the linked devices education sheet. Embeds {{ %1$@ download link }} */
-"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "On the device you want to link, visit %1$@ to install Signal";
+"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "Χρησιμοποιώντας τη συσκευή που θέλεις να συνδέσεις, επισκέψου το %1$@ για εγκατάσταση του Signal";
 
 /* Bullet point about message sync on the linked devices education sheet */
 "LINKED_DEVICES_EDUCATION_POINT_MESSAGES" = "Τα μηνύματα Signal συγχρονίζονται με το Signal στο τηλέφωνό σου, αφού αυτό συνδεθεί.";
@@ -5504,13 +5504,13 @@
 "LINKED_DEVICES_EDUCATION_POINT_PRIVACY" = "Όλα τα μηνύματα στις συνδεδεμένες συσκευές είναι ιδιωτικά";
 
 /* Title for the linked device education sheet */
-"LINKED_DEVICES_EDUCATION_TITLE" = "Signal on a linked device";
+"LINKED_DEVICES_EDUCATION_TITLE" = "Signal σε μία συνδεδεμένη συσκευή";
 
 /* Text that appears where the linked device list would be indicating that there are no linked devices. */
 "LINKED_DEVICES_EMPTY_STATE" = "Δεν υπάρχουν συνδεδεμένες συσκευές";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use this Signal account on another device.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "Χρησιμοποίησε αυτόν τον λογαριασμό Signal σε διαφορετική συσκευή.";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "Τα μηνύματα και οι πληροφορίες συνομιλίας προστατεύονται με κρυπτογράφηση από άκρο σε άκρο σε όλες τις συσκευές";
@@ -6224,10 +6224,10 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Το Signal χρειάζεται πρόσβαση στις φωτογραφίες σου για αυτήν τη λειτουργία.";
 
 /* Title for a progress modal shown after the user taps Cancel, while the work is being cancelled. */
-"MODAL_CIRCULAR_PROGRESS_CANCELLING_TITLE" = "Cancelling…";
+"MODAL_CIRCULAR_PROGRESS_CANCELLING_TITLE" = "Ακύρωση…";
 
 /* Label on a progress modal indicating how far along some work is. Embeds {{ formatted percentage }}. */
-"MODAL_CIRCULAR_PROGRESS_PERCENT_COMPLETE" = "%1$@ complete";
+"MODAL_CIRCULAR_PROGRESS_PERCENT_COMPLETE" = "%1$@ ολοκληρωμένο";
 
 /* Text on a blocking progress screen that indicates that there's a deletion in progress. */
 "MODAL_DELETING" = "Διαγραφή…";
@@ -8033,19 +8033,19 @@
 "REGISTER_WITHOUT_NUMBER" = "Εγγραφή χωρίς αριθμό";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "Make sure you’re registering with the same phone number and 64-character recovery key you saved when enabling Signal backups. Backups cannot be recovered without this key.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "Βεβαιώσου ότι εγγράφεσαι με τον ίδιο αριθμό τηλεφώνου και κλειδί ανάκτησης 64 χαρακτήρων που αποθήκευσες κατά την ενεργοποίηση των αντιγράφων ασφαλείας Signal. Τα Αντίγραφα ασφαλείας δεν μπορούν να ανακτηθούν χωρίς αυτό το κλειδί.";
 
 /* Title for a sheet warning users about an incorrect recovery key used for registration. */
 "REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Λανθασμένο κλειδί ανάκτησης";
 
 /* Action label action allowing users to use PIN/SMS for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_ACTION" = "Register Another Way";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_ACTION" = "Ενεργοποίηση με άλλον τρόπο";
 
 /* Message body for a sheet asking users if they would rather use PIN/SMS for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_MESSAGE" = "You can register your account by verifying via an SMS code Signal will send you, or by entering your PIN. After registering, you can try restoring your backup with your recovery key again.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_MESSAGE" = "Μπορείς να ενεργοποιήσεις τον λογαριασμό σου επαληθεύοντας τον μέσω ενός κωδικού SMS που θα σου στείλει η εφαρμογή Signal ή εισαγάγοντας το PIN σου. Αφού τον ενεργοποιήσεις, μπορείς να δοκιμάσεις ξανά να επαναφέρεις το αντίγραφο ασφαλείας σου χρησιμοποιώντας το κλειδί ανάκτησης.";
 
 /* Title for a sheet asking users if they would rather use PIN/SMS for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_TITLE" = "Verify with SMS or PIN?";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_TITLE" = "Επαλήθευση με SMS ή PIN;";
 
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "Δεν υπάρχει αντίγραφο ασφαλείας που να σχετίζεται με αυτό το κλειδί ανάκτησης. Βεβαιώσου ότι το κλειδί είναι σωστό και προσπάθησε ξανά.";
@@ -8348,28 +8348,28 @@
 "REGISTRATION_SIGNAL_LOGIN_PAY" = "Πληρωμή %1$@";
 
 /* Text for a bullet point describing that an existing Signal Login can be used to log in and restore an account. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_RESTORE" = "Login and restore your account";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_RESTORE" = "Συνδέσου και κάνε επαναφορά του λογαριασμού σου";
 
 /* Text for a bullet point thanking the user for supporting Signal by previously buying a Signal Login. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_THANKS" = "Thanks for supporting Signal";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_THANKS" = "Ευχαριστούμε που στηρίζεις το Signal";
 
 /* Subtitle for the option to register with a Signal Login the user already owns. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_SUBTITLE" = "Use your existing login info";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_SUBTITLE" = "Χρησιμοποίησε τα υπάρχοντα στοιχεία σύνδεσης";
 
 /* Title for the option to register with a Signal Login the user already owns. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_TITLE" = "I have a Signal Login";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_TITLE" = "Έχω Signal Login";
 
 /* Text for a bullet point describing that a Signal Login lets you register without a phone number. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NO_PHONE_NUMBER" = "No phone number needed";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NO_PHONE_NUMBER" = "Δεν χρειάζεται αριθμός τηλεφώνου";
 
 /* Text for a bullet point explaining that buying a Signal Login supports Signal, a non-profit. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NON_PROFIT" = "Signal is a non-profit — your purchase helps support our mission";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NON_PROFIT" = "Το Signal είναι μη κερδοσκοπικό — η αγορά σου βοηθά στην υποστήριξη της αποστολής μας";
 
 /* Text for a bullet point describing that a Signal Login comes with a username for messaging and calling. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_USERNAME" = "Username for messaging & calls";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_USERNAME" = "Όνομα χρήστη για μηνύματα και κλήσεις";
 
 /* Subtitle for the option to buy a new Signal Login. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_SUBTITLE" = "One-time purchase";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_SUBTITLE" = "Εφάπαξ αγορά";
 
 /* Title text for the 'Signal Login' screen. */
 "REGISTRATION_SIGNAL_LOGIN_TITLE" = "Signal Login";
@@ -8927,7 +8927,7 @@
 "SEND_MEDIA_TURN_OFF_MM_TITLE" = "Απενεργοποίηση πολλαπλής λειτουργίας;";
 
 /* Label for the button to send a sticker message */
-"SEND_STICKER_BUTTON_TITLE" = "Send Sticker";
+"SEND_STICKER_BUTTON_TITLE" = "Αποστολή αυτοκόλλητου";
 
 /* String describing high quality sent media */
 "SENT_MEDIA_QUALITY_HIGH" = "Υψηλή";
@@ -9143,43 +9143,43 @@
 "SETTINGS_CHATS" = "Συνομιλίες";
 
 /* Title for a button in Chats settings that starts exporting the user's chat history. */
-"SETTINGS_CHATS_EXPORT_BUTTON" = "Export Chats";
+"SETTINGS_CHATS_EXPORT_BUTTON" = "Εξαγωγή συνομιλιών";
 
 /* Title for a button in a sheet shown before the user chooses a folder to export their chat history into, which opens a folder picker. */
-"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_CHOOSE_BUTTON" = "Choose Folder";
+"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_CHOOSE_BUTTON" = "Επιλογή φακέλου";
 
 /* Message for a sheet shown before the user chooses a folder to export their chat history into. */
-"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_MESSAGE" = "Choose a folder in your device’s storage where your chat history will be stored.";
+"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_MESSAGE" = "Επίλεξε έναν φάκελο στον αποθηκευτικό χώρο της συσκευής σου όπου θα αποθηκευτεί το ιστορικό συνομιλίας.";
 
 /* Title for a sheet shown before the user chooses a folder to export their chat history into. */
-"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_TITLE" = "Choose a Folder";
+"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_TITLE" = "Επιλογή φακέλου";
 
 /* Message for a sheet shown after the user's chat history has been exported. */
-"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_MESSAGE" = "BE CAREFUL where you store your chat export file and do not share it with anyone. Other apps on your device can access it depending on your device’s permissions.";
+"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_MESSAGE" = "ΠΡΟΣΟΧΗ στο πού αποθηκεύεις το αρχείο εξαγωγής συνομιλιών σου. Δεν πρέπει να το μοιράζεσαι με κανέναν. Άλλες εφαρμογές μπορεί να έχουν πρόσβαση στη συσκευή σου, ανάλογα με τις άδειές τους.";
 
 /* Title for a sheet shown after the user's chat history has been exported. */
-"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_TITLE" = "Chat Export Complete";
+"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_TITLE" = "Η εξαγωγή συνομιλίας ολοκληρώθηκε";
 
 /* Title for a button in a sheet shown after the user's chat history has been exported, which opens the exported folder in the Files app. */
-"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_VIEW_IN_FILES_BUTTON" = "View in Files";
+"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_VIEW_IN_FILES_BUTTON" = "Προβολή στα αρχεία";
 
 /* Message for a sheet shown when the user starts exporting their chat history from Chats settings. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_MESSAGE" = "BE CAREFUL! Do NOT share this file with anyone. Your chat history will be saved to your device and other apps can access it depending on your device’s permissions. Exporting with media will result in a larger file size.";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_MESSAGE" = "ΠΡΟΣΟΧΗ! ΜΗΝ κοινοποιείς αυτό το αρχείο με κανέναν. Το ιστορικό συνομιλιών σου θα αποθηκευτεί στη συσκευή σου και άλλες εφαρμογές θα έχουν πρόσβαση σε αυτό, ανάλογα με τα δικαιώματα της συσκευής σου. Η εξαγωγή με πολυμέσα θα έχει ως αποτέλεσμα μεγαλύτερο μέγεθος αρχείου.";
 
 /* Title for a sheet shown when the user starts exporting their chat history from Chats settings. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_TITLE" = "Export Chat History?";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_TITLE" = "Εξαγωγή ιστορικού συνομιλιών;";
 
 /* Title for a button in a sheet shown when the user starts exporting their chat history, which exports their chat history including attachments. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITH_MEDIA_BUTTON" = "Export With Media";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITH_MEDIA_BUTTON" = "Εξαγωγή με πολυμέσα";
 
 /* Title for a button in a sheet shown when the user starts exporting their chat history, which exports their chat history excluding attachments. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITHOUT_MEDIA_BUTTON" = "Export Without Media";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITHOUT_MEDIA_BUTTON" = "Εξαγωγή χωρίς πολυμέσα";
 
 /* Footer for the section in Chats settings containing a button to export the user's chat history. */
-"SETTINGS_CHATS_EXPORT_FOOTER" = "Export a machine-readable JSON copy of your chats. Disappearing messages will not be included.";
+"SETTINGS_CHATS_EXPORT_FOOTER" = "Κάνε εξαγωγή ενός αντιγράφου JSON των συνομιλιών σου που μπορεί να αναγνωστεί από μηχανήματα. Δεν περιλαμβάνονται τα μηνύματα που εξαφανίζονται.";
 
 /* Title for a progress modal shown while the user's chat history is being exported. */
-"SETTINGS_CHATS_EXPORT_PROGRESS_TITLE" = "Exporting chats…";
+"SETTINGS_CHATS_EXPORT_PROGRESS_TITLE" = "Εξαγωγή συνομιλιών...";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Εκκαθάριση ιστορικού συνομιλιών";

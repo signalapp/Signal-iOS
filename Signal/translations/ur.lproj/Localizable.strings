@@ -4007,7 +4007,7 @@
 "EXPIRATION_WARNING_TODAY" = "Signal یہ ورژن آج زائد المیعاد ہو جائے گا۔ میسجنگ جاری رکھنے کے لیے اپ ڈیٹ کریں۔";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to export your chat history. */
-"EXPORT_CHATS_AUTHENTICATION_REASON" = "Authenticate to export your chat history";
+"EXPORT_CHATS_AUTHENTICATION_REASON" = "اپنی چیٹ ہسٹری برآمد کرنے کے لیے تصدیق کریں";
 
 /* action sheet header when re-sending message which failed because of an invalid key signature */
 "FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "میسج نہیں بھیجا جا سکا کیونکہ %1$@ کو Signal کو اپ ڈیٹ کرنے اور کھولنے کی ضرورت ہے۔";
@@ -5495,7 +5495,7 @@
 "LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "ایسا لگتا ہے کہ آپ Signal ڈیوائس کو لنک کرنے کی کوشش کر رہے ہیں۔ جاری رکھیں پر ٹیپ کریں اور پھر \"نئی ڈیوائس لنک کریں\" پر ٹیپ کریں اور QR کوڈ کو دوبارہ اسکین کریں۔";
 
 /* Bullet point about a download link on the linked devices education sheet. Embeds {{ %1$@ download link }} */
-"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "On the device you want to link, visit %1$@ to install Signal";
+"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "ڈیوائس جس کو آپ مربوط کرنا چاہتے ہیں، Signal انسٹال کرنے کے لیے %1$@ ملاحظہ کریں";
 
 /* Bullet point about message sync on the linked devices education sheet */
 "LINKED_DEVICES_EDUCATION_POINT_MESSAGES" = "Signal کے لنک ہونے کے بعد آپ کے موبائل فون پر Signal میسجز اس کے ساتھ ہم وقت ساز ہوتے ہیں۔";
@@ -5504,13 +5504,13 @@
 "LINKED_DEVICES_EDUCATION_POINT_PRIVACY" = "لنک کردہ ڈیوائسز پر تمام میسجنگ نجی ہے";
 
 /* Title for the linked device education sheet */
-"LINKED_DEVICES_EDUCATION_TITLE" = "Signal on a linked device";
+"LINKED_DEVICES_EDUCATION_TITLE" = "لنک کردہ ڈیوائس پر Signal";
 
 /* Text that appears where the linked device list would be indicating that there are no linked devices. */
 "LINKED_DEVICES_EMPTY_STATE" = "کوئی لنک کردہ ڈیوائسز نہیں";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use this Signal account on another device.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "اس Signal اکاؤنٹ کو کسی دوسری ڈیوائس پر استعمال کریں۔";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "تمام ڈیوائسز پر میسجز اور چیٹس کی معلومات اینڈ ٹو اینڈ انکرپشن کے ذریعے محفوظ شدہ ہیں";
@@ -6224,10 +6224,10 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal کو  اس فیچر کیلئے تصاویر تک رسائی درکار ہے۔";
 
 /* Title for a progress modal shown after the user taps Cancel, while the work is being cancelled. */
-"MODAL_CIRCULAR_PROGRESS_CANCELLING_TITLE" = "Cancelling…";
+"MODAL_CIRCULAR_PROGRESS_CANCELLING_TITLE" = "منسوخ کیا جا رہا ہے…";
 
 /* Label on a progress modal indicating how far along some work is. Embeds {{ formatted percentage }}. */
-"MODAL_CIRCULAR_PROGRESS_PERCENT_COMPLETE" = "%1$@ complete";
+"MODAL_CIRCULAR_PROGRESS_PERCENT_COMPLETE" = "%1$@ مکمل ہو گیا ہے";
 
 /* Text on a blocking progress screen that indicates that there's a deletion in progress. */
 "MODAL_DELETING" = "حذف ہو رہی ہے۔۔۔";
@@ -8033,19 +8033,19 @@
 "REGISTER_WITHOUT_NUMBER" = "نمبر کے بغیر رجسٹر کریں";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "Make sure you’re registering with the same phone number and 64-character recovery key you saved when enabling Signal backups. Backups cannot be recovered without this key.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "یقینی بنائیں کہ آپ اسی فون نمبر اور اپنی 64 حروف پر مشتمل بحالی کی کیی کے ساتھ رجسٹر کر رہے ہیں جو آپ نے Signal بیک اپس کی فعالی کے وقت محفوظ کی تھی۔ اس کیی کے بغیر بیک اپس کو بحال نہیں کیا جا سکتا۔";
 
 /* Title for a sheet warning users about an incorrect recovery key used for registration. */
 "REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "غلط ریکوری کیی";
 
 /* Action label action allowing users to use PIN/SMS for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_ACTION" = "Register Another Way";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_ACTION" = "کسی دوسرے طریقے سے رجسٹر کریں";
 
 /* Message body for a sheet asking users if they would rather use PIN/SMS for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_MESSAGE" = "You can register your account by verifying via an SMS code Signal will send you, or by entering your PIN. After registering, you can try restoring your backup with your recovery key again.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_MESSAGE" = "آپ Signal کے بھیجے گئے SMS کوڈ کے ذریعے تصدیق کر کے یا اپنی پِن درج کر کے اپنے اکاؤنٹ کو رجسٹر کروا سکتے ہیں۔ رجسٹر کرنے کے بعد، آپ اپنی بحالی کی کیی کے ساتھ اپنا بیک اپ دوبارہ ری اسٹور کرنے کی کوشش کر سکتے ہیں۔";
 
 /* Title for a sheet asking users if they would rather use PIN/SMS for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_TITLE" = "Verify with SMS or PIN?";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_TITLE" = "SMS یا پِن سے تصدیق کریں؟";
 
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "اس بحالی کی کیی کے ساتھ کوئی بیک اپ منسلک شدہ نہیں ہے۔ براہ کرم یقینی بنائیں کہ کیی درست ہے اور دوبارہ کوشش کریں۔";
@@ -8348,28 +8348,28 @@
 "REGISTRATION_SIGNAL_LOGIN_PAY" = "%1$@ ادائیگی کریں";
 
 /* Text for a bullet point describing that an existing Signal Login can be used to log in and restore an account. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_RESTORE" = "Login and restore your account";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_RESTORE" = "لاگ اِن کریں اور اپنا اکاؤنٹ ری اسٹور کریں";
 
 /* Text for a bullet point thanking the user for supporting Signal by previously buying a Signal Login. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_THANKS" = "Thanks for supporting Signal";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_THANKS" = "Signal کو سپورٹ کرنے کا شکریہ";
 
 /* Subtitle for the option to register with a Signal Login the user already owns. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_SUBTITLE" = "Use your existing login info";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_SUBTITLE" = "اپنی موجودہ login کی معلومات استعمال کریں";
 
 /* Title for the option to register with a Signal Login the user already owns. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_TITLE" = "I have a Signal Login";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_TITLE" = "میرے پاس Signal Login ہے";
 
 /* Text for a bullet point describing that a Signal Login lets you register without a phone number. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NO_PHONE_NUMBER" = "No phone number needed";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NO_PHONE_NUMBER" = "فون نمبر کی ضرورت نہیں";
 
 /* Text for a bullet point explaining that buying a Signal Login supports Signal, a non-profit. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NON_PROFIT" = "Signal is a non-profit — your purchase helps support our mission";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NON_PROFIT" = "Signal ایک غیر منافع بخش ادارہ ہے — آپ کی خریداری ہمارے مشن کو سپورٹ کرنے میں مدد کرتی ہے";
 
 /* Text for a bullet point describing that a Signal Login comes with a username for messaging and calling. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_USERNAME" = "Username for messaging & calls";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_USERNAME" = "میسجنگ اور کالز کے لیے یوزر نیم";
 
 /* Subtitle for the option to buy a new Signal Login. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_SUBTITLE" = "One-time purchase";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_SUBTITLE" = "ایک وقتی خریداری";
 
 /* Title text for the 'Signal Login' screen. */
 "REGISTRATION_SIGNAL_LOGIN_TITLE" = "Signal Login";
@@ -8927,7 +8927,7 @@
 "SEND_MEDIA_TURN_OFF_MM_TITLE" = "ملٹی موڈ آف کریں؟";
 
 /* Label for the button to send a sticker message */
-"SEND_STICKER_BUTTON_TITLE" = "Send Sticker";
+"SEND_STICKER_BUTTON_TITLE" = "اسٹیکر بھیجیں";
 
 /* String describing high quality sent media */
 "SENT_MEDIA_QUALITY_HIGH" = "اونچا";
@@ -9143,43 +9143,43 @@
 "SETTINGS_CHATS" = "چیٹس";
 
 /* Title for a button in Chats settings that starts exporting the user's chat history. */
-"SETTINGS_CHATS_EXPORT_BUTTON" = "Export Chats";
+"SETTINGS_CHATS_EXPORT_BUTTON" = "چیٹس برآمد کریں";
 
 /* Title for a button in a sheet shown before the user chooses a folder to export their chat history into, which opens a folder picker. */
-"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_CHOOSE_BUTTON" = "Choose Folder";
+"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_CHOOSE_BUTTON" = "فولڈر منتخب کریں";
 
 /* Message for a sheet shown before the user chooses a folder to export their chat history into. */
-"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_MESSAGE" = "Choose a folder in your device’s storage where your chat history will be stored.";
+"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_MESSAGE" = "اپنی ڈیوائس کی اسٹوریج میں وہ فولڈر منتخب کریں جہاں آپ کی چیٹ ہسٹری محفوظ کی جائے گی۔";
 
 /* Title for a sheet shown before the user chooses a folder to export their chat history into. */
-"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_TITLE" = "Choose a Folder";
+"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_TITLE" = "ایک فولڈر منتخب کریں";
 
 /* Message for a sheet shown after the user's chat history has been exported. */
-"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_MESSAGE" = "BE CAREFUL where you store your chat export file and do not share it with anyone. Other apps on your device can access it depending on your device’s permissions.";
+"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_MESSAGE" = "محتاط رہیں کہ آپ اپنی برآمدی چیٹ کی فائل کہاں محفوظ کرتے ہیں اور اسے کسی کے ساتھ شیئر نہ کریں۔ آپ کی ڈیوائس پر موجود دیگر ایپس آپ کی ڈیوائس کی اجازتوں کے مطابق اس تک رسائی حاصل کر سکتی ہیں۔";
 
 /* Title for a sheet shown after the user's chat history has been exported. */
-"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_TITLE" = "Chat Export Complete";
+"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_TITLE" = "چیٹ کی برآمدگی مکمل ہو گئی ہے";
 
 /* Title for a button in a sheet shown after the user's chat history has been exported, which opens the exported folder in the Files app. */
-"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_VIEW_IN_FILES_BUTTON" = "View in Files";
+"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_VIEW_IN_FILES_BUTTON" = "فائلز میں دیکھیں";
 
 /* Message for a sheet shown when the user starts exporting their chat history from Chats settings. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_MESSAGE" = "BE CAREFUL! Do NOT share this file with anyone. Your chat history will be saved to your device and other apps can access it depending on your device’s permissions. Exporting with media will result in a larger file size.";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_MESSAGE" = "محتاط رہیں! اس فائل کو کسی کے ساتھ بھی شیئر نہ کریں۔ آپ کی چیٹ ہسٹری آپ کی ڈیوائس پر محفوظ ہو جائے گی اور دیگر ایپس آپ کی ڈیوائس کی اجازتوں کے مطابق اس تک رسائی حاصل کر سکیں گی۔ میڈیا کے ساتھ برآمد کرنے سے فائل کا سائز زیادہ ہو جائے گا۔";
 
 /* Title for a sheet shown when the user starts exporting their chat history from Chats settings. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_TITLE" = "Export Chat History?";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_TITLE" = "چیٹ ہسٹری ایکسپورٹ کریں؟";
 
 /* Title for a button in a sheet shown when the user starts exporting their chat history, which exports their chat history including attachments. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITH_MEDIA_BUTTON" = "Export With Media";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITH_MEDIA_BUTTON" = "میڈیا کے ساتھ برآمد کریں";
 
 /* Title for a button in a sheet shown when the user starts exporting their chat history, which exports their chat history excluding attachments. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITHOUT_MEDIA_BUTTON" = "Export Without Media";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITHOUT_MEDIA_BUTTON" = "میڈیا کے بغیر برآمد کریں";
 
 /* Footer for the section in Chats settings containing a button to export the user's chat history. */
-"SETTINGS_CHATS_EXPORT_FOOTER" = "Export a machine-readable JSON copy of your chats. Disappearing messages will not be included.";
+"SETTINGS_CHATS_EXPORT_FOOTER" = "اپنی چیٹس کی مشینی طور پر قابل فہم JSON کاپی برآمد کریں۔ اس میں غائب ہونے والے میسجز شامل نہیں ہوں گے۔";
 
 /* Title for a progress modal shown while the user's chat history is being exported. */
-"SETTINGS_CHATS_EXPORT_PROGRESS_TITLE" = "Exporting chats…";
+"SETTINGS_CHATS_EXPORT_PROGRESS_TITLE" = "چیٹس برآمد کی جا رہی ہیں…";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "چیٹ ہسٹری صاف کریں";

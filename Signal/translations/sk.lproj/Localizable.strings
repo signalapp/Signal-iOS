@@ -4007,7 +4007,7 @@
 "EXPIRATION_WARNING_TODAY" = "Táto verzia Signalu vyprší dnes. Ak chcete naďalej posielať správy, je potrebná aktualizácia.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to export your chat history. */
-"EXPORT_CHATS_AUTHENTICATION_REASON" = "Authenticate to export your chat history";
+"EXPORT_CHATS_AUTHENTICATION_REASON" = "Overte totožnosť na exportovanie histórie četov";
 
 /* action sheet header when re-sending message which failed because of an invalid key signature */
 "FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "Správu nebolo možné odoslať, pretože %1$@ si musí aktualizovať a otvoriť Signal.";
@@ -5495,7 +5495,7 @@
 "LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "Vyzerá to, že sa snažíte prepojiť zariadenie Signal. Ťuknite na Pokračovať, potom na „Prepojiť nové zariadenie“ a znova naskenujte QR kód.";
 
 /* Bullet point about a download link on the linked devices education sheet. Embeds {{ %1$@ download link }} */
-"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "On the device you want to link, visit %1$@ to install Signal";
+"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "Na zariadení, ktoré chcete prepojiť, prejdite na stránku %1$@ a nainštalujte Signal";
 
 /* Bullet point about message sync on the linked devices education sheet */
 "LINKED_DEVICES_EDUCATION_POINT_MESSAGES" = "Signal správy sú po prepojení synchronizované s aplikáciou Signal vo vašom mobilnom telefóne.";
@@ -5504,13 +5504,13 @@
 "LINKED_DEVICES_EDUCATION_POINT_PRIVACY" = "Všetky správy na prepojených zariadeniach sú súkromné";
 
 /* Title for the linked device education sheet */
-"LINKED_DEVICES_EDUCATION_TITLE" = "Signal on a linked device";
+"LINKED_DEVICES_EDUCATION_TITLE" = "Signal na prepojenom zariadení";
 
 /* Text that appears where the linked device list would be indicating that there are no linked devices. */
 "LINKED_DEVICES_EMPTY_STATE" = "Žiadne prepojené zariadenia";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use this Signal account on another device.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "Použite tento Signal účet na inom zariadení.";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "Správy a informácie o četoch sú na všetkých zariadeniach chránené end-to-end šifrovaním";
@@ -6224,10 +6224,10 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal vyžaduje pre túto funkciu prístup k vašim fotkám.";
 
 /* Title for a progress modal shown after the user taps Cancel, while the work is being cancelled. */
-"MODAL_CIRCULAR_PROGRESS_CANCELLING_TITLE" = "Cancelling…";
+"MODAL_CIRCULAR_PROGRESS_CANCELLING_TITLE" = "Prebieha zrušenie…";
 
 /* Label on a progress modal indicating how far along some work is. Embeds {{ formatted percentage }}. */
-"MODAL_CIRCULAR_PROGRESS_PERCENT_COMPLETE" = "%1$@ complete";
+"MODAL_CIRCULAR_PROGRESS_PERCENT_COMPLETE" = "Dokončené na %1$@";
 
 /* Text on a blocking progress screen that indicates that there's a deletion in progress. */
 "MODAL_DELETING" = "Vymazáva sa…";
@@ -8033,19 +8033,19 @@
 "REGISTER_WITHOUT_NUMBER" = "Registrovať sa bez čísla";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "Make sure you’re registering with the same phone number and 64-character recovery key you saved when enabling Signal backups. Backups cannot be recovered without this key.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "Uistite sa, že sa registrujete pomocou rovnakého telefónneho čísla a 64-miestneho záložného kľúča, ktoré ste si uložili pri povolení Záloh Signal. Zálohy nie je možné obnoviť bez tohto kľúča.";
 
 /* Title for a sheet warning users about an incorrect recovery key used for registration. */
 "REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "Nesprávny kľúč na obnovenie";
 
 /* Action label action allowing users to use PIN/SMS for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_ACTION" = "Register Another Way";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_ACTION" = "Zaregistrovať sa iným spôsobom";
 
 /* Message body for a sheet asking users if they would rather use PIN/SMS for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_MESSAGE" = "You can register your account by verifying via an SMS code Signal will send you, or by entering your PIN. After registering, you can try restoring your backup with your recovery key again.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_MESSAGE" = "Svoj účet si môžete zaregistrovať overením pomocou SMS kódu, ktorý vám Signal pošle, alebo zadaním PIN. Po registrácii môžete znova skúsiť obnoviť zálohu pomocou kľúča na obnovenie.";
 
 /* Title for a sheet asking users if they would rather use PIN/SMS for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_TITLE" = "Verify with SMS or PIN?";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_TITLE" = "Overiť pomocou SMS alebo PIN?";
 
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "K tomuto kľúču na obnovenie nie je priradená žiadna záloha. Uistite sa, že kľúč je správny, a skúste to znova.";
@@ -8348,28 +8348,28 @@
 "REGISTRATION_SIGNAL_LOGIN_PAY" = "Zaplatiť %1$@";
 
 /* Text for a bullet point describing that an existing Signal Login can be used to log in and restore an account. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_RESTORE" = "Login and restore your account";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_RESTORE" = "Prihláste sa a obnovte svoj účet";
 
 /* Text for a bullet point thanking the user for supporting Signal by previously buying a Signal Login. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_THANKS" = "Thanks for supporting Signal";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_THANKS" = "Ďakujeme, že podporujete Signal";
 
 /* Subtitle for the option to register with a Signal Login the user already owns. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_SUBTITLE" = "Use your existing login info";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_SUBTITLE" = "Použite svoje existujúce prihlasovacie údaje";
 
 /* Title for the option to register with a Signal Login the user already owns. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_TITLE" = "I have a Signal Login";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_TITLE" = "Mám Signal Login";
 
 /* Text for a bullet point describing that a Signal Login lets you register without a phone number. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NO_PHONE_NUMBER" = "No phone number needed";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NO_PHONE_NUMBER" = "Nie je potrebné žiadne telefónne číslo";
 
 /* Text for a bullet point explaining that buying a Signal Login supports Signal, a non-profit. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NON_PROFIT" = "Signal is a non-profit — your purchase helps support our mission";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NON_PROFIT" = "Signal je nezisková organizácia — váš nákup pomôže podporiť naše poslanie";
 
 /* Text for a bullet point describing that a Signal Login comes with a username for messaging and calling. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_USERNAME" = "Username for messaging & calls";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_USERNAME" = "Používateľské meno na hovory a správy";
 
 /* Subtitle for the option to buy a new Signal Login. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_SUBTITLE" = "One-time purchase";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_SUBTITLE" = "Jednorazový nákup";
 
 /* Title text for the 'Signal Login' screen. */
 "REGISTRATION_SIGNAL_LOGIN_TITLE" = "Signal Login";
@@ -8927,7 +8927,7 @@
 "SEND_MEDIA_TURN_OFF_MM_TITLE" = "Vypnúť multi-režim?";
 
 /* Label for the button to send a sticker message */
-"SEND_STICKER_BUTTON_TITLE" = "Send Sticker";
+"SEND_STICKER_BUTTON_TITLE" = "Odoslať nálepku";
 
 /* String describing high quality sent media */
 "SENT_MEDIA_QUALITY_HIGH" = "Vysoká";
@@ -9143,43 +9143,43 @@
 "SETTINGS_CHATS" = "Čety";
 
 /* Title for a button in Chats settings that starts exporting the user's chat history. */
-"SETTINGS_CHATS_EXPORT_BUTTON" = "Export Chats";
+"SETTINGS_CHATS_EXPORT_BUTTON" = "Exportovať čety";
 
 /* Title for a button in a sheet shown before the user chooses a folder to export their chat history into, which opens a folder picker. */
-"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_CHOOSE_BUTTON" = "Choose Folder";
+"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_CHOOSE_BUTTON" = "Vybrať priečinok";
 
 /* Message for a sheet shown before the user chooses a folder to export their chat history into. */
-"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_MESSAGE" = "Choose a folder in your device’s storage where your chat history will be stored.";
+"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_MESSAGE" = "Vyberte priečinok v úložisku zariadenia, kde bude uložená história četov.";
 
 /* Title for a sheet shown before the user chooses a folder to export their chat history into. */
-"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_TITLE" = "Choose a Folder";
+"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_TITLE" = "Vyberte priečinok";
 
 /* Message for a sheet shown after the user's chat history has been exported. */
-"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_MESSAGE" = "BE CAREFUL where you store your chat export file and do not share it with anyone. Other apps on your device can access it depending on your device’s permissions.";
+"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_MESSAGE" = "DÁVAJTE POZOR, kde ukladáte exportovaný súbor s četmi a s nikým ho nezdieľajte. V závislosti od nastavených povolení zariadenia môžu mať k nemu prístup iné aplikácie vo vašom zariadení.";
 
 /* Title for a sheet shown after the user's chat history has been exported. */
-"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_TITLE" = "Chat Export Complete";
+"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_TITLE" = "Export četu bol úspešne dokončený";
 
 /* Title for a button in a sheet shown after the user's chat history has been exported, which opens the exported folder in the Files app. */
-"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_VIEW_IN_FILES_BUTTON" = "View in Files";
+"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_VIEW_IN_FILES_BUTTON" = "Zobraziť v Súboroch";
 
 /* Message for a sheet shown when the user starts exporting their chat history from Chats settings. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_MESSAGE" = "BE CAREFUL! Do NOT share this file with anyone. Your chat history will be saved to your device and other apps can access it depending on your device’s permissions. Exporting with media will result in a larger file size.";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_MESSAGE" = "POZOR! Tento súbor s nikým NEZDIEĽAJTE. História četov sa uloží do vášho zariadenia a ostatné aplikácie k nej môžu mať prístup v závislosti od nastavených povolení zariadenia. Exportovanie s médiami zvýši veľkosť súboru.";
 
 /* Title for a sheet shown when the user starts exporting their chat history from Chats settings. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_TITLE" = "Export Chat History?";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_TITLE" = "Exportovať históriu četov?";
 
 /* Title for a button in a sheet shown when the user starts exporting their chat history, which exports their chat history including attachments. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITH_MEDIA_BUTTON" = "Export With Media";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITH_MEDIA_BUTTON" = "Exportovať s médiami";
 
 /* Title for a button in a sheet shown when the user starts exporting their chat history, which exports their chat history excluding attachments. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITHOUT_MEDIA_BUTTON" = "Export Without Media";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITHOUT_MEDIA_BUTTON" = "Exportovať bez médií";
 
 /* Footer for the section in Chats settings containing a button to export the user's chat history. */
-"SETTINGS_CHATS_EXPORT_FOOTER" = "Export a machine-readable JSON copy of your chats. Disappearing messages will not be included.";
+"SETTINGS_CHATS_EXPORT_FOOTER" = "Exportujte strojovo čitateľnú kópiu JSON všetkých vašich četov. Miznúce správy nebudú zahrnuté.";
 
 /* Title for a progress modal shown while the user's chat history is being exported. */
-"SETTINGS_CHATS_EXPORT_PROGRESS_TITLE" = "Exporting chats…";
+"SETTINGS_CHATS_EXPORT_PROGRESS_TITLE" = "Prebieha exportovanie četu…";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Vymazať históriu četov";
@@ -10287,7 +10287,7 @@
 "STICKER_PACK_CONFIRM_REMOVE_TITLE" = "Odstrániť balíček nálepiek?";
 
 /* Label for a button to copy the link of a sticker pack */
-"STICKER_PACK_LINK" = "Kopírovať odkaz";
+"STICKER_PACK_LINK" = "Odkaz";
 
 /* Label for a button to uninstall a sticker pack */
 "STICKER_PACK_REMOVE" = "Odstrániť";

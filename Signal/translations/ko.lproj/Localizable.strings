@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_STICKER" = "스티커";
 
 /* Accessibility label for stickers. Embeds {{ name of top emoji the sticker resembles }} */
-"ACCESSIBILITY_LABEL_STICKER_FORMAT" = "%1$@와(과) 비슷한 스티커";
+"ACCESSIBILITY_LABEL_STICKER_FORMAT" = "%1$@ 이미지와 비슷한 스티커";
 
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "음성 메시지";
@@ -38,7 +38,7 @@
 "ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "보고서 내보내기";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the message on that warning. */
-"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "Signal 계정 데이터를 신뢰하는 사람 또는 앱에만 공유하세요.";
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "Signal 계정 데이터는 신뢰할 수 있는 사람이나 앱에만 공유하세요.";
 
 /* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the message on that error. */
 "ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "연결을 확인하고 다시 시도하세요.";
@@ -62,10 +62,10 @@
 "ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "보고서 내보내기";
 
 /* Users can request a report of their account data. This text appears at the bottom of this screen, offering more information. */
-"ACCOUNT_DATA_REPORT_FOOTER" = "보고서는 내보내기를 하는 시점에만 생성되며, 기기의 Signal에는 저장되지 않습니다.";
+"ACCOUNT_DATA_REPORT_FOOTER" = "보고서는 내보내는 시점에만 생성되며, Signal은 기기에 보고서를 저장하지 않습니다.";
 
 /* Users can request a report of their account data. This is the subtitle on the screen where they do this, giving them more information. */
-"ACCOUNT_DATA_REPORT_SUBTITLE" = "Signal 계정 데이터 보고서를 다운로드하고 내보냅니다. 이 보고서는 메시지나 미디어를 포함하지 않습니다.";
+"ACCOUNT_DATA_REPORT_SUBTITLE" = "Signal 계정 데이터 보고서를 다운로드하고 내보냅니다. 이 보고서에는 메시지나 미디어가 포함되지 않습니다.";
 
 /* Users can request a report of their account data. This is the title on the screen where they do this. */
 "ACCOUNT_DATA_REPORT_TITLE" = "내 계정 데이터";
@@ -173,7 +173,7 @@
 "ALL_MEDIA_AUDIO_FILTER_VOICE_MSG" = "음성 메시지";
 
 /* Audio file type in All Meda file type picker. */
-"ALL_MEDIA_FILE_TYPE_AUDIO" = "음성";
+"ALL_MEDIA_FILE_TYPE_AUDIO" = "오디오";
 
 /* Generic All Media file type for non-audiovisual files used in file type picker */
 "ALL_MEDIA_FILE_TYPE_FILES" = "파일";
@@ -227,7 +227,7 @@
 "APP_LAUNCH_FAILURE_CONTINUE" = "대신 Signal 열기";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "우리가 이 문제를 해결할 수 있도록 support@signal.org로 디버그 로그를 보내주세요.";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "문제 해결을 위해 디버그 로그를 support@signal.org 주소로 보내 주세요.";
 
 /* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
 "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Signal을 열 수 없음";
@@ -614,19 +614,19 @@
 "BACKUP_KEY_PLACEHOLDER" = "복구 키";
 
 /* Action text for Recovery Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_ACTION" = "확인";
+"BACKUP_KEY_REMINDER_MEGAPHONE_ACTION" = "인증";
 
 /* Body for Recovery Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "키를 아직 기억하고 있는지 확인하기 위해 때때로 키 확인을 요청드릴 수 있습니다";
+"BACKUP_KEY_REMINDER_MEGAPHONE_BODY" = "복구 키를 기억하고 계신지 확인하기 위해 주기적으로 키 입력을 요청할 수 있어요.";
 
 /* Title for Recovery Key reminder megaphone */
-"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "복구 키 확인";
+"BACKUP_KEY_REMINDER_MEGAPHONE_TITLE" = "복구 키를 인증하세요";
 
 /* Snooze text for Recovery Key reminder megaphone */
 "BACKUP_KEY_REMINDER_NOT_NOW_ACTION" = "나중에";
 
 /* Toast indicating that the Recovery Key was correct. */
-"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "복구 키가 맞습니다. 키를 안전하게 보관하세요.";
+"BACKUP_KEY_REMINDER_SUCCESSFUL_TOAST" = "복구 키가 일치합니다. 키를 안전하게 보관하세요.";
 
 /* Title for a button that lets the user see their whole Recovery Key, from a preview. */
 "BACKUP_KEY_SEE_FULL_KEY_BUTTON_TITLE" = "전체 키 보기";
@@ -641,7 +641,7 @@
 "BACKUP_ONBOARDING_CANCEL_SHEET_ACTION" = "백업 설정 종료";
 
 /* Message for action sheet when attempting to cancel backup onboarding */
-"BACKUP_ONBOARDING_CANCEL_SHEET_MESSAGE" = "백업 설정을 완료하지 않았으며 백업이 생성되지 않았습니다. 설정에서 백업을 활성화할 수 있습니다.";
+"BACKUP_ONBOARDING_CANCEL_SHEET_MESSAGE" = "백업 설정이 완료되지 않아 아직 백업이 생성되지 않았습니다. 설정에서 언제든지 백업을 활성화할 수 있습니다.";
 
 /* Title for action sheet when attempting to cancel backup onboarding */
 "BACKUP_ONBOARDING_CANCEL_SHEET_TITLE" = "백업 설정을 종료할까요?";
@@ -671,7 +671,7 @@
 "BACKUP_ONBOARDING_INTRO_BULLET_3" = "언제나 백업 삭제 가능";
 
 /* A toast shown when 'Not Now' is tapped from the Backups onboarding intro. */
-"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "설정에서 백업을 활성화할 수 있습니다.";
+"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "설정에서 언제든지 백업을 활성화할 수 있습니다.";
 
 /* Subtitle for a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Signal의 안전한 종단간 암호화 저장 공간 서비스를 사용하여 메시지와 미디어를 백업하세요. 새 휴대폰을 구매하거나 Signal을 다시 설치하는 경우에도 메시지를 손실할 염려가 없습니다.";
@@ -695,10 +695,10 @@
 "BACKUP_ONBOARDING_KEY_INTRO_TITLE" = "복구 키";
 
 /* Body for a sheet shown when your Backup plan is downgraded. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_BODY" = "현재 등록된 결제 수단으로 갱신할 수 없어 백업 구독이 만료되었습니다.\n\n미디어 백업을 계속하려면 다시 구독하세요. 무료 Signal 백업 플랜을 계속 이용할 수 있습니다.";
+"BACKUP_PLAN_DOWNGRADED_SHEET_BODY" = "현재 등록된 결제 수단으로 갱신할 수 없어 백업 구독이 만료되었습니다.\n\n미디어 백업을 계속하려면 다시 구독해 주세요. 기본 무료 Signal 백업 플랜은 계속 이용할 수 있습니다.";
 
 /* Body for a sheet shown when your Backup plan is downgraded because you stopped using TestFlight. */
-"BACKUP_PLAN_DOWNGRADED_SHEET_BODY_TESTFLIGHT" = "TestFlight를 더 이상 사용하지 않아 백업 구독이 만료되었습니다.\n\n미디어 백업을 계속하려면 다시 구독하세요. 무료 Signal 백업 플랜을 계속 이용할 수 있습니다.";
+"BACKUP_PLAN_DOWNGRADED_SHEET_BODY_TESTFLIGHT" = "TestFlight를 더 이상 사용하지 않아 백업 구독이 만료되었습니다.\n\n미디어 백업을 계속하려면 다시 구독해 주세요. 기본 무료 Signal 백업 플랜은 계속 이용할 수 있습니다.";
 
 /* Primary button for a sheet shown when your Backup plan is downgraded. */
 "BACKUP_PLAN_DOWNGRADED_SHEET_PRIMARY_BUTTON" = "백업 관리";
@@ -794,13 +794,13 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "셀룰러 데이터를 통한 백업 허용";
 
 /* Message for an action sheet explaining that performing a backup failed because WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "셀룰러 데이터를 사용하여 백업할 경우 데이터 요금이 발생할 수 있습니다. WiFi 네트워크에 연결하거나, 셀룰러 데이터를 통한 백업을 허용할 수 있습니다.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "셀룰러 데이터를 사용하여 백업할 경우 데이터 요금이 발생할 수 있습니다. Wi-Fi 네트워크에 연결하거나, 셀룰러 데이터를 통한 백업을 허용할 수 있습니다.";
 
 /* Title for an action sheet explaining that performing a backup failed because WiFi is required. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "백업 시 셀룰러 데이터 사용을 허락할까요?";
 
 /* Message for an action sheet explaining that performing a backup failed with a network error. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "백업을 만드는 중 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도하세요.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "백업 생성 중에 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도하세요.";
 
 /* Message for an action sheet explaining that you must be registered to make a Backup. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NOT_REGISTERED" = "백업을 만들려면 먼저 등록을 완료해야 합니다.";
@@ -830,13 +830,13 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_AND_DISABLED_DESCRIPTION" = "백업을 껐습니다.";
 
 /* Text describing the user's free backup plan. */
-"BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "백업 플랜이 무료입니다.";
+"BACKUP_SETTINGS_BACKUP_PLAN_FREE_DESCRIPTION" = "무료 백업 플랜을 이용 중입니다.";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_MESSAGE" = "오류가 발생했습니다. 고객 지원팀에 문의하세요.";
 
 /* Title for a view indicating we failed to fetch someone's Backup plan due to an unexpected error. */
-"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "백업 플랜을 가져오지 못함";
+"BACKUP_SETTINGS_BACKUP_PLAN_GENERIC_ERROR_TITLE" = "백업 플랜 가져오기 실패";
 
 /* Message for a view indicating we failed to fetch someone's Backup plan due to a network error. */
 "BACKUP_SETTINGS_BACKUP_PLAN_NETWORK_ERROR_MESSAGE" = "연결을 확인하고 다시 시도하세요.";
@@ -899,16 +899,16 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_RENEWAL_FORMAT" = "%1$@ 갱신";
 
 /* Footer for a menu section related to settings for when Backups are disabled. */
-"BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "백업을 사용하지 않도록 설정했으며, Signal의 안전한 저장소 서비스에서 데이터를 삭제했습니다.";
+"BACKUP_SETTINGS_BACKUPS_DISABLED_SECTION_FOOTER" = "백업이 해제되었으며, Signal 보안 저장소 서비스에서 데이터가 삭제되었습니다.";
 
 /* Description for a progress view tracking media being downloaded in service of disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "백업을 비활성화했으며, 이 기기에 저장되지 않은 모든 미디어를 다운로드하는 중입니다. 다운로드가 완료되면 Signal의 보안 저장 공간에서 해당 데이터가 삭제됩니다.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_DOWNLOADING_MEDIA_PROGRESS_VIEW_DESCRIPTION" = "백업이 해제되었으며, 이 기기에 없는 미디어를 지금 다운로드하고 있습니다. 다운로드가 완료되면 Signal 보안 저장소 서비스에서 데이터가 삭제됩니다.";
 
 /* Message for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_MESSAGE" = "오류가 발생했습니다. 고객 지원팀에 문의하세요.";
 
 /* Header for a menu section related to settings for when disabling Backups encountered an unexpected error. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "Signal의 안전한 저장소 서비스에서 데이터를 삭제하는 도중 오류가 발생했습니다.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_SECTION_HEADER" = "Signal 보안 저장소 서비스에서 데이터를 삭제하는 중 오류가 발생했습니다.";
 
 /* Title for a view indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_BACKUPS_DISABLING_GENERIC_ERROR_TITLE" = "백업 삭제 실패";
@@ -917,7 +917,7 @@
 "BACKUP_SETTINGS_BACKUPS_DISABLING_PROGRESS_VIEW_DESCRIPTION" = "백업을 삭제하는 중...";
 
 /* Header for a menu section related to disabling Backups. */
-"BACKUP_SETTINGS_BACKUPS_DISABLING_SECTION_HEADER" = "백업을 사용하지 않도록 설정했으며, Signal의 안전한 저장소 서비스에서 데이터가 삭제됩니다.";
+"BACKUP_SETTINGS_BACKUPS_DISABLING_SECTION_HEADER" = "백업이 해제되었으며, Signal 보안 저장소 서비스에서 데이터가 삭제됩니다.";
 
 /* Header for a menu section related to settings for when Backups are enabled. */
 "BACKUP_SETTINGS_BACKUPS_ENABLED_SECTION_HEADER" = "백업 세부 정보";
@@ -938,7 +938,7 @@
 "BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_TITLE" = "복구 키 한도 도달";
 
 /* Toast shown when a new Recovery Key has been created successfully. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "새 키를 생성했습니다!";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_SUCCESS_TOAST" = "새 키를 생성했습니다.";
 
 /* TItle for a sheet warning users that Backups must be disabled to create a new Recovery Key. */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_WARNING_SHEET_BACKUPS_MUST_BE_DISABLED_TITLE" = "키 비활성화 및 새 키 생성";
@@ -965,13 +965,13 @@
 "BACKUP_SETTINGS_DISABLING_CONFIRMATION_ACTION_SHEET_TITLE" = "백업을 끄고 삭제할까요?";
 
 /* Message shown in an action sheet when the user disables Backups, explaining that their media is downloading first. */
-"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_MESSAGE" = "백업에 이 기기에 없는 미디어가 있습니다. 백업 다운로드에 시간이 오래 걸릴 수 있습니다. 다운로드가 중단되는 걸 방지하려면 Signal을 계속 열어두세요.";
+"BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_MESSAGE" = "현재 기기에 없는 미디어가 백업에 존재합니다. 백업을 다운로드하는 데 다소 긴 시간이 걸릴 수 있으니, 다운로드가 중단되는 걸 방지하려면 Signal을 계속 열어두세요.";
 
 /* Title shown in an action sheet when the user disables Backups, explaining that their media is downloading first. */
 "BACKUP_SETTINGS_DISABLING_DOWNLOADS_STARTED_ACTION_SHEET_TITLE" = "백업을 다운로드하는 중";
 
 /* Message shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
-"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "Signal의 안전한 저장소 서비스에서 데이터를 삭제하는 도중 오류가 발생했습니다.";
+"BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_MESSAGE" = "Signal 보안 저장소 서비스에서 데이터를 삭제하는 중 오류가 발생했습니다.";
 
 /* Title shown in an action sheet indicating we failed to delete the user's Backup due to an unexpected error. */
 "BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "백업 삭제 실패";
@@ -1007,10 +1007,10 @@
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_DISK_SPACE" = "미디어를 다운로드할 공간이 부족합니다. 계속하려면 %1$@의 공간을 확보하세요.";
 
 /* Subtitle for a progress bar tracking downloads that are paused because they need internet. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "다운로드 일시 중지됨: 인터넷 연결 없음…";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "다운로드 일시 중지됨: 인터넷 연결 없음";
 
 /* Subtitle for a progress bar tracking downloads that are paused because they need WiFi. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "다운로드 일시 중지됨: Wi-Fi를 연결하는 중";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "다운로드 일시 중지됨: Wi-Fi 연결 대기 중";
 
 /* Subtitle for a progress bar tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_RUNNING" = "%1$@/%2$@ 다운로드 중(%3$@)";
@@ -1100,7 +1100,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_LATER_ACTION" = "나중에 다운로드";
 
 /* Message for an action sheet allowing users to download their offloaded media. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_MESSAGE" = "백업에 이 기기에 없는 미디어가 있습니다. 다운로드하는 데 시간이 오래 걸릴 수 있으므로 다운로드가 중단되지 않도록 Signal을 계속 열어두세요.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_MESSAGE" = "현재 기기에 없는 미디어가 백업에 존재합니다. 다운로드하는 데 다소 긴 시간이 걸릴 수 있으니, 다운로드가 중단되는 걸 방지하려면 Signal을 계속 열어두세요.";
 
 /* Action in an action sheet allowing users to download their offloaded media now. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_NOW_ACTION" = "지금 다운로드";
@@ -1127,7 +1127,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE" = "다음 백업 시 오래된 미디어는 오프로드되지만, 언제든지 백업에서 다시 다운로드할 수 있습니다.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "저장 공간 최적화는 유료 Signal 백업으로만 사용할 수 있습니다. 이 기능을 사용하기 시작하려면 백업 플랜을 업그레이드하세요.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "저장 공간 최적화는 유료 Signal 백업으로만 사용할 수 있습니다. 이 기능을 사용하려면 백업 플랜을 업그레이드하세요.";
 
 /* Title for a toggle allowing users to change the Optimize Local Storage setting. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Signal 저장 공간 최적화";
@@ -1175,16 +1175,16 @@
 "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_DETAIL_BUTTON" = "세부 정보";
 
 /* Title for notice that the user's Backups subscription couldn't be redeemed. */
-"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_TITLE" = "백업 구독을 사용하지 못했습니다";
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_TITLE" = "백업 구독을 적용할 수 없습니다";
 
 /* Body for a sheet explaining that the user's Backups subscription was already redeemed. */
-"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_BODY" = "이달에 너무 많은 기기에서 구독을 사용하려고 시도했습니다.\n\nSignal 계정을 너무 많이 재등록했거나, 동일한 구독을 사용하는 기기가 너무 많을 수 있습니다.";
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_BODY" = "이번 달 구독을 등록하려는 기기 수가 한도를 초과했습니다.\n\nSignal 계정을 너무 많이 재등록했거나, 동일한 구독을 사용하는 기기가 너무 많을 수 있습니다.";
 
 /* Button for a sheet explaining that the user's Backups subscription was already redeemed. */
 "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_GOT_IT_BUTTON" = "확인";
 
 /* Title for a sheet explaining that the user's Backups subscription was already redeemed. */
-"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_TITLE" = "백업 구독을 사용하지 못했습니다";
+"BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_TITLE" = "백업 구독을 적용할 수 없습니다";
 
 /* Subtitle for a progress bar tracking uploads that are paused because of low battery. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_BATTERY" = "미디어 업로드 일시 중지됨: 기기 배터리 부족";
@@ -1193,7 +1193,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "미디어 업로드 일시 중지됨: 저전력 모드";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need an internet connection */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "미디어 업로드 일시 중지: 인터넷 연결 없음...";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "미디어 업로드 일시 중지: 인터넷 연결 없음";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "미디어 업로드 일시 중지됨: Wi-Fi 연결 대기 중";
@@ -1304,7 +1304,7 @@
 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT" = "%1$@에 이 계정의 Signal 백업을 켰습니다. 탭하여 확인하세요.";
 
 /* Title for system notification or megaphone when backups is enabled */
-"BACKUPS_TURNED_ON_TITLE" = "백업을 켜야 함";
+"BACKUPS_TURNED_ON_TITLE" = "백업 켜짐 안내";
 
 /* Action text for backups enabled megaphone taking user to backup settings */
 "BACKUPS_VIEW_SETTINGS_BUTTON" = "설정 보기";
@@ -1349,7 +1349,7 @@
 "BADGE_THANKS_BANK_DONATION_COMPLETE_TITLE" = "후원 완료";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "프로필에 이 배지를 표시하여 Signal에 대한 지지를 보여줄 수 있습니다.";
+"BADGE_THANKS_BODY" = "후원 사실을 알리고 싶다면 프로필에 이 배지를 표시해 보세요.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "프로필에 표시";
@@ -1367,7 +1367,7 @@
 "BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO" = "계좌 정보 찾기";
 
 /* On the bank transfer donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their bank information (2) tell them that Signal does not collect or store their personal information. */
-"BANK_DONATION_SUBHEADER_TEXT" = "은행 세부 정보를 입력하세요. Signal은 개인 정보를 수집하거나 저장하지 않습니다.";
+"BANK_DONATION_SUBHEADER_TEXT" = "은행 세부 정보를 입력해 주세요. Signal은 사용자의 개인정보를 수집하거나 저장하지 않습니다.";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a label for a button to agree to the mandate. */
 "BANK_MANDATE_AGREE" = "동의";
@@ -1838,7 +1838,7 @@
 "CALLS_TAB_CALL_DIRECTION_LABEL_OUTGOING" = "발신";
 
 /* Title for a row in the Calls Tab that represents multiple calls that have been coalesced together. Embeds {{ a title describing the coalesced calls }}, {{ the number of coalesced calls }}. */
-"CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@ (%2$@)";
+"CALLS_TAB_COALESCED_CALLS_TITLE_FORMAT" = "%1$@(%2$@)";
 
 /* Title for a button allowing the user to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "모두 지우기";
@@ -1988,7 +1988,7 @@
 "CARD_DONATION_CVV_LABEL" = "CVV";
 
 /* Users can donate to Signal with a credit or debit card. If their card verification code (CVV) is too long, this error will be shown. Try to use a short string to make space in the UI. */
-"CARD_DONATION_CVV_TOO_LONG_ERROR" = "코드가 너무 깁니다.";
+"CARD_DONATION_CVV_TOO_LONG_ERROR" = "코드 길이 초과";
 
 /* Users can donate to Signal with a credit or debit card. If their expiration date is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_EXPIRATION_DATE_GENERIC_ERROR" = "잘못된 만료 날짜";
@@ -2000,16 +2000,16 @@
 "CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER" = "MM/YY";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
-"CARD_DONATION_READ_MORE_SHEET_BODY" = "후원금 처리 과정에서 Signal은 어떠한 개인정보도 수집하거나 저장하지 않습니다.\n\n후원금 결제는 Stripe를 통해 처리되며, Signal은 Stripe에 제공된 정보에 접근하지 않고 이를 저장하거나 보관하지도 않습니다.\n\n또한 후원 내역을 Signal 계정과 연결할 수 없으며, 실제로도 연결되지 않습니다.\n\nSignal을 지지해 주셔서 감사합니다!";
+"CARD_DONATION_READ_MORE_SHEET_BODY" = "후원금 처리 과정에서 Signal은 어떠한 개인정보도 수집하거나 저장하지 않습니다.\n\n후원금 결제는 Stripe를 통해 처리되며, Signal은 Stripe에 제공된 정보에 접근하지 않고 이를 저장하거나 보관하지도 않습니다.\n\n또한 후원 내역을 Signal 계정과 연결할 수 없으며, 실제로도 연결되지 않습니다.\n\n소중한 후원에 감사드립니다!";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the title of that sheet. */
-"CARD_DONATION_READ_MORE_SHEET_TITLE" = "개인 정보는 비공개로 유지됩니다.";
+"CARD_DONATION_READ_MORE_SHEET_TITLE" = "개인정보는 비공개로 유지됩니다.";
 
 /* On the credit/debit card donation screen, a small amount of information text is shown. Users can click this link to learn more information. */
-"CARD_DONATION_SUBHEADER_LEARN_MORE" = "더 알아보세요.";
+"CARD_DONATION_SUBHEADER_LEARN_MORE" = "자세히 알아보세요.";
 
 /* On the credit/debit card donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their credit/debit card information (2) tell them that Signal does not collect or store their personal information. */
-"CARD_DONATION_SUBHEADER_TEXT" = "카드 세부 정보를 입력하세요. Signal은 개인 정보를 수집하거나 저장하지 않습니다.";
+"CARD_DONATION_SUBHEADER_TEXT" = "카드 세부 정보를 입력하세요. Signal은 개인정보를 수집하거나 저장하지 않습니다.";
 
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "국가 선택";
@@ -2201,7 +2201,7 @@
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "구매 항목을 사용하는 데 문제가 발생했습니다. 고객 지원팀에 문의하세요.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED" = "새 복구 키 한도에 도달했기 때문에 남용을 방지하기 위해 %1$@ 동안 백업을 활성화할 수 없습니다. %1$@ 동안 기다렸다가 다시 시도하세요.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED" = "새 복구 키 생성 한도에 도달했습니다. 남용을 방지하기 위해 %1$@ 동안 백업을 활성화할 수 없습니다. %1$@ 후에 다시 시도하세요.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. {{ Embeds 1 & 2: the preformatted time they must wait before enabling backups, such as \"1 week\" or \"6 hours\". }} */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED_TITLE" = "백업을 활성화할 수 없음";
@@ -2900,7 +2900,7 @@
 "CREATE_USERNAME_MEGAPHONE_BODY" = "전화번호 보호와 사용자 이름, 그리고 링크 기능이 추가됐어요.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_TITLE" = "새로운 연락 방법";
+"CREATE_USERNAME_MEGAPHONE_TITLE" = "연결 방식이 업그레이드됐어요";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "카드가 만료되었습니다. 카드 세부 정보가 올바른지 확인하고 다시 시도하세요.";
@@ -2957,13 +2957,13 @@
 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "무시하고 계속";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "데이터 복구를 완료하려면 기기에 저장공간이 %1$@ 이상 있어야 합니다.";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "데이터 복구를 완료하려면 기기에 저장 공간이 %1$@ 이상 있어야 합니다.";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "저장공간 부족";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "저장 공간 부족";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "메시지 기록을 복구할 수 없습니다. Signal을 다시 설치하고 계속 사용할 수 있습니다. 어디에 문제가 있었는지 확인할 수 있도록 디버그 로그를 제출해 주세요.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "메시지 기록을 복구하지 못했습니다. 앱을 삭제한 뒤 다시 설치하면 Signal을 계속 이용하실 수 있습니다. 문제 원인을 정확히 파악할 수 있도록 디버그 로그를 보내주세요.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Signal 초기화";
@@ -2972,7 +2972,7 @@
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "초기화";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "내 계정 정보와 프로필, 모든 메시지를 삭제합니다. 이 프로세스를 완료하면 앱을 종료합니다.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "계정 정보, 프로필, 모든 메시지가 삭제됩니다. 작업이 완료되면 앱이 종료됩니다.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Signal 초기화";
@@ -2981,19 +2981,19 @@
 "DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "디버그 로그 보내기";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "데이터를 복구하지 못함";
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "데이터 복구 실패";
 
 /* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "복구 프로세스 중 앱을 종료하지 마세요. 몇 분 정도가 걸릴 수 있습니다.";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "복구가 진행되는 동안 앱을 종료하지 마세요. 몇 분 정도 걸릴 수 있습니다.";
 
 /* On the database recovery screen, this is the title shown as the user's data is being recovered. */
 "DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "데이터 복구 중";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "복구에 성공했으나 일부 메시지를 복구하지 못했을 수 있습니다.";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "복구를 완료했지만 일부 메시지는 복구되지 않았을 수 있습니다.";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "데이터를 복구함";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "데이터 복구 완료";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "몇 분 정도 소요됩니다.";
@@ -3242,7 +3242,7 @@
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING" = "이전 iPhone에 연결 중…";
 
 /* Description message on new device displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "이전 기기를 가까이 가져오고, Wi-Fi와 Bluetooth가 활성화되어 있는지 확인하세요.";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "기존 기기를 가까이 두고 Wi-Fi와 블루투스가 켜져 있는지 확인하세요.";
 
 /* Description message on new device displayed during device transfer when using WiFiAware. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_WIFI_AWARE_MESSAGE" = "이전 기기를 가까이 두고 Wi-Fi와 블루투스가 켜져 있는지 확인하세요. 이전 기기의 기기 목록에서 이 기기를 선택합니다.  목록에 표시되지 않으면 아래에서 '새 기기 페어링하기'를 선택하세요.";
@@ -3272,7 +3272,7 @@
 "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING" = "새 iPhone에 연결 중…";
 
 /* Description message on old device displayed during device transfer. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "새 기기를 가까이 가져오고, Wi-Fi와 Bluetooth가 활성화되어 있는지 확인하세요.";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "새 기기를 가까이 두고 Wi-Fi와 블루투스가 켜져 있는지 확인하세요.";
 
 /* Description message on old device displayed during device connection when using WiFiAware. */
 "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_WIFI_AWARE_MESSAGE" = "새 기기를 가까이 두고 Wi-Fi와 Bluetooth가 켜져 있는지 확인하세요.";
@@ -3311,7 +3311,7 @@
 "DISAPPEARING_MESSAGES" = "자동 삭제 메시지";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "%1$@ 뒤 이 대화의 메시지가 사라집니다.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "%1$@ 뒤 이 대화의 메시지가 자동 삭제됩니다.";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "맞춤 시간";
@@ -3383,7 +3383,7 @@
 "DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD" = "신용카드 또는 체크카드";
 
 /* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the subtitle on that sheet. Embeds {{recipient's name}}. */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "%1$@ 님 대신";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "%1$@ 님 대신 후원";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "%1$@ 배지 받기";
@@ -3494,7 +3494,7 @@
 "DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "구독 갱신";
 
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
-"DONATION_FOR_A_FRIEND_ROW_DURATION" = "지속 기간: %1$@";
+"DONATION_FOR_A_FRIEND_ROW_DURATION" = "%1$@ 사용 가능";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
 "DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "후원이 만료되어 더 이상 프로필에 표시되지 않습니다.";
@@ -3518,7 +3518,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "친구를 대신해 후원하세요.";
 
 /* Title on the screen where you choose who you're going to donate on behalf of. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "수신자 선택";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "받는 사람 선택";
 
 /* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "후원 확인 요청";
@@ -3530,10 +3530,10 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "일회성 후원";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "결제를 처리하지 못했으며 요금이 청구되지 않았습니다. 다시 시도하세요.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "결제를 처리하지 못했으며 요금이 청구되지 않았습니다. 다시 시도해 주세요.";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "결제에 실패했습니다.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "결제 실패";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "결제를 처리했으나 Signal에서 후원 알림 메시지를 보내지 못했습니다. 고객 지원팀으로 문의해 주세요.";
@@ -3557,7 +3557,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "후원을 완료할 수 없습니다.";
 
 /* Label for a button used to redeem a badge that was received as a donation on your behalf. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "사용";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "배지 사용하기";
 
 /* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "후원 배지는 나중에도 등록하실 수 있어요";
@@ -3575,7 +3575,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "%1$@ 님을 대신해 Signal에 후원금을 보냈어요. 해당 사용자는 Signal 후원 사실을 프로필 배지로 표시할 수 있어요.";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "후원에 감사드립니다!";
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "따뜻한 후원에 감사드립니다!";
 
 /* A button shown on a donation message you send, to view additional details about the badge that was sent. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "보기";
@@ -3632,7 +3632,7 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Signal을 다시 설치했다면 이전 후원 영수증은 사용할 수 없습니다.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user cancels the webview before authrizing the payment. */
-"DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "결제를 취소했습니다. 다시 시도해 주세요.";
+"DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "결제가 취소되었습니다. 다시 시도해 주세요.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the callback is in an unexpected format. */
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "결제 응답이 잘못되었습니다. 다시 시도해 주세요.";
@@ -3782,7 +3782,7 @@
 "EDIT_ITEM_COPY_ACTION" = "복사";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "메시지 수정은 발송 시간으로부터 24시간 이내에 해야 합니다.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "메시지 수정은 발송 시점으로부터 24시간 이내에만 가능합니다.";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
@@ -3959,7 +3959,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "%1$@ 님과의 안전 번호가 변경되었습니다.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "대화 세션을 새로 고침";
+"ERROR_MESSAGE_SESSION_REFRESH" = "대화 세션이 새로고침되었습니다";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "알 수 없는 오류가 발생했습니다.";
@@ -3998,19 +3998,19 @@
 "EXPIRATION_ERROR" = "이 Signal 버전은 만료되었습니다. 메시지를 주고받으려면 업데이트하세요.";
 
 /* If the user's app is too old, they'll be shown a warning asking them to upgrade. This is the text on the warning, and tapping it will open the App Store page for Signal. */
-"EXPIRATION_WARNING_ACTION_TITLE" = "지금 업데이트하세요.";
+"EXPIRATION_WARNING_ACTION_TITLE" = "지금 업데이트하세요";
 
 /* Label warning the user that the app will expire soon. Embeds {{date}}. */
-"EXPIRATION_WARNING_SOON" = "이 Signal 버전은 %1$@에 만료됩니다. 업데이트하여 계속 메시지를 주고받으세요.";
+"EXPIRATION_WARNING_SOON" = "이 Signal 버전은 %1$@에 만료됩니다. 대화를 계속하려면 앱을 업데이트하세요.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "이 Signal 버전은 오늘 만료됩니다. 업데이트하여 계속 메시지를 주고받으세요.";
+"EXPIRATION_WARNING_TODAY" = "이 Signal 버전은 오늘 만료됩니다. 대화를 계속하려면 앱을 업데이트하세요.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to export your chat history. */
-"EXPORT_CHATS_AUTHENTICATION_REASON" = "Authenticate to export your chat history";
+"EXPORT_CHATS_AUTHENTICATION_REASON" = "대화 기록을 내보내려면 본인 인증을 진행하세요";
 
 /* action sheet header when re-sending message which failed because of an invalid key signature */
-"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "메시지를 전송하지 못했습니다. %1$@님이 Signal을 업데이트한 후 다시 열어야 합니다.";
+"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "%1$@ 님이 Signal을 업데이트하고 다시 실행해야 메시지를 보낼 수 있습니다.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "%1$@ 님과의 안전 번호가 최근 변경되었습니다. 메시지를 보내기 전 안전 번호를 검증해보세요.";
@@ -4037,7 +4037,7 @@
 "FILE_UNAVAILABLE_SHEET_TITLE" = "파일을 사용할 수 없음";
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the body of that sheet. */
-"FIND_ACCOUNT_INFO_SHEET_BODY" = "은행 입출금 내역서 상단에 있는 IBAN을 찾으세요. IBAN 번호는 최대 34자로 구성됩니다. 입력한 이름이 은행 계좌상의 전체 이름과 일치해야 합니다. 더 자세한 정보는 은행에 문의하세요.";
+"FIND_ACCOUNT_INFO_SHEET_BODY" = "은행 입출금 내역서 상단에 있는 IBAN을 확인해 보세요. IBAN은 최대 34자로 구성됩니다. 입력한 이름은 은행 계좌상의 전체 실명과 일치해야 합니다. 더 자세한 정보는 은행에 문의하세요.";
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "계좌 정보를 찾으세요";
@@ -4133,7 +4133,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 그룹 정보를 수정할 수 있는 사람을 '%2$@'로 변경했습니다.";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "이제 '%1$@'이(가) 그룹 정보를 변경할 수 있습니다.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "이제 '%1$@'가 그룹 정보를 변경할 수 있습니다.";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "관리자";
@@ -4166,7 +4166,7 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 그룹 멤버십을 수정할 수 있는 사람을 '%2$@'로 변경했습니다.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "이제 '%1$@'이(가) 그룹 멤버십을 변경할 수 있습니다.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "이제 '%1$@'가 그룹 멤버십을 변경할 수 있습니다.";
 
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "관리자만 이 설정을 변경할 수 있습니다.";
@@ -4766,7 +4766,7 @@
 "GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "%1$@ 님을 내보냈습니다.";
 
 /* Message indicating that a remote user was removed from the group by an unknown user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ 님은 더 이상 그룹에 있지 않습니다.";
+"GROUP_REMOTE_USER_REMOVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ 님은 더 이상 그룹 멤버가 아닙니다.";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 %2$@ 님을 내보냈습니다.";
@@ -4778,7 +4778,7 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ 님이 %1$@ 님의 그룹 참가 요청을 승인했습니다.";
 
 /* Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "%1$@의 그룹 참가 요청이 승인됐습니다.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ 님의 그룹 참가 요청이 승인됐습니다.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 그룹 참가 요청을 취소했습니다.";
@@ -4829,7 +4829,7 @@
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "'%1$@' 스토리를 제거할까요?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "'%1$@' 그룹 대화 멤버는 이 스토리를 보고 여기에 답장할 수 있습니다. 그룹에서 이 대화에 대한 멤버십을 업데이트할 수 있습니다.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "'%1$@' 그룹 멤버는 이 스토리를 보고 답장할 수 있습니다. 멤버 목록은 해당 그룹 설정에서 수정할 수 있습니다.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "이 스토리를 볼 수 있는 사람";
@@ -4985,7 +4985,7 @@
 "HIDE_RECIPIENT_ACTION_SHEET_TITLE_FORMAT" = "%1$@ 님을 내보낼까요?";
 
 /* An explanation of the consequences of removing a user. */
-"HIDE_RECIPIENT_BEHAVIOR_EXPLANATION" = "검색 시 이 사용자가 표시되지 않습니다. 향후 해당 사용자가 메시지를 보내는 경우 메시지 요청이 수신됩니다.";
+"HIDE_RECIPIENT_BEHAVIOR_EXPLANATION" = "검색 시 이 사용자가 표시되지 않습니다. 상대방이 나중에 메시지를 보내면 메시지 요청으로 받게 됩니다.";
 
 /* Button label for the 'remove' button */
 "HIDE_RECIPIENT_BUTTON" = "삭제하기";
@@ -5126,7 +5126,7 @@
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "미사용 연동 기기";
 
 /* Body for an in-app megaphone about a user's inactive primary device. */
-"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_BODY" = "계정을 활성화 상태로 유지하려면 주요 기기에서 Signal을 여세요.";
+"INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_BODY" = "계정을 활성 상태로 유지하려면 기본 기기에서 Signal을 실행해 주세요.";
 
 /* Title for a button in an in-app megaphone about a user's inactive primary device, temporarily dismissing the megaphone. */
 "INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_GOT_IT_BUTTON" = "확인";
@@ -5219,7 +5219,7 @@
 "INFO_MESSAGE_REPORTED_SPAM" = "스팸으로 신고함";
 
 /* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
-"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal에 이 사람이 스팸을 보내는 것 같다는 알림이 전송되었습니다. Signal은 대화의 내용을 볼 수 없습니다.";
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "해당 사용자에 대한 스팸 신고가 Signal에 전달되었습니다. Signal은 대화 내용을 확인할 수 없습니다.";
 
 /* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "스팸으로 신고함";
@@ -5408,7 +5408,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "QR 코드 스캔";
 
 /* Body text for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "계속을 탭하고 휴대폰 잠금을 풀어 확인하세요. Signal PIN을 입력하지 마세요.";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "계속을 탭한 다음 휴대폰의 화면 잠금을 해제하여 확인하세요. Signal PIN을 입력하지 마세요.";
 
 /* Title for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
 "LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "연동 전 본인 확인을 진행할게요";
@@ -5435,7 +5435,7 @@
 "LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "연동 기기로 메시지 기록을 가져오지 못했습니다. 다시 연동해서 메시지 기록을 가져오거나, 가져오지 않고 그대로 시작할 수 있습니다.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
-"LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "메시지를 동기화하지 못함";
+"LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "메시지 동기화 실패";
 
 /* On a progress modal */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_DO_NOT_CLOSE_APP" = "Signal을 닫지 마세요";
@@ -5495,7 +5495,7 @@
 "LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "Signal 기기를 연동하려고 하시는 것 같네요. 계속을 탭한 다음 '새 기기 연동'을 탭하고 QR 코드를 다시 스캔하세요.";
 
 /* Bullet point about a download link on the linked devices education sheet. Embeds {{ %1$@ download link }} */
-"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "On the device you want to link, visit %1$@ to install Signal";
+"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "연동하려는 기기에서 %1$@ 링크를 방문하여 Signal을 설치하세요.";
 
 /* Bullet point about message sync on the linked devices education sheet */
 "LINKED_DEVICES_EDUCATION_POINT_MESSAGES" = "기기가 연동되면 휴대폰의 Signal 메시지와 자동으로 동기화됩니다.";
@@ -5504,13 +5504,13 @@
 "LINKED_DEVICES_EDUCATION_POINT_PRIVACY" = "연동 기기에서 주고받는 모든 메시지는 안전하게 보호됩니다.";
 
 /* Title for the linked device education sheet */
-"LINKED_DEVICES_EDUCATION_TITLE" = "Signal on a linked device";
+"LINKED_DEVICES_EDUCATION_TITLE" = "연동 기기에서의 Signal";
 
 /* Text that appears where the linked device list would be indicating that there are no linked devices. */
 "LINKED_DEVICES_EMPTY_STATE" = "연동된 기기 없음";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use this Signal account on another device.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "다른 기기에서도 Signal 계정을 사용해 보세요.";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "메시지와 대화 정보는 모든 기기에서 종단간 암호화로 보호됩니다.";
@@ -5522,13 +5522,13 @@
 "LINKED_DEVICES_RENAME_BUTTON" = "이름 변경";
 
 /* Message on a sheet indicating the device rename attempt received an error. */
-"LINKED_DEVICES_RENAME_FAILURE_MESSAGE" = "장치 이름을 바꾸지 못했습니다. 나중에 다시 시도하세요.";
+"LINKED_DEVICES_RENAME_FAILURE_MESSAGE" = "기기 이름을 바꾸지 못했습니다. 나중에 다시 시도하세요.";
 
 /* Message on a toast indicating the device was renamed. */
-"LINKED_DEVICES_RENAME_SUCCESS_MESSAGE" = "장치 이름을 업데이트했습니다";
+"LINKED_DEVICES_RENAME_SUCCESS_MESSAGE" = "기기 이름을 업데이트했습니다";
 
 /* Title for the screen for renaming a linked device */
-"LINKED_DEVICES_RENAME_TITLE" = "장치 이름 수정";
+"LINKED_DEVICES_RENAME_TITLE" = "기기 이름 수정";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "연동 기기";
@@ -5774,7 +5774,7 @@
 "MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "권한 변경";
 
 /* Body for action sheet when attempting to change the group attributes access to 'administrator' */
-"MEMBER_LABEL_CLEAR_WARNING_BODY" = "이 권한을 '관리자만'으로 변경하면 이 그룹에서 관리자가 아닌 사용자가 설정한 멤버 라벨이 제거됩니다.";
+"MEMBER_LABEL_CLEAR_WARNING_BODY" = "이 권한을 '관리자'로 변경하면 이 그룹에서 관리자가 아닌 사용자가 설정한 멤버 라벨이 제거됩니다.";
 
 /* Title for action sheet when attempting to change the group attributes access to 'administrator' */
 "MEMBER_LABEL_CLEAR_WARNING_TITLE" = "멤버 라벨이 제거됩니다";
@@ -5831,7 +5831,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "모두에게서 삭제";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "이 대화에 참여하고 최신 버전 Signal을 설치한 모든 기기에서 이 메시지를 삭제합니다. 다른 사용자는 내가 메시지를 삭제했다는 것을 볼 수 있습니다.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "이 메시지는 최신 Signal을 설치한 모든 멤버에게서 삭제됩니다. 멤버는 내가 메시지를 삭제했다는 것을 확인할 수 있습니다.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "이 메시지를 누구에게서 삭제할까요?";
@@ -6047,7 +6047,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "그룹을 삭제하고 나가시겠어요?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "이 사람의 이름이 연락처의 다른 사람과 이름이 같습니다.";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "기존 연락처 중 동일한 이름을 가진 사람이 있습니다.";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "요청을 보낸 사람이 누군지 모르겠다면 아래 연락처 목록을 살펴본 후 진행해 주세요.";
@@ -6134,7 +6134,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "다운로드 중";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "수정함";
+"MESSAGE_STATUS_EDITED" = "수정됨";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "전송하지 못했습니다.";
@@ -6224,10 +6224,10 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal에서 해당 기능을 사용하려면 사진 접근 권한을 허용하세요.";
 
 /* Title for a progress modal shown after the user taps Cancel, while the work is being cancelled. */
-"MODAL_CIRCULAR_PROGRESS_CANCELLING_TITLE" = "Cancelling…";
+"MODAL_CIRCULAR_PROGRESS_CANCELLING_TITLE" = "취소하는 중…";
 
 /* Label on a progress modal indicating how far along some work is. Embeds {{ formatted percentage }}. */
-"MODAL_CIRCULAR_PROGRESS_PERCENT_COMPLETE" = "%1$@ complete";
+"MODAL_CIRCULAR_PROGRESS_PERCENT_COMPLETE" = "%1$@ 완료";
 
 /* Text on a blocking progress screen that indicates that there's a deletion in progress. */
 "MODAL_DELETING" = "삭제하는 중…";
@@ -6284,7 +6284,7 @@
 "MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "스토리를 볼 수 있는 사람을 선택하세요.";
 
 /* Title for the my story settings sheet */
-"MY_STORY_SETTINGS_SHEET_TITLE" = "내 스토리 개인정보보호";
+"MY_STORY_SETTINGS_SHEET_TITLE" = "내 스토리 개인정보 보호";
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "내 스토리";
@@ -6806,7 +6806,7 @@
 "OUTAGE_WARNING" = "현재 Signal 서비스에 일시적인 장애가 발생했습니다. 빠르게 복구 작업을 진행하고 있으니 잠시만 기다려 주세요.";
 
 /* Label for action link when the user has an outdated payment client */
-"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "지금 업데이트하세요.";
+"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "지금 업데이트하세요";
 
 /* Label warning the user that they should update Signal to continue using payments. */
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "결제를 계속 사용하려면 Signal을 업데이트하세요. 잔액이 최신 상태가 아닐 수 있습니다.";
@@ -6911,7 +6911,7 @@
 "OUTGOING_VOICE_CALL" = "발신 음성 통화";
 
 /* Footer for message cell for long text when it is expired and unavailable for download */
-"OVERSIZE_TEXT_UNAVAILABLE_FOOTER" = "메시지가 불완전함";
+"OVERSIZE_TEXT_UNAVAILABLE_FOOTER" = "만료된 메시지입니다";
 
 /* Title for sheet shown when tapping oversized text that has expired and is unavailable for download */
 "OVERSIZE_TEXT_UNAVAILABLE_SHEET_TITLE" = "전체 메시지를 사용할 수 없음";
@@ -6974,7 +6974,7 @@
 "PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "인증에 실패했습니다.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "인증 실패 횟수가 너무 많습니다. 나중에 다시 시도해 주세요.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "인증 시도 횟수를 초과했습니다. 나중에 다시 시도해 주세요.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
 "PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "결제 잠금을 사용하려면 iOS 설정에서 비밀번호를 설정해야 합니다.";
@@ -7010,7 +7010,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "이체 시 얼굴 ID 요구";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "이체하려면 Optic ID 필요";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "이체 시 Optic ID 요구";
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "이체 시 휴대폰 비밀번호 요구";
@@ -7073,7 +7073,7 @@
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "네트워크 요금";
 
 /* Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}. */
-"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "추정 %1$@";
+"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "예상 %1$@";
 
 /* Label for the 'invalid amount' button. */
 "PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "잘못된 금액";
@@ -7364,10 +7364,10 @@
 "PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "대화로 이동";
 
 /* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "'%1$@ 님'과 대화를 시작해 보세요.";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "'%1$@' 님과 대화를 시작해 보세요.";
 
 /* Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ 님을 찾았습니다.";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ 님을 찾았습니다";
 
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "고정";
@@ -7379,7 +7379,7 @@
 "PIN_CREATION_CHANGING_TITLE" = "PIN 변경";
 
 /* Title of the 'pin creation' confirmation view. */
-"PIN_CREATION_CONFIRM_TITLE" = "PIN 확인";
+"PIN_CREATION_CONFIRM_TITLE" = "PIN을 확인해 주세요";
 
 /* The explanation of confirmation in the 'pin creation' view. */
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "방금 만든 PIN을 입력하세요.";
@@ -7409,7 +7409,7 @@
 "PIN_CREATION_LEARN_MORE" = "PIN에 관한 자세한 정보";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
-"PIN_CREATION_LEARN_MORE_TEXT" = "PIN은 사용자만 액세스할 수 있도록 사용자 정보를 Singal에 암호화하여 저장합니다. 다시 설치하면 프로필, 설정, 연락처가 복원됩니다.";
+"PIN_CREATION_LEARN_MORE_TEXT" = "PIN은 Signal에 저장된 정보를 암호화하여 본인만 확인할 수 있도록 안전하게 보호합니다. 다시 설치하면 프로필, 설정, 연락처가 복원됩니다.";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet. */
 "PIN_CREATION_LEARN_MORE_TITLE" = "Signal PIN 정보";
@@ -7442,7 +7442,7 @@
 "PIN_CREATION_WEAK_ERROR" = "더 강력한 PIN을 설정하세요";
 
 /* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
-"PIN_CREATION_WEAK_ERROR_MESSAGE" = "PIN은 사용자만 액세스할 수 있도록 사용자 정보를 Singal에 암호화하여 저장합니다. 더욱 강력한 PIN을 선택하여 계정을 보호하세요.";
+"PIN_CREATION_WEAK_ERROR_MESSAGE" = "PIN은 Signal에 저장된 정보를 암호화하여 본인만 확인할 수 있도록 안전하게 보호합니다. 더욱 강력한 PIN을 선택하여 계정을 보호하세요.";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
 "PIN_ENTER_EXISTING_SKIP" = "PIN 건너뛰기";
@@ -7460,7 +7460,7 @@
 "PIN_REMINDER_MEGAPHONE_BODY" = "PIN을 잊어버리지 않도록 주기적으로 확인을 요청드릴게요.";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_SUCCESSFUL_TOAST" = "PIN이 올바릅니다. 며칠 후에 다시 알려드리겠습니다.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_SUCCESSFUL_TOAST" = "PIN이 확인되었습니다. 며칠 후에 다시 요청 드리겠습니다.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "며칠 후에 다시 알려드리겠습니다.";
@@ -7469,13 +7469,13 @@
 "PIN_REMINDER_MEGAPHONE_TITLE" = "Signal PIN 인증";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks, after successfully entering it. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_SUCCESSFUL_TOAST" = "PIN이 올바릅니다. 몇 주 후에 다시 알려드리겠습니다.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_SUCCESSFUL_TOAST" = "PIN이 확인되었습니다. 몇 주 후에 다시 요청 드리겠습니다.";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "몇 주 후에 다시 알려드리겠습니다.";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it. */
-"PIN_REMINDER_MEGAPHONE_WEEK_SUCCESSFUL_TOAST" = "PIN이 올바릅니다. 일주일 후에 다시 알려드리겠습니다.";
+"PIN_REMINDER_MEGAPHONE_WEEK_SUCCESSFUL_TOAST" = "PIN이 확인되었습니다. 일주일 후에 다시 요청 드리겠습니다.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "일주일 후에 다시 알려드리겠습니다.";
@@ -7715,7 +7715,7 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "삭제하기";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "이 사용자가 더 이상 이 스토리를 볼 수 없습니다.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "이 사용자는 더 이상 이 스토리를 볼 수 없습니다.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "%1$@ 님을 삭제할까요?";
@@ -7724,7 +7724,7 @@
 "PROCEED_BUTTON" = "계속";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "간략한 자기소개를 적어주세요…";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "나를 간략하게 소개해 보세요";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "배려 있게 대화해요";
@@ -7928,7 +7928,7 @@
 "RAISED_HANDS_TOAST_LOWER_YOUR_HAND_SUGGESTION" = "손을 내릴까요?";
 
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
-"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@님이 손을 들었습니다.";
+"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ 님이 손을 들었습니다.";
 
 /* A compact member count on the call view's raised hands toast indicating that you and a number of other users raised a hand. Embeds {{number of other users}} */
 "RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "나 외 %1$d명";
@@ -8000,7 +8000,7 @@
 "RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ 님은 Signal 사용자가 아닙니다. 이 전화번호를 초대할까요?";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_TITLE" = "Signal로 초대";
+"RECIPIENT_PICKER_INVITE_TITLE" = "Signal로 초대하기";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode during a periodic reminder to record your recovery key. */
 "RECOVERY_KEY_REMINDER_AUTHENTICATION_REASON" = "복구 키를 확인하려면 인증을 진행해 주세요";
@@ -8024,7 +8024,7 @@
 "REGISTER_CONTACTS_WELCOME" = "환영합니다!";
 
 /* Body of action sheet shown when rate-limited during registration. */
-"REGISTER_RATE_LIMITING_ALERT" = "너무 자주 시도했습니다. 몇 분 후 다시 시도하세요.";
+"REGISTER_RATE_LIMITING_ALERT" = "시도 횟수를 초과했습니다. 몇 분 후 다시 시도해 주세요.";
 
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_ERROR" = "시도 횟수를 초과했습니다. 1분 후에 다시 시도해 주세요.";
@@ -8033,19 +8033,19 @@
 "REGISTER_WITHOUT_NUMBER" = "전화번호 없이 등록하기";
 
 /* Short description for a sheet warning users about an incorrect recovery key used for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "Make sure you’re registering with the same phone number and 64-character recovery key you saved when enabling Signal backups. Backups cannot be recovered without this key.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_BODY" = "Signal 백업을 활성화할 때 저장한 전화번호와 64자 복구 키가 맞는지 확인해 주세요. 이 키가 없으면 백업을 복구할 수 없습니다.";
 
 /* Title for a sheet warning users about an incorrect recovery key used for registration. */
 "REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TITLE" = "잘못된 복구 키";
 
 /* Action label action allowing users to use PIN/SMS for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_ACTION" = "Register Another Way";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_ACTION" = "다른 방법으로 등록하기";
 
 /* Message body for a sheet asking users if they would rather use PIN/SMS for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_MESSAGE" = "You can register your account by verifying via an SMS code Signal will send you, or by entering your PIN. After registering, you can try restoring your backup with your recovery key again.";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_MESSAGE" = "Signal에서 발송하는 SMS 코드로 인증하거나 PIN을 입력하여 계정을 등록할 수 있습니다. 등록을 마친 후 복구 키로 백업 복원을 다시 시도해 보세요.";
 
 /* Title for a sheet asking users if they would rather use PIN/SMS for registration. */
-"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_TITLE" = "Verify with SMS or PIN?";
+"REGISTRATION_BACKUP_REGISTRATION_ERROR_INCORRECT_KEY_TRY_PIN_TITLE" = "SMS 또는 PIN으로 인증할까요?";
 
 /* Body for a sheet warning users about a missing backup. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_BACKUP_NOT_FOUND_BODY" = "이 복구 키와 관련된 백업이 없습니다. 키가 올바른지 확인한 후 다시 시도하세요.";
@@ -8075,7 +8075,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_CANT_RESTORE_TITLE" = "백업을 복원할 수 없음";
 
 /* Body for a sheet warning users about a generic backup restore failure. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_BODY" = "오류가 발생하여 계정을 전송할 수 없습니다. QR 코드를 스캔하고 전송 방법을 선택하여 다시 시도해 주세요.";
+"REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_BODY" = "오류가 발생하여 계정을 이전할 수 없습니다. QR 코드를 스캔하고 이전 방법을 선택하여 다시 시도해 주세요.";
 
 /* Title for a sheet warning users about a generic backup restore failure. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_GENERIC_RETRY_TITLE" = "이전을 완료할 수 없음";
@@ -8204,19 +8204,19 @@
 "REGISTRATION_PIN_CONFIRM_SUBTITLE" = "방금 만든 PIN을 다시 입력하세요.";
 
 /* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
-"REGISTRATION_PIN_CONFIRM_TITLE" = "PIN 확인";
+"REGISTRATION_PIN_CONFIRM_TITLE" = "PIN을 확인해 주세요";
 
 /* During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
 "REGISTRATION_PIN_CREATE_SUBTITLE" = "PIN을 설정하면 계정을 복원하고 Signal에서 정보를 암호화하는 데 도움이 됩니다.";
 
 /* During registration, users are asked to create a PIN code. This is the title on the screen where this happens. */
-"REGISTRATION_PIN_CREATE_TITLE" = "내 PIN 만들기";
+"REGISTRATION_PIN_CREATE_TITLE" = "PIN을 생성하세요";
 
 /* During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
 "REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "PIN을 설정하면 계정을 복원하고 Signal에서 정보를 암호화하는 데 도움이 됩니다.";
 
 /* During re-registration, users may be asked to re-enter their PIN code. This is the title on the screen where this happens. */
-"REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "PIN 입력";
+"REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "PIN을 입력하세요";
 
 /* During registration, users set up their profile. Users input a family name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "성";
@@ -8231,10 +8231,10 @@
 "REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "대화를 새로 시작하거나 수락하면 상대방이 내 이름과 사진, 업데이트 사항을 볼 수 있습니다.";
 
 /* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
-"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "프로필 개인 정보 보호";
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "프로필 개인정보 보호";
 
 /* During registration, users set up their profile. This is the subtitle on the screen where this is done. It tells users about the privacy of their profile. A \"learn more\" link will be added to the end of this string. */
-"REGISTRATION_PROFILE_SETUP_SUBTITLE" = "사용자가 메시지를 보내는 사람과 연락처, 그룹에 프로필이 표시됩니다.";
+"REGISTRATION_PROFILE_SETUP_SUBTITLE" = "프로필은 메시지를 주고받는 상대와 연락처, 그룹에 표시됩니다.";
 
 /* During registration, users set up their profile. This is the title on the screen where this is done. */
 "REGISTRATION_PROFILE_SETUP_TITLE" = "프로필 설정";
@@ -8348,28 +8348,28 @@
 "REGISTRATION_SIGNAL_LOGIN_PAY" = "%1$@ 결제하기";
 
 /* Text for a bullet point describing that an existing Signal Login can be used to log in and restore an account. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_RESTORE" = "Login and restore your account";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_RESTORE" = "로그인 및 계정 복구";
 
 /* Text for a bullet point thanking the user for supporting Signal by previously buying a Signal Login. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_THANKS" = "Thanks for supporting Signal";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_THANKS" = "Signal을 후원해 주셔서 감사합니다!";
 
 /* Subtitle for the option to register with a Signal Login the user already owns. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_SUBTITLE" = "Use your existing login info";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_SUBTITLE" = "기존 로그인 정보 사용하기";
 
 /* Title for the option to register with a Signal Login the user already owns. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_TITLE" = "I have a Signal Login";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_TITLE" = "Signal Login이 있는 경우";
 
 /* Text for a bullet point describing that a Signal Login lets you register without a phone number. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NO_PHONE_NUMBER" = "No phone number needed";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NO_PHONE_NUMBER" = "전화번호 입력 필요 없음";
 
 /* Text for a bullet point explaining that buying a Signal Login supports Signal, a non-profit. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NON_PROFIT" = "Signal is a non-profit — your purchase helps support our mission";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_NON_PROFIT" = "Signal은 비영리 단체로, 결제 금액은 Signal의 사명을 이어가는 데 도움이 됩니다.";
 
 /* Text for a bullet point describing that a Signal Login comes with a username for messaging and calling. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_USERNAME" = "Username for messaging & calls";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_BULLET_USERNAME" = "메시지와 통화를 위한 사용자 이름";
 
 /* Subtitle for the option to buy a new Signal Login. */
-"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_SUBTITLE" = "One-time purchase";
+"REGISTRATION_SIGNAL_LOGIN_SELECTION_PURCHASE_SUBTITLE" = "1회 구매";
 
 /* Title text for the 'Signal Login' screen. */
 "REGISTRATION_SIGNAL_LOGIN_TITLE" = "Signal Login";
@@ -8381,13 +8381,13 @@
 "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "SMS를 통해 확인 코드를 보낼 수 없습니다. 음성 통화로 대신 받아 보세요.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
-"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "코드 입력을 너무 많이 시도했습니다. 코드를 다시 보내고 다시 시도하세요.";
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "코드 입력 횟수를 초과했습니다. 코드를 재전송하고 다시 시도해 주세요.";
 
 /* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
-"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "코드 입력을 너무 많이 시도했습니다. %1$@ 후 다시 시도하세요.";
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "코드 입력 횟수를 초과했습니다. %1$@ 후에 다시 시도해 주세요.";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
-"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "입력한 코드가 틀렸습니다. 코드를 다시 보내고 다시 시도하세요.";
+"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "입력하신 코드가 올바르지 않습니다. 코드를 재전송하고 다시 시도해 주세요.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "유효한 전화번호를 입력하세요.";
@@ -8468,10 +8468,10 @@
 "REREGISTER_FOR_PUSH" = "푸시 알림 재등록";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "%1$@번 더 시도할 수 있습니다. 나음 횟수를 모두 사용하면 새로운 PIN을 만들 수 있습니다. 계정을 등록하여 사용할 수 있지만 프로필 정보 등 일부 저장된 설정이 손실됩니다.";
+"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "시도 횟수가 %1$@회 남았습니다. 남은 횟수를 모두 사용하면 새로운 PIN을 만들 수 있습니다. 등록 후 계정은 계속 사용할 수 있지만, 프로필 정보와 같은 일부 설정은 복구되지 않습니다.";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "%1$@번 더 시도할 수 있습니다. 남은 횟수를 모두 사용하면 계정이 7일 동안 잠깁니다. 7일 동안 활동이 없으면 PIN 없이 다시 등록할 수 있습니다. 이 경우 모든 내용이 삭제됩니다.";
+"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "입력할 수 있는 횟수가 %1$@회 남았습니다. 남은 횟수를 모두 소진하면 계정이 7일 동안 잠깁니다. 활동이 없는 상태로 7일이 지나면 PIN 없이 다시 등록을 진행할 수 있으나, 기존의 모든 데이터는 삭제됩니다.";
 
 /* Configure reactions reset button text */
 "RESET" = "초기화";
@@ -8573,10 +8573,10 @@
 "RETURN_CALL_PILL_BUTTON" = "반환";
 
 /* Text for a toast confirming that ringing has been turned off for a call. */
-"RING_OFF_CONFIRMATION_TOAST_LABEL" = "통화 꺼짐";
+"RING_OFF_CONFIRMATION_TOAST_LABEL" = "벨소리 알림 꺼짐";
 
 /* Text for a toast confirming that ringing has been turned on for a call. */
-"RING_ON_CONFIRMATION_TOAST_LABEL" = "통화 켜짐";
+"RING_ON_CONFIRMATION_TOAST_LABEL" = "벨소리 알림 켜짐";
 
 /* Message shown in an action sheet when attempting to disable PIN, but Backups is enabled. */
 "ROTATE_AEP_ACTION_BACKUPS_DISABLE_REQUIRED" = "진행하기 전 Signal 안전 백업을 비활성화해야 합니다.";
@@ -8600,7 +8600,7 @@
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "안전 번호 변경";
 
 /* Text explaining that the given contact has had their safety number verified. */
-"SAFETY_NUMBER_CONFIRMATION_VERIFIED" = "확인됨";
+"SAFETY_NUMBER_CONFIRMATION_VERIFIED" = "인증 완료";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "보기";
@@ -8927,7 +8927,7 @@
 "SEND_MEDIA_TURN_OFF_MM_TITLE" = "멀티 모드를 끌까요?";
 
 /* Label for the button to send a sticker message */
-"SEND_STICKER_BUTTON_TITLE" = "Send Sticker";
+"SEND_STICKER_BUTTON_TITLE" = "스티커 보내기";
 
 /* String describing high quality sent media */
 "SENT_MEDIA_QUALITY_HIGH" = "높음";
@@ -8969,10 +8969,10 @@
 "SEPA_DONATION_IBAN_LABEL" = "IBAN";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) is too long, this error will be shown. Try to use a short string to make space in the UI. */
-"SEPA_DONATION_IBAN_TOO_LONG_ERROR" = "IBAN이 너무 깁니다";
+"SEPA_DONATION_IBAN_TOO_LONG_ERROR" = "IBAN 자릿수를 초과했습니다.";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) is too long, this error will be shown. Try to use a short string to make space in the UI. */
-"SEPA_DONATION_IBAN_TOO_SHORT_ERROR" = "IBAN이 너무 짧습니다";
+"SEPA_DONATION_IBAN_TOO_SHORT_ERROR" = "IBAN 자릿수가 부족합니다.";
 
 /* Users can donate to Signal with a bank account. This is the label for name field on that screen. */
 "SEPA_DONATION_NAME_LABEL" = "이름";
@@ -8984,7 +8984,7 @@
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal은 종단간 암호화를 사용하며, 때에 따라 대화 세션을 새로고침해야 할 수 있습니다. 이 과정은 보안에 영향을 주지 않지만, 간혹 메시지가 수신되지 않을 수 있습니다. 이런 경우 상대방에게 메시지 재전송을 요청해 주세요.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "대화 세션을 새로 고침";
+"SESSION_REFRESH_ALERT_TITLE" = "대화 세션이 새로고침되었습니다";
 
 /* If you send a message to a phone number, we might not know the owner of the account. When you later learn the owner of the account, we may show this message. The first parameter is a phone number; the second parameter is the contact's name. Put differently, this message indicates that a phone number belongs to a particular named recipient. */
 "SESSION_SWITCHOVER_EVENT" = "%1$@번은 %2$@ 님의 전화번호입니다.";
@@ -9143,43 +9143,43 @@
 "SETTINGS_CHATS" = "대화";
 
 /* Title for a button in Chats settings that starts exporting the user's chat history. */
-"SETTINGS_CHATS_EXPORT_BUTTON" = "Export Chats";
+"SETTINGS_CHATS_EXPORT_BUTTON" = "대화 내보내기";
 
 /* Title for a button in a sheet shown before the user chooses a folder to export their chat history into, which opens a folder picker. */
-"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_CHOOSE_BUTTON" = "Choose Folder";
+"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_CHOOSE_BUTTON" = "폴더 선택";
 
 /* Message for a sheet shown before the user chooses a folder to export their chat history into. */
-"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_MESSAGE" = "Choose a folder in your device’s storage where your chat history will be stored.";
+"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_MESSAGE" = "기기의 저장 공간에서 대화 기록이 저장될 폴더를 선택해 주세요.";
 
 /* Title for a sheet shown before the user chooses a folder to export their chat history into. */
-"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_TITLE" = "Choose a Folder";
+"SETTINGS_CHATS_EXPORT_CHOOSE_FOLDER_SHEET_TITLE" = "폴더 선택";
 
 /* Message for a sheet shown after the user's chat history has been exported. */
-"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_MESSAGE" = "BE CAREFUL where you store your chat export file and do not share it with anyone. Other apps on your device can access it depending on your device’s permissions.";
+"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_MESSAGE" = "대화 기록 파일을 저장할 위치를 신중하게 선택하고, 다른 사람과 공유하지 마세요. 기기의 사용 권한에 따라 다른 앱이 이 파일에 접근할 수 있습니다.";
 
 /* Title for a sheet shown after the user's chat history has been exported. */
-"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_TITLE" = "Chat Export Complete";
+"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_TITLE" = "대화 내보내기 완료";
 
 /* Title for a button in a sheet shown after the user's chat history has been exported, which opens the exported folder in the Files app. */
-"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_VIEW_IN_FILES_BUTTON" = "View in Files";
+"SETTINGS_CHATS_EXPORT_COMPLETE_SHEET_VIEW_IN_FILES_BUTTON" = "파일 앱에서 보기";
 
 /* Message for a sheet shown when the user starts exporting their chat history from Chats settings. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_MESSAGE" = "BE CAREFUL! Do NOT share this file with anyone. Your chat history will be saved to your device and other apps can access it depending on your device’s permissions. Exporting with media will result in a larger file size.";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_MESSAGE" = "주의! 이 파일을 다른 사람과 공유하지 마세요. 대화 기록이 기기에 저장되며, 기기의 사용 권한에 따라 다른 앱에서 액세스할 수 있습니다. 미디어를 포함하여 내보내면 파일 용량이 커집니다.";
 
 /* Title for a sheet shown when the user starts exporting their chat history from Chats settings. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_TITLE" = "Export Chat History?";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_TITLE" = "대화 기록을 내보낼까요?";
 
 /* Title for a button in a sheet shown when the user starts exporting their chat history, which exports their chat history including attachments. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITH_MEDIA_BUTTON" = "Export With Media";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITH_MEDIA_BUTTON" = "미디어를 포함하여 내보내기";
 
 /* Title for a button in a sheet shown when the user starts exporting their chat history, which exports their chat history excluding attachments. */
-"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITHOUT_MEDIA_BUTTON" = "Export Without Media";
+"SETTINGS_CHATS_EXPORT_CONFIRMATION_SHEET_WITHOUT_MEDIA_BUTTON" = "미디어 없이 내보내기";
 
 /* Footer for the section in Chats settings containing a button to export the user's chat history. */
-"SETTINGS_CHATS_EXPORT_FOOTER" = "Export a machine-readable JSON copy of your chats. Disappearing messages will not be included.";
+"SETTINGS_CHATS_EXPORT_FOOTER" = "대화 기록을 기계 가독형 JSON 파일로 내보냅니다. 자동 삭제 메시지는 내보내기에 포함되지 않습니다.";
 
 /* Title for a progress modal shown while the user's chat history is being exported. */
-"SETTINGS_CHATS_EXPORT_PROGRESS_TITLE" = "Exporting chats…";
+"SETTINGS_CHATS_EXPORT_PROGRESS_TITLE" = "대화를 내보내는 중…";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "대화 기록 삭제";
@@ -11046,7 +11046,7 @@
 "USERNAME_EDUCATION_SET_UP_BUTTON" = "사용자 이름 설정";
 
 /* Title to set up signal username */
-"USERNAME_EDUCATION_TITLE" = "새로운 연락 방법";
+"USERNAME_EDUCATION_TITLE" = "연결 방식이 업그레이드됐어요";
 
 /* Description of usernames on the username education sheet */
 "USERNAME_EDUCATION_USERNAME_DESCRIPTION" = "이제 별도의 사용자 이름으로 메시지를 받을 수 있어 다른 사람과 전화번호를 공유하지 않아도 됩니다. 사용자 이름은 프로필에 표시되지 않습니다.";
