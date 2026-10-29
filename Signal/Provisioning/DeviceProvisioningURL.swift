@@ -51,17 +51,26 @@ public class DeviceProvisioningURL {
         self.capabilities = capabilities
     }
 
-    // We don't use URLComponents to generate this URL as it encodes '+' and '/'
-    // in the base64 pub_key in a way the Android doesn't tolerate.
     public func buildUrl() throws -> URL {
-        var urlString = Constants.sgnlPrefix
-        urlString.append("://")
-        urlString.append(linkType.rawValue)
-        urlString.append("?\(Constants.uuidParamName)=\(ephemeralDeviceId)")
-        urlString.append("&\(Constants.publicKeyParamName)=\(try Self.encodePublicKey(publicKey))")
-        urlString.append("&\(Constants.capabilitiesParamName)=\(capabilities.map(\.rawValue).joined(separator: ","))")
+        let publicKeyTemplate = Randomness.generateRandomBytes(32).hexadecimalString
+        var components = URLComponents()
+        components.scheme = Constants.sgnlPrefix
+        components.host = linkType.rawValue
+        components.queryItems = [
+            URLQueryItem(name: Constants.uuidParamName, value: ephemeralDeviceId),
+            URLQueryItem(name: Constants.publicKeyParamName, value: publicKeyTemplate),
+            URLQueryItem(name: Constants.capabilitiesParamName, value: capabilities.map(\.rawValue).joined(separator: ",")),
+        ]
+        guard let templateUrl = components.url else {
+            throw OWSGenericError("couldn't encode url")
+        }
+        var urlString = templateUrl.absoluteString
+        // We don't use queryItems to generate this parameter because it encodes
+        // '+' and '/' in the pub_key in a way the Android doesn't tolerate.
+        let encodedPublicKey = try Self.encodePublicKey(publicKey)
+        urlString = urlString.replacingOccurrences(of: publicKeyTemplate, with: encodedPublicKey)
         guard let url = URL(string: urlString) else {
-            throw OWSAssertionError("invalid url: \(urlString)")
+            throw OWSGenericError("couldn't re-encode url")
         }
         return url
     }
