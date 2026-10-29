@@ -132,13 +132,13 @@ public struct PreviewableAttachment {
     public static func compressVideoAsMp4(
         dataSource: DataSourcePath,
         attachmentLimits: OutgoingAttachmentLimits,
-        sessionCallback: (@MainActor (AVAssetExportSession) -> Void)? = nil,
+        progress: Progress? = nil,
     ) async throws -> Self {
         return try await compressVideoAsMp4(
             asset: AVAsset(url: dataSource.fileUrl),
             baseFilename: dataSource.sourceFilename,
             attachmentLimits: attachmentLimits,
-            sessionCallback: sessionCallback,
+            progress: progress,
         )
     }
 
@@ -147,45 +147,29 @@ public struct PreviewableAttachment {
         asset: AVAsset,
         baseFilename: String?,
         attachmentLimits: OutgoingAttachmentLimits,
-        sessionCallback: (@MainActor (AVAssetExportSession) -> Void)? = nil,
+        progress: Progress? = nil,
     ) async throws -> Self {
         let startTime = MonotonicDate()
-
-        guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPreset640x480) else {
-            throw SignalAttachmentError.couldNotConvertToMpeg4
-        }
-
-        exportSession.shouldOptimizeForNetworkUse = true
-        exportSession.metadataItemFilter = AVMetadataItemFilter.forSharing()
-
-        if let sessionCallback {
-            sessionCallback(exportSession)
-        }
-
         let exportURL = OWSFileSystem.temporaryFileUrl(fileExtension: "mp4", isAvailableWhileDeviceLocked: false)
 
-        try await exportSession.exportAsync(to: exportURL, as: .mp4)
-
-        switch exportSession.status {
-        case .unknown:
-            throw OWSAssertionError("Unknown export status.")
-        case .waiting:
-            throw OWSAssertionError("Export status: .waiting.")
-        case .exporting:
-            throw OWSAssertionError("Export status: .exporting.")
-        case .completed:
-            break
-        case .failed:
-            if let error = exportSession.error {
-                owsFailDebug("Error: \(error)")
-                throw error
-            } else {
-                throw OWSAssertionError("Export failed without error.")
+        do {
+            let settings = switch attachmentLimits.standardQualityLevel {
+            case .one:
+                VideoTranscoding.Settings.level1
+            case .two, .three:
+                VideoTranscoding.Settings.level2
             }
-        case .cancelled:
-            throw CancellationError()
-        @unknown default:
-            throw OWSAssertionError("Unknown export status: \(exportSession.status.rawValue)")
+            // TODO: if the user has selected "high quality", insert `VideoTranscoding.Settings.high` before `settings`.
+            try await VideoTranscoding.transcodeMp4(
+                asset: asset,
+                settings: settings,
+                outputUrl: exportURL,
+                progress: progress,
+            )
+        } catch let e as CancellationError {
+            throw e
+        } catch {
+            throw OWSAssertionError("export failed: \(error)")
         }
 
         let mp4Filename: String?

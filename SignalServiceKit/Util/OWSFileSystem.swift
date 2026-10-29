@@ -332,6 +332,8 @@ public enum OWSFileSystem {
 
     // MARK: - Temporary Files
 
+    /// If `fileName` is non-nil, creates the file in a dedicated directory to
+    /// avoid the possibility of conflicts.
     public static func temporaryFileUrl(
         fileName: String? = nil,
         fileExtension: String? = nil,
@@ -344,6 +346,8 @@ public enum OWSFileSystem {
         ))
     }
 
+    /// If `fileName` is non-nil, creates the file in a dedicated directory to
+    /// avoid the possibility of conflicts.
     public static func temporaryFilePath(
         fileName: String? = nil,
         fileExtension: String? = nil,

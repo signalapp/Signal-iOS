@@ -416,19 +416,10 @@ public struct TypedItemProvider {
         progress: Progress?,
     ) async throws -> PreviewableAttachment {
         if SignalAttachment.videoUTISet.contains(dataUTI) {
-            // TODO: Move waiting for this export to the end of the share flow rather than up front
-            var progressPoller: ProgressPoller?
-            defer {
-                progressPoller?.stopPolling()
-            }
             return try await PreviewableAttachment.compressVideoAsMp4(
                 dataSource: dataSource,
                 attachmentLimits: attachmentLimits,
-                sessionCallback: { exportSession in
-                    guard let progress else { return }
-                    progressPoller = ProgressPoller(progress: progress, pollInterval: 0.1, fractionCompleted: { return exportSession.progress })
-                    progressPoller?.startPolling()
-                },
+                progress: progress,
             )
         } else if mustBeVisualMedia {
             // If it's not a video but must be visual media, then we must parse it as

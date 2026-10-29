@@ -972,6 +972,7 @@
 		557238D32F2D53FD0033BC9A /* RingrtcVp9Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557238D22F2D53EF0033BC9A /* RingrtcVp9Config.swift */; };
 		55B753602D97304100CCC91C /* RemoteMuteToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B7535F2D97303A00CCC91C /* RemoteMuteToast.swift */; };
 		55BD355C2F16DAC0008E989C /* input_video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5531BE0E2F15B97F002AF66F /* input_video.mp4 */; };
+		5A7583823033CA9600895F5E /* VideoTranscoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A7583813033CA8B00895F5E /* VideoTranscoding.swift */; };
 		5AA002E62CA24566002D1CC2 /* SessionStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA002E52CA2455F002D1CC2 /* SessionStoreTest.swift */; };
 		5F0FCB3F9BC04E7EB4B5A9DA /* ContactSharingRowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C97A48E040D913B54956AB /* ContactSharingRowCell.swift */; };
 		61475E7AED76A77DD11F9968 /* RegistrationSignalLoginDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4F92E120FC707A4CBFF39 /* RegistrationSignalLoginDetailsViewController.swift */; };
@@ -5493,6 +5494,7 @@
 		557238D22F2D53EF0033BC9A /* RingrtcVp9Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingrtcVp9Config.swift; sourceTree = "<group>"; };
 		55B305CB99EC1478F69D91CF /* Pods-SignalUITests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.profiling.xcconfig"; path = "Target Support Files/Pods-SignalUITests/Pods-SignalUITests.profiling.xcconfig"; sourceTree = "<group>"; };
 		55B7535F2D97303A00CCC91C /* RemoteMuteToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMuteToast.swift; sourceTree = "<group>"; };
+		5A7583813033CA8B00895F5E /* VideoTranscoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTranscoding.swift; sourceTree = "<group>"; };
 		5AA002E52CA2455F002D1CC2 /* SessionStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStoreTest.swift; sourceTree = "<group>"; };
 		5D6C4583F668E9D733E59B9B /* Pods-SignalServiceKitTests.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKitTests.testable release.xcconfig"; path = "Target Support Files/Pods-SignalServiceKitTests/Pods-SignalServiceKitTests.testable release.xcconfig"; sourceTree = "<group>"; };
 		5F85041386A219C9710EAB41 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
@@ -12442,6 +12444,7 @@
 				5011C8D72ED77478005DF488 /* SendableAttachment.swift */,
 				34D913491F62D4A500722898 /* SignalAttachment.swift */,
 				B99CD9432DA9AB530035C77B /* TypedItemProvider.swift */,
+				5A7583813033CA8B00895F5E /* VideoTranscoding.swift */,
 			);
 			path = Attachments;
 			sourceTree = "<group>";
@@ -18866,6 +18869,7 @@
 				34A954E8271B4F6A00B05242 /* VideoPlayer.swift in Sources */,
 				3402AAB4271D9E180084CBAE /* VideoPlayerView.swift in Sources */,
 				76896BFA28415B6B00F6C8D2 /* VideoTimelineView.swift in Sources */,
+				5A7583823033CA9600895F5E /* VideoTranscoding.swift in Sources */,
 				3402AA9F271D9E180084CBAE /* ViewOnceTooltip.swift in Sources */,
 				3402AA6A271D9DFC0084CBAE /* Wallpaper+SignalUI.swift in Sources */,
 				D9392DE02D88AA5800728C01 /* ZoomableMediaView.swift in Sources */,
