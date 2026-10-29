@@ -7,16 +7,13 @@ We typically develop against the latest stable version of Xcode.
 Clone the repo to a working directory:
 
 ```
-git clone --recurse-submodules https://github.com/signalapp/Signal-iOS
+git clone https://github.com/signalapp/Signal-iOS
 ```
-
-Since we make use of sub-modules, you must use `git clone`, rather than
-downloading a prepared zip file from Github.
 
 We recommend you fork the repo on GitHub, then clone your fork:
 
 ```
-git clone --recurse-submodules https://github.com/<USERNAME>/Signal-iOS.git
+git clone https://github.com/<USERNAME>/Signal-iOS.git
 ```
 
 You can then add the Signal repo to sync with upstream changes:
@@ -25,15 +22,7 @@ You can then add the Signal repo to sync with upstream changes:
 git remote add upstream https://github.com/signalapp/Signal-iOS
 ```
 
-## 2. Dependencies
-
-To build and configure the libraries Signal uses, just run:
-
-```
-make dependencies
-```
-
-## 3. Xcode
+## 2. Xcode
 
 Open the `Signal.xcworkspace` in Xcode.
 

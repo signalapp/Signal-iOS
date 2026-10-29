@@ -634,7 +634,7 @@ def find_header_include_paths(include_path):
 #
 # #import <SignalServiceKit/OWSFailedAttachmentDownloadsJob.h>
 #
-# To simulate this, we walk the Pods directory and copy
+# To simulate this, we walk the project directories and copy
 # headers into per-framework directories.
 
 
@@ -651,21 +651,9 @@ def copy_module_headers(src_dir_path, module_name, module_header_dir_path):
             shutil.copyfile(src_file_path, dst_file_path)
 
 
-def gather_pod_headers(pods_dir_path, module_header_dir_path):
-
-    for dirname in os.listdir(pods_dir_path):
-        src_dir_path = os.path.join(pods_dir_path, dirname)
-        if not os.path.isdir(src_dir_path):
-            continue
-
-        copy_module_headers(src_dir_path, dirname, module_header_dir_path)
-
-
-def gather_module_headers(pods_dir_path):
+def gather_module_headers():
     # Make a temp directory to gather framework headers in.
     module_header_dir_path = tempfile.mkdtemp()
-
-    gather_pod_headers(pods_dir_path, module_header_dir_path)
 
     for project_name in (
         "SignalServiceKit",
@@ -797,7 +785,7 @@ if __name__ == "__main__":
 
     src_path = os.path.abspath(args.src_path)
     swift_bridging_path = os.path.abspath(args.swift_bridging_path)
-    module_header_dir_path = gather_module_headers("Pods")
+    module_header_dir_path = gather_module_headers()
 
     command = [
         "xcrun",

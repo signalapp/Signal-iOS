@@ -6,7 +6,7 @@ set -eux
 # definitions for all types we use, otherwise clang will treat them
 # as `long *`.
 #
-# This script enumerates all swift files in our codebase (including our Pods)
+# This script enumerates all swift files in our codebase
 # and generates fake Obj-c headers (.h) that @interface and @protocol
 # stubs for each swift class.  This is analogous to a very simplified
 # version of the "-Swift.h" files used by Swift for bridging.

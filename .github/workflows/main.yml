@@ -52,10 +52,6 @@ jobs:
         run: |
           xcodebuild -downloadPlatform iOS
 
-      - uses: ./.github/actions/clone-everything
-        with:
-          access-token: ${{ secrets.ACCESS_TOKEN }}
-
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1 # Reads .ruby-version file by default
         with:
@@ -63,6 +59,14 @@ jobs:
 
       - name: Build and Test
         run: Scripts/build-and-test.sh
+
+      - name: Check acknowledgements
+        run: |
+          Scripts/generate_acknowledgements.py
+          git diff --exit-code Signal/Settings.bundle/Acknowledgements.plist || {
+            echo "::error file=Signal/Settings.bundle/Acknowledgements.plist::Out of date. Run Scripts/generate_acknowledgements.py."
+            exit 1
+          }
 
       - name: Upload build logs
         uses: actions/upload-artifact@v6

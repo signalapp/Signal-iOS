@@ -140,9 +140,11 @@
 		05A180362CD1840F00579FA4 /* UIViewPropertyAnimator+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A180352CD1840F00579FA4 /* UIViewPropertyAnimator+SignalUI.swift */; };
 		05B411252C62845000A1EDBC /* ChatListInboxFilterSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B411242C62845000A1EDBC /* ChatListInboxFilterSection.swift */; };
 		05FDBC292CD91B31000C87BC /* ChatListContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FDBC282CD91B31000C87BC /* ChatListContainerView.swift */; };
-		0CE014267EDFBD2538E940A0 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FF88FB580BC19B240EEB86A /* Pods_Signal.framework */; };
+		07F59254C61C55544866602E /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 6F1A4C201B105514D40AED85 /* WebRTC */; };
+		0D444649A74185022B77D89A /* SignalRingRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 0064D116DC1B78A20DF4FEB3 /* SignalRingRTC */; };
 		1027FFCCCC063C8107CCD1DD /* ContactSharingPickerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1FF7C99B8F2DF3BAF0DC9F /* ContactSharingPickerDelegate.swift */; };
 		13A31CC02277A1C103CAE95B /* AciContactShareNameManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7358C9DE9823FD80FD3F9815 /* AciContactShareNameManagerTests.swift */; };
+		13B0034DE05913DB4E5C86E1 /* SignalRingRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 37783C088FC6563374668C3B /* SignalRingRTC */; };
 		1404D8B3276A353B0068E2F6 /* ChatListViewController+Multiselect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1404D8B2276A353A0068E2F6 /* ChatListViewController+Multiselect.swift */; };
 		1466AB282817F7E7003B3D9F /* PluralAware.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = 1466AB262817F7E7003B3D9F /* PluralAware.stringsdict */; };
 		1477630B275E20D700D1067E /* ThreadContextualActionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1477630A275E20D700D1067E /* ThreadContextualActionProvider.swift */; };
@@ -155,8 +157,6 @@
 		1704690C25D4C92B000793D8 /* test-jpg-rotated.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1704690B25D4C92B000793D8 /* test-jpg-rotated.jpg */; };
 		17E6049028A17BD300127680 /* ZkGroupIntegrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E6048F28A17BD200127680 /* ZkGroupIntegrationTest.swift */; };
 		17EC850C29133CDB00319C82 /* CancelledGroupRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17EC850B29133CDB00319C82 /* CancelledGroupRing.swift */; };
-		259D4DF2486F14DB112B3999 /* Pods_SignalServiceKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91DA2BE463493965F5BC71C0 /* Pods_SignalServiceKitTests.framework */; };
-		2B5914CF7BCE3017430CFD84 /* Pods_SignalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BADD293DAFC82BF3274F0F6 /* Pods_SignalTests.framework */; };
 		3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */; };
 		326DF2612739F4D90017B789 /* FeaturedBadgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326DF2602739F4D90017B789 /* FeaturedBadgeViewController.swift */; };
 		327CF66825ACE7DD00DA0A6F /* GetStartedBannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327CF66725ACE7DC00DA0A6F /* GetStartedBannerViewController.swift */; };
@@ -498,6 +498,7 @@
 		34FB6A5325D2D10400E599B1 /* PaymentsViewUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5225D2D10400E599B1 /* PaymentsViewUtils.swift */; };
 		34FB6A5525D2E17200E599B1 /* PaymentModelCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5425D2E17200E599B1 /* PaymentModelCell.swift */; };
 		34FCCA04264AEDFE00A63EDE /* CustomColorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FCCA03264AEDFE00A63EDE /* CustomColorViewController.swift */; };
+		3598721B24C6DE838BF4705D /* LibRingRTCFfi in Frameworks */ = {isa = PBXBuildFile; productRef = CF9E6895854844558D430358 /* LibRingRTCFfi */; };
 		3A6C1F0E8B2D4A7C9E5B1D40 /* OWSContactTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7D2A1F9C3E5B8DAF6C2E51 /* OWSContactTests.swift */; };
 		3F3A3AE8BCD234B622D7217E /* AciContactShareNameStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D88A50F7A21109F53A878CF8 /* AciContactShareNameStoreTests.swift */; };
 		41117D98253D4E33B367812D /* NotificationSettingsWhileMutedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09AF6C1F75C04D3196CCFD38 /* NotificationSettingsWhileMutedViewController.swift */; };
@@ -566,7 +567,6 @@
 		45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */; };
 		45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F32C1D205718B000A300D5 /* MediaPageViewController.swift */; };
 		45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */; };
-		46B99B83D9513F2B8641EAB1 /* Pods_SignalNSE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F965533D71CA51BE6704CC4 /* Pods_SignalNSE.framework */; };
 		48BD1EA140B397C56029EE17 /* ContactShareViewHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B928D1052C237E4BD2B13718 /* ContactShareViewHelperTests.swift */; };
 		4C0CF6FA2386295400C9F818 /* tap_to_focus.json in Resources */ = {isa = PBXBuildFile; fileRef = 4C0CF6F92386295400C9F818 /* tap_to_focus.json */; };
 		4C1885D2218F8E1C00B67051 /* PhotoGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1885D1218F8E1C00B67051 /* PhotoGridViewCell.swift */; };
@@ -919,14 +919,15 @@
 		50FA17123006F244007529C6 /* GroupInviteLinkTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50FA17113006F244007529C6 /* GroupInviteLinkTest.swift */; };
 		50FA17143006F635007529C6 /* GroupInviteLinkConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50FA17133006F635007529C6 /* GroupInviteLinkConfiguration.swift */; };
 		50FA1B822F2D2935000DDCF9 /* InstalledStickerRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50FA1B812F2D2935000DDCF9 /* InstalledStickerRecord.swift */; };
+		527D6D321E488457677C4613 /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = F4A1F14CB746D6D1F42E1318 /* WebRTC */; };
 		557238D32F2D53FD0033BC9A /* RingrtcVp9Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557238D22F2D53EF0033BC9A /* RingrtcVp9Config.swift */; };
 		55B753602D97304100CCC91C /* RemoteMuteToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B7535F2D97303A00CCC91C /* RemoteMuteToast.swift */; };
 		55BD355C2F16DAC0008E989C /* input_video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5531BE0E2F15B97F002AF66F /* input_video.mp4 */; };
+		55D6843A871DDADB0C8C3B49 /* SignalRingRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 9DD50945261BE0AAB490BEDC /* SignalRingRTC */; };
 		5A7583823033CA9600895F5E /* VideoTranscoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A7583813033CA8B00895F5E /* VideoTranscoding.swift */; };
 		5AA002E62CA24566002D1CC2 /* SessionStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA002E52CA2455F002D1CC2 /* SessionStoreTest.swift */; };
 		5F0FCB3F9BC04E7EB4B5A9DA /* ContactSharingRowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C97A48E040D913B54956AB /* ContactSharingRowCell.swift */; };
 		61475E7AED76A77DD11F9968 /* RegistrationSignalLoginDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE4F92E120FC707A4CBFF39 /* RegistrationSignalLoginDetailsViewController.swift */; };
-		616577F953D77424E32C7438 /* Pods_SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */; };
 		631759F830921F6000C98C98 /* LibSignalFfi in Frameworks */ = {isa = PBXBuildFile; productRef = 631759F730921F6000C98C98 /* LibSignalFfi */; };
 		631759FB30921FA700C98C98 /* LibSignalClient in Frameworks */ = {isa = PBXBuildFile; productRef = 631759FA30921FA700C98C98 /* LibSignalClient */; };
 		631759FD30921FBA00C98C98 /* LibSignalClient in Frameworks */ = {isa = PBXBuildFile; productRef = 631759FC30921FBA00C98C98 /* LibSignalClient */; };
@@ -1807,6 +1808,7 @@
 		88F5FA9428EBD4CF007AA1BF /* StorySharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5FA9228EBD484007AA1BF /* StorySharing.swift */; };
 		88FE237E249C22080041670F /* ConversationViewController+Scroll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FE237D249C22080041670F /* ConversationViewController+Scroll.swift */; };
 		954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */; };
+		9C3FA005C549319E4E8E089C /* SignalRingRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 220E4B3E3CC1B4F59371045A /* SignalRingRTC */; };
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
 		A123C14916F902EE000AE905 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A163E8AA16F3F6A90094D68B /* Security.framework */; };
@@ -1817,6 +1819,8 @@
 		A5E7C675248C5443007C949A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A5E7C673248C5442007C949A /* InfoPlist.strings */; };
 		A8B4B2CDBC78CBC03A4BC247 /* MockAciContactShareNameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA74775FE55A58CC252DB9AA /* MockAciContactShareNameManager.swift */; };
 		AB0C401C2E5BADCE00A1B2C3 /* NotificationSettingsBadgeCountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0C401B2E5BADCE00A1B2C3 /* NotificationSettingsBadgeCountViewController.swift */; };
+		AC6377D9BE386E0C7ECB1507 /* SignalRingRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 33BD72EA7E91D995F7205803 /* SignalRingRTC */; };
+		B3F9C5136E41C9001E63DF21 /* SignalRingRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 085D7E0DBA593E27245EF4DB /* SignalRingRTC */; };
 		B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60EDE031A05A01700D73516 /* AudioToolbox.framework */; };
 		B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
@@ -2042,7 +2046,6 @@
 		C1FB9B732B16495D00D51A3B /* DonationSubscriptionLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FB9B722B16495D00D51A3B /* DonationSubscriptionLevel.swift */; };
 		C1FB9B752B16498C00D51A3B /* PendingIDEALDonationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FB9B742B16498C00D51A3B /* PendingIDEALDonationStore.swift */; };
 		C1FE1F612C80CDC30031860B /* AttachmentBackupThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FE1F602C80CDC30031860B /* AttachmentBackupThumbnail.swift */; };
-		C26296B4BDCEDADBDA01DDD2 /* Pods_SignalServiceKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 948B2FC201146EF3BA459226 /* Pods_SignalServiceKit.framework */; };
 		CBCD7499B0A64FE64EAC82E4 /* LowDiskSpaceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A780A90C5DDC028939E97635 /* LowDiskSpaceManager.swift */; };
 		CD00DF277C60D21E1D55B5CA /* AciContactShareNameStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D205E8F7C927C969E2B7D84 /* AciContactShareNameStore.swift */; };
 		D202868116DBE0E7009068E9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
@@ -2520,10 +2523,11 @@
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
 		E75DD3E02810CDBD00E32C36 /* SubscriptionModelsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD3DF2810CDBD00E32C36 /* SubscriptionModelsTest.swift */; };
 		E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */; };
-		EC7A9D369AF9724FEEE5B653 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3F39202F831935AAE1C5F54 /* Pods_SignalUITests.framework */; };
+		ED0DCCF3A307EB06A9352222 /* SignalRingRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 2D0111921182D8AB2A063FC6 /* SignalRingRTC */; };
 		F02564D8274EDF4600D7B48A /* BadgeIssueSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02564D7274EDF4600D7B48A /* BadgeIssueSheet.swift */; };
 		F05F51C926A90D6B00861034 /* ContextMenuActionsAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */; };
 		F090C8202762F2C5005C20FC /* EmojiReactionPickerConfigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F090C81F2762F2C5005C20FC /* EmojiReactionPickerConfigViewController.swift */; };
+		F0A8BD2131524F207FD82D8B /* SignalRingRTC in Frameworks */ = {isa = PBXBuildFile; productRef = A213A668C51E4A2CCC1B4AA7 /* SignalRingRTC */; };
 		F0B872B6269CF6D900D26481 /* ContextMenuInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */; };
 		F0B872B8269D079B00D26481 /* ContextMenuConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B872B7269D079B00D26481 /* ContextMenuConfiguration.swift */; };
 		F0EE4DB626A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0EE4DB526A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift */; };
@@ -3307,7 +3311,6 @@
 		05EA61442CC943DD00B16D4E /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
 		05FDBC282CD91B31000C87BC /* ChatListContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListContainerView.swift; sourceTree = "<group>"; };
 		09AF6C1F75C04D3196CCFD38 /* NotificationSettingsWhileMutedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsWhileMutedViewController.swift; sourceTree = "<group>"; };
-		0BADD293DAFC82BF3274F0F6 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CAE5380475512D4C3083EDC /* ContactSharingPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSharingPickerViewController.swift; sourceTree = "<group>"; };
 		1404D8B2276A353A0068E2F6 /* ChatListViewController+Multiselect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+Multiselect.swift"; sourceTree = "<group>"; };
 		1466AB272817F7E7003B3D9F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = translations/en.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
@@ -3338,10 +3341,7 @@
 		17E6048F28A17BD200127680 /* ZkGroupIntegrationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZkGroupIntegrationTest.swift; sourceTree = "<group>"; };
 		17EC850B29133CDB00319C82 /* CancelledGroupRing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CancelledGroupRing.swift; sourceTree = "<group>"; };
 		25C97A48E040D913B54956AB /* ContactSharingRowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSharingRowCell.swift; sourceTree = "<group>"; };
-		299F6904BB7E4C0E2463A169 /* Pods-SignalNSE.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.app store release.xcconfig"; path = "Target Support Files/Pods-SignalNSE/Pods-SignalNSE.app store release.xcconfig"; sourceTree = "<group>"; };
-		2C1CB05FE7FDA3C1F0138D7F /* Pods-SignalServiceKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKitTests.debug.xcconfig"; path = "Target Support Files/Pods-SignalServiceKitTests/Pods-SignalServiceKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		2D205E8F7C927C969E2B7D84 /* AciContactShareNameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AciContactShareNameStore.swift; sourceTree = "<group>"; };
-		2E997798B7AF35DBBC0905DF /* Pods-SignalUI.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUI.testable release.xcconfig"; path = "Target Support Files/Pods-SignalUI/Pods-SignalUI.testable release.xcconfig"; sourceTree = "<group>"; };
 		3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameCollisionReviewCell.swift; sourceTree = "<group>"; };
 		32525F9427C74B1A0099E801 /* GroupCallManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallManager.swift; sourceTree = "<group>"; };
 		326DF2602739F4D90017B789 /* FeaturedBadgeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturedBadgeViewController.swift; sourceTree = "<group>"; };
@@ -3723,7 +3723,6 @@
 		34FC7EEB265834F30046707A /* AvatarBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AvatarBuilder.swift; sourceTree = "<group>"; };
 		34FCCA03264AEDFE00A63EDE /* CustomColorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomColorViewController.swift; sourceTree = "<group>"; };
 		3CE4F92E120FC707A4CBFF39 /* RegistrationSignalLoginDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationSignalLoginDetailsViewController.swift; sourceTree = "<group>"; };
-		44B6CDDFDDD0811DBBC57CD1 /* Pods-SignalTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.profiling.xcconfig"; path = "Target Support Files/Pods-SignalTests/Pods-SignalTests.profiling.xcconfig"; sourceTree = "<group>"; };
 		4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "classic-quiet.aifc"; sourceTree = "<group>"; };
 		4503F1BC20470A5B00CEE724 /* classic.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = classic.aifc; sourceTree = "<group>"; };
 		45069FC529D3A7C800D0DD14 /* WideMediaTileViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WideMediaTileViewLayout.swift; sourceTree = "<group>"; };
@@ -3796,7 +3795,6 @@
 		45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarqueeLabel.swift; sourceTree = "<group>"; };
 		45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableTextFilterTest.swift; sourceTree = "<group>"; };
 		45F32C1D205718B000A300D5 /* MediaPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MediaPageViewController.swift; path = Signal/src/ViewControllers/MediaGallery/MediaPageViewController.swift; sourceTree = SOURCE_ROOT; };
-		46A35218397D9FD1709A675C /* Pods-SignalUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.debug.xcconfig"; path = "Target Support Files/Pods-SignalUITests/Pods-SignalUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		4B7D2A1F9C3E5B8DAF6C2E51 /* OWSContactTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactTests.swift; sourceTree = "<group>"; };
 		4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
 		4C0CF6F92386295400C9F818 /* tap_to_focus.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = tap_to_focus.json; sourceTree = "<group>"; };
@@ -3843,7 +3841,6 @@
 		4CFB4E9B220BC56D00ECB4DE /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = translations/nb.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4CFF115223A9C2130007F9D7 /* UnreadIndicatorInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadIndicatorInteraction.swift; sourceTree = "<group>"; };
 		4CFF4C0920F55BBA005DA313 /* MessageActionsToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageActionsToolbar.swift; sourceTree = "<group>"; };
-		4FD665383260B4FC0A94CE02 /* Pods-Signal.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.testable release.xcconfig"; path = "Target Support Files/Pods-Signal/Pods-Signal.testable release.xcconfig"; sourceTree = "<group>"; };
 		5000499E28330102006A7466 /* sr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = sr; path = translations/sr.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		500049A328330114006A7466 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = sv; path = translations/sv.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		500049A62833011A006A7466 /* th */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = th; path = translations/th.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
@@ -4199,17 +4196,13 @@
 		50FA1B812F2D2935000DDCF9 /* InstalledStickerRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstalledStickerRecord.swift; sourceTree = "<group>"; };
 		5531BE0E2F15B97F002AF66F /* input_video.mp4 */ = {isa = PBXFileReference; lastKnownFileType = text; path = input_video.mp4; sourceTree = "<group>"; };
 		557238D22F2D53EF0033BC9A /* RingrtcVp9Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingrtcVp9Config.swift; sourceTree = "<group>"; };
-		55B305CB99EC1478F69D91CF /* Pods-SignalUITests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.profiling.xcconfig"; path = "Target Support Files/Pods-SignalUITests/Pods-SignalUITests.profiling.xcconfig"; sourceTree = "<group>"; };
 		55B7535F2D97303A00CCC91C /* RemoteMuteToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMuteToast.swift; sourceTree = "<group>"; };
 		5A7583813033CA8B00895F5E /* VideoTranscoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTranscoding.swift; sourceTree = "<group>"; };
 		5AA002E52CA2455F002D1CC2 /* SessionStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStoreTest.swift; sourceTree = "<group>"; };
-		5D6C4583F668E9D733E59B9B /* Pods-SignalServiceKitTests.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKitTests.testable release.xcconfig"; path = "Target Support Files/Pods-SignalServiceKitTests/Pods-SignalServiceKitTests.testable release.xcconfig"; sourceTree = "<group>"; };
-		5F85041386A219C9710EAB41 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
 		632BFEBF30752A2E005399C0 /* GroupViewHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupViewHelperTests.swift; sourceTree = "<group>"; };
 		63C24D4C306AF7A100D4C167 /* ContactSharingPermissionPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSharingPermissionPromptView.swift; sourceTree = "<group>"; };
 		63C24D52306C50FD00D4C167 /* ContactShareAvatarFieldTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareAvatarFieldTests.swift; sourceTree = "<group>"; };
 		63C24D54306C510200D4C167 /* ContactShareAvatarPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareAvatarPickerSheet.swift; sourceTree = "<group>"; };
-		65703441A3D2C7FE670E65ED /* Pods-SignalServiceKit.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.profiling.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.profiling.xcconfig"; sourceTree = "<group>"; };
 		6600BB192BA3A0930005A035 /* LinkPreviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewManager.swift; sourceTree = "<group>"; };
 		6600BB202BA3BC540005A035 /* LinkPreviewHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewHelper.swift; sourceTree = "<group>"; };
 		6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnknownEnumCodable.swift; sourceTree = "<group>"; };
@@ -4640,11 +4633,8 @@
 		66FC638B29E9E9D200F00DAC /* TextCheckingDataItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextCheckingDataItem.swift; sourceTree = "<group>"; };
 		66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDisplayConfigurations.swift; sourceTree = "<group>"; };
 		66FFDADB2C823C270079C0E7 /* BackupArchive+Contexts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackupArchive+Contexts.swift"; sourceTree = "<group>"; };
-		67391FF368D9A60FC8B73F0E /* Pods-Signal.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.profiling.xcconfig"; path = "Target Support Files/Pods-Signal/Pods-Signal.profiling.xcconfig"; sourceTree = "<group>"; };
-		675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		691923222A44D263F4F0084D /* ContactSharingSystemContactWrapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSharingSystemContactWrapperTests.swift; sourceTree = "<group>"; };
 		6AA5EACC302E7D5800E5954E /* RingrtcSvcConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingrtcSvcConfig.swift; sourceTree = "<group>"; };
-		6BB92957776B3173894CD3E9 /* Pods-SignalServiceKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.app store release.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.app store release.xcconfig"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		7203F5322D53B52900639949 /* UInt64+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt64+SSK.swift"; sourceTree = "<group>"; };
 		7203F5342D53B83000639949 /* TimeInterval+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+SSK.swift"; sourceTree = "<group>"; };
@@ -4767,8 +4757,6 @@
 		76F4B580293ACCD200A7CF2F /* UIKit+Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIKit+Animations.swift"; sourceTree = "<group>"; };
 		76F958622A09A5AE00B43E63 /* DebugUIDiskUsage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIDiskUsage.swift; sourceTree = "<group>"; };
 		76FCCDBB27AB8FBE00BAA7F0 /* MediaControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaControls.swift; sourceTree = "<group>"; };
-		7F965533D71CA51BE6704CC4 /* Pods_SignalNSE.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalNSE.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		7FF88FB580BC19B240EEB86A /* Pods_Signal.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Signal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		83B9573827C9A1FA00A678FD /* CaptchaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptchaView.swift; sourceTree = "<group>"; };
 		8806EF18248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPermissionReminderMegaphone.swift; sourceTree = "<group>"; };
 		8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactPermissionReminderMegaphone.swift; sourceTree = "<group>"; };
@@ -4997,25 +4985,18 @@
 		88F5FA9228EBD484007AA1BF /* StorySharing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySharing.swift; sourceTree = "<group>"; };
 		88F5FA9528EF7E02007AA1BF /* StorySharingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySharingTests.swift; sourceTree = "<group>"; };
 		88FE237D249C22080041670F /* ConversationViewController+Scroll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Scroll.swift"; sourceTree = "<group>"; };
-		89BA19AB4B8B1BC811E53717 /* Pods-SignalServiceKit.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.testable release.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.testable release.xcconfig"; sourceTree = "<group>"; };
 		8F23C21CD526C1F69ED4D55F /* ContactSharingPickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSharingPickerViewModel.swift; sourceTree = "<group>"; };
-		91DA2BE463493965F5BC71C0 /* Pods_SignalServiceKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalServiceKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9354BFE890B6D894C3B321E1 /* AciContactShareNameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AciContactShareNameManager.swift; sourceTree = "<group>"; };
-		948B2FC201146EF3BA459226 /* Pods_SignalServiceKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalServiceKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		94A685625E25E6F3EE3CC812 /* Pods-SignalUITests.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.testable release.xcconfig"; path = "Target Support Files/Pods-SignalUITests/Pods-SignalUITests.testable release.xcconfig"; sourceTree = "<group>"; };
 		954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsPickerTest.swift; sourceTree = "<group>"; };
 		A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A163E8AA16F3F6A90094D68B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		A1C32D4D17A0652C000A904E /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		A1C32D4F17A06537000A904E /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		A1FDCBEE16DAA6C300868894 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		A33E43CA8A572CA70089C4CC /* Pods-SignalServiceKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.debug.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.debug.xcconfig"; sourceTree = "<group>"; };
-		A566C0C0B69138202C0367E6 /* Pods-Signal.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.app store release.xcconfig"; path = "Target Support Files/Pods-Signal/Pods-Signal.app store release.xcconfig"; sourceTree = "<group>"; };
 		A5E7C674248C5442007C949A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = translations/en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A780A90C5DDC028939E97635 /* LowDiskSpaceManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LowDiskSpaceManager.swift; sourceTree = "<group>"; };
 		AA74775FE55A58CC252DB9AA /* MockAciContactShareNameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAciContactShareNameManager.swift; sourceTree = "<group>"; };
 		AB0C401B2E5BADCE00A1B2C3 /* NotificationSettingsBadgeCountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsBadgeCountViewController.swift; sourceTree = "<group>"; };
-		B3F39202F831935AAE1C5F54 /* Pods_SignalUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B60EDE031A05A01700D73516 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		B634CBB31AB10D2300C49B99 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = translations/hr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B634CBB51AB10D5400C49B99 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = translations/ro.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -5042,7 +5023,6 @@
 		B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		B71510D89BF76955AB33D606 /* AciContactShareName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AciContactShareName.swift; sourceTree = "<group>"; };
 		B76A4C51840CBBECD4CA0ECE /* ContactSharingPickerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSharingPickerViewModelTests.swift; sourceTree = "<group>"; };
-		B7DF4FBE40A1DE0CD288E0EB /* Pods-SignalUITests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.app store release.xcconfig"; path = "Target Support Files/Pods-SignalUITests/Pods-SignalUITests.app store release.xcconfig"; sourceTree = "<group>"; };
 		B909C1582AAA5BAA00FED2AF /* AppIconSettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconSettingsTableViewController.swift; sourceTree = "<group>"; };
 		B91751C22EC5527B00FF7A9C /* AppIcon-news.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "AppIcon-news.icon"; sourceTree = "<group>"; };
 		B91751C62EC552DD00FF7A9C /* AppIcon-bubbles.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "AppIcon-bubbles.icon"; sourceTree = "<group>"; };
@@ -5133,8 +5113,6 @@
 		B9F817632BA263A900EAEE23 /* SignalSymbols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalSymbols.swift; sourceTree = "<group>"; };
 		B9F9ABF62CB98844001AE92D /* UIColor+Signal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Signal.swift"; sourceTree = "<group>"; wrapsLines = 1; };
 		B9FF37352B9286C6005ADDB8 /* UsernameLinkScanQRCodeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkScanQRCodeSheet.swift; sourceTree = "<group>"; };
-		BA04179298647E71115FA4C1 /* Pods-SignalNSE.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.testable release.xcconfig"; path = "Target Support Files/Pods-SignalNSE/Pods-SignalNSE.testable release.xcconfig"; sourceTree = "<group>"; };
-		BAD74FE6EBEB10FF3426D809 /* Pods-SignalTests.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.testable release.xcconfig"; path = "Target Support Files/Pods-SignalTests/Pods-SignalTests.testable release.xcconfig"; sourceTree = "<group>"; };
 		C100E6812C33087C000C83B8 /* PaymentsFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsFormat.swift; sourceTree = "<group>"; };
 		C109A8432FDB62790065225E /* ThroughputMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThroughputMonitor.swift; sourceTree = "<group>"; };
 		C109A8792FDC90630065225E /* WiFiAware.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WiFiAware.framework; path = System/Library/Frameworks/WiFiAware.framework; sourceTree = SDKROOT; };
@@ -5219,7 +5197,6 @@
 		C1A979862EE38277005EC945 /* BaseQuickRestoreQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseQuickRestoreQRCodeViewController.swift; sourceTree = "<group>"; };
 		C1A979882EE38D1F005EC945 /* RegistrationTransferStatusPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferStatusPresenter.swift; sourceTree = "<group>"; };
 		C1AE7C592D7B4451007A618D /* QuickRestoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickRestoreManager.swift; sourceTree = "<group>"; };
-		C1BD5FA792ACABB4855877BD /* Pods-SignalUI.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUI.app store release.xcconfig"; path = "Target Support Files/Pods-SignalUI/Pods-SignalUI.app store release.xcconfig"; sourceTree = "<group>"; };
 		C1BF1F702BA0D7CC0004B112 /* StreamTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamTransform.swift; sourceTree = "<group>"; };
 		C1C2185C2E70BA27008567A1 /* RegistrationIdMismatchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationIdMismatchManager.swift; sourceTree = "<group>"; };
 		C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerShims.swift; sourceTree = "<group>"; };
@@ -5268,7 +5245,6 @@
 		C1FB9B722B16495D00D51A3B /* DonationSubscriptionLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationSubscriptionLevel.swift; sourceTree = "<group>"; };
 		C1FB9B742B16498C00D51A3B /* PendingIDEALDonationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingIDEALDonationStore.swift; sourceTree = "<group>"; };
 		C1FE1F602C80CDC30031860B /* AttachmentBackupThumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentBackupThumbnail.swift; sourceTree = "<group>"; };
-		C597942EF64D456BBE9782A2 /* Pods-SignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.debug.xcconfig"; path = "Target Support Files/Pods-SignalTests/Pods-SignalTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		D221A089169C9E5E00537ABF /* Signal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Signal.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -5763,8 +5739,6 @@
 		E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDismiss.swift; sourceTree = "<group>"; };
 		E75DD3DF2810CDBD00E32C36 /* SubscriptionModelsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionModelsTest.swift; sourceTree = "<group>"; };
 		E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+OWS.swift"; sourceTree = "<group>"; };
-		EA03B20E7D8DBBE1B07BA967 /* Pods-SignalNSE.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.debug.xcconfig"; path = "Target Support Files/Pods-SignalNSE/Pods-SignalNSE.debug.xcconfig"; sourceTree = "<group>"; };
-		EC7FF00AFA51D97689DC9C2E /* Pods-SignalUI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUI.debug.xcconfig"; path = "Target Support Files/Pods-SignalUI/Pods-SignalUI.debug.xcconfig"; sourceTree = "<group>"; };
 		F00385FD273F6388000B5ABD /* DonationUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DonationUtilities.swift; sourceTree = "<group>"; };
 		F00385FE273F6388000B5ABD /* Stripe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stripe.swift; sourceTree = "<group>"; };
 		F02564D7274EDF4600D7B48A /* BadgeIssueSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeIssueSheet.swift; sourceTree = "<group>"; };
@@ -5777,7 +5751,6 @@
 		F0FB6B1F269E625A00AC2A41 /* ContextMenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuController.swift; sourceTree = "<group>"; };
 		F588CA982FA088B700693838 /* CallingAssetsFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallingAssetsFetcher.swift; sourceTree = "<group>"; };
 		F5C80FA12BE3F29F0028F76D /* RTCIceServerFetcherTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTCIceServerFetcherTest.swift; sourceTree = "<group>"; };
-		F70CAD4E12CCE311EC60A2C9 /* Pods-SignalServiceKitTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKitTests.profiling.xcconfig"; path = "Target Support Files/Pods-SignalServiceKitTests/Pods-SignalServiceKitTests.profiling.xcconfig"; sourceTree = "<group>"; };
 		F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptViewController.swift; sourceTree = "<group>"; };
 		F903C29A28EC7AE60035B42B /* RegistrationIdGeneratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationIdGeneratorTest.swift; sourceTree = "<group>"; };
 		F905DFEA29A534F200BAD034 /* RegistrationPhoneNumberDiscoverabilityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationPhoneNumberDiscoverabilityViewController.swift; sourceTree = "<group>"; };
@@ -6306,12 +6279,8 @@
 		F9F797E0296CCC630025C103 /* DonationViewsUtil+Gifting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+Gifting.swift"; sourceTree = "<group>"; };
 		F9FA363529F335E500C13830 /* ProvisioningCipherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningCipherTests.swift; sourceTree = "<group>"; };
 		F9FAABD729DB55940004B383 /* Progress+Signal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Progress+Signal.swift"; sourceTree = "<group>"; };
-		FA0F334C71C5504ED07AC74C /* Pods-SignalUI.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUI.profiling.xcconfig"; path = "Target Support Files/Pods-SignalUI/Pods-SignalUI.profiling.xcconfig"; sourceTree = "<group>"; };
 		FC3BD9871A30A790005B96BB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		FCB11D8B1A129A76002F93FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
-		FEFD8A174F57F4C221747D51 /* Pods-SignalServiceKitTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKitTests.app store release.xcconfig"; path = "Target Support Files/Pods-SignalServiceKitTests/Pods-SignalServiceKitTests.app store release.xcconfig"; sourceTree = "<group>"; };
-		FF348A86F3FA1E5B5A62F033 /* Pods-SignalNSE.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.profiling.xcconfig"; path = "Target Support Files/Pods-SignalNSE/Pods-SignalNSE.profiling.xcconfig"; sourceTree = "<group>"; };
-		FF39DCC8D1F7DFD3708276E2 /* Pods-SignalTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.app store release.xcconfig"; path = "Target Support Files/Pods-SignalTests/Pods-SignalTests.app store release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -6325,9 +6294,9 @@
 				63DC4561307EA32800119464 /* libPhoneNumber in Frameworks */,
 				63175A0130921FCC00C98C98 /* LibSignalClient in Frameworks */,
 				63DC4552307E7D7700119464 /* libwebp in Frameworks */,
-				46B99B83D9513F2B8641EAB1 /* Pods_SignalNSE.framework in Frameworks */,
 				63DC4548307E7D4E00119464 /* SDWebImage in Frameworks */,
 				63DC454A307E7D4E00119464 /* SDWebImageWebPCoder in Frameworks */,
+				9C3FA005C549319E4E8E089C /* SignalRingRTC in Frameworks */,
 				631CB528307EDAA500EA5851 /* SwiftProtobuf in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -6345,10 +6314,10 @@
 				631CB51F307EDA1C00EA5851 /* Logging in Frameworks */,
 				63DC45303079AF9100119464 /* Lottie in Frameworks */,
 				636E63623089304B008905CF /* MobileCoinCore in Frameworks */,
-				616577F953D77424E32C7438 /* Pods_SignalUI.framework in Frameworks */,
 				63DC45373079BADA00119464 /* PureLayout in Frameworks */,
 				63DC454C307E7D6400119464 /* SDWebImage in Frameworks */,
 				63DC454E307E7D6400119464 /* SDWebImageWebPCoder in Frameworks */,
+				13B0034DE05913DB4E5C86E1 /* SignalRingRTC in Frameworks */,
 				631CB524307EDA8B00EA5851 /* SwiftProtobuf in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -6359,7 +6328,7 @@
 			files = (
 				63DAB2A0308A5E0000764C31 /* GRDB in Frameworks */,
 				63175A0730921FE500C98C98 /* LibSignalClient in Frameworks */,
-				EC7A9D369AF9724FEEE5B653 /* Pods_SignalUITests.framework in Frameworks */,
+				0D444649A74185022B77D89A /* SignalRingRTC in Frameworks */,
 				34A954B2271A471300B05242 /* SignalUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -6376,6 +6345,7 @@
 				63DC45393079BCC100119464 /* PureLayout in Frameworks */,
 				63DC4556307E7DBB00119464 /* SDWebImage in Frameworks */,
 				63DC455A307E7DBB00119464 /* SDWebImageWebPCoder in Frameworks */,
+				ED0DCCF3A307EB06A9352222 /* SignalRingRTC in Frameworks */,
 				631CB52A307EDAAE00EA5851 /* SwiftProtobuf in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -6410,13 +6380,13 @@
 				455A16DE1F1FEA0000F86704 /* MetalKit.framework in Frameworks */,
 				636E636430893053008905CF /* MobileCoinCore in Frameworks */,
 				4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */,
-				0CE014267EDFBD2538E940A0 /* Pods_Signal.framework in Frameworks */,
 				63DC45353079BACE00119464 /* PureLayout in Frameworks */,
 				B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */,
 				A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */,
 				63DC453C307E7C5E00119464 /* SDWebImage in Frameworks */,
 				63DC4542307E7CD300119464 /* SDWebImageWebPCoder in Frameworks */,
 				A163E8AB16F3F6AA0094D68B /* Security.framework in Frameworks */,
+				AC6377D9BE386E0C7ECB1507 /* SignalRingRTC in Frameworks */,
 				F9C5C8AA289451B900548EEE /* SignalServiceKit.framework in Frameworks */,
 				34A954BD271A471300B05242 /* SignalUI.framework in Frameworks */,
 				63DAB29A308A59AD00764C31 /* SQLCipher in Frameworks */,
@@ -6424,6 +6394,7 @@
 				631CB526307EDA9900EA5851 /* SwiftProtobuf in Frameworks */,
 				D2179CFE16BB0B480006F3AB /* SystemConfiguration.framework in Frameworks */,
 				D221A08E169C9E5E00537ABF /* UIKit.framework in Frameworks */,
+				07F59254C61C55544866602E /* WebRTC in Frameworks */,
 				C109A87A2FDC90630065225E /* WiFiAware.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -6444,12 +6415,13 @@
 				A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */,
 				E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */,
 				636E636630893058008905CF /* MobileCoinCore in Frameworks */,
-				2B5914CF7BCE3017430CFD84 /* Pods_SignalTests.framework in Frameworks */,
 				A1A018521805C5E800A052A6 /* QuartzCore.framework in Frameworks */,
 				A123C14916F902EE000AE905 /* Security.framework in Frameworks */,
+				B3F9C5136E41C9001E63DF21 /* SignalRingRTC in Frameworks */,
 				631CB53D307FEE8E00EA5851 /* SwiftProtobuf in Frameworks */,
 				D202868216DBE0F4009068E9 /* SystemConfiguration.framework in Frameworks */,
 				D221A0AD169C9E5F00537ABF /* UIKit.framework in Frameworks */,
+				527D6D321E488457677C4613 /* WebRTC in Frameworks */,
 				B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -6462,12 +6434,13 @@
 				631CB52D307EDB0000EA5851 /* CocoaLumberjack in Frameworks */,
 				638C27C9308A51ED00EE57E0 /* GRDB in Frameworks */,
 				63DC455D307EA24D00119464 /* libPhoneNumber in Frameworks */,
+				3598721B24C6DE838BF4705D /* LibRingRTCFfi in Frameworks */,
 				631759FB30921FA700C98C98 /* LibSignalClient in Frameworks */,
 				631759F830921F6000C98C98 /* LibSignalFfi in Frameworks */,
 				63DC4554307E7D8700119464 /* libwebp in Frameworks */,
-				C26296B4BDCEDADBDA01DDD2 /* Pods_SignalServiceKit.framework in Frameworks */,
 				63DC4544307E7D0300119464 /* SDWebImage in Frameworks */,
 				63DC4546307E7D0300119464 /* SDWebImageWebPCoder in Frameworks */,
+				F0A8BD2131524F207FD82D8B /* SignalRingRTC in Frameworks */,
 				63DAB298308A59A000764C31 /* SQLCipher in Frameworks */,
 				631CB522307EDA7800EA5851 /* SwiftProtobuf in Frameworks */,
 			);
@@ -6480,8 +6453,8 @@
 				631CB53F307FEFD600EA5851 /* CocoaLumberjack in Frameworks */,
 				63DAB29E308A5DF800764C31 /* GRDB in Frameworks */,
 				63175A0930921FED00C98C98 /* LibSignalClient in Frameworks */,
-				259D4DF2486F14DB112B3999 /* Pods_SignalServiceKitTests.framework in Frameworks */,
 				E89806325E61AF66B93F902A /* SignalMessageBackupTests in Frameworks */,
+				55D6843A871DDADB0C8C3B49 /* SignalRingRTC in Frameworks */,
 				F9C5C89F289451B900548EEE /* SignalServiceKit.framework in Frameworks */,
 				631CB541307FEFDB00EA5851 /* SwiftProtobuf in Frameworks */,
 			);
@@ -6630,41 +6603,6 @@
 				2D205E8F7C927C969E2B7D84 /* AciContactShareNameStore.swift */,
 			);
 			path = AciContactShareName;
-			sourceTree = "<group>";
-		};
-		07B6BFA4D17E1353B0696C14 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				A566C0C0B69138202C0367E6 /* Pods-Signal.app store release.xcconfig */,
-				5F85041386A219C9710EAB41 /* Pods-Signal.debug.xcconfig */,
-				67391FF368D9A60FC8B73F0E /* Pods-Signal.profiling.xcconfig */,
-				4FD665383260B4FC0A94CE02 /* Pods-Signal.testable release.xcconfig */,
-				299F6904BB7E4C0E2463A169 /* Pods-SignalNSE.app store release.xcconfig */,
-				EA03B20E7D8DBBE1B07BA967 /* Pods-SignalNSE.debug.xcconfig */,
-				FF348A86F3FA1E5B5A62F033 /* Pods-SignalNSE.profiling.xcconfig */,
-				BA04179298647E71115FA4C1 /* Pods-SignalNSE.testable release.xcconfig */,
-				6BB92957776B3173894CD3E9 /* Pods-SignalServiceKit.app store release.xcconfig */,
-				A33E43CA8A572CA70089C4CC /* Pods-SignalServiceKit.debug.xcconfig */,
-				65703441A3D2C7FE670E65ED /* Pods-SignalServiceKit.profiling.xcconfig */,
-				89BA19AB4B8B1BC811E53717 /* Pods-SignalServiceKit.testable release.xcconfig */,
-				FEFD8A174F57F4C221747D51 /* Pods-SignalServiceKitTests.app store release.xcconfig */,
-				2C1CB05FE7FDA3C1F0138D7F /* Pods-SignalServiceKitTests.debug.xcconfig */,
-				F70CAD4E12CCE311EC60A2C9 /* Pods-SignalServiceKitTests.profiling.xcconfig */,
-				5D6C4583F668E9D733E59B9B /* Pods-SignalServiceKitTests.testable release.xcconfig */,
-				FF39DCC8D1F7DFD3708276E2 /* Pods-SignalTests.app store release.xcconfig */,
-				C597942EF64D456BBE9782A2 /* Pods-SignalTests.debug.xcconfig */,
-				44B6CDDFDDD0811DBBC57CD1 /* Pods-SignalTests.profiling.xcconfig */,
-				BAD74FE6EBEB10FF3426D809 /* Pods-SignalTests.testable release.xcconfig */,
-				C1BD5FA792ACABB4855877BD /* Pods-SignalUI.app store release.xcconfig */,
-				EC7FF00AFA51D97689DC9C2E /* Pods-SignalUI.debug.xcconfig */,
-				FA0F334C71C5504ED07AC74C /* Pods-SignalUI.profiling.xcconfig */,
-				2E997798B7AF35DBBC0905DF /* Pods-SignalUI.testable release.xcconfig */,
-				B7DF4FBE40A1DE0CD288E0EB /* Pods-SignalUITests.app store release.xcconfig */,
-				46A35218397D9FD1709A675C /* Pods-SignalUITests.debug.xcconfig */,
-				55B305CB99EC1478F69D91CF /* Pods-SignalUITests.profiling.xcconfig */,
-				94A685625E25E6F3EE3CC812 /* Pods-SignalUITests.testable release.xcconfig */,
-			);
-			path = Pods;
 			sourceTree = "<group>";
 		};
 		1704690725D4C2DA000793D8 /* attachments */ = {
@@ -10143,7 +10081,6 @@
 				05EA61412CC9437300B16D4E /* Config */,
 				D221A08C169C9E5E00537ABF /* Frameworks */,
 				D221A08A169C9E5E00537ABF /* Products */,
-				07B6BFA4D17E1353B0696C14 /* Pods */,
 			);
 			indentWidth = 4;
 			sourceTree = "<group>";
@@ -10193,13 +10130,6 @@
 				70377AAA1918450100CAF501 /* MobileCoreServices.framework */,
 				C109A87D2FDC90780065225E /* Network.framework */,
 				4520D8D41D417D8E00123472 /* Photos.framework */,
-				7FF88FB580BC19B240EEB86A /* Pods_Signal.framework */,
-				7F965533D71CA51BE6704CC4 /* Pods_SignalNSE.framework */,
-				948B2FC201146EF3BA459226 /* Pods_SignalServiceKit.framework */,
-				91DA2BE463493965F5BC71C0 /* Pods_SignalServiceKitTests.framework */,
-				0BADD293DAFC82BF3274F0F6 /* Pods_SignalTests.framework */,
-				675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */,
-				B3F39202F831935AAE1C5F54 /* Pods_SignalUITests.framework */,
 				B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */,
 				A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */,
 				A163E8AA16F3F6A90094D68B /* Security.framework */,
@@ -12801,7 +12731,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 342FFE9027245852000AC89F /* Build configuration list for PBXNativeTarget "SignalNSE" */;
 			buildPhases = (
-				B919910BE29927697FAB0801 /* [CP] Check Pods Manifest.lock */,
 				342FFE8427245850000AC89F /* Sources */,
 				342FFE8527245850000AC89F /* Frameworks */,
 				342FFE8627245850000AC89F /* Resources */,
@@ -12815,6 +12744,7 @@
 			packageProductDependencies = (
 				638C27C2308A51D200EE57E0 /* GRDB */,
 				63175A0030921FCC00C98C98 /* LibSignalClient */,
+				220E4B3E3CC1B4F59371045A /* SignalRingRTC */,
 			);
 			productName = SignalNSE;
 			productReference = 342FFE8827245850000AC89F /* SignalNSE.appex */;
@@ -12824,7 +12754,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 34A954C7271A471300B05242 /* Build configuration list for PBXNativeTarget "SignalUI" */;
 			buildPhases = (
-				A33CDEE7ACE660654CE4406E /* [CP] Check Pods Manifest.lock */,
 				34A954A3271A471200B05242 /* Headers */,
 				34A954A4271A471200B05242 /* Sources */,
 				34A954A5271A471200B05242 /* Frameworks */,
@@ -12839,6 +12768,7 @@
 			packageProductDependencies = (
 				638C27C6308A51E500EE57E0 /* GRDB */,
 				631759FC30921FBA00C98C98 /* LibSignalClient */,
+				37783C088FC6563374668C3B /* SignalRingRTC */,
 			);
 			productName = SignalUI;
 			productReference = 34A954A8271A471200B05242 /* SignalUI.framework */;
@@ -12848,7 +12778,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 34A954C8271A471300B05242 /* Build configuration list for PBXNativeTarget "SignalUITests" */;
 			buildPhases = (
-				5B77DDC6DC8E67BE40AECB55 /* [CP] Check Pods Manifest.lock */,
 				34A954AD271A471300B05242 /* Sources */,
 				34A954AE271A471300B05242 /* Frameworks */,
 				34A954AF271A471300B05242 /* Resources */,
@@ -12863,6 +12792,7 @@
 			packageProductDependencies = (
 				63DAB29F308A5E0000764C31 /* GRDB */,
 				63175A0630921FE500C98C98 /* LibSignalClient */,
+				0064D116DC1B78A20DF4FEB3 /* SignalRingRTC */,
 			);
 			productName = SignalUITests;
 			productReference = 34A954B1271A471300B05242 /* SignalUITests.xctest */;
@@ -12886,6 +12816,7 @@
 			packageProductDependencies = (
 				638C27C4308A51DD00EE57E0 /* GRDB */,
 				63175A0230921FD400C98C98 /* LibSignalClient */,
+				2D0111921182D8AB2A063FC6 /* SignalRingRTC */,
 			);
 			productName = SignalShareExtension;
 			productReference = 453518681FC635DD00210559 /* SignalShareExtension.appex */;
@@ -12895,14 +12826,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D221A0BC169C9E5F00537ABF /* Build configuration list for PBXNativeTarget "Signal" */;
 			buildPhases = (
-				641003894BBE033C4B3E736C /* [CP] Check Pods Manifest.lock */,
 				D221A085169C9E5E00537ABF /* Sources */,
 				D221A086169C9E5E00537ABF /* Frameworks */,
 				34C239432180B01B00B6108F /* Run Script: update_plist_info */,
 				D221A087169C9E5E00537ABF /* Resources */,
 				453518771FC635DD00210559 /* Embed Foundation Extensions */,
 				4535189F1FC63DBF00210559 /* Embed Frameworks */,
-				73B038A9B680719715E2A2B1 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -12917,6 +12846,8 @@
 				638C27C0308A51C100EE57E0 /* GRDB */,
 				63DAB299308A59AD00764C31 /* SQLCipher */,
 				631759FE30921FC400C98C98 /* LibSignalClient */,
+				33BD72EA7E91D995F7205803 /* SignalRingRTC */,
+				6F1A4C201B105514D40AED85 /* WebRTC */,
 			);
 			productName = RedPhone;
 			productReference = D221A089169C9E5E00537ABF /* Signal.app */;
@@ -12926,11 +12857,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D221A0BF169C9E5F00537ABF /* Build configuration list for PBXNativeTarget "SignalTests" */;
 			buildPhases = (
-				A4D1FA79EABAB87C39656EF3 /* [CP] Check Pods Manifest.lock */,
 				D221A0A5169C9E5F00537ABF /* Sources */,
 				D221A0A6169C9E5F00537ABF /* Frameworks */,
 				D221A0A7169C9E5F00537ABF /* Resources */,
-				8C4669F1AC92D639F8254584 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -12942,6 +12871,8 @@
 			packageProductDependencies = (
 				63DAB29B308A5DEC00764C31 /* GRDB */,
 				63175A0430921FDE00C98C98 /* LibSignalClient */,
+				085D7E0DBA593E27245EF4DB /* SignalRingRTC */,
+				F4A1F14CB746D6D1F42E1318 /* WebRTC */,
 			);
 			productName = RedPhoneTests;
 			productReference = D221A0AA169C9E5F00537ABF /* SignalTests.xctest */;
@@ -12951,7 +12882,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F9C5C8B4289451B900548EEE /* Build configuration list for PBXNativeTarget "SignalServiceKit" */;
 			buildPhases = (
-				9C2A8E692614308868FA7FAF /* [CP] Check Pods Manifest.lock */,
 				F9C5C892289451B900548EEE /* Headers */,
 				F9C5C893289451B900548EEE /* Sources */,
 				F9C5C894289451B900548EEE /* Frameworks */,
@@ -12967,6 +12897,8 @@
 				63DAB297308A59A000764C31 /* SQLCipher */,
 				631759F730921F6000C98C98 /* LibSignalFfi */,
 				631759FA30921FA700C98C98 /* LibSignalClient */,
+				A213A668C51E4A2CCC1B4AA7 /* SignalRingRTC */,
+				CF9E6895854844558D430358 /* LibRingRTCFfi */,
 			);
 			productName = SignalServiceKit;
 			productReference = F9C5C897289451B900548EEE /* SignalServiceKit.framework */;
@@ -12976,7 +12908,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F9C5C8B5289451B900548EEE /* Build configuration list for PBXNativeTarget "SignalServiceKitTests" */;
 			buildPhases = (
-				B70FDFD06B733FDC84685267 /* [CP] Check Pods Manifest.lock */,
 				F9C5C89A289451B900548EEE /* Sources */,
 				F9C5C89B289451B900548EEE /* Frameworks */,
 				F9C5C89C289451B900548EEE /* Resources */,
@@ -12992,6 +12923,7 @@
 				63DAB29D308A5DF800764C31 /* GRDB */,
 				63175A0830921FED00C98C98 /* LibSignalClient */,
 				F51E5093CA28750A1A691909 /* SignalMessageBackupTests */,
+				9DD50945261BE0AAB490BEDC /* SignalRingRTC */,
 			);
 			productName = SignalServiceKitTests;
 			productReference = F9C5C89E289451B900548EEE /* SignalServiceKitTests.xctest */;
@@ -13157,10 +13089,11 @@
 				631CB520307EDA7800EA5851 /* XCRemoteSwiftPackageReference "swift-protobuf" */,
 				631CB52B307EDB0000EA5851 /* XCRemoteSwiftPackageReference "cocoalumberjack" */,
 				636E635E30892FEF008905CF /* XCRemoteSwiftPackageReference "MobileCoin-Swift" */,
-				638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */,
+				638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 				63DAB296308A59A000764C31 /* XCRemoteSwiftPackageReference "sqlcipher" */,
 				631759F930921FA700C98C98 /* XCRemoteSwiftPackageReference "libsignal" */,
 				6EA6825FE538D9157EB1011D /* XCRemoteSwiftPackageReference "Signal-Message-Backup-Tests" */,
+				7B851A5C216FD130C3E4EE2E /* XCRemoteSwiftPackageReference "ringrtc" */,
 			);
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
 			projectDirPath = "";
@@ -13402,200 +13335,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PROJECT_DIR}\"/Scripts/update_plist_info.sh\n";
-		};
-		5B77DDC6DC8E67BE40AECB55 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SignalUITests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		641003894BBE033C4B3E736C /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Signal-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		73B038A9B680719715E2A2B1 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Signal/Pods-Signal-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SignalRingRTC/SignalRingRTC.framework",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/SignalRingRTC/WebRTC/WebRTC.framework/WebRTC",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalRingRTC.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Signal/Pods-Signal-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		8C4669F1AC92D639F8254584 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SignalTests/Pods-SignalTests-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SignalRingRTC/SignalRingRTC.framework",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/SignalRingRTC/WebRTC/WebRTC.framework/WebRTC",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalRingRTC.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SignalTests/Pods-SignalTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9C2A8E692614308868FA7FAF /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SignalServiceKit-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A33CDEE7ACE660654CE4406E /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SignalUI-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A4D1FA79EABAB87C39656EF3 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SignalTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B70FDFD06B733FDC84685267 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SignalServiceKitTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B919910BE29927697FAB0801 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SignalNSE-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -16622,7 +16361,6 @@
 /* Begin XCBuildConfiguration section */
 		342FFE9127245852000AC89F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EA03B20E7D8DBBE1B07BA967 /* Pods-SignalNSE.debug.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -16656,7 +16394,6 @@
 		};
 		342FFE9227245852000AC89F /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 299F6904BB7E4C0E2463A169 /* Pods-SignalNSE.app store release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_MODULES = YES;
@@ -16712,7 +16449,6 @@
 		};
 		342FFE9327245852000AC89F /* Profiling */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FF348A86F3FA1E5B5A62F033 /* Pods-SignalNSE.profiling.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_MODULES = YES;
@@ -16768,7 +16504,6 @@
 		};
 		342FFE9427245852000AC89F /* Testable Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BA04179298647E71115FA4C1 /* Pods-SignalNSE.testable release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_MODULES = YES;
@@ -16824,7 +16559,6 @@
 		};
 		34A954BF271A471300B05242 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EC7FF00AFA51D97689DC9C2E /* Pods-SignalUI.debug.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -16868,7 +16602,6 @@
 		};
 		34A954C0271A471300B05242 /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C1BD5FA792ACABB4855877BD /* Pods-SignalUI.app store release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				APPLICATION_EXTENSION_API_ONLY = YES;
@@ -16934,7 +16667,6 @@
 		};
 		34A954C1271A471300B05242 /* Profiling */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FA0F334C71C5504ED07AC74C /* Pods-SignalUI.profiling.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				APPLICATION_EXTENSION_API_ONLY = YES;
@@ -17000,7 +16732,6 @@
 		};
 		34A954C2271A471300B05242 /* Testable Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2E997798B7AF35DBBC0905DF /* Pods-SignalUI.testable release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				APPLICATION_EXTENSION_API_ONLY = YES;
@@ -17066,7 +16797,6 @@
 		};
 		34A954C3271A471300B05242 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 46A35218397D9FD1709A675C /* Pods-SignalUITests.debug.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -17102,7 +16832,6 @@
 		};
 		34A954C4271A471300B05242 /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B7DF4FBE40A1DE0CD288E0EB /* Pods-SignalUITests.app store release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_MODULES = YES;
@@ -17160,7 +16889,6 @@
 		};
 		34A954C5271A471300B05242 /* Profiling */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 55B305CB99EC1478F69D91CF /* Pods-SignalUITests.profiling.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_MODULES = YES;
@@ -17218,7 +16946,6 @@
 		};
 		34A954C6271A471300B05242 /* Testable Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 94A685625E25E6F3EE3CC812 /* Pods-SignalUITests.testable release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_MODULES = YES;
@@ -17477,7 +17204,6 @@
 		};
 		4C10B17B23176CEB0099396B /* Testable Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4FD665383260B4FC0A94CE02 /* Pods-Signal.testable release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-color AppIcon-bubbles AppIcon-white AppIcon-dark AppIcon-dark-variant AppIcon-chat AppIcon-yellow AppIcon-news AppIcon-notes AppIcon-weather AppIcon-wave";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -17516,7 +17242,6 @@
 		};
 		4C10B17C23176CEB0099396B /* Testable Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BAD74FE6EBEB10FF3426D809 /* Pods-SignalTests.testable release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
 				CLANG_ENABLE_MODULES = YES;
@@ -17535,7 +17260,6 @@
 				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				HEADER_SEARCH_PATHS = (
-					"${PODS_HEADERS_SEARCH_PATHS}",
 					"$(inherited)",
 					"\"${SRCROOT}/Signal/lib/speex/include\"",
 					"\"${SRCROOT}/Signal/lib/ogg/include\"",
@@ -17736,7 +17460,6 @@
 		};
 		88238EA824EAD2FD00F28079 /* Profiling */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 67391FF368D9A60FC8B73F0E /* Pods-Signal.profiling.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-color AppIcon-bubbles AppIcon-white AppIcon-dark AppIcon-dark-variant AppIcon-chat AppIcon-yellow AppIcon-news AppIcon-notes AppIcon-weather AppIcon-wave";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -17775,7 +17498,6 @@
 		};
 		88238EA924EAD2FD00F28079 /* Profiling */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 44B6CDDFDDD0811DBBC57CD1 /* Pods-SignalTests.profiling.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
 				CLANG_ENABLE_MODULES = YES;
@@ -17794,7 +17516,6 @@
 				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				HEADER_SEARCH_PATHS = (
-					"${PODS_HEADERS_SEARCH_PATHS}",
 					"$(inherited)",
 					"\"${SRCROOT}/Signal/lib/speex/include\"",
 					"\"${SRCROOT}/Signal/lib/ogg/include\"",
@@ -18103,7 +17824,6 @@
 		};
 		D221A0BD169C9E5F00537ABF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5F85041386A219C9710EAB41 /* Pods-Signal.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-color AppIcon-bubbles AppIcon-white AppIcon-dark AppIcon-dark-variant AppIcon-chat AppIcon-yellow AppIcon-news AppIcon-notes AppIcon-weather AppIcon-wave";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -18145,7 +17865,6 @@
 		};
 		D221A0BE169C9E5F00537ABF /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A566C0C0B69138202C0367E6 /* Pods-Signal.app store release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-color AppIcon-bubbles AppIcon-white AppIcon-dark AppIcon-dark-variant AppIcon-chat AppIcon-yellow AppIcon-news AppIcon-notes AppIcon-weather AppIcon-wave";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -18184,7 +17903,6 @@
 		};
 		D221A0C0169C9E5F00537ABF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C597942EF64D456BBE9782A2 /* Pods-SignalTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
 				CLANG_ENABLE_MODULES = YES;
@@ -18203,7 +17921,6 @@
 				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				HEADER_SEARCH_PATHS = (
-					"${PODS_HEADERS_SEARCH_PATHS}",
 					"$(inherited)",
 					"\"${SRCROOT}/Signal/lib/speex/include\"",
 					"\"${SRCROOT}/Signal/lib/ogg/include\"",
@@ -18242,7 +17959,6 @@
 		};
 		D221A0C1169C9E5F00537ABF /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FF39DCC8D1F7DFD3708276E2 /* Pods-SignalTests.app store release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Signal.app/Signal";
 				CLANG_ENABLE_MODULES = YES;
@@ -18261,7 +17977,6 @@
 				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				HEADER_SEARCH_PATHS = (
-					"${PODS_HEADERS_SEARCH_PATHS}",
 					"$(inherited)",
 					"\"${SRCROOT}/Signal/lib/speex/include\"",
 					"\"${SRCROOT}/Signal/lib/ogg/include\"",
@@ -18300,7 +18015,6 @@
 		};
 		F9C5C8AC289451B900548EEE /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A33E43CA8A572CA70089C4CC /* Pods-SignalServiceKit.debug.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -18339,7 +18053,6 @@
 		};
 		F9C5C8AD289451B900548EEE /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6BB92957776B3173894CD3E9 /* Pods-SignalServiceKit.app store release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				APPLICATION_EXTENSION_API_ONLY = YES;
@@ -18378,7 +18091,6 @@
 		};
 		F9C5C8AE289451B900548EEE /* Profiling */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 65703441A3D2C7FE670E65ED /* Pods-SignalServiceKit.profiling.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				APPLICATION_EXTENSION_API_ONLY = YES;
@@ -18417,7 +18129,6 @@
 		};
 		F9C5C8AF289451B900548EEE /* Testable Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 89BA19AB4B8B1BC811E53717 /* Pods-SignalServiceKit.testable release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				APPLICATION_EXTENSION_API_ONLY = YES;
@@ -18456,7 +18167,6 @@
 		};
 		F9C5C8B0289451B900548EEE /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2C1CB05FE7FDA3C1F0138D7F /* Pods-SignalServiceKitTests.debug.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
@@ -18495,7 +18205,6 @@
 		};
 		F9C5C8B1289451B900548EEE /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FEFD8A174F57F4C221747D51 /* Pods-SignalServiceKitTests.app store release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -18555,7 +18264,6 @@
 		};
 		F9C5C8B2289451B900548EEE /* Profiling */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F70CAD4E12CCE311EC60A2C9 /* Pods-SignalServiceKitTests.profiling.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -18615,7 +18323,6 @@
 		};
 		F9C5C8B3289451B900548EEE /* Testable Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5D6C4583F668E9D733E59B9B /* Pods-SignalServiceKitTests.testable release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -18834,7 +18541,7 @@
 				version = "6.0.3-signal.1";
 			};
 		};
-		638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */ = {
+		638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/signalapp/GRDB.swift";
 			requirement = {
@@ -18898,9 +18605,47 @@
 				version = "1.2.0-signal.2";
 			};
 		};
+		7B851A5C216FD130C3E4EE2E /* XCRemoteSwiftPackageReference "ringrtc" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/signalapp/ringrtc";
+			requirement = {
+				kind = exactVersion;
+				version = 2.74.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0064D116DC1B78A20DF4FEB3 /* SignalRingRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7B851A5C216FD130C3E4EE2E /* XCRemoteSwiftPackageReference "ringrtc" */;
+			productName = SignalRingRTC;
+		};
+		085D7E0DBA593E27245EF4DB /* SignalRingRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7B851A5C216FD130C3E4EE2E /* XCRemoteSwiftPackageReference "ringrtc" */;
+			productName = SignalRingRTC;
+		};
+		220E4B3E3CC1B4F59371045A /* SignalRingRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7B851A5C216FD130C3E4EE2E /* XCRemoteSwiftPackageReference "ringrtc" */;
+			productName = SignalRingRTC;
+		};
+		2D0111921182D8AB2A063FC6 /* SignalRingRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7B851A5C216FD130C3E4EE2E /* XCRemoteSwiftPackageReference "ringrtc" */;
+			productName = SignalRingRTC;
+		};
+		33BD72EA7E91D995F7205803 /* SignalRingRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7B851A5C216FD130C3E4EE2E /* XCRemoteSwiftPackageReference "ringrtc" */;
+			productName = SignalRingRTC;
+		};
+		37783C088FC6563374668C3B /* SignalRingRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7B851A5C216FD130C3E4EE2E /* XCRemoteSwiftPackageReference "ringrtc" */;
+			productName = SignalRingRTC;
+		};
 		631759F730921F6000C98C98 /* LibSignalFfi */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = LibSignalFfi;
@@ -19052,27 +18797,27 @@
 		};
 		638C27C0308A51C100EE57E0 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */;
+			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
 			productName = GRDB;
 		};
 		638C27C2308A51D200EE57E0 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */;
+			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
 			productName = GRDB;
 		};
 		638C27C4308A51DD00EE57E0 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */;
+			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
 			productName = GRDB;
 		};
 		638C27C6308A51E500EE57E0 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */;
+			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
 			productName = GRDB;
 		};
 		638C27C8308A51ED00EE57E0 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */;
+			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
 			productName = GRDB;
 		};
 		63DAB297308A59A000764C31 /* SQLCipher */ = {
@@ -19087,17 +18832,17 @@
 		};
 		63DAB29B308A5DEC00764C31 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */;
+			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
 			productName = GRDB;
 		};
 		63DAB29D308A5DF800764C31 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */;
+			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
 			productName = GRDB;
 		};
 		63DAB29F308A5E0000764C31 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */;
+			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
 			productName = GRDB;
 		};
 		63DC452F3079AF9100119464 /* Lottie */ = {
@@ -19228,6 +18973,30 @@
 		63DC4566307EC00A00119464 /* blurhash */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = blurhash;
+		};
+		6F1A4C201B105514D40AED85 /* WebRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7B851A5C216FD130C3E4EE2E /* XCRemoteSwiftPackageReference "ringrtc" */;
+			productName = WebRTC;
+		};
+		9DD50945261BE0AAB490BEDC /* SignalRingRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7B851A5C216FD130C3E4EE2E /* XCRemoteSwiftPackageReference "ringrtc" */;
+			productName = SignalRingRTC;
+		};
+		A213A668C51E4A2CCC1B4AA7 /* SignalRingRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7B851A5C216FD130C3E4EE2E /* XCRemoteSwiftPackageReference "ringrtc" */;
+			productName = SignalRingRTC;
+		};
+		CF9E6895854844558D430358 /* LibRingRTCFfi */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = LibRingRTCFfi;
+		};
+		F4A1F14CB746D6D1F42E1318 /* WebRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7B851A5C216FD130C3E4EE2E /* XCRemoteSwiftPackageReference "ringrtc" */;
+			productName = WebRTC;
 		};
 		F51E5093CA28750A1A691909 /* SignalMessageBackupTests */ = {
 			isa = XCSwiftPackageProductDependency;

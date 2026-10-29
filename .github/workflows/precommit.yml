@@ -87,7 +87,9 @@ jobs:
         if: github.event_name == 'pull_request'
         working-directory: Signal-iOS
         run: |
-          Scripts/precommit.py --ref origin/${{ github.base_ref }}
+          # Generating acknowledgements needs resolved Swift packages, which
+          # only exist after a build. main.yml checks them after it builds.
+          Scripts/precommit.py --ref origin/${{ github.base_ref }} --skip-acknowledgements
 
           # https://help.github.com/en/actions/reference/development-tools-for-github-actions#logging-commands
           git diff --name-only | sed -E 's|(.*)|::error file=\1::Incorrectly formatted (Scripts/precommit.py)|'

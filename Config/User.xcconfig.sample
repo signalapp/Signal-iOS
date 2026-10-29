@@ -5,7 +5,8 @@
 
 OTHER_SWIFT_FLAGS = $(inherited) -no-warnings-as-errors
 
-// To use a test input file for the camera, uncomment the below line, uncomment
-// the relevant line in the Podfile to set RINGRTC_USE_FILE_BASED_CAMERA, and
-// put a video file at the below location
+// To use a test input file for the camera, uncomment the below line, open
+// Xcode with RINGRTC_USE_FILE_BASED_CAMERA set in the environment (for example,
+// `RINGRTC_USE_FILE_BASED_CAMERA=1 xed Signal.xcworkspace`), and put a video
+// file at the below location
 // MAYBE_INPUT_VIDEO_PATH = Signal/test/Assets/input_video.mp4

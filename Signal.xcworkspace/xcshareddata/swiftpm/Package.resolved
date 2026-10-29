@@ -1,5 +1,5 @@
 {
-  "originHash" : "d0075113d6169c36b7ed01bae15b27c7a04ad6b8f456d17206c29a243b7007c5",
+  "originHash" : "5e68ac760d43dd903d3ddb9de67aef4477190f1d23112be4072d50c45aaea2d7",
   "pins" : [
     {
       "identity" : "bonmot",
@@ -80,6 +80,15 @@
       "state" : {
         "revision" : "5561683c96dc49b023c1299bfe4f6fbeed5f8199",
         "version" : "3.1.9"
+      }
+    },
+    {
+      "identity" : "ringrtc",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/signalapp/ringrtc",
+      "state" : {
+        "revision" : "bdbb0dd1b9f418850dfe1fa3cd4b1c2b1123436f",
+        "version" : "2.74.0"
       }
     },
     {
