@@ -99,7 +99,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
             toContextProvider = contextProvider
         case let homeTabBarController as HomeTabBarController:
             guard
-                let splitViewController = homeTabBarController.selectedViewController as? UISplitViewController,
+                let splitViewController = homeTabBarController.selectedViewController as? HomeTabSplitViewController,
                 let contextProvider = splitViewController.topViewController as? MediaPresentationContextProvider
             else {
                 owsFailDebug("unexpected contextProvider: \(String(describing: homeTabBarController.selectedViewController))")
