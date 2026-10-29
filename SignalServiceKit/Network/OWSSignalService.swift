@@ -264,9 +264,6 @@ public class OWSSignalService: OWSSignalServiceProtocol {
         return await cdnSessionCache.getOrBuildSession(
             key: cacheKey,
             buildFn: {
-                let urlSessionConfiguration = OWSURLSession.defaultConfigurationWithoutCaching
-                urlSessionConfiguration.timeoutIntervalForRequest = 600
-
                 let baseUrl: URL
                 let censorshipCircumventionPathPrefix: String
                 switch cdnNumber {
@@ -293,7 +290,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
                         censorshipCircumventionPathPrefix: censorshipCircumventionPathPrefix,
                         shouldUseSignalCertificate: true,
                     ),
-                    configuration: urlSessionConfiguration,
+                    configuration: nil,
                     // Optimistically attempt HTTP/3 (QUIC) for CDN requests.
                     // CDN endpoints (Cloudflare) advertise h3 via Alt-Svc, but
                     // ephemeral sessions don't persist the Alt-Svc cache. This
