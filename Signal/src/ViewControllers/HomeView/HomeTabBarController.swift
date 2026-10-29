@@ -425,22 +425,20 @@ class HomeTabBarController: UITabBarController, UINavigationControllerDelegate, 
         var navigationController: UINavigationController
         if chatsSplitViewController.isCollapsed {
             guard
-                let primaryNavigationController = chatsSplitViewController.viewController(for: .primary)?.navigationController,
+                let primaryNavigationController = chatsSplitViewController.primaryNavigationController,
                 primaryNavigationController.viewControllers.count > 1
             else { return nil }
 
             navigationController = primaryNavigationController
         } else {
-            guard let secondaryNavigationController = chatsSplitViewController.viewController(for: .secondary)?.navigationController else { return nil }
+            guard let secondaryNavigationController = chatsSplitViewController.secondaryNavigationController
+            else { return nil }
 
             navigationController = secondaryNavigationController
         }
-        if
-            let conversationViewController = navigationController.viewControllers.first(
-                where: { $0 is ConversationViewController },
-            ) as? ConversationViewController
-        {
-            return conversationViewController
+
+        if let conversationVC = navigationController.findViewController(ofType: ConversationViewController.self) {
+            return conversationVC
         }
         return nil
     }
@@ -532,15 +530,27 @@ class HomeTabBarController: UITabBarController, UINavigationControllerDelegate, 
             // If we're currently displaying the conversation in the primary nav controller, remove it
             // and everything it pushed to the navigation stack from the nav controller. We don't want
             // to just pop to root as we might have opened this conversation from the archive.
-            if
-                let navigationController = chatListViewController.navigationController,
-                let selectedConversationIndex = navigationController.viewControllers.firstIndex(
-                    of: selectedConversationViewController,
-                )
-            {
-                let targetViewController = navigationController.viewControllers[max(0, selectedConversationIndex - 1)]
-                navigationController.popToViewController(targetViewController, animated: animated)
+            guard let primaryNavigationController = chatsSplitViewController.primaryNavigationController else {
+                owsFailBeta("No primaryNavigationController")
+                return
             }
+            // Conversation VC might also be wrapped into a separate navigation controller.
+            var selectedConversationIndex: Int? = nil
+            if let index = primaryNavigationController.viewControllers.firstIndex(of: selectedConversationViewController) {
+                selectedConversationIndex = index
+            } else if
+                let nc = selectedConversationViewController.navigationController,
+                let index = primaryNavigationController.viewControllers.firstIndex(of: nc)
+            {
+                selectedConversationIndex = index
+            }
+            guard let selectedConversationIndex else {
+                owsFailBeta("Could not unwind.")
+                return
+            }
+
+            let targetViewController = primaryNavigationController.viewControllers[max(0, selectedConversationIndex - 1)]
+            primaryNavigationController.popToViewController(targetViewController, animated: animated)
         } else {
             chatsSplitViewController.setViewController(
                 SplitViewDetailPlaceholderViewController(
@@ -1221,9 +1231,27 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
         fatalError("init(coder:) has not been implemented")
     }
 
-    private var primaryNavigationController: UINavigationController? {
+    fileprivate var primaryNavigationController: UINavigationController? {
         let vc = viewController(for: .primary)
         return (vc as? UINavigationController) ?? vc?.navigationController
+    }
+
+    fileprivate var secondaryNavigationController: UINavigationController? {
+        let vc = viewController(for: .secondary)
+        return (vc as? UINavigationController) ?? vc?.navigationController
+    }
+
+    /// - returns: When collapsed: top view controller in the primary column's navigation stack.
+    /// When expanded: top view controller in the secondary column's navigation stack, falling back to primary column
+    /// if secondary is empty.
+    var topViewController: UIViewController? {
+        if isCollapsed {
+            var top: UIViewController? = primaryNavigationController
+            // The collapsed detail can arrive as a nested navigation controller
+            while let nc = top as? UINavigationController { top = nc.topViewController }
+            return top
+        }
+        return secondaryNavigationController?.topViewController ?? primaryNavigationController?.topViewController
     }
 
     private func updateTabBar(displayMode mode: DisplayMode? = nil, animated: Bool = false) {
@@ -1364,17 +1392,22 @@ extension ConversationViewController {
     }
 }
 
-extension UISplitViewController {
-    var topViewController: UIViewController? {
-        let primaryNavigationController = viewController(for: .primary)?.navigationController
-        if isCollapsed {
-            var top = primaryNavigationController?.topViewController
-            // The collapsed detail can arrive as a nested navigation controller
-            while let nav = top as? UINavigationController { top = nav.topViewController }
-            return top
+private extension UINavigationController {
+    /// - returns: First child or a grandchild that is an instance of a provided class.
+    ///
+    /// Method searches within immediate children, as well as within immediate children of child navigation controllers.
+    func findViewController<T: UIViewController>(ofType type: T.Type) -> T? {
+        for vc in viewControllers {
+            // No recursion, go just one level deep.
+            if
+                let nc = vc as? UINavigationController,
+                let result = nc.viewControllers.first(where: { $0 is T }) as? T
+            {
+                return result
+            } else if let result = vc as? T {
+                return result
+            }
         }
-
-        let detailNavigationController = viewController(for: .secondary)?.navigationController
-        return detailNavigationController?.topViewController ?? primaryNavigationController?.topViewController
+        return nil
     }
 }
