@@ -634,13 +634,18 @@ private struct GRDBStorage {
         var coordinatorError: NSError?
         var newPool: DatabasePool?
         var dbError: Error?
+        // Coordinate on the directory, not the database file. The coordinator
+        // closes its own descriptor on the item it coordinates, and closing any
+        // descriptor for a file releases every POSIX lock this process holds on
+        // it, including SQLite's SHARED lock.
         coordinator.coordinate(
-            writingItemAt: dbURL,
+            writingItemAt: dbURL.deletingLastPathComponent(),
             options: .forMerging,
             error: &coordinatorError,
             byAccessor: { url in
                 do {
-                    newPool = try DatabasePool(path: url.path, configuration: poolConfiguration)
+                    let databasePath = url.appendingPathComponent(dbURL.lastPathComponent).path
+                    newPool = try DatabasePool(path: databasePath, configuration: poolConfiguration)
                 } catch {
                     dbError = error
                 }
