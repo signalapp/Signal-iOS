@@ -120,6 +120,8 @@ public struct PendingIDEALDonationStore {
     private enum Constants {
         static let pendingOneTimeDonationKey = "PendingOneTimeDonationKey"
         static let pendingMonthlyDonationKey = "PendingMonthlyDonationKey"
+        static let unclaimedOneTimeDonationKey = "UnclaimedOneTimeDonationKey"
+        static let unclaimedRecurringDonationKey = "UnclaimedRecurringDonationKey"
     }
 
     private let keyStore: NewKeyValueStore
@@ -164,5 +166,21 @@ public struct PendingIDEALDonationStore {
 
     public func clearPendingSubscription(tx: DBWriteTransaction) {
         keyStore.removeValue(forKey: Constants.pendingMonthlyDonationKey, tx: tx)
+    }
+
+    // MARK: - Donation Handling
+
+    public func claimDonationHandling(isOneTime: Bool, intentId: String, tx: DBWriteTransaction) -> Bool {
+        let key = isOneTime ? Constants.unclaimedOneTimeDonationKey : Constants.unclaimedRecurringDonationKey
+        let returnValue = keyStore.fetchValue(String.self, forKey: key, tx: tx) == intentId
+        if returnValue {
+            keyStore.removeValue(forKey: key, tx: tx)
+        }
+        return returnValue
+    }
+
+    public func setDonationNeedsHandling(isOneTime: Bool, intentId: String, tx: DBWriteTransaction) {
+        let key = isOneTime ? Constants.unclaimedOneTimeDonationKey : Constants.unclaimedRecurringDonationKey
+        keyStore.writeValue(intentId, forKey: key, tx: tx)
     }
 }

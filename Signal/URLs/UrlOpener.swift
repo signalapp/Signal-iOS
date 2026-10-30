@@ -262,7 +262,7 @@ class UrlOpener {
 
         case .completeIDEALDonation(let donationType):
             _ = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
-            Task { [databaseStorage] in
+            Task { [databaseStorage, idealStore] in
                 let handled = await DonationViewsUtil.attemptToContinueActiveIDEALDonation(
                     type: donationType,
                     databaseStorage: databaseStorage,
@@ -271,6 +271,36 @@ class UrlOpener {
                     Logger.info("[Donations] Completed iDEAL donation")
                     return
                 }
+
+                let (isOneTime, intentId) = {
+                    switch donationType {
+                    case let .oneTime(_, intent):
+                        return (true, intent)
+                    case let .monthly(_, _, intent):
+                        return (false, intent)
+                    }
+                }()
+                // The app attempts to process iDEAL transactions fully within the
+                // app by showing the bank UI via ASWebAuthenticationSession, but this
+                // flow usually contains options to link out to the banks full website,
+                // or more usually - to the various bank app that support iDEAL.  This
+                // means the completed transaction redirect can come from a variety
+                // of sources: the authentication session, as a universal link, and finally
+                // as the landing page's sgnl:// deep link if nothing handles the redirect URL.
+                // To avoid attempting to process the donation multiple times, claim the
+                // intent here so only the first redirect to arrive acts on it.
+                let alreadyHandled = await databaseStorage.awaitableWrite { tx -> Bool in
+                    return !idealStore.claimDonationHandling(
+                        isOneTime: isOneTime,
+                        intentId: intentId,
+                        tx: tx,
+                    )
+                }
+                if alreadyHandled {
+                    Logger.info("[Donations] Ignoring duplicate iDEAL callback")
+                    return
+                }
+
                 do {
                     try await DonationViewsUtil.restartAndCompleteInterruptedIDEALDonation(
                         type: donationType,
@@ -285,7 +315,7 @@ class UrlOpener {
                     // This is an expected error case for pending donations
                 } catch {
                     // Unexpected. Log a warning
-                    Logger.warn("[Donations] Unexpected error encountered with iDEAL donation")
+                    Logger.warn("[Donations] Unexpected error encountered with iDEAL donation: \(error)")
                 }
             }
 
