@@ -9,14 +9,20 @@ import XCTest
 class SubscriptionChargeFailureTest: XCTestCase {
     typealias ChargeFailure = Subscription.ChargeFailure
 
-    func testJsonInit() {
-        let chargeFailure = ChargeFailure(jsonDictionary: ["code": "foo"])
-        XCTAssertEqual(chargeFailure.code, "foo")
+    func testDecodeResponseBody() {
+        let chargeFailure = ChargeFailure.decode(responseBody: Data(#"{"chargeFailure": {"code": "foo"}}"#.utf8))
+        XCTAssertEqual(chargeFailure?.code, "foo")
 
-        let strangeInputs: [[String: Any]] = [[:], ["no code": "missing"], ["code": 123]]
-        for jsonDictionary in strangeInputs {
-            let chargeFailure = ChargeFailure(jsonDictionary: jsonDictionary)
-            XCTAssertNil(chargeFailure.code)
+        let strangeInputs = [#"{}"#, #"{"no code": "missing"}"#, #"{"code": 123}"#]
+        for chargeFailureJson in strangeInputs {
+            let chargeFailure = ChargeFailure.decode(responseBody: Data(#"{"chargeFailure": \#(chargeFailureJson)}"#.utf8))
+            XCTAssertNotNil(chargeFailure)
+            XCTAssertNil(chargeFailure?.code)
+        }
+
+        let missingInputs: [Data?] = [nil, Data(), Data(#"{}"#.utf8), Data(#"{"chargeFailure": null}"#.utf8)]
+        for responseBody in missingInputs {
+            XCTAssertNil(ChargeFailure.decode(responseBody: responseBody))
         }
     }
 }
@@ -40,7 +46,7 @@ class SubscriptionTest: XCTestCase {
     func testJsonInit() throws {
         let subscription = try Subscription(
             subscriptionDict: subscriptionDict,
-            chargeFailureDict: nil,
+            chargeFailure: nil,
         )
 
         XCTAssertEqual(subscription.level, 123)
@@ -58,7 +64,7 @@ class SubscriptionTest: XCTestCase {
 
         let subscription = try Subscription(
             subscriptionDict: subscriptionDictWithUnexpectedStatus,
-            chargeFailureDict: nil,
+            chargeFailure: nil,
         )
 
         XCTAssertEqual(subscription.status, .unrecognized(rawValue: "unexpected!!"))
@@ -68,19 +74,9 @@ class SubscriptionTest: XCTestCase {
     func testChargeFailure() throws {
         let subscription = try Subscription(
             subscriptionDict: subscriptionDict,
-            chargeFailureDict: ["code": "foo bar"],
+            chargeFailure: .decode(responseBody: Data(#"{"chargeFailure": {"code": "foo bar"}}"#.utf8)),
         )
         XCTAssertEqual(subscription.chargeFailure?.code, "foo bar")
-
-        let strangeChargeFailures: [[String: Any]] = [[:], ["no code": "missing"], ["code": 123]]
-        for chargeFailureDict in strangeChargeFailures {
-            let subscription = try Subscription(
-                subscriptionDict: subscriptionDict,
-                chargeFailureDict: chargeFailureDict,
-            )
-            XCTAssertNotNil(subscription.chargeFailure)
-            XCTAssertNil(subscription.chargeFailure?.code)
-        }
     }
 }
 

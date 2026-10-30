@@ -37,8 +37,6 @@ extension DonationViewsUtil {
             try await withUncooperativeTimeout(seconds: paymentMethod.timeoutDuration, operation: block)
         } catch is UncooperativeTimeoutError {
             throw DonationJobError.timeout
-        } catch {
-            throw DonationJobError.assertion
         }
     }
 }

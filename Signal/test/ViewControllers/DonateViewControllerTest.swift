@@ -151,7 +151,7 @@ final class DonateViewControllerTest: SignalBaseTest {
                 "paymentMethod": paymentMethod,
                 "paymentProcessing": isPaymentProcessing,
             ],
-            chargeFailureDict: nil,
+            chargeFailure: nil,
         )
     }
 

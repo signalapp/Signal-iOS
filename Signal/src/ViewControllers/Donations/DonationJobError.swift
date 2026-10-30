@@ -7,5 +7,4 @@ import Foundation
 
 enum DonationJobError: Error {
     case timeout
-    case assertion
 }
