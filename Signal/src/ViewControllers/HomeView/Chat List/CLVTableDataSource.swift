@@ -44,8 +44,8 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
 
     var renderState: CLVRenderState = .empty
 
-    /// Used to let  chat list cells know when they should use rounded corners for background in `selected` state,
-    var useSideBarChatListCellAppearance: Bool = false
+    /// Used to let chat list cells know when they should use rounded corners for background in `selected` state,
+    var useSideBarListCellAppearance: Bool = false
 
     /// While table view selection is changing, i.e., between
     /// `tableView(_:willSelectRowAt:)` and `tableView(_:didSelectRowAt:)`,
@@ -642,17 +642,14 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
     }
 
     private func buildConversationCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
-        AssertIsOnMainThread()
-
-        let cell = tableView.dequeueReusableCell(ChatListCell.self, for: indexPath)
-
         guard let contentToken = buildCellContentToken(for: indexPath) else {
             owsFailDebug("Missing cellConfigurationAndContentToken.")
             return UITableViewCell()
         }
 
+        let cell = tableView.dequeueReusableCell(ChatListCell.self, for: indexPath)
         cell.configure(cellContentToken: contentToken, spoilerAnimationManager: viewState.spoilerAnimationManager)
-        cell.useSidebarAppearance = useSideBarChatListCellAppearance
+        cell.useSidebarAppearance = useSideBarListCellAppearance
 
         if
             let homeTabBarController = viewController?.homeTabBarController,
@@ -668,7 +665,6 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
     }
 
     private func buildArchivedConversationsButtonCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
-        AssertIsOnMainThread()
         let cell = tableView.dequeueReusableCell(ArchivedConversationsCell.self, for: indexPath)
         cell.configure(enabled: !viewState.multiSelectState.isActive)
         return cell

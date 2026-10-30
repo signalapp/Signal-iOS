@@ -178,10 +178,18 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
     }
 
     override func updateConfiguration(using state: UICellConfigurationState) {
-        var configuration = UIBackgroundConfiguration.clear()
+        var configuration = UIBackgroundConfiguration.clear().updated(for: state)
         if state.isSelected || state.isHighlighted {
             configuration.backgroundColor = OWSTableViewController2.cellSelectedBackgroundColor
             if useSidebarAppearance {
+                let leading = safeAreaInsets.leading + (directionalLayoutMargins.leading - safeAreaInsets.leading) / 2
+                let trailing = safeAreaInsets.trailing + (directionalLayoutMargins.trailing - safeAreaInsets.trailing) / 2
+                configuration.backgroundInsets = .init(
+                    top: 0,
+                    leading: leading,
+                    bottom: 0,
+                    trailing: trailing,
+                )
                 configuration.cornerRadius = 24
             }
         } else {
@@ -330,8 +338,6 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         spoilerAnimationManager: SpoilerAnimationManager,
         asyncAvatarLoadingAllowed: Bool = true,
     ) {
-        AssertIsOnMainThread()
-
         self.cellContentToken = cellContentToken
 
         let configuration = cellContentToken.configuration

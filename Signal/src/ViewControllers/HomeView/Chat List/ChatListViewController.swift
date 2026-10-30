@@ -101,7 +101,7 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
         updateExpirationReminderView()
         updatePaymentReminderView()
         updateUsernameReminderView()
-        updateTableViewPaddingIfNeeded()
+        updateListCellAppearance()
         observeNotifications()
     }
 
@@ -329,25 +329,9 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
 
         containerView.willTransition(to: size, with: coordinator)
 
-        // There is a subtle difference in when the split view controller
-        // transitions between collapsed and expanded state on iPad vs
-        // when it does on iPhone. We reloadData here in order to ensure
-        // the background color of all of our cells is updated to reflect
-        // the current state, so it's important that we're only doing this
-        // once the state is ready, otherwise there will be a flash of the
-        // wrong background color. For iPad, this moment is _before_ the
-        // transition occurs. For iPhone, this moment is _during_ the
-        // transition. We reload in the right places accordingly.
-        if UIDevice.current.isIPad {
-            updateTableViewPaddingIfNeeded()
-            reloadTableDataAndResetCellContentCache()
-        }
-
         coordinator.animate { context in
-            if !UIDevice.current.isIPad {
-                self.updateTableViewPaddingIfNeeded()
-                self.reloadTableDataAndResetCellContentCache()
-            }
+            self.updateListCellAppearance()
+            self.reloadTableDataAndResetCellContentCache()
 
             // The Get Started banner will occupy most of the screen in landscape
             // If we're transitioning to landscape, fade out the view (if it exists)
@@ -686,16 +670,12 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
     }
 
     func reloadTableDataAndResetCellContentCache() {
-        AssertIsOnMainThread()
-
         cellContentCache.clear()
         conversationCellHeightCache = nil
         reloadTableData()
     }
 
     func reloadTableData(previouslySelectedThreadUniqueIds: [String] = []) {
-        AssertIsOnMainThread()
-
         tableView.reloadData()
 
         let selectedThreadIds: Set<String> = Set(previouslySelectedThreadUniqueIds)
@@ -721,8 +701,6 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
     }
 
     func updateCellVisibility() {
-        AssertIsOnMainThread()
-
         for cell in tableView.visibleCells {
             guard let cell = cell as? ChatListCell else {
                 continue
@@ -732,14 +710,10 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
     }
 
     func updateCellVisibility(cell: ChatListCell, isCellVisible: Bool) {
-        AssertIsOnMainThread()
-
         cell.isCellVisible = isViewVisible && isCellVisible
     }
 
     private func ensureCellAnimations() {
-        AssertIsOnMainThread()
-
         for cell in tableView.visibleCells {
             guard let cell = cell as? ChatListCell else {
                 continue
@@ -748,10 +722,10 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
         }
     }
 
-    /// iOS 26+: checks if this VC is displayed in the collapsed split view controller
-    /// and updates `containerView.tableViewHorizontalInset` accordingly.
-    /// Does nothing on prior iOS versions.
-    private func updateTableViewPaddingIfNeeded() {
+    /// Checks whether this view controller is displayed in an expanded or collapsed split view controller
+    /// and updates `tableDataSource.useSideBarChatListCellAppearance` accordingly.
+    /// No-op on versions below iOS 26.
+    private func updateListCellAppearance() {
         guard #available(iOS 26, *) else { return }
 
         let useSidebarChatListCellAppearance: Bool
@@ -760,10 +734,9 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
         } else {
             useSidebarChatListCellAppearance = false
         }
-        // We need to add/remove horizotal padding around table view...
-        containerView.tableViewHorizontalInset = useSidebarChatListCellAppearance ? 16 : 0
-        // ... and tell ChatListCell to use rounded corners if there is non-zero padding.
-        tableDataSource.useSideBarChatListCellAppearance = useSidebarChatListCellAppearance
+        // CLVTableDataSource will tell ChatListCell to use different selected state background appearance
+        // (rounded corners, inset) if chat list is presented in an expanded UISplitViewController.
+        tableDataSource.useSideBarListCellAppearance = useSidebarChatListCellAppearance
     }
 
     // MARK: UI Helpers
