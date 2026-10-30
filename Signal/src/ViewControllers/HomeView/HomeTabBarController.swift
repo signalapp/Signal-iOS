@@ -218,6 +218,8 @@ class HomeTabBarController: UITabBarController, UINavigationControllerDelegate, 
 
         delegate = self
 
+        view.tintColor = .Signal.label
+
         NotificationCenter.default.addObserver(self, selector: #selector(storiesEnabledStateDidChange), name: .storiesEnabledStateDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterForeground), name: .OWSApplicationWillEnterForeground, object: nil)
 
