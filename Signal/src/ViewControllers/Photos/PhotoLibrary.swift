@@ -60,12 +60,6 @@ class PhotoAlbumContents {
     private let fetchResult: PHFetchResult<PHAsset>
     private let limit: Int
 
-    enum PhotoLibraryError: Error {
-        case assertionError(description: String)
-        case unsupportedMediaType
-        case failedToExportAsset(underlyingError: Error?)
-    }
-
     init(fetchResult: PHFetchResult<PHAsset>, limit: Int) {
         self.fetchResult = fetchResult
         self.limit = limit
@@ -107,13 +101,13 @@ class PhotoAlbumContents {
             }
         }
         guard let imageData else {
-            throw PhotoLibraryError.assertionError(description: "imageData was unexpectedly nil")
+            throw OWSGenericError("imageData was unexpectedly nil")
         }
         guard let dataUTI else {
-            throw PhotoLibraryError.assertionError(description: "dataUTI was unexpectedly nil")
+            throw OWSGenericError("dataUTI was unexpectedly nil")
         }
         guard let fileExtension = MimeTypeUtil.fileExtensionForUtiType(dataUTI) else {
-            throw PhotoLibraryError.assertionError(description: "fileExtension was unexpectedly nil")
+            throw OWSGenericError("fileExtension was unexpectedly nil")
         }
         let dataSource = try DataSourcePath(writingTempFileData: imageData, fileExtension: fileExtension)
         return (dataSource: dataSource, dataUTI: dataUTI)
@@ -127,8 +121,8 @@ class PhotoAlbumContents {
         return try await withCheckedThrowingContinuation { continuation in
             _ = imageManager.requestAVAsset(forVideo: asset, options: options) { video, _, info in
                 guard let video else {
-                    let error = info?[PHImageErrorKey] as! Error?
-                    continuation.resume(throwing: PhotoLibraryError.failedToExportAsset(underlyingError: error))
+                    let error = info?[PHImageErrorKey] as? Error
+                    continuation.resume(throwing: error ?? OWSGenericError("video was unexpectedly nil"))
                     return
                 }
                 continuation.resume(returning: video)
@@ -147,7 +141,7 @@ class PhotoAlbumContents {
         case .unknown, .audio:
             fallthrough
         @unknown default:
-            throw PhotoLibraryError.unsupportedMediaType
+            throw OWSGenericError("unsupported media type: \(asset.mediaType)")
         }
     }
 }
