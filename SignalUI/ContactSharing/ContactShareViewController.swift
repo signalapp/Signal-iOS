@@ -33,7 +33,10 @@ public class ContactShareViewController: OWSTableViewController2, ApprovalFooter
 
     private var contactShareDraft: ContactShareDraft
 
-    private lazy var avatarField = ContactShareAvatarField(contactShareDraft: contactShareDraft)
+    private lazy var avatarField = ContactShareAvatarField(
+        contactShareDraft: contactShareDraft,
+        preferContactAvatars: DependenciesBridge.shared.db.read { tx in SSKPreferences.preferContactAvatars(transaction: tx) },
+    )
 
     private lazy var nicknameField: ContactShareField? = {
         guard let nickname = contactShareDraft.signalNickname else { return nil }

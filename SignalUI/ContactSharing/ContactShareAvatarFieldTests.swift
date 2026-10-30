@@ -16,19 +16,22 @@ struct ContactShareAvatarFieldTests {
     private let blueImageData = makeImageData(color: .blue)
 
     @Test
-    func testOffersTheSystemContactPhotoFirstAndSelectsIt() throws {
-        let field = try #require(ContactShareAvatarField(contactShareDraft: makeDraft(
-            systemContactAvatarImageData: redImageData,
-            signalAvatarImageData: blueImageData,
-        )))
+    func testSelectsTheSignalPhotoUnlessAddressBookPhotosArePreferred() throws {
+        let draft = makeDraft(systemContactAvatarImageData: redImageData, signalAvatarImageData: blueImageData)
 
-        #expect(field.options.map(\.source) == [.systemContact, .signal])
-        #expect(field.selectedSource == .systemContact)
+        let signalField = try #require(ContactShareAvatarField(contactShareDraft: draft, preferContactAvatars: false))
+        #expect(signalField.selectedSource == .signal)
+
+        let systemContactField = try #require(ContactShareAvatarField(contactShareDraft: draft, preferContactAvatars: true))
+        #expect(systemContactField.selectedSource == .systemContact)
     }
 
     @Test
     func testSelectsTheSignalPhotoWhenThereIsNoSystemContactPhoto() throws {
-        let field = try #require(ContactShareAvatarField(contactShareDraft: makeDraft(signalAvatarImageData: blueImageData)))
+        let field = try #require(ContactShareAvatarField(
+            contactShareDraft: makeDraft(signalAvatarImageData: blueImageData),
+            preferContactAvatars: true,
+        ))
 
         #expect(field.options.map(\.source) == [.signal])
         #expect(field.selectedSource == .signal)
@@ -36,25 +39,25 @@ struct ContactShareAvatarFieldTests {
 
     @Test
     func testOffersIdenticalPhotosOnce() throws {
-        let field = try #require(ContactShareAvatarField(contactShareDraft: makeDraft(
-            systemContactAvatarImageData: redImageData,
-            signalAvatarImageData: redImageData,
-        )))
+        let field = try #require(ContactShareAvatarField(
+            contactShareDraft: makeDraft(systemContactAvatarImageData: redImageData, signalAvatarImageData: redImageData),
+            preferContactAvatars: false,
+        ))
 
         #expect(field.options.map(\.source) == [.systemContact])
     }
 
     @Test
     func testHasNoFieldWhenThereAreNoPhotos() {
-        #expect(ContactShareAvatarField(contactShareDraft: makeDraft()) == nil)
+        #expect(ContactShareAvatarField(contactShareDraft: makeDraft(), preferContactAvatars: false) == nil)
     }
 
     @Test
     func testSharesTheSelectedPhoto() throws {
-        let field = try #require(ContactShareAvatarField(contactShareDraft: makeDraft(
-            systemContactAvatarImageData: redImageData,
-            signalAvatarImageData: blueImageData,
-        )))
+        let field = try #require(ContactShareAvatarField(
+            contactShareDraft: makeDraft(systemContactAvatarImageData: redImageData, signalAvatarImageData: blueImageData),
+            preferContactAvatars: true,
+        ))
         field.selectedSource = .signal
 
         let result = makeDraft()
@@ -65,7 +68,10 @@ struct ContactShareAvatarFieldTests {
 
     @Test
     func testSharesNoPhotoWhenInitialsAreSelected() throws {
-        let field = try #require(ContactShareAvatarField(contactShareDraft: makeDraft(systemContactAvatarImageData: redImageData)))
+        let field = try #require(ContactShareAvatarField(
+            contactShareDraft: makeDraft(systemContactAvatarImageData: redImageData),
+            preferContactAvatars: false,
+        ))
         field.selectedSource = nil
 
         let result = makeDraft()

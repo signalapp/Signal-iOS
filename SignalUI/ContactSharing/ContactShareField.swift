@@ -154,7 +154,7 @@ class ContactShareAvatarField {
     /// `nil` shares no avatar, which recipients see as the contact's initials.
     var selectedSource: ContactShareAvatarOption.Source?
 
-    init?(contactShareDraft: ContactShareDraft) {
+    init?(contactShareDraft: ContactShareDraft, preferContactAvatars: Bool) {
         var options = [ContactShareAvatarOption]()
         for source in ContactShareAvatarOption.Source.allCases {
             let imageData: Data?
@@ -177,7 +177,8 @@ class ContactShareAvatarField {
             return nil
         }
         self.options = options
-        self.selectedSource = firstOption.source
+        let preferredSource: ContactShareAvatarOption.Source = preferContactAvatars ? .systemContact : .signal
+        self.selectedSource = options.contains { $0.source == preferredSource } ? preferredSource : firstOption.source
     }
 
     var selectedOption: ContactShareAvatarOption? {

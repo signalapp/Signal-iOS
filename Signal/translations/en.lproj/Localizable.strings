@@ -9106,12 +9106,6 @@
 /* The title for the app icon section in the appearance settings. */
 "SETTINGS_APPEARANCE_APP_ICON" = "App Icon";
 
-/* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display phone contact photos if available.";
-
-/* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use Phone Contact Photos";
-
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Theme";
 
@@ -9222,6 +9216,12 @@
 
 /* Title for a progress modal shown while the user's chat history is being exported. */
 "SETTINGS_CHATS_EXPORT_PROGRESS_TITLE" = "Exporting chats…";
+
+/* Footer below the switch in Chats settings that chooses between contact photos from the phone's address book and Signal profile photos. */
+"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_FOOTER" = "Prefer contact photos from your address book if available.";
+
+/* Label for the switch in Chats settings that, when on, shows contact photos from the phone's address book instead of Signal profile photos. */
+"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_LABEL" = "Prefer Address Book Photos";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Clear Chat History";

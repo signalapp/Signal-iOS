@@ -975,6 +975,7 @@ struct ContactSharingPickerViewModelTests {
             notificationCenter: notificationCenter,
             phoneNumberUtil: PhoneNumberUtil(),
             phoneNumberVisibilityFetcher: phoneNumberVisibilityFetcher,
+            preferContactAvatarsProvider: { _ in true },
             profileManager: OWSFakeProfileManager(),
             recipientDatabaseTable: recipientDatabaseTable,
             recipientHidingManager: recipientHidingManager,
