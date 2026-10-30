@@ -64,6 +64,7 @@ public class OWSTableItem {
         accessoryText: String? = nil,
         accessoryType: UITableViewCell.AccessoryType,
         accessibilityIdentifier: String? = nil,
+        contextMenuActionProvider: UIContextMenuActionProvider? = nil,
     ) {
         self.init(
             customCellBlock: {
@@ -76,6 +77,7 @@ public class OWSTableItem {
                 )
             },
             actionBlock: actionBlock,
+            contextMenuActionProvider: contextMenuActionProvider,
         )
     }
 

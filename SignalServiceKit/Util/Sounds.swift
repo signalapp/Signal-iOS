@@ -445,6 +445,36 @@ public class Sounds {
         keyValueStore.removeAll(transaction: tx)
     }
 
+    /// Deletes the given custom sound, removing its file and clearing any
+    /// references to it in the per-thread and global notification sound
+    /// settings, so that they fall back to the default sound.
+    @discardableResult
+    public static func deleteCustomSound(_ sound: Sound) -> Bool {
+        guard case .custom(let customSound) = sound else {
+            owsFailDebug("Invalid sound.")
+            return false
+        }
+
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
+            keyValueStore.removeValues(
+                forKeys: keyValueStore.allKeys(transaction: tx).filter {
+                    keyValueStore.getUInt64($0, transaction: tx) == customSound.id
+                },
+                transaction: tx,
+            )
+
+            let notificationPreferencesManager = DependenciesBridge.shared.notificationPreferencesManager
+            if notificationPreferencesManager.globalNotificationSound(tx: tx).id == customSound.id {
+                notificationPreferencesManager.setGlobalNotificationSound(
+                    NotificationPreferencesManager.Defaults.globalNotificationSound,
+                    tx: tx,
+                )
+            }
+        }
+
+        return deleteCustomSound(customSound)
+    }
+
     // MARK: - Util
 
     private static func deleteCustomSound(_ sound: CustomSound) -> Bool {

@@ -6547,6 +6547,12 @@
 /* Label for settings UI that allows user to add a new notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
 
+/* Context menu action that deletes a custom notification sound. */
+"NOTIFICATIONS_DELETE_CUSTOM_SOUND_ACTION" = "Delete Sound";
+
+/* Title of the confirmation alert shown before deleting a custom notification sound. Embeds the {{sound name}}. */
+"NOTIFICATIONS_DELETE_CUSTOM_SOUND_CONFIRMATION_FORMAT" = "Delete %@?";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
 
