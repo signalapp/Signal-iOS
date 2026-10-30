@@ -2026,7 +2026,6 @@
 		C16AFACB2BE9CA6F00838FFB /* HmacStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16AFACA2BE9CA6F00838FFB /* HmacStreamTransform.swift */; };
 		C16B8B752B8940D40030BA24 /* OutgoingSentMessageTranscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16B8B742B8940D40030BA24 /* OutgoingSentMessageTranscript.swift */; };
 		C172D54F30462D0F002AF55F /* RegistrationSignalLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C172D54E30462D02002AF55F /* RegistrationSignalLoginViewController.swift */; };
-		D9A0C2002F00000200000002 /* RegistrationTwoFactorPasskeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A0C2002F00000200000001 /* RegistrationTwoFactorPasskeyViewController.swift */; };
 		C17310A72BD9D45400B7A151 /* BackupServiceAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17310A62BD9D45400B7A151 /* BackupServiceAuth.swift */; };
 		C17345BB2A5E000300C6426D /* PreKeyTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17345BA2A5E000300C6426D /* PreKeyTarget.swift */; };
 		C17586642E2AC3CE008B3A13 /* MediaRootBackupKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17586632E2AC3CE008B3A13 /* MediaRootBackupKey.swift */; };
@@ -3404,6 +3403,7 @@
 		D99ABC7A2A3D1D710034CD3B /* semitransparent.png in Resources */ = {isa = PBXBuildFile; fileRef = D99ABC792A3D1D710034CD3B /* semitransparent.png */; };
 		D99D960F292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */; };
 		D99E19C22F35623300CA6A09 /* OWSAttachmentInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99E19C12F35622F00CA6A09 /* OWSAttachmentInfo.swift */; };
+		D9A0C2002F00000200000002 /* RegistrationTwoFactorPasskeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A0C2002F00000200000001 /* RegistrationTwoFactorPasskeyViewController.swift */; };
 		D9A36B932C7FEDA100CEC0E7 /* LineByLineStringDiff.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A36B922C7FEDA100CEC0E7 /* LineByLineStringDiff.swift */; };
 		D9A3E22B2A0D633500E2A8B5 /* UsernameLookupRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */; };
 		D9A3E2302A0DABDF00E2A8B5 /* UsernameQuerier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A3E22F2A0DABDF00E2A8B5 /* UsernameQuerier.swift */; };
@@ -6494,7 +6494,6 @@
 		C16AFACA2BE9CA6F00838FFB /* HmacStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HmacStreamTransform.swift; sourceTree = "<group>"; };
 		C16B8B742B8940D40030BA24 /* OutgoingSentMessageTranscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingSentMessageTranscript.swift; sourceTree = "<group>"; };
 		C172D54E30462D02002AF55F /* RegistrationSignalLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationSignalLoginViewController.swift; sourceTree = "<group>"; };
-		D9A0C2002F00000200000001 /* RegistrationTwoFactorPasskeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTwoFactorPasskeyViewController.swift; sourceTree = "<group>"; };
 		C17310A62BD9D45400B7A151 /* BackupServiceAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupServiceAuth.swift; sourceTree = "<group>"; };
 		C17345BA2A5E000300C6426D /* PreKeyTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTarget.swift; sourceTree = "<group>"; };
 		C17586632E2AC3CE008B3A13 /* MediaRootBackupKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaRootBackupKey.swift; sourceTree = "<group>"; };
@@ -7884,6 +7883,7 @@
 		D99ABC792A3D1D710034CD3B /* semitransparent.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = semitransparent.png; sourceTree = "<group>"; };
 		D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+OneTimePaypalDonation.swift"; sourceTree = "<group>"; };
 		D99E19C12F35622F00CA6A09 /* OWSAttachmentInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSAttachmentInfo.swift; sourceTree = "<group>"; };
+		D9A0C2002F00000200000001 /* RegistrationTwoFactorPasskeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTwoFactorPasskeyViewController.swift; sourceTree = "<group>"; };
 		D9A36B922C7FEDA100CEC0E7 /* LineByLineStringDiff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineByLineStringDiff.swift; sourceTree = "<group>"; };
 		D9A3E22F2A0DABDF00E2A8B5 /* UsernameQuerier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameQuerier.swift; sourceTree = "<group>"; };
 		D9A81C6A2BAA54FC00C07D2B /* CallRecordSyncMessageConversationIdAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordSyncMessageConversationIdAdapter.swift; sourceTree = "<group>"; };
