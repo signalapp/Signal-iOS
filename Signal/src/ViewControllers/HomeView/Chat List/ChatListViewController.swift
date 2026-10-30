@@ -4,10 +4,10 @@
 //
 
 import SignalServiceKit
-public import SignalUI
+import SignalUI
 import StoreKit
 
-public class ChatListViewController: OWSViewController, HomeTabViewController {
+class ChatListViewController: OWSViewController, HomeTabViewController {
     init(
         chatListMode: ChatListMode,
     ) {
@@ -28,17 +28,17 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         viewState.configure()
     }
 
-    override public var canBecomeFirstResponder: Bool {
+    override var canBecomeFirstResponder: Bool {
         true
     }
 
     // MARK: View Lifecycle
 
-    override public func loadView() {
+    override func loadView() {
         view = containerView
     }
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = .Signal.background
@@ -107,7 +107,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     private var viewHasAppeared = false
 
-    override public func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         isViewVisible = true
@@ -233,7 +233,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
     }
 
-    override public func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         defer {
             hasEverAppeared = true
@@ -263,7 +263,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         tableDataSource.updateAndSetRefreshTimer()
     }
 
-    override public func viewWillDisappear(_ animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         leaveMultiselectMode()
         tableDataSource.stopRefreshTimer()
 
@@ -273,7 +273,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         searchResultsController.viewWillDisappear(animated)
     }
 
-    override public func viewDidDisappear(_ animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
         searchResultsController.viewDidDisappear(animated)
@@ -283,13 +283,13 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         viewState.localFileBackupExportProgressView.didDisappear()
     }
 
-    override public func viewIsAppearing(_ animated: Bool) {
+    override func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
 
         updateFilterControl(animated: false)
     }
 
-    override public func viewDidLayoutSubviews() {
+    override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
         let bottomInset = if let getStartedBanner, getStartedBanner.isViewLoaded, getStartedBanner.view.alpha > 0 {
@@ -308,21 +308,21 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     // MARK: Theme, content size, and layout changes
 
-    override public func contentSizeCategoryDidChange() {
+    override func contentSizeCategoryDidChange() {
         super.contentSizeCategoryDidChange()
 
         // This is expensive but this event is very rare.
         reloadTableDataAndResetCellContentCache()
     }
 
-    override public func themeDidChange() {
+    override func themeDidChange() {
         super.themeDidChange()
 
         reloadTableDataAndResetCellContentCache()
         applyThemeToContextMenuAndToolbar()
     }
 
-    override public func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
         guard isViewLoaded else { return }
@@ -1502,24 +1502,24 @@ extension ChatListViewController {
 }
 
 extension ChatListViewController: UIScrollViewDelegate {
-    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         filterControl?.draggingWillBegin(in: scrollView)
         cancelSearch()
     }
 
-    public func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         filterControl?.draggingWillEnd(in: scrollView)
     }
 
-    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate: Bool) {
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate: Bool) {
         filterControl?.draggingDidEnd(in: scrollView)
     }
 
-    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         filterControl?.scrollingDidStop(in: scrollView)
     }
 
-    public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
         filterControl?.scrollingDidStop(in: scrollView)
     }
 }

@@ -3,11 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
-import UIKit
+import SignalServiceKit
 
 extension ChatListViewController {
-    public var isViewVisible: Bool {
+    var isViewVisible: Bool {
         get { viewState.isViewVisible }
         set {
             if newValue != viewState.isViewVisible {
@@ -258,13 +257,13 @@ private enum CLVLoadType {
 
 // MARK: -
 
-public class CLVLoadCoordinator {
+class CLVLoadCoordinator {
     private let filterStore: ChatListFilterStore
     private var loadInfoBuilder: CLVLoadInfoBuilder
 
-    public weak var viewController: ChatListViewController?
+    weak var viewController: ChatListViewController?
 
-    public init() {
+    init() {
         self.filterStore = ChatListFilterStore()
         self.loadInfoBuilder = CLVLoadInfoBuilder()
         self.loadInfoBuilder.shouldResetAll = true
@@ -320,13 +319,13 @@ public class CLVLoadCoordinator {
         }
     }
 
-    public func saveInboxFilter(_ inboxFilter: InboxFilter) {
+    func saveInboxFilter(_ inboxFilter: InboxFilter) {
         SSKEnvironment.shared.databaseStorageRef.asyncWrite { [filterStore] transaction in
             filterStore.setInboxFilter(inboxFilter, transaction: transaction)
         }
     }
 
-    public func scheduleHardReset() {
+    func scheduleHardReset() {
         AssertIsOnMainThread()
 
         loadInfoBuilder.shouldResetAll = true
@@ -334,7 +333,7 @@ public class CLVLoadCoordinator {
         loadIfNecessary()
     }
 
-    public func scheduleLoad(updatedThreadIds: some Collection<String>, animated: Bool = true) {
+    func scheduleLoad(updatedThreadIds: some Collection<String>, animated: Bool = true) {
         AssertIsOnMainThread()
         owsAssertDebug(!updatedThreadIds.isEmpty)
 
@@ -343,7 +342,7 @@ public class CLVLoadCoordinator {
         loadIfNecessary(suppressAnimations: !animated)
     }
 
-    public func ensureFirstLoad() {
+    func ensureFirstLoad() {
         AssertIsOnMainThread()
 
         guard let viewController else {
@@ -364,7 +363,7 @@ public class CLVLoadCoordinator {
     }
 
     @objc
-    public func applicationWillEnterForeground() {
+    func applicationWillEnterForeground() {
         AssertIsOnMainThread()
 
         guard let viewController else {
@@ -383,7 +382,7 @@ public class CLVLoadCoordinator {
         }
     }
 
-    public func loadIfNecessary(suppressAnimations: Bool = false, shouldForceLoad: Bool = false) {
+    func loadIfNecessary(suppressAnimations: Bool = false, shouldForceLoad: Bool = false) {
         AssertIsOnMainThread()
 
         guard let viewController else {

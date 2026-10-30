@@ -6,9 +6,8 @@
 import PureLayout
 import SignalServiceKit
 import SignalUI
-import UIKit
 
-public class CLVLocalFileBackupRestoreProgressView: LocalFileBackupRestoreProgressView.Delegate {
+class CLVLocalFileBackupRestoreProgressView: LocalFileBackupRestoreProgressView.Delegate {
 
     private struct State {
         var isVisible: Bool = false
@@ -21,7 +20,7 @@ public class CLVLocalFileBackupRestoreProgressView: LocalFileBackupRestoreProgre
 
     private let state: AtomicValue<State>
 
-    public weak var chatListViewController: ChatListViewController?
+    weak var chatListViewController: ChatListViewController?
     private let localFileBackupRestoreProgressView: LocalFileBackupRestoreProgressView
 
     private let localFileBackupAttachmentRestoreProgress: LocalFileBackupAttachmentRestoreProgress

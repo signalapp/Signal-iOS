@@ -5,9 +5,8 @@
 
 import SignalServiceKit
 import SignalUI
-import UIKit
 
-public class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate {
+class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate {
 
     private struct State {
         var isVisible: Bool = false
@@ -21,7 +20,7 @@ public class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate 
 
     private let state: AtomicValue<State>
 
-    public weak var chatListViewController: ChatListViewController?
+    weak var chatListViewController: ChatListViewController?
     private let backupDownloadProgressView: BackupDownloadProgressView
 
     private let backupAttachmentDownloadQueueStatusManager: BackupAttachmentDownloadQueueStatusManager

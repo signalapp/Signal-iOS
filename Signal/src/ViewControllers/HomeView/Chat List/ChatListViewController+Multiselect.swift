@@ -290,7 +290,7 @@ extension ChatListViewController {
         }
     }
 
-    public func updateCaptions() {
+    func updateCaptions() {
         let count = tableView.indexPathsForSelectedRows?.count ?? 0
         if count == 0 {
             title = viewState.multiSelectState.title
@@ -454,7 +454,7 @@ private struct ChatListToolbarButtons {
 
 // MARK: - object encapsulating the complete state of the MultiSelect process
 
-public class MultiSelectState {
+class MultiSelectState {
 
     static let multiSelectionModeDidChange = Notification.Name("multiSelectionModeDidChange")
 

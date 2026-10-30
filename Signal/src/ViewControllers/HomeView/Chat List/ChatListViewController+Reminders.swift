@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 
 @MainActor
-public class CLVReminderViews {
+class CLVReminderViews {
 
     let reminderViewCell = UITableViewCell()
 
@@ -25,7 +25,7 @@ public class CLVReminderViews {
     fileprivate var usernameCorruptedReminderView = UIView()
     fileprivate var usernameLinkCorruptedReminderView = UIView()
 
-    public weak var chatListViewController: ChatListViewController?
+    weak var chatListViewController: ChatListViewController?
 
     init() {
         reminderStackView.axis = .vertical
@@ -182,7 +182,7 @@ public class CLVReminderViews {
         chatListViewController.showAppSettings(mode: .corruptedUsernameLinkResolution)
     }
 
-    public var hasVisibleReminders: Bool {
+    var hasVisibleReminders: Bool {
 
         !self.archiveReminderView.isHidden ||
             self.deregisteredView?.isHidden == false ||
@@ -207,25 +207,25 @@ extension ChatListViewController {
     fileprivate var usernameCorruptedReminderView: UIView { reminderViews.usernameCorruptedReminderView }
     fileprivate var usernameLinkCorruptedReminderView: UIView { reminderViews.usernameLinkCorruptedReminderView }
 
-    public func updateArchiveReminderView() {
+    func updateArchiveReminderView() {
         archiveReminderView.isHidden = viewState.chatListMode != .archive
     }
 
-    public func updateRegistrationReminderView() {
+    func updateRegistrationReminderView() {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let tsRegistrationState = tsAccountManager.registrationStateWithMaybeSneakyTransaction
         reminderViews.updateDeregisteredView(tsRegistrationState.deregisteredState)
     }
 
-    public func updateOutageDetectionReminderView() {
+    func updateOutageDetectionReminderView() {
         outageView.isHidden = !OutageDetection.shared.hasOutage
     }
 
-    public func updateExpirationReminderView() {
+    func updateExpirationReminderView() {
         expiredView.update()
     }
 
-    public func updatePaymentReminderView() {
+    func updatePaymentReminderView() {
         if unreadPaymentNotificationsCount == 1, let firstUnreadPaymentModel = self.firstUnreadPaymentModel {
             self.paymentsReminderView.isHidden = false
 
@@ -244,7 +244,7 @@ extension ChatListViewController {
         }
     }
 
-    public func updateUsernameReminderView() {
+    func updateUsernameReminderView() {
         SSKEnvironment.shared.databaseStorageRef.read { tx in
             updateUsernameStateViews(tx: tx)
         }
@@ -252,7 +252,7 @@ extension ChatListViewController {
 
     // MARK: -
 
-    public func updateBackupFailureAlertsWithSneakyTransaction() {
+    func updateBackupFailureAlertsWithSneakyTransaction() {
         typealias BackupFailureAlertType = CLVViewState.BackupFailureAlertType
 
         let db = DependenciesBridge.shared.db
@@ -276,7 +276,7 @@ extension ChatListViewController {
         }
     }
 
-    public func updateBackupSubscriptionFailedToRedeemAlertsWithSneakyTx() {
+    func updateBackupSubscriptionFailedToRedeemAlertsWithSneakyTx() {
         typealias BackupSubscriptionAlreadyRedeemedAlertType = CLVViewState.BackupSubscriptionAlreadyRedeemedAlertType
 
         let db = DependenciesBridge.shared.db
@@ -294,7 +294,7 @@ extension ChatListViewController {
         }
     }
 
-    public func updateBackupIAPNotFoundLocallyAlertsWithSneakyTx() {
+    func updateBackupIAPNotFoundLocallyAlertsWithSneakyTx() {
         typealias BackupIAPNotFoundLocallyAlertType = CLVViewState.BackupIAPNotFoundLocallyAlertType
 
         let db = DependenciesBridge.shared.db
@@ -312,7 +312,7 @@ extension ChatListViewController {
         }
     }
 
-    public func updateHasConsumedMediaTierCapacityWithSneakyTransaction() {
+    func updateHasConsumedMediaTierCapacityWithSneakyTransaction() {
         let backupSettingsStore = BackupSettingsStore()
         viewState.hasConsumedMediaTierCapacity = SSKEnvironment.shared.databaseStorageRef.read { tx in
             backupSettingsStore.hasConsumedMediaTierCapacity(tx: tx)
@@ -331,7 +331,7 @@ extension ChatListViewController {
         set { viewState.firstUnreadPaymentModel = newValue }
     }
 
-    public func updateUnreadPaymentNotificationsCountWithSneakyTransaction() {
+    func updateUnreadPaymentNotificationsCountWithSneakyTransaction() {
         AssertIsOnMainThread()
 
         guard SSKEnvironment.shared.paymentsHelperRef.arePaymentsEnabled else {

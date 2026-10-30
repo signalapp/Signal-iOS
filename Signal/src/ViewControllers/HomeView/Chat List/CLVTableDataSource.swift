@@ -4,14 +4,14 @@
 //
 
 import SignalServiceKit
-public import SignalUI
+import SignalUI
 
-public enum ChatListMode: Int, CaseIterable {
+enum ChatListMode: Int, CaseIterable {
     case archive
     case inbox
 }
 
-public enum ChatListSectionType: String, CaseIterable {
+enum ChatListSectionType: String, CaseIterable {
     case reminders
     case backupDownloadProgressView
     case backupExportProgressView
@@ -919,7 +919,7 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
 
 // MARK: -
 
-public class CLVTableView: UITableView {
+class CLVTableView: UITableView {
     fileprivate var lastReloadDate: Date?
 
     // A `tableFooterView` that always expands to fill available contentSize
@@ -933,7 +933,7 @@ public class CLVTableView: UITableView {
     // content height is too small, the search bar otherwise becomes un-hideable).
     private let footerView = UIView()
 
-    public init() {
+    init() {
         super.init(frame: .zero, style: .grouped)
         tableFooterView = footerView
     }
@@ -943,7 +943,7 @@ public class CLVTableView: UITableView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override public func reloadData() {
+    override func reloadData() {
         AssertIsOnMainThread()
 
         lastReloadDate = Date()
@@ -951,12 +951,12 @@ public class CLVTableView: UITableView {
         (dataSource as? CLVTableDataSource)?.calcRefreshTimer()
     }
 
-    override public func layoutSubviews() {
+    override func layoutSubviews() {
         super.layoutSubviews()
         updateFooterHeight()
     }
 
-    override public func adjustedContentInsetDidChange() {
+    override func adjustedContentInsetDidChange() {
         super.adjustedContentInsetDidChange()
         updateFooterHeight()
     }

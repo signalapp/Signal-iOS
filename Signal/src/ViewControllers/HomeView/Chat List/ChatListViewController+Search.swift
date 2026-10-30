@@ -4,7 +4,7 @@
 //
 
 import SignalServiceKit
-public import SignalUI
+import SignalUI
 
 extension ChatListViewController: OWSNavigationChildController {
     func focusSearch() {
@@ -43,7 +43,7 @@ extension ChatListViewController: OWSNavigationChildController {
 
 extension ChatListViewController: UISearchResultsUpdating {
 
-    public func updateSearchResults(for searchController: UISearchController) {
+    func updateSearchResults(for searchController: UISearchController) {
         guard isSearching else { return }
 
         viewState.searchResultsController.searchText = searchText
@@ -52,13 +52,13 @@ extension ChatListViewController: UISearchResultsUpdating {
 
 extension ChatListViewController: ConversationSearchViewDelegate {
 
-    public func conversationSearchViewWillBeginDragging() {
+    func conversationSearchViewWillBeginDragging() {
         AssertIsOnMainThread()
         searchBar.resignFirstResponder()
         owsAssertDebug(!searchBar.isFirstResponder)
     }
 
-    public func conversationSearchDidSelectRow() {
+    func conversationSearchDidSelectRow() {
         AssertIsOnMainThread()
         viewState.shouldFocusSearchOnAppear = searchBar.resignFirstResponder()
     }
