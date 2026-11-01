@@ -4,6 +4,7 @@
 //
 
 import LibSignalClient
+import SignalMessageBackupTests
 import XCTest
 
 @testable import SignalServiceKit
@@ -99,9 +100,9 @@ class BackupArchiveIntegrationTests: XCTestCase {
     /// test cases.
     func testIntegrationTestCases() async throws {
         let binProtoFileUrls: [URL] = {
-            let allBinprotoUrls = Bundle(for: type(of: self)).urls(
+            let allBinprotoUrls = MessageBackupTestCases.bundle.urls(
                 forResourcesWithExtension: "binproto",
-                subdirectory: nil,
+                subdirectory: "test-cases",
             ) ?? []
 
             return allBinprotoUrls.filter { binprotoUrl in

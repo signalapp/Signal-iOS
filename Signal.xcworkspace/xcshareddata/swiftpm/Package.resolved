@@ -1,5 +1,5 @@
 {
-  "originHash" : "7ff105006b668e45ccfc1d1d8300a40d07ba135c4b0c73846b03c47cf88a9726",
+  "originHash" : "d0075113d6169c36b7ed01bae15b27c7a04ad6b8f456d17206c29a243b7007c5",
   "pins" : [
     {
       "identity" : "bonmot",
@@ -98,6 +98,14 @@
       "state" : {
         "revision" : "f534cfe830a7807ecc3d0332127a502426cfa067",
         "version" : "0.14.6"
+      }
+    },
+    {
+      "identity" : "signal-message-backup-tests",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/signalapp/Signal-Message-Backup-Tests",
+      "state" : {
+        "revision" : "a76aa2831427b86059d12bf8bc9db2370430b003"
       }
     },
     {
