@@ -112,58 +112,6 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         contents.add(debugSection)
 
-        if ScreenshotBlockingManager.isAvailable {
-            let db = DependenciesBridge.shared.db
-            let screenshotBlockingManager = AppEnvironment.shared.screenshotBlockingManager!
-
-            let currentPreference = db.read { screenshotBlockingManager.getPreference(tx: $0) }
-
-            let screenshotsSection = OWSTableSection(title: "Screenshots")
-            screenshotsSection.footerTitle = "Prevent screenshots and screen recordings from capturing Signal."
-            screenshotsSection.add(.menuPicker(
-                withText: "Block Screenshots",
-                menuTitle: "Block Screenshots",
-                menuOptions: ScreenshotBlockingPreference.allCases.map { preference in
-                    let menuOptionTitle = switch preference {
-                    case .blockScreenshots: "On"
-                    case .doNotBlockScreenshots: "Off"
-                    case .doNotBlockScreenshotsForTenMinutes: "Off for 10 Minutes"
-                    }
-
-                    // Don't allow temporarily disabling if we're already
-                    // permanently disabled.
-                    let isOptionEnabled: Bool = switch preference {
-                    case .blockScreenshots, .doNotBlockScreenshots:
-                        true
-                    case .doNotBlockScreenshotsForTenMinutes:
-                        switch currentPreference {
-                        case .blockScreenshots, .doNotBlockScreenshotsForTenMinutes: true
-                        case .doNotBlockScreenshots: false
-                        }
-                    }
-
-                    return OWSTableItem.MenuPickerOption<ScreenshotBlockingPreference>(
-                        title: menuOptionTitle,
-                        isEnabled: isOptionEnabled,
-                        value: preference,
-                        onSelect: { [weak self] in
-                            guard let self else { return }
-
-                            Task {
-                                await screenshotBlockingManager.setPreferenceWithConfirmation(
-                                    preference,
-                                    fromViewController: self,
-                                )
-                                self.updateTableContents()
-                            }
-                        },
-                    )
-                },
-                selectedMenuOption: currentPreference,
-            ))
-            contents.add(screenshotsSection)
-        }
-
         let (
             contactThreadCount,
             groupThreadCount,

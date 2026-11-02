@@ -8803,6 +8803,57 @@
 /* Label for button on lock screen that lets users unlock Signal. */
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Unlock Signal";
 
+/* Title for a button in a toast shown when a screenshot is blocked. */
+"SCREENSHOT_BLOCKING_BLOCKED_TOAST_OPTIONS_BUTTON_TITLE" = "Options";
+
+/* Text for a toast shown when a screenshot is blocked. */
+"SCREENSHOT_BLOCKING_BLOCKED_TOAST_TEXT" = "Screenshot prevented by “Block Siri AI” setting";
+
+/* Title for a button in a sheet shown to confirm disabling screenshot blocking. */
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_ALLOW_BUTTON_TITLE" = "Allow Siri AI";
+
+/* Message for a sheet shown to confirm disabling screenshot blocking. */
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_MESSAGE" = "If allowed, Siri AI can automatically scan Signal content and use it for features that may not be private.";
+
+/* Title for a sheet shown to confirm disabling screenshot blocking. */
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_TITLE" = "Allow Siri AI?";
+
+/* Text for a toast shown after disabling screenshot blocking for ten minutes. */
+"SCREENSHOT_BLOCKING_DISABLED_TEN_MINUTES_TOAST_TEXT" = "“Block Siri AI” turned off for 10 minutes";
+
+/* Text for a toast shown after disabling screenshot blocking. */
+"SCREENSHOT_BLOCKING_DISABLED_TOAST_TEXT" = "“Block Siri AI” turned off";
+
+/* Title for a button that disables screenshot blocking, in a sheet shown from a toast shown when a screenshot is blocked. */
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_BUTTON_TITLE" = "Turn Off “Block Siri AI”";
+
+/* Title for a button that temporarily disables screenshot blocking, in a sheet shown from a toast shown when a screenshot is blocked. */
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_TEN_MINUTES_BUTTON_TITLE" = "Turn Off for 10 Minutes";
+
+/* Message for a sheet shown from a toast shown when a screenshot is blocked. */
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_MESSAGE" = "This prevents Siri AI from automatically scanning Signal content. It also blocks you from taking screenshots in the app and App Switcher.";
+
+/* Title for a sheet shown from a toast shown when a screenshot is blocked. */
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_TITLE" = "Block Siri AI is On";
+
+/* Option disabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_OPTION" = "Off";
+
+/* Option temporarily disabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_TEN_MINUTES_OPTION" = "Off for 10 Minutes";
+
+/* Option enabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_ENABLED_OPTION" = "On";
+
+/* Title for the menu of the screenshot blocking item of the privacy settings. */
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_TITLE" = "Block Siri AI";
+
+/* Label for the screenshot blocking item of the privacy settings. */
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_TITLE" = "Block Siri AI";
+
+/* Footer for the screenshot blocking section of the privacy settings. */
+"SCREENSHOT_BLOCKING_SETTINGS_SECTION_FOOTER" = "Prevent Siri AI from scanning Signal content. This will also block you from taking screenshots in the app and App Switcher.";
+
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Name, username, or number";
 

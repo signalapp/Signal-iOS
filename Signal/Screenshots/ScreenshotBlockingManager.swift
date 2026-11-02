@@ -288,10 +288,16 @@ class ScreenshotBlockingManager {
 
     private func showScreenshotBlockedToast(fromViewController: UIViewController) {
         fromViewController.presentToast(
-            text: "Screenshot blocked",
+            text: OWSLocalizedString(
+                "SCREENSHOT_BLOCKING_BLOCKED_TOAST_TEXT",
+                comment: "Text for a toast shown when a screenshot is blocked.",
+            ),
             image: .lock,
             button: ToastController.Button(
-                title: "Options",
+                title: OWSLocalizedString(
+                    "SCREENSHOT_BLOCKING_BLOCKED_TOAST_OPTIONS_BUTTON_TITLE",
+                    comment: "Title for a button in a toast shown when a screenshot is blocked.",
+                ),
                 onPrimaryAction: { [self] in
                     showDisableFromToastSheet(
                         fromViewController: fromViewController,
@@ -305,24 +311,39 @@ class ScreenshotBlockingManager {
 
     private func showDisableFromToastSheet(fromViewController: UIViewController) {
         let actionSheet = ActionSheetController(
-            title: "Screenshot Blocking is On",
-            message: "This blocks screenshots and screen recordings of Signal, including in the App Switcher.",
+            title: OWSLocalizedString(
+                "SCREENSHOT_BLOCKING_OPTIONS_SHEET_TITLE",
+                comment: "Title for a sheet shown from a toast shown when a screenshot is blocked.",
+            ),
+            message: OWSLocalizedString(
+                "SCREENSHOT_BLOCKING_OPTIONS_SHEET_MESSAGE",
+                comment: "Message for a sheet shown from a toast shown when a screenshot is blocked.",
+            ),
         )
         actionSheet.addAction(ActionSheetAction(
-            title: "Turn Off for 10 Minutes",
+            title: OWSLocalizedString(
+                "SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_TEN_MINUTES_BUTTON_TITLE",
+                comment: "Title for a button that temporarily disables screenshot blocking, in a sheet shown from a toast shown when a screenshot is blocked.",
+            ),
             handler: { [self] _ in
                 db.write { tx in
                     self.setPreference(.doNotBlockScreenshotsForTenMinutes, tx: tx)
                 }
 
                 fromViewController.presentToast(
-                    text: "Screenshot blocking turned off for 10 minutes",
+                    text: OWSLocalizedString(
+                        "SCREENSHOT_BLOCKING_DISABLED_TEN_MINUTES_TOAST_TEXT",
+                        comment: "Text for a toast shown after disabling screenshot blocking for ten minutes.",
+                    ),
                     image: .unlockedLock,
                 )
             },
         ))
         actionSheet.addAction(ActionSheetAction(
-            title: "Turn Off Screenshot Blocking",
+            title: OWSLocalizedString(
+                "SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_BUTTON_TITLE",
+                comment: "Title for a button that disables screenshot blocking, in a sheet shown from a toast shown when a screenshot is blocked.",
+            ),
             style: .destructive,
             handler: { [self] _ in
                 let doubleConfirmActionSheet = makeDisableScreenshotBlockingSheet(
@@ -332,7 +353,10 @@ class ScreenshotBlockingManager {
                         }
 
                         fromViewController.presentToast(
-                            text: "Screenshot blocking turned off",
+                            text: OWSLocalizedString(
+                                "SCREENSHOT_BLOCKING_DISABLED_TOAST_TEXT",
+                                comment: "Text for a toast shown after disabling screenshot blocking.",
+                            ),
                             image: .unlockedLock,
                         )
                     },
@@ -350,11 +374,20 @@ class ScreenshotBlockingManager {
         onDisableTapped: @escaping () -> Void,
     ) -> ActionSheetController {
         let actionSheet = ActionSheetController(
-            title: "Turn Off Screenshot Blocking?",
-            message: "Screenshots and screen recordings will be able to capture Signal content.",
+            title: OWSLocalizedString(
+                "SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_TITLE",
+                comment: "Title for a sheet shown to confirm disabling screenshot blocking.",
+            ),
+            message: OWSLocalizedString(
+                "SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_MESSAGE",
+                comment: "Message for a sheet shown to confirm disabling screenshot blocking.",
+            ),
         )
         actionSheet.addAction(ActionSheetAction(
-            title: "Turn Off",
+            title: OWSLocalizedString(
+                "SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_ALLOW_BUTTON_TITLE",
+                comment: "Title for a button in a sheet shown to confirm disabling screenshot blocking.",
+            ),
             style: .destructive,
             handler: { _ in
                 onDisableTapped()

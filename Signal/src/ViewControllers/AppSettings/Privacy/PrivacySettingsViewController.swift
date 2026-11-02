@@ -201,6 +201,76 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         }
         contents.add(appSecuritySection)
 
+        if ScreenshotBlockingManager.isAvailable {
+            let db = DependenciesBridge.shared.db
+            let screenshotBlockingManager = AppEnvironment.shared.screenshotBlockingManager!
+
+            let currentPreference = db.read { screenshotBlockingManager.getPreference(tx: $0) }
+
+            let screenshotBlockingSection = OWSTableSection()
+            screenshotBlockingSection.footerTitle = OWSLocalizedString(
+                "SCREENSHOT_BLOCKING_SETTINGS_SECTION_FOOTER",
+                comment: "Footer for the screenshot blocking section of the privacy settings.",
+            )
+            screenshotBlockingSection.add(.menuPicker(
+                withText: OWSLocalizedString(
+                    "SCREENSHOT_BLOCKING_SETTINGS_ITEM_TITLE",
+                    comment: "Label for the screenshot blocking item of the privacy settings.",
+                ),
+                menuTitle: OWSLocalizedString(
+                    "SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_TITLE",
+                    comment: "Title for the menu of the screenshot blocking item of the privacy settings.",
+                ),
+                menuOptions: ScreenshotBlockingPreference.allCases.map { preference in
+                    let menuOptionTitle = switch preference {
+                    case .blockScreenshots: OWSLocalizedString(
+                            "SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_ENABLED_OPTION",
+                            comment: "Option enabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings.",
+                        )
+                    case .doNotBlockScreenshots: OWSLocalizedString(
+                            "SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_OPTION",
+                            comment: "Option disabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings.",
+                        )
+                    case .doNotBlockScreenshotsForTenMinutes: OWSLocalizedString(
+                            "SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_TEN_MINUTES_OPTION",
+                            comment: "Option temporarily disabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings.",
+                        )
+                    }
+
+                    // Don't allow temporarily disabling if we're already
+                    // permanently disabled.
+                    let isOptionEnabled: Bool = switch preference {
+                    case .blockScreenshots, .doNotBlockScreenshots:
+                        true
+                    case .doNotBlockScreenshotsForTenMinutes:
+                        switch currentPreference {
+                        case .blockScreenshots, .doNotBlockScreenshotsForTenMinutes: true
+                        case .doNotBlockScreenshots: false
+                        }
+                    }
+
+                    return OWSTableItem.MenuPickerOption<ScreenshotBlockingPreference>(
+                        title: menuOptionTitle,
+                        isEnabled: isOptionEnabled,
+                        value: preference,
+                        onSelect: { [weak self] in
+                            guard let self else { return }
+
+                            Task {
+                                await screenshotBlockingManager.setPreferenceWithConfirmation(
+                                    preference,
+                                    fromViewController: self,
+                                )
+                                self.updateTableContents()
+                            }
+                        },
+                    )
+                },
+                selectedMenuOption: currentPreference,
+            ))
+            contents.add(screenshotBlockingSection)
+        }
+
         // Payments
         let paymentsSection = OWSTableSection()
         paymentsSection.headerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_SECURITY_TITLE", comment: "Title for the payments section in the app’s privacy settings tableview")
