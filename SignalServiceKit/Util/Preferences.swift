@@ -225,8 +225,12 @@ public class Preferences {
         setBool(true, forKey: .wasBlurTooltipShown)
     }
 
-    public var wasDeleteForEveryoneConfirmationShown: Bool {
-        bool(forKey: .wasDeleteForEveryoneConfirmationShown, defaultValue: false)
+    public func wasDeleteForEveryoneConfirmationShown(tx: DBReadTransaction) -> Bool {
+        return keyValueStore.getBool(
+            Key.wasDeleteForEveryoneConfirmationShown.rawValue,
+            defaultValue: false,
+            transaction: tx,
+        )
     }
 
     public func setWasDeleteForEveryoneConfirmationShown() {
