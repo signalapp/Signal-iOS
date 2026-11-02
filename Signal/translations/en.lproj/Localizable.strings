@@ -10355,6 +10355,12 @@
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Add Stickers";
 
+/* Placeholder text for the search bar in the sticker pack management. */
+"STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "Search stickers";
+
+/* Label for a view explaining that no search results were found. Embeds {{ the search term }}. */
+"STICKERS_MANAGE_SEARCH_NO_RESULTS" = "No results found for '%1$@'";
+
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal Artist Series";
 
