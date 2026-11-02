@@ -10,16 +10,6 @@ public enum RegistrationServiceResponses {
 
     // MARK: - Registration Session Endpoints
 
-    public enum FetchSessionResponseCodes: Int, UnknownEnumCodable {
-        /// Success. Response body has `RegistrationSession` object.
-        case success = 200
-        /// No session was found with the given ID. A new session should be initiated.
-        case missingSession = 404
-        case unexpectedError = -1
-
-        public static var unknown: Self { .unexpectedError }
-    }
-
     public struct RegistrationSession: Codable {
         /// An opaque identifier for this session.
         /// Clients will need to provide this ID to the API for subsequent operations.

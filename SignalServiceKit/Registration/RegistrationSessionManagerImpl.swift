@@ -24,8 +24,6 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         self.networkManager = networkManager
     }
 
-    // TODO: make this and other methods resilient to transient network failures by adding
-    // basic retrying logic.
     public func restoreSession(logger: PrefixedLogger) async -> RegistrationSession? {
         // Just get the most recent one, don't validate against any e164.
         return await restoreSession(forE164: nil, logger: logger)
@@ -119,18 +117,6 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         }
     }
 
-    private func persistSessionFromResponse(_ response: FetchSessionResponse) async -> FetchSessionResponse {
-        switch response {
-        case .success(let session):
-            await db.awaitableWrite { self.persist(session: session, $0) }
-        case .sessionInvalid:
-            await db.awaitableWrite { self.clearPersistedSession($0) }
-        case .genericError:
-            break
-        }
-        return response
-    }
-
     private func updatingSession(
         _ session: inout RegistrationSession,
         block: (_ session: RegistrationSession, _ updatedSession: inout RegistrationSession?) async throws -> Void,
@@ -162,10 +148,8 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
 
     // MARK: - Requests
 
-    // TODO: make this and other methods resilient to transient network failures by adding
-    // basic retrying logic.
     private func restoreSession(forE164 e164: E164?, logger: PrefixedLogger) async -> RegistrationSession? {
-        guard let existingSession = db.read(block: { self.getPersistedSession($0) }) else {
+        guard var existingSession = db.read(block: { self.getPersistedSession($0) }) else {
             return nil
         }
         if let e164, existingSession.e164 != e164 {
@@ -174,12 +158,18 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             return nil
         }
         // Verify the session is still valid.
-        let fetchSessionResponse = await makeFetchSessionRequest(existingSession, logger: logger)
-        _ = await self.persistSessionFromResponse(fetchSessionResponse)
-        switch fetchSessionResponse {
-        case .success(let session):
-            return session
-        case .sessionInvalid, .genericError:
+        do {
+            try await Retry.performWithBackoff(maxAttempts: 2, isRetryable: { $0.isNetworkFailureOrTimeout }) {
+                try await updatingSession(&existingSession) { existingSession, updatedSession in
+                    try await makeFetchSessionRequest(forSession: existingSession, updatedSession: &updatedSession, logger: logger)
+                }
+            }
+            return existingSession
+        } catch is Registration.MissingSessionError {
+            // The session isn't valid, so wipe it and create a new one.
+            await db.awaitableWrite { self.clearPersistedSession($0) }
+            return nil
+        } catch {
             return nil
         }
     }
@@ -348,58 +338,17 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
 
     // MARK: Fetch Session
 
-    private enum FetchSessionResponse: Equatable {
-        case success(RegistrationSession)
-        /// This session is known to be invalid or timed out.
-        /// It should be thrown away and another session started.
-        case sessionInvalid
-        /// Some other error occurred; an error might be shown to the user
-        /// but the session shouldn't be discarded.
-        case genericError
-    }
-
     private func makeFetchSessionRequest(
-        _ session: RegistrationSession,
+        forSession session: RegistrationSession,
+        updatedSession: inout RegistrationSession?,
         logger: PrefixedLogger,
-    ) async -> FetchSessionResponse {
+    ) async throws {
         let request = RegistrationRequestFactory.fetchSessionRequest(sessionId: session.id, logger: logger)
         do {
             let response = try await networkManager.asyncRequest(request)
-            return handleFetchSessionResponse(
-                sessionAtSendTime: session,
-                statusCode: response.responseStatusCode,
-                bodyData: response.responseBodyData,
-            )
-        } catch {
-            guard let error = error as? OWSHTTPError else {
-                return .genericError
-            }
-            let response = handleFetchSessionResponse(
-                sessionAtSendTime: session,
-                statusCode: error.responseStatusCode,
-                bodyData: error.httpResponseData,
-            )
-            return response
-        }
-    }
-
-    private func handleFetchSessionResponse(
-        sessionAtSendTime: RegistrationSession,
-        statusCode: Int,
-        bodyData: Data?,
-    ) -> FetchSessionResponse {
-        let e164 = sessionAtSendTime.e164
-        let statusCode = RegistrationServiceResponses.FetchSessionResponseCodes(rawValue: statusCode)
-        switch statusCode {
-        case .success:
-            return (try? registrationSession(
-                fromResponseBody: bodyData,
-                e164: e164,
-            )).map { .success($0) } ?? .genericError
-        case .missingSession:
-            return .sessionInvalid
-        case .unexpectedError, .none:
-            return .genericError
+            updatedSession = try registrationSession(fromResponseBody: response.responseBodyData, e164: session.e164)
+        } catch where error.httpStatusCode == 404 {
+            throw Registration.MissingSessionError()
         }
     }
 
