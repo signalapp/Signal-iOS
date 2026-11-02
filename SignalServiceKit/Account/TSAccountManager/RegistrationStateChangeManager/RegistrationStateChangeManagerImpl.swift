@@ -197,8 +197,8 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         }
     }
 
-    public func resetForReregistration(isPrimaryDevice: Bool, tx: DBWriteTransaction) {
-        tsAccountManager.resetForReregistration(tx: tx)
+    public func resetForRegistration(isPrimaryDevice: Bool, tx: DBWriteTransaction) {
+        tsAccountManager.resetForRegistration(tx: tx)
 
         signalProtocolStoreManager.sessionStore.deleteAllSessions(tx: tx)
         senderKeyManager.resetAll(tx: tx)

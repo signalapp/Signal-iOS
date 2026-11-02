@@ -182,7 +182,7 @@ public protocol LocalIdentifiersSetter {
     /// Returns true if successful. Not successful iff the old value is the same as new value (no-op).
     func setIsDeregisteredOrDelinked(_ isDeregisteredOrDelinked: Bool, tx: DBWriteTransaction) -> Bool
 
-    func resetForReregistration(tx: DBWriteTransaction)
+    func resetForRegistration(tx: DBWriteTransaction)
 
     /// Returns true if value changed, false otherwise.
     func setIsTransferInProgress(_ isTransferInProgress: Bool, tx: DBWriteTransaction) -> Bool

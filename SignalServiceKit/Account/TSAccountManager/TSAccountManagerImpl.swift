@@ -247,9 +247,9 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
         }
     }
 
-    public func resetForReregistration(tx: DBWriteTransaction) {
+    public func resetForRegistration(tx: DBWriteTransaction) {
         mutateWithLock(tx: tx) {
-            Self.regStateLogger.info("resetting for reregistration")
+            Self.regStateLogger.info("resetting for registration")
 
             let keysToKeep: Set<String> = [
                 // These define our current identity and are updated during registration.

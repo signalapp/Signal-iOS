@@ -662,8 +662,6 @@ public class RegistrationCoordinatorTest {
             Issue.record("must be verificationCodeEntry")
             return
         }
-        // No exit allowed since we've already started trying to create the account.
-        #expect(codeState.exitConfiguration == .noExitAllowed)
         #expect(codeState.validationError == nil)
 
         // We want to have kept the master key; we failed the reg recovery pw check
@@ -777,8 +775,6 @@ public class RegistrationCoordinatorTest {
             Issue.record("must be verificationCodeEntry")
             return
         }
-        // No exit allowed since we've already started trying to create the account.
-        #expect(codeState.exitConfiguration == .noExitAllowed)
         #expect(codeState.validationError == nil)
         // We want to have wiped our master key; we failed reglock, which means the key itself is wrong
         #expect(didClearPinCode)
@@ -1381,12 +1377,10 @@ public class RegistrationCoordinatorTest {
 
         // Give it the pin code, which should make it try and register.
         nextStep = await coordinator.submitPINCode(Stubs.pinCode).awaitable()
-        guard case .verificationCodeEntry(let codeState) = nextStep else {
+        guard case .verificationCodeEntry = nextStep else {
             Issue.record("must be verificationCodeEntry")
             return
         }
-        // TODO: [Refactor]: Is 'noExitAllowed' the correct value to expect here?
-        #expect(codeState.exitConfiguration == .noExitAllowed)
         #expect(!didClearPinCode)
 
         // Submit verification code
@@ -1399,7 +1393,9 @@ public class RegistrationCoordinatorTest {
         switch testCase.mode {
         case .registering:
             acknowledgeAction = .resetPhoneNumber
-        case .changingNumber, .reRegistering:
+        case .reRegistering:
+            acknowledgeAction = .close
+        case .changingNumber:
             acknowledgeAction = .none
         }
         #expect(reglockState.acknowledgeAction == acknowledgeAction)

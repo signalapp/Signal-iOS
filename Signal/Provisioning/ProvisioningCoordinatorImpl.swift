@@ -91,12 +91,13 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                     throw .previouslyLinkedWithDifferentAccount
                 }
             }
-            await self.db.awaitableWrite { tx in
-                registrationStateChangeManager.resetForReregistration(isPrimaryDevice: false, tx: tx)
-                preferences.unsetRecordedAPNSTokens(tx: tx)
-            }
         default:
             owsFail("can't link with state: \(registrationState)")
+        }
+
+        await self.db.awaitableWrite { tx in
+            registrationStateChangeManager.resetForRegistration(isPrimaryDevice: false, tx: tx)
+            preferences.unsetRecordedAPNSTokens(tx: tx)
         }
 
         let result = try await completeProvisioning_updateCensorshipCircumvention(

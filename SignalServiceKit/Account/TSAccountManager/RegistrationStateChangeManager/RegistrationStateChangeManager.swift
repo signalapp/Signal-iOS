@@ -50,7 +50,7 @@ public protocol RegistrationStateChangeManager {
     /**
      * Reset the account state to prepare for registration.
      */
-    func resetForReregistration(isPrimaryDevice: Bool, tx: DBWriteTransaction)
+    func resetForRegistration(isPrimaryDevice: Bool, tx: DBWriteTransaction)
 
     /**
      * Set when a transfer (incoming or outgoing) begins.

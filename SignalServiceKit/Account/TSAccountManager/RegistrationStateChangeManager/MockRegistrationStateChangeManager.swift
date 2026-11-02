@@ -42,10 +42,10 @@ open class MockRegistrationStateChangeManager: RegistrationStateChangeManager {
         didUpdateLocalPhoneNumberMock(aci, phoneNumber)
     }
 
-    public lazy var resetForReregistrationMock: (_ isPrimaryDevice: Bool) -> Void = { _ in }
+    public lazy var resetForRegistrationMock: (_ isPrimaryDevice: Bool) -> Void = { _ in }
 
-    open func resetForReregistration(isPrimaryDevice: Bool, tx: DBWriteTransaction) {
-        return resetForReregistrationMock(isPrimaryDevice)
+    open func resetForRegistration(isPrimaryDevice: Bool, tx: DBWriteTransaction) {
+        return resetForRegistrationMock(isPrimaryDevice)
     }
 
     public lazy var setIsTransferInProgressMock: () -> Void = { [weak self] in
