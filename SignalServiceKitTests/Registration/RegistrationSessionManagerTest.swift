@@ -57,7 +57,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
 
         networkManager.asyncRequestHandlers.append(MockNetworkManager.mockResponse(
             matchingRequest: { $0.url == expectedRequest.url },
-            statusCode: RegistrationServiceResponses.SubmitVerificationCodeResponseCodes.success.rawValue,
+            statusCode: 200,
             bodyData: responseJSON.data(using: .utf8),
         ))
 
@@ -95,7 +95,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
 
         networkManager.asyncRequestHandlers.append(MockNetworkManager.mockResponse(
             matchingRequest: { $0.url == expectedRequest.url },
-            statusCode: RegistrationServiceResponses.SubmitVerificationCodeResponseCodes.success.rawValue,
+            statusCode: 200,
             bodyData: responseJSON.data(using: .utf8),
         ))
 
@@ -136,7 +136,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
 
         networkManager.asyncRequestHandlers.append(MockNetworkManager.mockResponse(
             matchingRequest: { $0.url == expectedRequest.url },
-            statusCode: RegistrationServiceResponses.SubmitVerificationCodeResponseCodes.success.rawValue,
+            statusCode: 200,
             bodyData: responseJSON.data(using: .utf8),
         ))
 
@@ -250,7 +250,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
 
         networkManager.asyncRequestHandlers.append(MockNetworkManager.mockResponse(
             matchingRequest: { $0.url.relativeString.hasSuffix(fetchSessionRequest.url.absoluteString) },
-            statusCode: RegistrationServiceResponses.FetchSessionResponseCodes.missingSession.rawValue,
+            statusCode: 404,
         ))
         networkManager.asyncRequestHandlers.append(MockNetworkManager.mockResponse(
             matchingRequest: { $0.url.relativeString.hasSuffix(beginSessionRequest.url.relativeString) },
@@ -540,50 +540,80 @@ public class RegistrationSessionManagerTest: XCTestCase {
         }
     }
 
-    public func testSubmitVerificationCode() async {
+    public func testSubmitVerificationCode() async throws {
         let code = "1234"
         let oldSession = stubSession()
-        let expectedRequest = RegistrationRequestFactory.submitVerificationCodeRequest(
-            sessionId: oldSession.id,
-            code: code,
-            logger: .empty(),
-        )
 
-        // will have a new ids, which is fine cuz it lets us differentiate.
-        let verifiedResponseBody = stubWireSession(verified: true)
-        let verifiedResponseSession = sessionConverter(verifiedResponseBody)
-        let unVerifiedResponseBody = stubWireSession(verified: false)
-        let unVerifiedResponseSession = sessionConverter(unVerifiedResponseBody)
-        let unVerifiedWithNoAttemptResponseBody = stubWireSession(verified: false, hasNextVerificationAttempt: false)
-        let unVerifiedWithNoAttemptResponseSession = sessionConverter(unVerifiedWithNoAttemptResponseBody)
-
-        let statusCodeResponsePairs: [(
-            RegistrationServiceResponses.SubmitVerificationCodeResponseCodes,
-            Registration.UpdateSessionResponse,
-            RegistrationServiceResponses.RegistrationSession?,
-        )] = [
-            (.success, .success(verifiedResponseSession), verifiedResponseBody),
-            (.success, .rejectedArgument(unVerifiedResponseSession), unVerifiedResponseBody),
-            (.malformedRequest, .genericError, nil),
-            (.missingSession, .invalidSession, nil),
-            (.newCodeRequired, .success(verifiedResponseSession), verifiedResponseBody),
-            (.newCodeRequired, .retryAfterTimeout(unVerifiedResponseSession, retryAfterHeader: nil), unVerifiedResponseBody),
-            (.newCodeRequired, .disallowed(unVerifiedWithNoAttemptResponseSession), unVerifiedWithNoAttemptResponseBody),
-            (.retry, .retryAfterTimeout(unVerifiedResponseSession, retryAfterHeader: nil), unVerifiedResponseBody),
-            (.unexpectedError, .genericError, nil),
-        ]
-        for (statusCode, expectedResponse, sessionInBody) in statusCodeResponsePairs {
+        func mockResponse(statusCode: Int, session: RegistrationServiceResponses.RegistrationSession?) {
             networkManager.asyncRequestHandlers.append(MockNetworkManager.mockResponse(
-                matchingRequest: { $0.url.relativeString.hasSuffix(expectedRequest.url.relativeString) },
-                statusCode: statusCode.rawValue,
-                bodyJson: sessionInBody,
+                matchingRequest: { $0.method == "PUT" && $0.url.relativeString.hasPrefix("v1/verification/session/") && $0.url.relativeString.hasSuffix("/code") },
+                statusCode: statusCode,
+                bodyJson: session,
             ))
-            let result = await registrationSessionManager.submitVerificationCode(
-                for: oldSession,
+        }
+
+        var session = oldSession
+        func submitVerificationCode() async throws {
+            session = oldSession
+            try await registrationSessionManager.submitVerificationCode(
+                for: &session,
                 code: code,
                 logger: .empty(),
             )
-            XCTAssertEqual(result, expectedResponse)
+        }
+
+        // will have a new ids, which is fine cuz it lets us differentiate.
+
+        let verifiedResponseBody = stubWireSession(verified: true)
+        do {
+            mockResponse(statusCode: 200, session: verifiedResponseBody)
+            try await submitVerificationCode()
+            XCTAssertEqual(session, sessionConverter(verifiedResponseBody))
+            XCTAssertEqual(session.verified, true)
+        }
+
+        let unVerifiedResponseBody = stubWireSession(verified: false)
+        do {
+            mockResponse(statusCode: 200, session: unVerifiedResponseBody)
+            try await submitVerificationCode()
+            XCTAssertEqual(session, sessionConverter(unVerifiedResponseBody))
+            XCTAssertEqual(session.verified, false)
+        }
+
+        do {
+            mockResponse(statusCode: 404, session: nil)
+            try await submitVerificationCode()
+        } catch is Registration.MissingSessionError {
+            // OK
+        }
+
+        // A bit weird and probably not possible in practice
+        do {
+            mockResponse(statusCode: 409, session: verifiedResponseBody)
+            try await submitVerificationCode()
+            XCTAssertEqual(session, sessionConverter(verifiedResponseBody))
+        }
+
+        do {
+            mockResponse(statusCode: 409, session: unVerifiedResponseBody)
+            try await submitVerificationCode()
+        } catch where error.httpStatusCode == Registration.SubmitVerificationCodeErrorCode.notAllowed.rawValue {
+            XCTAssertEqual(session, sessionConverter(unVerifiedResponseBody))
+        }
+
+        let unVerifiedWithNoAttemptResponseBody = stubWireSession(verified: false, hasNextVerificationAttempt: false)
+        do {
+            mockResponse(statusCode: 409, session: unVerifiedWithNoAttemptResponseBody)
+            try await submitVerificationCode()
+        } catch where error.httpStatusCode == Registration.SubmitVerificationCodeErrorCode.notAllowed.rawValue {
+            XCTAssertEqual(session, sessionConverter(unVerifiedWithNoAttemptResponseBody))
+        }
+
+        do {
+            mockResponse(statusCode: 429, session: unVerifiedResponseBody)
+            try await submitVerificationCode()
+        } catch where error.httpStatusCode == Registration.SubmitVerificationCodeErrorCode.rateLimited.rawValue {
+            XCTAssertEqual(session, sessionConverter(unVerifiedResponseBody))
         }
     }
 

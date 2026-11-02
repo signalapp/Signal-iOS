@@ -291,7 +291,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             owsFailBeta("Shouldn't be submitting verification code from non session paths.")
             return Guarantee.wrapAsync { await self.nextStep() }
         case .session(let session):
-            return Guarantee.wrapAsync { await self.submitSessionCode(session: session, code: code, failureCount: 0) }
+            return Guarantee.wrapAsync { await self.submitSessionCode(session: session, code: code) }
         }
     }
 
@@ -3519,9 +3519,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func submitSessionCode(
         session: RegistrationSession,
         code: String,
-        failureCount: Int,
     ) async -> RegistrationStep {
-        let maxAutomaticRetries = Constants.networkErrorRetries
+        var session = session
 
         logger.info("")
 
@@ -3531,21 +3530,41 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         }
 
-        let result = await deps.sessionManager.submitVerificationCode(
-            for: session,
-            code: code,
-            logger: logger,
-        )
-
-        switch result {
-        case .success(let session):
-            if !session.verified {
-                // The code must have been wrong.
-                fallthrough
+        do {
+            try await Retry.performWithMinimumBackoff(
+                maxAttempts: Constants.networkErrorRetries + 1,
+                block: {
+                    try await deps.sessionManager.submitVerificationCode(
+                        for: &session,
+                        code: code,
+                        logger: logger,
+                    )
+                },
+                onError: {
+                    if $0.isNetworkFailureOrTimeout {
+                        return .retryAfterBackoff()
+                    }
+                    if
+                        let statusCode = $0.httpStatusCode,
+                        let errorCode = Registration.SubmitVerificationCodeErrorCode(rawValue: statusCode),
+                        errorCode == .rateLimited || errorCode == .notAllowed,
+                        let timeInterval = session.nextVerificationAttempt,
+                        timeInterval < Constants.autoRetryInterval,
+                        let retryAfterHeader = $0.httpResponseHeaders?.retryAfterTimeInterval,
+                        retryAfterHeader < Constants.autoRetryInterval
+                    {
+                        db.write { self.processSession(session, $0) }
+                        return .retryAfterAtLeast(max(timeInterval, retryAfterHeader))
+                    }
+                    throw $0
+                },
+            )
+            guard session.verified else {
+                throw Registration.CodeRejectedError()
             }
             db.write { self.processSession(session, $0) }
             return await nextStep()
-        case .rejectedArgument(let session):
+        } catch is Registration.CodeRejectedError {
             if session.nextVerificationAttemptDate != nil {
                 db.write { self.processSession(session, $0) }
                 return .verificationCodeEntry(self.verificationCodeEntryState(
@@ -3557,38 +3576,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 db.write { self.processSession(session, initialCodeRequestState: .exhaustedCodeAttempts, $0) }
                 return verificationCodeSubmissionRejectedError
             }
-        case .disallowed(let session):
-            // This state means the session state is updated
-            // such that what comes next has changed, e.g. we can't send a verification
-            // code and will kick the user back to sending an sms code.
-            db.write { self.processSession(session, $0) }
-            return verificationCodeSubmissionRejectedError
-        case .invalidSession:
+        } catch is Registration.MissingSessionError {
             db.write { self.resetSession($0) }
             return .showErrorSheet(.sessionInvalidated)
-        case .serverFailure(let failureResponse):
-            if failureResponse.isPermanent {
-                return .showErrorSheet(.genericError)
-            } else {
-                return .showErrorSheet(.networkError)
-            }
-        case .retryAfterTimeout(let session, let retryAfterHeader):
+        } catch where (
+            error.httpStatusCode == Registration.SubmitVerificationCodeErrorCode.notAllowed.rawValue
+                || error.httpStatusCode == Registration.SubmitVerificationCodeErrorCode.rateLimited.rawValue
+        ) {
             db.write { self.processSession(session, $0) }
-            if
-                failureCount < maxAutomaticRetries,
-                let timeInterval = session.nextVerificationAttempt,
-                timeInterval < Constants.autoRetryInterval,
-                let retryAfterHeader,
-                retryAfterHeader < Constants.autoRetryInterval
-            {
-                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
-                try? await Task.sleep(nanoseconds: max(timeInterval, retryAfterHeader, minimumBackoff).clampedNanoseconds)
-                return await self.submitSessionCode(
-                    session: session,
-                    code: code,
-                    failureCount: failureCount + 1,
-                )
-            }
             if session.nextVerificationAttemptDate != nil {
                 return .verificationCodeEntry(verificationCodeEntryState(
                     session: session,
@@ -3598,22 +3593,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // Something went wrong, we can't submit again.
                 return verificationCodeSubmissionRejectedError
             }
-        case .networkFailure:
-            if failureCount < maxAutomaticRetries {
-                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
-                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
-                return await submitSessionCode(
-                    session: session,
-                    code: code,
-                    failureCount: failureCount + 1,
-                )
-            }
+        } catch where error.isNetworkFailureOrTimeout {
             return .showErrorSheet(.networkError)
-        case .transportError(let session):
-            logger.error("Should not get transport error when submitting verification code")
-            db.write { self.processSession(session, $0) }
-            return .showErrorSheet(.genericError)
-        case .genericError:
+        } catch {
             return .showErrorSheet(.genericError)
         }
     }

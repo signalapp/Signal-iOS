@@ -16,16 +16,13 @@ public protocol RegistrationSessionManager {
     func beginOrRestoreSession(e164: E164, apnsToken: String?, logger: PrefixedLogger) async throws -> RegistrationSession
 
     /// Fulfill a challenge for the session (e.g. a captcha).
-    /// See `Registration.UpdateSessionResponse` for possible responses, including errors.
     func fulfillChallenge(for session: inout RegistrationSession, fulfillment: Registration.ChallengeFulfillment, logger: PrefixedLogger) async throws
 
     /// Request a verification code be sent to the session's phone number, for some transport.
-    /// See `Registration.UpdateSessionResponse` for possible responses, including errors.
     func requestVerificationCode(for session: inout RegistrationSession, transport: Registration.CodeTransport, logger: PrefixedLogger) async throws
 
     /// Submit a verification code that was previously requested.
-    /// See `Registration.UpdateSessionResponse` for possible responses, including errors.
-    func submitVerificationCode(for session: RegistrationSession, code: String, logger: PrefixedLogger) async -> Registration.UpdateSessionResponse
+    func submitVerificationCode(for session: inout RegistrationSession, code: String, logger: PrefixedLogger) async throws
 
     /// Completes a session, wiping it from future restoration.
     /// Typically called once the session is verified and is used to complete registration.
@@ -48,7 +45,9 @@ public enum Registration {
 
     public static let challengeRejectedErrorCode = 403
 
-    public struct MissingSessionError: Error {}
+    public struct MissingSessionError: Error {
+        public init() {}
+    }
 
     public enum RequestVerificationCodeErrorCode: Int {
         case notYetAllowed = 409
@@ -60,40 +59,13 @@ public enum Registration {
         public let failureResponse: ServerFailureResponse
     }
 
-    /// Collapses a few different error responses possible from the server down to only those
-    /// relevant to the registration flow, in other words those that should have distinct error behaviors.
-    public enum UpdateSessionResponse: Equatable {
-        case success(RegistrationSession)
-        /// Some input was incorrect or otherwise rejected; typically
-        /// should have the user update and retry.
-        /// `RegistrationSession` state should be checked regardless, as
-        /// (for example) a new challenge may have been requested.
-        case rejectedArgument(RegistrationSession)
-        /// This happens when the attempted operation cannot be fulfilled
-        /// given the current session state, and a different operation must
-        /// be completed first, such as a challenge.
-        /// For example, a verification code may have been submitted
-        /// despite no code being available for submission.
-        case disallowed(RegistrationSession)
-        /// This happens when the provided transport is rejected,
-        /// for example if attempting to send a verification code sms
-        /// to a landline number.
-        /// The user can retry with an alternative transport method.
-        case transportError(RegistrationSession)
-        /// The request was made before the required timeout; it should be
-        /// made again after the time specified in the `RegistrationSession`.
-        case retryAfterTimeout(RegistrationSession, retryAfterHeader: TimeInterval?)
-        /// The provided session has timed out or is otherwise invalid, and a new
-        /// session needs to be started, throwing away all current session state.
-        case invalidSession
-        /// Something went wrong on the server or an external service.
-        /// If non-permanent, a retry after some delay is allowed.
-        /// Otherwise, registration may not be possible.
-        case serverFailure(ServerFailureResponse)
-        /// A network failure.
-        case networkFailure
-        /// Some other generic unknown error.
-        case genericError
+    public enum SubmitVerificationCodeErrorCode: Int {
+        case notAllowed = 409
+        case rateLimited = 429
+    }
+
+    public struct CodeRejectedError: Error {
+        public init() {}
     }
 
     public struct ServerFailureResponse: Equatable {

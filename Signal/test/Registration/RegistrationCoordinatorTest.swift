@@ -1010,10 +1010,11 @@ public class RegistrationCoordinatorTest {
         sessionManager.addRequestVerificationCodeMock({ $0 = expectedSession2 })
 
         // Give back an valid session.
-        sessionManager.addSubmitCodeResponseMock(.success(stubs.session(
+        let expectedSession3 = stubs.session(
             receivedDate: date,
             verified: true,
-        )))
+        )
+        sessionManager.addSubmitVerificationCodeMock({ $0 = expectedSession3 })
 
         // Once the request fails, we should try again with the reglock
         // token, this time.
@@ -1357,7 +1358,8 @@ public class RegistrationCoordinatorTest {
         ))
 
         // Give back a verified session.
-        sessionManager.addSubmitCodeResponseMock(.success(stubs.session(verified: true)))
+        let expectedSession3 = stubs.session(verified: true)
+        sessionManager.addSubmitVerificationCodeMock({ $0 = expectedSession3 })
 
         var nextStep = await coordinator.nextStep()
 
@@ -1709,7 +1711,8 @@ public class RegistrationCoordinatorTest {
         await createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
         // Give back a verified session.
-        sessionManager.addSubmitCodeResponseMock(.success(stubs.session(verified: true)))
+        let expectedSession = stubs.session(verified: true)
+        sessionManager.addSubmitVerificationCodeMock({ $0 = expectedSession })
 
         let accountIdentityResponse = Stubs.accountIdentityResponse()
 
@@ -2008,7 +2011,14 @@ public class RegistrationCoordinatorTest {
         // If we try and submit a code, we should get an error sheet
         // because a code never got sent in the first place.
         // (If the server rejects the submission, which it obviously should).
-        sessionManager.addSubmitCodeResponseMock(.disallowed(stubs.session()))
+        let expectedSession3 = stubs.session()
+        sessionManager.addSubmitVerificationCodeMock({
+            $0 = expectedSession3
+            throw HTTPResponse(
+                requestUrl: URL(string: "v1/verification/session/\(Stubs.sessionId)/code")!,
+                status: Registration.SubmitVerificationCodeErrorCode.notAllowed.rawValue,
+            ).asError()
+        })
 
         // Give it a phone number, which should cause it to start a session.
         // We should get back the code entry step,
@@ -2647,9 +2657,10 @@ public class RegistrationCoordinatorTest {
         await createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
         // Give back a rejected argument response, its the wrong code.
-        sessionManager.addSubmitCodeResponseMock(.rejectedArgument(stubs.session(
+        let expectedSession = stubs.session(
             nextVerificationAttempt: 0,
-        )))
+        )
+        sessionManager.addSubmitVerificationCodeMock({ $0 = expectedSession })
 
         // Now try and send the wrong code.
         let badCode = "garbage"
@@ -2672,15 +2683,20 @@ public class RegistrationCoordinatorTest {
         await createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
         // Give back a retry response.
-        sessionManager.addSubmitCodeResponseMock(.retryAfterTimeout(
-            stubs.session(nextVerificationAttempt: 10),
-            retryAfterHeader: 10,
-        ))
+        let expectedSession = stubs.session(nextVerificationAttempt: 10)
+        sessionManager.addSubmitVerificationCodeMock({
+            $0 = expectedSession
+            throw HTTPResponse(
+                requestUrl: URL(string: "v1/verification/session/\(Stubs.sessionId)/code")!,
+                status: Registration.SubmitVerificationCodeErrorCode.rateLimited.rawValue,
+                headers: ["Retry-After": "10"],
+            ).asError()
+        })
 
         // Resend an sms code, time that out too.
-        let expectedSession = stubs.session(nextSMS: 7, nextCall: 0, nextVerificationAttempt: 9)
+        let expectedSession2 = stubs.session(nextSMS: 7, nextCall: 0, nextVerificationAttempt: 9)
         sessionManager.addRequestVerificationCodeMock({
-            $0 = expectedSession
+            $0 = expectedSession2
             throw HTTPResponse(
                 requestUrl: URL(string: "v1/verification/session/\(Stubs.sessionId)/code")!,
                 status: Registration.RequestVerificationCodeErrorCode.rateLimited.rawValue,
@@ -2691,10 +2707,10 @@ public class RegistrationCoordinatorTest {
         // Resend an voice code, time that out too
         // Make the timeout SO short that it retries
         var didRequestCode = false
-        let expectedSession2 = stubs.session(nextSMS: 6, nextCall: 0.1, nextVerificationAttempt: 8)
+        let expectedSession3 = stubs.session(nextSMS: 6, nextCall: 0.1, nextVerificationAttempt: 8)
         sessionManager.addRequestVerificationCodeMock({
             didRequestCode = true
-            $0 = expectedSession2
+            $0 = expectedSession3
             throw HTTPResponse(
                 requestUrl: URL(string: "v1/verification/session/\(Stubs.sessionId)/code")!,
                 status: Registration.RequestVerificationCodeErrorCode.rateLimited.rawValue,
@@ -2703,9 +2719,9 @@ public class RegistrationCoordinatorTest {
         })
 
         // Be ready for the retry. Ensure we called it the first time.
-        let expectedSession3 = stubs.session(nextSMS: 5, nextCall: 4, nextVerificationAttempt: 8)
+        let expectedSession4 = stubs.session(nextSMS: 5, nextCall: 4, nextVerificationAttempt: 8)
         sessionManager.addRequestVerificationCodeMock({
-            $0 = expectedSession3
+            $0 = expectedSession4
             throw HTTPResponse(
                 requestUrl: URL(string: "v1/verification/session/\(Stubs.sessionId)/code")!,
                 status: Registration.RequestVerificationCodeErrorCode.rateLimited.rawValue,
@@ -2774,7 +2790,14 @@ public class RegistrationCoordinatorTest {
         // Make the session unverified. Together this will be interpreted
         // as meaning no code has been sent (via sms or voice) and one
         // must be requested.
-        sessionManager.addSubmitCodeResponseMock(.disallowed(stubs.session()))
+        let expectedSession = stubs.session()
+        sessionManager.addSubmitVerificationCodeMock({
+            $0 = expectedSession
+            throw HTTPResponse(
+                requestUrl: URL(string: "v1/verification/session/\(Stubs.sessionId)/code")!,
+                status: Registration.SubmitVerificationCodeErrorCode.notAllowed.rawValue,
+            ).asError()
+        })
 
         // The server says no code is available to submit. But we think we tried
         // sending a code with local state. We want to be on the verification
@@ -2802,7 +2825,14 @@ public class RegistrationCoordinatorTest {
 
         // Give back a retry response when submitting a code,
         // but with no ability to resubmit.
-        sessionManager.addSubmitCodeResponseMock(.retryAfterTimeout(stubs.session(), retryAfterHeader: nil))
+        let expectedSession = stubs.session()
+        sessionManager.addSubmitVerificationCodeMock({
+            $0 = expectedSession
+            throw HTTPResponse(
+                requestUrl: URL(string: "v1/verification/session/\(Stubs.sessionId)/code")!,
+                status: Registration.SubmitVerificationCodeErrorCode.rateLimited.rawValue,
+            ).asError()
+        })
 
         var nextStep = await coordinator.submitVerificationCode(Stubs.verificationCode).awaitable()
         guard case .showErrorSheet(.verificationCodeSubmissionUnavailable) = nextStep else {
@@ -2837,7 +2867,9 @@ public class RegistrationCoordinatorTest {
         sessionManager.addRequestVerificationCodeMock({ $0 = expectedSession2 })
 
         // Give back an expired session.
-        sessionManager.addSubmitCodeResponseMock(.invalidSession)
+        sessionManager.addSubmitVerificationCodeMock({ _ in
+            throw Registration.MissingSessionError()
+        })
 
         // Give it a phone number, which should cause it to start a session.
         coordinator.submitE164(Stubs.e164)
@@ -2870,10 +2902,11 @@ public class RegistrationCoordinatorTest {
         await createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
         // Give back a verified session.
-        sessionManager.addSubmitCodeResponseMock(.success(stubs.session(
+        let expectedSession = stubs.session(
             receivedDate: date,
             verified: true,
-        )))
+        )
+        sessionManager.addSubmitVerificationCodeMock({ $0 = expectedSession })
 
         let accountIdentityResponse = Stubs.accountIdentityResponse()
         var authPassword: String!
@@ -2976,10 +3009,11 @@ public class RegistrationCoordinatorTest {
         await createSessionAndRequestFirstCode(coordinator: coordinator, mode: .registering)
 
         // Give back a verified session.
-        sessionManager.addSubmitCodeResponseMock(.success(stubs.session(
+        let expectedSession = stubs.session(
             receivedDate: date,
             verified: true,
-        )))
+        )
+        sessionManager.addSubmitVerificationCodeMock({ $0 = expectedSession })
 
         // Previously used SVR so we first ask to restore.
         let accountIdentityResponse = Stubs.accountIdentityResponse(hasPreviouslyUsedSVR: true)
