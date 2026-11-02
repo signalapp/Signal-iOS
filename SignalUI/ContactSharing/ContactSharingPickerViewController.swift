@@ -519,6 +519,7 @@ public class ContactSharingPickerViewController: OWSTableViewController2, UISear
 
     // MARK: - UITextViewDelegate
 
+    @available(iOS, deprecated: 17.0)
     public func textView(
         _ textView: UITextView,
         shouldInteractWith URL: URL,

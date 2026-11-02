@@ -561,6 +561,7 @@ extension ActionSheetController: UIViewControllerTransitioningDelegate {
 }
 
 extension ActionSheetController: UITextViewDelegate {
+    @available(iOS, deprecated: 17.0)
     public func textView(
         _ textView: UITextView,
         shouldInteractWith url: URL,

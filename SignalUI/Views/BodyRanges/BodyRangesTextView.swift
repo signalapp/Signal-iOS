@@ -725,10 +725,12 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         bodyRangesDelegate?.textViewDidEndEditing?(textView)
     }
 
+    @available(iOS, deprecated: 17.0)
     open func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         return bodyRangesDelegate?.textView?(textView, shouldInteractWith: URL, in: characterRange, interaction: interaction) ?? true
     }
 
+    @available(iOS, deprecated: 17.0)
     open func textView(_ textView: UITextView, shouldInteractWith textAttachment: NSTextAttachment, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         return bodyRangesDelegate?.textView?(textView, shouldInteractWith: textAttachment, in: characterRange, interaction: interaction) ?? true
     }

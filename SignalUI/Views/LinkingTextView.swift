@@ -87,6 +87,7 @@ public class LinkingTextView: UITextView {
 
 extension LinkingTextView: UITextViewDelegate {
 
+    @available(iOS, deprecated: 17.0)
     public func textView(_ textView: UITextView, shouldInteractWith url: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         if let shouldInteractWithURLOverride {
             return shouldInteractWithURLOverride(url)
