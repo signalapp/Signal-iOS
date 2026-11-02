@@ -19,7 +19,7 @@ concurrency:
 jobs:
   build_and_test:
     name: Build and Test
-    timeout-minutes: 20
+    timeout-minutes: 30
     runs-on: ${{matrix.os}}
     env:
       FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 7
