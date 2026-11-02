@@ -1099,13 +1099,13 @@ public class RegistrationCoordinatorTest {
         // NOTE: We expect to skip opening path steps because
         // if we have a SVR master key locally, this _must_ be
         // a previously registered device, and we can skip intros.
-        svr.restoreKeysMock = { pin, authMethod in
+        svr.restoreMasterKeyMock = { pin, authMethod in
             #expect(pin == Stubs.pinCode)
             if case .svrAuth(Stubs.svr2AuthCredential, backup: nil) = authMethod {
             } else {
                 Issue.record("wrong authMethod: \(authMethod)")
             }
-            return .value(.success(remoteMasterKey))
+            return remoteMasterKey
         }
 
         // First we try and create an account with reg recovery
@@ -1282,13 +1282,13 @@ public class RegistrationCoordinatorTest {
         // if we have a SVR master key locally, this _must_ be
         // a previously registered device, and we can skip intros.
 
-        svr.restoreKeysMock = { pin, authMethod in
+        svr.restoreMasterKeyMock = { pin, authMethod in
             #expect(pin == Stubs.pinCode)
             if case .svrAuth(Stubs.svr2AuthCredential, backup: nil) = authMethod {
             } else {
                 Issue.record("wrong authMethod: \(authMethod)")
             }
-            return .value(.success(remoteMasterKey))
+            return remoteMasterKey
         }
 
         // First we try and create an account with reg recovery
@@ -1433,14 +1433,14 @@ public class RegistrationCoordinatorTest {
         let finalMasterKey = aep.getMasterKey()
 
         // Resolve the key restoration from SVR and have it start returning the key.
-        svr.restoreKeysMock = { pin, authMethod in
+        svr.restoreMasterKeyMock = { pin, authMethod in
             self.testRun.addObservedStep(.restoreKeys)
             #expect(pin == Stubs.pinCode)
             if case .svrAuth(Stubs.svr2AuthCredential, backup: nil) = authMethod {
             } else {
                 Issue.record("wrong authMethod: \(authMethod)")
             }
-            return .value(.success(initialMasterKey))
+            return initialMasterKey
         }
 
         // Before registering, it should ask for push tokens to give the registration.

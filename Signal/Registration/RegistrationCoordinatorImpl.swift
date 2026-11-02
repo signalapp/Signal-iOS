@@ -2470,7 +2470,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return await restoreSVRMasterSecretForAuthCredentialPath(
             pin: pin,
             credential: svrAuthCredential,
-            failureCount: 0,
         )
     }
 
@@ -2478,14 +2477,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func restoreSVRMasterSecretForAuthCredentialPath(
         pin: String,
         credential: SVRAuthCredential,
-        failureCount: Int,
     ) async -> RegistrationStep {
-        let maxAutomaticRetries = Constants.networkErrorRetries
-
-        let result = await deps.svr.restoreKeys(pin: pin, authMethod: .svrAuth(credential, backup: nil))
-
-        switch result {
-        case .success(let masterKey):
+        do {
+            let masterKey = try await Retry.performWithBackoff(
+                maxAttempts: Constants.networkErrorRetries + 1,
+                isRetryable: { !($0 is SVR.RestoreMasterKeyError) },
+                block: {
+                    return try await deps.svr.restoreMasterKey(
+                        pin: pin,
+                        authMethod: .svrAuth(credential, backup: nil),
+                    )
+                },
+            )
             db.write {
                 updatePersistedState($0) { state in
                     state.recoveredSVRMasterKey = masterKey
@@ -2494,7 +2497,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 updateMasterKeyAndLocalState(masterKey: masterKey, tx: $0)
             }
             return await nextStep()
-        case let .invalidPin(remainingAttempts):
+        } catch SVR.RestoreMasterKeyError.wrongPin(let remainingAttempts) {
             return .pinEntry(RegistrationPinState(
                 operation: .enteringExistingPin(
                     skippability: .canSkip,
@@ -2504,7 +2507,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 contactSupportMode: contactSupportRegistrationPINMode(),
                 exitConfiguration: pinCodeEntryExitConfiguration(),
             ))
-        case .backupMissing:
+        } catch SVR.RestoreMasterKeyError.notFound {
             // If we are unable to talk to SVR, it got wiped and we can't
             // recover. Give it all up and wipe our SVR info.
             wipeInMemoryStateToPreventSVRPathAttempts()
@@ -2517,35 +2520,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .pinAttemptsExhaustedWithoutReglock(
                 .init(mode: .restoringRegistrationRecoveryPassword),
             )
-        case .networkError:
-            if failureCount < maxAutomaticRetries {
-                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
-                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
-                return await restoreSVRMasterSecretForAuthCredentialPath(
-                    pin: pin,
-                    credential: credential,
-                    failureCount: failureCount + 1,
-                )
-            }
+        } catch where error.isNetworkFailureOrTimeout {
             return .showErrorSheet(.networkError)
-        case .genericError:
-            if failureCount < maxAutomaticRetries {
-                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
-                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
-                return await restoreSVRMasterSecretForAuthCredentialPath(
-                    pin: pin,
-                    credential: credential,
-                    failureCount: failureCount + 1,
-                )
-            } else {
-                inMemoryState.pinFromUser = nil
-                return .pinEntry(RegistrationPinState(
-                    operation: .enteringExistingPin(skippability: .canSkip, remainingAttempts: nil),
-                    error: .serverError,
-                    contactSupportMode: contactSupportRegistrationPINMode(),
-                    exitConfiguration: pinCodeEntryExitConfiguration(),
-                ))
-            }
+        } catch {
+            inMemoryState.pinFromUser = nil
+            return .pinEntry(RegistrationPinState(
+                operation: .enteringExistingPin(skippability: .canSkip, remainingAttempts: nil),
+                error: .serverError,
+                contactSupportMode: contactSupportRegistrationPINMode(),
+                exitConfiguration: pinCodeEntryExitConfiguration(),
+            ))
         }
     }
 
@@ -3608,17 +3592,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         reglockExpirationDate: Date,
         failureCount: Int,
     ) async -> RegistrationStep {
-        let maxAutomaticRetries = Constants.networkErrorRetries
-
         logger.info("Restoring the master key from SVR to get past reglock")
 
-        let result = await deps.svr.restoreKeys(
-            pin: pin,
-            authMethod: .svrAuth(svrAuthCredential, backup: nil),
-        )
-
-        switch result {
-        case .success(let masterKey):
+        do {
+            let masterKey = try await Retry.performWithBackoff(
+                maxAttempts: Constants.networkErrorRetries + 1,
+                isRetryable: { $0.isNetworkFailureOrTimeout },
+                block: {
+                    return try await deps.svr.restoreMasterKey(
+                        pin: pin,
+                        authMethod: .svrAuth(svrAuthCredential, backup: nil),
+                    )
+                },
+            )
             logger.info("Restored the master key from SVR; retrying registration with a reglock token")
             self.db.write { tx in
                 self.updateMasterKeyAndLocalState(masterKey: masterKey, tx: tx)
@@ -3632,7 +3618,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
             }
             return await nextStep()
-        case let .invalidPin(remainingAttempts):
+        } catch SVR.RestoreMasterKeyError.wrongPin(let remainingAttempts) {
             logger.warn("Wrong PIN for the SVR restore; \(remainingAttempts) attempt(s) left")
             return .pinEntry(RegistrationPinState(
                 operation: .enteringExistingPin(
@@ -3643,7 +3629,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 contactSupportMode: contactSupportRegistrationPINMode(),
                 exitConfiguration: pinCodeEntryExitConfiguration(),
             ))
-        case .backupMissing:
+        } catch SVR.RestoreMasterKeyError.notFound {
             // If we are unable to talk to SVR, it got wiped, probably
             // because we used up our guesses. We can't get past reglock.
             logger.warn(
@@ -3661,20 +3647,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
             }
             return await nextStep()
-        case .networkError:
-            if failureCount < maxAutomaticRetries {
-                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
-                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
-                return await restoreSVRMasterSecretForSessionPathReglock(
-                    session: session,
-                    pin: pin,
-                    svrAuthCredential: svrAuthCredential,
-                    reglockExpirationDate: reglockExpirationDate,
-                    failureCount: failureCount + 1,
-                )
-            }
+        } catch where error.isNetworkFailureOrTimeout {
             return .showErrorSheet(.networkError)
-        case .genericError:
+        } catch {
             return .showErrorSheet(.genericError)
         }
     }
@@ -4260,8 +4235,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         accountIdentity: AccountIdentity,
         failureCount: Int,
     ) async -> RegistrationStep {
-        let maxAutomaticRetries = Constants.networkErrorRetries
-
         logger.info("")
 
         let backupAuthMethod = SVR.AuthMethod.chatServerAuth(accountIdentity.authedAccount)
@@ -4271,19 +4244,24 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         } else {
             authMethod = backupAuthMethod
         }
-        let result = await deps.svr.restoreKeys(
-            pin: pin,
-            authMethod: authMethod,
-        )
 
-        switch result {
-        case .success(let masterKey):
+        do {
+            let masterKey = try await Retry.performWithBackoff(
+                maxAttempts: Constants.networkErrorRetries + 1,
+                isRetryable: { !($0.isPostRegDeregisteredError || $0 is SVR.RestoreMasterKeyError) },
+                block: {
+                    return try await deps.svr.restoreMasterKey(
+                        pin: pin,
+                        authMethod: authMethod,
+                    )
+                },
+            )
             inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = false
             await db.awaitableWrite { tx in
                 updatePersistedState(tx) { $0.recoveredSVRMasterKey = masterKey }
             }
             return await nextStep()
-        case let .invalidPin(remainingAttempts):
+        } catch SVR.RestoreMasterKeyError.wrongPin(let remainingAttempts) {
             return .pinEntry(RegistrationPinState(
                 operation: .enteringExistingPin(
                     skippability: .canSkipAndCreateNew,
@@ -4293,7 +4271,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 contactSupportMode: contactSupportRegistrationPINMode(),
                 exitConfiguration: pinCodeEntryExitConfiguration(),
             ))
-        case .backupMissing:
+        } catch SVR.RestoreMasterKeyError.notFound {
             // If we are unable to talk to SVR, it got wiped and we can't
             // recover. Keep going like if nothing happened.
             inMemoryState.pinFromUser = nil
@@ -4304,40 +4282,21 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .pinAttemptsExhaustedWithoutReglock(
                 .init(mode: .restoringBackup),
             )
-        case .networkError:
-            if failureCount < maxAutomaticRetries {
-                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
-                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
-                return await restoreSVRBackupPostRegistration(
-                    pin: pin,
-                    accountIdentity: accountIdentity,
-                    failureCount: failureCount + 1,
-                )
-            }
+        } catch where error.isNetworkFailureOrTimeout {
             return .showErrorSheet(.networkError)
-        case .genericError(let error):
-            if error.isPostRegDeregisteredError {
-                return await becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
-            } else if failureCount < maxAutomaticRetries {
-                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
-                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
-                return await restoreSVRBackupPostRegistration(
-                    pin: pin,
-                    accountIdentity: accountIdentity,
-                    failureCount: failureCount + 1,
-                )
-            } else {
-                self.inMemoryState.pinFromUser = nil
-                return .pinEntry(RegistrationPinState(
-                    operation: .enteringExistingPin(
-                        skippability: .canSkipAndCreateNew,
-                        remainingAttempts: nil,
-                    ),
-                    error: .serverError,
-                    contactSupportMode: self.contactSupportRegistrationPINMode(),
-                    exitConfiguration: self.pinCodeEntryExitConfiguration(),
-                ))
-            }
+        } catch where error.isPostRegDeregisteredError {
+            return await becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
+        } catch {
+            self.inMemoryState.pinFromUser = nil
+            return .pinEntry(RegistrationPinState(
+                operation: .enteringExistingPin(
+                    skippability: .canSkipAndCreateNew,
+                    remainingAttempts: nil,
+                ),
+                error: .serverError,
+                contactSupportMode: self.contactSupportRegistrationPINMode(),
+                exitConfiguration: self.pinCodeEntryExitConfiguration(),
+            ))
         }
     }
 

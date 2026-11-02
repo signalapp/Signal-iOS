@@ -78,20 +78,9 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
     }
 
-    public func restoreKeys(pin: String, authMethod: SVR.AuthMethod) async -> SVR.RestoreKeysResult {
+    public func restoreMasterKey(pin: String, authMethod: SVR.AuthMethod) async throws -> MasterKey {
         Logger.info("")
-        // When we restore, we remember which enclave it was from. On some future app startup, we check
-        // this enclave, and migrate to a new one if available. This code path relies on that happening
-        // asynchronously.
-        do {
-            return try await doRestore(pin: pin, authMethod: authMethod).asSVRResult
-        } catch {
-            // [Err] TODO: Expose these directly to the caller.
-            if error.isNetworkFailureOrTimeout {
-                return .networkError(error)
-            }
-            return .genericError(error)
-        }
+        return try await doRestore(pin: pin, authMethod: authMethod)
     }
 
     public func storeKeys(
@@ -375,55 +364,41 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     // MARK: - Restore Request
 
-    private enum RestoreResult {
-        case success(masterKey: MasterKey, mrEnclave: MrEnclave)
-        case invalidPin(remainingAttempts: UInt32)
-        case backupMissing
-
-        var asSVRResult: SVR.RestoreKeysResult {
-            switch self {
-            case .success(let masterKey, _):
-                return .success(masterKey)
-            case .backupMissing:
-                return .backupMissing
-            case .invalidPin(let remainingAttempts):
-                return .invalidPin(remainingAttempts: remainingAttempts)
-            }
-        }
-    }
-
     private func doRestore(
         pin: String,
         authMethod: SVR2.AuthMethod,
-    ) async throws -> RestoreResult {
+    ) async throws -> MasterKey {
         for enclave in tsConstants.svr2Enclaves {
-            let enclaveResult = try await self.doRestoreForSpecificEnclave(
-                pin: pin,
-                mrEnclave: enclave,
-                authMethod: authMethod,
-            )
-            switch enclaveResult {
-            case .backupMissing:
-                // Only if we get an explicit backup missing result
-                // from the server, try prior enclaves.
-                // This works because we always wipe old enclaves when
-                // we know about newer ones, so the only reason we'd have
-                // anything in an old enclave is that we haven't migrated yet.
-                // Once we migrate, we wipe the old one.
-                continue
-            case .success, .invalidPin:
-                return enclaveResult
+            do {
+                return try await self.doRestoreForSpecificEnclave(
+                    pin: pin,
+                    mrEnclave: enclave,
+                    authMethod: authMethod,
+                )
+            } catch let error as SVR.RestoreMasterKeyError {
+                switch error {
+                case .wrongPin:
+                    throw error
+                case .notFound:
+                    // Only if we get an explicit backup missing result
+                    // from the server, try prior enclaves.
+                    // This works because we always wipe old enclaves when
+                    // we know about newer ones, so the only reason we'd have
+                    // anything in an old enclave is that we haven't migrated yet.
+                    // Once we migrate, we wipe the old one.
+                    break
+                }
             }
         }
         // If we reach the end, there's no backup.
-        return .backupMissing
+        throw SVR.RestoreMasterKeyError.notFound
     }
 
     private func doRestoreForSpecificEnclave(
         pin: String,
         mrEnclave: MrEnclave,
         authMethod: SVR2.AuthMethod,
-    ) async throws -> RestoreResult {
+    ) async throws -> MasterKey {
         let config = SVR2WebsocketConfigurator(
             mrenclave: mrEnclave,
             authMethod: authMethod,
@@ -440,7 +415,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             )
         } catch WebSocketError.httpError(statusCode: 404, retryAfter: _) {
             Logger.warn("skipping restore for non-existent enclave")
-            return .backupMissing
+            throw SVR.RestoreMasterKeyError.notFound
         }
     }
 
@@ -448,7 +423,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         mrEnclave: MrEnclave,
         pin: String,
         connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
-    ) async throws -> RestoreResult {
+    ) async throws -> MasterKey {
         let pinHash = try hashPin(pin, forConnection: connection)
 
         var restoreRequest = SVR2Proto_RestoreRequest()
@@ -464,16 +439,16 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             throw OWSGenericError("restore status response unknown")
         case .missing:
             Logger.info("restore response: backup missing")
-            return .backupMissing
+            throw SVR.RestoreMasterKeyError.notFound
         case .pinMismatch:
             Logger.info("restore response: invalid pin")
-            return .invalidPin(remainingAttempts: response.restore.tries)
+            throw SVR.RestoreMasterKeyError.wrongPin(remainingAttempts: response.restore.tries)
         case .ok:
             Logger.info("Restore success!")
             let encryptedMasterKey = response.restore.data
             let masterKeyData = try pinHash.decryptMasterKey(encryptedMasterKey)
             let masterKey = try MasterKey(data: masterKeyData)
-            return .success(masterKey: masterKey, mrEnclave: mrEnclave)
+            return masterKey
         }
     }
 

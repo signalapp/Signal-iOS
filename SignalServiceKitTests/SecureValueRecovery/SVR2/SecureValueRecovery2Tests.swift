@@ -348,6 +348,79 @@ class SecureValueRecovery2Tests: XCTestCase {
             XCTAssertEqual(localStorage.backupAttemptStore.fetchKeys(tx: tx), [mockEnclave.stringValue])
         }
     }
+
+    @MainActor
+    func testRestore() async throws {
+        let pin = "1234"
+        let masterKey = AccountEntropyPool().getMasterKey()
+
+        // Set up the connections to both the old and new enclaves.
+        let mockAuth = RemoteAttestationAuth(username: "username", password: "password")
+
+        let oldEnclave = MrEnclave("0000000000000000000000000000000000000000000000000000000000000000")
+        let oldEnclaveConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
+        oldEnclaveConnection.mockEnclave = oldEnclave
+        oldEnclaveConnection.mockAuth = mockAuth
+        let oldPinHash = try MockPinHasher().hashPin(normalizedPin: pin, username: "username", mrEnclave: oldEnclave)
+        let oldMasterKeyCiphertext = try oldPinHash.encryptMasterKey(masterKey.rawData)
+
+        let newEnclave = MrEnclave("0101010101010101010101010101010101010101010101010101010101010101")
+        let newEnclaveConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
+        newEnclaveConnection.mockEnclave = newEnclave
+        newEnclaveConnection.mockAuth = mockAuth
+        let newPinHash = try MockPinHasher().hashPin(normalizedPin: pin, username: "username", mrEnclave: newEnclave)
+
+        mockConnectionFactory.setOnConnectAndPerformHandshake { (config: SVR2WebsocketConfigurator) in
+            switch config.mrenclave.stringValue {
+            case oldEnclave.stringValue:
+                return oldEnclaveConnection
+            case newEnclave.stringValue:
+                return newEnclaveConnection
+            default:
+                throw OWSAssertionError("")
+            }
+        }
+
+        var newEnclaveRequestCount = 0
+        newEnclaveConnection.onSendRequestAndReadResponse = { request in
+            defer { newEnclaveRequestCount += 1 }
+            var response = SVR2Proto_Response()
+            switch newEnclaveRequestCount {
+            case 0:
+                // First it should issue a backup to the new enclave.
+                XCTAssert(request.hasRestore)
+                XCTAssertEqual(request.restore.pin, newPinHash.accessKey)
+                response.restore.status = .missing
+            default:
+                return Promise(error: OWSAssertionError(""))
+            }
+            return .value(response)
+        }
+
+        var oldEnclaveRequestCount = 0
+        oldEnclaveConnection.onSendRequestAndReadResponse = { request in
+            defer { oldEnclaveRequestCount += 1 }
+            var response = SVR2Proto_Response()
+            switch oldEnclaveRequestCount {
+            case 0:
+                // First it should issue a backup to the old enclave
+                XCTAssert(request.hasRestore)
+                XCTAssertEqual(request.restore.pin, oldPinHash.accessKey)
+                response.restore.status = .ok
+                response.restore.data = oldMasterKeyCiphertext
+            default:
+                return Promise(error: OWSAssertionError(""))
+            }
+            return .value(response)
+        }
+
+        // Migrate to the old enclave.
+        mockTSConstants.svr2Enclaves = [newEnclave, oldEnclave]
+        mockTSConstants.activeSvr2EnclaveCount = 1
+
+        let restoredMasterKey = try await svr.restoreMasterKey(pin: pin, authMethod: .implicit)
+        XCTAssertEqual(restoredMasterKey.rawData, masterKey.rawData)
+    }
 }
 
 // MARK: -
