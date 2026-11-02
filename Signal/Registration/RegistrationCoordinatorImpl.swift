@@ -4636,14 +4636,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         logger.info("")
 
         switch mode {
-        case .reRegistering(let localIdentifiers):
+        case .reRegistering:
             if !persistedState.hasResetForReRegistration {
                 db.write { tx in
-                    deps.registrationStateChangeManager.resetForReregistration(
-                        localIdentifiers: localIdentifiers,
-                        isPrimaryDevice: true,
-                        tx: tx,
-                    )
+                    deps.registrationStateChangeManager.resetForReregistration(isPrimaryDevice: true, tx: tx)
                     updatePersistedState(tx) {
                         $0.hasResetForReRegistration = true
                     }

@@ -48,25 +48,9 @@ public protocol RegistrationStateChangeManager {
     )
 
     /**
-     * Reset the account state to prepare for reregistration.
-     * Should only be called when in ``TSRegistrationState.deregistered`` or
-     * ``TSRegistrationState.delinked``, and local identifiers are set.
-     * This puts the state into ``TSRegistrationState.reregistering``.
-     *
-     * Can fail, if local state is not as expected. In these cases, will return false and callers
-     * should abort any reregistration attempts.
-     *
-     * To observe changes related to this method, use ``NSNotification.Name.registrationStateDidChange``
-     * and ``NSNotification.Name.localNumberDidChange``.
-     *
-     * Note that some side effects (generally, those that must happen in the same write transaction)
-     * are triggered internally by this class and don't need separate observation.
+     * Reset the account state to prepare for registration.
      */
-    func resetForReregistration(
-        localIdentifiers: ReregisteringLocalIdentifiers,
-        isPrimaryDevice: Bool,
-        tx: DBWriteTransaction,
-    )
+    func resetForReregistration(isPrimaryDevice: Bool, tx: DBWriteTransaction)
 
     /**
      * Set when a transfer (incoming or outgoing) begins.

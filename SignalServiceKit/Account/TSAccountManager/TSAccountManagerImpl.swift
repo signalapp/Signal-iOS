@@ -247,34 +247,29 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
         }
     }
 
-    public func resetForReregistration(
-        localIdentifiers: ReregisteringLocalIdentifiers,
-        isPrimaryDevice: Bool,
-        tx: DBWriteTransaction,
-    ) {
+    public func resetForReregistration(tx: DBWriteTransaction) {
         mutateWithLock(tx: tx) {
-            Self.regStateLogger.info("resetting for reregistration; isPrimary? \(isPrimaryDevice)")
-
-            kvStore.writeValue(localIdentifiers.phoneNumber, forKey: Keys.reregistrationPhoneNumber, tx: tx)
-            kvStore.writeValue(localIdentifiers.aci?.serviceIdUppercaseString, forKey: Keys.reregistrationAci, tx: tx)
-            kvStore.writeValue(isPrimaryDevice, forKey: Keys.reregistrationWasPrimaryDevice, tx: tx)
+            Self.regStateLogger.info("resetting for reregistration")
 
             let keysToKeep: Set<String> = [
+                // These define our current identity and are updated during registration.
+                Keys.isDeregisteredOrDelinked,
+                Keys.localAci,
+                Keys.localPhoneNumber,
+                Keys.localPni,
+                Keys.authCredentialSalt,
+                Keys.deviceId,
+                // We explicitly want to maintian these across re-registrations.
                 Keys.isDiscoverableByPhoneNumber,
                 Keys.lastSetIsDiscoverableByPhoneNumber,
+                // If these are already set, we need to keep them to maintain this state.
                 Keys.reregistrationAci,
                 Keys.reregistrationPhoneNumber,
                 Keys.reregistrationWasPrimaryDevice,
             ]
             let keysToRemove: Set<String> = [
-                Keys.deviceId,
-                Keys.isDeregisteredOrDelinked,
                 Keys.isManualMessageFetchEnabled,
                 Keys.isTransferInProgress,
-                Keys.localAci,
-                Keys.localPhoneNumber,
-                Keys.localPni,
-                Keys.authCredentialSalt,
                 Keys.aciRegistrationIdKey,
                 Keys.pniRegistrationIdKey,
                 Keys.registrationDate,
@@ -573,13 +568,19 @@ extension TSAccountManagerImpl {
                 phoneNumber: kvStore.fetchValue(String.self, forKey: Keys.reregistrationPhoneNumber, tx: tx),
                 aci: Aci.parseFrom(aciString: kvStore.fetchValue(String.self, forKey: Keys.reregistrationAci, tx: tx)),
             )
+            // TODO: Move this logic into a GRDB migration.
+            // These values are no longer set, but existing installations may have them.
             if let reregisteringLocalIdentifiers {
-                // (Note: isDeregistered is probably also true; this takes precedence.)
+                let localIdentifiers = DeregisteredLocalIdentifiers(
+                    aci: reregisteringLocalIdentifiers.aci,
+                    phoneNumber: reregisteringLocalIdentifiers.phoneNumber,
+                    pni: nil,
+                )
                 let shouldDefaultToPrimaryDevice = UIDevice.current.userInterfaceIdiom == .phone
                 if kvStore.fetchValue(Bool.self, forKey: Keys.reregistrationWasPrimaryDevice, tx: tx) ?? shouldDefaultToPrimaryDevice {
-                    return .reregistering(reregisteringLocalIdentifiers)
+                    return .deregistered(localIdentifiers)
                 } else {
-                    return .relinking(reregisteringLocalIdentifiers)
+                    return .delinked(localIdentifiers)
                 }
             }
             let isDeregisteredOrDelinked = kvStore.fetchValue(Bool.self, forKey: Keys.isDeregisteredOrDelinked, tx: tx) ?? false

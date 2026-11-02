@@ -126,7 +126,6 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
             switch registrationState {
             case
                 .unregistered,
-                .reregistering,
                 .deregistered,
                 .transferringIncoming,
                 .transferringPrimaryOutgoing,
@@ -138,7 +137,6 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
                 await loader.stop(reason: error)
                 return .retryableError(error)
             case
-                .relinking,
                 .delinked,
                 .transferringLinkedOutgoing,
                 .provisioned:

@@ -17,7 +17,7 @@ public struct DeregisteredState {
         case .delinked(let localIdentifiers):
             self.isPrimary = false
             self.localIdentifiers = localIdentifiers
-        case .unregistered, .reregistering, .relinking, .registered, .provisioned, .transferringIncoming, .transferringPrimaryOutgoing, .transferringLinkedOutgoing, .transferred:
+        case .unregistered, .registered, .provisioned, .transferringIncoming, .transferringPrimaryOutgoing, .transferringLinkedOutgoing, .transferred:
             return nil
         }
     }

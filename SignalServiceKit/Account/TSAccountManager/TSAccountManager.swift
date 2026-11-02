@@ -180,19 +180,9 @@ public protocol LocalIdentifiersSetter {
     )
 
     /// Returns true if successful. Not successful iff the old value is the same as new value (no-op).
-    ///
-    /// Note that the old value is NOT equivalent to ``TSRegistrationState.deregistered``
-    /// or ``TSRegistrationState.delinked``; you can be deregistered AND reregistering,
-    /// in which case state would be ``TSRegistrationState.reregistering`` (and remain so)
-    /// but this method could still mutate underlying state which would take effect _after_ the
-    /// reregistration state was also cleared.
     func setIsDeregisteredOrDelinked(_ isDeregisteredOrDelinked: Bool, tx: DBWriteTransaction) -> Bool
 
-    func resetForReregistration(
-        localIdentifiers: ReregisteringLocalIdentifiers,
-        isPrimaryDevice: Bool,
-        tx: DBWriteTransaction,
-    )
+    func resetForReregistration(tx: DBWriteTransaction)
 
     /// Returns true if value changed, false otherwise.
     func setIsTransferInProgress(_ isTransferInProgress: Bool, tx: DBWriteTransaction) -> Bool

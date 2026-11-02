@@ -1050,15 +1050,6 @@ final class AppLifecycleManager: NSObject, UNUserNotificationCenterDelegate {
             // We're already registered.
             return .chatList
 
-        case .reregistering(let localIdentifiers):
-            Logger.info("Found legacy re-registration; continuing in new registration")
-            // A user who started re-registration before the new
-            // registration flow shipped; kick them to new re-reg.
-            return .registration(regLoader, .reRegistering(localIdentifiers))
-
-        case .relinking:
-            return .secondaryProvisioning
-
         case .deregistered:
             // If we are deregistered, go to the chat list in the deregistered state.
             // The user can kick of re-registration from there, which will set the

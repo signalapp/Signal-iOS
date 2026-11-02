@@ -197,16 +197,8 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         }
     }
 
-    public func resetForReregistration(
-        localIdentifiers: ReregisteringLocalIdentifiers,
-        isPrimaryDevice: Bool,
-        tx: DBWriteTransaction,
-    ) {
-        tsAccountManager.resetForReregistration(
-            localIdentifiers: localIdentifiers,
-            isPrimaryDevice: isPrimaryDevice,
-            tx: tx,
-        )
+    public func resetForReregistration(isPrimaryDevice: Bool, tx: DBWriteTransaction) {
+        tsAccountManager.resetForReregistration(tx: tx)
 
         signalProtocolStoreManager.sessionStore.deleteAllSessions(tx: tx)
         senderKeyManager.resetAll(tx: tx)
@@ -220,11 +212,6 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         } else {
             // PaymentsEvents will dispatch this event to the appropriate singletons.
             paymentsEvents.clearState(transaction: tx)
-        }
-
-        tx.addSyncCompletion {
-            self.postRegistrationStateDidChangeNotification()
-            self.postLocalNumberDidChangeNotification()
         }
     }
 
