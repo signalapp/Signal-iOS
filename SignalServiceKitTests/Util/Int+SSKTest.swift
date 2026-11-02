@@ -4,8 +4,8 @@
 //
 
 import Foundation
-@testable import SignalServiceKit
 import Testing
+@testable import SignalServiceKit
 
 struct IntTest {
     @Test
