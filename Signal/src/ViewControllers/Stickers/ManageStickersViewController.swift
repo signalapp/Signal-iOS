@@ -71,9 +71,9 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
 
     // MARK: - View Lifecycle
 
-    override public var navbarBackgroundColorOverride: UIColor? { cellBackgroundColor }
+    override var navbarBackgroundColorOverride: UIColor? { cellBackgroundColor }
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         navigationItem.title = OWSLocalizedString("STICKERS_MANAGE_VIEW_TITLE", comment: "Title for the 'manage stickers' view.")
@@ -89,7 +89,7 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
 
         backgroundStyle = .none
         tableView.backgroundColor = cellBackgroundColor
-        defaultSeparatorInsetLeading = iconSize + iconSpacing
+        defaultSeparatorInsetLeading = hInnerMargin + iconSize + iconSpacing
 
         updateState()
 
@@ -291,6 +291,7 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
                         }
                         self?.show(packInfo: packInfo)
                     },
+                    contextMenuActionProvider: contextMenuActionProvider(pack: dataSource),
                 ))
             }
             contents.add(installedSection)
@@ -315,6 +316,7 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
                         }
                         self?.show(packInfo: packInfo)
                     },
+                    contextMenuActionProvider: contextMenuActionProvider(pack: dataSource),
                 )
             }
 
@@ -517,6 +519,7 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
         return view
     }
 
+    private let hInnerMargin: CGFloat = 4
     private let iconSize: CGFloat = 56
     private let iconSpacing: CGFloat = 12
     private func buildTableCell(
@@ -604,8 +607,8 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
         stack.spacing = iconSpacing
 
         cell.contentView.addSubview(stack)
-        stack.autoPinEdge(toSuperviewEdge: .leading, withInset: 0)
-        stack.autoPinEdge(toSuperviewEdge: .trailing, withInset: 0)
+        stack.autoPinEdge(toSuperviewEdge: .leading, withInset: hInnerMargin)
+        stack.autoPinEdge(toSuperviewEdge: .trailing, withInset: hInnerMargin)
         stack.autoPinEdge(toSuperviewEdge: .top, withInset: Self.cellVInnerMargin)
         stack.autoPinEdge(toSuperviewEdge: .bottom, withInset: Self.cellVInnerMargin)
 
@@ -671,6 +674,82 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
         return container
     }()
 
+    // MARK: Context menu
+
+    func contextMenuActionProvider(pack: StickerPackDataSource) -> UIContextMenuActionProvider {
+        return { [weak self] _ in
+            guard
+                let self,
+                let stickerPack = pack.getStickerPack()
+            else {
+                return nil
+            }
+
+            let additionalAction = if (stickerPack.isInstalled == true) {
+                [self.removeAction(pack: pack)]
+            } else {
+                [self.addAction(pack: pack)]
+            }
+
+            return UIMenu(children: [
+                self.sendAction(pack: pack),
+                self.copyAction(pack: pack),
+            ] + additionalAction)
+        }
+    }
+
+    private func sendAction(pack: StickerPackDataSource) -> UIAction {
+        UIAction(
+            title: OWSLocalizedString(
+                "STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND",
+                comment: "The title for a context menu item that sends the sticker pack link to someone else.",
+            ),
+            image: UIImage(named: "forward"),
+        ) { [weak self] _ in
+            guard let self, let info = pack.info else { return }
+            self.share(packInfo: info)
+        }
+    }
+
+    private func copyAction(pack: StickerPackDataSource) -> UIAction {
+        UIAction(
+            title: OWSLocalizedString(
+                "STICKERS_MANAGE_VIEW_CONTEXT_MENU_COPY",
+                comment: "The title for a context menu item that copies the sticker pack link.",
+            ),
+            image: UIImage(named: "link"),
+        ) { [weak self] _ in
+            guard let self, let info = pack.info else { return }
+            self.copyLinkToPasteboard(packInfo: info)
+        }
+    }
+
+    private func removeAction(pack: StickerPackDataSource) -> UIAction {
+        UIAction(
+            title: OWSLocalizedString(
+                "STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE",
+                comment: "The title for a context menu item that uninstalls a sticker pack.",
+            ),
+            image: UIImage(named: "minus-circle"),
+        ) { [weak self] _ in
+            guard let self, let info = pack.info else { return }
+            self.didTapUninstall(pack: info)
+        }
+    }
+
+    private func addAction(pack: StickerPackDataSource) -> UIAction {
+        UIAction(
+            title: OWSLocalizedString(
+                "STICKERS_MANAGE_VIEW_CONTEXT_MENU_ADD",
+                comment: "The title for a context menu item that installs a sticker pack.",
+            ),
+            image: UIImage(named: "plus-circle"),
+        ) { [weak self] _ in
+            guard let self, let stickerPack = pack.getStickerPack() else { return }
+            self.install(stickerPack: stickerPack)
+        }
+    }
+
     // MARK: Events
 
     private func show(packInfo: StickerPackInfo) {
@@ -733,6 +812,57 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
             }
             self?.updateState()
         }
+    }
+
+    private func copyLinkToPasteboard(packInfo: StickerPackInfo) {
+        UIPasteboard.general.string = packInfo.shareUrl()
+        presentToast(
+            text: CommonStrings.copiedToClipboardToast,
+            image: .copy,
+        )
+    }
+
+    private func didTapUninstall(pack: StickerPackInfo) {
+        let confirmUninstallSheet = ActionSheetController(
+            title: OWSLocalizedString("STICKER_PACK_CONFIRM_REMOVE_TITLE", comment: "Title for a sheet asking the user to confirm they want to remove a sticker pack"),
+            message: OWSLocalizedString("STICKER_PACK_CONFIRM_REMOVE_MESSAGE", comment: "Message for a sheet asking the user to confirm they want to remove a sticker pack"),
+        )
+
+        confirmUninstallSheet.addAction(
+            ActionSheetAction(
+                title: OWSLocalizedString(
+                    "STICKER_PACK_CONFIRM_REMOVE_BUTTON",
+                    comment: "Button to confirm a user wants to remove a sticker pack",
+                ),
+                style: .destructive,
+                handler: { [weak self] _ in
+                    self?.didConfirmUninstall(pack: pack)
+                },
+            ),
+        )
+        confirmUninstallSheet.addAction(.cancel)
+        presentActionSheet(confirmUninstallSheet)
+    }
+
+    private func didConfirmUninstall(pack: StickerPackInfo) {
+        let stickerPackInfo = pack
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            canCancel: false,
+            presentationDelay: 0,
+            backgroundBlock: { [db, stickerManager] modal in
+                db.write { transaction in
+                    stickerManager.uninstallStickerPack(
+                        stickerPackInfo: stickerPackInfo,
+                        wasLocallyInitiated: true,
+                        transaction: transaction,
+                    )
+                }
+                DispatchQueue.main.async {
+                    modal.dismiss()
+                }
+            },
+        )
     }
 
     private func showAllPacks(revealingIndices: [IndexPath]) {

@@ -10364,6 +10364,18 @@
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Shared With You";
 
+/* The title for a context menu item that installs a sticker pack. */
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_ADD" = "Add";
+
+/* The title for a context menu item that copies the sticker pack link. */
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_COPY" = "Copy Link";
+
+/* The title for a context menu item that uninstalls a sticker pack. */
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "Remove";
+
+/* The title for a context menu item that sends the sticker pack link to someone else. */
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "Send";
+
 /* Label indicating that one or more known sticker packs failed to load. */
 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
 
