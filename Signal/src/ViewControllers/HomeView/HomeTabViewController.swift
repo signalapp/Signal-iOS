@@ -39,8 +39,21 @@ extension HomeTabViewController {
             handler: { _ in showAppSettings() },
         )
 
+        let donateAction = UIAction(
+            title: OWSLocalizedString(
+                "HOME_VIEW_TITLE_DONATE",
+                comment: "Title for the 'donate' action in the context menu of the settings button on home view tabs.",
+            ),
+            image: Theme.iconImage(.settingsDonate),
+            handler: { [weak self] _ in
+                self?.homeTabBarController?.showAppSettingsWithMode(
+                    .donate(donateMode: .oneTime),
+                )
+            },
+        )
+
         let contextButton = ContextMenuButton(
-            actions: buildActions(settingsAction),
+            actions: buildActions(settingsAction) + [donateAction],
             onDidDismissContextMenu: onDidDismissContextMenu,
         )
         contextButton.accessibilityLabel = CommonStrings.openAppSettingsButton
