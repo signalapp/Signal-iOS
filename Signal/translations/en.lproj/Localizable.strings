@@ -10163,6 +10163,15 @@
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
 
+/* Message for a sheet shown when tapping the disabled screen security switch in privacy settings. */
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_MESSAGE" = "To protect your privacy, your screen is always hidden in the App Switcher when Block Siri AI is on. Turning off Block Siri AI will unlock this setting.";
+
+/* Title for a sheet shown when tapping the disabled screen security switch in privacy settings. */
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_TITLE" = "Block Siri AI is On";
+
+/* Title for a button in a sheet shown when tapping the disabled screen security switch in privacy settings. */
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_VIEW_SETTING_BUTTON_TITLE" = "View Setting";
+
 /* Footer for table section */
 "SETTINGS_SECTION_FOOTER_CALLING" = "Show calls in the “Recents” list in the iOS Phone app.";
 

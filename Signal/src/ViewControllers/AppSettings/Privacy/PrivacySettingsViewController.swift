@@ -7,6 +7,8 @@ import SignalServiceKit
 import SignalUI
 
 class PrivacySettingsViewController: OWSTableViewController2 {
+    private weak var screenshotBlockingSection: OWSTableSection?
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -170,11 +172,32 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             appSecuritySection.footerTitle = OWSLocalizedString("SETTINGS_SECURITY_DETAIL_OPTICID", comment: "Section footer")
         }
 
+        let isScreenshotBlockingEnabled: Bool
+        if ScreenshotBlockingManager.isAvailable {
+            let screenshotBlockingPreference = DependenciesBridge.shared.db.read {
+                AppEnvironment.shared.screenshotBlockingManager!
+                    .getPreference(tx: $0)
+            }
+            isScreenshotBlockingEnabled = switch screenshotBlockingPreference {
+            case .blockScreenshots: true
+            case .doNotBlockScreenshots, .doNotBlockScreenshotsForTenMinutes: false
+            }
+        } else {
+            isScreenshotBlockingEnabled = false
+        }
+
         appSecuritySection.add(.switch(
             withText: OWSLocalizedString("SETTINGS_SCREEN_SECURITY", comment: ""),
-            isOn: { SSKEnvironment.shared.preferencesRef.isScreenSecurityEnabled },
+            isOn: {
+                isScreenshotBlockingEnabled
+                    || SSKEnvironment.shared.preferencesRef.isScreenSecurityEnabled
+            },
+            isEnabled: { !isScreenshotBlockingEnabled },
             actionBlock: { [weak self] uiSwitch in
                 self?.didToggleScreenSecurity(uiSwitch)
+            },
+            disabledTapActionBlock: { [weak self] in
+                self?.showScreenSecurityLockedSheet()
             },
         ))
         appSecuritySection.add(.switch(
@@ -269,6 +292,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 selectedMenuOption: currentPreference,
             ))
             contents.add(screenshotBlockingSection)
+            self.screenshotBlockingSection = screenshotBlockingSection
         }
 
         // Payments
@@ -355,6 +379,58 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
     private func didToggleScreenSecurity(_ sender: UISwitch) {
         SSKEnvironment.shared.preferencesRef.setIsScreenSecurityEnabled(sender.isOn)
+    }
+
+    private func showScreenSecurityLockedSheet() {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_TITLE",
+                comment: "Title for a sheet shown when tapping the disabled screen security switch in privacy settings.",
+            ),
+            message: OWSLocalizedString(
+                "SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_MESSAGE",
+                comment: "Message for a sheet shown when tapping the disabled screen security switch in privacy settings.",
+            ),
+        )
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_VIEW_SETTING_BUTTON_TITLE",
+                comment: "Title for a button in a sheet shown when tapping the disabled screen security switch in privacy settings.",
+            ),
+            handler: { [weak self] _ in
+                self?.scrollToAndHighlightScreenshotBlockingRow()
+            },
+        ))
+        actionSheet.addAction(.ok)
+        presentActionSheet(actionSheet)
+    }
+
+    private func scrollToAndHighlightScreenshotBlockingRow() {
+        guard
+            let screenshotBlockingSection,
+            let sectionIndex = contents.sections.firstIndex(where: {
+                $0 === screenshotBlockingSection
+            })
+        else {
+            return
+        }
+        let indexPath = IndexPath(row: 0, section: sectionIndex)
+
+        tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+
+        Task {
+            guard let cell = tableView.cellForRow(at: indexPath) else { return }
+
+            try? await Task.sleep(nanoseconds: 0.2.clampedNanoseconds)
+
+            // Briefly highlight the row to make it really obvious.
+            let originalSelectionStyle = cell.selectionStyle
+            cell.selectionStyle = .default
+            cell.setHighlighted(true, animated: true)
+            try? await Task.sleep(nanoseconds: 0.5.clampedNanoseconds)
+            cell.setHighlighted(false, animated: true)
+            cell.selectionStyle = originalSelectionStyle
+        }
     }
 
     private func didToggleScreenLock(_ sender: UISwitch) {
