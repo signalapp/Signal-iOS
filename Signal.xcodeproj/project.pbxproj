@@ -971,7 +971,6 @@
 		63DAB29A308A59AD00764C31 /* SQLCipher in Frameworks */ = {isa = PBXBuildFile; productRef = 63DAB299308A59AD00764C31 /* SQLCipher */; };
 		63DAB29C308A5DEC00764C31 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 63DAB29B308A5DEC00764C31 /* GRDB */; };
 		63DAB29E308A5DF800764C31 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 63DAB29D308A5DF800764C31 /* GRDB */; };
-		E89806325E61AF66B93F902A /* SignalMessageBackupTests in Frameworks */ = {isa = PBXBuildFile; productRef = F51E5093CA28750A1A691909 /* SignalMessageBackupTests */; };
 		63DAB2A0308A5E0000764C31 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 63DAB29F308A5E0000764C31 /* GRDB */; };
 		63DC45303079AF9100119464 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC452F3079AF9100119464 /* Lottie */; };
 		63DC45323079AF9C00119464 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 63DC45313079AF9C00119464 /* Lottie */; };
@@ -2523,6 +2522,7 @@
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
 		E75DD3E02810CDBD00E32C36 /* SubscriptionModelsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD3DF2810CDBD00E32C36 /* SubscriptionModelsTest.swift */; };
 		E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */; };
+		E89806325E61AF66B93F902A /* SignalMessageBackupTests in Frameworks */ = {isa = PBXBuildFile; productRef = F51E5093CA28750A1A691909 /* SignalMessageBackupTests */; };
 		ED0DCCF3A307EB06A9352222 /* SignalRingRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 2D0111921182D8AB2A063FC6 /* SignalRingRTC */; };
 		F02564D8274EDF4600D7B48A /* BadgeIssueSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02564D7274EDF4600D7B48A /* BadgeIssueSheet.swift */; };
 		F05F51C926A90D6B00861034 /* ContextMenuActionsAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */; };
@@ -13089,7 +13089,7 @@
 				631CB520307EDA7800EA5851 /* XCRemoteSwiftPackageReference "swift-protobuf" */,
 				631CB52B307EDB0000EA5851 /* XCRemoteSwiftPackageReference "cocoalumberjack" */,
 				636E635E30892FEF008905CF /* XCRemoteSwiftPackageReference "MobileCoin-Swift" */,
-				638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
+				638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */,
 				63DAB296308A59A000764C31 /* XCRemoteSwiftPackageReference "sqlcipher" */,
 				631759F930921FA700C98C98 /* XCRemoteSwiftPackageReference "libsignal" */,
 				6EA6825FE538D9157EB1011D /* XCRemoteSwiftPackageReference "Signal-Message-Backup-Tests" */,
@@ -18481,14 +18481,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		6EA6825FE538D9157EB1011D /* XCRemoteSwiftPackageReference "Signal-Message-Backup-Tests" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/signalapp/Signal-Message-Backup-Tests";
-			requirement = {
-				kind = revision;
-				revision = a76aa2831427b86059d12bf8bc9db2370430b003;
-			};
-		};
 		631759F930921FA700C98C98 /* XCRemoteSwiftPackageReference "libsignal" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/signalapp/libsignal";
@@ -18537,7 +18529,7 @@
 				version = "6.0.3-signal.1";
 			};
 		};
-		638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
+		638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/signalapp/GRDB.swift";
 			requirement = {
@@ -18599,6 +18591,14 @@
 			requirement = {
 				kind = exactVersion;
 				version = "1.2.0-signal.2";
+			};
+		};
+		6EA6825FE538D9157EB1011D /* XCRemoteSwiftPackageReference "Signal-Message-Backup-Tests" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/signalapp/Signal-Message-Backup-Tests";
+			requirement = {
+				kind = revision;
+				revision = a76aa2831427b86059d12bf8bc9db2370430b003;
 			};
 		};
 		7B851A5C216FD130C3E4EE2E /* XCRemoteSwiftPackageReference "ringrtc" */ = {
@@ -18793,27 +18793,27 @@
 		};
 		638C27C0308A51C100EE57E0 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */;
 			productName = GRDB;
 		};
 		638C27C2308A51D200EE57E0 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */;
 			productName = GRDB;
 		};
 		638C27C4308A51DD00EE57E0 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */;
 			productName = GRDB;
 		};
 		638C27C6308A51E500EE57E0 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */;
 			productName = GRDB;
 		};
 		638C27C8308A51ED00EE57E0 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */;
 			productName = GRDB;
 		};
 		63DAB297308A59A000764C31 /* SQLCipher */ = {
@@ -18828,17 +18828,17 @@
 		};
 		63DAB29B308A5DEC00764C31 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */;
 			productName = GRDB;
 		};
 		63DAB29D308A5DF800764C31 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */;
 			productName = GRDB;
 		};
 		63DAB29F308A5E0000764C31 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			package = 638C27BF308A51C100EE57E0 /* XCRemoteSwiftPackageReference "GRDB" */;
 			productName = GRDB;
 		};
 		63DC452F3079AF9100119464 /* Lottie */ = {
