@@ -34,6 +34,8 @@ class PrivacySettingsViewController: OWSTableViewController2 {
     private func updateTableContents() {
         let contents = OWSTableContents()
 
+        let db = DependenciesBridge.shared.db
+        let screenshotBlockingManager = AppEnvironment.shared.screenshotBlockingManager!
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         if tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.hasPhoneNumber == true {
@@ -173,10 +175,9 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         }
 
         let isScreenshotBlockingEnabled: Bool
-        if ScreenshotBlockingManager.isAvailable {
-            let screenshotBlockingPreference = DependenciesBridge.shared.db.read {
-                AppEnvironment.shared.screenshotBlockingManager!
-                    .getPreference(tx: $0)
+        if ScreenshotBlockingManager.isAvailable(remoteConfig: .current) {
+            let screenshotBlockingPreference = db.read {
+                screenshotBlockingManager.getPreference(tx: $0)
             }
             isScreenshotBlockingEnabled = switch screenshotBlockingPreference {
             case .blockScreenshots: true
@@ -185,7 +186,6 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         } else {
             isScreenshotBlockingEnabled = false
         }
-
         appSecuritySection.add(.switch(
             withText: OWSLocalizedString("SETTINGS_SCREEN_SECURITY", comment: ""),
             isOn: {
@@ -224,10 +224,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         }
         contents.add(appSecuritySection)
 
-        if ScreenshotBlockingManager.isAvailable {
-            let db = DependenciesBridge.shared.db
-            let screenshotBlockingManager = AppEnvironment.shared.screenshotBlockingManager!
-
+        if ScreenshotBlockingManager.isAvailable(remoteConfig: .current) {
             let currentPreference = db.read { screenshotBlockingManager.getPreference(tx: $0) }
 
             let screenshotBlockingSection = OWSTableSection()

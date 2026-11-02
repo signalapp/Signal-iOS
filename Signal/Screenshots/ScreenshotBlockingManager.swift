@@ -35,16 +35,15 @@ private enum _ScreenshotBlockingPreference {
 @MainActor
 class ScreenshotBlockingManager {
 
-    /// Whether blocking screenshots of the app's windows is available at all.
-    nonisolated static var isAvailable: Bool {
-        guard BuildFlags.screenshotBlocking else {
-            return false
+    /// Whether app-wide Screenshot Blocking is available at all.
+    nonisolated static func isAvailable(remoteConfig: RemoteConfig?) -> Bool {
+        guard #available(iOS 27, *) else { return false }
+
+        if let remoteConfig {
+            return remoteConfig.enableScreenshotBlocking
         }
 
-        if #available(iOS 27, *) {
-            return true
-        }
-        return false
+        return true
     }
 
     private enum StoreKeys {
@@ -56,21 +55,24 @@ class ScreenshotBlockingManager {
     private let db: any DB
     private let disabledTemporarilyInterval: TimeInterval
     private let kvStore: NewKeyValueStore
+    private let remoteConfigProvider: any RemoteConfigProvider
     private let windowManager: WindowManager
 
-    private var isBlockingScreenshots: Bool = ScreenshotBlockingManager.isAvailable
+    private var isBlockingScreenshots: Bool = ScreenshotBlockingManager.isAvailable(remoteConfig: nil)
     private var notificationObservers: [NotificationCenter.Observer] = []
 
     init(
         dateProvider: @escaping DateProvider,
         db: any DB,
         disabledTemporarilyInterval: TimeInterval = 10 * .minute,
+        remoteConfigProvider: any RemoteConfigProvider,
         windowManager: WindowManager,
     ) {
         self.dateProvider = dateProvider
         self.db = db
         self.disabledTemporarilyInterval = disabledTemporarilyInterval
         self.kvStore = NewKeyValueStore(collection: "ScreenshotBlockingManager")
+        self.remoteConfigProvider = remoteConfigProvider
         self.windowManager = windowManager
     }
 
@@ -263,13 +265,15 @@ class ScreenshotBlockingManager {
     }
 
     private func applyToWindows(_preference: _ScreenshotBlockingPreference) {
+        let remoteConfig = remoteConfigProvider.currentConfig()
+
         let shouldBlockScreenshots = switch _preference {
         case .blockScreenshots: true
         case .doNotBlockScreenshots: false
         case .doNotBlockScreenshotsTemporarily: false
         }
 
-        isBlockingScreenshots = Self.isAvailable && shouldBlockScreenshots
+        isBlockingScreenshots = Self.isAvailable(remoteConfig: remoteConfig) && shouldBlockScreenshots
         windowManager.setBlocksScreenshots(isBlockingScreenshots)
     }
 
