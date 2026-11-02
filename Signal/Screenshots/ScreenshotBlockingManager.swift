@@ -24,6 +24,22 @@ private enum _ScreenshotBlockingPreference {
     case blockScreenshots
     case doNotBlockScreenshots
     case doNotBlockScreenshotsTemporarily(remainingInterval: TimeInterval)
+
+    var preference: ScreenshotBlockingPreference {
+        return switch self {
+        case .blockScreenshots: .blockScreenshots
+        case .doNotBlockScreenshots: .doNotBlockScreenshots
+        case .doNotBlockScreenshotsTemporarily: .doNotBlockScreenshotsForTenMinutes
+        }
+    }
+}
+
+// MARK: -
+
+extension Notification.Name {
+    /// Posted on the main thread when the current Screenshot Blocking preference
+    /// changes, including when "off for 10m" expires.
+    static let screenshotBlockingPreferenceDidChange = Notification.Name("ScreenshotBlockingPreferenceDidChange")
 }
 
 // MARK: -
@@ -59,6 +75,7 @@ class ScreenshotBlockingManager {
     private let windowManager: WindowManager
 
     private var isBlockingScreenshots: Bool = ScreenshotBlockingManager.isAvailable(remoteConfig: nil)
+    private var lastReconciledPreference: ScreenshotBlockingPreference?
     private var notificationObservers: [NotificationCenter.Observer] = []
 
     init(
@@ -115,11 +132,7 @@ class ScreenshotBlockingManager {
 
     /// Gets the user's current Screenshot Blocking preference. Defaults to `.blockScreenshots`.
     func getPreference(tx: DBReadTransaction) -> ScreenshotBlockingPreference {
-        return switch _getPreference(tx: tx) {
-        case .blockScreenshots: .blockScreenshots
-        case .doNotBlockScreenshots: .doNotBlockScreenshots
-        case .doNotBlockScreenshotsTemporarily: .doNotBlockScreenshotsForTenMinutes
-        }
+        return _getPreference(tx: tx).preference
     }
 
     private func _getPreference(tx: DBReadTransaction) -> _ScreenshotBlockingPreference {
@@ -233,6 +246,14 @@ class ScreenshotBlockingManager {
 
         defer {
             applyToWindows(_preference: _preference)
+
+            if _preference.preference != lastReconciledPreference {
+                lastReconciledPreference = _preference.preference
+                NotificationCenter.default.postOnMainThread(
+                    name: .screenshotBlockingPreferenceDidChange,
+                    object: nil,
+                )
+            }
         }
 
         var intervalUntilNoLongerDisabled: TimeInterval

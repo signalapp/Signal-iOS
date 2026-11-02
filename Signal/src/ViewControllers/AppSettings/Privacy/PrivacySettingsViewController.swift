@@ -22,6 +22,12 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             name: .syncManagerConfigurationSyncDidComplete,
             object: nil,
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateTableContents),
+            name: .screenshotBlockingPreferenceDidChange,
+            object: nil,
+        )
     }
 
     override func viewWillAppear(_ animated: Bool) {
