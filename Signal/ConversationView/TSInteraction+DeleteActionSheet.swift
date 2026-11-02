@@ -243,18 +243,25 @@ extension TSInteraction {
 
         guard shouldShowAdminDeleteConfirmation || shouldShowRegularDeleteConfirmation else { return completion() }
 
-        let title: String
+        let message: String
         if shouldShowAdminDeleteConfirmation {
-            title = OWSLocalizedString("MESSAGE_ACTION_ADMIN_DELETE_FOR_EVERYONE_CONFIRMATION", comment: "A one-time confirmation that you, as an admin, want to delete for everyone")
+            message = OWSLocalizedString(
+                "DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_ADMIN_MESSAGE",
+                comment: "Message for a sheet confirming that the user, as a group admin, wants to delete messages for everyone.",
+            )
         } else {
-            title = OWSLocalizedString(
-                "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION",
-                comment: "A one-time confirmation that you want to delete for everyone",
+            message = OWSLocalizedString(
+                "DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_MESSAGE",
+                comment: "Message for a sheet confirming that the user wants to delete their message for everyone.",
             )
         }
 
         OWSActionSheets.showConfirmationAlert(
-            title: title,
+            title: OWSLocalizedString(
+                "DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_TITLE",
+                comment: "Title for a sheet confirming that the user wants to delete messages for everyone.",
+            ),
+            message: message,
             proceedTitle: CommonStrings.deleteForEveryoneButton,
             proceedStyle: .destructive,
         ) { _ in
