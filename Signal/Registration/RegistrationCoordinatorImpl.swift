@@ -2797,7 +2797,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             switch pendingCodeTransport {
             case .sms:
                 if let nextSMSDate = session.nextSMSDate, nextSMSDate <= deps.dateProvider() {
-                    return await requestSessionCode(session: session, transport: pendingCodeTransport, failureCount: 0)
+                    return await requestSessionCode(session: session, transport: pendingCodeTransport)
                 } else {
                     // Inability to send puts on the verification entry screen, so the
                     // user can try the alternate transport manually.
@@ -2808,7 +2808,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
             case .voice:
                 if let nextCallDate = session.nextCallDate, nextCallDate <= deps.dateProvider() {
-                    return await requestSessionCode(session: session, transport: pendingCodeTransport, failureCount: 0)
+                    return await requestSessionCode(session: session, transport: pendingCodeTransport)
                 } else {
                     // Inability to send puts on the verification entry screen, so the
                     // user can try the alternate transport manually.
@@ -3142,49 +3142,68 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func requestSessionCode(
         session: RegistrationSession,
         transport: Registration.CodeTransport,
-        failureCount: Int,
     ) async -> RegistrationStep {
-        let maxAutomaticRetries = Constants.networkErrorRetries
-
-        let result = await self.deps.sessionManager.requestVerificationCode(
-            for: session,
-            transport: transport,
-            logger: logger,
-        )
-
-        switch result {
-        case .success(let session):
+        var session = session
+        do {
+            try await Retry.performWithMinimumBackoff(
+                maxAttempts: Constants.networkErrorRetries + 1,
+                block: {
+                    try await self.deps.sessionManager.requestVerificationCode(
+                        for: &session,
+                        transport: transport,
+                        logger: logger,
+                    )
+                },
+                onError: {
+                    if $0.isNetworkFailureOrTimeout {
+                        return .retryAfterBackoff()
+                    }
+                    if $0.httpStatusCode == Registration.RequestVerificationCodeErrorCode.rateLimited.rawValue {
+                        let timeInterval: TimeInterval?
+                        switch transport {
+                        case .sms:
+                            timeInterval = session.nextSMS
+                        case .voice:
+                            timeInterval = session.nextCall
+                        }
+                        if
+                            session.allowedToRequestCode,
+                            let timeInterval,
+                            timeInterval < Constants.autoRetryInterval,
+                            let retryAfterHeader = $0.httpResponseHeaders?.retryAfterTimeInterval,
+                            retryAfterHeader < Constants.autoRetryInterval
+                        {
+                            self.db.write { self.processSession(session, $0) }
+                            return .retryAfterAtLeast(max(timeInterval, retryAfterHeader))
+                        }
+                    }
+                    throw $0
+                },
+            )
             inMemoryState.pendingCodeTransport = nil
             db.write {
                 self.processSession(session, initialCodeRequestState: .requested, $0)
             }
             return await nextStep()
-        case .rejectedArgument(let session):
-            logger.error("Should never get rejected argument error from requesting code. E164 already set on session.")
-            // Wipe the pending code request, so we don't retry.
-            inMemoryState.pendingCodeTransport = nil
-            db.write {
-                self.processSession(session, initialCodeRequestState: .failedToRequest, $0)
-            }
-            return await nextStep()
-        case .disallowed(let session):
+        } catch where error.httpStatusCode == Registration.RequestVerificationCodeErrorCode.notYetAllowed.rawValue {
             // Whatever caused this should be represented on the session itself,
             // and once we unblock we should retry sending so don't clear the pending
             // code transport.
             db.write { self.processSession(session, $0) }
             return await nextStep()
-        case .transportError(let session):
+        } catch where error.httpStatusCode == Registration.RequestVerificationCodeErrorCode.notEverSupported.rawValue {
             // We failed with the current transport, but another transport
             // might work.
             db.write { self.processSession(session, initialCodeRequestState: .smsTransportFailed, $0) }
             // Wipe the pending code request, so we don't auto-retry.
             inMemoryState.pendingCodeTransport = nil
             return await nextStep()
-        case .invalidSession:
+        } catch is Registration.MissingSessionError {
             self.inMemoryState.pendingCodeTransport = nil
             self.db.write { self.resetSession($0) }
             return .showErrorSheet(.sessionInvalidated)
-        case .serverFailure(let failureResponse):
+        } catch let error as Registration.RequestRejectedByProviderError {
+            let failureResponse = error.failureResponse
             db.write { tx in
                 self.processSession(
                     session,
@@ -3197,7 +3216,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // Wipe the pending code request, so we don't auto-retry.
             inMemoryState.pendingCodeTransport = nil
             return await nextStep()
-        case .retryAfterTimeout(let session, let retryAfterHeader):
+        } catch where error.httpStatusCode == Registration.RequestVerificationCodeErrorCode.rateLimited.rawValue {
             let timeInterval: TimeInterval?
             switch transport {
             case .sms:
@@ -3205,23 +3224,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case .voice:
                 timeInterval = session.nextCall
             }
-            if
-                failureCount < maxAutomaticRetries,
-                session.allowedToRequestCode,
-                let timeInterval,
-                timeInterval < Constants.autoRetryInterval,
-                let retryAfterHeader,
-                retryAfterHeader < Constants.autoRetryInterval
-            {
-                self.db.write { self.processSession(session, $0) }
-                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
-                try? await Task.sleep(nanoseconds: max(timeInterval, retryAfterHeader, minimumBackoff).clampedNanoseconds)
-                return await requestSessionCode(
-                    session: session,
-                    transport: transport,
-                    failureCount: failureCount + 1,
-                )
-            } else {
+            do {
                 inMemoryState.pendingCodeTransport = nil
                 if session.nextVerificationAttemptDate != nil {
                     db.write {
@@ -3254,22 +3257,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return .showErrorSheet(.sessionInvalidated)
                 }
             }
-        case .networkFailure:
-            if failureCount < maxAutomaticRetries {
-                let minimumBackoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failureCount + 1)
-                try? await Task.sleep(nanoseconds: minimumBackoff.clampedNanoseconds)
-                return await requestSessionCode(
-                    session: session,
-                    transport: transport,
-                    failureCount: failureCount + 1,
-                )
-            }
+        } catch where error.isNetworkFailureOrTimeout {
             inMemoryState.pendingCodeTransport = nil
             db.write {
                 self.processSession(session, initialCodeRequestState: .failedToRequest, $0)
             }
             return .showErrorSheet(.networkError)
-        case .genericError:
+        } catch {
             inMemoryState.pendingCodeTransport = nil
             db.write {
                 self.processSession(session, initialCodeRequestState: .failedToRequest, $0)

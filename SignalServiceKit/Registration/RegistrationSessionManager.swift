@@ -21,7 +21,7 @@ public protocol RegistrationSessionManager {
 
     /// Request a verification code be sent to the session's phone number, for some transport.
     /// See `Registration.UpdateSessionResponse` for possible responses, including errors.
-    func requestVerificationCode(for session: RegistrationSession, transport: Registration.CodeTransport, logger: PrefixedLogger) async -> Registration.UpdateSessionResponse
+    func requestVerificationCode(for session: inout RegistrationSession, transport: Registration.CodeTransport, logger: PrefixedLogger) async throws
 
     /// Submit a verification code that was previously requested.
     /// See `Registration.UpdateSessionResponse` for possible responses, including errors.
@@ -49,6 +49,16 @@ public enum Registration {
     public static let challengeRejectedErrorCode = 403
 
     public struct MissingSessionError: Error {}
+
+    public enum RequestVerificationCodeErrorCode: Int {
+        case notYetAllowed = 409
+        case notEverSupported = 418
+        case rateLimited = 429
+    }
+
+    public struct RequestRejectedByProviderError: Error {
+        public let failureResponse: ServerFailureResponse
+    }
 
     /// Collapses a few different error responses possible from the server down to only those
     /// relevant to the registration flow, in other words those that should have distinct error behaviors.
@@ -87,8 +97,6 @@ public enum Registration {
     }
 
     public struct ServerFailureResponse: Equatable {
-        public let session: RegistrationSession
-
         /// If true, whatever failure occurred isn't likely to be resolved by retrying.
         /// Otherwise a retry after some delay is appropriate. (e.g. let the user retry)
         public let isPermanent: Bool

@@ -629,7 +629,8 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.setReceivePreAuthChallengeTokenMock({ "PUSH TOKEN" })
 
         // Resolve with an updated session.
-        sessionManager.addRequestCodeResponseMock(.success(stubs.session(nextVerificationAttempt: 0)))
+        let expectedSession2 = stubs.session(nextVerificationAttempt: 0)
+        sessionManager.addRequestVerificationCodeMock({ $0 = expectedSession2 })
 
         var nextStep = await coordinator.nextStep()
 
@@ -745,7 +746,8 @@ public class RegistrationCoordinatorTest {
         // a verification code to be sent.
 
         // Resolve with an updated session.
-        sessionManager.addRequestCodeResponseMock(.success(stubs.session(nextVerificationAttempt: 0)))
+        let expectedSession2 = stubs.session(nextVerificationAttempt: 0)
+        sessionManager.addRequestVerificationCodeMock({ $0 = expectedSession2 })
 
         var nextStep = await coordinator.nextStep()
 
@@ -1004,7 +1006,8 @@ public class RegistrationCoordinatorTest {
         // a verification code to be sent.
         // Resolve with an updated session.
 
-        sessionManager.addRequestCodeResponseMock(.success(stubs.session(nextVerificationAttempt: 0)))
+        let expectedSession2 = stubs.session(nextVerificationAttempt: 0)
+        sessionManager.addRequestVerificationCodeMock({ $0 = expectedSession2 })
 
         // Give back an valid session.
         sessionManager.addSubmitCodeResponseMock(.success(stubs.session(
@@ -1333,11 +1336,12 @@ public class RegistrationCoordinatorTest {
         })
 
         // Resolve with an updated session.
-        sessionManager.addRequestCodeResponseMock(.success(stubs.session(nextVerificationAttempt: 0)))
+        let expectedSession = stubs.session(nextVerificationAttempt: 0)
+        sessionManager.addRequestVerificationCodeMock({ $0 = expectedSession })
 
         // Resolve with a session.
-        let expectedSession = stubs.session()
-        sessionManager.addBeginSessionResponseMock({ expectedSession })
+        let expectedSession2 = stubs.session()
+        sessionManager.addBeginSessionResponseMock({ expectedSession2 })
 
         // Once the request fails, we should try again with the reglock
         // token, this time.
@@ -1578,7 +1582,8 @@ public class RegistrationCoordinatorTest {
         // Then when it gets back the session, it should immediately ask for
         // a verification code to be sent.
         // Resolve with an updated session.
-        sessionManager.addRequestCodeResponseMock(.success(stubs.session(nextVerificationAttempt: 0)))
+        let expectedSession2 = stubs.session(nextVerificationAttempt: 0)
+        sessionManager.addRequestVerificationCodeMock({ $0 = expectedSession2 })
 
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
@@ -1640,7 +1645,8 @@ public class RegistrationCoordinatorTest {
 
         // Then when it gets back the session, it should immediately ask for a verification code to be sent.
         // Resolve with an updated session.
-        sessionManager.addRequestCodeResponseMock(.success(stubs.session(nextVerificationAttempt: 0)))
+        let expectedSession2 = stubs.session(nextVerificationAttempt: 0)
+        sessionManager.addRequestVerificationCodeMock({ $0 = expectedSession2 })
 
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
 
@@ -1927,13 +1933,24 @@ public class RegistrationCoordinatorTest {
         // Resolve with a transport error
         // and no next verification attempt on the session,
         // so it counts as transport failure with no code sent.
-        sessionManager.addRequestCodeResponseMock(.transportError(stubs.session(
+        let expectedSession2 = stubs.session(
             nextSMS: nil, /* now sms unavailable but calling is */
-        )))
+        )
+        sessionManager.addRequestVerificationCodeMock({
+            $0 = expectedSession2
+            throw HTTPResponse(
+                requestUrl: URL(string: "v1/verification/session/\(Stubs.sessionId)/code")!,
+                status: Registration.RequestVerificationCodeErrorCode.notEverSupported.rawValue,
+            ).asError()
+        })
 
         // If we resend via voice, that should put us in a happy path. Resolve with a success.
-        sessionManager.didRequestCode = false
-        sessionManager.addRequestCodeResponseMock(.success(stubs.session(nextVerificationAttempt: 0)))
+        var didRequestCode = false
+        let expectedSession3 = stubs.session(nextVerificationAttempt: 0)
+        sessionManager.addRequestVerificationCodeMock({
+            didRequestCode = true
+            $0 = expectedSession3
+        })
 
         // Give it a phone number, which should cause it to start a session.
         // We should get back the code entry step, with a validation error for the sms transport.
@@ -1960,7 +1977,7 @@ public class RegistrationCoordinatorTest {
             }
             #expect(state.validationError == nil)
         }
-        #expect(sessionManager.didRequestCode)
+        #expect(didRequestCode)
     }
 
     @MainActor @Test(arguments: Self.testCases())
@@ -1979,7 +1996,14 @@ public class RegistrationCoordinatorTest {
         // Resolve with a transport error,
         // and no next verification attempt on the session,
         // so it counts as transport failure with no code sent.
-        sessionManager.addRequestCodeResponseMock(.transportError(stubs.session()))
+        let expectedSession2 = stubs.session()
+        sessionManager.addRequestVerificationCodeMock({
+            $0 = expectedSession2
+            throw HTTPResponse(
+                requestUrl: URL(string: "v1/verification/session/\(Stubs.sessionId)/code")!,
+                status: Registration.RequestVerificationCodeErrorCode.notEverSupported.rawValue,
+            ).asError()
+        })
 
         // If we try and submit a code, we should get an error sheet
         // because a code never got sent in the first place.
@@ -2048,10 +2072,14 @@ public class RegistrationCoordinatorTest {
         // Once we get that session, we should try and send a code.
 
         // Reject with a timeout.
-        sessionManager.addRequestCodeResponseMock(.retryAfterTimeout(
-            stubs.session(receivedDate: self.date, nextSMS: 10),
-            retryAfterHeader: nil,
-        ))
+        let expectedSession2 = stubs.session(receivedDate: self.date, nextSMS: 10)
+        sessionManager.addRequestVerificationCodeMock({
+            $0 = expectedSession2
+            throw HTTPResponse(
+                requestUrl: URL(string: "v1/verification/session/\(Stubs.sessionId)/code")!,
+                status: Registration.RequestVerificationCodeErrorCode.rateLimited.rawValue,
+            ).asError()
+        })
 
         // Give it a phone number, which should cause it to start a session.
         // It should put us on the phone number entry screen again
@@ -2100,10 +2128,11 @@ public class RegistrationCoordinatorTest {
 
         // Once we get that session, we should try and send a code.
         // Give back a session with a sent code.
-        sessionManager.addRequestCodeResponseMock(.success(stubs.session(
+        let expectedSession2 = stubs.session(
             e164: originalE164,
             nextVerificationAttempt: 0,
-        )))
+        )
+        sessionManager.addRequestVerificationCodeMock({ $0 = expectedSession2 })
 
         // These mocks are removed after each use, so set up another
         pushRegistrationManagerMock.addRequestPushTokenMock({ .success(Stubs.apnsRegistrationId) })
@@ -2116,15 +2145,16 @@ public class RegistrationCoordinatorTest {
 
         // Give back a session that's ready to go.
         // TODO: allow mocking multiple responses
-        let expectedSession2 = stubs.session(e164: changedE164)
-        sessionManager.addBeginSessionResponseMock({ expectedSession2 })
+        let expectedSession3 = stubs.session(e164: changedE164)
+        sessionManager.addBeginSessionResponseMock({ expectedSession3 })
 
         // Once we get that session, we should try and send a code.
         // Give back a session with a sent code.
-        sessionManager.addRequestCodeResponseMock(.success(stubs.session(
+        let expectedSession4 = stubs.session(
             e164: changedE164,
             nextVerificationAttempt: 0,
-        )))
+        )
+        sessionManager.addRequestVerificationCodeMock({ $0 = expectedSession4 })
 
         // Give it a phone number, which should cause it to start a session.
         coordinator.submitE164(originalE164)
@@ -2184,15 +2214,16 @@ public class RegistrationCoordinatorTest {
         // Resolve with a session.
         // The session has a sent code, but requires a challenge to send
         // a code again. That should be ignored until we ask to send another code.
-        sessionManager.addRequestCodeResponseMock(.success(stubs.session(
+        let expectedSession3 = stubs.session(
             nextVerificationAttempt: 0,
             allowedToRequestCode: false,
             requestedInformation: [.captcha],
-        )))
+        )
+        sessionManager.addRequestVerificationCodeMock({ $0 = expectedSession3 })
 
         // Give back a session without the challenge.
-        let expectedSession3 = stubs.session(nextVerificationAttempt: 0)
-        sessionManager.addFulfillChallengeResponseMock({ session, _ in session = expectedSession3 })
+        let expectedSession4 = stubs.session(nextVerificationAttempt: 0)
+        sessionManager.addFulfillChallengeResponseMock({ session, _ in session = expectedSession4 })
 
         // Give it a phone number, which should cause it to start a session.
         coordinator.submitE164(Stubs.e164)
@@ -2224,10 +2255,11 @@ public class RegistrationCoordinatorTest {
         stubs.date = date.addingTimeInterval(10)
         let secondCodeDate = date
 
-        sessionManager.addRequestCodeResponseMock(.success(stubs.session(
+        let expectedSession5 = stubs.session(
             receivedDate: secondCodeDate,
             nextVerificationAttempt: 0,
-        )))
+        )
+        sessionManager.addRequestVerificationCodeMock({ $0 = expectedSession5 })
 
         // Submit a captcha challenge.
         // Once all is done, we should have a new code and be back on the code
@@ -2266,11 +2298,12 @@ public class RegistrationCoordinatorTest {
             latestChallengeFulfillment = fulfillment
         })
 
-        sessionManager.addRequestCodeResponseMock(.success(stubs.session(
+        let expectedSession3 = stubs.session(
             nextVerificationAttempt: 0,
             allowedToRequestCode: false,
             requestedInformation: [.pushChallenge],
-        )))
+        )
+        sessionManager.addRequestVerificationCodeMock({ $0 = expectedSession3 })
 
         // Give the push challenge token. Also prepare to handle its usage, and the
         // resulting request for another SMS code.
@@ -2433,9 +2466,10 @@ public class RegistrationCoordinatorTest {
             latestChallengeFulfillment = fulfillment
         })
 
-        sessionManager.addRequestCodeResponseMock(.success(stubs.session(
+        let expectedSession3 = stubs.session(
             nextVerificationAttempt: 0,
-        )))
+        )
+        sessionManager.addRequestVerificationCodeMock({ $0 = expectedSession3 })
 
         // Give it a phone number, which should cause it to start a session.
         coordinator.submitE164(Stubs.e164)
@@ -2508,11 +2542,12 @@ public class RegistrationCoordinatorTest {
         let expectedSession2 = stubs.session(nextVerificationAttempt: 0)
         sessionManager.addFulfillChallengeResponseMock({ session, _ in session = expectedSession2 })
 
-        sessionManager.addRequestCodeResponseMock(.success(stubs.session(
+        let expectedSession3 = stubs.session(
             nextVerificationAttempt: 0,
             allowedToRequestCode: false,
             requestedInformation: [.pushChallenge],
-        )))
+        )
+        sessionManager.addRequestVerificationCodeMock({ $0 = expectedSession3 })
 
         timeoutProviderMock.pushTokenTimeout = 5
         Task {
@@ -2643,24 +2678,40 @@ public class RegistrationCoordinatorTest {
         ))
 
         // Resend an sms code, time that out too.
-        sessionManager.addRequestCodeResponseMock(.retryAfterTimeout(
-            stubs.session(nextSMS: 7, nextCall: 0, nextVerificationAttempt: 9),
-            retryAfterHeader: 7,
-        ))
+        let expectedSession = stubs.session(nextSMS: 7, nextCall: 0, nextVerificationAttempt: 9)
+        sessionManager.addRequestVerificationCodeMock({
+            $0 = expectedSession
+            throw HTTPResponse(
+                requestUrl: URL(string: "v1/verification/session/\(Stubs.sessionId)/code")!,
+                status: Registration.RequestVerificationCodeErrorCode.rateLimited.rawValue,
+                headers: ["Retry-After": "7"],
+            ).asError()
+        })
 
         // Resend an voice code, time that out too
         // Make the timeout SO short that it retries
-        sessionManager.didRequestCode = false
-        sessionManager.addRequestCodeResponseMock(.retryAfterTimeout(
-            stubs.session(nextSMS: 6, nextCall: 0.1, nextVerificationAttempt: 8),
-            retryAfterHeader: 0.1,
-        ))
+        var didRequestCode = false
+        let expectedSession2 = stubs.session(nextSMS: 6, nextCall: 0.1, nextVerificationAttempt: 8)
+        sessionManager.addRequestVerificationCodeMock({
+            didRequestCode = true
+            $0 = expectedSession2
+            throw HTTPResponse(
+                requestUrl: URL(string: "v1/verification/session/\(Stubs.sessionId)/code")!,
+                status: Registration.RequestVerificationCodeErrorCode.rateLimited.rawValue,
+                headers: ["Retry-After": "0.1"],
+            ).asError()
+        })
 
         // Be ready for the retry. Ensure we called it the first time.
-        sessionManager.addRequestCodeResponseMock(.retryAfterTimeout(
-            stubs.session(nextSMS: 5, nextCall: 4, nextVerificationAttempt: 8),
-            retryAfterHeader: 4,
-        ))
+        let expectedSession3 = stubs.session(nextSMS: 5, nextCall: 4, nextVerificationAttempt: 8)
+        sessionManager.addRequestVerificationCodeMock({
+            $0 = expectedSession3
+            throw HTTPResponse(
+                requestUrl: URL(string: "v1/verification/session/\(Stubs.sessionId)/code")!,
+                status: Registration.RequestVerificationCodeErrorCode.rateLimited.rawValue,
+                headers: ["Retry-After": "4"],
+            ).asError()
+        })
 
         var nextStep = await coordinator.submitVerificationCode(Stubs.verificationCode).awaitable()
         do {
@@ -2709,7 +2760,7 @@ public class RegistrationCoordinatorTest {
             #expect(state.nextVerificationAttemptDate == dateProvider().addingTimeInterval(8))
         }
 
-        #expect(sessionManager.didRequestCode)
+        #expect(didRequestCode)
     }
 
     @MainActor @Test(arguments: Self.testCases())
@@ -2782,9 +2833,8 @@ public class RegistrationCoordinatorTest {
         // Have that ready to go.
 
         // Resolve with a session
-        sessionManager.addRequestCodeResponseMock(.success(stubs.session(
-            nextVerificationAttempt: 0,
-        )))
+        let expectedSession2 = stubs.session(nextVerificationAttempt: 0)
+        sessionManager.addRequestVerificationCodeMock({ $0 = expectedSession2 })
 
         // Give back an expired session.
         sessionManager.addSubmitCodeResponseMock(.invalidSession)
@@ -3176,7 +3226,8 @@ public class RegistrationCoordinatorTest {
 
         // Once we get that session, we should try and send a code.
         // Resolve with a session thats ready for code submission.
-        sessionManager.addRequestCodeResponseMock(.success(stubs.session(nextVerificationAttempt: 0)))
+        let expectedSession2 = stubs.session(nextVerificationAttempt: 0)
+        sessionManager.addRequestVerificationCodeMock({ $0 = expectedSession2 })
 
         // We should get back the code entry step.
         coordinator.submitE164(Stubs.e164)

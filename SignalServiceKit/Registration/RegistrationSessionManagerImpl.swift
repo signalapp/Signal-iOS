@@ -65,9 +65,19 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         }
     }
 
-    public func requestVerificationCode(for session: RegistrationSession, transport: Registration.CodeTransport, logger: PrefixedLogger) async -> Registration.UpdateSessionResponse {
-        let response = await makeRequestVerificationCodeRequest(session, transport, logger: logger)
-        return await persistSessionFromResponse(response)
+    public func requestVerificationCode(
+        for session: inout RegistrationSession,
+        transport: Registration.CodeTransport,
+        logger: PrefixedLogger,
+    ) async throws {
+        try await updatingSession(&session) { session, updatedSession in
+            try await makeRequestVerificationCodeRequest(
+                forSession: session,
+                updatedSession: &updatedSession,
+                transport: transport,
+                logger: logger,
+            )
+        }
     }
 
     public func submitVerificationCode(for session: RegistrationSession, code: String, logger: PrefixedLogger) async -> Registration.UpdateSessionResponse {
@@ -241,10 +251,11 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
     // MARK: Request Verification Code
 
     private func makeRequestVerificationCodeRequest(
-        _ session: RegistrationSession,
-        _ transport: Registration.CodeTransport,
+        forSession session: RegistrationSession,
+        updatedSession: inout RegistrationSession?,
+        transport: Registration.CodeTransport,
         logger: PrefixedLogger,
-    ) async -> Registration.UpdateSessionResponse {
+    ) async throws {
         let wireTransport: RegistrationRequestFactory.VerificationCodeTransport
         switch transport {
         case .sms:
@@ -253,9 +264,6 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             wireTransport = .voice
         }
 
-        // In an abstract sense we should mock these out for testing, but
-        // for any concrete test we'd want to write the language code doesn't matter
-        // at all. Its serialization is already tested at a lower level.
         let locale = Locale.current
         let languageCode: String?
         let countryCode: String?
@@ -274,48 +282,33 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             transport: wireTransport,
             logger: logger,
         )
-        return await makeUpdateRequest(
-            request,
-            session: session,
-            handler: self.handleRequestVerificationCodeResponse(sessionAtSendTime:statusCode:retryAfterHeader:bodyData:),
-        )
-    }
-
-    private func handleRequestVerificationCodeResponse(
-        sessionAtSendTime: RegistrationSession,
-        statusCode: Int,
-        retryAfterHeader: TimeInterval?,
-        bodyData: Data?,
-    ) -> Registration.UpdateSessionResponse {
-        let e164 = sessionAtSendTime.e164
-        let statusCode = RegistrationServiceResponses.RequestVerificationCodeResponseCodes(rawValue: statusCode)
-        switch statusCode {
-        case .success:
-            return (try? registrationSession(
-                fromResponseBody: bodyData,
-                e164: e164,
-            )).map { .success($0) } ?? .genericError
-        case .disallowed:
-            return (try? registrationSession(
-                fromResponseBody: bodyData,
-                e164: e164,
-            )).map { .disallowed($0) } ?? .genericError
-        case .retry:
-            return (try? registrationSession(
-                fromResponseBody: bodyData,
-                e164: e164,
-            )).map { .retryAfterTimeout($0, retryAfterHeader: retryAfterHeader) } ?? .genericError
-        case .providerFailure:
-            return serverFailureResponse(fromResponseBody: bodyData, sessionAtSendTime: sessionAtSendTime).map { .serverFailure($0) } ?? .genericError
-        case .missingSession:
-            return .invalidSession
-        case .transportError:
-            return (try? registrationSession(
-                fromResponseBody: bodyData,
-                e164: e164,
-            )).map { .transportError($0) } ?? .genericError
-        case .malformedRequest, .unexpectedError, .none:
-            return .genericError
+        do {
+            let response = try await networkManager.asyncRequest(request)
+            updatedSession = try registrationSession(fromResponseBody: response.responseBodyData, e164: session.e164)
+        } catch where error.httpStatusCode == 404 {
+            throw Registration.MissingSessionError()
+        } catch where error.httpStatusCode == Registration.RequestVerificationCodeErrorCode.notYetAllowed.rawValue {
+            /// The current session state disallows requesting a code. The client may
+            /// have to fulfill some challenge before proceeding, or the session might
+            /// already be verified. Check the session object to know.
+            updatedSession = try registrationSession(fromResponseBody: error.httpResponseData, e164: session.e164)
+            throw error
+        } catch where error.httpStatusCode == Registration.RequestVerificationCodeErrorCode.notEverSupported.rawValue {
+            /// The chosen transport mode is not supported (likely scoped to the e164),
+            /// but another transport may be supported.
+            updatedSession = try registrationSession(fromResponseBody: error.httpResponseData, e164: session.e164)
+            throw error
+        } catch where error.httpStatusCode == Registration.RequestVerificationCodeErrorCode.rateLimited.rawValue {
+            /// May need to wait before trying again; check session object for timeouts.
+            /// If no timeout is specified, a different transport or starting a fresh
+            /// session may be required.
+            updatedSession = try registrationSession(fromResponseBody: error.httpResponseData, e164: session.e164)
+            throw error
+        } catch where error.httpStatusCode == 440 {
+            /// The attempt to send a verification code failed because an external
+            /// service (e.g. the SMS provider) refused to deliver the code.
+            let failureResponse = try serverFailureResponse(fromResponseBody: error.httpResponseData)
+            throw Registration.RequestRejectedByProviderError(failureResponse: failureResponse)
         }
     }
 
@@ -464,18 +457,11 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
         return session.toLocalSession(forE164: e164, receivedAt: dateProvider())
     }
 
-    private func serverFailureResponse(
-        fromResponseBody bodyData: Data?,
-        sessionAtSendTime: RegistrationSession,
-    ) -> Registration.ServerFailureResponse? {
-        guard let bodyData else {
-            Logger.warn("Got empty provider failure response")
-            return nil
-        }
-        guard let failure = try? JSONDecoder().decode(RegistrationServiceResponses.SendVerificationCodeFailedResponse.self, from: bodyData) else {
-            Logger.warn("Unable to parse registration session from response")
-            return nil
-        }
+    private func serverFailureResponse(fromResponseBody bodyData: Data?) throws -> Registration.ServerFailureResponse {
+        let failure = try JSONDecoder().decode(
+            RegistrationServiceResponses.SendVerificationCodeFailedResponse.self,
+            from: bodyData ?? Data(),
+        )
         let reasonString: String = {
             switch failure.reason {
             case .none, .unknown:
@@ -501,7 +487,6 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
             localReason = .illegalArgument
         }
         return Registration.ServerFailureResponse(
-            session: sessionAtSendTime,
             isPermanent: failure.permanentFailure,
             reason: localReason,
         )

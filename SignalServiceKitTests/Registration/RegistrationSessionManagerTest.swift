@@ -62,13 +62,14 @@ public class RegistrationSessionManagerTest: XCTestCase {
         ))
 
         do {
-            let result = await registrationSessionManager.requestVerificationCode(
-                for: oldSession,
+            var session = oldSession
+            try await registrationSessionManager.requestVerificationCode(
+                for: &session,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!,
                 logger: .empty(),
             )
 
-            XCTAssertEqual(result, .success(RegistrationSession(
+            XCTAssertEqual(session, RegistrationSession(
                 id: "abcd",
                 e164: oldSession.e164,
                 receivedDate: self.date,
@@ -79,7 +80,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
                 requestedInformation: [.captcha, .pushChallenge],
                 hasUnknownChallengeRequiringAppUpdate: false,
                 verified: false,
-            )))
+            ))
         }
 
         // Try empty time durations
@@ -99,13 +100,14 @@ public class RegistrationSessionManagerTest: XCTestCase {
         ))
 
         do {
-            let result = await registrationSessionManager.requestVerificationCode(
-                for: oldSession,
+            var session = oldSession
+            try await registrationSessionManager.requestVerificationCode(
+                for: &session,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!,
                 logger: .empty(),
             )
 
-            XCTAssertEqual(result, .success(RegistrationSession(
+            XCTAssertEqual(session, RegistrationSession(
                 id: "abcd",
                 e164: oldSession.e164,
                 receivedDate: self.date,
@@ -116,7 +118,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
                 requestedInformation: [.captcha, .pushChallenge],
                 hasUnknownChallengeRequiringAppUpdate: false,
                 verified: false,
-            )))
+            ))
         }
 
         // Try requested info we don't know how to parse.
@@ -139,13 +141,14 @@ public class RegistrationSessionManagerTest: XCTestCase {
         ))
 
         do {
-            let result = await registrationSessionManager.requestVerificationCode(
-                for: oldSession,
+            var session = oldSession
+            try await registrationSessionManager.requestVerificationCode(
+                for: &session,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!,
                 logger: .empty(),
             )
 
-            XCTAssertEqual(result, .success(RegistrationSession(
+            XCTAssertEqual(session, RegistrationSession(
                 id: "abcd",
                 e164: oldSession.e164,
                 receivedDate: self.date,
@@ -157,7 +160,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
                 // We saw unknown challenges
                 hasUnknownChallengeRequiringAppUpdate: true,
                 verified: false,
-            )))
+            ))
         }
     }
 
@@ -416,55 +419,71 @@ public class RegistrationSessionManagerTest: XCTestCase {
         }
     }
 
-    public func testRequestVerificationCode() async {
+    public func testRequestVerificationCode() async throws {
         let oldSession = stubSession()
-        let expectedRequest = RegistrationRequestFactory.requestVerificationCodeRequest(
-            sessionId: oldSession.id,
-            languageCode: nil,
-            countryCode: nil,
-            transport: .sms,
-            logger: .empty(),
-        )
 
         // will have a new id, which is fine cuz it lets us differentiate.
         let responseBody = stubWireSession()
 
-        let statusCodeResponsePairs: [(
-            RegistrationServiceResponses.RequestVerificationCodeResponseCodes,
-            Registration.UpdateSessionResponse,
-            Bool, // expects session in response
-        )] = [
-            (.success, .success(sessionConverter(responseBody)), true),
-            (.malformedRequest, .genericError, false),
-            (.disallowed, .disallowed(sessionConverter(responseBody)), true),
-            (.missingSession, .invalidSession, false),
-            (.retry, .retryAfterTimeout(sessionConverter(responseBody), retryAfterHeader: nil), true),
-            (.unexpectedError, .genericError, false),
-        ]
-        for (statusCode, expectedResponse, sessionInBody) in statusCodeResponsePairs {
+        func mockResponse(statusCode: Int, hasSession: Bool) {
             networkManager.asyncRequestHandlers.append(MockNetworkManager.mockResponse(
-                matchingRequest: { $0.url.relativeString.hasSuffix(expectedRequest.url.relativeString) },
-                statusCode: statusCode.rawValue,
-                bodyJson: sessionInBody ? responseBody : nil,
+                matchingRequest: { $0.method == "POST" && $0.url.relativeString.hasPrefix("v1/verification/session/") && $0.url.relativeString.hasSuffix("/code") },
+                statusCode: statusCode,
+                bodyJson: hasSession ? responseBody : nil,
             ))
-            let result = await registrationSessionManager.requestVerificationCode(
-                for: oldSession,
+        }
+
+        var session = oldSession
+        func requestVerificationCode() async throws {
+            session = oldSession
+            try await registrationSessionManager.requestVerificationCode(
+                for: &session,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!,
                 logger: .empty(),
             )
-            XCTAssertEqual(result, expectedResponse)
+        }
+
+        do {
+            mockResponse(statusCode: 200, hasSession: true)
+            try await requestVerificationCode()
+            XCTAssertEqual(session, sessionConverter(responseBody))
+        }
+
+        do {
+            mockResponse(statusCode: 400, hasSession: false)
+            try await requestVerificationCode()
+            XCTFail("must have error")
+        } catch where error.httpStatusCode == 400 {
+            XCTAssertNotEqual(session, sessionConverter(responseBody))
+        }
+
+        do {
+            mockResponse(statusCode: 409, hasSession: true)
+            try await requestVerificationCode()
+            XCTFail("must have error")
+        } catch where error.httpStatusCode == Registration.RequestVerificationCodeErrorCode.notYetAllowed.rawValue {
+            XCTAssertEqual(session, sessionConverter(responseBody))
+        }
+
+        do {
+            mockResponse(statusCode: 404, hasSession: true)
+            try await requestVerificationCode()
+            XCTFail("must have error")
+        } catch is Registration.MissingSessionError {
+            XCTAssertNotEqual(session, sessionConverter(responseBody))
+        }
+
+        do {
+            mockResponse(statusCode: 429, hasSession: true)
+            try await requestVerificationCode()
+            XCTFail("must have error")
+        } catch where error.httpStatusCode == Registration.RequestVerificationCodeErrorCode.rateLimited.rawValue {
+            XCTAssertEqual(session, sessionConverter(responseBody))
         }
     }
 
-    public func testRequestVerificationCodeServiceError() async {
+    public func testRequestVerificationCodeServiceError() async throws {
         let oldSession = stubSession()
-        let expectedRequest = RegistrationRequestFactory.requestVerificationCodeRequest(
-            sessionId: oldSession.id,
-            languageCode: nil,
-            countryCode: nil,
-            transport: .sms,
-            logger: .empty(),
-        )
 
         var errorResponseJSON = """
         {
@@ -474,22 +493,23 @@ public class RegistrationSessionManagerTest: XCTestCase {
         """
 
         networkManager.asyncRequestHandlers.append(MockNetworkManager.mockResponse(
-            matchingRequest: { $0.url == expectedRequest.url },
-            statusCode: RegistrationServiceResponses.RequestVerificationCodeResponseCodes.providerFailure.rawValue,
-            bodyData: errorResponseJSON.data(using: .utf8),
+            matchingRequest: { $0.method == "POST" && $0.url.relativeString.hasPrefix("v1/verification/session/") && $0.url.relativeString.hasSuffix("/code") },
+            statusCode: 440,
+            bodyData: Data(errorResponseJSON.utf8),
         ))
 
         do {
-            let result = await registrationSessionManager.requestVerificationCode(
-                for: oldSession,
+            var session = oldSession
+            try await registrationSessionManager.requestVerificationCode(
+                for: &session,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!,
                 logger: .empty(),
             )
-            XCTAssertEqual(result, .serverFailure(Registration.ServerFailureResponse(
-                session: oldSession,
+        } catch let error as Registration.RequestRejectedByProviderError {
+            XCTAssertEqual(error.failureResponse, Registration.ServerFailureResponse(
                 isPermanent: false,
                 reason: .providerRejected,
-            )))
+            ))
         }
 
         errorResponseJSON = """
@@ -500,22 +520,23 @@ public class RegistrationSessionManagerTest: XCTestCase {
         """
 
         networkManager.asyncRequestHandlers.append(MockNetworkManager.mockResponse(
-            matchingRequest: { $0.url == expectedRequest.url },
-            statusCode: RegistrationServiceResponses.RequestVerificationCodeResponseCodes.providerFailure.rawValue,
-            bodyData: errorResponseJSON.data(using: .utf8),
+            matchingRequest: { $0.method == "POST" && $0.url.relativeString.hasPrefix("v1/verification/session/") && $0.url.relativeString.hasSuffix("/code") },
+            statusCode: 440,
+            bodyData: Data(errorResponseJSON.utf8),
         ))
 
         do {
-            let result = await registrationSessionManager.requestVerificationCode(
-                for: oldSession,
+            var session = oldSession
+            try await registrationSessionManager.requestVerificationCode(
+                for: &session,
                 transport: [Registration.CodeTransport.sms, .voice].randomElement()!,
                 logger: .empty(),
             )
-            XCTAssertEqual(result, .serverFailure(Registration.ServerFailureResponse(
-                session: oldSession,
+        } catch let error as Registration.RequestRejectedByProviderError {
+            XCTAssertEqual(error.failureResponse, Registration.ServerFailureResponse(
                 isPermanent: false,
                 reason: nil,
-            )))
+            ))
         }
     }
 
