@@ -133,7 +133,7 @@ public class DeviceProvisioningURL {
         guard let encodedPublicKey else {
             return nil
         }
-        guard let annotatedPublicKey = Data(base64Encoded: encodedPublicKey, options: [.ignoreUnknownCharacters]) else {
+        guard let annotatedPublicKey = try? Data.data(fromBase64Url: encodedPublicKey) else {
             return nil
         }
         let publicKey: PublicKey

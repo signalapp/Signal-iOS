@@ -25,6 +25,11 @@ struct DeviceProvisioningURLTest {
             uuid: "nw_QVJRauc7Y-g39lB_3fA==",
             publicKeyData: Data(base64Encoded: "0MXr79Q+tu100YZG0uoOJ7ySGbGUQQys3y3+Y0XWblU=")!,
         ),
+        (
+            urlString: "sgnl://linkdevice?uuid=nw_QVJRauc7Y-g39lB_3fA%3D%3D&pub_key=BdDF6-_UPrbtdNGGRtLqDie8khmxlEEMrN8t_mNF1m5V&capabilities=",
+            uuid: "nw_QVJRauc7Y-g39lB_3fA==",
+            publicKeyData: Data(base64Encoded: "0MXr79Q+tu100YZG0uoOJ7ySGbGUQQys3y3+Y0XWblU=")!,
+        ),
     ])
     func testValid(testCase: (urlString: String, uuid: String, publicKeyData: Data)) throws {
         let url = try #require(DeviceProvisioningURL(urlString: testCase.urlString))
