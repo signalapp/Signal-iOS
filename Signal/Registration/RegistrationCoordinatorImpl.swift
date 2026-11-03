@@ -3088,6 +3088,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
+    @MainActor
     private func _startSession(e164: E164) async throws {
         let tokenResult = await deps.pushRegistrationManager.requestPushToken()
         let apnsToken: String?
