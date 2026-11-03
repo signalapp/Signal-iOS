@@ -12,6 +12,7 @@ private extension Notification.Name {
     static let isHiddenDidChange = Notification.Name("CLVLocalFileBackupExportProgressView.isHiddenDidChange")
 }
 
+@MainActor
 class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.Delegate {
 
     struct Store {
@@ -96,7 +97,6 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
 
     // MARK: -
 
-    @MainActor
     func willAppear() {
         state.update { _state in
             _state.isVisible = true
@@ -104,7 +104,6 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
         }
     }
 
-    @MainActor
     func didDisappear() {
         state.update { _state in
             _state.isVisible = false
@@ -192,7 +191,6 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
 
     private let setViewStateTaskQueue = SerialTaskQueue()
 
-    @MainActor
     private func setViewStateForState(state: inout State) {
         let oldViewState = state.currentViewState
         let newViewState = viewStateForState(state: state)
@@ -251,7 +249,6 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
         return nil
     }
 
-    @MainActor
     private func manageDeviceSleepBlock(state: inout State) {
         var shouldBlockDeviceSleep = switch state.currentViewState {
         case .attachmentMetadataPrep: true
@@ -363,6 +360,7 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
 
 private class LocalFileBackupExportProgressView: ChatListBackupProgressView {
 
+    @MainActor
     protocol Delegate: AnyObject {
         func didTapDismissButton()
     }

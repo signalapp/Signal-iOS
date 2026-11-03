@@ -257,6 +257,7 @@ private enum CLVLoadType {
 
 // MARK: -
 
+@MainActor
 class CLVLoadCoordinator {
     private let filterStore: ChatListFilterStore
     private var loadInfoBuilder: CLVLoadInfoBuilder
@@ -274,6 +275,7 @@ class CLVLoadCoordinator {
         let loadType: CLVLoadType
     }
 
+    @MainActor
     private class CLVLoadInfoBuilder {
         var shouldResetAll = false
         var updatedThreadIds = Set<String>()
@@ -326,15 +328,12 @@ class CLVLoadCoordinator {
     }
 
     func scheduleHardReset() {
-        AssertIsOnMainThread()
-
         loadInfoBuilder.shouldResetAll = true
 
         loadIfNecessary()
     }
 
     func scheduleLoad(updatedThreadIds: some Collection<String>, animated: Bool = true) {
-        AssertIsOnMainThread()
         owsAssertDebug(!updatedThreadIds.isEmpty)
 
         loadInfoBuilder.updatedThreadIds.formUnion(updatedThreadIds)
@@ -343,8 +342,6 @@ class CLVLoadCoordinator {
     }
 
     func ensureFirstLoad() {
-        AssertIsOnMainThread()
-
         guard let viewController else {
             owsFailDebug("Missing viewController.")
             return
@@ -364,8 +361,6 @@ class CLVLoadCoordinator {
 
     @objc
     func applicationWillEnterForeground() {
-        AssertIsOnMainThread()
-
         guard let viewController else {
             owsFailDebug("Missing viewController.")
             return
@@ -383,8 +378,6 @@ class CLVLoadCoordinator {
     }
 
     func loadIfNecessary(suppressAnimations: Bool = false, shouldForceLoad: Bool = false) {
-        AssertIsOnMainThread()
-
         guard let viewController else {
             owsFailDebug("Missing viewController.")
             return
@@ -402,7 +395,7 @@ class CLVLoadCoordinator {
                 inboxFilter: viewController.viewState.inboxFilter,
                 isMultiselectActive: viewController.viewState.multiSelectState.isActive,
                 lastSelectedThreadId: viewController.viewState.lastSelectedThreadId,
-                hasVisibleReminders: MainActor.assumeIsolated { viewController.viewState.reminderViews.hasVisibleReminders },
+                hasVisibleReminders: viewController.viewState.reminderViews.hasVisibleReminders,
                 shouldBackupDownloadProgressViewBeVisible: viewController.viewState.backupDownloadProgressView.shouldBeVisible,
                 shouldBackupExportProgressViewBeVisible: viewController.viewState.backupExportProgressView.shouldBeVisible,
                 shouldLocalFileBackupRestoreProgressViewBeVisible: viewController.viewState.localFileBackupRestoreProgressView.shouldBeVisible,

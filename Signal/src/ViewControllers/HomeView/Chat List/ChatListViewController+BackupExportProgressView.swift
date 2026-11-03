@@ -12,6 +12,7 @@ private extension Notification.Name {
     static let isHiddenDidChange = Notification.Name("CLVBackupExportProgressView.isHiddenDidChange")
 }
 
+@MainActor
 class CLVBackupExportProgressView: BackupExportProgressView.Delegate {
 
     struct Store {
@@ -113,7 +114,6 @@ class CLVBackupExportProgressView: BackupExportProgressView.Delegate {
 
     // MARK: -
 
-    @MainActor
     func willAppear() {
         state.update { _state in
             _state.isVisible = true
@@ -121,7 +121,6 @@ class CLVBackupExportProgressView: BackupExportProgressView.Delegate {
         }
     }
 
-    @MainActor
     func didDisappear() {
         state.update { _state in
             _state.isVisible = false
@@ -233,7 +232,6 @@ class CLVBackupExportProgressView: BackupExportProgressView.Delegate {
 
     private let setViewStateTaskQueue = SerialTaskQueue()
 
-    @MainActor
     private func setViewStateForState(state: inout State) {
         let oldViewState = state.currentViewState
         let newViewState = viewStateForState(state: state)
@@ -315,7 +313,6 @@ class CLVBackupExportProgressView: BackupExportProgressView.Delegate {
         return nil
     }
 
-    @MainActor
     private func manageDeviceSleepBlock(state: inout State) {
         var shouldBlockDeviceSleep = switch state.currentViewState {
         case .backupFilePreparation: true
@@ -469,6 +466,7 @@ class CLVBackupExportProgressView: BackupExportProgressView.Delegate {
 
 private class BackupExportProgressView: ChatListBackupProgressView {
 
+    @MainActor
     protocol Delegate: AnyObject {
         func didTapDismissButton()
         func didTapPausedWifiResumeButton()

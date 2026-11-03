@@ -6,6 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
+@MainActor
 class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate {
 
     private struct State {
@@ -31,8 +32,6 @@ class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate {
     private let deviceSleepManager: DeviceSleepManager
 
     init() {
-        AssertIsOnMainThread()
-
         guard let deviceSleepManager = DependenciesBridge.shared.deviceSleepManager else {
             owsFail("Unexpectedly missing device sleep manager in main app!")
         }
@@ -78,7 +77,6 @@ class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate {
 
     // MARK: -
 
-    @MainActor
     func startTracking() {
         Task { [weak self, backupAttachmentDownloadTracker] in
             for await downloadUpdate in backupAttachmentDownloadTracker.updates() {
@@ -88,7 +86,6 @@ class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate {
         }
     }
 
-    @MainActor
     private func onDownloadUpdate(_ downloadUpdate: BackupAttachmentDownloadTracker.DownloadUpdate) {
         let downloadUpdateStateChanged = state.update {
             let oldLatestDownloadUpdate = $0.latestDownloadUpdate
@@ -126,7 +123,6 @@ class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate {
 
     private let updateViewStateTaskQueue = SerialTaskQueue()
 
-    @MainActor
     private func updateViewState(state: inout State) {
         let oldViewState = state.currentViewState
         let newViewState = downloadProgressViewState(state: state)
@@ -152,7 +148,6 @@ class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate {
 
     // MARK: -
 
-    @MainActor
     func willAppear() {
         state.update { _state in
             _state.isVisible = true
@@ -160,7 +155,6 @@ class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate {
         }
     }
 
-    @MainActor
     func didDisappear() {
         state.update { _state in
             _state.isVisible = false
@@ -168,7 +162,6 @@ class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate {
         }
     }
 
-    @MainActor
     private func manageDeviceSleepBlock(state: inout State) {
         switch state.currentViewState {
         case nil, .complete:
@@ -186,7 +179,6 @@ class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate {
 
     // MARK: - BackupDownloadProgressView.Delegate
 
-    @MainActor
     func didTapDismiss() {
         db.write { tx in
             self.backupAttachmentDownloadStore.setDidDismissDownloadCompleteBanner(tx: tx)
@@ -201,14 +193,12 @@ class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate {
         }
     }
 
-    @MainActor
     func didTapResume() {
         db.write { tx in
             backupSettingsStore.setShouldAllowBackupDownloadsOnCellular(true, tx: tx)
         }
     }
 
-    @MainActor
     func didTapOutOfDiskSpaceDetails() {
         guard case .outOfDiskSpace(let spaceRequired) = backupDownloadProgressView.viewState else {
             return
@@ -456,12 +446,10 @@ extension ChatListViewController {
 
 private class BackupDownloadProgressView: ChatListBackupProgressView {
 
+    @MainActor
     protocol Delegate: AnyObject {
-        @MainActor
         func didTapDismiss()
-        @MainActor
         func didTapOutOfDiskSpaceDetails()
-        @MainActor
         func didTapResume()
     }
 
