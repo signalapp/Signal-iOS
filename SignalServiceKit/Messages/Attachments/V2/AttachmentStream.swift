@@ -86,28 +86,10 @@ public class AttachmentStream {
         return Self.absoluteAttachmentFileURL(relativeFilePath: self.localRelativeFilePath)
     }
 
-    /// - parameter filename: if provided, the output file url will use this name, minus any file extension (which
-    /// will instead be inferred from the file contents) and made url-safe AND user-friendly. If nil, a random file name is used.
+    /// - parameter filename: if provided, the output file url will use this name, made url-safe and user-friendly.
+    /// If nil, a random file name is used.
     public func makeDecryptedCopy(filename: String?) throws -> URL {
-        var pathExtension: String = {
-            if let pathExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType) {
-                return pathExtension
-            } else if
-                let filename,
-                let filenameUrl = URL(string: filename),
-                let pathExtension = filenameUrl.pathExtension.nilIfEmpty
-            {
-                return pathExtension
-            } else {
-                return "bin"
-            }
-        }()
-        // Special-case the "aac" filetype we use for voice messages (for legacy reasons)
-        // to use a .m4a file extension, not .aac, since AVAudioPlayer can't handle .aac
-        // properly. Doesn't affect file contents.
-        if pathExtension == "aac" {
-            pathExtension = "m4a"
-        }
+        let pathExtension = Self.decryptedCopyFileExtension(mimeType: mimeType, filename: filename)
 
         let tmpURL: URL
         if let filename {
@@ -147,6 +129,25 @@ public class AttachmentStream {
             output: tmpURL,
         )
         return tmpURL
+    }
+
+    static func decryptedCopyFileExtension(mimeType: String, filename: String?) -> String {
+        let filenameExtension = filename.flatMap { ($0 as NSString).pathExtension.nilIfEmpty }
+        var pathExtension: String
+        if let filenameExtension,
+           mimeType == MimeType.applicationOctetStream.rawValue || mimeType == "text/plain"
+        {
+            pathExtension = filenameExtension
+        } else {
+            pathExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType) ?? filenameExtension ?? "bin"
+        }
+        // Special-case the "aac" filetype we use for voice messages (for legacy reasons)
+        // to use a .m4a file extension, not .aac, since AVAudioPlayer can't handle .aac
+        // properly. Doesn't affect file contents.
+        if pathExtension == "aac" {
+            pathExtension = "m4a"
+        }
+        return pathExtension
     }
 
     public func decryptedRawData() throws -> Data {

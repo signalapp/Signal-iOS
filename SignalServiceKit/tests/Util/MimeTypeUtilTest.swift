@@ -10,6 +10,24 @@ import Testing
 
 struct MimeTypeUtilTest {
 
+    // MARK: - Decrypted attachment copies
+
+    @Test(arguments: [
+        ("text/plain", "subtitles.srt", "srt"),
+        (MimeType.applicationOctetStream.rawValue, "app.ipa", "ipa"),
+        (MimeType.applicationOctetStream.rawValue, "library.dylib", "dylib"),
+        ("text/plain", "notes.txt", "txt"),
+        (MimeType.imageJpeg.rawValue, "photo.png", "jpg"),
+        ("audio/aac", "voice.aac", "m4a"),
+        (MimeType.applicationOctetStream.rawValue, nil, "bin"),
+    ] as [(String, String?, String)])
+    func testDecryptedCopyFileExtension(testCase: (mimeType: String, filename: String?, expected: String)) {
+        #expect(AttachmentStream.decryptedCopyFileExtension(
+            mimeType: testCase.mimeType,
+            filename: testCase.filename,
+        ) == testCase.expected)
+    }
+
     // MARK: - Content type inference
 
     @Test(arguments: [
