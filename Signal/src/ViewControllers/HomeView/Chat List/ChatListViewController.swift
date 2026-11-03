@@ -506,7 +506,7 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
             databaseStorage: db,
             badgeColor: badgeColor,
             onDidDismissContextMenu: onDidDismissContextMenu,
-            buildActions: { settingsAction -> [UIMenuElement] in
+            buildActions: {
                 var contextMenuActions: [UIMenuElement] = []
 
                 if viewState.settingsButtonCreator.showBackupsFailedMenuItem {
@@ -612,14 +612,6 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
                     )
                 }
 
-                // FIXME: combine viewState.inboxFilter and renderState.viewInfo.inboxFilter to avoid bugs with them getting out of sync
-                switch viewState.inboxFilter {
-                case .unread:
-                    contextMenuActions.append(.disableChatListFilter(target: self))
-                case .unfiltered, nil:
-                    contextMenuActions.append(.enableChatListFilter(target: self))
-                }
-
                 if viewState.settingsButtonCreator.hasInboxChats {
                     contextMenuActions.append(
                         UIAction(
@@ -635,7 +627,13 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
                     )
                 }
 
-                contextMenuActions.append(settingsAction)
+                // FIXME: combine viewState.inboxFilter and renderState.viewInfo.inboxFilter to avoid bugs with them getting out of sync
+                switch viewState.inboxFilter {
+                case .unread:
+                    contextMenuActions.append(.disableChatListFilter(target: self))
+                case .unfiltered, nil:
+                    contextMenuActions.append(.enableChatListFilter(target: self))
+                }
 
                 contextMenuActions.append(
                     UIAction(

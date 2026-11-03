@@ -52,7 +52,7 @@ extension HomeTabViewController {
         databaseStorage: SDSDatabaseStorage,
         badgeColor: UIColor? = nil,
         onDidDismissContextMenu: @escaping () -> Void = {},
-        buildActions: (_ settingsAction: UIMenuElement) -> [UIMenuElement],
+        buildActions: () -> [UIMenuElement],
         showAppSettings: @escaping () -> Void,
     ) -> UIBarButtonItem {
 
@@ -92,7 +92,7 @@ extension HomeTabViewController {
         )
 
         let contextButton = ContextMenuButton(
-            actions: buildActions(settingsAction) + [donateAction],
+            actions: buildActions() + [donateAction, settingsAction],
             onDidDismissContextMenu: onDidDismissContextMenu,
         )
         contextButton.accessibilityLabel = CommonStrings.openAppSettingsButton

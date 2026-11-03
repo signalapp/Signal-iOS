@@ -196,7 +196,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func settingsBarButtonItem() -> UIBarButtonItem {
         createSettingsBarButtonItem(
             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-            buildActions: { settingsAction -> [UIMenuElement] in
+            buildActions: {
                 return [
                     UIAction(
                         title: Strings.selectCallsButtonTitle,
@@ -205,7 +205,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                             self?.startMultiselect()
                         },
                     ),
-                    settingsAction,
                 ]
             },
             showAppSettings: { [weak self] in
