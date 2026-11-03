@@ -12,7 +12,6 @@ class CLVLocalFileBackupRestoreProgressView: LocalFileBackupRestoreProgressView.
 
     private struct State {
         var isVisible: Bool = false
-        var deviceSleepBlock: DeviceSleepBlockObject?
         var completeBannerByteCount: UInt64?
 
         var latestProgress: OWSProgress?
@@ -25,7 +24,7 @@ class CLVLocalFileBackupRestoreProgressView: LocalFileBackupRestoreProgressView.
     private let localFileBackupRestoreProgressView: LocalFileBackupRestoreProgressView
 
     private let localFileBackupAttachmentRestoreProgress: LocalFileBackupAttachmentRestoreProgress
-    private let deviceSleepManager: DeviceSleepManager
+    private let deviceSleepBlocker: DeviceSleepBlocker
     private var observer: LocalFileBackupAttachmentRestoreProgressObserver?
 
     init() {
@@ -35,7 +34,11 @@ class CLVLocalFileBackupRestoreProgressView: LocalFileBackupRestoreProgressView.
 
         self.state = AtomicValue(State(), lock: .init())
         self.localFileBackupAttachmentRestoreProgress = DependenciesBridge.shared.localFileBackupAttachmentRestoreProgress
-        self.deviceSleepManager = deviceSleepManager
+        self.deviceSleepBlocker = DeviceSleepBlocker(
+            blockReason: "CLVLocalFileBackupRestoreProgressView",
+            maxBlockDuration: .infinity,
+            deviceSleepManager: deviceSleepManager,
+        )
         self.localFileBackupRestoreProgressView = LocalFileBackupRestoreProgressView(viewState: nil)
         self.localFileBackupRestoreProgressView.delegate = self
     }
@@ -137,21 +140,13 @@ class CLVLocalFileBackupRestoreProgressView: LocalFileBackupRestoreProgressView.
     }
 
     private func manageDeviceSleepBlock(state: inout State) {
-        let shouldBlockDeviceSleep = state.currentViewState != nil && state.isVisible
-
-        if
-            shouldBlockDeviceSleep,
-            state.deviceSleepBlock == nil
-        {
-            let deviceSleepBlock = DeviceSleepBlockObject(blockReason: "CLVLocalFileBackupRestoreProgressView")
-            deviceSleepManager.addBlock(blockObject: deviceSleepBlock)
-            state.deviceSleepBlock = deviceSleepBlock
-        } else if
-            !shouldBlockDeviceSleep,
-            let deviceSleepBlock = state.deviceSleepBlock.take()
-        {
-            deviceSleepManager.removeBlock(blockObject: deviceSleepBlock)
+        let shouldBlockDeviceSleep = switch state.currentViewState {
+        case .restoring: true
+        case .complete: false
+        case nil: false
         }
+
+        deviceSleepBlocker.setShouldBlock(shouldBlockDeviceSleep && state.isVisible)
     }
 
     func didTapDismiss() {

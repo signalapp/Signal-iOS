@@ -1264,6 +1264,7 @@
 		D9B2268F301BF9F10078C200 /* AppBlockingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B2268E301BF9ED0078C200 /* AppBlockingViewController.swift */; };
 		D9B22691301BF9F10078C200 /* ClockSkewAppBlockingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B22690301BF9F10078C200 /* ClockSkewAppBlockingViewController.swift */; };
 		D9B2E1182E748E1900A823E4 /* OWSByteCountFormatStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B2E1172E748DFB00A823E4 /* OWSByteCountFormatStyle.swift */; };
+		D9B676E230998B9F007B275A /* DeviceSleepBlockerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B676E130998B9F007B275A /* DeviceSleepBlockerTest.swift */; };
 		D9BA97F42FEDEFA4009A4D5B /* BackupSaveAndConfirmKeyCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BA97F32FEDEF96009A4D5B /* BackupSaveAndConfirmKeyCoordinator.swift */; };
 		D9BF53362D0814A000EC3DF0 /* QRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BF53352D08149D00EC3DF0 /* QRCodeView.swift */; };
 		D9C0AE692BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE682BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift */; };
@@ -2909,6 +2910,7 @@
 		D9B2268E301BF9ED0078C200 /* AppBlockingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppBlockingViewController.swift; sourceTree = "<group>"; };
 		D9B22690301BF9F10078C200 /* ClockSkewAppBlockingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockSkewAppBlockingViewController.swift; sourceTree = "<group>"; };
 		D9B2E1172E748DFB00A823E4 /* OWSByteCountFormatStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSByteCountFormatStyle.swift; sourceTree = "<group>"; };
+		D9B676E130998B9F007B275A /* DeviceSleepBlockerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceSleepBlockerTest.swift; sourceTree = "<group>"; };
 		D9BA97F32FEDEF96009A4D5B /* BackupSaveAndConfirmKeyCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSaveAndConfirmKeyCoordinator.swift; sourceTree = "<group>"; };
 		D9BF53352D08149D00EC3DF0 /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
 		D9C0AE682BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactiveLinkedDeviceReminderMegaphone.swift; sourceTree = "<group>"; };
@@ -5413,6 +5415,7 @@
 				34F1072126D045290053EF4D /* BatchUpdateTest.swift */,
 				4C9D347923679C13006A4307 /* ContactStreamTest.swift */,
 				3494BBDF26E66FC30079B11B /* DateUtilTest.swift */,
+				D9B676E130998B9F007B275A /* DeviceSleepBlockerTest.swift */,
 				45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */,
 				3485434426BC598800FB9C38 /* EmojiTests.swift */,
 				F9952B3029F2D99500EA989E /* ExpirationNagViewTest.swift */,
@@ -8018,6 +8021,7 @@
 				88D6E94325535D49003142D9 /* CVTextTest.swift in Sources */,
 				3494BBE026E66FC30079B11B /* DateUtilTest.swift in Sources */,
 				C17A54962D7B3D9E00E1D267 /* DeviceProvisioningURLTest.swift in Sources */,
+				D9B676E230998B9F007B275A /* DeviceSleepBlockerTest.swift in Sources */,
 				D92812E22FA95C1400667DCF /* DisplayableAccountEntropyPoolTest.swift in Sources */,
 				45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */,
 				F90B7BC12912B90100F50A59 /* DonateViewControllerTest.swift in Sources */,

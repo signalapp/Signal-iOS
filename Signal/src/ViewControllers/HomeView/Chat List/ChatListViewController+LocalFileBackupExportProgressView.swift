@@ -40,7 +40,6 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
 
     private struct State {
         var isVisible: Bool = false
-        var deviceSleepBlock: DeviceSleepBlockObject?
         var currentViewState: LocalFileBackupExportProgressView.ViewState?
 
         var isHidden: Bool = false
@@ -54,7 +53,7 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
     private let localFileBackupExportJobRunner: LocalFileBackupExportJobRunner
     private let localFileBackupStore: LocalFileBackupStore
     private let db: DB
-    private let deviceSleepManager: DeviceSleepManager
+    private let deviceSleepBlocker: DeviceSleepBlocker
     private let store: Store
 
     private let localFileBackupExportProgressView: LocalFileBackupExportProgressView
@@ -69,7 +68,13 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
         self.localFileBackupExportJobRunner = DependenciesBridge.shared.localFileBackupExportJobRunner
         self.localFileBackupStore = LocalFileBackupStore()
         self.db = DependenciesBridge.shared.db
-        self.deviceSleepManager = DependenciesBridge.shared.deviceSleepManager.owsFailUnwrap("Missing DeviceSleepManager!")
+        self.deviceSleepBlocker = DeviceSleepBlocker(
+            blockReason: "CLVLocalFileBackupExportProgressView",
+            maxBlockDuration: .infinity,
+            deviceSleepManager: DependenciesBridge.shared.deviceSleepManager.owsFailUnwrap(
+                "Missing DeviceSleepManager!",
+            ),
+        )
         self.store = Store()
 
         self.localFileBackupExportProgressView = LocalFileBackupExportProgressView(viewState: nil)
@@ -260,19 +265,7 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
 
         shouldBlockDeviceSleep = shouldBlockDeviceSleep && state.isVisible
 
-        if
-            shouldBlockDeviceSleep,
-            state.deviceSleepBlock == nil
-        {
-            let deviceSleepBlock = DeviceSleepBlockObject(blockReason: "CLVLocalFileBackupExportProgressView")
-            deviceSleepManager.addBlock(blockObject: deviceSleepBlock)
-            state.deviceSleepBlock = deviceSleepBlock
-        } else if
-            !shouldBlockDeviceSleep,
-            let deviceSleepBlock = state.deviceSleepBlock.take()
-        {
-            deviceSleepManager.removeBlock(blockObject: deviceSleepBlock)
-        }
+        deviceSleepBlocker.setShouldBlock(shouldBlockDeviceSleep)
     }
 
     // MARK: - LocalFileBackupExportProgressView.Delegate

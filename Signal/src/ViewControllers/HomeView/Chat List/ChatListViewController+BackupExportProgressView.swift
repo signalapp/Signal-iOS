@@ -49,7 +49,6 @@ class CLVBackupExportProgressView: BackupExportProgressView.Delegate {
 
     private struct State {
         var isVisible: Bool = false
-        var deviceSleepBlock: DeviceSleepBlockObject?
         var currentViewState: BackupExportProgressView.ViewState?
 
         var earliestBackupDateToConsider: Date = .distantFuture
@@ -69,7 +68,7 @@ class CLVBackupExportProgressView: BackupExportProgressView.Delegate {
     private let backupSettingsStore: BackupSettingsStore
     private let dateProvider: DateProvider
     private let db: DB
-    private let deviceSleepManager: DeviceSleepManager
+    private let deviceSleepBlocker: DeviceSleepBlocker
     private let store: Store
 
     private let backupExportProgressView: BackupExportProgressView
@@ -86,7 +85,13 @@ class CLVBackupExportProgressView: BackupExportProgressView.Delegate {
         self.backupSettingsStore = BackupSettingsStore()
         self.dateProvider = { Date() }
         self.db = DependenciesBridge.shared.db
-        self.deviceSleepManager = DependenciesBridge.shared.deviceSleepManager.owsFailUnwrap("Missing DeviceSleepManager!")
+        self.deviceSleepBlocker = DeviceSleepBlocker(
+            blockReason: "CLVBackupExportProgressView",
+            maxBlockDuration: .infinity,
+            deviceSleepManager: DependenciesBridge.shared.deviceSleepManager.owsFailUnwrap(
+                "Missing DeviceSleepManager!",
+            ),
+        )
         self.store = Store()
 
         self.backupExportProgressView = BackupExportProgressView(viewState: nil)
@@ -327,19 +332,7 @@ class CLVBackupExportProgressView: BackupExportProgressView.Delegate {
 
         shouldBlockDeviceSleep = shouldBlockDeviceSleep && state.isVisible
 
-        if
-            shouldBlockDeviceSleep,
-            state.deviceSleepBlock == nil
-        {
-            let deviceSleepBlock = DeviceSleepBlockObject(blockReason: "CLVBackupExportProgressView")
-            deviceSleepManager.addBlock(blockObject: deviceSleepBlock)
-            state.deviceSleepBlock = deviceSleepBlock
-        } else if
-            !shouldBlockDeviceSleep,
-            let deviceSleepBlock = state.deviceSleepBlock.take()
-        {
-            deviceSleepManager.removeBlock(blockObject: deviceSleepBlock)
-        }
+        deviceSleepBlocker.setShouldBlock(shouldBlockDeviceSleep)
     }
 
     // MARK: - ExportProgressView.Delegate

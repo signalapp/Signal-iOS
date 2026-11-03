@@ -13,7 +13,6 @@ class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate {
         var isVisible: Bool = false
         var didDismissDownloadBanner: Bool = false
         var downloadCompleteBannerByteCount: UInt64?
-        var deviceSleepBlock: DeviceSleepBlockObject?
 
         var latestDownloadUpdate: BackupAttachmentDownloadTracker.DownloadUpdate?
         var currentViewState: BackupDownloadProgressView.ViewState?
@@ -29,7 +28,7 @@ class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate {
     private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let backupSettingsStore: BackupSettingsStore
     private let db: DB
-    private let deviceSleepManager: DeviceSleepManager
+    private let deviceSleepBlocker: DeviceSleepBlocker
 
     init() {
         guard let deviceSleepManager = DependenciesBridge.shared.deviceSleepManager else {
@@ -43,7 +42,11 @@ class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate {
         self.backupAttachmentDownloadStore = DependenciesBridge.shared.backupAttachmentDownloadStore
         self.backupSettingsStore = BackupSettingsStore()
         self.db = DependenciesBridge.shared.db
-        self.deviceSleepManager = deviceSleepManager
+        self.deviceSleepBlocker = DeviceSleepBlocker(
+            blockReason: "CLVBackupDownloadProgressView",
+            maxBlockDuration: 5 * .minute,
+            deviceSleepManager: deviceSleepManager,
+        )
 
         backupDownloadProgressView = BackupDownloadProgressView(viewState: nil)
         backupDownloadProgressView.delegate = self
@@ -163,18 +166,14 @@ class CLVBackupDownloadProgressView: BackupDownloadProgressView.Delegate {
     }
 
     private func manageDeviceSleepBlock(state: inout State) {
-        switch state.currentViewState {
-        case nil, .complete:
-            if let deviceSleepBlock = state.deviceSleepBlock.take() {
-                deviceSleepManager.removeBlock(blockObject: deviceSleepBlock)
-            }
-        case .restoring, .wifiNotReachable, .paused, .outOfDiskSpace:
-            if state.deviceSleepBlock == nil {
-                let deviceSleepBlock = DeviceSleepBlockObject(blockReason: "CLVBackupDownloadProgressView")
-                state.deviceSleepBlock = deviceSleepBlock
-                deviceSleepManager.addBlock(blockObject: deviceSleepBlock)
-            }
+        let shouldBlockDeviceSleep = switch state.currentViewState {
+        case .restoring: true
+        case .wifiNotReachable, .paused, .outOfDiskSpace: false
+        case .complete: false
+        case nil: false
         }
+
+        deviceSleepBlocker.setShouldBlock(shouldBlockDeviceSleep && state.isVisible)
     }
 
     // MARK: - BackupDownloadProgressView.Delegate
