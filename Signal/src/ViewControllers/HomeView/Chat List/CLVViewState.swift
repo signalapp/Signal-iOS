@@ -149,7 +149,6 @@ class CLVViewState {
         inboxFilter = viewInfo.inboxFilter
         settingsButtonCreator.updateState(
             hasInboxChats: viewInfo.inboxCount > 0,
-            hasArchivedChats: viewInfo.archiveCount > 0,
         )
     }
 }

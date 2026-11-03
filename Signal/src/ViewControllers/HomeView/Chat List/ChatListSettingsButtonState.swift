@@ -13,7 +13,6 @@ protocol ChatListSettingsButtonDelegate: AnyObject {
 
 final class ChatListSettingsButtonState {
     var hasInboxChats: Bool = false
-    var hasArchivedChats: Bool = false
     var hasUnreadPaymentNotification: Bool = false
     var showBackupsFailedMenuItem: Bool = false
     var hasConsumedMediaTierCapacity: Bool = false
@@ -28,7 +27,6 @@ final class ChatListSettingsButtonState {
 
     func updateState(
         hasInboxChats: Bool? = nil,
-        hasArchivedChats: Bool? = nil,
         hasUnreadPaymentNotification: Bool? = nil,
         hasConsumedMediaTierCapacity: Bool? = nil,
         showBackupsFailedAvatarBadge: Bool? = nil,
@@ -43,10 +41,6 @@ final class ChatListSettingsButtonState {
         if let hasInboxChats {
             didUpdate = didUpdate || self.hasInboxChats != hasInboxChats
             self.hasInboxChats = hasInboxChats
-        }
-        if let hasArchivedChats {
-            didUpdate = didUpdate || self.hasArchivedChats != hasArchivedChats
-            self.hasArchivedChats = hasArchivedChats
         }
         if let hasUnreadPaymentNotification {
             didUpdate = didUpdate || self.hasUnreadPaymentNotification != hasUnreadPaymentNotification

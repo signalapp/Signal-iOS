@@ -637,20 +637,18 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
 
                 contextMenuActions.append(settingsAction)
 
-                if viewState.settingsButtonCreator.hasArchivedChats {
-                    contextMenuActions.append(
-                        UIAction(
-                            title: OWSLocalizedString(
-                                "HOME_VIEW_TITLE_ARCHIVE",
-                                comment: "Title for the conversation list's 'archive' mode.",
-                            ),
-                            image: Theme.iconImage(.contextMenuArchive),
-                            handler: { [weak self] _ in
-                                self?.showArchivedConversations(offerMultiSelectMode: true)
-                            },
+                contextMenuActions.append(
+                    UIAction(
+                        title: OWSLocalizedString(
+                            "HOME_VIEW_TITLE_ARCHIVE",
+                            comment: "Title for the conversation list's 'archive' mode.",
                         ),
-                    )
-                }
+                        image: Theme.iconImage(.contextMenuArchive),
+                        handler: { [weak self] _ in
+                            self?.showArchivedConversations(offerMultiSelectMode: true)
+                        },
+                    ),
+                )
 
                 return contextMenuActions
             },
