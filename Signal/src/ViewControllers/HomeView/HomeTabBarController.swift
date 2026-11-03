@@ -184,6 +184,19 @@ class HomeTabBarController: UITabBarController, UINavigationControllerDelegate, 
     )
     lazy var storiesTabBarItem = Tabs.stories.tabBarItem
 
+    /// - returns: Currently selected split view controller.
+    /// - warning: Use this property instead of `selectedViewController` because
+    /// `selectedViewController` will not return a `UISplitViewController` on iOS 15-16.
+    fileprivate var selectedSplitViewController: HomeTabSplitViewController? {
+        guard let selectedViewController else { return nil }
+
+        // Unwrap UISplitViewController from HomeTabSplitContainerViewController
+        if #unavailable(iOS 26), let splitContainerVC = selectedViewController as? HomeTabSplitContainerViewController {
+            return splitContainerVC.splitVC
+        }
+        return selectedViewController as? HomeTabSplitViewController
+    }
+
     // There are two things going on here that require this code. The first is a stored property can't
     // conditionally include itself with an @available property, so some type erasing hoops need to be
     // jumped through to persis UITabs in a property.  As for why the need to persist UITabs -
@@ -258,9 +271,9 @@ class HomeTabBarController: UITabBarController, UINavigationControllerDelegate, 
 
         viewControllers = tabs
             .map(childControllers(for:))
-            .map { navController, tabBarItem in
-                navController.tabBarItem = tabBarItem
-                return navController
+            .map { viewController, tabBarItem in
+                viewController.tabBarItem = tabBarItem
+                return viewController
             }
     }
 
@@ -268,13 +281,17 @@ class HomeTabBarController: UITabBarController, UINavigationControllerDelegate, 
         viewController: UIViewController,
         tabBarItem: UITabBarItem,
     ) {
+        func wrapIfNecessary(_ splitVC: HomeTabSplitViewController) -> UIViewController {
+            guard #unavailable(iOS 26) else { return splitVC }
+            return HomeTabSplitContainerViewController(splitViewController: splitVC)
+        }
         switch tab {
         case .chatList:
-            return (chatsSplitViewController, chatListTabBarItem)
+            return (wrapIfNecessary(chatsSplitViewController), chatListTabBarItem)
         case .calls:
-            return (callsSplitViewController, callsListTabBarItem)
+            return (wrapIfNecessary(callsSplitViewController), callsListTabBarItem)
         case .stories:
-            return (storiesSplitViewController, storiesTabBarItem)
+            return (wrapIfNecessary(storiesSplitViewController), storiesTabBarItem)
         }
     }
 
@@ -1259,10 +1276,14 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
         return secondaryNavigationController?.topViewController ?? primaryNavigationController?.topViewController
     }
 
+    private var homeTabBarController: HomeTabBarController? {
+        tabBarController as? HomeTabBarController
+    }
+
     private func updateTabBar(displayMode mode: DisplayMode? = nil, animated: Bool = false) {
         guard
-            let tabBarController = self.tabBarController as? HomeTabBarController,
-            tabBarController.selectedViewController === self
+            let homeTabBarController,
+            homeTabBarController.selectedSplitViewController === self
         else { return }
 
         let isPrimaryVisible: Bool
@@ -1273,9 +1294,9 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
             isPrimaryVisible = (mode ?? displayMode) != .secondaryOnly
         }
         if #available(iOS 18, *) {
-            tabBarController.setTabBarHidden(!isPrimaryVisible, animated: animated)
+            homeTabBarController.setTabBarHidden(!isPrimaryVisible, animated: animated)
         } else {
-            tabBarController.setTabBar(hidden: !isPrimaryVisible, animated: animated)
+            homeTabBarController.setTabBar(hidden: !isPrimaryVisible, animated: animated)
         }
     }
 
@@ -1338,9 +1359,9 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
         // If there is a conversation selected in expanded state, keep the chat visible by collapsing into the secondary column.
         if
             proposedTopColumn == .secondary,
-            let homeTabBarViewController = tabBarController as? HomeTabBarController,
-            svc === homeTabBarViewController.chatsSplitViewController,
-            homeTabBarViewController.selectedConversationViewController != nil
+            let homeTabBarController,
+            svc === homeTabBarController.chatsSplitViewController,
+            homeTabBarController.selectedConversationViewController != nil
         {
             topColumn = proposedTopColumn
         }
@@ -1348,7 +1369,8 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
     }
 
     func splitViewController(_ svc: UISplitViewController, willHide column: UISplitViewController.Column) {
-        guard column == .primary, tabBarController?.selectedViewController === svc else { return }
+        guard column == .primary, homeTabBarController?.selectedSplitViewController === svc else { return }
+
         if let transitionCoordinator = svc.transitionCoordinator {
             transitionCoordinator.animate { _ in self.updateTabBar() }
         } else {
@@ -1357,7 +1379,8 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
     }
 
     func splitViewController(_ svc: UISplitViewController, willShow column: UISplitViewController.Column) {
-        guard column == .primary, tabBarController?.selectedViewController === svc else { return }
+        guard column == .primary, homeTabBarController?.selectedSplitViewController === svc else { return }
+
         if let transitionCoordinator = svc.transitionCoordinator {
             transitionCoordinator.animate { _ in self.updateTabBar() }
         } else {
@@ -1366,29 +1389,30 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
     }
 
     func splitViewController(_ svc: UISplitViewController, didShow column: UISplitViewController.Column) {
-        guard tabBarController?.selectedViewController === svc else { return }
+        guard homeTabBarController?.selectedSplitViewController === svc else { return }
 
         // See comment in `resetSecondaryViewController()` on purpose of this.
         if
             let homeTabSplitViewController = svc as? HomeTabSplitViewController,
-            svc.isCollapsed, column == .primary
+            svc.isCollapsed,
+            column == .primary
         {
             homeTabSplitViewController.resetSecondaryViewController()
         }
     }
 
     func splitViewControllerDidCollapse(_ svc: UISplitViewController) {
-        guard tabBarController?.selectedViewController === svc else { return }
+        guard homeTabBarController?.selectedSplitViewController === svc else { return }
         updateTabBar()
     }
 
     func splitViewControllerDidExpand(_ svc: UISplitViewController) {
-        guard tabBarController?.selectedViewController === svc else { return }
+        guard homeTabBarController?.selectedSplitViewController === svc else { return }
         updateTabBar()
     }
 
     func splitViewController(_ svc: UISplitViewController, willChangeTo displayMode: UISplitViewController.DisplayMode) {
-        guard tabBarController?.selectedViewController === svc else { return }
+        guard homeTabBarController?.selectedSplitViewController === svc else { return }
 
         if let transitionCoordinator = svc.transitionCoordinator {
             transitionCoordinator.animate { _ in self.updateTabBar(displayMode: displayMode) }
@@ -1436,6 +1460,38 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
         if viewController is HomeTabViewController {
             resetSecondaryViewController()
         }
+    }
+}
+
+/**
+ * UIKit on iOS 15-18 has this bug when UISplitViewController, when put into a UITabBarController,
+ * will not receive proper size class traits and will forever stay in horizontal compact environment,
+ * which means the split will not expand into two columns when it should.
+ * The workaround is to wrap UISplitViewController into a simple UIViewController and pass that
+ * to the tab bar controller.
+ */
+@available(iOS, deprecated: 26, message: "It is not necessary to wrap UISplitViewController on iOS 26 and newer.")
+private class HomeTabSplitContainerViewController: UIViewController {
+
+    fileprivate let splitVC: HomeTabSplitViewController
+
+    init(splitViewController: HomeTabSplitViewController) {
+        splitVC = splitViewController
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        addChild(splitVC)
+        splitVC.view.frame = view.bounds
+        splitVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(splitVC.view)
+        splitVC.didMove(toParent: self)
     }
 }
 
