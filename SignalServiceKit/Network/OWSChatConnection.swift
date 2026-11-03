@@ -65,6 +65,15 @@ public class OWSChatConnection {
         }
     }
 
+    /// Whether the connection is currently open directly to the service, rather
+    /// than through a reflector or a user-configured proxy.
+    /// False while not connected.
+    var isConnectedDirectly: Bool {
+        get async {
+            return false
+        }
+    }
+
     fileprivate var logPrefix: String {
         "[\(type)]"
     }
@@ -515,6 +524,20 @@ class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OW
             assertOnQueue(serialQueue)
             _connection = newValue
             notifyStatusChange(newState: newValue.asExternalState)
+        }
+    }
+
+    override var isConnectedDirectly: Bool {
+        get async {
+            return await withCheckedContinuation { continuation in
+                serialQueue.async {
+                    if case .open(let connection) = self.connection {
+                        continuation.resume(returning: connection.info().isDirect)
+                    } else {
+                        continuation.resume(returning: false)
+                    }
+                }
+            }
         }
     }
 
