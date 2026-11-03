@@ -746,14 +746,13 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
     var lastViewedThreadUniqueId: String?
 
     func updateBarButtonItems() {
-        updateLeftBarButtonItem()
+        updateSettingsBarButtonItem()
         updateRightBarButtonItems()
     }
 
-    private func updateLeftBarButtonItem() {
+    func updateSettingsBarButtonItem() {
         guard viewState.chatListMode == .inbox, !viewState.multiSelectState.isActive else { return }
 
-        // Settings button.
         navigationItem.leftBarButtonItem = settingsBarButtonItem()
     }
 
@@ -1324,7 +1323,7 @@ extension ChatListViewController {
 
 extension ChatListViewController: ChatListSettingsButtonDelegate {
     func didUpdateButton(_ settingsButtonCreator: ChatListSettingsButtonState) {
-        updateLeftBarButtonItem()
+        updateSettingsBarButtonItem()
     }
 }
 

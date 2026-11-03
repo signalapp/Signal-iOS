@@ -237,9 +237,9 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
     }
 
     @objc
-    private func profileDidChange() { updateNavigationBar() }
+    private func profileDidChange() { updateSettingsBarButtonItem() }
 
-    func updateNavigationBar() {
+    func updateSettingsBarButtonItem() {
         navigationItem.leftBarButtonItem = createSettingsBarButtonItem(
             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             buildActions: { settingsAction -> [UIMenuElement] in
@@ -261,14 +261,23 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
                 self?.showAppSettings()
             },
         )
+    }
+
+    func updateNavigationBar() {
+        updateSettingsBarButtonItem()
 
         let cameraButton = UIBarButtonItem.button(icon: .buttonCamera) { [weak self] in
             self?.showCameraView()
         }
-        cameraButton.accessibilityLabel = OWSLocalizedString("CAMERA_BUTTON_LABEL", comment: "Accessibility label for camera button.")
-        cameraButton.accessibilityHint = OWSLocalizedString("CAMERA_BUTTON_HINT", comment: "Accessibility hint describing what you can do with the camera button")
-
-        navigationItem.rightBarButtonItems = [cameraButton]
+        cameraButton.accessibilityLabel = OWSLocalizedString(
+            "CAMERA_BUTTON_LABEL",
+            comment: "Accessibility label for camera button.",
+        )
+        cameraButton.accessibilityHint = OWSLocalizedString(
+            "CAMERA_BUTTON_HINT",
+            comment: "Accessibility hint describing what you can do with the camera button",
+        )
+        navigationItem.rightBarButtonItem = cameraButton
     }
 
     private func showCameraView() {

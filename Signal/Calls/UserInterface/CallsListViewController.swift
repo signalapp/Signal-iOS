@@ -167,12 +167,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     }
 
     func updateBarButtonItems() {
+        updateSettingsBarButtonItem()
+
         if tableView.isEditing {
-            navigationItem.leftBarButtonItem = cancelMultiselectButton()
             navigationItem.rightBarButtonItem = deleteAllCallsButton
             updateMultiselectButtons()
         } else {
-            navigationItem.leftBarButtonItem = profileBarButtonItem()
             navigationItem.rightBarButtonItem = newCallButton()
         }
 
@@ -183,9 +183,17 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         }
     }
 
-    // MARK: Profile button
+    // MARK: Settings nav bar button
 
-    private func profileBarButtonItem() -> UIBarButtonItem {
+    func updateSettingsBarButtonItem() {
+        if tableView.isEditing {
+            navigationItem.leftBarButtonItem = cancelMultiselectButton()
+        } else {
+            navigationItem.leftBarButtonItem = settingsBarButtonItem()
+        }
+    }
+
+    private func settingsBarButtonItem() -> UIBarButtonItem {
         createSettingsBarButtonItem(
             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             buildActions: { settingsAction -> [UIMenuElement] in

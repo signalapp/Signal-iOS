@@ -1291,6 +1291,11 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
         tabBarController as? HomeTabBarController
     }
 
+    /// - returns: Root view controller for the primary column as `HomeTabViewController`.
+    private var homeTabViewController: HomeTabViewController? {
+        primaryNavigationController?.viewControllers.first as? HomeTabViewController
+    }
+
     private func updateTabBar(displayMode mode: DisplayMode? = nil, animated: Bool = false) {
         guard
             let homeTabBarController,
@@ -1312,7 +1317,7 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
     }
 
     fileprivate func scrollPrimaryViewControllerToTop(animated: Bool) {
-        guard let homeTabViewController = primaryNavigationController?.viewControllers.first as? HomeTabViewController else {
+        guard let homeTabViewController else {
             owsFailDebug("Could not find homeTabViewController")
             return
         }
@@ -1421,13 +1426,37 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
     }
 
     func splitViewControllerDidCollapse(_ svc: UISplitViewController) {
-        guard homeTabBarController?.selectedSplitViewController === svc else { return }
-        updateTabBar()
+        // Update appearance of the Settings button on iOS 26 and later.
+        // Update because appearance depends on whether the split view controller is expanded or collapsed.
+        if
+            let homeSplitViewController = svc as? HomeTabSplitViewController,
+            let homeTabViewController = homeSplitViewController.homeTabViewController,
+            homeTabViewController.isSettingsButtonAppearanceFixed == false
+        {
+            homeTabViewController.updateSettingsBarButtonItem()
+        }
+
+        // Tab bar is not always visible in a collapsed split view controller.
+        if homeTabBarController?.selectedSplitViewController === svc {
+            updateTabBar()
+        }
     }
 
     func splitViewControllerDidExpand(_ svc: UISplitViewController) {
-        guard homeTabBarController?.selectedSplitViewController === svc else { return }
-        updateTabBar()
+        // Update appearance of the Settings button on iOS 26 and later.
+        // Update because appearance depends on whether the split view controller is expanded or collapsed.
+        if
+            let homeSplitViewController = svc as? HomeTabSplitViewController,
+            let homeTabViewController = homeSplitViewController.homeTabViewController,
+            homeTabViewController.isSettingsButtonAppearanceFixed == false
+        {
+            homeTabViewController.updateSettingsBarButtonItem()
+        }
+
+        // Tab bar is always visible in expanded split view controller.
+        if homeTabBarController?.selectedSplitViewController === svc {
+            updateTabBar()
+        }
     }
 
     func splitViewController(_ svc: UISplitViewController, willChangeTo displayMode: UISplitViewController.DisplayMode) {

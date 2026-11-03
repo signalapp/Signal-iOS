@@ -8,6 +8,11 @@ import SignalUI
 
 protocol HomeTabViewController: UIViewController {
     var tableView: UITableView { get }
+
+    // Split view controller will call this method whenever it transitions
+    // in and out of collapsed state so that view controller could
+    // update appearance for the navigation bar's settings button.
+    func updateSettingsBarButtonItem()
 }
 
 extension HomeTabViewController {
@@ -27,6 +32,17 @@ extension HomeTabViewController {
         )
     }
 
+    // Settings navigation bar button item has a fixed appearance on legacy iOS versions.
+    // This property is how split view controller checks if reload of the Settings button
+    // is necessary when transitioning between expanded and collapsed states.
+    var isSettingsButtonAppearanceFixed: Bool {
+        // Use different sizes and offsets in iOS 26.x only,
+        // where side bar in expanded split view controller is a bit odd.
+        if #available(iOS 27, *) { return true }
+        if #available(iOS 26, *) { return false }
+        return true
+    }
+
     /// - Parameter badgeColor
     /// Color for a badge added to the bar button item, if any.
     /// - Parameter onDidDismissContextMenu
@@ -39,11 +55,21 @@ extension HomeTabViewController {
         buildActions: (_ settingsAction: UIMenuElement) -> [UIMenuElement],
         showAppSettings: @escaping () -> Void,
     ) -> UIBarButtonItem {
-        let isInFloatingSidebar = if #available(iOS 26, *) {
-            splitViewController?.isCollapsed == false
+
+        let avatarSizeClass: ConversationAvatarView.Configuration.SizeClass
+        let avatarLeadingMargin: CGFloat
+
+        if #available(iOS 27, *) {
+            avatarSizeClass = .forty
+            avatarLeadingMargin = 0
+        } else if #available(iOS 26, *) {
+            // Floating sidebar only exists on iOS 26.x
+            let isInFloatingSidebar = (splitViewController?.isCollapsed == false)
+            avatarSizeClass = isInFloatingSidebar ? .thirtyTwo : .forty
+            avatarLeadingMargin = isInFloatingSidebar ? 8 : 0
         } else {
-            // Floating sidebar only exists on iOS 26+
-            false
+            avatarSizeClass = .twentyEight
+            avatarLeadingMargin = 2
         }
 
         let settingsAction = UIAction(
@@ -71,15 +97,8 @@ extension HomeTabViewController {
         )
         contextButton.accessibilityLabel = CommonStrings.openAppSettingsButton
 
-        let sizeClass: ConversationAvatarView.Configuration.SizeClass
-        if #available(iOS 26, *) {
-            sizeClass = isInFloatingSidebar ? .thirtyTwo : .forty
-        } else {
-            sizeClass = .twentyEight
-        }
-
         let avatarView = ConversationAvatarView(
-            sizeClass: sizeClass,
+            sizeClass: avatarSizeClass,
             localUserDisplayMode: .asUser,
         )
         databaseStorage.read { transaction in
@@ -93,7 +112,7 @@ extension HomeTabViewController {
 
         avatarView.autoPinEdgesToSuperviewEdges(with: .init(
             top: 0,
-            leading: isInFloatingSidebar ? 2 : 0,
+            leading: avatarLeadingMargin,
             bottom: 0,
             trailing: 0,
         ))
@@ -107,7 +126,7 @@ extension HomeTabViewController {
             wrapper.addCircleBadge(
                 color: badgeColor,
                 onCircleView: avatarView,
-                circleDiameter: CGFloat(sizeClass.diameter),
+                circleDiameter: CGFloat(avatarSizeClass.diameter),
             )
             barButtonView = wrapper
         } else {
