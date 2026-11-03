@@ -1026,20 +1026,27 @@ class HomeTabBarController: UITabBarController, UINavigationControllerDelegate, 
 
     // MARK: - UITabBarControllerDelegate
 
-    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
-        // If we re-select the active tab, scroll to the top.
-        if selectedViewController == viewController {
-            let tableView: UITableView
-            switch selectedHomeTab {
-            case .chatList:
-                tableView = chatListViewController.tableView
-            case .stories:
-                tableView = storiesViewController.tableView
-            case .calls:
-                tableView = callsListViewController.tableView
-            }
+    @available(iOS 18, *)
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelectTab tab: UITab) -> Bool {
+        // Scroll primary to top when user taps on the currently selected tab.
+        if
+            tab == tabBarController.selectedTab,
+            let homeTabSplitViewController = tabBarController.selectedViewController as? HomeTabSplitViewController
+        {
+            homeTabSplitViewController.scrollPrimaryViewControllerToTop(animated: true)
+        }
 
-            tableView.setContentOffset(CGPoint(x: 0, y: -tableView.safeAreaInsets.top), animated: true)
+        return true
+    }
+
+    @available(iOS, deprecated: 18)
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        // Scroll primary to top when user taps on the currently selected tab.
+        if
+            selectedViewController == viewController,
+            let homeTabSplitViewController = viewController as? HomeTabSplitViewController
+        {
+            homeTabSplitViewController.scrollPrimaryViewControllerToTop(animated: true)
         }
 
         return true
@@ -1233,6 +1240,8 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
         fatalError("init(coder:) has not been implemented")
     }
 
+    // MARK: - View Controller management
+
     fileprivate var primaryNavigationController: UINavigationController? {
         let vc = viewController(for: .primary)
         return (vc as? UINavigationController) ?? vc?.navigationController
@@ -1275,6 +1284,16 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
             tabBarController.setTabBar(hidden: !isPrimaryVisible, animated: animated)
         }
     }
+
+    fileprivate func scrollPrimaryViewControllerToTop(animated: Bool) {
+        guard let homeTabViewController = primaryNavigationController?.viewControllers.first as? HomeTabViewController else {
+            owsFailDebug("Could not find homeTabViewController")
+            return
+        }
+        homeTabViewController.scrollToTop(animated: animated)
+    }
+
+    // MARK: - UISptilViewController overrides
 
     override func setViewController(_ vc: UIViewController?, for column: UISplitViewController.Column) {
         guard #unavailable(iOS 26) else {

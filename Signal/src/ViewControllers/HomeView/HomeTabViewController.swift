@@ -6,12 +6,25 @@
 import SignalServiceKit
 import SignalUI
 
-protocol HomeTabViewController: UIViewController { }
+protocol HomeTabViewController: UIViewController {
+    var tableView: UITableView { get }
+}
 
 extension HomeTabViewController {
 
     var homeTabBarController: HomeTabBarController? {
         tabBarController as? HomeTabBarController
+    }
+
+    func scrollToTop(animated: Bool) {
+        let targetContentOffsetY = -tableView.adjustedContentInset.top
+        tableView.setContentOffset(
+            CGPoint(
+                x: tableView.contentOffset.x,
+                y: targetContentOffsetY,
+            ),
+            animated: animated,
+        )
     }
 
     /// - Parameter badgeColor
