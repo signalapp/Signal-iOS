@@ -175,13 +175,13 @@ class HomeTabBarController: UITabBarController, UINavigationControllerDelegate, 
     lazy var callsListTabBarItem = Tabs.calls.tabBarItem
 
     // No need to share spoiler render state across the whole app.
+    lazy var storiesViewController = StoriesViewController(spoilerState: SpoilerRenderState())
     lazy var storiesSplitViewController = makeSplit(
         primary: storiesViewController,
         placeholder: SplitViewDetailPlaceholderViewController(
             contentConfiguration: Tabs.stories.detailPlaceholderViewContentConfiguration,
         ),
     )
-    lazy var storiesViewController = StoriesViewController(spoilerState: SpoilerRenderState())
     lazy var storiesTabBarItem = Tabs.stories.tabBarItem
 
     // There are two things going on here that require this code. The first is a stored property can't
@@ -290,15 +290,7 @@ class HomeTabBarController: UITabBarController, UINavigationControllerDelegate, 
     private func storiesEnabledStateDidChange() {
         updateTabBars(areStoriesEnabled: StoryManager.areStoriesEnabled)
         if selectedHomeTab == .stories {
-            // Reset second column to show placeholder view.
-            storiesSplitViewController.setViewController(
-                UINavigationController(
-                    rootViewController: SplitViewDetailPlaceholderViewController(
-                        contentConfiguration: Tabs.stories.detailPlaceholderViewContentConfiguration,
-                    ),
-                ),
-                for: .secondary,
-            )
+            storiesSplitViewController.resetSecondaryViewController()
         }
 
         selectedHomeTab = .chatList
@@ -554,12 +546,7 @@ class HomeTabBarController: UITabBarController, UINavigationControllerDelegate, 
             let targetViewController = primaryNavigationController.viewControllers[max(0, selectedConversationIndex - 1)]
             primaryNavigationController.popToViewController(targetViewController, animated: animated)
         } else {
-            chatsSplitViewController.setViewController(
-                SplitViewDetailPlaceholderViewController(
-                    contentConfiguration: Tabs.chatList.detailPlaceholderViewContentConfiguration,
-                ),
-                for: .secondary,
-            )
+            chatsSplitViewController.resetSecondaryViewController()
         }
     }
 
@@ -1227,13 +1214,29 @@ private class SplitViewDetailPlaceholderViewController: OWSViewController {
 
 class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDelegate, UINavigationControllerDelegate {
 
+    private let placeholderViewController: UIViewController
+
     fileprivate init(primary: UIViewController, placeholder: UIViewController) {
+        placeholderViewController = placeholder
+
         super.init(style: .doubleColumn)
 
         delegate = self
         setViewController(primary, for: .primary)
         setViewController(placeholder, for: .secondary)
-        primaryNavigationController?.delegate = self
+
+        // On iOS 26 and later, when navigating between chat list and conversation screen,
+        // collapsed UISplitViewController will call `splitViewController(_:willShow:)` and
+        // `splitViewController(_:willHide:)` for both columns as one would expect.
+        // However, those delegate callbacks are not called for the collapsed split view
+        // controller on iOS 15-18. To handle the change from the root view (eg chat list)
+        // to detail view (eg convesation view) and back, and update visibility
+        // of the tab bar accordingly, we need to monitor UINavigationController
+        // for the `primary` column. That navigation controller is the one that responsible
+        // for presenting anything that's pushed on top of the root in a collapsed split view.
+        if #unavailable(iOS 26) {
+            primaryNavigationController?.delegate = self
+        }
     }
 
     required init?(coder: NSCoder) {
@@ -1291,6 +1294,16 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
             return
         }
         homeTabViewController.scrollToTop(animated: animated)
+    }
+
+    fileprivate func resetSecondaryViewController() {
+        // This is used primarily to to unload `ConversationViewController`
+        // once user navigates back from a conversation view back to the chat list
+        // in a collapsed split view controller.
+        // While there's no memory leak if we don't do this - keeping an active
+        // chat view around might lead to an unwanted behavior if `ConversationViewController`
+        // isn't careful about what it is doing while being loaded but not visible on the screen.
+        setViewController(placeholderViewController, for: .secondary)
     }
 
     // MARK: - UISptilViewController overrides
@@ -1369,6 +1382,18 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
         }
     }
 
+    func splitViewController(_ svc: UISplitViewController, didShow column: UISplitViewController.Column) {
+        guard tabBarController?.selectedViewController === svc else { return }
+
+        // See comment in `resetSecondaryViewController()` on purpose of this.
+        if
+            let homeTabSplitViewController = svc as? HomeTabSplitViewController,
+            svc.isCollapsed, column == .primary
+        {
+            homeTabSplitViewController.resetSecondaryViewController()
+        }
+    }
+
     func splitViewControllerDidCollapse(_ svc: UISplitViewController) {
         guard tabBarController?.selectedViewController === svc else { return }
         updateTabBar()
@@ -1389,13 +1414,20 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
         }
     }
 
-    // Collapsed: push/pop on the merged stack, including interactive back swipes.
+    // MARK: UINavigationController
+
     func navigationController(
         _ navigationController: UINavigationController,
         willShow viewController: UIViewController,
         animated: Bool,
     ) {
-        guard isCollapsed else { return }
+        // iOS 26 and later tracks view changes in a collapsed split view controller
+        // via `splitViewController(_:willShow:)` and `splitViewController(_:willHide:)`.
+        // Please see the comment in `init` for more info.
+        guard #unavailable(iOS 26), isCollapsed else { return }
+
+        // Show hide navigation bar as user navigates between root view in the split view controller
+        // and whatever is pushed on top of the root.
         if let transitionCoordinator = navigationController.transitionCoordinator {
             transitionCoordinator.animate(
                 alongsideTransition: { _ in self.updateTabBar() },
@@ -1403,6 +1435,23 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
             )
         } else {
             updateTabBar()
+        }
+    }
+
+    func navigationController(
+        _ navigationController: UINavigationController,
+        didShow viewController: UIViewController,
+        animated: Bool,
+    ) {
+        // iOS 26 and later tracks view changes in a collapsed split view controller
+        // via `splitViewController(_:willShow:)` and `splitViewController(_:willHide:)`.
+        // Please see the comment in `init` for more info.
+        guard #unavailable(iOS 26), isCollapsed else { return }
+
+        // User navigated back to root - reset secondary column to the placeholder.
+        // See comment in `resetSecondaryViewController()` about why we do this.
+        if viewController is HomeTabViewController {
+            resetSecondaryViewController()
         }
     }
 }
