@@ -183,6 +183,7 @@ public class DependenciesBridge {
     public let svr: SecureValueRecovery
     public let svrAuthCredentialManager: SVRAuthCredentialManager
     public let senderKeyStore: SenderKeyStore
+    public let stickerDownloader: any StickerDownloader
     public let stickerManager: StickerManager
     public let storageServiceRecordIkmMigrator: StorageServiceRecordIkmMigrator
     public let storyMessageExpirationJob: StoryMessageExpirationJob
@@ -336,6 +337,7 @@ public class DependenciesBridge {
         senderKeyStore: SenderKeyStore,
         sentMessageTranscriptReceiver: SentMessageTranscriptReceiver,
         signalProtocolStoreManager: SignalProtocolStoreManager,
+        stickerDownloader: any StickerDownloader,
         stickerManager: StickerManager,
         storageServiceRecordIkmMigrator: StorageServiceRecordIkmMigrator,
         storyMessageExpirationJob: StoryMessageExpirationJob,
@@ -491,6 +493,7 @@ public class DependenciesBridge {
         self.senderKeyStore = senderKeyStore
         self.sentMessageTranscriptReceiver = sentMessageTranscriptReceiver
         self.signalProtocolStoreManager = signalProtocolStoreManager
+        self.stickerDownloader = stickerDownloader
         self.stickerManager = stickerManager
         self.storageServiceRecordIkmMigrator = storageServiceRecordIkmMigrator
         self.storyMessageExpirationJob = storyMessageExpirationJob

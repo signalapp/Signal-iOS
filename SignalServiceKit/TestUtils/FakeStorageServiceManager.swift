@@ -22,6 +22,7 @@ public class FakeStorageServiceManager: StorageServiceManager {
     public func recordPendingInsertions(forGroupMasterKeys groupMasterKeys: [GroupMasterKey]) {}
     public func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) {}
     public func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey]) {}
+    public func recordPendingUpdates(favoriteStickerIds: [FavoriteStickerId]) {}
     public func recordPendingLocalAccountUpdates() {}
 
     public func backupPendingChanges(authedAccount: AuthedAccount) {}

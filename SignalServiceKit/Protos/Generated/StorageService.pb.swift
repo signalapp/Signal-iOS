@@ -272,6 +272,7 @@ nonisolated struct StorageServiceProtos_ManifestRecord: Sendable {
       case account // = 4
       case storyDistributionList // = 5
       case callLink // = 7
+      case favoriteStickerPack // = 11
       case UNRECOGNIZED(Int)
 
       init() {
@@ -287,6 +288,7 @@ nonisolated struct StorageServiceProtos_ManifestRecord: Sendable {
         case 4: self = .account
         case 5: self = .storyDistributionList
         case 7: self = .callLink
+        case 11: self = .favoriteStickerPack
         default: self = .UNRECOGNIZED(rawValue)
         }
       }
@@ -300,6 +302,7 @@ nonisolated struct StorageServiceProtos_ManifestRecord: Sendable {
         case .account: return 4
         case .storyDistributionList: return 5
         case .callLink: return 7
+        case .favoriteStickerPack: return 11
         case .UNRECOGNIZED(let i): return i
         }
       }
@@ -313,6 +316,7 @@ nonisolated struct StorageServiceProtos_ManifestRecord: Sendable {
         .account,
         .storyDistributionList,
         .callLink,
+        .favoriteStickerPack,
       ]
 
     }
@@ -378,6 +382,14 @@ nonisolated struct StorageServiceProtos_StorageRecord: Sendable {
     set {record = .callLink(newValue)}
   }
 
+  var sticker: StorageServiceProtos_FavoriteStickerRecord {
+    get {
+      if case .sticker(let v)? = record {return v}
+      return StorageServiceProtos_FavoriteStickerRecord()
+    }
+    set {record = .sticker(newValue)}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   nonisolated enum OneOf_Record: Equatable, Sendable {
@@ -387,6 +399,7 @@ nonisolated struct StorageServiceProtos_StorageRecord: Sendable {
     case account(StorageServiceProtos_AccountRecord)
     case storyDistributionList(StorageServiceProtos_StoryDistributionListRecord)
     case callLink(StorageServiceProtos_CallLinkRecord)
+    case sticker(StorageServiceProtos_FavoriteStickerRecord)
 
   }
 
@@ -1370,6 +1383,36 @@ nonisolated struct StorageServiceProtos_CallLinkRecord: Sendable {
   init() {}
 }
 
+/// Can come from uninstalled packs so we must store all relevant information ourselves. If limit is exceeded (500), reject newest one.
+nonisolated struct StorageServiceProtos_FavoriteStickerRecord: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// 16 bytes
+  var packID: Data = Data()
+
+  /// 32 bytes, used to derive the AES-256 key
+  var packKey: Data = Data()
+
+  /// aesKey = HKDF(
+  ///   input = packKey,
+  ///   salt = 32 zero bytes,
+  ///   info = "Sticker Pack"
+  /// )
+  var stickerID: UInt32 = 0
+
+  /// Sorted by newest timestamp first. Can be mutated if sticker is reordered via 'Move to top'
+  var favoritedAtTimestamp: UInt64 = 0
+
+  /// Timestamp in milliseconds. When present and
+  var deletedAtTimestamp: UInt64 = 0
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate nonisolated let _protobuf_package = "StorageServiceProtos"
@@ -1642,12 +1685,12 @@ nonisolated extension StorageServiceProtos_ManifestRecord.Key: SwiftProtobuf.Mes
 }
 
 nonisolated extension StorageServiceProtos_ManifestRecord.Key.TypeEnum: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}CONTACT\0\u{1}GROUPV1\0\u{1}GROUPV2\0\u{1}ACCOUNT\0\u{1}STORY_DISTRIBUTION_LIST\0\u{2}\u{2}CALL_LINK\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}CONTACT\0\u{1}GROUPV1\0\u{1}GROUPV2\0\u{1}ACCOUNT\0\u{1}STORY_DISTRIBUTION_LIST\0\u{2}\u{2}CALL_LINK\0\u{2}\u{4}FAVORITE_STICKER_PACK\0")
 }
 
 nonisolated extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".StorageRecord"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contact\0\u{1}groupV1\0\u{1}groupV2\0\u{1}account\0\u{1}storyDistributionList\0\u{2}\u{2}callLink\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contact\0\u{1}groupV1\0\u{1}groupV2\0\u{1}account\0\u{1}storyDistributionList\0\u{2}\u{2}callLink\0\u{2}\u{4}sticker\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1733,6 +1776,19 @@ nonisolated extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message,
           self.record = .callLink(v)
         }
       }()
+      case 11: try {
+        var v: StorageServiceProtos_FavoriteStickerRecord?
+        var hadOneofValue = false
+        if let current = self.record {
+          hadOneofValue = true
+          if case .sticker(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.record = .sticker(v)
+        }
+      }()
       default: break
       }
     }
@@ -1767,6 +1823,10 @@ nonisolated extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message,
     case .callLink?: try {
       guard case .callLink(let v)? = self.record else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+    }()
+    case .sticker?: try {
+      guard case .sticker(let v)? = self.record else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
     }()
     case nil: break
     }
@@ -3028,6 +3088,56 @@ nonisolated extension StorageServiceProtos_CallLinkRecord: SwiftProtobuf.Message
     if lhs.rootKey != rhs.rootKey {return false}
     if lhs.adminPasskey != rhs.adminPasskey {return false}
     if lhs.deletedAtTimestampMs != rhs.deletedAtTimestampMs {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension StorageServiceProtos_FavoriteStickerRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".FavoriteStickerRecord"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}packId\0\u{1}packKey\0\u{1}stickerId\0\u{1}favoritedAtTimestamp\0\u{1}deletedAtTimestamp\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.packID) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.packKey) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.stickerID) }()
+      case 4: try { try decoder.decodeSingularUInt64Field(value: &self.favoritedAtTimestamp) }()
+      case 5: try { try decoder.decodeSingularUInt64Field(value: &self.deletedAtTimestamp) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.packID.isEmpty {
+      try visitor.visitSingularBytesField(value: self.packID, fieldNumber: 1)
+    }
+    if !self.packKey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.packKey, fieldNumber: 2)
+    }
+    if self.stickerID != 0 {
+      try visitor.visitSingularUInt32Field(value: self.stickerID, fieldNumber: 3)
+    }
+    if self.favoritedAtTimestamp != 0 {
+      try visitor.visitSingularUInt64Field(value: self.favoritedAtTimestamp, fieldNumber: 4)
+    }
+    if self.deletedAtTimestamp != 0 {
+      try visitor.visitSingularUInt64Field(value: self.deletedAtTimestamp, fieldNumber: 5)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: StorageServiceProtos_FavoriteStickerRecord, rhs: StorageServiceProtos_FavoriteStickerRecord) -> Bool {
+    if lhs.packID != rhs.packID {return false}
+    if lhs.packKey != rhs.packKey {return false}
+    if lhs.stickerID != rhs.stickerID {return false}
+    if lhs.favoritedAtTimestamp != rhs.favoritedAtTimestamp {return false}
+    if lhs.deletedAtTimestamp != rhs.deletedAtTimestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

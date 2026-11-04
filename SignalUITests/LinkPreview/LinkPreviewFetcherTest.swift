@@ -22,26 +22,13 @@ class LinkPreviewFetcherTest: XCTestCase {
         super.setUp()
 
         let db = InMemoryDB()
-        let dateProvider = { Date() }
-        let appReadiness = AppReadinessMock()
-
         self.linkPreviewFetcher = LinkPreviewFetcherImpl(
             authCredentialManager: MockAuthCrededentialManager(),
             db: db,
             groupsV2: MockGroupsV2(),
             linkPreviewSettingStore: LinkPreviewSettingStore.mock(),
             tsAccountManager: MockTSAccountManager(),
-            stickerManager: StickerManager(
-                appReadiness: appReadiness,
-                dateProvider: dateProvider,
-                attachmentStore: AttachmentStore(),
-                attachmentDownloadStore: AttachmentDownloadStore(dateProvider: dateProvider),
-                tsAccountManager: MockTSAccountManager(),
-                messageSenderJobQueue: MessageSenderJobQueue(appReadiness: appReadiness),
-                interactionStore: InteractionStoreImpl(),
-                stickerFavoriteStore: StickerFavoriteStore(),
-                db: db,
-            ),
+            stickerDownloader: MockStickerDownloader(stickerData: UIImage(systemName: "circle")!.pngData()!),
         )
     }
 

@@ -14,13 +14,16 @@ public final class FavoriteStickerExpirationJob: ExpirationJob<FavoriteStickerRe
     static let unfavoritedExpiresAt: TimeInterval = 45 * .day
 
     private let stickerFavoriteStore: StickerFavoriteStore
+    private let storageServiceManager: any StorageServiceManager
 
     init(
         dateProvider: @escaping DateProvider,
         db: DB,
         stickerFavoriteStore: StickerFavoriteStore,
+        storageServiceManager: any StorageServiceManager,
     ) {
         self.stickerFavoriteStore = stickerFavoriteStore
+        self.storageServiceManager = storageServiceManager
 
         super.init(
             dateProvider: dateProvider,
@@ -47,6 +50,15 @@ public final class FavoriteStickerExpirationJob: ExpirationJob<FavoriteStickerRe
     override public func deleteExpiredElement(_ record: FavoriteStickerRecord, tx: DBWriteTransaction) {
         // The sticker's file was deleted when it was unfavorited, so only the
         // row remains.
-        stickerFavoriteStore.deleteUnfavoritedSticker(record, tx: tx)
+        let didDelete = stickerFavoriteStore.deleteUnfavoritedSticker(record, tx: tx)
+        guard didDelete else {
+            return
+        }
+
+        // Expire this record in storage service by calling recordPendingUpdates on a missing row
+        let favoriteStickerId = FavoriteStickerId(packId: record.packId, stickerId: record.stickerId)
+        tx.addSyncCompletion { [storageServiceManager] in
+            storageServiceManager.recordPendingUpdates(favoriteStickerIds: [favoriteStickerId])
+        }
     }
 }

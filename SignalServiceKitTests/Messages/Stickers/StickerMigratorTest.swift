@@ -37,6 +37,8 @@ final class StickerMigratorTest {
             interactionStore: InteractionStoreImpl(),
             cacheDirUrl: URL(fileURLWithPath: self.tempDirPath),
             stickerFavoriteStore: StickerFavoriteStore(),
+            storageServiceManager: FakeStorageServiceManager(),
+            stickerDownloader: MockStickerDownloader(stickerData: UIImage(systemName: "circle")!.pngData()!),
             db: db,
         )
         self.stickerManager = stickerManager

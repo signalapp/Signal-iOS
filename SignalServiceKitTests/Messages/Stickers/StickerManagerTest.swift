@@ -131,6 +131,8 @@ class StickerManagerTest2: SSKBaseTest {
             messageSenderJobQueue: MessageSenderJobQueue(appReadiness: appReadiness),
             interactionStore: InteractionStoreImpl(),
             stickerFavoriteStore: StickerFavoriteStore(),
+            storageServiceManager: FakeStorageServiceManager(),
+            stickerDownloader: MockStickerDownloader(stickerData: UIImage(systemName: "circle")!.pngData()!),
             db: SSKEnvironment.shared.databaseStorageRef,
         )
     }

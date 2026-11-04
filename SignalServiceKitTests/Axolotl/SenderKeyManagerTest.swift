@@ -297,6 +297,7 @@ private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingInsertions(forGroupMasterKeys groupMasterKeys: [GroupMasterKey]) {}
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) {}
     func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey]) {}
+    func recordPendingUpdates(favoriteStickerIds: [FavoriteStickerId]) {}
     func recordPendingLocalAccountUpdates() {}
     func backupPendingChanges(authedAccount: AuthedAccount) {}
     func resetLocalData(transaction: DBWriteTransaction) {}

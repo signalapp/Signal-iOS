@@ -684,7 +684,9 @@ extension AppSetup.GlobalsContinuation {
             dateProvider: dateProvider,
             db: db,
             stickerFavoriteStore: stickerFavoriteStore,
+            storageServiceManager: storageServiceManager,
         )
+        let stickerDownloader = StickerDownloaderImpl()
         let stickerManager = StickerManager(
             appReadiness: appReadiness,
             dateProvider: dateProvider,
@@ -694,6 +696,8 @@ extension AppSetup.GlobalsContinuation {
             messageSenderJobQueue: messageSenderJobQueue,
             interactionStore: interactionStore,
             stickerFavoriteStore: stickerFavoriteStore,
+            storageServiceManager: storageServiceManager,
+            stickerDownloader: stickerDownloader,
             db: db,
         )
 
@@ -1988,6 +1992,7 @@ extension AppSetup.GlobalsContinuation {
             senderKeyStore: senderKeyStore,
             sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
             signalProtocolStoreManager: signalProtocolStoreManager,
+            stickerDownloader: stickerDownloader,
             stickerManager: stickerManager,
             storageServiceRecordIkmMigrator: storageServiceRecordIkmMigrator,
             storyMessageExpirationJob: storyMessageExpirationJob,

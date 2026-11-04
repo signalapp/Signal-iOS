@@ -2618,6 +2618,89 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
     }
 }
 
+class StorageServiceFavoriteStickerRecordUpdater: StorageServiceRecordUpdater {
+    typealias IdType = FavoriteStickerId
+    typealias RecordType = StorageServiceProtoFavoriteStickerRecord
+
+    let stickerManager: StickerManager
+
+    init(
+        stickerManager: StickerManager,
+    ) {
+        self.stickerManager = stickerManager
+    }
+
+    func unknownFields(for record: StorageServiceProtoFavoriteStickerRecord) -> UnknownStorage? {
+        record.unknownFields
+    }
+
+    func buildStorageItem(for record: StorageServiceProtoFavoriteStickerRecord) -> StorageService.StorageItem {
+        return StorageService.StorageItem(identifier: .generate(type: .favoriteStickerPack), favoriteSticker: record)
+    }
+
+    func buildRecord(
+        for favoriteStickerId: FavoriteStickerId,
+        unknownFields: SwiftProtobuf.UnknownStorage?,
+        transaction: DBReadTransaction,
+    ) -> StorageServiceProtoFavoriteStickerRecord? {
+        guard
+            let favoriteStickerRecord = stickerManager.fetchFavoriteStickerRecord(
+                packId: favoriteStickerId.packId,
+                stickerId: favoriteStickerId.stickerId,
+                tx: transaction,
+            )
+        else {
+            return nil
+        }
+
+        var builder = StorageServiceProtoFavoriteStickerRecord.builder()
+
+        // If a sticker is unfavorited, packKey and favoritedAt should be unset
+        if let unfavoritedAt = favoriteStickerRecord.unfavoritedAt {
+            builder.setDeletedAtTimestamp(UInt64(clamping: unfavoritedAt))
+        } else {
+            guard
+                let favoritedAt = favoriteStickerRecord.favoritedAt,
+                let packKey = favoriteStickerRecord.packKey
+            else {
+                return nil
+            }
+            builder.setPackKey(packKey)
+            builder.setFavoritedAtTimestamp(UInt64(clamping: favoritedAt))
+        }
+
+        builder.setPackID(favoriteStickerRecord.packId)
+        builder.setStickerID(favoriteStickerRecord.stickerId)
+
+        if let unknownFields {
+            builder.setUnknownFields(unknownFields)
+        }
+        return builder.buildInfallibly()
+    }
+
+    func mergeRecord(
+        _ record: StorageServiceProtoFavoriteStickerRecord,
+        transaction: DBWriteTransaction,
+    ) -> StorageServiceMergeResult<FavoriteStickerId> {
+        guard
+            let packID = record.packID
+        else {
+            owsFailDebug("invalid sticker pack info")
+            return .invalid
+        }
+
+        let needsUpdate = stickerManager.mergeFavoriteStickerFromStorageServiceAndCheckNeedsUpdate(
+            packID: packID,
+            storageServiceRecord: record,
+            tx: transaction,
+        )
+
+        let favoriteStickerId = FavoriteStickerId(packId: packID, stickerId: record.stickerID)
+
+        return .merged(needsUpdate: needsUpdate, favoriteStickerId)
+    }
+}
+
 // MARK: -
 
 extension StorageServiceProtoOptionalBool {

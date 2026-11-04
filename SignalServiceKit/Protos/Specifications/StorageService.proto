@@ -54,6 +54,7 @@ message ManifestRecord {
       ACCOUNT = 4;
       STORY_DISTRIBUTION_LIST = 5;
       CALL_LINK = 7;
+      FAVORITE_STICKER_PACK = 11;
     }
 
     // @required
@@ -77,6 +78,7 @@ message StorageRecord {
     AccountRecord account = 4;
     StoryDistributionListRecord storyDistributionList = 5;
     CallLinkRecord callLink = 7;
+    FavoriteStickerRecord sticker = 11;
   }
 }
 
@@ -324,4 +326,19 @@ message CallLinkRecord {
   uint64 deletedAtTimestampMs = 3; // When present and non-zero, `adminPasskey`
                                    // should be cleared
   reserved /*epoch*/ 4;
+}
+
+message FavoriteStickerRecord { // Can come from uninstalled packs so we must store all relevant information ourselves. If limit is exceeded (500), reject newest one.
+  bytes packId = 1; // 16 bytes
+  bytes packKey = 2; // 32 bytes, used to derive the AES-256 key
+                     // aesKey = HKDF(
+                     //   input = packKey,
+                     //   salt = 32 zero bytes,
+                     //   info = "Sticker Pack"
+                     // )
+  uint32 stickerId = 3;
+  uint64 favoritedAtTimestamp = 4; // Sorted by newest timestamp first. Can be mutated if sticker is reordered via 'Move to top'
+  uint64 deletedAtTimestamp = 5; // Timestamp in milliseconds. When present and
+                                 // non-zero - `packKey`, and `favoritedAtTimestamp` should
+                                 // be unset
 }

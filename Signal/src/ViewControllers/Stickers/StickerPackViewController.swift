@@ -26,6 +26,7 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
         self.init(
             stickerPackInfo: stickerPackInfo,
             stickerManager: DependenciesBridge.shared.stickerManager,
+            stickerDownloader: DependenciesBridge.shared.stickerDownloader,
             db: DependenciesBridge.shared.db,
         )
     }
@@ -33,6 +34,7 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
     init(
         stickerPackInfo: StickerPackInfo,
         stickerManager: StickerManager,
+        stickerDownloader: any StickerDownloader,
         db: DB,
     ) {
         self.stickerPackInfo = stickerPackInfo
@@ -41,6 +43,7 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
         self.dataSource = TransientStickerPackDataSource(
             stickerPackInfo: stickerPackInfo,
             shouldDownloadAllStickers: true,
+            stickerDownloader: stickerDownloader,
             stickerManager: stickerManager,
             db: db,
         )

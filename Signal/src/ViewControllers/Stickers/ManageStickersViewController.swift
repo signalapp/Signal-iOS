@@ -53,17 +53,20 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
     typealias DatedStickerPackInfo = StickerManager.DatedStickerPackInfo
 
     let stickerManager: StickerManager
+    let stickerDownloader: any StickerDownloader
     let db: DB
 
     override convenience init() {
         self.init(
             stickerManager: DependenciesBridge.shared.stickerManager,
+            stickerDownloader: DependenciesBridge.shared.stickerDownloader,
             db: DependenciesBridge.shared.db,
         )
     }
 
-    init(stickerManager: StickerManager, db: DB) {
+    init(stickerManager: StickerManager, stickerDownloader: any StickerDownloader, db: DB) {
         self.stickerManager = stickerManager
+        self.stickerDownloader = stickerDownloader
         self.db = db
 
         super.init()
@@ -268,6 +271,7 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
             let source = TransientStickerPackDataSource(
                 stickerPackInfo: info,
                 shouldDownloadAllStickers: false,
+                stickerDownloader: self.stickerDownloader,
                 stickerManager: self.stickerManager,
                 db: self.db,
             )

@@ -142,6 +142,7 @@ public class StickerPackCollectionView: UICollectionView {
         stickerPackDataSource = TransientStickerPackDataSource(
             stickerPackInfo: stickerPack.info,
             shouldDownloadAllStickers: true,
+            stickerDownloader: DependenciesBridge.shared.stickerDownloader,
             stickerManager: DependenciesBridge.shared.stickerManager,
             db: DependenciesBridge.shared.db,
         )
