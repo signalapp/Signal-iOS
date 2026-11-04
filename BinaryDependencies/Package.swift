@@ -7,6 +7,16 @@
 
 import PackageDescription
 
+let ringRTCFfi: Target = if let path = Context.environment["SIGNAL_RINGRTC_FFI_XCFRAMEWORK"] {
+    .binaryTarget(name: "LibRingRTCFfi", path: path)
+} else {
+    .binaryTarget(
+        name: "LibRingRTCFfi",
+        url: "https://build-artifacts.signal.org/libraries/ringrtc-ios-build-v2.74.0.xcframework.zip",
+        checksum: "789d702a2e0ce00da851c118e40d80bc73e4b3c7b43c6846be2210c6f6b81104",
+    )
+}
+
 let package = Package(
     name: "BinaryDependencies",
     platforms: [.iOS(.v15)],
@@ -20,10 +30,6 @@ let package = Package(
             url: "https://build-artifacts.signal.org/libraries/libsignal-client-ios-build-v0.106.1.xcframework.zip",
             checksum: "60baf6a3a8ee4cab82339a5e4ed4676e2119c6dc8002018f8063d6a96c195a77",
         ),
-        .binaryTarget(
-            name: "LibRingRTCFfi",
-            url: "https://build-artifacts.signal.org/libraries/ringrtc-ios-build-v2.74.0.xcframework.zip",
-            checksum: "789d702a2e0ce00da851c118e40d80bc73e4b3c7b43c6846be2210c6f6b81104",
-        ),
+        ringRTCFfi,
     ],
 )

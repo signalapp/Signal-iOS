@@ -44,3 +44,7 @@ debuglogs/
 /.vscode
 
 fastlane/Preview.html
+
+# Local RingRTC development (Scripts/local-ringrtc.py)
+/ringrtc
+/Signal-LocalRingRTC.xcworkspace/
