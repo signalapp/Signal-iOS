@@ -3324,7 +3324,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             if requestsCaptchaChallenge {
                 logger.info("Showing the CAPTCHA challenge to the user")
                 db.write { transaction in
-                    SupportKeyValueStore().setLastChallengeDate(value: Date(), transaction: transaction)
+                    deps.supportKeyValueStore.setLastChallengeDate(value: deps.dateProvider(), tx: transaction)
                 }
                 return .captchaChallenge
             }

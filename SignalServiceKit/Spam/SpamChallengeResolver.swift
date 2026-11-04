@@ -251,9 +251,16 @@ extension SpamChallengeResolver {
     }
 
     func tryToHandleSilently(token: String, options: Set<ChallengeOption>, retryAfter: TimeInterval?) async throws {
+        let db = DependenciesBridge.shared.db
+        let supportKeyValueStore = SupportKeyValueStore()
+
         guard let retryAfter else {
+            await db.awaitableWrite { tx in
+                supportKeyValueStore.setLastChallengeDate(value: Date(), tx: tx)
+            }
             throw SpamChallengeRequiredError()
         }
+
         let retryAfterDate = Date(timeIntervalSinceNow: retryAfter)
         try await withCheckedThrowingContinuation { continuation in
             handleServerChallengeBody(token: token, options: options, retryAfter: retryAfterDate) { didResolve in

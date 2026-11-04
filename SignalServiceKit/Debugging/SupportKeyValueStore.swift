@@ -4,7 +4,6 @@
 //
 
 import Foundation
-public import SignalServiceKit
 
 public class SupportKeyValueStore {
     private enum StoreKeys {
@@ -19,19 +18,29 @@ public class SupportKeyValueStore {
 
     public func setLastChallengeDate(
         value: Date,
-        transaction: DBWriteTransaction,
+        tx: DBWriteTransaction,
     ) {
         kvStore.writeValue(
             value,
             forKey: StoreKeys.lastChallengeDateKey,
-            tx: transaction,
+            tx: tx,
         )
     }
 
     public func lastChallengeWithinTimeframe(
-        transaction: DBReadTransaction,
         lastChallengeFloor: Date,
+        tx: DBReadTransaction,
     ) -> Bool {
-        return kvStore.fetchValue(Date.self, forKey: StoreKeys.lastChallengeDateKey, tx: transaction) ?? Date.distantPast > lastChallengeFloor
+        guard
+            let lastChallengeDate = kvStore.fetchValue(
+                Date.self,
+                forKey: StoreKeys.lastChallengeDateKey,
+                tx: tx,
+            )
+        else {
+            return false
+        }
+
+        return lastChallengeDate > lastChallengeFloor
     }
 }

@@ -167,6 +167,7 @@ public class RegistrationCoordinatorTest {
             sessionManager: sessionManager,
             signalService: OWSSignalServiceMock(),
             storageServiceManager: storageServiceManagerMock,
+            supportKeyValueStore: SupportKeyValueStore(),
             svr: svr,
             svrLocalStorage: SVRLocalStorage(),
             svrAuthCredentialManager: svrAuthCredentialManager,
