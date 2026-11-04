@@ -95,8 +95,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func nextStep() async -> RegistrationStep {
-        if deps.appExpiry.isExpired(now: deps.dateProvider()) {
-            return logStep(.appUpdateBanner)
+        do {
+            try deps.appExpiry.checkExpiration(now: deps.dateProvider())
+        } catch {
+            return logStep(.showError(error))
         }
 
         // Always start by restoring state.
@@ -2049,7 +2051,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     )
                     return .deviceTransfer(deviceTransferCoordinator)
                 } catch {
-                    return .showErrorSheet(.genericError)
+                    return .showError(error)
                 }
             } else {
                 return .scanQuickRegistrationQrCode
@@ -2187,10 +2189,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 wipeInMemoryStateToPreventSVRPathAttempts()
                 return await startSession(e164: e164)
             }
-        } catch where error.isNetworkFailureOrTimeout {
-            return .showErrorSheet(.networkError)
         } catch {
-            return .showErrorSheet(.genericError)
+            return .showError(error)
         }
     }
 
@@ -2484,7 +2484,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 .init(mode: .restoringRegistrationRecoveryPassword),
             )
         } catch where error.isNetworkFailureOrTimeout {
-            return .showErrorSheet(.networkError)
+            return .showError(error)
         } catch {
             inMemoryState.pinFromUser = nil
             return .pinEntry(RegistrationPinState(
@@ -2683,10 +2683,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     db.write { self.resetSession($0) }
                 }
                 return await nextStep()
-            } catch where error.isNetworkFailureOrTimeout {
-                return .showErrorSheet(.networkError)
             } catch {
-                return .showErrorSheet(.genericError)
+                return .showError(error)
             }
         }
 
@@ -3036,12 +3034,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     e164: e164,
                 )),
             ))
-        } catch is SessionCanNeverRequestVerificationCodeError {
-            return .showErrorSheet(.sessionCanNeverRequestVerificationCode)
-        } catch where error.isNetworkFailureOrTimeout {
-            return .showErrorSheet(.networkError)
         } catch {
-            return .showErrorSheet(.genericError)
+            return .showError(error)
         }
     }
 
@@ -3063,7 +3057,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         if sessionCanNeverRequestVerificationCode(session) {
             db.write { resetSession($0) }
-            throw SessionCanNeverRequestVerificationCodeError()
+            throw Registration.VerificationCodeError.providerFailure
         }
 
         db.write { tx in
@@ -3076,8 +3070,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         }
     }
-
-    private struct SessionCanNeverRequestVerificationCodeError: Error {}
 
     private func requestSessionCode(
         session: RegistrationSession,
@@ -3138,10 +3130,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // Wipe the pending code request, so we don't auto-retry.
             inMemoryState.pendingCodeTransport = nil
             return await nextStep()
-        } catch is Registration.MissingSessionError {
+        } catch let error as Registration.MissingSessionError {
             self.inMemoryState.pendingCodeTransport = nil
             self.db.write { self.resetSession($0) }
-            return .showErrorSheet(.sessionInvalidated)
+            return .showError(error)
         } catch let error as Registration.RequestRejectedByProviderError {
             let failureResponse = error.failureResponse
             db.write { tx in
@@ -3194,21 +3186,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 } else {
                     // Can't send a code, session is useless.
                     db.write { self.resetSession($0) }
-                    return .showErrorSheet(.sessionInvalidated)
+                    return .showError(error)
                 }
             }
-        } catch where error.isNetworkFailureOrTimeout {
-            inMemoryState.pendingCodeTransport = nil
-            db.write {
-                self.processSession(session, initialCodeRequestState: .failedToRequest, $0)
-            }
-            return .showErrorSheet(.networkError)
         } catch {
             inMemoryState.pendingCodeTransport = nil
             db.write {
                 self.processSession(session, initialCodeRequestState: .failedToRequest, $0)
             }
-            return .showErrorSheet(.genericError)
+            return .showError(error)
         }
     }
 
@@ -3325,7 +3311,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case is UncooperativeTimeoutError where failChallengeIfTimedOut:
                     logger.warn("No challenge token received in time. Resetting")
                     db.write { self.resetSession($0) }
-                    return .showErrorSheet(.sessionInvalidated)
+                    return .showError(error)
                 default:
                     logger.warn("No challenge token received in time, falling back to next challenge")
                     return await tryNonImmediatePushChallenge()
@@ -3363,7 +3349,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 db.write { tx in
                     self.processSession(session, initialCodeRequestState: .failedToRequest, tx)
                 }
-                return .appUpdateBanner
+                return .showError(Registration.UnknownChallengeError())
             } else {
                 logger.warn("Couldn't fulfill any challenges. Resetting the session")
                 db.write { resetSession($0) }
@@ -3421,7 +3407,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
             if sessionCanNeverRequestVerificationCode(session) {
                 db.write { resetSession($0) }
-                return .showErrorSheet(.sessionCanNeverRequestVerificationCode)
+                return .showError(Registration.VerificationCodeError.providerFailure)
             }
 
             db.write { tx in
@@ -3442,12 +3428,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     $0.pushChallengeState = .rejected
                 }
             }
-            return .showErrorSheet(.genericError)
-        } catch is Registration.MissingSessionError {
+            return .showError(error)
+        } catch let error as Registration.MissingSessionError {
             db.write { self.resetSession($0) }
-            return .showErrorSheet(.sessionInvalidated)
+            return .showError(error)
         } catch {
-            return .showErrorSheet(.genericError)
+            return .showError(error)
         }
     }
 
@@ -3509,11 +3495,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             } else {
                 // Something went wrong, we can't submit again.
                 db.write { self.processSession(session, initialCodeRequestState: .exhaustedCodeAttempts, $0) }
-                return verificationCodeSubmissionRejectedError
+                return .showError(verificationCodeSubmissionRejectedError())
             }
-        } catch is Registration.MissingSessionError {
+        } catch let error as Registration.MissingSessionError {
             db.write { self.resetSession($0) }
-            return .showErrorSheet(.sessionInvalidated)
+            return .showError(error)
         } catch where (
             error.httpStatusCode == Registration.SubmitVerificationCodeErrorCode.notAllowed.rawValue
                 || error.httpStatusCode == Registration.SubmitVerificationCodeErrorCode.rateLimited.rawValue
@@ -3526,12 +3512,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 ))
             } else {
                 // Something went wrong, we can't submit again.
-                return verificationCodeSubmissionRejectedError
+                return .showError(verificationCodeSubmissionRejectedError())
             }
-        } catch where error.isNetworkFailureOrTimeout {
-            return .showErrorSheet(.networkError)
         } catch {
-            return .showErrorSheet(.genericError)
+            return .showError(error)
         }
     }
 
@@ -3597,10 +3581,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
             }
             return await nextStep()
-        } catch where error.isNetworkFailureOrTimeout {
-            return .showErrorSheet(.networkError)
         } catch {
-            return .showErrorSheet(.genericError)
+            return .showError(error)
         }
     }
 
@@ -3628,7 +3610,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     product = try await fetchSignalLoginProduct()
                 } catch {
                     owsFailDebug("couldn't fetch product")
-                    return .showErrorSheet(.genericError)
+                    return .showError(error)
                 }
                 return .signalLoginSplash(RegistrationSignalLoginSplashState(
                     formattedPrice: product.displayPrice,
@@ -3643,7 +3625,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     product = try await fetchSignalLoginProduct()
                 } catch {
                     owsFailDebug("couldn't fetch product")
-                    return .showErrorSheet(.genericError)
+                    return .showError(error)
                 }
                 let purchaseResult: StoreKit.Product.PurchaseResult
                 do {
@@ -3666,10 +3648,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     setSignalLoginState(.splash, in: &currentState)
                     continue
                 case .pending:
-                    return .showErrorSheet(.genericError)
+                    return .showError(OWSGenericError("purchase pending"))
                 @unknown default:
-                    owsFailDebug("couldn't complete purchase due to unknown error")
-                    return .showErrorSheet(.genericError)
+                    return .showError(OWSAssertionError("couldn't complete purchase due to unknown error"))
                 }
                 // Create (and persist!) the receipt credential request context. We must
                 // use the same context when retrying `createLoginReceiptCredential`
@@ -3692,7 +3673,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     product = try await fetchSignalLoginProduct()
                 } catch {
                     owsFailDebug("couldn't fetch product")
-                    return .showErrorSheet(.genericError)
+                    return .showError(error)
                 }
                 // We've now persisted the transaction ID, so we no longer need access to
                 // the payment. We do this as the first step of this state rather than the
@@ -3741,7 +3722,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     receiptCredentialPresentation = try receiptOperations.createReceiptCredentialPresentation(receiptCredential: receiptCredential)
                 } catch {
                     owsFailDebug("couldn't present credential: \(error)")
-                    return .showErrorSheet(.genericError)
+                    return .showError(error)
                 }
                 do {
                     return try await Retry.performWithBackoff(maxAttempts: Constants.networkErrorRetries + 1) {
@@ -3811,8 +3792,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     let newPhoneNumber = E164(accountIdentity.localIdentifiers.phoneNumber),
                     let newPni = accountIdentity.localIdentifiers.pni
                 else {
-                    owsFailDebug("can't change number without E164/PNI")
-                    return .showErrorSheet(.genericError)
+                    return .showError(OWSAssertionError("can't change number without E164/PNI"))
                 }
                 await finalizeChangeNumberPniState(
                     changeNumberState: changeNumberState,
@@ -4228,9 +4208,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 .init(mode: .restoringBackup),
             )
         } catch where error.isNetworkFailureOrTimeout {
-            return .showErrorSheet(.networkError)
+            return .showError(error)
         } catch where error.isPostRegDeregisteredError {
-            return await becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
+            return .showError(await becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity))
         } catch {
             self.inMemoryState.pinFromUser = nil
             return .pinEntry(RegistrationPinState(
@@ -4292,10 +4272,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
             }
             inMemoryState.hasRestoredFromStorageService = true
+        } catch where error.isPostRegDeregisteredError {
+            return .showError(await becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity))
         } catch {
-            if error.isPostRegDeregisteredError {
-                return await becameDeregisteredBeforeCompleting(accountIdentity: accountIdentity)
-            }
             inMemoryState.hasSkippedRestoreFromStorageService = true
         }
         return await nextStep()
@@ -4531,9 +4510,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 apnRegistrationId = nil
             case .timeout:
                 logger.error("Timed out waiting for apns token")
-                return .showErrorSheet(.genericError)
+                return .showError(OWSGenericError(""))
             case .genericError:
-                return .showErrorSheet(.genericError)
+                return .showError(OWSGenericError(""))
             }
             inMemoryState.isManualMessageFetchEnabled = isManualMessageFetchEnabled
             if isManualMessageFetchEnabled {
@@ -4550,7 +4529,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             do {
                 try await sendRestoreMethodIfNecessary()
             } catch {
-                return .showErrorSheet(.genericError)
+                return .showError(error)
             }
             let accountResponse = try await makeCreateAccountRequestAndFinalizePreKeys(
                 verificationMethod: method,
@@ -4806,7 +4785,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func becameDeregisteredBeforeCompleting(
         accountIdentity: AccountIdentity,
-    ) async -> RegistrationStep {
+    ) async -> Registration.BecameDeregisteredError {
         logger.info("")
 
         switch mode {
@@ -4826,7 +4805,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         await deps.registrationWebSocketManager.releaseRestrictedWebSocket(isRegistered: false)
         inMemoryState.hasOpenedConnection = false
 
-        return .showErrorSheet(.becameDeregistered(localIdentifiers: accountIdentity.localIdentifiers.asReregisteringLocalIdentifiers))
+        return Registration.BecameDeregisteredError(localIdentifiers: accountIdentity.localIdentifiers.asReregisteringLocalIdentifiers)
     }
 
     // MARK: - Account objects
@@ -5111,7 +5090,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
-    private var verificationCodeSubmissionRejectedError: RegistrationStep {
+    private func verificationCodeSubmissionRejectedError() -> Registration.VerificationCodeError {
         switch persistedState.sessionState?.initialCodeRequestState {
         case
             .none,
@@ -5120,9 +5099,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             .permanentProviderFailure,
             .transientProviderFailure,
             .smsTransportFailed:
-            return .showErrorSheet(.submittingVerificationCodeBeforeAnyCodeSent)
+            return .wrongCode
         case .exhaustedCodeAttempts, .requested:
-            return .showErrorSheet(.verificationCodeSubmissionUnavailable)
+            return .tooManyAttempts
         }
     }
 

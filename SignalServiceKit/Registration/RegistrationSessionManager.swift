@@ -87,4 +87,39 @@ public enum Registration {
             case providerUnavailable
         }
     }
+
+    // TODO: The user-visible error messages don't match the behavior.
+    public enum VerificationCodeError: Error {
+        /// The user tried to submit a verification code, but we've never actually
+        /// sent a code, so no submission could possibly be correct.
+        ///
+        /// The error that's shown indicates that the code is wrong.
+        case wrongCode
+        /// The user can no longer submit a verification code. This could be because
+        /// the previously sent code expired, or because they used up their
+        /// verification code attempts. In either case, they need to send a new code
+        /// to proceed.
+        ///
+        /// The error that's shown indicates too many attempts have been made.
+        case tooManyAttempts
+        /// We received a session that indicates we won't be able to use it to
+        /// request a code.
+        case providerFailure
+    }
+
+    public struct UnknownChallengeError: Error {
+        public init() {}
+    }
+
+    /// The user had completed registration, but before finishing
+    /// post-registration steps they were deregistered, likely by another device
+    /// registering on the same number. The only path forward is to reset
+    /// _everything_ and re-register.
+    public struct BecameDeregisteredError: Error {
+        public let localIdentifiers: ReregisteringLocalIdentifiers
+
+        public init(localIdentifiers: ReregisteringLocalIdentifiers) {
+            self.localIdentifiers = localIdentifiers
+        }
+    }
 }

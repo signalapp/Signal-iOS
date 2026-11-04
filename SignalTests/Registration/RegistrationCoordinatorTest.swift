@@ -282,7 +282,11 @@ public class RegistrationCoordinatorTest {
         setupDefaultAccountAttributes()
 
         // We should start with the banner.
-        #expect(await coordinator.nextStep().isAppUpdateBanner)
+        let nextStep = await coordinator.nextStep()
+        guard case .showError(let error) = nextStep, error is AppExpiredError else {
+            Issue.record("must be showError(AppExpiredError)")
+            return
+        }
     }
 
     @MainActor @Test(arguments: Self.testCases())
@@ -2045,8 +2049,8 @@ public class RegistrationCoordinatorTest {
 
         do {
             let nextStep = await coordinator.submitVerificationCode(Stubs.verificationCode).awaitable()
-            guard case .showErrorSheet(.submittingVerificationCodeBeforeAnyCodeSent) = nextStep else {
-                Issue.record("must be showErrorSheet(submittingVerificationCodeBeforeAnyCodeSent)")
+            guard case .showError(Registration.VerificationCodeError.wrongCode) = nextStep else {
+                Issue.record("must be showError(VerificationCodeError.wrongCode)")
                 return
             }
         }
@@ -2369,8 +2373,8 @@ public class RegistrationCoordinatorTest {
         // Give it a phone number, which should cause it to start a session.
         coordinator.submitE164(Stubs.e164)
         let nextStep = await coordinator.nextStep()
-        guard case .showErrorSheet(.sessionInvalidated) = nextStep else {
-            Issue.record("must be showErrorSheet(sessionInvalidated)")
+        guard case .showError = nextStep else {
+            Issue.record("must be showError")
             return
         }
 
@@ -2413,8 +2417,8 @@ public class RegistrationCoordinatorTest {
         // Give it a phone number, which should cause it to start a session.
         coordinator.submitE164(Stubs.e164)
         let nextStep = await coordinator.nextStep()
-        guard case .showErrorSheet(.sessionInvalidated) = nextStep else {
-            Issue.record("must be showErrorSheet(sessionInvalidated)")
+        guard case .showError = nextStep else {
+            Issue.record("must be showError")
             return
         }
 
@@ -2645,8 +2649,8 @@ public class RegistrationCoordinatorTest {
 
         // This means we should get the app update banner.
         nextStep = await coordinator.submitCaptcha(Stubs.captchaToken).awaitable()
-        guard case .appUpdateBanner = nextStep else {
-            Issue.record("must be appUpdateBanner")
+        guard case .showError(let error) = nextStep, error is Registration.UnknownChallengeError else {
+            Issue.record("must be showError(UnknownChallengeError)")
             return
         }
     }
@@ -2805,8 +2809,8 @@ public class RegistrationCoordinatorTest {
         // sending a code with local state. We want to be on the verification
         // code entry screen, with an error so the user retries sending a code.
         var nextStep = await coordinator.submitVerificationCode(Stubs.verificationCode).awaitable()
-        guard case .showErrorSheet(.verificationCodeSubmissionUnavailable) = nextStep else {
-            Issue.record("must be showErrorSheet(verificationCodeSubmissionUnavailable)")
+        guard case .showError(Registration.VerificationCodeError.tooManyAttempts) = nextStep else {
+            Issue.record("must be showError(VerificationCodeError.tooManyAttempts)")
             return
         }
 
@@ -2837,8 +2841,8 @@ public class RegistrationCoordinatorTest {
         })
 
         var nextStep = await coordinator.submitVerificationCode(Stubs.verificationCode).awaitable()
-        guard case .showErrorSheet(.verificationCodeSubmissionUnavailable) = nextStep else {
-            Issue.record("must be showErrorSheet(verificationCodeSubmissionUnavailable)")
+        guard case .showError(Registration.VerificationCodeError.tooManyAttempts) = nextStep else {
+            Issue.record("must be showError(VerificationCodeError.tooManyAttempts)")
             return
         }
 
@@ -2883,8 +2887,8 @@ public class RegistrationCoordinatorTest {
         }
 
         nextStep = await coordinator.submitVerificationCode(Stubs.pinCode).awaitable()
-        guard case .showErrorSheet(.sessionInvalidated) = nextStep else {
-            Issue.record("must be showErrorSheet(sessionInvalidated)")
+        guard case .showError(let error) = nextStep, error is Registration.MissingSessionError else {
+            Issue.record("must be showError(MissingSessionError)")
             return
         }
 
@@ -3538,13 +3542,6 @@ private extension TSRequest {
 private extension RegistrationStep {
     var isRegistrationSplash: Bool {
         if case .registrationSplash = self {
-            return true
-        }
-        return false
-    }
-
-    var isAppUpdateBanner: Bool {
-        if case .appUpdateBanner = self {
             return true
         }
         return false
