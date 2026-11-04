@@ -1392,16 +1392,6 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
         return topColumn
     }
 
-    func splitViewController(_ svc: UISplitViewController, willHide column: UISplitViewController.Column) {
-        guard column == .primary, homeTabBarController?.selectedSplitViewController === svc else { return }
-
-        if let transitionCoordinator = svc.transitionCoordinator {
-            transitionCoordinator.animate { _ in self.updateTabBar() }
-        } else {
-            updateTabBar()
-        }
-    }
-
     func splitViewController(_ svc: UISplitViewController, willShow column: UISplitViewController.Column) {
         guard column == .primary, homeTabBarController?.selectedSplitViewController === svc else { return }
 
@@ -1412,16 +1402,27 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
         }
     }
 
-    func splitViewController(_ svc: UISplitViewController, didShow column: UISplitViewController.Column) {
+    func splitViewController(_ svc: UISplitViewController, willHide column: UISplitViewController.Column) {
         guard homeTabBarController?.selectedSplitViewController === svc else { return }
 
-        // See comment in `resetSecondaryViewController()` on purpose of this.
-        if
-            let homeTabSplitViewController = svc as? HomeTabSplitViewController,
-            svc.isCollapsed,
-            column == .primary
-        {
-            homeTabSplitViewController.resetSecondaryViewController()
+        if let transitionCoordinator = svc.transitionCoordinator {
+            transitionCoordinator.animate(
+                alongsideTransition: { _ in
+                    if column == .primary {
+                        self.updateTabBar()
+                    }
+                },
+                completion: { context in
+                    // Unload secondary at the end of transition that wasn't canceled.
+                    if column == .secondary, context.isCancelled == false {
+                        self.resetSecondaryViewController()
+                    }
+                },
+            )
+        } else {
+            if column == .primary {
+                updateTabBar()
+            }
         }
     }
 
