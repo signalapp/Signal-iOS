@@ -167,8 +167,11 @@ extension StickerDetailSheet.Action {
 
                     switch stickerContext {
                     case .message:
-                        // open sticker keyboard and bounce it.
-                        break
+                        guard let cvc = presentingVC as? ConversationViewController else {
+                            owsFailDebug("Sticker context is Message but presenting view is not CVC")
+                            return
+                        }
+                        cvc.openStickerKeyboard(page: .favorites, bouncing: stickerMetadata.stickerInfo)
                     case .stickerPack:
                         presentingVC?.presentToast(
                             text: OWSLocalizedString(

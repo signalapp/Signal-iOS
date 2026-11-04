@@ -74,4 +74,8 @@ class StickerKeyboard: CustomKeyboard, StickerPickerViewDelegate {
     func didSelectSticker(_ stickerMetadata: any StickerMetadata) {
         delegate?.stickerKeyboard(self, didSelect: stickerMetadata.stickerInfo)
     }
+
+    func select(page: StickerPickerPage, bouncingSticker: StickerInfo? = nil) {
+        stickerPickerView.select(page: page, bouncingSticker: bouncingSticker)
+    }
 }

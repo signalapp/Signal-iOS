@@ -700,6 +700,84 @@ extension RecentStickerPackDataSource: StickerPackDataSource {
     }
 }
 
+// Supplies sticker pack data for favorited stickers.
+public class FavoritesStickerPackDataSource: BaseStickerPackDataSource, StickerPackDataSource {
+    private let stickerManager: StickerManager
+    private let db: DB
+
+    public init(stickerManager: StickerManager, db: DB) {
+        self.stickerManager = stickerManager
+        self.db = db
+
+        super.init()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(favoriteStickersDidChange),
+            name: StickerManager.favoriteStickersDidChange,
+            object: nil,
+        )
+
+        ensureState()
+    }
+
+    private func ensureState() {
+        db.read { tx in
+            stickerInfos = stickerManager.fetchAllFavoritedStickerInfos(tx: tx)
+        }
+    }
+
+    // MARK: Events
+
+    @objc
+    private func favoriteStickersDidChange() {
+        AssertIsOnMainThread()
+
+        ensureState()
+    }
+
+    // MARK: - StickerPackDataSource
+
+    public var info: StickerPackInfo? {
+        owsFailDebug("This method should never be called.")
+        return nil
+    }
+
+    public var title: String? {
+        owsFailDebug("This method should never be called.")
+        return nil
+    }
+
+    public var author: String? {
+        owsFailDebug("This method should never be called.")
+        return nil
+    }
+
+    public func getStickerPack() -> StickerPackRecord? {
+        owsFailDebug("This method should never be called.")
+        return nil
+    }
+
+    public var installedCoverInfo: StickerInfo? {
+        owsFailDebug("This method should never be called.")
+        return nil
+    }
+
+    public var installedStickerInfos: [StickerInfo] {
+        AssertIsOnMainThread()
+
+        return stickerInfos
+    }
+
+    public func metadata(forSticker stickerInfo: StickerInfo) -> (any StickerMetadata)? {
+        AssertIsOnMainThread()
+
+        return db.read { tx in
+            stickerManager.favoriteStickerMetadata(stickerInfo: stickerInfo, transaction: tx)
+        }
+    }
+}
+
 // MARK: -
 
 extension StickerPackRecord {

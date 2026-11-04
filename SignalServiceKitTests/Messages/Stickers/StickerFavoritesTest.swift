@@ -296,7 +296,7 @@ final class StickerFavoritesTest {
         db.read { tx in
             #expect(stickerFavoriteStore.fetchFavoriteSticker(packId: removed.stickerInfo.packId, stickerId: removed.stickerInfo.stickerId, tx: tx) == nil)
             #expect(stickerManager.stickerFavoriteCount(tx: tx) == 1)
-            #expect(stickerFavoriteStore.favoritedStickers(tx: tx).map(\.packId) == [kept.packId])
+            #expect(stickerFavoriteStore.downloadedFavoritedStickers(tx: tx).map(\.packId) == [kept.packId])
         }
         #expect(favoriteFilePaths().count == 1)
         #expect(Set(favoriteFilePaths()) == Set(favoriteDirContents()))
@@ -343,7 +343,7 @@ final class StickerFavoritesTest {
         }
 
         let packIds = db.read { tx in
-            stickerFavoriteStore.favoritedStickers(tx: tx).map(\.packId)
+            stickerFavoriteStore.downloadedFavoritedStickers(tx: tx).map(\.packId)
         }
         #expect(packIds == [third.packId, second.packId, first.packId])
     }

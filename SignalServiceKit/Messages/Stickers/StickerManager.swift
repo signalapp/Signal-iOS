@@ -44,6 +44,7 @@ public class StickerManager {
     public static let packsDidChange = Notification.Name("packsDidChange")
     public static let stickersOrPacksDidChange = Notification.Name("stickersOrPacksDidChange")
     public static let recentStickersDidChange = Notification.Name("recentStickersDidChange")
+    public static let favoriteStickersDidChange = Notification.Name("favoriteStickersDidChange")
 
     private let packsDidChangeEvent: DebouncedEvent = DebouncedEvents.build(
         mode: .firstLast,
@@ -539,6 +540,40 @@ public class StickerManager {
             stickerInfo: stickerInfo,
             stickerType: stickerType,
             emojiString: installedSticker.emojiString,
+            encryptedStickerDataUrl: stickerDataUrl,
+            encryptionKey: localKey,
+            plaintextLength: plaintextLength,
+        )
+    }
+
+    public func favoriteStickerMetadata(
+        stickerInfo: StickerInfo,
+        transaction: DBReadTransaction,
+    ) -> (any StickerMetadata)? {
+        guard let favoriteStickerRecord = stickerFavoriteStore.fetchFavoriteSticker(packId: stickerInfo.packId, stickerId: stickerInfo.stickerId, tx: transaction) else {
+            return nil
+        }
+        return favoritedStickerMetadata(favoritedSticker: favoriteStickerRecord, stickerInfo: stickerInfo)
+    }
+
+    public func favoritedStickerMetadata(
+        favoritedSticker: FavoriteStickerRecord,
+        stickerInfo: StickerInfo,
+    ) -> EncryptedStickerMetadata? {
+        guard let stickerDataUrl = stickerDataUrl(stickerInfo: stickerInfo, contentType: favoritedSticker.contentType, isFavorites: true, verifyExists: true) else {
+            return nil
+        }
+
+        guard let localKey = favoritedSticker.localKey, let plaintextLength = favoritedSticker.plaintextLength else {
+            // If a favorited sticker has no local key & plaintext length,
+            // assume it hasn't been downloaded yet.
+            return nil
+        }
+
+        return EncryptedStickerMetadata(
+            stickerInfo: stickerInfo,
+            stickerType: StickerType.stickerType(forContentType: favoritedSticker.contentType),
+            emojiString: favoritedSticker.emojiString,
             encryptedStickerDataUrl: stickerDataUrl,
             encryptionKey: localKey,
             plaintextLength: plaintextLength,
@@ -1194,6 +1229,8 @@ public class StickerManager {
                 }
             }
         }
+
+        NotificationCenter.default.postOnMainThread(name: Self.favoriteStickersDidChange, object: nil)
     }
 
     private func updateExistingFavoriteRecordWithData(stickerMetadata: any StickerMetadata) async throws {
@@ -1349,6 +1386,7 @@ public class StickerManager {
                 unfavoritedAtTimestamp: Int64(clamping: storageServiceRecord.deletedAtTimestamp),
                 tx: tx,
             )
+
             tx.addSyncCompletion {
                 Task {
                     // This is a best-effort cleanup after we unfavorite, but OWSOrphanDataCleaner will also
@@ -1361,6 +1399,7 @@ public class StickerManager {
                         owsFailDebug("error deleting unfavorited sticker file \(error)")
                     }
                 }
+                NotificationCenter.default.postOnMainThread(name: Self.favoriteStickersDidChange, object: nil)
             }
         } else {
             owsFailDebug("missing favoritedAtTimestamp or deletedAtTimestamp on favorite sticker storage service record")
@@ -1414,6 +1453,8 @@ public class StickerManager {
 
             let favoriteStickerId = FavoriteStickerId(packId: stickerInfo.packId, stickerId: stickerInfo.stickerId)
             storageServiceManager.recordPendingUpdates(favoriteStickerIds: [favoriteStickerId])
+
+            NotificationCenter.default.postOnMainThread(name: Self.favoriteStickersDidChange, object: nil)
         }
     }
 
@@ -1442,6 +1483,8 @@ public class StickerManager {
             let favoriteStickerId = FavoriteStickerId(packId: stickerInfo.packId, stickerId: stickerInfo.stickerId)
             storageServiceManager.recordPendingUpdates(favoriteStickerIds: [favoriteStickerId])
 
+            NotificationCenter.default.postOnMainThread(name: Self.favoriteStickersDidChange, object: nil)
+
             // Use the stored contentType so we delete the file we actually wrote.
             guard
                 let stickerDataUrl = self.stickerDataUrl(
@@ -1465,7 +1508,7 @@ public class StickerManager {
 
     public func filePathsForAllFavoritedStickers(transaction: DBReadTransaction) -> [String] {
         var filePaths = [String]()
-        let favoritedStickers = stickerFavoriteStore.favoritedStickers(tx: transaction)
+        let favoritedStickers = stickerFavoriteStore.downloadedFavoritedStickers(tx: transaction)
         for favorite in favoritedStickers {
             guard let packKey = favorite.packKey else {
                 owsFailDebug("Favorited sticker missing packKey")
@@ -1500,6 +1543,17 @@ public class StickerManager {
 
     public func fetchAllFavoritedAndUnfavoritedStickers(tx: DBReadTransaction) -> [FavoriteStickerRecord] {
         stickerFavoriteStore.favoritedAndUnfavoritedStickers(tx: tx)
+    }
+
+    public func fetchAllFavoritedStickerInfos(tx: DBReadTransaction) -> [StickerInfo] {
+        stickerFavoriteStore.downloadedFavoritedStickers(tx: tx).compactMap {
+            guard let packKey = $0.packKey else {
+                owsFailDebug("Favorited sticker should always have packKey")
+                return nil
+            }
+            let stickerInfo = StickerInfo(packId: $0.packId, packKey: packKey, stickerId: $0.stickerId)
+            return stickerInfo
+        }
     }
 
     // MARK: - StickerPack Download Task Queue

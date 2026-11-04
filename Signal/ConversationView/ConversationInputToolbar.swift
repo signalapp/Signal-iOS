@@ -3055,8 +3055,14 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         return stickerKeyboard
     }
 
-    func showStickerKeyboard() {
+    func showStickerKeyboard(
+        page: StickerPickerPage? = nil,
+        bouncingSticker: StickerInfo? = nil,
+    ) {
         AssertIsOnMainThread()
+        if let page {
+            stickerKeyboard.select(page: page, bouncingSticker: bouncingSticker)
+        }
         guard desiredKeyboardType != .sticker else { return }
         toggleKeyboardType(.sticker, animated: false)
     }

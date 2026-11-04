@@ -429,7 +429,10 @@ extension ConversationViewController {
         showConversationSettingsAndShowAllMedia()
     }
 
-    func openStickerKeyboard() {
+    func openStickerKeyboard(
+        page: StickerPickerPage? = nil,
+        bouncing stickerInfo: StickerInfo? = nil,
+    ) {
         guard hasViewWillAppearEverBegun else {
             owsFailDebug("InputToolbar not yet ready.")
             return
@@ -438,7 +441,7 @@ extension ConversationViewController {
             return
         }
 
-        inputToolbar.showStickerKeyboard()
+        inputToolbar.showStickerKeyboard(page: page, bouncingSticker: stickerInfo)
     }
 
     func openAttachmentKeyboard() {

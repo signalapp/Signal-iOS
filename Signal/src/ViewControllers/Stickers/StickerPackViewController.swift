@@ -222,7 +222,7 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
 
     private let navBarDefaultPackImage = UIImageView(image: .official)
 
-    private let stickerCollectionView = StickerPackCollectionView(placeholderColor: .ows_blackAlpha60)
+    private let stickerCollectionView = StickerPackCollectionView(placeholderColor: .ows_blackAlpha60, shouldShowSectionHeaders: false)
 
     private func updateCollectionViewContentInset() {
         stickerCollectionView.layoutIfNeeded()

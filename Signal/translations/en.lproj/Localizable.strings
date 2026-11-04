@@ -10376,6 +10376,15 @@
 /* Button to confirm a user wants to remove a sticker */
 "STICKER_CONFIRM_REMOVE_BUTTON" = "Remove";
 
+/* Toast shown when user tries to tap Favorites in sticker keyboard but has none */
+"STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "Press and hold a sticker to add to Favorites";
+
+/* Section header for favorites in the sticker keyboard */
+"STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "Favorites";
+
+/* Section header for recents in the sticker keyboard */
+"STICKER_KEYBOARD_SECTION_HEADER_LABEL_RECENTS" = "Recently Used";
+
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Sticker Message";
 

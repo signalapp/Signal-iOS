@@ -118,10 +118,12 @@ public class StickerFavoriteStore {
         }
     }
 
-    func favoritedStickers(tx: DBReadTransaction) -> [FavoriteStickerRecord] {
+    func downloadedFavoritedStickers(tx: DBReadTransaction) -> [FavoriteStickerRecord] {
         return failIfThrows {
             return try FavoriteStickerRecord
                 .filter(Column(FavoriteStickerRecord.CodingKeys.favoritedAt) != nil)
+                .filter(Column(FavoriteStickerRecord.CodingKeys.localKey) != nil)
+                .filter(Column(FavoriteStickerRecord.CodingKeys.plaintextLength) != nil)
                 .order(Column(FavoriteStickerRecord.CodingKeys.favoritedAt).desc)
                 .fetchAll(tx.database)
         }
