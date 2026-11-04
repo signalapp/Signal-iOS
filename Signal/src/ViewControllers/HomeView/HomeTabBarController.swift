@@ -1334,6 +1334,18 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
         setViewController(placeholderViewController, for: .secondary)
     }
 
+    private func resetSecondaryViewControllerIfNeeded() {
+        guard isCollapsed else { return }
+        if #available(iOS 26, *) {
+            guard isShowing(.primary) else { return }
+        } else {
+            guard (primaryNavigationController?.viewControllers.count ?? 0) <= 1 else {
+                return
+            }
+        }
+        resetSecondaryViewController()
+    }
+
     // MARK: - UISptilViewController overrides
 
     override func setViewController(_ vc: UIViewController?, for column: UISplitViewController.Column) {
@@ -1415,7 +1427,7 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
                 completion: { context in
                     // Unload secondary at the end of transition that wasn't canceled.
                     if column == .secondary, context.isCancelled == false {
-                        self.resetSecondaryViewController()
+                        self.resetSecondaryViewControllerIfNeeded()
                     }
                 },
             )
@@ -1507,7 +1519,7 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
         // User navigated back to root - reset secondary column to the placeholder.
         // See comment in `resetSecondaryViewController()` about why we do this.
         if viewController is HomeTabViewController {
-            resetSecondaryViewController()
+            resetSecondaryViewControllerIfNeeded()
         }
     }
 }
