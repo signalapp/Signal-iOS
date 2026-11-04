@@ -1705,6 +1705,7 @@ final class AppLifecycleManager: NSObject, UNUserNotificationCenterDelegate {
                 taskGroup.addTask { try await dependenciesBridge.decryptionPlaceholderExpirationJob.run() }
                 taskGroup.addTask { try await dependenciesBridge.storyMessageExpirationJob.run() }
                 taskGroup.addTask { try await dependenciesBridge.pinnedMessageExpirationJob.run() }
+                taskGroup.addTask { try await dependenciesBridge.favoriteStickerExpirationJob.run() }
                 taskGroup.addTask { try await AppEnvironment.shared.groupSendEndorsementExpirationJob.run() }
                 taskGroup.addTask { try await AppEnvironment.shared.senderKeyExpirationJob.run() }
                 try await taskGroup.waitForAll()

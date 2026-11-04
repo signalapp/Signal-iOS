@@ -31,6 +31,7 @@ final class StickerInstallFlowTest {
             messageSenderJobQueue: MessageSenderJobQueue(appReadiness: appReadiness),
             interactionStore: InteractionStoreImpl(),
             cacheDirUrl: URL(fileURLWithPath: self.tempDirPath),
+            stickerFavoriteStore: StickerFavoriteStore(),
             db: db,
         )
     }

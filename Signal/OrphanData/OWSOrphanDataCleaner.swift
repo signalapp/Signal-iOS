@@ -168,6 +168,7 @@ enum OWSOrphanDataCleaner {
             try Task.checkCancellation()
 
             activeStickerFilePaths.formUnion(stickerManager.filePathsForAllInstalledStickers(transaction: transaction))
+            activeStickerFilePaths.formUnion(stickerManager.filePathsForAllFavoritedStickers(transaction: transaction))
             try Task.checkCancellation()
 
             hasOrphanedPacksOrStickers = stickerManager.hasOrphanedData(tx: transaction)

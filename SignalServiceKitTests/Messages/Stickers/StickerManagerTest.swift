@@ -130,6 +130,7 @@ class StickerManagerTest2: SSKBaseTest {
             tsAccountManager: MockTSAccountManager(),
             messageSenderJobQueue: MessageSenderJobQueue(appReadiness: appReadiness),
             interactionStore: InteractionStoreImpl(),
+            stickerFavoriteStore: StickerFavoriteStore(),
             db: SSKEnvironment.shared.databaseStorageRef,
         )
     }

@@ -10349,6 +10349,15 @@
 /* Text for a toast confirming that the speakerphone has been turned on for a call. */
 "SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "Speaker on";
 
+/* Text shown in a toast confirming a sticker was added to favorites */
+"STICKER_ADDED_TO_FAVORITES_TOAST" = "Sticker added to Favorites";
+
+/* Label for button to add sticker to favorites */
+"STICKER_BUTTON_ADD_FAVORITES" = "Add to Favorites";
+
+/* Label for button to remove sticker from favorites */
+"STICKER_BUTTON_REMOVE_FAVORITES" = "Remove From Favorites";
+
 /* Title for a button to view a sticker pack */
 "STICKER_BUTTON_VIEW_PACK" = "View Pack";
 
@@ -10363,6 +10372,9 @@
 
 /* The name for the sticker category 'Recents' */
 "STICKER_CATEGORY_RECENTS_NAME" = "Recents";
+
+/* Button to confirm a user wants to remove a sticker */
+"STICKER_CONFIRM_REMOVE_BUTTON" = "Remove";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Sticker Message";
@@ -10393,6 +10405,15 @@
 
 /* Label for a button on a sticker-pack share sheet that sends the pack in Signal. */
 "STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Send in Signal";
+
+/* Message for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "You can’t send it or add it to Favorites again without a link or sticker message.";
+
+/* Title for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "Remove From Favorites?";
+
+/* Text shown in a toast confirming a sticker was removed from favorites */
+"STICKER_REMOVED_FROM_FAVORITES_TOAST" = "Sticker removed from Favorites";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
 "STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Sticker not available";

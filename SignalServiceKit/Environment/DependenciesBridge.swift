@@ -116,6 +116,7 @@ public class DependenciesBridge {
     public let donationSubscriptionManager: DonationSubscriptionManager
     public let editManager: EditManager
     public let editMessageStore: EditMessageStore
+    public let favoriteStickerExpirationJob: FavoriteStickerExpirationJob
     public let groupCallRecordManager: GroupCallRecordManager
     public let groupMemberStore: GroupMemberStore
     public let groupMemberUpdater: GroupMemberUpdater
@@ -271,6 +272,7 @@ public class DependenciesBridge {
         donationSubscriptionManager: DonationSubscriptionManager,
         editManager: EditManager,
         editMessageStore: EditMessageStore,
+        favoriteStickerExpirationJob: FavoriteStickerExpirationJob,
         groupCallRecordManager: GroupCallRecordManager,
         groupMemberStore: GroupMemberStore,
         groupMemberUpdater: GroupMemberUpdater,
@@ -424,6 +426,7 @@ public class DependenciesBridge {
         self.donationSubscriptionManager = donationSubscriptionManager
         self.editManager = editManager
         self.editMessageStore = editMessageStore
+        self.favoriteStickerExpirationJob = favoriteStickerExpirationJob
         self.groupCallRecordManager = groupCallRecordManager
         self.groupMemberStore = groupMemberStore
         self.groupMemberUpdater = groupMemberUpdater

@@ -63,7 +63,7 @@ public final class InstalledStickerRecord: SDSCodableModel, Decodable {
         owsAssertDebug(!info.packKey.isEmpty)
 
         self.id = nil
-        self.uniqueId = Self.uniqueId(for: info)
+        self.uniqueId = StickerManager.uniqueId(for: info)
         self.info = info
         self.contentType = contentType?.nilIfEmpty
         self.emojiString = emojiString
@@ -112,10 +112,6 @@ public final class InstalledStickerRecord: SDSCodableModel, Decodable {
     var stickerId: UInt32 {
         return self.info.stickerId
     }
-
-    static func uniqueId(for stickerInfo: StickerInfo) -> String {
-        return stickerInfo.asKey()
-    }
 }
 
 #if TESTABLE_BUILD
@@ -131,7 +127,7 @@ extension InstalledStickerRecord {
     ) -> InstalledStickerRecord {
         return InstalledStickerRecord(
             id: nil,
-            uniqueId: Self.uniqueId(for: info),
+            uniqueId: StickerManager.uniqueId(for: info),
             info: info,
             contentType: contentType,
             emojiString: emojiString,

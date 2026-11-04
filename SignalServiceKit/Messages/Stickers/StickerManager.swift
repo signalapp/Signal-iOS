@@ -28,11 +28,16 @@ import LibSignalClient
 //   Once we've download the manifest the pack is "saved" but not "installed".
 // * We discard sticker and pack info once it is no longer in use.
 
+public enum StickerFavoriteError: Error {
+    case limitReached
+}
+
 public class StickerManager {
 
     // MARK: - Constants
 
     public static let packKeyLength: UInt = 32
+    public static let maxStickerFavorites: Int = 500
 
     // MARK: - Notifications
 
@@ -83,8 +88,11 @@ public class StickerManager {
     private let tsAccountManager: TSAccountManager
     private let messageSenderJobQueue: MessageSenderJobQueue
     private let _cacheDirUrl: URL?
+    private let stickerFavoriteStore: StickerFavoriteStore
+    private let dateProvider: DateProvider
 
-    private let stickerInstallQueue = KeyedConcurrentTaskQueue<String>(concurrentLimitPerKey: 1)
+    private let installStickerOperationQueue = KeyedConcurrentTaskQueue<String>(concurrentLimitPerKey: 1)
+    private let favoriteStickerOperationQueue = KeyedConcurrentTaskQueue<String>(concurrentLimitPerKey: 1)
 
     // MARK: - Initializers
 
@@ -97,6 +105,7 @@ public class StickerManager {
         messageSenderJobQueue: MessageSenderJobQueue,
         interactionStore: InteractionStore,
         cacheDirUrl: URL? = nil,
+        stickerFavoriteStore: StickerFavoriteStore,
         db: DB,
     ) {
         let runner = StickerPackDownloadTaskRunner(
@@ -119,6 +128,8 @@ public class StickerManager {
         self.interactionStore = interactionStore
         self._cacheDirUrl = cacheDirUrl
         self.db = db
+        self.stickerFavoriteStore = stickerFavoriteStore
+        self.dateProvider = dateProvider
 
         runner.stickerManager = self
 
@@ -186,6 +197,16 @@ public class StickerManager {
         } else {
             return Self.defaultCacheDirUrl
         }
+    }
+
+    private static let defaultFavoritesCacheDirUrl: URL = {
+        let url = defaultCacheDirUrl.appendingPathComponent("Favorites")
+        OWSFileSystem.ensureDirectoryExists(url.path)
+        return url
+    }()
+
+    public func favoritesCacheDirUrl() -> URL {
+        return _cacheDirUrl?.appendingPathComponent("Favorites") ?? Self.defaultFavoritesCacheDirUrl
     }
 
     // MARK: - Sticker Packs
@@ -456,7 +477,7 @@ public class StickerManager {
     ) -> [StickerInfo] {
         var result = [StickerInfo]()
         for stickerInfo in stickerPack.stickerInfos() {
-            let uniqueId = InstalledStickerRecord.uniqueId(for: stickerInfo)
+            let uniqueId = StickerManager.uniqueId(for: stickerInfo)
             guard let installedSticker = InstalledStickerRecord.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
                 continue
             }
@@ -489,7 +510,7 @@ public class StickerManager {
         stickerInfo: StickerInfo,
         transaction: DBReadTransaction,
     ) -> (any StickerMetadata)? {
-        let uniqueId = InstalledStickerRecord.uniqueId(for: stickerInfo)
+        let uniqueId = StickerManager.uniqueId(for: stickerInfo)
         guard let installedSticker = InstalledStickerRecord.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
             return nil
         }
@@ -501,7 +522,7 @@ public class StickerManager {
     ) -> (any StickerMetadata)? {
         let stickerInfo = installedSticker.info
         let stickerType = StickerType.stickerType(forContentType: installedSticker.contentType)
-        guard let stickerDataUrl = stickerDataUrl(stickerInfo: stickerInfo, stickerType: stickerType, verifyExists: true) else {
+        guard let stickerDataUrl = stickerDataUrl(forInstalledSticker: installedSticker, verifyExists: true) else {
             return nil
         }
 
@@ -526,20 +547,24 @@ public class StickerManager {
         )
     }
 
-    private func stickerDataUrl(stickerInfo: StickerInfo, contentType: String?, verifyExists: Bool) -> URL? {
+    static func uniqueId(for stickerInfo: StickerInfo) -> String {
+        return stickerInfo.asKey()
+    }
+
+    private func stickerDataUrl(stickerInfo: StickerInfo, contentType: String?, isFavorites: Bool, verifyExists: Bool) -> URL? {
         let stickerType = StickerType.stickerType(forContentType: contentType)
-        return stickerDataUrl(stickerInfo: stickerInfo, stickerType: stickerType, verifyExists: verifyExists)
+        return stickerDataUrl(stickerInfo: stickerInfo, stickerType: stickerType, isFavorites: isFavorites, verifyExists: verifyExists)
     }
 
     public func stickerDataUrl(forInstalledSticker installedSticker: InstalledStickerRecord, verifyExists: Bool) -> URL? {
         let stickerInfo = installedSticker.info
         let stickerType = StickerType.stickerType(forContentType: installedSticker.contentType)
-        return stickerDataUrl(stickerInfo: stickerInfo, stickerType: stickerType, verifyExists: verifyExists)
+        return stickerDataUrl(stickerInfo: stickerInfo, stickerType: stickerType, isFavorites: false, verifyExists: verifyExists)
     }
 
-    private func stickerDataUrl(stickerInfo: StickerInfo, stickerType: StickerType, verifyExists: Bool) -> URL? {
-        let uniqueId = InstalledStickerRecord.uniqueId(for: stickerInfo)
-        var url = cacheDirUrl()
+    private func stickerDataUrl(stickerInfo: StickerInfo, stickerType: StickerType, isFavorites: Bool, verifyExists: Bool) -> URL? {
+        let uniqueId = Self.uniqueId(for: stickerInfo)
+        var url = isFavorites ? favoritesCacheDirUrl() : cacheDirUrl()
         // Not all stickers are .webp.
         url.appendPathComponent("\(uniqueId).\(stickerType.fileExtension)")
         if verifyExists, !OWSFileSystem.fileOrFolderExists(url: url) {
@@ -559,7 +584,7 @@ public class StickerManager {
     }
 
     public func isStickerInstalled(stickerInfo: StickerInfo, transaction: DBReadTransaction) -> Bool {
-        let uniqueId = InstalledStickerRecord.uniqueId(for: stickerInfo)
+        let uniqueId = StickerManager.uniqueId(for: stickerInfo)
         return InstalledStickerRecord.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil
     }
 
@@ -599,7 +624,7 @@ public class StickerManager {
     }
 
     public func fetchInstalledSticker(stickerInfo: StickerInfo, transaction: DBReadTransaction) -> InstalledStickerRecord? {
-        let uniqueId = InstalledStickerRecord.uniqueId(for: stickerInfo)
+        let uniqueId = StickerManager.uniqueId(for: stickerInfo)
         return InstalledStickerRecord.anyFetch(uniqueId: uniqueId, transaction: transaction)
     }
 
@@ -612,13 +637,38 @@ public class StickerManager {
         return InstalledStickerRecord.anyFetch(uniqueId: uniqueId, transaction: transaction)
     }
 
+    private func generateKeyAndWriteToDisk(
+        stickerInfo: StickerInfo,
+        stickerData: Data,
+        contentType: String?,
+        isFavorites: Bool,
+    ) throws -> (AttachmentKey, UInt32) {
+        let stickerLocalKey = AttachmentKey.generate()
+        guard let stickerDataUrl = stickerDataUrl(stickerInfo: stickerInfo, contentType: contentType, isFavorites: isFavorites, verifyExists: false) else {
+            throw OWSAssertionError("Could not generate sticker data URL.")
+        }
+
+        let (encryptedStickerData, encryptionMetadata) = try Cryptography.encrypt(
+            stickerData,
+            attachmentKey: stickerLocalKey,
+            applyExtraPadding: false,
+        )
+
+        try encryptedStickerData.write(to: stickerDataUrl)
+
+        guard let plaintextLength = UInt32(exactly: encryptionMetadata.plaintextLength) else {
+            throw OWSAssertionError("Sticker plaintext data too large")
+        }
+        return (stickerLocalKey, plaintextLength)
+    }
+
     public func installSticker(
         stickerInfo: StickerInfo,
         stickerData: Data,
         contentType: String?,
         emojiString: String?,
     ) async -> Bool {
-        return await stickerInstallQueue.runWithoutTaskCancellationHandler(forKey: stickerInfo.asKey()) {
+        return await installStickerOperationQueue.runWithoutTaskCancellationHandler(forKey: stickerInfo.asKey()) {
             let alreadyInstalled = db.read { tx in
                 fetchInstalledSticker(stickerInfo: stickerInfo, transaction: tx) != nil
             }
@@ -627,30 +677,16 @@ public class StickerManager {
                 return false
             }
 
-            let stickerLocalKey = AttachmentKey.generate()
-            guard let stickerDataUrl = stickerDataUrl(stickerInfo: stickerInfo, contentType: contentType, verifyExists: false) else {
-                owsFailDebug("Could not generate sticker data URL.")
-                return false
-            }
-
-            let encryptionMetadata: EncryptionMetadata
+            let stickerLocalKey: AttachmentKey
+            let plaintextLength: UInt32
             do {
-
-                let (encryptedStickerData, metadata) = try Cryptography.encrypt(
-                    stickerData,
-                    attachmentKey: stickerLocalKey,
-                    applyExtraPadding: false,
+                (stickerLocalKey, plaintextLength) = try generateKeyAndWriteToDisk(
+                    stickerInfo: stickerInfo,
+                    stickerData: stickerData,
+                    contentType: contentType,
+                    isFavorites: false,
                 )
-                encryptionMetadata = metadata
-
-                try encryptedStickerData.write(to: stickerDataUrl)
             } catch {
-                owsFailDebug("Sticker file write failed: \(error)")
-                return false
-            }
-
-            guard let plaintextLength = UInt32(exactly: encryptionMetadata.plaintextLength) else {
-                owsFailDebug("Sticker plaintext data too large")
                 return false
             }
 
@@ -725,7 +761,6 @@ public class StickerManager {
     }
 
     private let stickerDownloads = AtomicValue<[String: StickerDownload]>([:], lock: .init())
-    private let stickerOperationQueue = ConcurrentTaskQueue(concurrentLimit: 4)
 
     public func tryToDownloadSticker(stickerInfo: StickerInfo) -> Promise<Data> {
         let (stickerDownload, shouldStartTask) = stickerDownloads.update {
@@ -1113,6 +1148,125 @@ public class StickerManager {
             owsFailDebug("Unknown type.")
             return
         }
+    }
+
+    // MARK: - Favorites
+
+    public func addStickerToFavorites(
+        stickerMetadata: any StickerMetadata,
+    ) async throws {
+        let stickerInfo = stickerMetadata.stickerInfo
+
+        return try await favoriteStickerOperationQueue.runWithThrowingTask(forKey: stickerInfo.asKey()) {
+            let (isAlreadyFavorited, stickerCount) = db.read { tx in
+                let isFavorited = stickerFavoriteStore.isFavoritedSticker(stickerInfo: stickerInfo, tx: tx)
+                let stickerCount = stickerFavoriteStore.stickerFavoriteCount(tx: tx)
+                return (isFavorited, stickerCount)
+            }
+
+            guard !isAlreadyFavorited else {
+                return
+            }
+
+            guard stickerCount < Self.maxStickerFavorites else {
+                throw StickerFavoriteError.limitReached
+            }
+
+            let emojiString = stickerMetadata.emojiString
+            let contentType = stickerMetadata.mimeType
+
+            let (stickerLocalKey, plaintextLength) = try generateKeyAndWriteToDisk(
+                stickerInfo: stickerInfo,
+                stickerData: try stickerMetadata.readStickerData(),
+                contentType: contentType,
+                isFavorites: true,
+            )
+
+            await db.awaitableWrite { tx in
+                stickerFavoriteStore.addStickerToFavorites(
+                    stickerInfo: stickerInfo,
+                    contentType: contentType,
+                    emojiString: emojiString,
+                    localKey: stickerLocalKey.combinedKey,
+                    plaintextLength: plaintextLength,
+                    favoritedAtTimestamp: dateProvider().ows_millisecondsSince1970,
+                    tx: tx,
+                )
+            }
+        }
+    }
+
+    public func removeStickerFromFavorites(
+        stickerInfo: StickerInfo,
+    ) async {
+        return await favoriteStickerOperationQueue.runWithoutTaskCancellationHandler(forKey: stickerInfo.asKey()) {
+            let removedFavorite = db.read { tx in
+                stickerFavoriteStore.fetchFavoriteSticker(stickerInfo: stickerInfo, tx: tx)
+            }
+
+            guard let removedFavorite else {
+                Logger.info("Skipping favorite removal; not favorited.")
+                return
+            }
+
+            await db.awaitableWrite { tx in
+                stickerFavoriteStore.removeStickerFromFavorites(
+                    stickerInfo: stickerInfo,
+                    unfavoritedAtTimestamp: dateProvider().ows_millisecondsSince1970,
+                    tx: tx,
+                )
+            }
+
+            // Use the stored contentType so we delete the file we actually wrote.
+            guard
+                let stickerDataUrl = self.stickerDataUrl(
+                    stickerInfo: stickerInfo,
+                    contentType: removedFavorite.contentType,
+                    isFavorites: true,
+                    verifyExists: true,
+                )
+            else {
+                // The sticker file is already deleted, no need to delete.
+                return
+            }
+
+            do {
+                try OWSFileSystem.deleteFileIfExists(url: stickerDataUrl)
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
+        }
+    }
+
+    public func filePathsForAllFavoritedStickers(transaction: DBReadTransaction) -> [String] {
+        var filePaths = [String]()
+        let favoritedStickers = stickerFavoriteStore.favoritedStickers(tx: transaction)
+        for favorite in favoritedStickers {
+            guard let packKey = favorite.packKey else {
+                owsFailDebug("Favorited sticker missing packKey")
+                continue
+            }
+            let stickerInfo = StickerInfo(packId: favorite.packId, packKey: packKey, stickerId: favorite.stickerId)
+            if
+                let stickerDataUrl = stickerDataUrl(
+                    stickerInfo: stickerInfo,
+                    contentType: favorite.contentType,
+                    isFavorites: true,
+                    verifyExists: false,
+                )
+            {
+                filePaths.append(stickerDataUrl.path)
+            }
+        }
+        return filePaths
+    }
+
+    public func isStickerFavorited(stickerInfo: StickerInfo, tx: DBReadTransaction) -> Bool {
+        return stickerFavoriteStore.isFavoritedSticker(stickerInfo: stickerInfo, tx: tx)
+    }
+
+    public func stickerFavoriteCount(tx: DBReadTransaction) -> Int {
+        return stickerFavoriteStore.stickerFavoriteCount(tx: tx)
     }
 
     // MARK: - StickerPack Download Task Queue

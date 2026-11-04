@@ -39,6 +39,7 @@ class LinkPreviewFetcherTest: XCTestCase {
                 tsAccountManager: MockTSAccountManager(),
                 messageSenderJobQueue: MessageSenderJobQueue(appReadiness: appReadiness),
                 interactionStore: InteractionStoreImpl(),
+                stickerFavoriteStore: StickerFavoriteStore(),
                 db: db,
             ),
         )
