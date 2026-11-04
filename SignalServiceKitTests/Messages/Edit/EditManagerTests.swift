@@ -75,6 +75,64 @@ class EditManagerTests: SSKBaseTest {
         }
     }
 
+    func testIncomingEditIgnoresExpireTimer() throws {
+        let targetMessage = createIncomingMessage(with: thread) { builder in
+            builder.setMessageBody(AttachmentContentValidatorMock.mockValidatedBody("BAR"))
+            builder.authorAci = authorAci
+            builder.expiresInSeconds = 60
+            builder.expireTimerVersion = 2
+            builder.expireStartedAt = 3
+        }
+
+        let editMessage = createEditDataMessage { builder in
+            builder.setBody("FOO")
+            builder.setExpireTimer(3600)
+            builder.setExpireTimerVersion(5)
+        }
+        let editManager = EditManagerImpl(
+            context: EditManagerImpl.Context(
+                attachmentContentValidator: AttachmentContentValidatorMock(),
+                attachmentStore: AttachmentStore(),
+                editManagerAttachments: MockEditManagerAttachments(),
+                editMessageStore: EditMessageStore(),
+                receiptManagerShim: ReceiptManagerMock(),
+            ),
+        )
+
+        var newMessage: TSMessage!
+        try db.write { tx in
+            targetMessage.anyInsert(transaction: tx)
+            newMessage = try editManager.processIncomingEditMessage(
+                editMessage,
+                serverTimestamp: 2,
+                serverGuid: UUID().uuidString,
+                serverDeliveryTimestamp: 1234,
+                thread: thread,
+                editTarget: .incomingMessage(IncomingEditMessageWrapper(
+                    message: targetMessage,
+                    thread: thread,
+                    authorAci: authorAci,
+                )),
+                tx: tx,
+            )
+        }
+
+        XCTAssertEqual(newMessage.body, "FOO")
+        XCTAssertEqual(newMessage.expiresInSeconds, 60)
+        XCTAssertEqual(newMessage.expireTimerVersion?.uint32Value, 2)
+        XCTAssertEqual(newMessage.expireStartedAt, 3)
+
+        // Prior revisions don't expire on their own.
+        try db.read { tx in
+            let priorRevision = try InteractionFinder.fetchInteractions(
+                timestamp: targetMessage.timestamp,
+                transaction: tx,
+            ).first as! TSMessage
+            XCTAssertEqual(priorRevision.editState, .pastRevision)
+            XCTAssertEqual(priorRevision.expiresInSeconds, 0)
+        }
+    }
+
     func testViewOnceMessage() {
         let targetMessage = createIncomingMessage(with: thread) { builder in
             builder.authorAci = authorAci
