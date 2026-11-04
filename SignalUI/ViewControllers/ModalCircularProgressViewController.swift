@@ -4,10 +4,9 @@
 //
 
 import SignalServiceKit
-import SignalUI
 
 /// A modal, determinate circular progress indicator for async work.
-class ModalCircularProgressViewController: OWSViewController {
+public class ModalCircularProgressViewController: OWSViewController {
 
     /// Present the modal and run the given work behind it, dismissing the modal
     /// and propagating the result when the work finishes.
@@ -16,7 +15,7 @@ class ModalCircularProgressViewController: OWSViewController {
     ///
     /// - Parameter progressUpdates
     /// Progress of the work, as a fraction from 0 to 1.
-    static func presentAndRun<T>(
+    public static func presentAndRun<T>(
         from presenter: UIViewController,
         title: String,
         progressUpdates: AsyncStream<Float>,
@@ -168,7 +167,7 @@ class ModalCircularProgressViewController: OWSViewController {
 
     // MARK: -
 
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = .Signal.backdrop

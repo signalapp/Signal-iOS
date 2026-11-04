@@ -31,7 +31,7 @@ public struct SpoilerMetalConfiguration {
             Logger.warn("Unable to instantiate metal command queue.")
             return nil
         }
-        guard let library = device.makeDefaultLibrary() else {
+        guard let library = try? device.makeDefaultLibrary(bundle: Bundle(for: SpoilerParticleView.self)) else {
             Logger.warn("Unable to instantiate metal library.")
             return nil
         }
