@@ -297,13 +297,6 @@ extension Registration {
         case timeout
         case genericError(Error)
     }
-
-    public enum SyncPushTokensResult {
-        case success
-        case pushUnsupported(description: String)
-        case networkError
-        case genericError(Error)
-    }
 }
 
 public protocol _RegistrationCoordinator_PushRegistrationManagerShim {
