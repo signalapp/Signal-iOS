@@ -215,7 +215,7 @@ public class TSConstantsProduction: TSConstantsProtocol {
         MrEnclave("ced8217b26228e4b210c985786999d095c4958a94faf37b14acaf25c4cbb02a4"),
     ]
 
-    public let activeSvr2EnclaveCount: Int = 2
+    public let activeSvr2EnclaveCount: Int = 1
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group"
 
