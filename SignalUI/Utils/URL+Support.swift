@@ -19,6 +19,7 @@ extension URL {
         public static let proxies: URL = .supportArticle("360056052052")
         public static let requestingAccountData: URL = .supportArticle("5538911756954")
         public static let safetyNumbers: URL = .supportArticle("360007060632")
+        public static let screenshotBlocking: URL = .supportArticle("11338514641306")
         public static let keyTransparency: URL = .supportArticle("10223569377562")
         public static let troubleshootingMultipleDevices: URL = .supportArticle("360007320451")
         public static let unsupportedOS: URL = .supportArticle("5109141421850")

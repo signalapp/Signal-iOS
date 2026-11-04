@@ -234,10 +234,14 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             let currentPreference = db.read { screenshotBlockingManager.getPreference(tx: $0) }
 
             let screenshotBlockingSection = OWSTableSection()
-            screenshotBlockingSection.footerTitle = OWSLocalizedString(
-                "SCREENSHOT_BLOCKING_SETTINGS_SECTION_FOOTER",
-                comment: "Footer for the screenshot blocking section of the privacy settings.",
-            )
+            screenshotBlockingSection.footerAttributedTitle = NSAttributedString.composed(of: [
+                OWSLocalizedString(
+                    "SCREENSHOT_BLOCKING_SETTINGS_SECTION_FOOTER",
+                    comment: "Footer for the screenshot blocking section of the privacy settings.",
+                ),
+                " ",
+                CommonStrings.learnMore.styled(with: .link(URL.Support.screenshotBlocking)),
+            ]).styled(with: Self.defaultFooterTextStyle)
             screenshotBlockingSection.add(.menuPicker(
                 withText: OWSLocalizedString(
                     "SCREENSHOT_BLOCKING_SETTINGS_ITEM_TITLE",
