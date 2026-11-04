@@ -92,6 +92,7 @@ public class SignalApp {
         }
     }
 
+    @MainActor
     func showRegistration(
         loader: RegistrationCoordinatorLoader,
         desiredMode: RegistrationMode,

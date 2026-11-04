@@ -150,6 +150,7 @@ class ProvisioningController: NSObject {
         viewController.navigationController?.pushViewController(view, animated: true)
     }
 
+    @MainActor
     func switchToPrimaryRegistration(viewController: UIViewController) {
         AssertIsOnMainThread()
 

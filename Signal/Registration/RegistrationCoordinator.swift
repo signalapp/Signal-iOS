@@ -7,6 +7,7 @@ public import SignalServiceKit
 
 /// Manages the step-to-step state of primary device registration,
 /// including re-registration and change number.
+@MainActor
 public protocol RegistrationCoordinator {
 
     /// Prepare to switch to secondary device linking, if allowed.
@@ -34,15 +35,12 @@ public protocol RegistrationCoordinator {
     /// The idea is that view controllers should be (mostly) stateless, and rely on
     /// the coordinator to update its state when actions are taken, then get the next
     /// step to know what view to push next.
-    @MainActor
     func nextStep() async -> RegistrationStep
 
     /// Continue past the splash screen (marking it as shown).
-    @MainActor
     func continueFromSplash()
 
     /// Mark if the user has their old device available to source registration information from.
-    @MainActor
     func setHasOldDevice(_ hasOldDevice: Bool)
 
     /// Show the system permissions prompts, proceeding to the next step when done.
@@ -51,19 +49,15 @@ public protocol RegistrationCoordinator {
     /// but which attached metadata giving more info on the rejection.
     func requestPermissions() -> Guarantee<RegistrationStep>
 
-    @MainActor
     func registerWithoutNumber()
 
-    @MainActor
     func exitSignalLogin()
 
-    @MainActor
     func beginSignalLogin(useExisting: Bool)
 
     /// Submit an e164 to confirm for change number, returning the next step to take.
     /// If the e164 is rejected for any reason, the next step will be the same current step
     /// but with attached metadata giving more info on the rejection.
-    @MainActor
     func submitProspectiveChangeNumberE164(_ e164: E164)
 
     /// Submit an e164 to use, returning the next step to take.
@@ -73,26 +67,22 @@ public protocol RegistrationCoordinator {
     /// An e164 may already be known (e.g. re-registration); this call cements that
     /// e164. Until this is called, the e164 will not actually be used for registration.
     /// This gives the user a chance to change it before any automatic steps are taken.
-    @MainActor
     func submitE164(_ e164: E164)
 
     /// Wipes any previously submitted E164 so the user can enter a new one.
     ///
     /// May also blow away in progress registration steps and require redoing them;
     /// a new number is essentially a new registration.
-    @MainActor
     func requestChangeE164()
 
     /// Request an SMS code be sent, returning the next step to take.
     /// If requesting a code is disallowed for any reason, the next step will be the same current
     /// step but with attached metadata giving more info on the reason.
-    @MainActor
     func requestSMSCode()
 
     /// Request an voice code be sent, returning the next step to take.
     /// If requesting a code is disallowed for any reason, the next step will be the same current
     /// step but with attached metadata giving more info on the reason.
-    @MainActor
     func requestVoiceCode()
 
     /// Submit a verification code, returning the next step to take.
@@ -107,12 +97,10 @@ public protocol RegistrationCoordinator {
 
     /// Submit a PIN code, but require confirmation in a subsequent step to proceed.
     /// That step will be provided the passed in blob, uninspected by this class.
-    @MainActor
     func setPINCodeForConfirmation(_ blob: RegistrationPinConfirmationBlob)
 
     /// Clear out an unconfirmed PIN code submitted via `setPINCodeForConfirmation`.
     /// Typically, will return to the initial PIN code step.
-    @MainActor
     func resetUnconfirmedPINCode()
 
     /// Set the PIN code, whether that be for the first time, to fetch from KBS, or
@@ -124,40 +112,33 @@ public protocol RegistrationCoordinator {
     /// Skip entering the PIN code when registering for an existing account.
     /// This is only possible if reglock is disabled, and if done will wipe any KBS backups.
     /// If not allowed, an error step may be returned.
-    @MainActor
     func skipPINCode()
 
     /// Skip entering the existing PIN code when registering for an existing account, and instead
     /// create a new PIN (losing any backed up information).
     /// This is only possible if reglock is disabled, and if done will wipe any KBS backups.
     /// If not allowed, an error step may be returned.
-    @MainActor
     func skipAndCreateNewPINCode()
 
     /// Set the target restore method to be used in the next step to restore the system.
-    @MainActor
     func updateRestoreMethod(method: RegistrationRestoreMethod)
 
     /// Set the user-provided AEP
-    @MainActor
     func updateAccountEntropyPool(_ accountEntropyPool: AccountEntropyPool)
 
     /// Called after the old device sends the registration message after scanning the QR code.
     /// - parameter message: The `RegistrationProvisioningMessage` sent from the old
     ///     device containing the necessary info to reregister
-    @MainActor
     func restoreFromRegistrationMessage(message: RegistrationProvisioningMessage)
 
     /// Set whether the user's PNI should be discoverable by phone number.
     /// If the update is rejected for any reason, the next step will be the same current
     /// step but with attached metadata giving more info on the rejection.
-    @MainActor
     func setPhoneNumberDiscoverability(_ phoneNumberDiscoverability: PhoneNumberDiscoverability)
 
     /// Set the user's profile information.
     /// If the update is rejected for any reason, the next step will be the same current
     /// step but with attached metadata giving more info on the rejection.
-    @MainActor
     func setProfileInfo(
         givenName: OWSUserProfile.NameComponent,
         familyName: OWSUserProfile.NameComponent?,
@@ -176,23 +157,19 @@ public protocol RegistrationCoordinator {
 
     /// Reset the chosen restore path - This is the path selected from the splash that decides
     /// between regular registration, quick restore and manual restore.
-    @MainActor
     func resetRestoreMode()
 
     /// Clear out the chosen restore method.  This will result in the user being sent back
     /// to the UI to choose a new restore method.
-    @MainActor
     func resetRestoreMethodChoice()
 
     /// Additional step to have the user confirm restoring from backup.
-    @MainActor
     func confirmRestoreFromBackup(
         progress: OWSSequentialProgressRootSink<BackupRestoreProgressPhase>,
         selectedBackup: RegistrationRestoreFromBackupConfirmationState.AvailableBackup,
     )
 
     /// Cancel from the backup entry screen and clear out any key that has been entered.
-    @MainActor
     func cancelRecoveryKeyEntry()
 
     var logger: PrefixedLogger { get }

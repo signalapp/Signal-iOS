@@ -204,10 +204,12 @@ public class RegistrationCoordinatorTest {
         return results
     }
 
+    @MainActor
     func setupTest(_ testCase: TestCase) -> RegistrationCoordinatorImpl {
         return setUpTest(forMode: testCase.mode)
     }
 
+    @MainActor
     private func setUpTest(forMode mode: RegistrationMode) -> RegistrationCoordinatorImpl {
         return db.write {
             return registrationCoordinatorLoader.coordinator(
