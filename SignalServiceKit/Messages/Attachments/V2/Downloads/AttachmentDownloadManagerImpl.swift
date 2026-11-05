@@ -1975,39 +1975,15 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             _ sticker: InstalledStickerRecord,
         ) async throws -> PendingAttachment {
             return try await decryptionQueue.runWithThrowingTask {
-                guard
-                    let stickerDataUrl = stickerManager.stickerDataUrl(
-                        forInstalledSticker: sticker,
-                        verifyExists: true,
-                    )
-                else {
-                    throw OWSAssertionError("Missing sticker")
-                }
-
                 let stickerType = StickerType.stickerType(forContentType: sticker.contentType)
-                if let plaintextLength = sticker.plaintextLength, let localKey = sticker.localKey {
-                    return try await attachmentValidator.validateDownloadedContents(
-                        ofEncryptedFileAt: stickerDataUrl,
-                        attachmentKey: AttachmentKey(combinedKey: localKey),
-                        plaintextLength: plaintextLength,
-                        integrityCheck: nil,
-                        mimeType: stickerType.mimeType,
-                        renderingFlag: .default,
-                        sourceFilename: nil,
-                    )
+                let metadata = stickerManager.installedStickerMetadata(installedSticker: sticker)
+                guard let stickerData = try metadata?.readStickerData() else {
+                    throw OWSAssertionError("invalid sticker data")
                 }
 
-                let mimeType: MimeType
-                let imageMetadata = try? DataImageSource.forPath(stickerDataUrl.path).imageMetadata()
-                if let imageMetadata {
-                    mimeType = imageMetadata.imageFormat.mimeType
-                } else {
-                    mimeType = MimeType.imageWebp
-                }
-
-                return try await attachmentValidator.validateDataSourceContents(
-                    DataSourcePath(fileUrl: stickerDataUrl, ownership: .borrowed),
-                    mimeType: mimeType.rawValue,
+                return try await attachmentValidator.validateDataContents(
+                    stickerData,
+                    mimeType: stickerType.mimeType,
                     renderingFlag: .borderless,
                     sourceFilename: nil,
                 )
