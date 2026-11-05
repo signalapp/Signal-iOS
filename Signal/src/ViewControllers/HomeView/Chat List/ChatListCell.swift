@@ -182,8 +182,9 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         if state.isSelected || state.isHighlighted {
             configuration.backgroundColor = OWSTableViewController2.cellSelectedBackgroundColor
             if useSidebarAppearance {
-                let leading = safeAreaInsets.leading + (directionalLayoutMargins.leading - safeAreaInsets.leading) / 2
-                let trailing = safeAreaInsets.trailing + (directionalLayoutMargins.trailing - safeAreaInsets.trailing) / 2
+                let contentMargin: CGFloat = 12
+                let leading = directionalLayoutMargins.leading - contentMargin
+                let trailing = directionalLayoutMargins.trailing - contentMargin
                 configuration.backgroundInsets = .init(
                     top: 0,
                     leading: leading,
