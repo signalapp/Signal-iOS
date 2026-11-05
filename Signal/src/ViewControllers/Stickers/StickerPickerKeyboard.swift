@@ -12,7 +12,7 @@ protocol StickerKeyboardDelegate: AnyObject {
 
     func stickerKeyboardDidRequestPresentManageStickersView(_ stickerKeyboard: StickerKeyboard)
 
-    func stickerKeyboard(_: StickerKeyboard, didSelect stickerInfo: StickerInfo)
+    func stickerKeyboard(_: StickerKeyboard, didSelect stickerMetadata: any StickerMetadata)
 }
 
 class StickerKeyboard: CustomKeyboard, StickerPickerViewDelegate {
@@ -72,7 +72,7 @@ class StickerKeyboard: CustomKeyboard, StickerPickerViewDelegate {
     }
 
     func didSelectSticker(_ stickerMetadata: any StickerMetadata) {
-        delegate?.stickerKeyboard(self, didSelect: stickerMetadata.stickerInfo)
+        delegate?.stickerKeyboard(self, didSelect: stickerMetadata)
     }
 
     func select(page: StickerPickerPage, bouncingSticker: StickerInfo? = nil) {

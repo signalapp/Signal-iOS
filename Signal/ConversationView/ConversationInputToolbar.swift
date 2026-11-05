@@ -11,7 +11,7 @@ protocol ConversationInputToolbarDelegate: AnyObject {
 
     func sendButtonPressed()
 
-    func sendSticker(_ sticker: StickerInfo)
+    func sendSticker(_ sticker: any StickerMetadata)
 
     func presentManageStickersView()
 
@@ -2210,7 +2210,7 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
 
     private var currentSuggestedStickerEmoji: Character?
 
-    private var currentSuggestedStickers: [StickerInfo] = []
+    private var currentSuggestedStickers: [any StickerMetadata] = []
 
     private var isStickerPanelHidden = true
 
@@ -2346,15 +2346,17 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         guard currentSuggestedStickerEmoji != suggestedStickerEmoji else { return }
         currentSuggestedStickerEmoji = suggestedStickerEmoji
 
-        let suggestedStickers: [StickerInfo]
+        let suggestedStickers: [any StickerMetadata]
         if let suggestedStickerEmoji {
             suggestedStickers = db.read { tx in
-                return stickerManager.suggestedStickers(for: suggestedStickerEmoji, tx: tx).map { $0.info }
+                return stickerManager.suggestedStickers(for: suggestedStickerEmoji, tx: tx).compactMap {
+                    stickerManager.installedStickerMetadata(installedSticker: $0)
+                }
             }
         } else {
             suggestedStickers = []
         }
-        guard currentSuggestedStickers != suggestedStickers else { return }
+        guard currentSuggestedStickers.map(\.stickerInfo) != suggestedStickers.map(\.stickerInfo) else { return }
 
         currentSuggestedStickers = suggestedStickers
 
@@ -2376,11 +2378,11 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
 
         loadStickerPanelIfNecessary()
 
-        stickersListView.items = currentSuggestedStickers.map { stickerInfo in
+        stickersListView.items = currentSuggestedStickers.map { stickerMetadata in
             StickerHorizontalListViewItemSticker(
-                stickerInfo: stickerInfo,
+                stickerInfo: stickerMetadata.stickerInfo,
                 didSelectBlock: { [weak self] in
-                    self?.didSelectSuggestedSticker(stickerInfo)
+                    self?.didSelectSuggestedSticker(stickerMetadata)
                 },
                 cache: suggestedStickerViewCache,
             )
@@ -2492,11 +2494,11 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         animator.startAnimation()
     }
 
-    private func didSelectSuggestedSticker(_ stickerInfo: StickerInfo) {
+    private func didSelectSuggestedSticker(_ stickerMetadata: any StickerMetadata) {
         AssertIsOnMainThread()
 
         clearTextMessage(animated: true)
-        inputToolbarDelegate?.sendSticker(stickerInfo)
+        inputToolbarDelegate?.sendSticker(stickerMetadata)
     }
 
     // MARK: Voice Memo
@@ -3373,9 +3375,9 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
 
     // MARK: - StickerKeyboardDelegate
 
-    func stickerKeyboard(_: StickerKeyboard, didSelect stickerInfo: StickerInfo) {
+    func stickerKeyboard(_: StickerKeyboard, didSelect stickerMetadata: any StickerMetadata) {
         AssertIsOnMainThread()
-        inputToolbarDelegate?.sendSticker(stickerInfo)
+        inputToolbarDelegate?.sendSticker(stickerMetadata)
     }
 
     func stickerKeyboardDidRequestPresentManageStickersView(_ stickerKeyboard: StickerKeyboard) {

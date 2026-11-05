@@ -39,26 +39,12 @@ final class SendStickerFlow: ConversationPickerDelegate {
             }
         }
 
-        let stickerInfo = stickerMetadata.stickerInfo
-        let installed = db.read { tx in
-            stickerManager.isStickerInstalled(stickerInfo: stickerInfo, transaction: tx)
-        }
-
         for thread in threads {
-            if installed {
-                ThreadUtil.enqueueMessage(withInstalledSticker: stickerInfo, quotedReplyDraft: nil, thread: thread)
-            } else {
-                do {
-                    let stickerData = try stickerMetadata.readStickerData()
-                    ThreadUtil.enqueueMessage(
-                        withUninstalledSticker: stickerMetadata,
-                        stickerData: stickerData,
-                        thread: thread,
-                    )
-                } catch {
-                    owsFailDebug("Failed to send sticker: \(error)")
-                }
-            }
+            ThreadUtil.enqueueMessage(
+                withSticker: stickerMetadata,
+                quotedReplyDraft: nil,
+                thread: thread,
+            )
         }
     }
 
