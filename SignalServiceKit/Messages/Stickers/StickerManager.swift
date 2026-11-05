@@ -621,8 +621,12 @@ public class StickerManager {
     }
 
     public func isStickerInstalled(stickerInfo: StickerInfo, transaction: DBReadTransaction) -> Bool {
-        let uniqueId = StickerManager.uniqueId(for: stickerInfo)
-        return InstalledStickerRecord.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil
+        let installedSticker = fetchInstalledSticker(stickerInfo: stickerInfo, transaction: transaction)
+        guard let installedSticker else {
+            return false
+        }
+
+        return stickerDataUrl(forInstalledSticker: installedSticker, verifyExists: true) != nil
     }
 
     typealias CleanupCompletion = () -> Void
@@ -707,7 +711,7 @@ public class StickerManager {
     ) async -> Bool {
         return await installStickerOperationQueue.runWithoutTaskCancellationHandler(forKey: stickerInfo.asKey()) {
             let alreadyInstalled = db.read { tx in
-                fetchInstalledSticker(stickerInfo: stickerInfo, transaction: tx) != nil
+                isStickerInstalled(stickerInfo: stickerInfo, transaction: tx)
             }
 
             guard !alreadyInstalled else {
@@ -736,7 +740,7 @@ public class StickerManager {
             )
 
             return await db.awaitableWrite { transaction -> Bool in
-                installedSticker.anyInsert(transaction: transaction)
+                installedSticker.anyUpsert(transaction: transaction)
 
                 // For every attachment referencing this sticker, we can now enqueue a "download"
                 // that's really just a local file clone, from the newly installed sticker.
