@@ -9535,8 +9535,7 @@
 /* Explanation for the button that resets all notification settings. */
 "SETTINGS_NOTIFICATIONS_RESET_FOOTER" = "Reset notification settings to default, including custom settings for your chats.";
 
-/* Label for the switch controlling whether reminders about unread messages are shown.
-   Label for the switch controlling whether reminders about unread messages in muted chats are shown. */
+/* Label for the switch controlling whether reminders about unread messages in muted chats are shown */
 "SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS" = "Unread Reminders";
 
 /* Explanation for the switch controlling whether reminders about unread messages are shown in this chat while it is muted. */

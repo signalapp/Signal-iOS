@@ -139,10 +139,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
             comment: "Explanation for the switch controlling whether reminders about unread messages in muted chats are shown.",
         )
         unreadRemindersSection.add(.switch(
-            withText: OWSLocalizedString(
-                "SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS",
-                comment: "Label for the switch controlling whether reminders about unread messages in muted chats are shown.",
-            ),
+            withText: NotificationPreferencesManager.unreadRemindersTitle,
             isOn: {
                 db.read { tx in
                     notificationPreferencesManager.globalShowUnreadReminders(tx: tx)

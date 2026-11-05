@@ -227,10 +227,7 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
             comment: "Explanation for the switch controlling whether reminders about unread messages are shown in this chat while it is muted.",
         )
         section.add(.switch(
-            withText: OWSLocalizedString(
-                "SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS",
-                comment: "Label for the switch controlling whether reminders about unread messages are shown.",
-            ),
+            withText: NotificationPreferencesManager.unreadRemindersTitle,
             image: UIImage(resource: .chatBadge).withTintColor(.Signal.label, renderingMode: .alwaysOriginal),
             isOn: { [db, notificationPreferencesManager] in
                 db.read { tx in
