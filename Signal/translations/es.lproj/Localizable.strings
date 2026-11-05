@@ -128,7 +128,7 @@
 "AEP_MANAGER_LOCAL_BACKUPS_DISABLE_REQUIRED" = "Antes de continuar, debes desactivar las copias de seguridad locales.";
 
 /* Button in an action sheet that takes the user to On-Device Backup settings. */
-"AEP_MANAGER_ON_DEVICE_BACKUP_SETTINGS_BUTTON" = "Ajustes de las copias de seguridad locales";
+"AEP_MANAGER_ON_DEVICE_BACKUP_SETTINGS_BUTTON" = "Ajustes de copias de seguridad locales";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Entendido";
@@ -4712,7 +4712,7 @@
 "GROUP_NAME_VIEW_TITLE" = "Nombre del grupo";
 
 /* Bottom bar label for group chats the local user is not a member of */
-"GROUP_NOT_MEMBER_BOTTOM_PANEL_LABEL" = "You can’t send messages to this group because you’re not a member.";
+"GROUP_NOT_MEMBER_BOTTOM_PANEL_LABEL" = "No puedes enviar mensajes porque no formas parte de este grupo.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%1$@ ha aceptado una invitación al grupo.";
@@ -4817,7 +4817,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Solicitudes e invitaciones";
 
 /* Label for a banner in group settings shown when the local user is not a member of the group */
-"GROUP_SETTINGS_NOT_MEMBER_BANNER_LABEL" = "You’re not a member of this group";
+"GROUP_SETTINGS_NOT_MEMBER_BANNER_LABEL" = "No formas parte de este grupo";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
 "GROUP_STORY_NAME_FORMAT" = "%1$@ para \"%2$@\"";
@@ -5015,13 +5015,13 @@
 "HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "Esta persona está guardada en los contactos de tu teléfono. Elimínala de los contactos de tu teléfono y vuelve a intentarlo.";
 
 /* Displayed on Calls tab when the screen is large (eg iPad) and is split into two columns and nothing is selected. */
-"HOME_CALLS_TAB_PLACEHOLDER" = "Tap %1$@ to start a new voice or video call.";
+"HOME_CALLS_TAB_PLACEHOLDER" = "Toca %1$@ para iniciar una nueva llamada o videollamada.";
 
 /* Displayed on Chats tab when the screen is large (eg iPad) and is split into two columns and no chat is selected. */
-"HOME_CHATS_TAB_PLACEHOLDER" = "Select a chat or tap %1$@ to start messaging.";
+"HOME_CHATS_TAB_PLACEHOLDER" = "Selecciona un chat o toca %1$@ para empezar a chatear.";
 
 /* Displayed on Stories tab when screen is large (eg iPad) and is split into two columns. */
-"HOME_STORIES_TAB_PLACEHOLDER" = "Tap to view a story.";
+"HOME_STORIES_TAB_PLACEHOLDER" = "Toca para ver una historia.";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Chats archivados";
@@ -5159,10 +5159,10 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Los chats archivados se mostrarán en la lista principal cuando recibas un nuevo mensaje.";
 
 /* Title of action allowing user to connect to an existing device */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_EXITING_OLD_DEVICE_ACTION" = "Conectar con dispositivo en uso";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_EXITING_OLD_DEVICE_ACTION" = "Conectar con dispositivo registrado";
 
 /* Body of prompt asking user to select device transfer target. */
-"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_BODY" = "Elige un dispositivo nuevo o uno que ya tengas en uso para conectarlo. Una vez conectado, empezará la transferencia de tu cuenta.";
+"INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_BODY" = "Elige un dispositivo nuevo o uno que ya tengas registrado para conectarlo. Una vez conectado, empezará la transferencia de tu cuenta.";
 
 /* Title of action allowing user to pair a new device transfer peer. */
 "INCOMING_DEVICE_TRANSFER_CHOOSE_OLD_DEVICE_PAIR_NEW_ACTION" = "Conectar nuevo dispositivo";
@@ -5486,7 +5486,7 @@
 "LINKED_DEVICE_INFO_SHEET_BULLET_3" = "Algunos ajustes solo se pueden configurar en tu dispositivo principal, como los ajustes de tu cuenta y las copias de seguridad.";
 
 /* Lead paragraph for a sheet explaining linked devices. The text within the <bold></bold> tags is styled bold. */
-"LINKED_DEVICE_INFO_SHEET_HEADER" = "Los <bold>dispositivos vinculados</bold> te permiten acceder de forma segura a tu cuenta y mensajes de Signal desde cualquiera de tus dispositivos adicionales.";
+"LINKED_DEVICE_INFO_SHEET_HEADER" = "Con los <bold>dispositivos vinculados</bold> puedes acceder a tu cuenta de Signal y chatear de forma segura desde cualquiera de tus dispositivos adicionales.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
 "LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Ya no es posible gestionar los contactos del teléfono desde un dispositivo vinculado. Cualquier cambio que hagas en tu lista de contactos de Signal usando tu dispositivo principal se sincronizará en este dispositivo vinculado.";
@@ -5549,10 +5549,10 @@
 "LINKED_DEVICES_TITLE" = "Dispositivos vinculados";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Couldn’t Link Device";
+"LINKING_DEVICE_FAILED_TITLE" = "No se ha podido vincular el dispositivo";
 
 /* Shown when trying to link a device to an account but that device is out of date and must first update its version of Signal. */
-"LINKING_DEVICE_OUT_OF_DATE" = "Your other device is running an old version of Signal. You need to update Signal on that device before you can link it.";
+"LINKING_DEVICE_OUT_OF_DATE" = "En tu otro dispositivo tienes una versión anterior de Signal. Debes actualizar Signal para poder vincularlo.";
 
 /* Progress label when the message loading has nearly completed during the device linking process */
 "LINKING_SYNCING_FINALIZING" = "Finalizando la transferencia de mensajes…";
@@ -6758,25 +6758,25 @@
 "ONBOARDING_SPLASH_TITLE" = "Lleva la privacidad contigo.\nSé tú en cada mensaje.";
 
 /* Subtitle for action to verify with an authenticator as a 2fa method. */
-"ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_BODY" = "Enter a one-time code generated by your authenticator app.";
+"ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_BODY" = "Introduce el código de un solo uso de tu aplicación de autenticación.";
 
 /* Title for action to verify with an authenticator as a 2fa method. */
-"ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_TITLE" = "Authenticator App";
+"ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_TITLE" = "Aplicación de autenticación";
 
 /* Description for the 2fa screens shown during registration. */
-"ONBOARDING_TWO_FACTOR_AUTH_METHOD_BODY" = "Choose a method below to verify your account.";
+"ONBOARDING_TWO_FACTOR_AUTH_METHOD_BODY" = "Elige uno de los siguientes métodos para verificar tu cuenta.";
 
 /* Subtitle for action to verify with a passkey as a 2fa method. */
-"ONBOARDING_TWO_FACTOR_AUTH_METHOD_PASSKEY_BODY" = "Tap to use your saved biometric or FIDO2 passkey";
+"ONBOARDING_TWO_FACTOR_AUTH_METHOD_PASSKEY_BODY" = "Toca para usar la clave de acceso FIDO2 o los datos biométricos guardados";
 
 /* Title for action to verify with a passkey as a 2fa method. */
-"ONBOARDING_TWO_FACTOR_AUTH_METHOD_PASSKEY_TITLE" = "Passkey";
+"ONBOARDING_TWO_FACTOR_AUTH_METHOD_PASSKEY_TITLE" = "Clave de acceso";
 
 /* Description for the screen asking the user to verify their account with a passkey during registration. */
-"ONBOARDING_TWO_FACTOR_AUTH_PASSKEY_BODY" = "To continue, verify your account with your passkey.";
+"ONBOARDING_TWO_FACTOR_AUTH_PASSKEY_BODY" = "Para continuar, verifica tu cuenta con tu clave de acceso.";
 
 /* Title for the 2fa screens shown during registration. */
-"ONBOARDING_TWO_FACTOR_AUTH_TITLE" = "Two-Factor Authentication";
+"ONBOARDING_TWO_FACTOR_AUTH_TITLE" = "Autenticación de dos factores";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "¿Número incorrecto?";
@@ -6863,10 +6863,10 @@
 "OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "Registro completado";
 
 /* Body of prompt notifying connection failure during restore. */
-"OUTGOING_DEVICE_REGISTRATION_FAILED_CONNECTION_BODY" = "Connection to device failed or timed out. Please try again.";
+"OUTGOING_DEVICE_REGISTRATION_FAILED_CONNECTION_BODY" = "No se ha podido establecer la conexión con el dispositivo o se ha superado el tiempo de espera. Inténtalo de nuevo.";
 
 /* Title of prompt notifying connection failure during restore. */
-"OUTGOING_DEVICE_REGISTRATION_FAILED_CONNECTION_TITLE" = "Failed to connect";
+"OUTGOING_DEVICE_REGISTRATION_FAILED_CONNECTION_TITLE" = "Error de conexión";
 
 /* Body of prompt notifying restore failed. */
 "OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY" = "El mensaje restaurado de otro dispositivo contenía datos no válidos o caducados. Inténtalo de nuevo.";
@@ -6926,7 +6926,7 @@
 "OUTGOING_DEVICE_TRANSFER_COMPLETE_TITLE" = "Transferencia completada";
 
 /* Body of prompt confirming the start of device transfer. */
-"OUTGOING_DEVICE_TRANSFER_CONFIRM_BODY" = "Tu cuenta se transferirá a un nuevo dispositivo. En este dispositivo podrás ver tus grupos y contactos, acceder a tus chats y enviar mensajes desde tu perfil.";
+"OUTGOING_DEVICE_TRANSFER_CONFIRM_BODY" = "Tu cuenta se transferirá a un nuevo dispositivo. Allí podrás ver tus grupos y contactos, acceder a tus chats y enviar mensajes desde tu perfil.";
 
 /* Title of prompt confirming the start of device transfer. */
 "OUTGOING_DEVICE_TRANSFER_CONFIRM_TITLE" = "¿Transferir cuenta a \"%1$@\"?";
@@ -10329,7 +10329,7 @@
 "STICKER_PACK_CONFIRM_REMOVE_TITLE" = "¿Eliminar paquete de stickers?";
 
 /* Label for a button to copy the link of a sticker pack */
-"STICKER_PACK_LINK" = "Copiar enlace";
+"STICKER_PACK_LINK" = "Enlace";
 
 /* Label for a button to uninstall a sticker pack */
 "STICKER_PACK_REMOVE" = "Eliminar";
@@ -10359,37 +10359,37 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Stickers de artistas de Signal";
 
 /* Subtitle for the section of known stickers in the manage stickers view */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_SUBTITLE" = "When you receive a sticker from someone, the sticker pack will appear here.";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_SUBTITLE" = "Cuando recibas un sticker de alguien, el paquete de stickers aparecerá aquí.";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Shared With You";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Compartidos contigo";
 
 /* Label indicating that one or more known sticker packs failed to load. */
 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "No se han podido cargar algunos paquetes de stickers";
 
 /* An option in the sticker management screen allowing the user to select the filter option 'all'; i.e., 'unfiltered'. */
-"STICKERS_MANAGE_VIEW_FILTER_TAB_ALL" = "All";
+"STICKERS_MANAGE_VIEW_FILTER_TAB_ALL" = "Todos";
 
 /* An option in the sticker management screen allowing the user to select the filter option 'my stickers'; i.e., their installed packs. */
-"STICKERS_MANAGE_VIEW_FILTER_TAB_MY_STICKERS" = "My Stickers";
+"STICKERS_MANAGE_VIEW_FILTER_TAB_MY_STICKERS" = "Mis stickers";
 
 /* Label indicating that one or more known sticker packs is loading. */
 "STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Cargando…";
 
 /* Label indicating that the user has no installed sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No sticker packs.\nAdd stickers to send to your friends.";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No tienes paquetes de stickers.\nAñade stickers para enviar a tus amigos.";
 
 /* Button to redirect back to the manage sticker 'all' section */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS_BUTTON" = "Add Stickers";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS_BUTTON" = "Añadir stickers";
 
 /* Title for the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_TITLE" = "Stickers";
 
 /* Default author for sticker packs. */
-"STICKERS_PACK_DEFAULT_AUTHOR" = "Unknown author";
+"STICKERS_PACK_DEFAULT_AUTHOR" = "Autor desconocido";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "Unknown title";
+"STICKERS_PACK_DEFAULT_TITLE" = "Título desconocido";
 
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Paquete de stickers";

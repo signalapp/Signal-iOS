@@ -4172,7 +4172,7 @@
 "GROUP_ADMIN_ONLY_WARNING" = "관리자만 이 설정을 변경할 수 있습니다.";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "음성 또는 영상 통화를 더 이상 수신하지 않으며 해당 사용자도 나의 통화를 수신할 수 없습니다.";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "상대방의 음성과 영상을 수신할 수 없으며, 내 음성과 영상도 상대방에게 전송되지 않습니다.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%1$@ 님을 차단함";
@@ -4256,13 +4256,13 @@
 "GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET" = "통화에 참여하기 전에는 휴대폰 연락처, 그룹에 함께 속한 사용자, 1:1 대화를 한 적 있는 사용자의 이름만 표시됩니다. 통화에 참여하면 모든 이름과 사진이 표시됩니다.";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%1$@ 님의 음성 및 영상 통화를 수신할 수 없습니다.";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%1$@ 님의 음성과 영상을 수신할 수 없습니다.";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "상대방이 나의 안전 번호 변경을 확인하지 않았거나, 기기 오류 또는 차단 설정으로 인해 발생한 현상일 수 있습니다.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "%1$@ 님의 음성 및 영상 통화를 수신할 수 없습니다.";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "%1$@ 님의 음성과 영상을 수신할 수 없습니다.";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "참가한 사람이 없어요";
@@ -4712,7 +4712,7 @@
 "GROUP_NAME_VIEW_TITLE" = "그룹 이름";
 
 /* Bottom bar label for group chats the local user is not a member of */
-"GROUP_NOT_MEMBER_BOTTOM_PANEL_LABEL" = "You can’t send messages to this group because you’re not a member.";
+"GROUP_NOT_MEMBER_BOTTOM_PANEL_LABEL" = "이 그룹의 멤버가 아니어서 메시지를 보낼 수 없어요.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%1$@ 님이 그룹 초대를 수락했습니다.";
@@ -4817,7 +4817,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "요청 & 초대";
 
 /* Label for a banner in group settings shown when the local user is not a member of the group */
-"GROUP_SETTINGS_NOT_MEMBER_BANNER_LABEL" = "You’re not a member of this group";
+"GROUP_SETTINGS_NOT_MEMBER_BANNER_LABEL" = "그룹의 멤버가 아닙니다.";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
 "GROUP_STORY_NAME_FORMAT" = "보낸 사람: %1$@, 받는 그룹: %2$@";
@@ -4835,7 +4835,7 @@
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "'%1$@' 스토리를 제거할까요?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "'%1$@' 그룹 멤버는 이 스토리를 보고 답장할 수 있습니다. 멤버 목록은 해당 그룹 설정에서 수정할 수 있습니다.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "'%1$@' 그룹 멤버는 이 스토리를 보고 답장할 수 있습니다. 이 대화에 대한 멤버 목록은 그룹 설정에서 수정할 수 있습니다.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "이 스토리를 볼 수 있는 사람";
@@ -5015,13 +5015,13 @@
 "HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "휴대폰 연락처에 저장된 사용자입니다.휴대폰 연락처에서 삭제한 다음 다시 진행해 주세요.";
 
 /* Displayed on Calls tab when the screen is large (eg iPad) and is split into two columns and nothing is selected. */
-"HOME_CALLS_TAB_PLACEHOLDER" = "Tap %1$@ to start a new voice or video call.";
+"HOME_CALLS_TAB_PLACEHOLDER" = "%1$@ 아이콘을 탭하여 새 음성 또는 영상 통화를 시작하세요.";
 
 /* Displayed on Chats tab when the screen is large (eg iPad) and is split into two columns and no chat is selected. */
-"HOME_CHATS_TAB_PLACEHOLDER" = "Select a chat or tap %1$@ to start messaging.";
+"HOME_CHATS_TAB_PLACEHOLDER" = "채팅을 선택하거나 %1$@ 아이콘을 탭하여 메시지를 보내세요.";
 
 /* Displayed on Stories tab when screen is large (eg iPad) and is split into two columns. */
-"HOME_STORIES_TAB_PLACEHOLDER" = "Tap to view a story.";
+"HOME_STORIES_TAB_PLACEHOLDER" = "스토리를 보려면 탭하세요.";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "보관한 대화";
@@ -5156,7 +5156,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "알림을 끈 상태로 보관한 대화는 새 메시지가 도착해도 보관 상태로 유지됩니다.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "새 메시지가 도착하면 보관한 대화가 받은 편지함으로 이동합니다.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "새 메시지가 도착하면 보관한 대화가 받은 메시지함으로 이동합니다.";
 
 /* Title of action allowing user to connect to an existing device */
 "INCOMING_DEVICE_TRANSFER_CHOOSE_EXITING_OLD_DEVICE_ACTION" = "기존 기기와 연결하기";
@@ -5549,10 +5549,10 @@
 "LINKED_DEVICES_TITLE" = "연동 기기";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Couldn’t Link Device";
+"LINKING_DEVICE_FAILED_TITLE" = "기기를 연동할 수 없음";
 
 /* Shown when trying to link a device to an account but that device is out of date and must first update its version of Signal. */
-"LINKING_DEVICE_OUT_OF_DATE" = "Your other device is running an old version of Signal. You need to update Signal on that device before you can link it.";
+"LINKING_DEVICE_OUT_OF_DATE" = "연동하려는 기기에서 이전 버전의 Signal을 사용하고 있습니다. 기기를 연동하려면 먼저 해당 기기의 Signal을 업데이트해야 합니다.";
 
 /* Progress label when the message loading has nearly completed during the device linking process */
 "LINKING_SYNCING_FINALIZING" = "메시지 이전 완료 중...";
@@ -5567,7 +5567,7 @@
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "다운로드 준비 중…";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "몇 분 정도 소요됩니다";
+"LINKING_SYNCING_TIMING_INFO" = "몇 분 정도 소요될 수 있습니다.";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Signal을 닫지 마세요.";
@@ -6758,25 +6758,25 @@
 "ONBOARDING_SPLASH_TITLE" = "내 개인정보는 내 손에서만.\n안전하게 메시지를 보내세요.";
 
 /* Subtitle for action to verify with an authenticator as a 2fa method. */
-"ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_BODY" = "Enter a one-time code generated by your authenticator app.";
+"ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_BODY" = "인증 앱에 생성된 일회용 코드 입력하기";
 
 /* Title for action to verify with an authenticator as a 2fa method. */
-"ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_TITLE" = "Authenticator App";
+"ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_TITLE" = "인증 앱";
 
 /* Description for the 2fa screens shown during registration. */
-"ONBOARDING_TWO_FACTOR_AUTH_METHOD_BODY" = "Choose a method below to verify your account.";
+"ONBOARDING_TWO_FACTOR_AUTH_METHOD_BODY" = "계정을 인증하려면 아래 방식을 선택하세요.";
 
 /* Subtitle for action to verify with a passkey as a 2fa method. */
-"ONBOARDING_TWO_FACTOR_AUTH_METHOD_PASSKEY_BODY" = "Tap to use your saved biometric or FIDO2 passkey";
+"ONBOARDING_TWO_FACTOR_AUTH_METHOD_PASSKEY_BODY" = "탭하여 저장된 생체 정보 또는 FIDO2 패스키 사용하기";
 
 /* Title for action to verify with a passkey as a 2fa method. */
-"ONBOARDING_TWO_FACTOR_AUTH_METHOD_PASSKEY_TITLE" = "Passkey";
+"ONBOARDING_TWO_FACTOR_AUTH_METHOD_PASSKEY_TITLE" = "패스키";
 
 /* Description for the screen asking the user to verify their account with a passkey during registration. */
-"ONBOARDING_TWO_FACTOR_AUTH_PASSKEY_BODY" = "To continue, verify your account with your passkey.";
+"ONBOARDING_TWO_FACTOR_AUTH_PASSKEY_BODY" = "계속 진행하려면 패스키로 계정을 인증하세요.";
 
 /* Title for the 2fa screens shown during registration. */
-"ONBOARDING_TWO_FACTOR_AUTH_TITLE" = "Two-Factor Authentication";
+"ONBOARDING_TWO_FACTOR_AUTH_TITLE" = "2단계 인증";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "번호가 잘못되었나요?";
@@ -6863,10 +6863,10 @@
 "OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "등록 완료";
 
 /* Body of prompt notifying connection failure during restore. */
-"OUTGOING_DEVICE_REGISTRATION_FAILED_CONNECTION_BODY" = "Connection to device failed or timed out. Please try again.";
+"OUTGOING_DEVICE_REGISTRATION_FAILED_CONNECTION_BODY" = "기기 연결에 실패했거나 요청 시간이 초과되었습니다. 다시 시도해 주세요.";
 
 /* Title of prompt notifying connection failure during restore. */
-"OUTGOING_DEVICE_REGISTRATION_FAILED_CONNECTION_TITLE" = "Failed to connect";
+"OUTGOING_DEVICE_REGISTRATION_FAILED_CONNECTION_TITLE" = "연결 실패함";
 
 /* Body of prompt notifying restore failed. */
 "OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY" = "다른 기기의 복원 메시지에 유효하지 않거나 만료된 데이터가 포함되어 있습니다.  다시 시도해 주세요.";
@@ -8774,7 +8774,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "인증에 실패했습니다.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "인증 실패 횟수가 너무 많습니다. 나중에 다시 시도해 주세요.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "인증 시도 횟수를 초과했습니다. 나중에 다시 시도해 주세요.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "화면 잠금을 사용하려면 iOS 설정에서 암호를 활성화해야 합니다.";
@@ -10359,37 +10359,37 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal 아티스트 시리즈";
 
 /* Subtitle for the section of known stickers in the manage stickers view */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_SUBTITLE" = "When you receive a sticker from someone, the sticker pack will appear here.";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_SUBTITLE" = "누군가로부터 스티커 팩을 받으면 스티커 팩이 여기에 표시됩니다.";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Shared With You";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "공유받은 스티커";
 
 /* Label indicating that one or more known sticker packs failed to load. */
 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "일부 스티커 팩 불러오기 실패";
 
 /* An option in the sticker management screen allowing the user to select the filter option 'all'; i.e., 'unfiltered'. */
-"STICKERS_MANAGE_VIEW_FILTER_TAB_ALL" = "All";
+"STICKERS_MANAGE_VIEW_FILTER_TAB_ALL" = "전체";
 
 /* An option in the sticker management screen allowing the user to select the filter option 'my stickers'; i.e., their installed packs. */
-"STICKERS_MANAGE_VIEW_FILTER_TAB_MY_STICKERS" = "My Stickers";
+"STICKERS_MANAGE_VIEW_FILTER_TAB_MY_STICKERS" = "내 스티커";
 
 /* Label indicating that one or more known sticker packs is loading. */
 "STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "불러오는 중…";
 
 /* Label indicating that the user has no installed sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No sticker packs.\nAdd stickers to send to your friends.";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "보관 중인 스티커 팩이 없습니다.\n스티커를 추가해 친구들에게 보내보세요.";
 
 /* Button to redirect back to the manage sticker 'all' section */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS_BUTTON" = "Add Stickers";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS_BUTTON" = "스티커 추가";
 
 /* Title for the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_TITLE" = "스티커";
 
 /* Default author for sticker packs. */
-"STICKERS_PACK_DEFAULT_AUTHOR" = "Unknown author";
+"STICKERS_PACK_DEFAULT_AUTHOR" = "알 수 없는 작가";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "Unknown title";
+"STICKERS_PACK_DEFAULT_TITLE" = "알 수 없는 제목";
 
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "스티커 팩";
@@ -10824,7 +10824,7 @@
 "THIS_MESSAGE_WAS_DELETED" = "삭제된 메시지입니다.";
 
 /* Label for a group you are not in which has four members, listing their names */
-"THREAD_DETAILS_FOUR_MEMBERS" = "%1$@, %2$@, %3$@ 및 %4$@";
+"THREAD_DETAILS_FOUR_MEMBERS" = "%1$@, %2$@, %3$@, %4$@";
 
 /* Label for a group with more than four members, listing the first three members' names and embedding THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld as a count of other members */
 "THREAD_DETAILS_MANY_MEMBERS" = "%1$@, %2$@, %3$@ 외 %4$@";
@@ -10839,7 +10839,7 @@
 "THREAD_DETAILS_ONE_MEMBER" = "%1$@";
 
 /* Label for a group you are in with one other member, listing their name and yourself */
-"THREAD_DETAILS_ONE_MEMBER_AND_YOURSELF" = "나와 %1$@";
+"THREAD_DETAILS_ONE_MEMBER_AND_YOURSELF" = "나, %1$@";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%1$@ 멤버";
@@ -10863,7 +10863,7 @@
 "THREAD_DETAILS_TWO_MEMBERS" = "%1$@, %2$@";
 
 /* Label for a group you are in which has two other members, listing their names and yourself */
-"THREAD_DETAILS_TWO_MEMBERS_AND_YOURSELF" = "나와 %1$@, %2$@";
+"THREAD_DETAILS_TWO_MEMBERS_AND_YOURSELF" = "나, %1$@, %2$@";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%1$@ 및 %2$@ 멤버";
@@ -10872,7 +10872,7 @@
 "THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "공통 그룹 없음";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
-"THREAD_MERGE_LEARN_MORE" = "%1$@ 님과 대화한 후 이 번호가 %2$@ 님의 번호임을 확인했습니다. 해당 사용자의 번호는 비공개 상태입니다.\n\n두 대화의 메시지 기록이 이곳으로 통합되었습니다.";
+"THREAD_MERGE_LEARN_MORE" = "%1$@ 님과 대화한 후 이 번호가 %2$@ 님의 번호임을 확인했습니다. 해당 사용자의 번호는 비공개 상태입니다.\n\n두 대화의 메시지 기록이 여기에 통합되었습니다.";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
 "THREAD_MERGE_NO_PHONE_NUMBER" = "%1$@ 님과 주고받은 메시지 기록과 해당 사용자가 속한 다른 대화의 메시지 기록을 통합했습니다.";
@@ -11154,7 +11154,7 @@
 "USERNAME_LINK_SHEET_BUTTON" = "링크";
 
 /* Subtitle for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_SUBTITLE" = "나와 채팅을 시작할 수 있도록 고유 QR 코드 또는 링크를 공유하세요.";
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "내 QR 코드나 링크를 공유해 다른 사람과 쉽게 대화를 시작해 보세요.";
 
 /* Title for a tooltip describing ways to share your username. */
 "USERNAME_LINK_TOOLTIP_TITLE" = "사용자 이름 공유하기";
@@ -11211,7 +11211,7 @@
 "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "사용할 수 없는 사용자 이름입니다.";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "너무 많이 시도했습니다. 나중에 다시 시도해 주세요.";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "시도 횟수를 초과했습니다. 나중에 다시 시도해 주세요.";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "사용자 이름";
@@ -11220,7 +11220,7 @@
 "USERNAME_SELECTION_TITLE" = "사용자 이름";
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "이 번호는 00으로 끝날 수 없습니다. 1–9 중 하나를 입력하세요.";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "00은 입력할 수 없습니다. 1–9 사이의 숫자를 입력하세요.";
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "사용자 이름은 인터넷에 연결됐을 때만 업데이트할 수 있습니다.";
