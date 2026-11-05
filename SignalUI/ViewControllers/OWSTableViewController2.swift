@@ -688,6 +688,7 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
         textView.textColor = Self.defaultHeaderTextColor
         textView.font = Self.defaultHeaderFont
         textView.textContainerInset = headerTextContainerInsets(useDeepInsets: withDeepInsets)
+        textView.accessibilityTraits.insert(.header)
 
         return textView
     }

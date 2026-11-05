@@ -5782,6 +5782,9 @@
 /* Accessibility prefix for member labels. */
 "MEMBER_LABEL_AX_PREFIX" = "Member label: ";
 
+/* Accessibility label for the button that clears the member label text and emoji. */
+"MEMBER_LABEL_CLEAR_BUTTON_ACCESSIBILITY_LABEL" = "Clear label";
+
 /* Button label on action sheet when attempting to change the group attributes access to 'administrator' and then continue */
 "MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "Change Permission";
 
@@ -5793,6 +5796,9 @@
 
 /* Text for a button to set a member label */
 "MEMBER_LABEL_EDIT" = "Edit Your Label";
+
+/* Accessibility label for the button that chooses an emoji for a member label. */
+"MEMBER_LABEL_EMOJI_BUTTON_ACCESSIBILITY_LABEL" = "Choose emoji";
 
 /* Error indicating member label could not save. */
 "MEMBER_LABEL_FAIL_TO_SAVE" = "Couldn't Save Member Label";

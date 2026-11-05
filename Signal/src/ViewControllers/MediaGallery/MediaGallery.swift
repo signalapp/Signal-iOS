@@ -93,8 +93,6 @@ struct MediaGalleryItem:
         }
     }
 
-    private var mimeType: String { referencedAttachment.attachment.mimeType }
-
     var isVideo: Bool {
         switch referencedAttachment.attachment.contentType {
         case .video:
@@ -109,20 +107,6 @@ struct MediaGalleryItem:
         case .video where referencedAttachment.asReferencedStream != nil:
             return renderingFlag != .shouldLoop
         case .file, .image, .audio, .video:
-            return false
-        }
-    }
-
-    var isAnimated: Bool {
-        switch referencedAttachment.attachment.contentType {
-        case .video:
-            return renderingFlag == .shouldLoop
-        case .image:
-            // Important that this remains synced with the conditions for the
-            // MessageAttachmentReference/isGifCategory computed column, which
-            // powers the MediaGalleryAttachmentFinder "GIFs" query.
-            return mimeType == MimeType.imageGif.rawValue
-        case .file, .audio:
             return false
         }
     }
@@ -181,6 +165,26 @@ struct MediaGalleryItem:
             }
 
             return false
+        }
+    }
+}
+
+extension PhotoGridItemType {
+    init(referencedAttachment: ReferencedAttachment) {
+        let attachment = referencedAttachment.attachment
+        let renderingFlag = referencedAttachment.reference.renderingFlag
+        switch attachment.contentType {
+        case .video where renderingFlag == .shouldLoop:
+            self = .animated
+        case .video:
+            self = .video(duration: referencedAttachment.asReferencedStream?.attachmentStream.cachedVideoDuration)
+        // Important that this remains synced with the conditions for the
+        // MessageAttachmentReference/isGifCategory computed column, which
+        // powers the MediaGalleryAttachmentFinder "GIFs" query.
+        case .image where attachment.mimeType == MimeType.imageGif.rawValue:
+            self = .animated
+        case .image, .file, .audio:
+            self = .photo
         }
     }
 }

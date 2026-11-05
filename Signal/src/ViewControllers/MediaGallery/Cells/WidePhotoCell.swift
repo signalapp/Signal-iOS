@@ -113,12 +113,7 @@ class WidePhotoCell: MediaTileListModeCell {
         isAccessibilityElement = true
 
         if let item {
-            accessibilityLabel = [
-                item.type.localizedString,
-                MediaTileDateFormatter.formattedDateString(for: item.mediaMetadata?.creationDate),
-            ]
-            .compactMap { $0 }
-            .joined(separator: ", ")
+            accessibilityLabel = item.type.accessibilityLabel(creationDate: item.mediaMetadata?.creationDate)
         } else {
             accessibilityLabel = ""
         }

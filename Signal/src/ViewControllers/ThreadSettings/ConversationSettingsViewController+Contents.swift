@@ -367,6 +367,12 @@ extension ConversationSettingsViewController {
             background.cornerRadius = imageView.layer.cornerRadius
             return background
         }()
+        let receivedAtDate: Date? = switch referencedAttachment.reference.owner {
+        case .message(let messageSource): Date(millisecondsSince1970: messageSource.receivedAtTimestamp)
+        case .storyMessage, .thread: nil
+        }
+        button.accessibilityLabel = PhotoGridItemType(referencedAttachment: referencedAttachment)
+            .accessibilityLabel(creationDate: receivedAtDate)
         return button
     }
 
@@ -687,6 +693,9 @@ extension ConversationSettingsViewController {
                     accessoryText: disappearingMessagesConfiguration.isEnabled
                         ? DateUtil.formatDuration(seconds: disappearingMessagesConfiguration.durationSeconds, useShortFormat: true)
                         : CommonStrings.switchOff,
+                    accessoryAccessibilityLabel: disappearingMessagesConfiguration.isEnabled
+                        ? DateUtil.formatDuration(seconds: disappearingMessagesConfiguration.durationSeconds, useShortFormat: false)
+                        : nil,
                     accessoryType: .disclosureIndicator,
                     customColor: canEditConversationAttributes && !isTerminatedGroup ? nil : .Signal.secondaryLabel,
                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "disappearing_messages"),
@@ -1122,6 +1131,7 @@ extension ConversationSettingsViewController {
         titleLabel.textColor = OWSTableViewController2.defaultHeaderTextColor
         titleLabel.font = OWSTableViewController2.defaultHeaderFont
         titleLabel.numberOfLines = 0
+        titleLabel.accessibilityTraits = .header
         headerView.addArrangedSubview(titleLabel)
 
         headerView.addArrangedSubview(.hStretchingSpacer())
@@ -1138,7 +1148,10 @@ extension ConversationSettingsViewController {
             "GROUP_MEMBER_SEARCH_BUTTON_ACCESSIBILITY_LABEL",
             comment: "Accessibility label for the button that opens the group member search sheet.",
         )
+        searchButton.accessibilityTraits = .button
         headerView.addArrangedSubview(searchButton)
+
+        headerView.accessibilityElements = [titleLabel, searchButton]
 
         return headerView
     }

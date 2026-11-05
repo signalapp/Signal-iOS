@@ -125,15 +125,7 @@ class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
     }
 
     var type: PhotoGridItemType {
-        if galleryItem.isVideo {
-            return .video(
-                duration: galleryItem.referencedAttachment.asReferencedStream?.attachmentStream.cachedVideoDuration,
-            )
-        } else if galleryItem.isAnimated {
-            return .animated
-        } else {
-            return .photo
-        }
+        PhotoGridItemType(referencedAttachment: galleryItem.referencedAttachment)
     }
 
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) {

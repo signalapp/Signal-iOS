@@ -126,6 +126,9 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                     accessoryText: disappearingMessagesConfiguration.isEnabled
                         ? DateUtil.formatDuration(seconds: disappearingMessagesConfiguration.durationSeconds, useShortFormat: true)
                         : CommonStrings.switchOff,
+                    accessoryAccessibilityLabel: disappearingMessagesConfiguration.isEnabled
+                        ? DateUtil.formatDuration(seconds: disappearingMessagesConfiguration.durationSeconds, useShortFormat: false)
+                        : nil,
                     accessoryType: .disclosureIndicator,
                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "disappearing_messages"),
                 )

@@ -155,6 +155,9 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
                     accessoryText: self.disappearingMessagesConfiguration.isEnabled
                         ? DateUtil.formatDuration(seconds: self.disappearingMessagesConfiguration.durationSeconds, useShortFormat: true)
                         : CommonStrings.switchOff,
+                    accessoryAccessibilityLabel: self.disappearingMessagesConfiguration.isEnabled
+                        ? DateUtil.formatDuration(seconds: self.disappearingMessagesConfiguration.durationSeconds, useShortFormat: false)
+                        : nil,
                     accessoryType: .disclosureIndicator,
                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "disappearing_messages"),
                 )

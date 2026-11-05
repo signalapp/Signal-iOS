@@ -432,6 +432,7 @@ public extension OWSTableItem {
         maxItemNameLines: Int? = nil,
         textColor: UIColor? = nil,
         accessoryText: String? = nil,
+        accessoryAccessibilityLabel: String? = nil,
         accessoryTextColor: UIColor? = nil,
         accessoryType: UITableViewCell.AccessoryType = .none,
         accessoryContentView: UIView? = nil,
@@ -453,6 +454,7 @@ public extension OWSTableItem {
             maxItemNameLines: maxItemNameLines,
             textColor: textColor,
             accessoryText: accessoryText,
+            accessoryAccessibilityLabel: accessoryAccessibilityLabel,
             accessoryTextColor: accessoryTextColor,
             accessoryType: accessoryType,
             accessoryContentView: accessoryContentView,
@@ -505,6 +507,7 @@ public extension OWSTableItem {
         maxItemNameLines: Int? = nil,
         textColor: UIColor? = nil,
         accessoryText: String? = nil,
+        accessoryAccessibilityLabel: String? = nil,
         accessoryTextColor: UIColor? = nil,
         accessoryType: UITableViewCell.AccessoryType = .none,
         accessoryContentView: UIView? = nil,
@@ -618,6 +621,7 @@ public extension OWSTableItem {
         } else if let accessoryText {
             let accessoryLabel = UILabel()
             accessoryLabel.text = accessoryText
+            accessoryLabel.accessibilityLabel = accessoryAccessibilityLabel
             accessoryLabel.textColor = accessoryTextColor ?? OWSTableItem.accessoryGray
             accessoryLabel.font = OWSTableItem.accessoryLabelFont
             accessoryLabel.adjustsFontForContentSizeCategory = true
