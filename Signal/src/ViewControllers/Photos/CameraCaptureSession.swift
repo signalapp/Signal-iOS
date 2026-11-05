@@ -1202,6 +1202,7 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
             isAvailableWhileDeviceLocked: false,
         )
         let assetWriter = try AVAssetWriter(outputURL: outputURL, fileType: .mp4)
+        assetWriter.shouldOptimizeForNetworkUse = true
 
         guard
             var videoSettings = videoDataOutput.recommendedVideoSettings(
