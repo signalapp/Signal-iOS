@@ -87,15 +87,18 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
             Logger.error("Discarding link preview; message has attachments.")
             throw LinkPreviewError.invalidPreview
         }
-        guard let messageBody = dataMessage.body, messageBody.contains(proto.url) else {
-            Logger.error("Url not present in body")
-            throw LinkPreviewError.invalidPreview
-        }
+
         guard
-            LinkValidator.canParseURLs(in: messageBody),
-            LinkValidator.isValidLink(linkText: proto.url)
+            let messageBodyText = dataMessage.body,
+            LinkValidator.containsLinkPreviewURL(
+                proto.url,
+                messageBody: MessageBody(
+                    text: messageBodyText,
+                    ranges: MessageBodyRanges(protos: dataMessage.bodyRanges),
+                ),
+            )
         else {
-            Logger.error("Discarding link preview; can't parse URLs in message.")
+            Logger.error("Discarding link preview; url not found in body.")
             throw LinkPreviewError.invalidPreview
         }
 

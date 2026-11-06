@@ -58,6 +58,27 @@ class OWSLinkPreviewTest: XCTestCase {
         )
     }
 
+    func testBuildValidatedLinkPreview_Spoiler() throws {
+        let url = "https://www.youtube.com/watch?v=tP-Ipsat90c"
+        let body = "\(url)"
+        let previewBuilder = SSKProtoPreview.builder(url: url)
+        previewBuilder.setTitle("Some Youtube Video")
+        let bodyRangeBuilder = SSKProtoBodyRange.builder()
+        bodyRangeBuilder.setStart(0)
+        bodyRangeBuilder.setLength(UInt32(body.utf16.count))
+        bodyRangeBuilder.setStyle(.spoiler)
+        let dataBuilder = SSKProtoDataMessage.builder()
+        dataBuilder.addPreview(try! previewBuilder.build())
+        dataBuilder.setBody(body)
+        dataBuilder.addBodyRanges(bodyRangeBuilder.buildInfallibly())
+        let dataMessage = try! dataBuilder.build()
+
+        XCTAssertThrowsError(try linkPreviewManager.validateAndBuildLinkPreview(
+            from: dataMessage.preview.first!,
+            dataMessage: dataMessage,
+        ))
+    }
+
     func testBuildValidatedLinkPreview_Image() throws {
         let url = "https://www.youtube.com/watch?v=tP-Ipsat90c"
         let body = "\(url)"

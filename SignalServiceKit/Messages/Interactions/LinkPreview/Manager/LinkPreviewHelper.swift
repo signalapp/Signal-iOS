@@ -31,16 +31,29 @@ public enum LinkPreviewHelper {
         _ url: URL,
         parsedFrom sourceString: String? = nil,
     ) -> Bool {
-        guard let scheme = url.scheme?.lowercased().nilIfEmpty, Self.schemeAllowSet.contains(scheme) else { return false }
-        guard url.user == nil else { return false }
-        guard url.password == nil else { return false }
+        guard
+            let scheme = url.scheme?.lowercased().nilIfEmpty,
+            Self.schemeAllowSet.contains(scheme),
+            url.user == nil,
+            url.password == nil
+        else {
+            return false
+        }
 
         let rawHostname: String?
         if var sourceString {
+            // The scheme must be in the source string, since some parsers
+            // (e.g., NSDataDetector) add one to bare domains.
             let schemePrefix = "\(scheme)://"
-            if let schemeRange = sourceString.range(of: schemePrefix, options: [.anchored, .caseInsensitive]) {
-                sourceString.removeSubrange(schemeRange)
+            guard
+                let schemeRange = sourceString.range(
+                    of: schemePrefix,
+                    options: [.anchored, .caseInsensitive],
+                )
+            else {
+                return false
             }
+            sourceString.removeSubrange(schemeRange)
             let delimiterIndex = sourceString.firstIndex(where: { Self.urlDelimeters.contains($0) })
             rawHostname = String(sourceString[..<(delimiterIndex ?? sourceString.endIndex)])
 
