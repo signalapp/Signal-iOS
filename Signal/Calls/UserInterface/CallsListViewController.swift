@@ -1795,6 +1795,10 @@ extension CallsListViewController: UITableViewDelegate {
         switch Section(rawValue: indexPath.section) {
         case .createCallLink:
             createCallLink()
+            // "Create Call Link" is presented modally so we need to deselect the row.
+            DispatchQueue.main.async {
+                self.tableView.deselectRow(at: indexPath, animated: true)
+            }
         case .existingCalls, .none:
             guard let viewModel = viewModelWithSneakyTransaction(at: indexPath) else {
                 tableView.deselectRow(at: indexPath, animated: true)
