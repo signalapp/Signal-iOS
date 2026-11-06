@@ -360,7 +360,7 @@ class RecipientContextMenuHelper {
             actionSheet.addAction(removeAction)
         }
         actionSheet.addAction(ActionSheetAction(
-            title: CommonStrings.okayButton,
+            title: CommonStrings.okButton,
             style: .cancel,
         ))
         fromViewController.presentActionSheet(actionSheet)
@@ -446,7 +446,7 @@ class RecipientContextMenuHelper {
             ),
         )
         errorActionSheet.addAction(ActionSheetAction(
-            title: CommonStrings.okayButton,
+            title: CommonStrings.okButton,
         ))
         fromViewController.presentActionSheet(errorActionSheet)
     }

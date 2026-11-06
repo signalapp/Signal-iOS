@@ -301,7 +301,7 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController, UIDocume
 
         // Show large "No backup to restore" and "Skip Restore"
         let continueButton = UIButton(
-            configuration: .largePrimary(title: CommonStrings.okayButton),
+            configuration: .largePrimary(title: CommonStrings.okButton),
             primaryAction: UIAction { [weak self] _ in
                 self?.didTapCancel()
             },

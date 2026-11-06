@@ -1099,7 +1099,7 @@ class PaymentsSettingsViewController: OWSTableViewController2, PaymentsHistoryDa
                 )
             },
         ))
-        actionSheet.addAction(OWSActionSheets.okayAction)
+        actionSheet.addAction(OWSActionSheets.okAction)
         fromViewController.presentActionSheet(actionSheet)
     }
 

@@ -75,7 +75,7 @@ class LinkDeviceViewController: OWSViewController {
                     "LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY",
                     comment: "Title for QR Scanning screen instructions sheet",
                 ),
-                primaryButton: .dismissing(title: CommonStrings.okayButton),
+                primaryButton: .dismissing(title: CommonStrings.okButton),
             )
 
             DispatchQueue.main.async {
@@ -260,7 +260,7 @@ class LinkDeviceViewController: OWSViewController {
         )
         alertController.addTextField()
         alertController.addAction(UIAlertAction(
-            title: CommonStrings.okayButton,
+            title: CommonStrings.okButton,
             style: .default,
             handler: { _ in
                 guard let qrCodeString = alertController.textFields?.first?.text else { return }

@@ -2057,7 +2057,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
 
     private func presentSomeCallLinkDeletionError() {
         let actionSheet = ActionSheetController(message: Strings.deleteMultipleError)
-        actionSheet.addAction(OWSActionSheets.okayAction)
+        actionSheet.addAction(OWSActionSheets.okAction)
         self.presentActionSheet(actionSheet)
     }
 

@@ -1498,9 +1498,6 @@
 /* Label for the 'not now' button. */
 "BUTTON_NOT_NOW" = "Not Now";
 
-/* Label for the 'okay' button. */
-"BUTTON_OKAY" = "Okay";
-
 /* Label for the 'previous' button. */
 "BUTTON_PREVIOUS" = "Previous";
 

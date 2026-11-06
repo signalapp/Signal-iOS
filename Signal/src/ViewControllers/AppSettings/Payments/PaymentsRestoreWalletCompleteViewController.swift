@@ -93,7 +93,7 @@ class PaymentsRestoreWalletCompleteViewController: OWSViewController {
             ),
         )
         actionSheet.addAction(ActionSheetAction(
-            title: CommonStrings.okayButton,
+            title: CommonStrings.okButton,
             style: .default,
         ) { [weak self] _ in
             self?.returnToFirstWordView(shouldClearInput: true)

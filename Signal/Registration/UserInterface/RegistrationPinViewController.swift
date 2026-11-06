@@ -597,7 +597,7 @@ class RegistrationPinViewController: OWSViewController {
             self.present(SFSafariViewController(url: URL.Support.pin), animated: true)
         })
 
-        actionSheet.addAction(.init(title: CommonStrings.okayButton))
+        actionSheet.addAction(.init(title: CommonStrings.okButton))
 
         OWSActionSheets.showActionSheet(actionSheet, fromViewController: self)
     }
@@ -821,7 +821,7 @@ class RegistrationPinViewController: OWSViewController {
             ),
         )
 
-        actionSheet.addAction(.init(title: CommonStrings.okayButton))
+        actionSheet.addAction(.init(title: CommonStrings.okButton))
 
         presentActionSheet(actionSheet)
     }
@@ -834,7 +834,7 @@ class RegistrationPinViewController: OWSViewController {
             ),
         )
 
-        actionSheet.addAction(.init(title: CommonStrings.okayButton))
+        actionSheet.addAction(.init(title: CommonStrings.okButton))
 
         presentActionSheet(actionSheet)
     }

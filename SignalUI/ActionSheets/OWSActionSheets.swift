@@ -40,7 +40,7 @@ public enum OWSActionSheets {
         dismissalDelegate: (any SheetDismissalDelegate)? = nil,
     ) {
         let actionSheet = ActionSheetController(title: title, message: message)
-        actionSheet.addOkayAction(title: buttonTitle, action: buttonAction)
+        actionSheet.addOkAction(title: buttonTitle, action: buttonAction)
         actionSheet.dismissalDelegate = dismissalDelegate
         showActionSheet(actionSheet, fromViewController: fromViewController)
     }
@@ -53,7 +53,7 @@ public enum OWSActionSheets {
         fromViewController: UIViewController? = nil,
     ) {
         let actionSheet = ActionSheetController(title: title, message: message)
-        actionSheet.addOkayAction(title: buttonTitle, action: buttonAction)
+        actionSheet.addOkAction(title: buttonTitle, action: buttonAction)
         showActionSheet(actionSheet, fromViewController: fromViewController)
     }
 
@@ -139,7 +139,7 @@ public enum OWSActionSheets {
         )
     }
 
-    public static var okayAction: ActionSheetAction {
+    public static var okAction: ActionSheetAction {
         return ActionSheetAction(
             title: CommonStrings.okButton,
             style: .cancel,
@@ -201,7 +201,7 @@ public enum OWSActionSheets {
 }
 
 private extension ActionSheetController {
-    func addOkayAction(title: String? = nil, action: ActionSheetAction.Handler? = nil) {
+    func addOkAction(title: String? = nil, action: ActionSheetAction.Handler? = nil) {
         let actionTitle = title ?? CommonStrings.okButton
         let okAction = ActionSheetAction(title: actionTitle, style: .default, handler: action)
         addAction(okAction)

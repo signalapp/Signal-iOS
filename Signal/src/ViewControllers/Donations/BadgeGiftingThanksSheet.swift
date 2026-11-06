@@ -105,7 +105,7 @@ class BadgeGiftingThanksSheet: OWSTableViewController2 {
             let cell = Self.tableCell()
 
             let dismissButton = UIButton(
-                configuration: .largePrimary(title: CommonStrings.okayButton),
+                configuration: .largePrimary(title: CommonStrings.okButton),
                 primaryAction: UIAction { [weak self] _ in
                     self?.dismiss(animated: true)
                 },

@@ -83,10 +83,6 @@ public enum CommonStrings {
         )
     }
 
-    public static var okayButton: String {
-        OWSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
-    }
-
     public static var okButton: String {
         OWSLocalizedString("OK", comment: "Label for the 'ok' button.")
     }

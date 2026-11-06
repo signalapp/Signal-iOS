@@ -120,7 +120,7 @@ enum LegacyGroupLearnMoreUI {
         let actionSheet = ActionSheetController(title: mode.titleString, message: mode.bodyString)
         actionSheet.addAction(
             ActionSheetAction(
-                title: CommonStrings.okayButton,
+                title: CommonStrings.okButton,
                 style: .cancel,
             ),
         )

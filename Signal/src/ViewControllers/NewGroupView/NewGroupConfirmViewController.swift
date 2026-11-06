@@ -368,7 +368,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
             }
         })
         actionSheet.addAction(ActionSheetAction(
-            title: CommonStrings.okayButton,
+            title: CommonStrings.okButton,
             style: .default,
         ) { _ in
             navigateToNewGroup(completion: nil)

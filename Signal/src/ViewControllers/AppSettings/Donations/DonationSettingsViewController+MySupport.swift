@@ -451,7 +451,7 @@ extension DonationSettingsViewController {
                     )
                 },
             ))
-            actionSheet.addAction(OWSActionSheets.okayAction)
+            actionSheet.addAction(OWSActionSheets.okAction)
         }
 
         self.presentActionSheet(actionSheet, animated: true)

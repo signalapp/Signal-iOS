@@ -658,7 +658,7 @@ extension ConversationSettingsViewController {
                             title: localizedSheetTitle,
                             message: localizedSheetMessage,
                         )
-                        let buttonTitle = OWSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
+                        let buttonTitle = CommonStrings.okButton
                         fallbackSheet.addAction(ActionSheetAction(title: buttonTitle, style: .default))
                         self.presentActionSheet(fallbackSheet)
                         return

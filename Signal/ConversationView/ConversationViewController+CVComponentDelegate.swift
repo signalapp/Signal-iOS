@@ -443,7 +443,7 @@ extension ConversationViewController: CVComponentDelegate {
                 _freeTierMediaDays(),
             ),
         )
-        actionSheet.addAction(.okay)
+        actionSheet.addAction(.ok)
         actionSheet.isCancelable = true
         present(actionSheet, animated: true)
     }
@@ -463,7 +463,7 @@ extension ConversationViewController: CVComponentDelegate {
                 _freeTierMediaDays(),
             ),
         )
-        actionSheet.addAction(.okay)
+        actionSheet.addAction(.ok)
         actionSheet.isCancelable = true
         present(actionSheet, animated: true)
     }
@@ -483,7 +483,7 @@ extension ConversationViewController: CVComponentDelegate {
                 _freeTierMediaDays(),
             ),
         )
-        actionSheet.addAction(.okay)
+        actionSheet.addAction(.ok)
         actionSheet.isCancelable = true
         present(actionSheet, animated: true)
     }
@@ -503,7 +503,7 @@ extension ConversationViewController: CVComponentDelegate {
                 _freeTierMediaDays(),
             ),
         )
-        actionSheet.addAction(.okay)
+        actionSheet.addAction(.ok)
         actionSheet.isCancelable = true
         present(actionSheet, animated: true)
     }
@@ -1058,7 +1058,7 @@ extension ConversationViewController: CVComponentDelegate {
                 }
             },
         )
-        alert.addAction(OWSActionSheets.okayAction)
+        alert.addAction(OWSActionSheets.okAction)
 
         inputToolbar?.clearDesiredKeyboard()
         dismissKeyboard()
@@ -1356,7 +1356,7 @@ extension ConversationViewController: CVComponentDelegate {
                 comment: "Body message of the alert shown when a user taps on 'learn more' via the spam info message.",
             ),
         )
-        alert.addAction(OWSActionSheets.okayAction)
+        alert.addAction(OWSActionSheets.okAction)
 
         inputToolbar?.clearDesiredKeyboard()
         dismissKeyboard()

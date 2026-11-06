@@ -75,18 +75,18 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
         ))
         titleLabel.accessibilityIdentifier = "registration.reglockTimeout.titleLabel"
 
-        let okayButtonTitle: String
+        let okButtonTitle: String
         switch state.acknowledgeAction {
         case .resetPhoneNumber:
-            okayButtonTitle = OWSLocalizedString(
+            okButtonTitle = OWSLocalizedString(
                 "REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON",
                 comment: "Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number.",
             )
         case .close, .none:
-            okayButtonTitle = CommonStrings.okayButton
+            okButtonTitle = CommonStrings.okButton
         }
-        let okayButton = UIButton(
-            configuration: .largePrimary(title: okayButtonTitle),
+        let okButton = UIButton(
+            configuration: .largePrimary(title: okButtonTitle),
             primaryAction: UIAction { [weak self] _ in
                 self?.presenter?.acknowledgeReglockTimeout()
             },
@@ -107,7 +107,7 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
             titleLabel,
             explanationLabel,
             .vStretchingSpacer(),
-            [okayButton, learnMoreButton].enclosedInVerticalStackView(isFullWidthButtons: true),
+            [okButton, learnMoreButton].enclosedInVerticalStackView(isFullWidthButtons: true),
         ])
 
         updateExplanationLabelText()

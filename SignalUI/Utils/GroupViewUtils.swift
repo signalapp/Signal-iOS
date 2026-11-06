@@ -123,7 +123,7 @@ public class GroupViewUtils {
         ) { _ in
             self.showCantAddMemberView(fromViewController: fromViewController)
         })
-        actionSheet.addAction(OWSActionSheets.okayAction)
+        actionSheet.addAction(OWSActionSheets.okAction)
         fromViewController.presentActionSheet(actionSheet)
     }
 

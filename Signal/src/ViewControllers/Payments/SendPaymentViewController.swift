@@ -249,7 +249,7 @@ class SendPaymentViewController: OWSViewController, SendPaymentMemoViewDelegate,
                 }
             }
 
-            actionSheet.addAction(OWSActionSheets.okayAction)
+            actionSheet.addAction(OWSActionSheets.okAction)
 
             fromViewController.presentActionSheet(actionSheet)
 
@@ -1081,7 +1081,7 @@ class SendPaymentViewController: OWSViewController, SendPaymentMemoViewDelegate,
         )
         let actionSheet = ActionSheetController(title: title, message: message)
 
-        actionSheet.addAction(OWSActionSheets.okayAction)
+        actionSheet.addAction(OWSActionSheets.okAction)
 
         frontmostViewController.presentActionSheet(actionSheet)
     }

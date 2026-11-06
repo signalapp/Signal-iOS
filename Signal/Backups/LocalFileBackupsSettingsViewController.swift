@@ -876,7 +876,7 @@ class LocalFileBackupsSettingsViewController: OWSTableViewController2 {
                     comment: "Message for an action sheet explaining that you must be registered to make a Backup.",
                 ),
             )
-            actionSheet.addAction(.okay)
+            actionSheet.addAction(.ok)
         case LocalFileBackupError.unableToAccessLocalFile:
             actionSheet = ActionSheetController(
                 message: OWSLocalizedString(
@@ -922,7 +922,7 @@ class LocalFileBackupsSettingsViewController: OWSTableViewController2 {
                 emailFilter: .backupExportFailed,
                 fromViewController: self,
             ))
-            actionSheet.addAction(.okay)
+            actionSheet.addAction(.ok)
         }
 
         presentActionSheet(actionSheet)

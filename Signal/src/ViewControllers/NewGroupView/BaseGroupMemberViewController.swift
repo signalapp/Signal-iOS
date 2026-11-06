@@ -83,7 +83,7 @@ public class BaseGroupMemberViewController: BaseMemberViewController {
         if groupMemberViewDelegate.isNewGroup {
             let actionSheet = ActionSheetController(title: title, message: message)
 
-            actionSheet.addAction(ActionSheetAction(title: CommonStrings.okayButton) { [weak self] _ in
+            actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton) { [weak self] _ in
                 guard let self else { return }
                 self.ignoreSoftLimit = true
                 self.addRecipient(recipient)

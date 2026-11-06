@@ -207,7 +207,7 @@ extension ConversationViewController {
             message: alertMessage,
         )
         actionSheet.customHeader = headerView
-        actionSheet.addAction(OWSActionSheets.okayAction)
+        actionSheet.addAction(OWSActionSheets.okAction)
         actionSheet.addAction(
             ActionSheetAction(
                 title: CommonStrings.learnMore,
@@ -448,7 +448,7 @@ extension ConversationViewController {
             ),
         )
 
-        alert.addAction(OWSActionSheets.okayAction)
+        alert.addAction(OWSActionSheets.okAction)
         presentActionSheet(alert)
     }
 
