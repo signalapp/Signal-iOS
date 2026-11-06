@@ -3040,18 +3040,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func _startSession(e164: E164) async throws {
-        let tokenResult = await deps.pushRegistrationManager.requestPushToken()
-        let apnsToken: String?
-        switch tokenResult {
-        case .success(let tokens):
-            apnsToken = tokens.apnsToken
-        case .pushUnsupported, .timeout, .genericError:
-            apnsToken = nil
-        }
+        let tokenResult = try? await deps.pushRegistrationManager.requestPushToken()
 
         let session = try await deps.sessionManager.beginOrRestoreSession(
             e164: e164,
-            apnsToken: apnsToken,
+            apnsToken: tokenResult?.apnsToken,
             logger: logger,
         )
 
@@ -3063,7 +3056,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         db.write { tx in
             self.processSession(session, tx)
 
-            if apnsToken == nil {
+            if tokenResult == nil {
                 self.noPreAuthChallengeTokenWillArrive(session: session, transaction: tx)
             } else {
                 self.prepareToReceivePreAuthChallengeToken(session: session, transaction: tx)
@@ -4494,38 +4487,28 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // write it to TSAccountManager when all is said and done, and use
             // it for requests we need to make between now and then.
             let authToken = generateServerAuthToken()
-            let apnResult = await fetchApnRegistrationId()
 
+            let apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?
+            do {
+                apnRegistrationId = try await fetchApnRegistrationId()
+            } catch {
+                return .showError(error)
+            }
             // Either manual message fetch is true, or apns tokens are set.
             // Otherwise the request will fail.
-            let isManualMessageFetchEnabled: Bool
-            let apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?
-            switch apnResult {
-            case .success(let tokens):
-                isManualMessageFetchEnabled = false
-                apnRegistrationId = tokens
-            case .pushUnsupported:
-                logger.info("Push unsupported; enabling manual message fetch.")
-                isManualMessageFetchEnabled = true
-                apnRegistrationId = nil
-            case .timeout:
-                logger.error("Timed out waiting for apns token")
-                return .showError(OWSGenericError(""))
-            case .genericError:
-                return .showError(OWSGenericError(""))
-            }
+            let isManualMessageFetchEnabled = apnRegistrationId == nil
             inMemoryState.isManualMessageFetchEnabled = isManualMessageFetchEnabled
             if isManualMessageFetchEnabled {
                 db.write { tx in
                     self.deps.tsAccountManager.setIsManualMessageFetchEnabled(true, tx: tx)
                 }
             }
+
             let accountAttributes = makeAccountAttributes(
                 verificationMethod: method,
                 isManualMessageFetchEnabled: isManualMessageFetchEnabled,
                 reglockToken: reglockToken,
             )
-
             do {
                 try await sendRestoreMethodIfNecessary()
             } catch {
@@ -4840,11 +4823,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         )
     }
 
-    private func fetchApnRegistrationId() async -> Registration.RequestPushTokensResult {
-        guard !inMemoryState.isManualMessageFetchEnabled else {
-            return .pushUnsupported(description: "Manual fetch pre-enabled")
+    private func fetchApnRegistrationId() async throws -> RegistrationRequestFactory.ApnRegistrationId? {
+        if inMemoryState.isManualMessageFetchEnabled {
+            return nil
         }
-        return await self.deps.pushRegistrationManager.requestPushToken()
+        return try await self.deps.pushRegistrationManager.requestPushToken()
     }
 
     private func generateServerAuthToken() -> String {

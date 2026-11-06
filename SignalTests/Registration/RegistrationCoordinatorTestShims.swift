@@ -250,15 +250,15 @@ public class _RegistrationCoordinator_PushRegistrationManagerMock: _Registration
         doesNeedNotificationAuthorization = true
     }
 
-    public typealias RequestPushTokenMock = (() async -> Registration.RequestPushTokensResult)
+    public typealias RequestPushTokenMock = (() async throws -> RegistrationRequestFactory.ApnRegistrationId?)
     private var requestPushTokenMocks = [RequestPushTokenMock]()
     public func addRequestPushTokenMock(_ mock: @escaping RequestPushTokenMock) {
         requestPushTokenMocks.append(mock)
     }
 
-    public func requestPushToken() async -> Registration.RequestPushTokensResult {
+    public func requestPushToken() async throws -> RegistrationRequestFactory.ApnRegistrationId? {
         run.addObservedStep(.requestPushToken)
-        return await requestPushTokenMocks.removeFirst()()
+        return try await requestPushTokenMocks.removeFirst()()
     }
 
     public typealias ReceivePreAuthChallengeTokenMock = () async -> String
