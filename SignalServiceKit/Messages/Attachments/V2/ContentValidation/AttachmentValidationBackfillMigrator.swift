@@ -250,7 +250,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
                 localRelativeFilePath: nil,
                 localRelativeFilePathThumbnail: nil,
                 localRelativeFilePathAudioWaveform: nil,
-                localRelativeFilePathVideoStillFrame: streamInfo.cachedVideoStillFrameRelativeFilePath,
+                localRelativeFilePathVideoStillFrame: streamInfo.videoStillFrameRelativeFilePath,
                 timestamp: dateProvider().ows_millisecondsSince1970,
             )
         }()

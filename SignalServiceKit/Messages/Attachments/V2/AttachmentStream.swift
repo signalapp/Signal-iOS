@@ -23,9 +23,9 @@ public class AttachmentStream {
     public var mediaName: String { info.mediaName }
     public var encryptedByteCount: UInt32 { info.encryptedByteCount }
     public var unencryptedByteCount: UInt32 { info.unencryptedByteCount }
-    public var cachedMediaSizePixels: CGSize? { info.cachedMediaSizePixels }
-    public var cachedVideoDuration: TimeInterval? { info.cachedVideoDuration }
-    public var cachedVideoStillFrameRelativeFilePath: String? { info.cachedVideoStillFrameRelativeFilePath }
+    public var mediaSizePixels: CGSize? { info.mediaSizePixels }
+    public var videoDuration: TimeInterval? { info.videoDuration }
+    public var videoStillFrameRelativeFilePath: String? { info.videoStillFrameRelativeFilePath }
     public var localRelativeFilePath: String { info.localRelativeFilePath }
 
     // MARK: - Init
@@ -197,7 +197,7 @@ public class AttachmentStream {
         case .image:
             return try UIImage.from(self)
         case .video:
-            guard let stillImageRelativeFilePath = info.cachedVideoStillFrameRelativeFilePath else {
+            guard let stillImageRelativeFilePath = info.videoStillFrameRelativeFilePath else {
                 throw OWSAssertionError("Still image unavailable for video")
             }
             return try UIImage.fromEncryptedFile(

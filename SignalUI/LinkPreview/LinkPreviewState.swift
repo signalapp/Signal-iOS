@@ -363,7 +363,7 @@ public class LinkPreviewSent: LinkPreviewState {
     public var imagePixelSize: CGSize {
         if
             let attachmentStream = imageAttachment?.attachment.asStream(),
-            let pixelSize = attachmentStream.cachedMediaSizePixels
+            let pixelSize = attachmentStream.mediaSizePixels
         {
             return pixelSize
         } else if

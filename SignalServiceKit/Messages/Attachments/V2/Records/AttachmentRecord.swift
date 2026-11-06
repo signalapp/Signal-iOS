@@ -44,9 +44,9 @@ extension Attachment {
         var lastThumbnailDownloadAttemptTimestamp: UInt64?
         let localRelativeFilePath: String?
         let localRelativeFilePathThumbnail: String?
-        let cachedMediaHeightPixels: UInt32?
-        let cachedMediaWidthPixels: UInt32?
-        let cachedVideoDurationSeconds: Double?
+        let mediaHeightPixels: UInt32?
+        let mediaWidthPixels: UInt32?
+        let videoDurationSeconds: Double?
         let audioDurationSeconds: Double?
         let audioWaveformRelativeFilePath: String?
         let audioWaveformSamples: Data?
@@ -111,13 +111,13 @@ extension Attachment {
             case lastThumbnailDownloadAttemptTimestamp
             case localRelativeFilePath
             case localRelativeFilePathThumbnail
-            case cachedMediaHeightPixels
-            case cachedMediaWidthPixels
-            case cachedVideoDurationSeconds
+            case mediaHeightPixels = "cachedMediaHeightPixels"
+            case mediaWidthPixels = "cachedMediaWidthPixels"
+            case videoDurationSeconds = "cachedVideoDurationSeconds"
+            case videoStillFrameRelativeFilePath
             case audioDurationSeconds = "cachedAudioDurationSeconds"
             case audioWaveformRelativeFilePath
             case audioWaveformSamples
-            case videoStillFrameRelativeFilePath
             case originalAttachmentIdForQuotedReply
             case mediaTierIncrementalMac
             case mediaTierIncrementalMacChunkSize
@@ -232,13 +232,13 @@ extension Attachment {
             self.originalAttachmentIdForQuotedReply = originalAttachmentIdForQuotedReply
             self._lastFullscreenViewTimestamp = DBUInt64Optional(wrappedValue: lastFullscreenViewTimestamp)
 
-            self.cachedMediaHeightPixels = streamInfo?.cachedMediaSizePixels.flatMap { UInt32(exactly: $0.height.rounded()) }
-            self.cachedMediaWidthPixels = streamInfo?.cachedMediaSizePixels.flatMap { UInt32(exactly: $0.width.rounded()) }
-            self.cachedVideoDurationSeconds = streamInfo?.cachedVideoDuration
+            self.mediaHeightPixels = streamInfo?.mediaSizePixels.flatMap { UInt32(exactly: $0.height.rounded()) }
+            self.mediaWidthPixels = streamInfo?.mediaSizePixels.flatMap { UInt32(exactly: $0.width.rounded()) }
+            self.videoDurationSeconds = streamInfo?.videoDuration
             self.audioDurationSeconds = audioDetails?.duration
             self.audioWaveformRelativeFilePath = audioDetails?.waveformRelativeFilePath
             self.audioWaveformSamples = audioDetails?.waveform?.waveformData
-            self.videoStillFrameRelativeFilePath = streamInfo?.cachedVideoStillFrameRelativeFilePath
+            self.videoStillFrameRelativeFilePath = streamInfo?.videoStillFrameRelativeFilePath
         }
 
         // MARK: -

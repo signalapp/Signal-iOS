@@ -177,7 +177,7 @@ extension PhotoGridItemType {
         case .video where renderingFlag == .shouldLoop:
             self = .animated
         case .video:
-            self = .video(duration: referencedAttachment.asReferencedStream?.attachmentStream.cachedVideoDuration)
+            self = .video(duration: referencedAttachment.asReferencedStream?.attachmentStream.videoDuration)
         // Important that this remains synced with the conditions for the
         // MessageAttachmentReference/isGifCategory computed column, which
         // powers the MediaGalleryAttachmentFinder "GIFs" query.

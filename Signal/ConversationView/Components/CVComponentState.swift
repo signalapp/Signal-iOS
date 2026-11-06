@@ -1848,7 +1848,7 @@ private extension CVComponentState.Builder {
                     owsFailDebug("Building media album, but have audio or file attachment?")
                     mediaAlbumItems.append(brokenAlbumItem)
                 case .video:
-                    if let mediaSizePixels = attachmentStream.cachedMediaSizePixels {
+                    if let mediaSizePixels = attachmentStream.mediaSizePixels {
                         mediaAlbumItems.append(CVMediaAlbumItem(
                             attachment: cvAttachment,
                             attachmentStream: attachmentStream,
@@ -1862,7 +1862,7 @@ private extension CVComponentState.Builder {
                     }
                 case .image:
                     if
-                        let mediaSizePixels = attachmentStream.cachedMediaSizePixels,
+                        let mediaSizePixels = attachmentStream.mediaSizePixels,
                         imageMetadata != nil
                     {
                         mediaAlbumItems.append(CVMediaAlbumItem(

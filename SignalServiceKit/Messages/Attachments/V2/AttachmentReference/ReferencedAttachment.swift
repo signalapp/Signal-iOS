@@ -283,7 +283,7 @@ extension ReferencedAttachment {
 
         let pixelSize: CGSize?
         if let streamInfo = pointer.attachment.streamInfo {
-            pixelSize = streamInfo.cachedMediaSizePixels
+            pixelSize = streamInfo.mediaSizePixels
         } else {
             pixelSize = reference.sourceMediaSizePixels
         }
