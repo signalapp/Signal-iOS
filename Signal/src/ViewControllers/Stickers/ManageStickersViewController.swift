@@ -934,6 +934,10 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
     private func showAllPacks(revealingIndices: [IndexPath]) {
         isShowingAllPacks = true
 
+        if needsStateUpdate || needsTableUpdate {
+            return
+        }
+
         if let firstIndex = revealingIndices.first {
             tableView.beginUpdates()
 
