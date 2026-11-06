@@ -88,6 +88,11 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
             return
         }
 
+        // Resize `toView` now to ensure correct media view frame in `toMediaContext`.
+        toView.frame = transitionContext.finalFrame(for: toVC)
+        toView.setNeedsLayout()
+        toView.layoutIfNeeded()
+
         guard let toMediaContext = toContextProvider.mediaPresentationContext(item: item, in: containerView) else {
             owsFailDebug("toPresentationContext was unexpectedly nil")
             transitionContext.completeTransition(false)
@@ -129,11 +134,9 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
 
         // `toView` goes above the media view so that any toolbars the view might have show
         // over the media view.
-        containerView.addSubview(toView)
         toView.alpha = 0
-        toView.frame = containerView.bounds
-        toView.autoPinEdgesToSuperviewEdges()
-        toView.layoutIfNeeded()
+        toView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        containerView.addSubview(toView)
 
         // Because toggling `isHidden` causes UIStack view layouts to change, we instead toggle `alpha`
         fromMediaContext.mediaView.alpha = 0.0

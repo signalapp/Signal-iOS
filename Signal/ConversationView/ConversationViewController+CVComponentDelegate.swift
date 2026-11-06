@@ -532,21 +532,19 @@ extension ConversationViewController: CVComponentDelegate {
         attachment: ReferencedAttachment,
         imageView: UIView,
     ) {
-        AssertIsOnMainThread()
-
         dismissKeyboard()
 
         guard
             let pageVC = MediaPageViewController(
                 initialMediaAttachment: attachment,
-                thread: self.thread,
-                spoilerState: self.viewState.spoilerState,
+                thread: thread,
+                spoilerState: viewState.spoilerState,
             )
         else {
             return
         }
 
-        self.present(pageVC, animated: true, completion: nil)
+        present(pageVC, animated: true, completion: nil)
     }
 
     func didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) -> CVAttachmentTapAction {
