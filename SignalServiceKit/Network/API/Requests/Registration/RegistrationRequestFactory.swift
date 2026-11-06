@@ -204,20 +204,21 @@ public enum RegistrationRequestFactory {
 
     // MARK: - Account Creation/Change Number
 
-    public enum VerificationMethod {
+    public enum CreateAccountRequestContext {
         /// The ID of an existing, validated RegistrationSession.
-        case sessionId(E164, String)
-        case recoveryPassword(RegistrationIdentifier, RegistrationRecoveryPassword)
-        case receiptCredential(ReceiptCredentialPresentation)
-
-        public var shouldIncludePniMaterial: Bool {
-            switch self {
-            case .receiptCredential:
-                return false
-            case .sessionId, .recoveryPassword:
-                return true
-            }
-        }
+        case sessionId(
+            phoneNumber: E164,
+            sessionId: String,
+            pniPreKeyBundle: RegistrationPreKeyUploadBundle,
+        )
+        case recoveryPassword(
+            accountIdentifier: RegistrationIdentifier,
+            recoveryPassword: RegistrationRecoveryPassword,
+            pniPreKeyBundle: RegistrationPreKeyUploadBundle,
+        )
+        case receiptCredential(
+            receiptCredentialPresentation: ReceiptCredentialPresentation,
+        )
 
         public var hasSessionId: Bool {
             switch self {
@@ -275,13 +276,12 @@ public enum RegistrationRequestFactory {
     ///   must be true, otherwise the request will fail.
     /// - parameter prekeyBundles: Prekey information to include in the request; mirrors the requests to `v2/keys`.
     public static func createAccountRequest(
-        verificationMethod: VerificationMethod,
+        _ requestContext: CreateAccountRequestContext,
         authPassword: String,
         accountAttributes: AccountAttributes,
         skipDeviceTransfer: Bool,
         apnRegistrationId: ApnRegistrationId?,
         aciPreKeyBundle: RegistrationPreKeyUploadBundle,
-        pniPreKeyBundle: RegistrationPreKeyUploadBundle?,
         logger: PrefixedLogger,
     ) -> TSRequest {
         owsAssertDebug((apnRegistrationId != nil) != accountAttributes.isManualMessageFetchEnabled)
@@ -292,6 +292,16 @@ public enum RegistrationRequestFactory {
         var urlComponents = URLComponents()
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
         let url = urlComponents.url!
+
+        let pniPreKeyBundle: RegistrationPreKeyUploadBundle?
+        switch requestContext {
+        case .sessionId(phoneNumber: _, sessionId: _, let _pniPreKeyBundle):
+            pniPreKeyBundle = _pniPreKeyBundle
+        case .recoveryPassword(accountIdentifier: _, recoveryPassword: _, let _pniPreKeyBundle):
+            pniPreKeyBundle = _pniPreKeyBundle
+        case .receiptCredential:
+            pniPreKeyBundle = nil
+        }
 
         var request = RegistrationRequest(
             accountAttributes: accountAttributes,
@@ -306,11 +316,11 @@ public enum RegistrationRequestFactory {
         )
 
         let username: String
-        switch verificationMethod {
-        case .sessionId(let phoneNumber, let sessionId):
+        switch requestContext {
+        case .sessionId(let phoneNumber, let sessionId, pniPreKeyBundle: _):
             username = phoneNumber.stringValue
             request.sessionId = sessionId
-        case .recoveryPassword(let identifier, let recoveryPassword):
+        case .recoveryPassword(let identifier, let recoveryPassword, pniPreKeyBundle: _):
             switch identifier {
             case .phoneNumber(let phoneNumber):
                 username = phoneNumber.stringValue
@@ -343,6 +353,29 @@ public enum RegistrationRequestFactory {
         var apnToken: ApnRegistrationId?
     }
 
+    public enum ChangeNumberRequestContext {
+        case sessionId(String)
+        case recoveryPassword(RegistrationRecoveryPassword)
+
+        public var hasSessionId: Bool {
+            switch self {
+            case .sessionId:
+                return true
+            case .recoveryPassword:
+                return false
+            }
+        }
+
+        public var hasRecoveryPassword: Bool {
+            switch self {
+            case .recoveryPassword:
+                return true
+            case .sessionId:
+                return false
+            }
+        }
+    }
+
     /// Update the phone number on an account.
     ///
     /// - parameter verificationMethod: A way to verify phone number and account ownership.
@@ -352,7 +385,8 @@ public enum RegistrationRequestFactory {
     /// - parameter pniChangeNumberParameters: pni related params used to inform
     ///   linked device of the change number and rotated pni keys.
     public static func changeNumberRequest(
-        verificationMethod: VerificationMethod,
+        _ requestContext: ChangeNumberRequestContext,
+        newPhoneNumber: E164,
         reglockToken: RegistrationLock?,
         pniChangeNumberParameters: PniDistribution.Parameters,
         logger: PrefixedLogger,
@@ -363,16 +397,6 @@ public enum RegistrationRequestFactory {
         var urlComponents = URLComponents()
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
         let url = urlComponents.url!
-
-        let newPhoneNumber: E164
-        switch verificationMethod {
-        case .sessionId(let _newPhoneNumber, _):
-            newPhoneNumber = _newPhoneNumber
-        case .recoveryPassword(.phoneNumber(let _newPhoneNumber), _):
-            newPhoneNumber = _newPhoneNumber
-        case .receiptCredential:
-            owsFail("not supported")
-        }
 
         var request = ChangeNumberRequest(
             number: newPhoneNumber,
@@ -388,13 +412,11 @@ public enum RegistrationRequestFactory {
             pniRegistrationIds: pniChangeNumberParameters.pniRegistrationIds.mapKeys(injectiveTransform: { "\($0)" }),
         )
 
-        switch verificationMethod {
-        case .sessionId(_, let sessionId):
+        switch requestContext {
+        case .sessionId(let sessionId):
             request.sessionId = sessionId
-        case .recoveryPassword(_, let recoveryPassword):
+        case .recoveryPassword(let recoveryPassword):
             request.recoveryPassword = OWSRequestFactory.RegistrationRecoveryPassword(recoveryPassword)
-        case .receiptCredential:
-            owsFail("not supported")
         }
 
         return TSRequest(url: url, method: "PUT", body: .encodable(request), logger: logger)

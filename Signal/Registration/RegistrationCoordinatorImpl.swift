@@ -2240,10 +2240,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             let accountIdentity: AccountIdentity
             switch mode {
             case .registering, .reRegistering:
-                accountIdentity = try await makeRegisterRequest(
-                    .recoveryPassword(.phoneNumber(e164), regRecoveryPw),
+                accountIdentity = try await makeRegisterRequest(.recoveryPassword(
+                    phoneNumber: e164,
+                    recoveryPassword: regRecoveryPw,
                     reglockToken: reglockToken,
-                )
+                ))
             case .changingNumber(let changeNumberState):
                 if let pniState = changeNumberState.pniState {
                     // We had an in flight change number that was interrupted, recover.
@@ -2254,7 +2255,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return await nextStep()
                 }
                 accountIdentity = try await makeChangeNumberRequest(
-                    .recoveryPassword(.phoneNumber(e164), regRecoveryPw),
+                    newPhoneNumber: e164,
+                    requestContext: .recoveryPassword(regRecoveryPw),
                     reglockToken: reglockToken,
                     changeNumberState: changeNumberState,
                 )
@@ -2881,10 +2883,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             let accountIdentity: AccountIdentity
             switch mode {
             case .registering, .reRegistering:
-                accountIdentity = try await makeRegisterRequest(
-                    .sessionId(session.e164, session.id),
+                accountIdentity = try await makeRegisterRequest(.sessionId(
+                    phoneNumber: session.e164,
+                    sessionId: session.id,
                     reglockToken: reglockToken,
-                )
+                ))
             case .changingNumber(let changeNumberState):
                 if let pniState = changeNumberState.pniState {
                     // We had an in flight change number that was interrupted, recover.
@@ -2895,7 +2898,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return await nextStep()
                 }
                 accountIdentity = try await makeChangeNumberRequest(
-                    .sessionId(session.e164, session.id),
+                    newPhoneNumber: session.e164,
+                    requestContext: .sessionId(session.id),
                     reglockToken: reglockToken,
                     changeNumberState: changeNumberState,
                 )
@@ -3722,10 +3726,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 let accountIdentity: AccountIdentity
                 do {
                     accountIdentity = try await Retry.performWithBackoff(maxAttempts: Constants.networkErrorRetries + 1) {
-                        return try await makeRegisterRequest(
-                            .receiptCredential(receiptCredentialPresentation),
-                            reglockToken: nil,
-                        )
+                        return try await makeRegisterRequest(.receiptCredential(
+                            receiptCredentialPresentation: receiptCredentialPresentation,
+                        ))
                     }
                 } catch {
                     Logger.warn("couldn't create account: \(error)")
@@ -4465,10 +4468,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // MARK: - Register/Change Number Requests
 
-    private func makeRegisterRequest(
-        _ method: RegistrationRequestFactory.VerificationMethod,
-        reglockToken: RegistrationLock?,
-    ) async throws -> AccountIdentity {
+    /// Context necessary to invoke `makeRegisterRequest`.
+    ///
+    /// This is typically "what verification method should we use to prove
+    /// ownership of the account?", but it also carries additional fields that
+    /// are needed for each of those methods.
+    private enum RegistrationContext {
+        case sessionId(phoneNumber: E164, sessionId: String, reglockToken: RegistrationLock?)
+        case recoveryPassword(phoneNumber: E164, recoveryPassword: RegistrationRecoveryPassword, reglockToken: RegistrationLock?)
+        case receiptCredential(receiptCredentialPresentation: ReceiptCredentialPresentation)
+    }
+
+    private func makeRegisterRequest(_ registrationContext: RegistrationContext) async throws -> AccountIdentity {
         logger.info("")
 
         switch mode {
@@ -4500,19 +4511,67 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         }
 
+        try await sendRestoreMethodIfNecessary()
+
+        // If there are identity keys, we have to persist them before generating prekeys
+        if let registrationMessage = inMemoryState.registrationMessage {
+            persistRegistrationMessage(registrationMessage)
+        }
+        let aciPreKeyBundle = await deps.preKeyManager.createPreKeysForRegistration(forIdentity: .aci)
+        let pniPreKeyBundle: RegistrationPreKeyUploadBundle?
+
+        let requestContext: RegistrationRequestFactory.CreateAccountRequestContext
+        let reglockToken: RegistrationLock?
+        let pniRegistrationId: UInt32?
+        switch registrationContext {
+        case .sessionId(let phoneNumber, let sessionId, let _reglockToken):
+            let _pniPreKeyBundle = await deps.preKeyManager.createPreKeysForRegistration(forIdentity: .pni)
+            pniPreKeyBundle = _pniPreKeyBundle
+            requestContext = .sessionId(
+                phoneNumber: phoneNumber,
+                sessionId: sessionId,
+                pniPreKeyBundle: _pniPreKeyBundle,
+            )
+            reglockToken = _reglockToken
+            pniRegistrationId = persistedState.pniRegistrationId.owsFailUnwrap("must exist")
+        case .recoveryPassword(let phoneNumber, let recoveryPassword, let _reglockToken):
+            let _pniPreKeyBundle = await deps.preKeyManager.createPreKeysForRegistration(forIdentity: .pni)
+            pniPreKeyBundle = _pniPreKeyBundle
+            requestContext = .recoveryPassword(
+                accountIdentifier: .phoneNumber(phoneNumber),
+                recoveryPassword: recoveryPassword,
+                pniPreKeyBundle: _pniPreKeyBundle,
+            )
+            reglockToken = _reglockToken
+            pniRegistrationId = persistedState.pniRegistrationId.owsFailUnwrap("must exist")
+        case .receiptCredential(let receiptCredentialPresentation):
+            pniPreKeyBundle = nil
+            requestContext = .receiptCredential(
+                receiptCredentialPresentation: receiptCredentialPresentation,
+            )
+            reglockToken = nil
+            pniRegistrationId = nil
+        }
+
         let accountAttributes = makeAccountAttributes(
-            verificationMethod: method,
             isManualMessageFetchEnabled: isManualMessageFetchEnabled,
             reglockToken: reglockToken,
+            pniRegistrationId: pniRegistrationId,
         )
-        try await sendRestoreMethodIfNecessary()
-        let accountIdentityResponse = try await makeCreateAccountRequestAndFinalizePreKeys(
-            verificationMethod: method,
+        let accountIdentityResponse = try await Service.makeCreateAccountRequest(
+            requestContext,
             authPassword: authToken,
             accountAttributes: accountAttributes,
             skipDeviceTransfer: shouldSkipDeviceTransfer(),
             apnRegistrationId: apnRegistrationId,
+            aciPreKeyBundle: aciPreKeyBundle,
+            networkManager: deps.networkManager,
+            logger: logger,
         )
+        await deps.preKeyManager.finalizeRegistrationPreKeyBundle(aciPreKeyBundle)
+        if let pniPreKeyBundle {
+            await deps.preKeyManager.finalizeRegistrationPreKeyBundle(pniPreKeyBundle)
+        }
         return AccountIdentity(
             localIdentifiers: accountIdentityResponse.localIdentifiers,
             authPassword: authToken,
@@ -4521,7 +4580,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func makeChangeNumberRequest(
-        _ method: RegistrationRequestFactory.VerificationMethod,
+        newPhoneNumber: E164,
+        requestContext: RegistrationRequestFactory.ChangeNumberRequestContext,
         reglockToken: RegistrationLock?,
         changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState,
     ) async throws -> AccountIdentity {
@@ -4529,7 +4589,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         do {
             let accountIdentityResponse = try await generatePniStateAndMakeChangeNumberRequest(
-                verificationMethod: method,
+                newPhoneNumber: newPhoneNumber,
+                requestContext: requestContext,
                 reglockToken: reglockToken,
                 changeNumberState: changeNumberState,
             )
@@ -4603,59 +4664,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
-    private func makeCreateAccountRequestAndFinalizePreKeys(
-        verificationMethod: RegistrationRequestFactory.VerificationMethod,
-        authPassword: String,
-        accountAttributes: AccountAttributes,
-        skipDeviceTransfer: Bool,
-        apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
-    ) async throws -> AccountIdentityResponse {
-        // If there are identity keys, we have to persist them before generating prekeys
-        if let registrationMessage = inMemoryState.registrationMessage {
-            persistRegistrationMessage(registrationMessage)
-        }
-
-        let aciPreKeyBundle = await deps.preKeyManager.createPreKeysForRegistration(forIdentity: .aci)
-        var pniPreKeyBundle: RegistrationPreKeyUploadBundle?
-        if verificationMethod.shouldIncludePniMaterial {
-            pniPreKeyBundle = await deps.preKeyManager.createPreKeysForRegistration(forIdentity: .pni)
-        }
-
-        let shouldSkipDeviceTransfer = self.shouldSkipDeviceTransfer()
-        let accountResponse = try await Service.makeCreateAccountRequest(
-            verificationMethod,
-            authPassword: authPassword,
-            accountAttributes: accountAttributes,
-            skipDeviceTransfer: shouldSkipDeviceTransfer,
-            apnRegistrationId: apnRegistrationId,
-            aciPreKeyBundle: aciPreKeyBundle,
-            pniPreKeyBundle: pniPreKeyBundle,
-            networkManager: deps.networkManager,
-            logger: logger,
-        )
-        await deps.preKeyManager.finalizeRegistrationPreKeyBundle(aciPreKeyBundle)
-        if let pniPreKeyBundle {
-            await deps.preKeyManager.finalizeRegistrationPreKeyBundle(pniPreKeyBundle)
-        }
-        return accountResponse
-    }
-
     private func generatePniStateAndMakeChangeNumberRequest(
-        verificationMethod: RegistrationRequestFactory.VerificationMethod,
+        newPhoneNumber: E164,
+        requestContext: RegistrationRequestFactory.ChangeNumberRequestContext,
         reglockToken: RegistrationLock?,
         changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState,
     ) async throws -> AccountIdentityResponse {
         logger.info("")
-
-        let newPhoneNumber: E164
-        switch verificationMethod {
-        case .sessionId(let _newPhoneNumber, _):
-            newPhoneNumber = _newPhoneNumber
-        case .recoveryPassword(.phoneNumber(let _newPhoneNumber), _):
-            newPhoneNumber = _newPhoneNumber
-        case .receiptCredential:
-            owsFail("not supported")
-        }
 
         let (pniParams, pniPendingState) = try await deps.changeNumberPniManager.generatePniIdentity(
             forNewE164: newPhoneNumber,
@@ -4664,7 +4679,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         )
 
         return try await _makeChangeNumberRequest(
-            verificationMethod: verificationMethod,
+            newPhoneNumber: newPhoneNumber,
+            requestContext: requestContext,
             reglockToken: reglockToken,
             changeNumberState: changeNumberState,
             pniPendingState: pniPendingState,
@@ -4673,7 +4689,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func _makeChangeNumberRequest(
-        verificationMethod: RegistrationRequestFactory.VerificationMethod,
+        newPhoneNumber: E164,
+        requestContext: RegistrationRequestFactory.ChangeNumberRequestContext,
         reglockToken: RegistrationLock?,
         changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState,
         pniPendingState: ChangePhoneNumberPni.PendingState,
@@ -4695,7 +4712,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
 
         return try await Service.makeChangeNumberRequest(
-            verificationMethod,
+            requestContext,
+            newPhoneNumber: newPhoneNumber,
             reglockToken: reglockToken,
             pniChangeNumberParameters: pniParams,
             networkManager: deps.networkManager,
@@ -4796,14 +4814,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func makeAccountAttributes(
-        verificationMethod: RegistrationRequestFactory.VerificationMethod,
         isManualMessageFetchEnabled: Bool,
         reglockToken: RegistrationLock?,
+        pniRegistrationId: UInt32?,
     ) -> AccountAttributes {
         return AccountAttributes(
             isManualMessageFetchEnabled: isManualMessageFetchEnabled,
             registrationId: persistedState.aciRegistrationId!,
-            pniRegistrationId: verificationMethod.shouldIncludePniMaterial ? persistedState.pniRegistrationId! : nil,
+            pniRegistrationId: pniRegistrationId,
             unidentifiedAccessKey: inMemoryState.udAccessKey.keyData.base64EncodedString(),
             unrestrictedUnidentifiedAccess: inMemoryState.allowUnrestrictedUD,
             reglockToken: reglockToken?.canonicalStringRepresentation,

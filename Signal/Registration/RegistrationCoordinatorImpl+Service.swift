@@ -32,37 +32,35 @@ extension RegistrationCoordinatorImpl {
         }
 
         static func makeCreateAccountRequest(
-            _ verificationMethod: RegistrationRequestFactory.VerificationMethod,
+            _ requestContext: RegistrationRequestFactory.CreateAccountRequestContext,
             authPassword: String,
             accountAttributes: AccountAttributes,
             skipDeviceTransfer: Bool,
             apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
             aciPreKeyBundle: RegistrationPreKeyUploadBundle,
-            pniPreKeyBundle: RegistrationPreKeyUploadBundle?,
             networkManager: any NetworkManagerProtocol,
             logger: PrefixedLogger,
         ) async throws -> AccountIdentityResponse {
             let request = RegistrationRequestFactory.createAccountRequest(
-                verificationMethod: verificationMethod,
+                requestContext,
                 authPassword: authPassword,
                 accountAttributes: accountAttributes,
                 skipDeviceTransfer: skipDeviceTransfer,
                 apnRegistrationId: apnRegistrationId,
                 aciPreKeyBundle: aciPreKeyBundle,
-                pniPreKeyBundle: pniPreKeyBundle,
                 logger: logger,
             )
             let response: HTTPResponse
             do {
                 response = try await networkManager.asyncRequest(request)
-            } catch where error.httpStatusCode == 401 && verificationMethod.hasSessionId {
+            } catch where error.httpStatusCode == 401 && requestContext.hasSessionId {
                 /// The Authorization header was invalid or the provided credentials were
                 /// insufficient to verify ownership of the given phone number. Response
                 /// body has an optional string error message.
                 throw Registration.SessionRejectedError()
-            } catch where error.httpStatusCode == 401 && verificationMethod.hasReceiptCredential {
+            } catch where error.httpStatusCode == 401 && requestContext.hasReceiptCredential {
                 throw Registration.ReceiptCredentialRejectedError()
-            } catch where error.httpStatusCode == 403 && verificationMethod.hasRecoveryPassword {
+            } catch where error.httpStatusCode == 403 && requestContext.hasRecoveryPassword {
                 /// The provided registration recovery password is either incorrect or
                 /// registration via reg recovery password is impossible for this number.
                 throw Registration.RecoveryPasswordRejectedError()
@@ -93,14 +91,16 @@ extension RegistrationCoordinatorImpl {
         }
 
         static func makeChangeNumberRequest(
-            _ verificationMethod: RegistrationRequestFactory.VerificationMethod,
+            _ requestContext: RegistrationRequestFactory.ChangeNumberRequestContext,
+            newPhoneNumber: E164,
             reglockToken: RegistrationLock?,
             pniChangeNumberParameters: PniDistribution.Parameters,
             networkManager: any NetworkManagerProtocol,
             logger: PrefixedLogger,
         ) async throws -> AccountIdentityResponse {
             let request = RegistrationRequestFactory.changeNumberRequest(
-                verificationMethod: verificationMethod,
+                requestContext,
+                newPhoneNumber: newPhoneNumber,
                 reglockToken: reglockToken,
                 pniChangeNumberParameters: pniChangeNumberParameters,
                 logger: logger,
@@ -108,11 +108,11 @@ extension RegistrationCoordinatorImpl {
             let response: HTTPResponse
             do {
                 response = try await networkManager.asyncRequest(request)
-            } catch where error.httpStatusCode == 401 && verificationMethod.hasSessionId {
+            } catch where error.httpStatusCode == 401 && requestContext.hasSessionId {
                 /// The provided credentials were insufficient to verify ownership of the
                 /// given phone number.
                 throw Registration.SessionRejectedError()
-            } catch where error.httpStatusCode == 403 && verificationMethod.hasRecoveryPassword {
+            } catch where error.httpStatusCode == 403 && requestContext.hasRecoveryPassword {
                 /// The provided registration recovery password is either incorrect or
                 /// registration via reg recovery password is impossible for this number.
                 throw Registration.RecoveryPasswordRejectedError()

@@ -3176,13 +3176,16 @@ public class RegistrationCoordinatorTest {
         recoveryPassword: RegistrationRecoveryPassword,
     ) -> TSRequest {
         return RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .sessionId(Stubs.e164, Stubs.sessionId),
+            .sessionId(
+                phoneNumber: Stubs.e164,
+                sessionId: Stubs.sessionId,
+                pniPreKeyBundle: Stubs.preKeyBundle(identity: .pni),
+            ),
             authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(registrationRecoveryPassword: recoveryPassword),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             aciPreKeyBundle: Stubs.preKeyBundle(identity: .aci),
-            pniPreKeyBundle: Stubs.preKeyBundle(identity: .pni),
             logger: .empty(),
         )
     }
@@ -3191,13 +3194,16 @@ public class RegistrationCoordinatorTest {
         _ recoveryPassword: RegistrationRecoveryPassword,
     ) -> TSRequest {
         return RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .recoveryPassword(.phoneNumber(Stubs.e164), recoveryPassword),
+            .recoveryPassword(
+                accountIdentifier: .phoneNumber(Stubs.e164),
+                recoveryPassword: recoveryPassword,
+                pniPreKeyBundle: Stubs.preKeyBundle(identity: .pni),
+            ),
             authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(registrationRecoveryPassword: recoveryPassword),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             aciPreKeyBundle: Stubs.preKeyBundle(identity: .aci),
-            pniPreKeyBundle: Stubs.preKeyBundle(identity: .pni),
             logger: .empty(),
         )
     }
