@@ -720,38 +720,57 @@ extension ConversationViewController: CVComponentDelegate {
         let db = DependenciesBridge.shared.db
         let stickerManager = DependenciesBridge.shared.stickerManager
 
-        // TODO: [KC] add "Favorites" action once implemented
+        var actions: [StickerDetailSheet.Action] = []
+        actions.append(
+            StickerDetailSheet.Action(
+                icon: .buttonForward,
+                title: OWSLocalizedString(
+                    "SEND_STICKER_BUTTON_TITLE",
+                    comment: "Label for the button to send a sticker message",
+                ),
+                handler: { [weak self] in
+                    guard let self else { return }
+
+                    self.sendStickerFlow = SendStickerFlow(stickerMetadata: stickerMetadata, stickerManager: stickerManager, db: db)
+                    self.sendStickerFlow?.present(from: self)
+                },
+            ),
+        )
+
+        if BuildFlags.stickerFavorites {
+            if
+                let favoriteAction = StickerDetailSheet.Action.favoriteAction(
+                    stickerMetadata: stickerMetadata,
+                    db: db,
+                    stickerManager: stickerManager,
+                    presentingVC: self,
+                    stickerContext: .message,
+                )
+            {
+                actions.append(favoriteAction)
+            }
+        }
+
+        actions.append(
+            StickerDetailSheet.Action(
+                icon: .stickerPack,
+                title: OWSLocalizedString(
+                    "STICKER_BUTTON_VIEW_PACK",
+                    comment: "Title for a button to view a sticker pack",
+                ),
+                handler: { [weak self] in
+                    guard let self else { return }
+                    let vc = StickerPackViewController(stickerPackInfo: stickerMetadata.packInfo)
+                    vc.present(from: self, animated: true)
+                },
+            ),
+        )
+
         let stickerDetailsSheet = StickerDetailSheet(
             db: db,
             stickerMetadata: stickerMetadata,
             stickerManager: stickerManager,
-            actions: [
-                StickerDetailSheet.Action(
-                    icon: .buttonForward,
-                    title: OWSLocalizedString(
-                        "SEND_STICKER_BUTTON_TITLE",
-                        comment: "Label for the button to send a sticker message",
-                    ),
-                    handler: { [weak self] in
-                        guard let self else { return }
-
-                        self.sendStickerFlow = SendStickerFlow(stickerMetadata: stickerMetadata, stickerManager: stickerManager, db: db)
-                        self.sendStickerFlow?.present(from: self)
-                    },
-                ),
-                .init(
-                    icon: .stickerPack,
-                    title: OWSLocalizedString(
-                        "STICKER_BUTTON_VIEW_PACK",
-                        comment: "Title for a button to view a sticker pack",
-                    ),
-                    handler: { [weak self] in
-                        guard let self else { return }
-                        let vc = StickerPackViewController(stickerPackInfo: stickerMetadata.packInfo)
-                        vc.present(from: self, animated: true)
-                    },
-                ),
-            ],
+            actions: actions,
         )
         present(stickerDetailsSheet, animated: true)
     }
@@ -1059,7 +1078,7 @@ extension ConversationViewController: CVComponentDelegate {
         if SSKEnvironment.shared.spamChallengeResolverRef.isPausingMessages {
             SpamCaptchaViewController.presentActionSheet(from: self)
             DependenciesBridge.shared.db.write { tx in
-                SupportKeyValueStore().setLastChallengeDate(value: Date(), transaction: tx)
+                SupportKeyValueStore().setLastChallengeDate(value: Date(), tx: tx)
             }
         } else {
             SSKEnvironment.shared.spamChallengeResolverRef.retryPausedMessagesIfReady()

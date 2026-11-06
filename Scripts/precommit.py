@@ -10,6 +10,12 @@ from lint.util import EXTENSIONS_TO_CHECK
 
 CLANG_FORMAT_EXTS = set([".m", ".mm", ".h"])
 
+ACKNOWLEDGEMENTS_INPUT_PATHS = (
+    "Signal.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+    "Scripts/generate_acknowledgements.py",
+    "ThirdParty/",
+)
+
 
 def sort_forward_decl_statement_block(text):
     lines = text.split("\n")
@@ -179,6 +185,14 @@ def should_process_file(file_path: str) -> bool:
     return True
 
 
+def should_generate_acknowledgements(file_paths):
+    return any(
+        file_path.startswith(input_path)
+        for file_path in file_paths
+        for input_path in ACKNOWLEDGEMENTS_INPUT_PATHS
+    )
+
+
 def clang_format(file_paths):
     file_paths = list(filter(lambda f: get_ext(f) in CLANG_FORMAT_EXTS, file_paths))
     if len(file_paths) == 0:
@@ -209,13 +223,18 @@ if __name__ == "__main__":
         action='store_true',
         help="skip sorting the Xcode project",
     )
+    parser.add_argument(
+        "--skip-acknowledgements",
+        action='store_true',
+        help="skip regenerating the acknowledgements",
+    )
     ns = parser.parse_args()
 
     if len(ns.path) > 0:
-        file_paths = ns.path
+        changed_paths = ns.path
     else:
-        file_paths = get_file_paths_for_commit(ns.ref or "HEAD")
-    file_paths = sorted(set(filter(should_process_file, file_paths)))
+        changed_paths = get_file_paths_for_commit(ns.ref or "HEAD")
+    file_paths = sorted(set(filter(should_process_file, changed_paths)))
 
     result = True
 
@@ -238,6 +257,16 @@ if __name__ == "__main__":
         if proc.returncode != 0:
             result = False
     print("")
+
+    if ns.skip_acknowledgements:
+        print("Skipping acknowledgements!", flush=True)
+        print("")
+    elif should_generate_acknowledgements(changed_paths):
+        print("Generating acknowledgements...", flush=True)
+        proc = subprocess.run(["Scripts/generate_acknowledgements.py"])
+        if proc.returncode != 0:
+            result = False
+        print("")
 
     print("Running swiftformat...", flush=True)
     if not swiftformat(file_paths):

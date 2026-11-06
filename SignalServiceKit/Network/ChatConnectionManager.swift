@@ -19,6 +19,7 @@ public protocol ChatConnectionManager: ServiceProvider {
     func waitUntilIdentifiedConnectionShouldBeClosed() async throws(CancellationError)
     @MainActor
     var unidentifiedConnectionState: OWSChatConnectionState { get }
+    var hasDirectConnection: Bool { get async }
     var hasEmptiedInitialQueue: Bool { get async }
 
     func requestIdentifiedConnection() -> OWSChatConnection.ConnectionToken
@@ -196,6 +197,17 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         return connectionUnidentified.currentState
     }
 
+    public var hasDirectConnection: Bool {
+        get async {
+            for connection in connections {
+                if await connection.isConnectedDirectly {
+                    return true
+                }
+            }
+            return false
+        }
+    }
+
     // MARK: -
 
     public func keyTransparencyClient() async throws -> KeyTransparency.Client {
@@ -296,6 +308,8 @@ public class ChatConnectionManagerMock: ChatConnectionManager {
     }
 
     public var unidentifiedConnectionState: OWSChatConnectionState = .closed
+
+    public var hasDirectConnection: Bool = false
 
     public var shouldWaitForSocketToMakeRequestPerType = [OWSChatConnectionType: Bool]()
 

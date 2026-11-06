@@ -217,6 +217,7 @@ public class OWSTableItem {
         isOn: @escaping (() -> Bool),
         isEnabled: @escaping (() -> Bool) = { true },
         actionBlock: @escaping ((UISwitch) -> Void) = { _ in },
+        disabledTapActionBlock: (() -> Void)? = nil,
     ) -> OWSTableItem {
         return OWSTableItem(customCellBlock: {
             let cell = OWSTableItem.buildImageCell(
@@ -230,6 +231,10 @@ public class OWSTableItem {
             let cellSwitch = UISwitch()
             cellSwitch.isOn = isOn()
             cellSwitch.isEnabled = isEnabled()
+            if disabledTapActionBlock != nil {
+                // Let taps on a disabled switch fall through to the row.
+                cellSwitch.isUserInteractionEnabled = cellSwitch.isEnabled
+            }
             cellSwitch.accessibilityIdentifier = accessibilityIdentifier
             cellSwitch.addAction(
                 UIAction { [unowned cellSwitch] _ in actionBlock(cellSwitch) },
@@ -238,6 +243,10 @@ public class OWSTableItem {
             cell.accessoryView = cellSwitch
             cell.selectionStyle = .none
             return cell
+        }, actionBlock: disabledTapActionBlock.map { disabledTapActionBlock in
+            return {
+                if !isEnabled() { disabledTapActionBlock() }
+            }
         })
     }
 
@@ -423,6 +432,7 @@ public extension OWSTableItem {
         maxItemNameLines: Int? = nil,
         textColor: UIColor? = nil,
         accessoryText: String? = nil,
+        accessoryAccessibilityLabel: String? = nil,
         accessoryTextColor: UIColor? = nil,
         accessoryType: UITableViewCell.AccessoryType = .none,
         accessoryContentView: UIView? = nil,
@@ -444,6 +454,7 @@ public extension OWSTableItem {
             maxItemNameLines: maxItemNameLines,
             textColor: textColor,
             accessoryText: accessoryText,
+            accessoryAccessibilityLabel: accessoryAccessibilityLabel,
             accessoryTextColor: accessoryTextColor,
             accessoryType: accessoryType,
             accessoryContentView: accessoryContentView,
@@ -496,6 +507,7 @@ public extension OWSTableItem {
         maxItemNameLines: Int? = nil,
         textColor: UIColor? = nil,
         accessoryText: String? = nil,
+        accessoryAccessibilityLabel: String? = nil,
         accessoryTextColor: UIColor? = nil,
         accessoryType: UITableViewCell.AccessoryType = .none,
         accessoryContentView: UIView? = nil,
@@ -609,6 +621,7 @@ public extension OWSTableItem {
         } else if let accessoryText {
             let accessoryLabel = UILabel()
             accessoryLabel.text = accessoryText
+            accessoryLabel.accessibilityLabel = accessoryAccessibilityLabel
             accessoryLabel.textColor = accessoryTextColor ?? OWSTableItem.accessoryGray
             accessoryLabel.font = OWSTableItem.accessoryLabelFont
             accessoryLabel.adjustsFontForContentSizeCategory = true

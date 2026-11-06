@@ -3112,6 +3112,15 @@
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ ना आपल्या संपर्कांमधून हटवले आणि काढून टाकले.";
 
+/* Message for a sheet confirming that the user, as a group admin, wants to delete messages for everyone. */
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_ADMIN_MESSAGE" = "Group members will see that you deleted these messages.";
+
+/* Message for a sheet confirming that the user wants to delete their message for everyone. */
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_MESSAGE" = "This message will be deleted for everyone in the chat. They will be able to see that you deleted a message.";
+
+/* Title for a sheet confirming that the user wants to delete messages for everyone. */
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_TITLE" = "Delete for Everyone?";
+
 /* Title for an action sheet button explaining that a message will be deleted. */
 "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "हटवा";
 
@@ -3202,18 +3211,6 @@
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "इतर iPad वरून स्थानांतरित करा";
 
-/* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "हस्तांतरण पूर्ण होऊ शकले नाही. दोन्ही डिव्हाइसेसवर Signal उघडलेले असल्याची खात्री करा आणि पुन्हा प्रयत्न करा.";
-
-/* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "हस्तांतरण पूर्ण होऊ शकले नाही. आपले डिव्हाइसेस एकमेंकांच्या जवळ असल्याची खात्री करा आणि पुन्हा प्रयत्न करा.";
-
-/* An error indicating that the user does not have enough free space on their device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "स्थानांतरण पूर्ण करण्यासाठी पुरेशी मोकळी जागा नाही";
-
-/* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Signal च्या नवीनतम आवृत्ती वर अद्यतनित करा आणि पुन्हा प्रयत्न करा";
-
 /* Body of the device transfer screen for pairing a new device, from the new device */
 "DEVICE_TRANSFER_PAIR_NEW_DEVICE_MESSAGE" = "तुमचे खाते हस्तांतरित करण्यासाठी, हा डिव्हाईस तुमच्या जुन्या डिव्हाईसशी पेअर करा";
 
@@ -3225,12 +3222,6 @@
 
 /* Title of the device transfer screen for pairing a new device, from the old device */
 "DEVICE_TRANSFER_PAIR_OLD_DEVICE_TITLE" = "तुमच्या जुन्या डिव्हाईसशी पेअर करा";
-
-/* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "दोन्ही डिव्हाईस ऐकमेकांच्या जवळ ठेवा. कुठलाही डिव्हाईस बंद करू नका आणि Signal उघडे ठेवा. स्थानांतरण हे एंड-टू-एंड एन्क्रिप्टेड असतात.";
-
-/* The title on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_TITLE" = "डेटा प्राप्त करत आहे";
 
 /* Description in the progress view displayed during device transfer finalization. */
 "DEVICE_TRANSFER_STATUS_DEVICE_FINISHING" = "हस्तांतरण अंतिम टप्प्यात आहे...";
@@ -4712,7 +4703,7 @@
 "GROUP_NAME_VIEW_TITLE" = "गट नाव";
 
 /* Bottom bar label for group chats the local user is not a member of */
-"GROUP_NOT_MEMBER_BOTTOM_PANEL_LABEL" = "You can’t send messages to this group because you’re not a member.";
+"GROUP_NOT_MEMBER_BOTTOM_PANEL_LABEL" = "तुम्ही या गटात संदेश पाठवू शकत नाही कारण तुम्ही सदस्य नाही.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%1$@ ने गटाचे निमंत्रण स्वीकारले.";
@@ -4817,7 +4808,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "विनंत्या आणि आमंत्रणे";
 
 /* Label for a banner in group settings shown when the local user is not a member of the group */
-"GROUP_SETTINGS_NOT_MEMBER_BANNER_LABEL" = "You’re not a member of this group";
+"GROUP_SETTINGS_NOT_MEMBER_BANNER_LABEL" = "तुम्ही या गटाचे सदस्य नाही";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
 "GROUP_STORY_NAME_FORMAT" = "%1$@ पासून %2$@पर्यंत";
@@ -5015,13 +5006,13 @@
 "HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "या व्यक्तीला आपल्या फोनच्या संपर्कात जतन केले. आपल्या फोन वरील आपल्या संपर्कातून त्यांना हटवा आणि पुन्हा प्रयत्न करा.";
 
 /* Displayed on Calls tab when the screen is large (eg iPad) and is split into two columns and nothing is selected. */
-"HOME_CALLS_TAB_PLACEHOLDER" = "Tap %1$@ to start a new voice or video call.";
+"HOME_CALLS_TAB_PLACEHOLDER" = "नवीन व्हॉईस किंवा व्हिडिओ कॉल सुरु करण्यासाठी %1$@ वर टॅप करा.";
 
 /* Displayed on Chats tab when the screen is large (eg iPad) and is split into two columns and no chat is selected. */
-"HOME_CHATS_TAB_PLACEHOLDER" = "Select a chat or tap %1$@ to start messaging.";
+"HOME_CHATS_TAB_PLACEHOLDER" = "संदेश पाठवणे सुरु करण्यासाठी एक चॅट निवडा किंवा %1$@ वर टॅप करा.";
 
 /* Displayed on Stories tab when screen is large (eg iPad) and is split into two columns. */
-"HOME_STORIES_TAB_PLACEHOLDER" = "Tap to view a story.";
+"HOME_STORIES_TAB_PLACEHOLDER" = "कथा पाहण्यासाठी टॅप करा.";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "आर्काईव्ह केलेले चॅट्स";
@@ -5067,6 +5058,9 @@
 
 /* Title for the conversation list's backup subscription not found locally context menu action. */
 "HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY" = "बॅकअप सदस्यत्व सापडले नाही";
+
+/* Title for the 'donate' action in the context menu of the settings button on home view tabs. */
+"HOME_VIEW_TITLE_DONATE" = "Donate to Signal";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "बॅकअप घेता आला नाही";
@@ -5549,10 +5543,10 @@
 "LINKED_DEVICES_TITLE" = "लिंक केलेले डिव्हाईस";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Couldn’t Link Device";
+"LINKING_DEVICE_FAILED_TITLE" = "डिव्हाईस लिंक करता आला नाही";
 
 /* Shown when trying to link a device to an account but that device is out of date and must first update its version of Signal. */
-"LINKING_DEVICE_OUT_OF_DATE" = "Your other device is running an old version of Signal. You need to update Signal on that device before you can link it.";
+"LINKING_DEVICE_OUT_OF_DATE" = "तुमच्या दुसऱ्या डिव्हाईसवर Signalची जुनी आवृत्ती सुरु आहे. लिंक करण्यापूर्वी तुम्हाला त्या डिव्हाईसवर Signal अद्ययावत करावे लागेल.";
 
 /* Progress label when the message loading has nearly completed during the device linking process */
 "LINKING_SYNCING_FINALIZING" = "संदेश हस्तांतरण पूर्ण होत आहे...";
@@ -5788,6 +5782,9 @@
 /* Accessibility prefix for member labels. */
 "MEMBER_LABEL_AX_PREFIX" = "सदस्य लेबल: ";
 
+/* Accessibility label for the button that clears the member label text and emoji. */
+"MEMBER_LABEL_CLEAR_BUTTON_ACCESSIBILITY_LABEL" = "Clear label";
+
 /* Button label on action sheet when attempting to change the group attributes access to 'administrator' and then continue */
 "MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "अनुमती बदला";
 
@@ -5799,6 +5796,9 @@
 
 /* Text for a button to set a member label */
 "MEMBER_LABEL_EDIT" = "तुमचे लेबल संपादित करा";
+
+/* Accessibility label for the button that chooses an emoji for a member label. */
+"MEMBER_LABEL_EMOJI_BUTTON_ACCESSIBILITY_LABEL" = "Choose emoji";
 
 /* Error indicating member label could not save. */
 "MEMBER_LABEL_FAIL_TO_SAVE" = "सदस्य लेबल जतन करता आले नाही";
@@ -5839,17 +5839,11 @@
 /* Title for a view where users can edit and preview their member label. */
 "MEMBER_LABEL_VIEW_TITLE" = "सदस्य लेबल";
 
-/* A one-time confirmation that you, as an admin, want to delete for everyone */
-"MESSAGE_ACTION_ADMIN_DELETE_FOR_EVERYONE_CONFIRMATION" = "गट सदस्यांना Signalच्या नवीन आवृत्तीवर तुम्ही हे संदेश हटवल्याचे दिसेल.";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "संदेश मजकूर कॉपी करा";
 
 /* The title for the action that deletes a message for all users in the conversation. */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "सर्वांसाठी हटवा";
-
-/* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Signal च्या अलिकडील आवृत्तीवर असल्यास हा संदेश चॅटमधील प्रत्येकासाठी हटवला जाईल. आपण संदेश हटवला हे पाहण्यात ते सक्षम हाेतील.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "हा संदेश आपण कुणासाठी हटवू इच्छिता?";
@@ -6758,25 +6752,25 @@
 "ONBOARDING_SPLASH_TITLE" = "गोपनीयता आपल्या सोबत न्या.\nप्रत्येक संदेशामध्ये आपण स्वतः रहा.";
 
 /* Subtitle for action to verify with an authenticator as a 2fa method. */
-"ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_BODY" = "Enter a one-time code generated by your authenticator app.";
+"ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_BODY" = "तुमच्या ऑथेंटिकेटर ॲपने तयार केलेला एक वेळचा कोड प्रविष्ट करा.";
 
 /* Title for action to verify with an authenticator as a 2fa method. */
-"ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_TITLE" = "Authenticator App";
+"ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_TITLE" = "ऑथेंटिकेटर ॲप";
 
 /* Description for the 2fa screens shown during registration. */
-"ONBOARDING_TWO_FACTOR_AUTH_METHOD_BODY" = "Choose a method below to verify your account.";
+"ONBOARDING_TWO_FACTOR_AUTH_METHOD_BODY" = "तुमच्या खात्याची पडताळणी करण्यासाठी खालीलपैकी एक पद्धत निवडा.";
 
 /* Subtitle for action to verify with a passkey as a 2fa method. */
-"ONBOARDING_TWO_FACTOR_AUTH_METHOD_PASSKEY_BODY" = "Tap to use your saved biometric or FIDO2 passkey";
+"ONBOARDING_TWO_FACTOR_AUTH_METHOD_PASSKEY_BODY" = "तुम्ही जतन केलली बायोमेट्रिक किंवा FIDO2 पासकी वापरण्यासाठी टॅप करा";
 
 /* Title for action to verify with a passkey as a 2fa method. */
-"ONBOARDING_TWO_FACTOR_AUTH_METHOD_PASSKEY_TITLE" = "Passkey";
+"ONBOARDING_TWO_FACTOR_AUTH_METHOD_PASSKEY_TITLE" = "पासकी";
 
 /* Description for the screen asking the user to verify their account with a passkey during registration. */
-"ONBOARDING_TWO_FACTOR_AUTH_PASSKEY_BODY" = "To continue, verify your account with your passkey.";
+"ONBOARDING_TWO_FACTOR_AUTH_PASSKEY_BODY" = "चालू ठेवण्यासाठी, तुमच्या पासकीने तुमच्या खात्याची पडताळणी करा.";
 
 /* Title for the 2fa screens shown during registration. */
-"ONBOARDING_TWO_FACTOR_AUTH_TITLE" = "Two-Factor Authentication";
+"ONBOARDING_TWO_FACTOR_AUTH_TITLE" = "दुहेरी अधिस्वीकृती";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "चुकीचा नंबर?";
@@ -6863,10 +6857,10 @@
 "OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE" = "नोंदणी पूर्ण झाली";
 
 /* Body of prompt notifying connection failure during restore. */
-"OUTGOING_DEVICE_REGISTRATION_FAILED_CONNECTION_BODY" = "Connection to device failed or timed out. Please try again.";
+"OUTGOING_DEVICE_REGISTRATION_FAILED_CONNECTION_BODY" = "डिव्हाईसशी कनेक्शन अपयशी ठरले किंवा टाईम आऊट झाले. कृपया पुन्हा प्रयत्न करा.";
 
 /* Title of prompt notifying connection failure during restore. */
-"OUTGOING_DEVICE_REGISTRATION_FAILED_CONNECTION_TITLE" = "Failed to connect";
+"OUTGOING_DEVICE_REGISTRATION_FAILED_CONNECTION_TITLE" = "कनेक्ट करण्यात अयशस्वी";
 
 /* Body of prompt notifying restore failed. */
 "OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY" = "दुसऱ्या डिव्हाईसमधील रीस्टोर संदेशात अवैध किंवा कालबाह्य माहिती होती.  कृपया पुन्हा प्रयत्न करा.";
@@ -8797,6 +8791,57 @@
 /* Label for button on lock screen that lets users unlock Signal. */
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal अनलॉक करा";
 
+/* Title for a button in a toast shown when a screenshot is blocked. */
+"SCREENSHOT_BLOCKING_BLOCKED_TOAST_OPTIONS_BUTTON_TITLE" = "Options";
+
+/* Text for a toast shown when a screenshot is blocked. */
+"SCREENSHOT_BLOCKING_BLOCKED_TOAST_TEXT" = "Screenshot prevented by “Block Siri AI” setting";
+
+/* Title for a button in a sheet shown to confirm disabling screenshot blocking. */
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_ALLOW_BUTTON_TITLE" = "Allow Siri AI";
+
+/* Message for a sheet shown to confirm disabling screenshot blocking. */
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_MESSAGE" = "If allowed, Siri AI can automatically scan Signal content and use it for features that may not be private.";
+
+/* Title for a sheet shown to confirm disabling screenshot blocking. */
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_TITLE" = "Allow Siri AI?";
+
+/* Text for a toast shown after disabling screenshot blocking for ten minutes. */
+"SCREENSHOT_BLOCKING_DISABLED_TEN_MINUTES_TOAST_TEXT" = "“Block Siri AI” turned off for 10 minutes";
+
+/* Text for a toast shown after disabling screenshot blocking. */
+"SCREENSHOT_BLOCKING_DISABLED_TOAST_TEXT" = "“Block Siri AI” turned off";
+
+/* Title for a button that disables screenshot blocking, in a sheet shown from a toast shown when a screenshot is blocked. */
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_BUTTON_TITLE" = "Turn Off “Block Siri AI”";
+
+/* Title for a button that temporarily disables screenshot blocking, in a sheet shown from a toast shown when a screenshot is blocked. */
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_TEN_MINUTES_BUTTON_TITLE" = "Turn Off for 10 Minutes";
+
+/* Message for a sheet shown from a toast shown when a screenshot is blocked. */
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_MESSAGE" = "This prevents Siri AI from automatically scanning Signal content. It also blocks you from taking screenshots in the app and App Switcher.";
+
+/* Title for a sheet shown from a toast shown when a screenshot is blocked. */
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_TITLE" = "Block Siri AI is On";
+
+/* Option disabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_OPTION" = "Off";
+
+/* Option temporarily disabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_TEN_MINUTES_OPTION" = "Off for 10 Minutes";
+
+/* Option enabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_ENABLED_OPTION" = "On";
+
+/* Title for the menu of the screenshot blocking item of the privacy settings. */
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_TITLE" = "Block Siri AI";
+
+/* Label for the screenshot blocking item of the privacy settings. */
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_TITLE" = "Block Siri AI";
+
+/* Footer for the screenshot blocking section of the privacy settings. */
+"SCREENSHOT_BLOCKING_SETTINGS_SECTION_FOOTER" = "Prevent Siri AI from scanning Signal content. This will also block you from taking screenshots in the app and App Switcher.";
+
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "नाव, वापरकर्तानाव, किंवा नंबर";
 
@@ -9106,12 +9151,6 @@
 /* The title for the app icon section in the appearance settings. */
 "SETTINGS_APPEARANCE_APP_ICON" = "ॲप चिन्ह";
 
-/* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "उपलब्ध असल्यास फोन संपर्क फोटो दाखवा.";
-
-/* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "फोन संपर्क फोटो वापरा";
-
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "थीम";
 
@@ -9222,6 +9261,12 @@
 
 /* Title for a progress modal shown while the user's chat history is being exported. */
 "SETTINGS_CHATS_EXPORT_PROGRESS_TITLE" = "चॅट्स एक्सपोर्ट होत आहेत…";
+
+/* Footer below the switch in Chats settings that chooses between contact photos from the phone's address book and Signal profile photos. */
+"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_FOOTER" = "Prefer contact photos from your address book if available.";
+
+/* Label for the switch in Chats settings that, when on, shows contact photos from the phone's address book instead of Signal profile photos. */
+"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_LABEL" = "Prefer Address Book Photos";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "चॅट इतिहास साफ करा";
@@ -9496,8 +9541,7 @@
 /* Explanation for the button that resets all notification settings. */
 "SETTINGS_NOTIFICATIONS_RESET_FOOTER" = "अधिसूचना सेटिंग्ज डीफॉल्टवर रीसेट करा, अगदी तुमच्या चॅट्ससाठीच्या कस्टम सेटिंग्ज सुद्धा.";
 
-/* Label for the switch controlling whether reminders about unread messages are shown.
-   Label for the switch controlling whether reminders about unread messages in muted chats are shown. */
+/* Label for the switch controlling whether reminders about unread messages in muted chats are shown */
 "SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS" = "न वाचलेले रीमाइंडर्स";
 
 /* Explanation for the switch controlling whether reminders about unread messages are shown in this chat while it is muted. */
@@ -10106,6 +10150,15 @@
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "अॅप स्विचरमध्ये स्क्रीन लपवा";
 
+/* Message for a sheet shown when tapping the disabled screen security switch in privacy settings. */
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_MESSAGE" = "To protect your privacy, your screen is always hidden in the App Switcher when Block Siri AI is on. Turning off Block Siri AI will unlock this setting.";
+
+/* Title for a sheet shown when tapping the disabled screen security switch in privacy settings. */
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_TITLE" = "Block Siri AI is On";
+
+/* Title for a button in a sheet shown when tapping the disabled screen security switch in privacy settings. */
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_VIEW_SETTING_BUTTON_TITLE" = "View Setting";
+
 /* Footer for table section */
 "SETTINGS_SECTION_FOOTER_CALLING" = "iOS फोन अॅपमध्ये कॉल \"अलीकडील\" यादीमध्ये दाखवा.";
 
@@ -10301,6 +10354,15 @@
 /* Text for a toast confirming that the speakerphone has been turned on for a call. */
 "SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "स्पीकर सुरू";
 
+/* Text shown in a toast confirming a sticker was added to favorites */
+"STICKER_ADDED_TO_FAVORITES_TOAST" = "Sticker added to Favorites";
+
+/* Label for button to add sticker to favorites */
+"STICKER_BUTTON_ADD_FAVORITES" = "Add to Favorites";
+
+/* Label for button to remove sticker from favorites */
+"STICKER_BUTTON_REMOVE_FAVORITES" = "Remove From Favorites";
+
 /* Title for a button to view a sticker pack */
 "STICKER_BUTTON_VIEW_PACK" = "पॅक पाहा";
 
@@ -10315,6 +10377,18 @@
 
 /* The name for the sticker category 'Recents' */
 "STICKER_CATEGORY_RECENTS_NAME" = "अलीकडील";
+
+/* Button to confirm a user wants to remove a sticker */
+"STICKER_CONFIRM_REMOVE_BUTTON" = "Remove";
+
+/* Toast shown when user tries to tap Favorites in sticker keyboard but has none */
+"STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "Press and hold a sticker to add to Favorites";
+
+/* Section header for favorites in the sticker keyboard */
+"STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "Favorites";
+
+/* Section header for recents in the sticker keyboard */
+"STICKER_KEYBOARD_SECTION_HEADER_LABEL_RECENTS" = "Recently Used";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "स्टिकर संदेश";
@@ -10346,6 +10420,15 @@
 /* Label for a button on a sticker-pack share sheet that sends the pack in Signal. */
 "STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Signal मध्ये पाठवा";
 
+/* Message for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "You can’t send it or add it to Favorites again without a link or sticker message.";
+
+/* Title for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "Remove From Favorites?";
+
+/* Text shown in a toast confirming a sticker was removed from favorites */
+"STICKER_REMOVED_FROM_FAVORITES_TOAST" = "Sticker removed from Favorites";
+
 /* Message when trying to show a sticker that has expired and is unavailable for download */
 "STICKER_UNAVAILABLE_MESSAGE_LABEL" = "स्टिकर उपलब्ध नाही";
 
@@ -10355,41 +10438,59 @@
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "स्टिकर समाविष्ट करा";
 
+/* Placeholder text for the search bar in the sticker pack management. */
+"STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "Search stickers";
+
+/* Label for a view explaining that no search results were found. Embeds {{ the search term }}. */
+"STICKERS_MANAGE_SEARCH_NO_RESULTS" = "No results found for '%1$@'";
+
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal कलाकार सिरीझ";
 
 /* Subtitle for the section of known stickers in the manage stickers view */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_SUBTITLE" = "When you receive a sticker from someone, the sticker pack will appear here.";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_SUBTITLE" = "तुम्हाला कोणाकडूनही स्टिकर मिळतो, तेव्हा स्टिकर पॅक इथे दिसेल.";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Shared With You";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "तुम्हाला पाठवलेले";
+
+/* The title for a context menu item that installs a sticker pack. */
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_ADD" = "Add";
+
+/* The title for a context menu item that copies the sticker pack link. */
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_COPY" = "Copy Link";
+
+/* The title for a context menu item that uninstalls a sticker pack. */
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "Remove";
+
+/* The title for a context menu item that sends the sticker pack link to someone else. */
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "Send";
 
 /* Label indicating that one or more known sticker packs failed to load. */
 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "काही स्टिकर पॅक लोड होण्यात अयशस्वी";
 
 /* An option in the sticker management screen allowing the user to select the filter option 'all'; i.e., 'unfiltered'. */
-"STICKERS_MANAGE_VIEW_FILTER_TAB_ALL" = "All";
+"STICKERS_MANAGE_VIEW_FILTER_TAB_ALL" = "सर्व";
 
 /* An option in the sticker management screen allowing the user to select the filter option 'my stickers'; i.e., their installed packs. */
-"STICKERS_MANAGE_VIEW_FILTER_TAB_MY_STICKERS" = "My Stickers";
+"STICKERS_MANAGE_VIEW_FILTER_TAB_MY_STICKERS" = "माझे स्टिकर";
 
 /* Label indicating that one or more known sticker packs is loading. */
 "STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "लोड होत आहे…";
 
 /* Label indicating that the user has no installed sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No sticker packs.\nAdd stickers to send to your friends.";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "कोणतेही स्टिकर पॅक नाहीत.\nतुमच्या मित्रांना पाठवण्यासाठी स्टिकर समाविष्ट करा.";
 
 /* Button to redirect back to the manage sticker 'all' section */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS_BUTTON" = "Add Stickers";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS_BUTTON" = "स्टिकर समाविष्ट करा";
 
 /* Title for the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_TITLE" = "स्टिकर";
 
 /* Default author for sticker packs. */
-"STICKERS_PACK_DEFAULT_AUTHOR" = "Unknown author";
+"STICKERS_PACK_DEFAULT_AUTHOR" = "अज्ञात निर्माता";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "Unknown title";
+"STICKERS_PACK_DEFAULT_TITLE" = "अज्ञात शीर्षक";
 
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "स्टिकर पॅक";
@@ -10924,9 +11025,6 @@
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to transfer your account to a new device. */
 "TRANSFER_ACCOUNT_AUTHENTICATION_REASON" = "तुमचे खाते हस्तांतरित करण्यासाठी अधिस्वीकृती द्या";
-
-/* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
-"TRANSFER_COMPLETE_SHEET_BUTTON" = "Signal बंद करा";
 
 /* Subtitle for bottom sheet shown when device transfer completes on the receiving device. */
 "TRANSFER_COMPLETE_SHEET_SUBTITLE" = "या डिव्हाइसवर आपले खाते वापरणे सुरू करण्यासाठी, Signal बंद करा आणि ते पुन्हा उघडा.";

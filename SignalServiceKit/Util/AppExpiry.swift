@@ -173,6 +173,12 @@ public final class AppExpiry {
 
     public func isExpired(now: Date) -> Bool { expirationDate < now }
 
+    public func checkExpiration(now: Date) throws(AppExpiredError) {
+        if isExpired(now: now) {
+            throw AppExpiredError()
+        }
+    }
+
     public static let defaultExpirationInterval: TimeInterval = 90 * .day
 
     private var defaultExpirationDate: Date {

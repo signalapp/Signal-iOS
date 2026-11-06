@@ -3,14 +3,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
-public import SignalUI
+import SignalServiceKit
+import SignalUI
 
 extension ChatListViewController {
 
-    public static let clearSearch = Notification.Name("clearSearch")
+    static let clearSearch = Notification.Name("clearSearch")
 
-    public func observeNotifications() {
+    func observeNotifications() {
         AssertIsOnMainThread()
 
         NotificationCenter.default.addObserver(
@@ -348,7 +348,7 @@ extension ChatListViewController {
 
 extension ChatListViewController: DatabaseChangeDelegate {
 
-    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         if databaseChanges.didUpdate(tableName: TSPaymentModel.databaseTableName) {
             updateUnreadPaymentNotificationsCountWithSneakyTransaction()
         }
@@ -358,14 +358,14 @@ extension ChatListViewController: DatabaseChangeDelegate {
         }
     }
 
-    public func databaseChangesDidUpdateExternally() {
+    func databaseChangesDidUpdateExternally() {
         // External database modifications can't be converted into incremental updates,
         // so rebuild everything.  This is expensive and usually isn't necessary, but
         // there's no alternative.
         self.loadCoordinator.scheduleHardReset()
     }
 
-    public func databaseChangesDidReset() {
+    func databaseChangesDidReset() {
         // This should only happen if we need to recover from an error in the
         // database change observation pipeline.  This should never occur,
         // but when it does we need to rebuild everything.  This is expensive,
@@ -375,7 +375,7 @@ extension ChatListViewController: DatabaseChangeDelegate {
 }
 
 extension ChatListViewController: ContactsViewHelperObserver {
-    public func contactsViewHelperDidUpdateContacts() {
+    func contactsViewHelperDidUpdateContacts() {
         if !firstConversationCueView.isHidden {
             updateFirstConversationLabel()
         }

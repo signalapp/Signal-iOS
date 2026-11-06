@@ -45,6 +45,14 @@ public extension UIViewController {
 
         return viewController
     }
+
+    func topMostPresentedViewController() -> UIViewController {
+        var top = self
+        while let next = top.presentedViewController, !next.isBeingDismissed {
+            top = next
+        }
+        return top
+    }
 }
 
 // MARK: -

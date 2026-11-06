@@ -70,6 +70,10 @@ public class StickerPickerView: UIView {
         stickerPageView.wasPresented()
     }
 
+    public func select(page: StickerPickerPage, bouncingSticker: StickerInfo? = nil) {
+        stickerPageView.select(page: page, bouncingSticker: bouncingSticker)
+    }
+
     // MARK: Layout
 
     private lazy var toolbar = StickerPacksToolbar(delegate: self)
@@ -364,6 +368,12 @@ private protocol StickerPickerPageViewDelegate: StickerPickerDelegate {
     func updateSelections(scrollToSelectedItem: Bool)
 }
 
+public enum StickerPickerPage: Equatable {
+    case recents
+    case favorites
+    case pack(StickerPackRecord)
+}
+
 private class StickerPickerPageView: UIView {
 
     private weak var delegate: StickerPickerPageViewDelegate?
@@ -371,8 +381,11 @@ private class StickerPickerPageView: UIView {
     private let storyStickerConfiguration: StoryStickerConfiguration
 
     private var stickerPacks = [StickerPackRecord]()
+    private var hasFavorites = false
 
-    private var selectedStickerPack: StickerPackRecord? {
+    private var pendingBounce: (page: StickerPickerPage, stickerInfo: StickerInfo)?
+
+    private var selectedStickerPackPage: StickerPickerPage {
         didSet {
             selectedPackChanged(oldSelectedPack: oldValue)
         }
@@ -385,18 +398,24 @@ private class StickerPickerPageView: UIView {
         self.delegate = delegate
         self.storyStickerConfiguration = storyStickerConfiguration
 
+        // By default, show the "recent" stickers.
+        selectedStickerPackPage = .recents
+
         super.init(frame: .zero)
 
         setupPaging()
         reloadStickers()
 
-        // By default, show the "recent" stickers.
-        assert(nil == selectedStickerPack)
-
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(stickersOrPacksDidChange),
             name: StickerManager.stickersOrPacksDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(favoriteStickersDidChange),
+            name: StickerManager.favoriteStickersDidChange,
             object: nil,
         )
     }
@@ -407,13 +426,14 @@ private class StickerPickerPageView: UIView {
 
     func willBePresented() {
         // If there are no recents, default to showing the first sticker pack.
-        if currentPageCollectionView.stickerCount < 1 {
-            updateSelectedStickerPack(stickerPacks.first)
+        if currentPageCollectionView.stickerCount < 1, let firstPack = stickerPacks.first {
+            updateSelectedStickerPack(.pack(firstPack))
         }
     }
 
     func wasPresented() {
         updatePageConstraints(ignoreScrollingState: true)
+        performPendingBounce()
     }
 
     override var bounds: CGRect {
@@ -462,32 +482,54 @@ private class StickerPickerPageView: UIView {
         let stickerManager = DependenciesBridge.shared.stickerManager
 
         let oldStickerPacks = stickerPacks
+        let hadFavorites = hasFavorites
 
         db.read { transaction in
             self.stickerPacks = stickerManager.installedStickerPacks(transaction: transaction).sorted {
                 $0.dateCreated > $1.dateCreated
+            }
+            if BuildFlags.stickerFavorites {
+                self.hasFavorites = stickerManager.stickerFavoriteCount(tx: transaction) > 0
             }
         }
 
         // These go (via delegate) as source data to the toolbar.
         // No need to reverse order because toolbar supports mirrored layout for RTL languages.
         var items = [StickerHorizontalListViewItem]()
+
+        if BuildFlags.stickerFavorites {
+            items.append(StickerHorizontalListViewItemFavorites(
+                didSelectBlock: { [weak self] in
+                    self?.favoritesButtonWasTapped()
+                },
+                isSelectedBlock: { [weak self] in
+                    self?.selectedStickerPackPage == .favorites
+                },
+            ))
+        }
+
         items.append(StickerHorizontalListViewItemRecents(
             didSelectBlock: { [weak self] in
                 self?.recentsButtonWasTapped()
             },
             isSelectedBlock: { [weak self] in
-                self?.selectedStickerPack == nil
+                self?.selectedStickerPackPage == .recents
             },
         ))
         items += stickerPacks.map { stickerPack in
             StickerHorizontalListViewItemSticker(
                 stickerInfo: stickerPack.coverInfo,
                 didSelectBlock: { [weak self] in
-                    self?.updateSelectedStickerPack(stickerPack)
+                    self?.updateSelectedStickerPack(.pack(stickerPack))
                 },
                 isSelectedBlock: { [weak self] in
-                    self?.selectedStickerPack?.info == stickerPack.info
+                    guard let self else { return false }
+                    switch (self.selectedStickerPackPage) {
+                    case .favorites, .recents:
+                        return false
+                    case .pack(let selectedPack):
+                        return selectedPack.info == stickerPack.info
+                    }
                 },
                 cache: reusableStickerViewCache,
             )
@@ -504,11 +546,21 @@ private class StickerPickerPageView: UIView {
             stickerPacks = stickerPacks.reversed()
         }
 
-        guard oldStickerPacks != stickerPacks else { return }
+        guard oldStickerPacks != stickerPacks || hadFavorites != hasFavorites else { return }
 
         // If the selected pack was uninstalled, select the first pack.
-        if let selectedStickerPack, !stickerPacks.contains(selectedStickerPack) {
-            updateSelectedStickerPack(stickerPacks.first)
+        switch (selectedStickerPackPage) {
+        case .favorites:
+            // If the last favorite was removed while viewing Favorites, show Recents.
+            if hadFavorites, !hasFavorites {
+                updateSelectedStickerPack(.recents)
+            }
+        case .recents:
+            break
+        case .pack(let selectedPack):
+            if !stickerPacks.contains(selectedPack), let firstPack = stickerPacks.first {
+                updateSelectedStickerPack(.pack(firstPack))
+            }
         }
 
         resetStickerPages()
@@ -518,21 +570,63 @@ private class StickerPickerPageView: UIView {
 
     @objc
     private func stickersOrPacksDidChange() {
-        AssertIsOnMainThread()
+        reloadStickers()
+    }
 
+    @objc
+    private func favoriteStickersDidChange() {
         reloadStickers()
     }
 
     private func recentsButtonWasTapped() {
-        AssertIsOnMainThread()
-
-        // nil is used for the recents special-case.
-        updateSelectedStickerPack(nil)
+        updateSelectedStickerPack(.recents)
     }
 
-    private func updateSelectedStickerPack(_ stickerPack: StickerPackRecord?, scrollToSelected: Bool = false) {
-        selectedStickerPack = stickerPack
+    private func favoritesButtonWasTapped() {
+        if !hasFavorites {
+            ToastController(
+                text: OWSLocalizedString(
+                    "STICKER_KEYBOARD_NO_FAVORITES_TOAST",
+                    comment: "Toast shown when user tries to tap Favorites in sticker keyboard but has none",
+                ),
+            ).presentToastView(
+                from: .bottom,
+                of: self,
+                inset: stickerPageContentInset.bottom + safeAreaInsets.bottom + 16,
+            )
+            return
+        }
+
+        updateSelectedStickerPack(.favorites)
+    }
+
+    private func updateSelectedStickerPack(_ stickerPage: StickerPickerPage, scrollToSelected: Bool = false) {
+        selectedStickerPackPage = stickerPage
         delegate?.updateSelections(scrollToSelectedItem: scrollToSelected)
+    }
+
+    func select(page: StickerPickerPage, bouncingSticker: StickerInfo? = nil) {
+        pendingBounce = bouncingSticker.map { (page, $0) }
+        updateSelectedStickerPack(page, scrollToSelected: true)
+
+        // If the keyboard is already on screen when the user adds to favorites,
+        // wasPresented() won't be called after select(), so call it ourselves.
+        if window != nil {
+            self.performPendingBounce()
+        }
+    }
+
+    private func performPendingBounce() {
+        guard let pendingBounce else {
+            return
+        }
+        guard pendingBounce.page == selectedStickerPackPage else {
+            // The user moved to another page before we could bounce.
+            self.pendingBounce = nil
+            return
+        }
+        self.currentPageCollectionView.bounceSticker(pendingBounce.stickerInfo)
+        self.pendingBounce = nil
     }
 
     // MARK: Paging
@@ -542,9 +636,9 @@ private class StickerPickerPageView: UIView {
     /// 1 - Current Page
     /// 2 - Next Page
     lazy var stickerPackCollectionViews: [StickerPackCollectionView] = [
-        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration),
-        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration),
-        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration),
+        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration, shouldShowSectionHeaders: true),
+        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration, shouldShowSectionHeaders: true),
+        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration, shouldShowSectionHeaders: true),
     ]
     private var stickerPackCollectionViewConstraints = [NSLayoutConstraint]()
 
@@ -571,26 +665,22 @@ private class StickerPickerPageView: UIView {
         return scrollView
     }()
 
-    private var nextPageStickerPack: StickerPackRecord? {
-        // If we don't have a pack defined, the first pack is always up next
-        guard let stickerPack = selectedStickerPack else { return stickerPacks.first }
-
-        // If we don't have an index, or we're at the end of the array, recents is up next
-        guard let index = stickerPacks.firstIndex(of: stickerPack), index < (stickerPacks.count - 1) else { return nil }
-
-        // Otherwise, use the next pack in the array
-        return stickerPacks[index + 1]
+    private var orderedPages: [StickerPickerPage] {
+        var favorites: [StickerPickerPage] = []
+        if BuildFlags.stickerFavorites, self.hasFavorites {
+            favorites.append(.favorites)
+        }
+        return favorites + [.recents] + stickerPacks.map { .pack($0) }
     }
 
-    private var previousPageStickerPack: StickerPackRecord? {
-        // If we don't have a pack defined, the last pack is always previous
-        guard let stickerPack = selectedStickerPack else { return stickerPacks.last }
+    private var nextPageStickerPack: StickerPickerPage {
+        guard let index = orderedPages.firstIndex(of: selectedStickerPackPage) else { return .recents }
+        return orderedPages[(index + 1) % orderedPages.count]
+    }
 
-        // If we don't have an index, or we're at the start of the array, recents is previous
-        guard let index = stickerPacks.firstIndex(of: stickerPack), index > 0 else { return nil }
-
-        // Otherwise, use the previous pack in the array
-        return stickerPacks[index - 1]
+    private var previousPageStickerPack: StickerPickerPage {
+        guard let index = orderedPages.firstIndex(of: selectedStickerPackPage) else { return .recents }
+        return orderedPages[(index - 1 + orderedPages.count) % orderedPages.count]
     }
 
     private var pageWidth: CGFloat { return stickerPagingScrollView.frame.width }
@@ -688,9 +778,7 @@ private class StickerPickerPageView: UIView {
         pendingPageChangeUpdates = nil
     }
 
-    private func selectedPackChanged(oldSelectedPack: StickerPackRecord?) {
-        AssertIsOnMainThread()
-
+    private func selectedPackChanged(oldSelectedPack: StickerPickerPage) {
         // We're paging backwards!
         if oldSelectedPack == nextPageStickerPack {
             // The previous page becomes the current page and the current page becomes
@@ -700,7 +788,7 @@ private class StickerPickerPageView: UIView {
             stickerPackCollectionViewConstraints.insert(stickerPackCollectionViewConstraints.removeLast(), at: 0)
 
             pendingPageChangeUpdates = {
-                self.previousPageCollectionView.showInstalledPackOrRecents(stickerPack: self.previousPageStickerPack)
+                self.previousPageCollectionView.showSelectedStickerPickerPage(stickerPickerPage: self.previousPageStickerPack)
             }
 
             // We're paging forwards!
@@ -712,14 +800,14 @@ private class StickerPickerPageView: UIView {
             stickerPackCollectionViewConstraints.append(stickerPackCollectionViewConstraints.removeFirst())
 
             pendingPageChangeUpdates = {
-                self.nextPageCollectionView.showInstalledPackOrRecents(stickerPack: self.nextPageStickerPack)
+                self.nextPageCollectionView.showSelectedStickerPickerPage(stickerPickerPage: self.nextPageStickerPack)
             }
 
             // We didn't get here through paging, stuff probably changed. Reload all the things.
         } else {
-            currentPageCollectionView.showInstalledPackOrRecents(stickerPack: selectedStickerPack)
-            previousPageCollectionView.showInstalledPackOrRecents(stickerPack: previousPageStickerPack)
-            nextPageCollectionView.showInstalledPackOrRecents(stickerPack: nextPageStickerPack)
+            currentPageCollectionView.showSelectedStickerPickerPage(stickerPickerPage: selectedStickerPackPage)
+            previousPageCollectionView.showSelectedStickerPickerPage(stickerPickerPage: previousPageStickerPack)
+            nextPageCollectionView.showSelectedStickerPickerPage(stickerPickerPage: nextPageStickerPack)
 
             pendingPageChangeUpdates = nil
         }
@@ -731,9 +819,9 @@ private class StickerPickerPageView: UIView {
     }
 
     private func resetStickerPages() {
-        currentPageCollectionView.showInstalledPackOrRecents(stickerPack: selectedStickerPack)
-        previousPageCollectionView.showInstalledPackOrRecents(stickerPack: previousPageStickerPack)
-        nextPageCollectionView.showInstalledPackOrRecents(stickerPack: nextPageStickerPack)
+        currentPageCollectionView.showSelectedStickerPickerPage(stickerPickerPage: selectedStickerPackPage)
+        previousPageCollectionView.showSelectedStickerPickerPage(stickerPickerPage: previousPageStickerPack)
+        nextPageCollectionView.showSelectedStickerPickerPage(stickerPickerPage: nextPageStickerPack)
 
         pendingPageChangeUpdates = nil
 

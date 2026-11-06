@@ -45,7 +45,6 @@ public enum RegistrationRequestFactory {
         return result
     }
 
-    /// See `RegistrationServiceResponses.FetchSessionResponseCodes` for possible responses.
     public static func fetchSessionRequest(
         sessionId: String,
         logger: PrefixedLogger,

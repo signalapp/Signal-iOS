@@ -26,6 +26,15 @@ enum PhotoGridItemType {
         }
     }
 
+    func accessibilityLabel(creationDate: Date?) -> String {
+        return [
+            localizedString,
+            MediaTileDateFormatter.formattedDateString(for: creationDate),
+        ]
+        .compactMap { $0 }
+        .joined(separator: ", ")
+    }
+
     var formattedType: String {
         switch self {
         case .animated:
@@ -219,12 +228,7 @@ class PhotoGridViewCell: UICollectionViewCell {
         self.isAccessibilityElement = true
 
         if let item {
-            self.accessibilityLabel = [
-                item.type.localizedString,
-                MediaTileDateFormatter.formattedDateString(for: item.mediaMetadata?.creationDate),
-            ]
-            .compactMap { $0 }
-            .joined(separator: ", ")
+            self.accessibilityLabel = item.type.accessibilityLabel(creationDate: item.mediaMetadata?.creationDate)
         } else {
             self.accessibilityLabel = ""
         }

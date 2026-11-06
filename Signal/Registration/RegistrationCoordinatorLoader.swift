@@ -19,6 +19,7 @@ public protocol RegistrationCoordinatorLoader {
     /// `desiredMode` may not be the mode we end up in; for example if we
     /// were in the middle of re-registration and try to change number, that will
     /// be disallowed and we will fall back to re-registration.
+    @MainActor
     func coordinator(
         forDesiredMode: RegistrationMode,
         transaction: DBWriteTransaction,
@@ -101,6 +102,7 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
         return loadMode(transaction: transaction)?.asRegistrationMode()
     }
 
+    @MainActor
     public func coordinator(
         forDesiredMode desiredMode: RegistrationMode,
         transaction: DBWriteTransaction,

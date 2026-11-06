@@ -29,6 +29,7 @@ public protocol StorageServiceManager {
     func recordPendingUpdates(updatedGroupV2MasterKeys: [GroupMasterKey])
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data])
     func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey])
+    func recordPendingUpdates(favoriteStickerIds: [FavoriteStickerId])
     func recordPendingLocalAccountUpdates()
 
     /// Marks `groupMasterKeys` as needing an update if they don't yet exist.
@@ -551,6 +552,10 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         updatePendingMutations { $0.updatedCallLinkRootKeys.formUnion(callLinkRootKeys.lazy.map(\.bytes)) }
     }
 
+    public func recordPendingUpdates(favoriteStickerIds: [FavoriteStickerId]) {
+        updatePendingMutations { $0.updatedFavoriteStickerIds.formUnion(favoriteStickerIds) }
+    }
+
     public func recordPendingLocalAccountUpdates() {
         Logger.info("Recording pending local account updates")
 
@@ -713,6 +718,7 @@ private struct PendingMutations {
     var insertedGroupMasterKeys = Set<Data>()
     var updatedStoryDistributionListIds = Set<Data>()
     var updatedCallLinkRootKeys = Set<Data>()
+    var updatedFavoriteStickerIds = Set<FavoriteStickerId>()
     var updatedLocalAccount = false
 
     var hasChanges: Bool {
@@ -724,6 +730,7 @@ private struct PendingMutations {
                 || !insertedGroupMasterKeys.isEmpty
                 || !updatedStoryDistributionListIds.isEmpty
                 || !updatedCallLinkRootKeys.isEmpty
+                || !updatedFavoriteStickerIds.isEmpty
 
     }
 }
@@ -920,7 +927,8 @@ class StorageServiceOperation {
             Contacts: \(allRecipientUniqueIds.count); \
             GV2: \(pendingMutations.updatedGroupV2MasterKeys.count) + \(pendingMutations.insertedGroupMasterKeys.count); \
             DLists: \(pendingMutations.updatedStoryDistributionListIds.count); \
-            CLinks: \(pendingMutations.updatedCallLinkRootKeys.count))
+            CLinks: \(pendingMutations.updatedCallLinkRootKeys.count); \
+            FavStickers: \(pendingMutations.updatedFavoriteStickerIds.count))
             """,
         )
 
@@ -949,6 +957,10 @@ class StorageServiceOperation {
 
         pendingMutations.updatedCallLinkRootKeys.forEach {
             state.callLinkRootKeyChangeMap[$0] = .updated
+        }
+
+        pendingMutations.updatedFavoriteStickerIds.forEach {
+            state.favoriteStickerChangeMap[$0] = .updated
         }
     }
 
@@ -1079,6 +1091,11 @@ class StorageServiceOperation {
             updateRecords(
                 state: &state,
                 stateUpdater: buildCallLinkUpdater(),
+                transaction: transaction,
+            )
+            updateRecords(
+                state: &state,
+                stateUpdater: buildFavoriteStickerRecordUpdater(),
                 transaction: transaction,
             )
 
@@ -1369,6 +1386,13 @@ class StorageServiceOperation {
             let callLinkStore = callLinkUpdater.recordUpdater.callLinkStore
             callLinkStore.fetchAll(tx: transaction).forEach {
                 createRecord(localId: $0.rootKey.bytes, stateUpdater: callLinkUpdater)
+            }
+
+            let favoriteStickerUpdater = buildFavoriteStickerRecordUpdater()
+            let stickerManager = favoriteStickerUpdater.recordUpdater.stickerManager
+            stickerManager.fetchAllFavoritedAndUnfavoritedStickers(tx: transaction).forEach {
+                let favoriteStickerId = FavoriteStickerId(packId: $0.packId, stickerId: $0.stickerId)
+                createRecord(localId: favoriteStickerId, stateUpdater: favoriteStickerUpdater)
             }
         }
 
@@ -1723,6 +1747,24 @@ class StorageServiceOperation {
                     orphanedCallLinkRootKeyCount += 1
                 }
 
+                var orphanedFavoriteStickerCount = 0
+                for (favoriteStickerId, storageIdentifier) in state.favoriteStickerToStorageIdentifierMap where !allManifestItems.contains(storageIdentifier) {
+                    // If another client removes an unfavorited sticker, allow it.
+                    let stickerManager = DependenciesBridge.shared.stickerManager
+                    guard
+                        let favoriteStickerRecord = stickerManager.fetchFavoriteStickerRecord(
+                            packId: favoriteStickerId.packId,
+                            stickerId: favoriteStickerId.stickerId,
+                            tx: transaction,
+                        ),
+                        favoriteStickerRecord.favoritedAt != nil
+                    else {
+                        continue
+                    }
+                    state.favoriteStickerChangeMap[favoriteStickerId] = .updated
+                    orphanedFavoriteStickerCount += 1
+                }
+
                 var orphanedAccountCount = 0
                 let currentDate = Date()
                 let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
@@ -1745,7 +1787,8 @@ class StorageServiceOperation {
                     state.accountIdChangeMap.count
                         + state.groupV2ChangeMap.count
                         + state.storyDistributionListChangeMap.count
-                        + state.callLinkRootKeyChangeMap.count,
+                        + state.callLinkRootKeyChangeMap.count
+                        + state.favoriteStickerChangeMap.count,
                 )
 
                 Logger.info(
@@ -1756,7 +1799,8 @@ class StorageServiceOperation {
                     \(orphanedAccountCount) orphaned accounts; \
                     \(orphanedGroupV2Count) orphaned gv2; \
                     \(orphanedStoryDistributionListCount) orphaned dlists; \
-                    \(orphanedCallLinkRootKeyCount) orphaned clinks
+                    \(orphanedCallLinkRootKeyCount) orphaned clinks; \
+                    \(orphanedFavoriteStickerCount) orphaned favorite stickers
                     """,
                 )
 
@@ -1852,6 +1896,7 @@ class StorageServiceOperation {
         let groupV2Updater = buildGroupV2Updater()
         let storyDistributionListUpdater = buildStoryDistributionListUpdater()
         let callLinkUpdater = buildCallLinkUpdater()
+        let favoriteStickerUpdater = buildFavoriteStickerRecordUpdater()
         for item in items {
             func _mergeRecord<StateUpdater: StorageServiceStateUpdater>(
                 _ record: StateUpdater.RecordType,
@@ -1876,6 +1921,8 @@ class StorageServiceOperation {
                 _mergeRecord(storyDistributionListRecord, stateUpdater: storyDistributionListUpdater)
             } else if let callLinkRecord = item.callLinkRecord {
                 _mergeRecord(callLinkRecord, stateUpdater: callLinkUpdater)
+            } else if let favoriteStickerRecord = item.favoriteStickerRecord {
+                _mergeRecord(favoriteStickerRecord, stateUpdater: favoriteStickerUpdater)
             } else if case .account = item.identifier.type {
                 owsFailDebug("unexpectedly found account record in remaining items")
             } else {
@@ -1935,6 +1982,8 @@ class StorageServiceOperation {
         case .storyDistributionList:
             return true
         case .callLink:
+            return true
+        case .favoriteStickerPack:
             return true
         case .unknown, .UNRECOGNIZED, nil:
             return false
@@ -2235,6 +2284,17 @@ class StorageServiceOperation {
         )
     }
 
+    private func buildFavoriteStickerRecordUpdater() -> MultipleElementStateUpdater<StorageServiceFavoriteStickerRecordUpdater> {
+        return MultipleElementStateUpdater(
+            recordUpdater: StorageServiceFavoriteStickerRecordUpdater(
+                stickerManager: DependenciesBridge.shared.stickerManager,
+            ),
+            changeState: \.favoriteStickerChangeMap,
+            storageIdentifier: \.favoriteStickerToStorageIdentifierMap,
+            recordWithUnknownFields: \.favoriteStickerToRecordWithUnknownFields,
+        )
+    }
+
     // MARK: - State
 
     private static var maxConsecutiveConflicts = 3
@@ -2348,6 +2408,24 @@ class StorageServiceOperation {
             set { _callLinkRootKeyToRecordWithUnknownFields = newValue }
         }
 
+        private var _favoriteStickerChangeMap: [FavoriteStickerId: ChangeState]?
+        fileprivate var favoriteStickerChangeMap: [FavoriteStickerId: ChangeState] {
+            get { _favoriteStickerChangeMap ?? [:] }
+            set { _favoriteStickerChangeMap = newValue }
+        }
+
+        private var _favoriteStickerToStorageIdentifierMap: [FavoriteStickerId: StorageService.StorageIdentifier]?
+        fileprivate var favoriteStickerToStorageIdentifierMap: [FavoriteStickerId: StorageService.StorageIdentifier] {
+            get { _favoriteStickerToStorageIdentifierMap ?? [:] }
+            set { _favoriteStickerToStorageIdentifierMap = newValue }
+        }
+
+        private var _favoriteStickerToRecordWithUnknownFields: [FavoriteStickerId: StorageServiceProtoFavoriteStickerRecord]?
+        fileprivate var favoriteStickerToRecordWithUnknownFields: [FavoriteStickerId: StorageServiceProtoFavoriteStickerRecord] {
+            get { _favoriteStickerToRecordWithUnknownFields ?? [:] }
+            set { _favoriteStickerToRecordWithUnknownFields = newValue }
+        }
+
         fileprivate var allIdentifiers: [StorageService.StorageIdentifier] {
             var allIdentifiers = [StorageService.StorageIdentifier]()
             if let localAccountIdentifier {
@@ -2359,6 +2437,7 @@ class StorageServiceOperation {
             allIdentifiers += groupV2MasterKeyToIdentifierMap.values
             allIdentifiers += storyDistributionListIdentifierToStorageIdentifierMap.values
             allIdentifiers += callLinkRootKeyToStorageIdentifierMap.values
+            allIdentifiers += favoriteStickerToStorageIdentifierMap.values
 
             // We must persist any unknown identifiers, as they are potentially associated with
             // valid records that this version of the app doesn't yet understand how to parse.

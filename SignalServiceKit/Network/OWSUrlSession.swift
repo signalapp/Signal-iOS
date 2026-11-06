@@ -679,9 +679,9 @@ public class OWSURLSession: OWSURLSessionProtocol {
             Logger.warn("Missing TaskState.")
             return
         }
+        onFailureCallback?(error)
         taskState.reject(error: error, task: task)
         task.cancel()
-        onFailureCallback?(error)
     }
 
     // MARK: -

@@ -214,12 +214,10 @@ class WindowManager {
 
     // MARK: Screenshot Blocking
 
-    /// Whether the app's windows are blocked from appearing in screenshots.
-    ///
-    /// Starts out matching the default of the preference that drives it,
-    /// since that isn't readable until the database is — which can be after
-    /// the windows exist.
-    private(set) var blocksScreenshots: Bool = ScreenshotBlockingManager.isAvailable
+    /// Whether the app's windows should be Screenshot Block-ed. Default value
+    /// here used until the app is ready and `ScreenshotBlockingManager` has
+    /// started.
+    private(set) var blocksScreenshots: Bool = ScreenshotBlockingManager.isAvailable(remoteConfig: nil)
 
     private var windowVisibleObserver: NotificationCenter.Observer?
 

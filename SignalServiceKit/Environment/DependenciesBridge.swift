@@ -116,6 +116,7 @@ public class DependenciesBridge {
     public let donationSubscriptionManager: DonationSubscriptionManager
     public let editManager: EditManager
     public let editMessageStore: EditMessageStore
+    public let favoriteStickerExpirationJob: FavoriteStickerExpirationJob
     public let groupCallRecordManager: GroupCallRecordManager
     public let groupMemberStore: GroupMemberStore
     public let groupMemberUpdater: GroupMemberUpdater
@@ -182,6 +183,7 @@ public class DependenciesBridge {
     public let svr: SecureValueRecovery
     public let svrAuthCredentialManager: SVRAuthCredentialManager
     public let senderKeyStore: SenderKeyStore
+    public let stickerDownloader: any StickerDownloader
     public let stickerManager: StickerManager
     public let storageServiceRecordIkmMigrator: StorageServiceRecordIkmMigrator
     public let storyMessageExpirationJob: StoryMessageExpirationJob
@@ -271,6 +273,7 @@ public class DependenciesBridge {
         donationSubscriptionManager: DonationSubscriptionManager,
         editManager: EditManager,
         editMessageStore: EditMessageStore,
+        favoriteStickerExpirationJob: FavoriteStickerExpirationJob,
         groupCallRecordManager: GroupCallRecordManager,
         groupMemberStore: GroupMemberStore,
         groupMemberUpdater: GroupMemberUpdater,
@@ -334,6 +337,7 @@ public class DependenciesBridge {
         senderKeyStore: SenderKeyStore,
         sentMessageTranscriptReceiver: SentMessageTranscriptReceiver,
         signalProtocolStoreManager: SignalProtocolStoreManager,
+        stickerDownloader: any StickerDownloader,
         stickerManager: StickerManager,
         storageServiceRecordIkmMigrator: StorageServiceRecordIkmMigrator,
         storyMessageExpirationJob: StoryMessageExpirationJob,
@@ -424,6 +428,7 @@ public class DependenciesBridge {
         self.donationSubscriptionManager = donationSubscriptionManager
         self.editManager = editManager
         self.editMessageStore = editMessageStore
+        self.favoriteStickerExpirationJob = favoriteStickerExpirationJob
         self.groupCallRecordManager = groupCallRecordManager
         self.groupMemberStore = groupMemberStore
         self.groupMemberUpdater = groupMemberUpdater
@@ -488,6 +493,7 @@ public class DependenciesBridge {
         self.senderKeyStore = senderKeyStore
         self.sentMessageTranscriptReceiver = sentMessageTranscriptReceiver
         self.signalProtocolStoreManager = signalProtocolStoreManager
+        self.stickerDownloader = stickerDownloader
         self.stickerManager = stickerManager
         self.storageServiceRecordIkmMigrator = storageServiceRecordIkmMigrator
         self.storyMessageExpirationJob = storyMessageExpirationJob

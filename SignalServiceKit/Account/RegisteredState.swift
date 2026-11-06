@@ -17,7 +17,7 @@ public struct RegisteredState {
         case .provisioned(let localIdentifiers):
             self.isPrimary = false
             self.localIdentifiers = localIdentifiers
-        case .unregistered, .reregistering, .relinking, .deregistered, .delinked, .transferringIncoming, .transferringPrimaryOutgoing, .transferringLinkedOutgoing, .transferred:
+        case .unregistered, .deregistered, .delinked, .transferringIncoming, .transferringPrimaryOutgoing, .transferringLinkedOutgoing, .transferred:
             throw NotRegisteredError()
         }
     }

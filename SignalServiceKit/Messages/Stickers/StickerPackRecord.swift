@@ -159,4 +159,9 @@ public final class StickerPackRecord: SDSCodableModel, Decodable, Equatable, NSC
     func updateWith(isInstalled: Bool, tx: DBWriteTransaction) {
         anyUpdate(transaction: tx, block: { $0.isInstalled = isInstalled })
     }
+
+    func item(forStickerId stickerId: UInt32) -> StickerPackItem? {
+        if cover.stickerId == stickerId { return cover }
+        return items.first { $0.stickerId == stickerId }
+    }
 }

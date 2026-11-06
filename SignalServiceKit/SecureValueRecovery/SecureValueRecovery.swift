@@ -31,15 +31,12 @@ public enum SVR {
         case implicit
     }
 
-    public enum RestoreKeysResult {
-        case success(MasterKey)
-        case invalidPin(remainingAttempts: UInt32)
-        // This could mean there was never a backup, or it's been
-        // deleted due to using up all pin attempts.
-        case backupMissing
-        case networkError(Error)
-        // Some other issue.
-        case genericError(Error)
+    public enum RestoreMasterKeyError: Error {
+        case wrongPin(remainingAttempts: UInt32)
+        // Either (a) there was never a backup, or (b) all the pin attempts have
+        // been used and the backup has been destroyed. These cases are
+        // intentionally indistinguishable.
+        case notFound
     }
 }
 
@@ -52,7 +49,9 @@ public protocol SecureValueRecovery {
     func refreshCredentialsIfNecessary() async throws
 
     /// Loads the users key, if any, from the SVR into the database.
-    func restoreKeys(pin: String, authMethod: SVR.AuthMethod) async -> SVR.RestoreKeysResult
+    ///
+    /// - Throws: RestoreMasterKeyError and other errors
+    func restoreMasterKey(pin: String, authMethod: SVR.AuthMethod) async throws -> MasterKey
 
     /// Backs up the user's master key to SVR.
     func backUpMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) async throws

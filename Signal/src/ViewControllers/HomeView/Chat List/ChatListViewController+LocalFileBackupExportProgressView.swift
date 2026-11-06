@@ -12,6 +12,7 @@ private extension Notification.Name {
     static let isHiddenDidChange = Notification.Name("CLVLocalFileBackupExportProgressView.isHiddenDidChange")
 }
 
+@MainActor
 class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.Delegate {
 
     struct Store {
@@ -39,7 +40,6 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
 
     private struct State {
         var isVisible: Bool = false
-        var deviceSleepBlock: DeviceSleepBlockObject?
         var currentViewState: LocalFileBackupExportProgressView.ViewState?
 
         var isHidden: Bool = false
@@ -53,7 +53,7 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
     private let localFileBackupExportJobRunner: LocalFileBackupExportJobRunner
     private let localFileBackupStore: LocalFileBackupStore
     private let db: DB
-    private let deviceSleepManager: DeviceSleepManager
+    private let deviceSleepBlocker: DeviceSleepBlocker
     private let store: Store
 
     private let localFileBackupExportProgressView: LocalFileBackupExportProgressView
@@ -68,7 +68,13 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
         self.localFileBackupExportJobRunner = DependenciesBridge.shared.localFileBackupExportJobRunner
         self.localFileBackupStore = LocalFileBackupStore()
         self.db = DependenciesBridge.shared.db
-        self.deviceSleepManager = DependenciesBridge.shared.deviceSleepManager.owsFailUnwrap("Missing DeviceSleepManager!")
+        self.deviceSleepBlocker = DeviceSleepBlocker(
+            blockReason: "CLVLocalFileBackupExportProgressView",
+            maxBlockDuration: .infinity,
+            deviceSleepManager: DependenciesBridge.shared.deviceSleepManager.owsFailUnwrap(
+                "Missing DeviceSleepManager!",
+            ),
+        )
         self.store = Store()
 
         self.localFileBackupExportProgressView = LocalFileBackupExportProgressView(viewState: nil)
@@ -96,7 +102,6 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
 
     // MARK: -
 
-    @MainActor
     func willAppear() {
         state.update { _state in
             _state.isVisible = true
@@ -104,7 +109,6 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
         }
     }
 
-    @MainActor
     func didDisappear() {
         state.update { _state in
             _state.isVisible = false
@@ -192,7 +196,6 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
 
     private let setViewStateTaskQueue = SerialTaskQueue()
 
-    @MainActor
     private func setViewStateForState(state: inout State) {
         let oldViewState = state.currentViewState
         let newViewState = viewStateForState(state: state)
@@ -251,7 +254,6 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
         return nil
     }
 
-    @MainActor
     private func manageDeviceSleepBlock(state: inout State) {
         var shouldBlockDeviceSleep = switch state.currentViewState {
         case .attachmentMetadataPrep: true
@@ -263,19 +265,7 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
 
         shouldBlockDeviceSleep = shouldBlockDeviceSleep && state.isVisible
 
-        if
-            shouldBlockDeviceSleep,
-            state.deviceSleepBlock == nil
-        {
-            let deviceSleepBlock = DeviceSleepBlockObject(blockReason: "CLVLocalFileBackupExportProgressView")
-            deviceSleepManager.addBlock(blockObject: deviceSleepBlock)
-            state.deviceSleepBlock = deviceSleepBlock
-        } else if
-            !shouldBlockDeviceSleep,
-            let deviceSleepBlock = state.deviceSleepBlock.take()
-        {
-            deviceSleepManager.removeBlock(blockObject: deviceSleepBlock)
-        }
+        deviceSleepBlocker.setShouldBlock(shouldBlockDeviceSleep)
     }
 
     // MARK: - LocalFileBackupExportProgressView.Delegate
@@ -363,6 +353,7 @@ class CLVLocalFileBackupExportProgressView: LocalFileBackupExportProgressView.De
 
 private class LocalFileBackupExportProgressView: ChatListBackupProgressView {
 
+    @MainActor
     protocol Delegate: AnyObject {
         func didTapDismissButton()
     }

@@ -20,7 +20,6 @@ extension DonationViewsUtil {
         idealStore: PendingIDEALDonationStore,
         profileBadgeManager: ProfileBadgeManager,
     ) async throws {
-        let idealStore = DependenciesBridge.shared.pendingIDEALDonationStore
         let (success, intent, localIntent) = databaseStorage.read { tx in
             switch donationType {
             case let .oneTime(didSucceed: success, paymentIntentId: intentId):
@@ -30,6 +29,13 @@ extension DonationViewsUtil {
                 let localIntentId = idealStore.getPendingSubscription(tx: tx)
                 return (success, intentId, localIntentId?.setupIntentId)
             }
+        }
+
+        // The pending donation doesn't match the passed in donation type.
+        // Log the issue, but don't update the UI
+        guard localIntent == intent else {
+            Logger.info("[Donations] Ignoring iDEAL callback with no matching pending donation")
+            return
         }
 
         if rootViewController.presentedViewController != nil {
@@ -48,7 +54,7 @@ extension DonationViewsUtil {
 
         await frontVc.awaitablePresentFormSheet(appSettings, animated: false)
 
-        if success, let localIntent, intent == localIntent {
+        if success {
             try await Self.completeIDEALDonation(
                 fromViewController: donationsVC,
                 donationType: donationType,
@@ -59,7 +65,6 @@ extension DonationViewsUtil {
             )
         } else {
             Self.handleIDEALDonationIssue(
-                success: success,
                 donationType: donationType,
                 from: donationsVC,
                 databaseStorage: databaseStorage,
@@ -187,7 +192,6 @@ extension DonationViewsUtil {
 
     @MainActor
     private static func handleIDEALDonationIssue(
-        success: Bool,
         donationType: Stripe.IDEALCallbackType,
         from donationsVC: DonationSettingsViewController,
         databaseStorage: SDSDatabaseStorage,
@@ -215,11 +219,9 @@ extension DonationViewsUtil {
             ),
         )
         actionSheet.addAction(.init(title: CommonStrings.okButton, style: .default, handler: { _ in
-            if !success {
-                // Failing a donation will cause it to fail on the Stripe
-                // side no matter what, so clear it out before presenting
-                clearPendingDonation()
-            }
+            // Failing a donation will cause it to fail on the Stripe
+            // side no matter what, so clear it out before presenting
+            clearPendingDonation()
         }))
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         if

@@ -416,19 +416,10 @@ public struct TypedItemProvider {
         progress: Progress?,
     ) async throws -> PreviewableAttachment {
         if SignalAttachment.videoUTISet.contains(dataUTI) {
-            // TODO: Move waiting for this export to the end of the share flow rather than up front
-            var progressPoller: ProgressPoller?
-            defer {
-                progressPoller?.stopPolling()
-            }
             return try await PreviewableAttachment.compressVideoAsMp4(
                 dataSource: dataSource,
                 attachmentLimits: attachmentLimits,
-                sessionCallback: { exportSession in
-                    guard let progress else { return }
-                    progressPoller = ProgressPoller(progress: progress, pollInterval: 0.1, fractionCompleted: { return exportSession.progress })
-                    progressPoller?.startPolling()
-                },
+                progress: progress,
             )
         } else if mustBeVisualMedia {
             // If it's not a video but must be visual media, then we must parse it as
@@ -436,44 +427,6 @@ public struct TypedItemProvider {
             return try PreviewableAttachment.imageAttachment(dataSource: dataSource, dataUTI: dataUTI)
         } else {
             return try PreviewableAttachment.buildAttachment(dataSource: dataSource, dataUTI: dataUTI, attachmentLimits: attachmentLimits)
-        }
-    }
-}
-
-// MARK: - ProgressPoller
-
-/// Exposes a Progress object, whose progress is updated by polling the return of a given block
-private class ProgressPoller: NSObject {
-    private let progress: Progress
-    private let pollInterval: TimeInterval
-    private let fractionCompleted: () -> Float
-
-    init(progress: Progress, pollInterval: TimeInterval, fractionCompleted: @escaping () -> Float) {
-        self.progress = progress
-        self.pollInterval = pollInterval
-        self.fractionCompleted = fractionCompleted
-    }
-
-    private var timer: Timer?
-
-    func stopPolling() {
-        timer?.invalidate()
-    }
-
-    func startPolling() {
-        guard self.timer == nil else {
-            owsFailDebug("already started timer")
-            return
-        }
-
-        self.timer = WeakTimer.scheduledTimer(timeInterval: pollInterval, target: self, userInfo: nil, repeats: true) { [weak self] timer in
-            guard let self else {
-                timer.invalidate()
-                return
-            }
-
-            let fractionCompleted = self.fractionCompleted()
-            self.progress.completedUnitCount = Int64(fractionCompleted * Float(self.progress.totalUnitCount))
         }
     }
 }

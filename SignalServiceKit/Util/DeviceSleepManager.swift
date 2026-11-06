@@ -55,8 +55,17 @@ extension DeviceSleepManager {
 #if TESTABLE_BUILD
 
 class DeviceSleepManagerMock: DeviceSleepManager {
-    func addBlock(blockObject: DeviceSleepBlockObject) {}
-    func removeBlock(blockObject: DeviceSleepBlockObject) {}
+    private(set) var blockObjects: [DeviceSleepBlockObject] = []
+
+    nonisolated init() {}
+
+    func addBlock(blockObject: DeviceSleepBlockObject) {
+        blockObjects.append(blockObject)
+    }
+
+    func removeBlock(blockObject: DeviceSleepBlockObject) {
+        blockObjects.removeAll { $0 === blockObject }
+    }
 }
 
 #endif

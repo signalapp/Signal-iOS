@@ -106,6 +106,28 @@ public class OWSSignalService: OWSSignalServiceProtocol {
         }
     }
 
+    @Atomic private var directRequestFailedUntil: MonotonicDate?
+
+    private func shouldBypassReflectors() async -> Bool {
+        // Bypass the slower and more expensive reflectors when chat has a direct
+        // connection and no direct request has failed recently.
+        guard isCensorshipCircumventionActive else {
+            return false
+        }
+        if let directRequestFailedUntil, MonotonicDate() < directRequestFailedUntil {
+            return false
+        }
+        return await DependenciesBridge.shared.chatConnectionManager.hasDirectConnection
+    }
+
+    private func recordDirectRequestFailure(_ error: any Error) {
+        guard isCensorshipCircumventionActive, error.isNetworkFailureOrTimeout else {
+            return
+        }
+        Logger.warn("Direct request failed with reflectors enabled; falling back.")
+        directRequestFailedUntil = MonotonicDate().adding(Constants.directRequestFailureCooldown)
+    }
+
     // Returns nil if CC not active
     private func censorshipConfigurationParamsWithMaybeSneakyTransaction(
         censorshipCircumventionSupportedForService: Bool,
@@ -201,6 +223,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             configuration: configuration,
             assumesHTTP3Capable: signalServiceInfo.assumesHTTP3Capable,
             shouldHandleRemoteDeprecation: signalServiceInfo.shouldHandleRemoteDeprecation,
+            canBypassReflectors: false,
             onFailureCallback: nil,
         )
     }
@@ -210,13 +233,20 @@ public class OWSSignalService: OWSSignalServiceProtocol {
         configuration: URLSessionConfiguration?,
         assumesHTTP3Capable: Bool,
         shouldHandleRemoteDeprecation: Bool,
+        canBypassReflectors: Bool,
         onFailureCallback: ((any Error) -> Void)?,
     ) -> OWSURLSessionProtocol {
+        let isDirect = endpoint.frontingInfo == nil
         let urlSession = OWSURLSession(
             endpoint: endpoint,
             configuration: configuration ?? OWSURLSession.defaultConfigurationWithoutCaching,
-            canUseSignalProxy: endpoint.frontingInfo == nil,
-            onFailureCallback: onFailureCallback,
+            canUseSignalProxy: isDirect,
+            onFailureCallback: { [weak self] error in
+                if canBypassReflectors, isDirect {
+                    self?.recordDirectRequestFailure(error)
+                }
+                onFailureCallback?(error)
+            },
         )
         urlSession.assumesHTTP3Capable = assumesHTTP3Capable
         urlSession.shouldHandleRemoteDeprecation = shouldHandleRemoteDeprecation
@@ -257,16 +287,18 @@ public class OWSSignalService: OWSSignalServiceProtocol {
     private let cdnSessionCache = CDNSessionCache()
 
     public func sharedUrlSessionForCdn(cdnNumber: UInt32) async -> OWSURLSessionProtocol {
-        let ccParams = self.censorshipConfigurationParamsWithMaybeSneakyTransaction(
-            censorshipCircumventionSupportedForService: true,
-        )
+        let ccParams: CensorshipConfigurationParams?
+        if await shouldBypassReflectors() {
+            ccParams = nil
+        } else {
+            ccParams = self.censorshipConfigurationParamsWithMaybeSneakyTransaction(
+                censorshipCircumventionSupportedForService: true,
+            )
+        }
         let cacheKey = CDNSessionCache.Key(cdnNumber: cdnNumber, ccParams: ccParams)
         return await cdnSessionCache.getOrBuildSession(
             key: cacheKey,
             buildFn: {
-                let urlSessionConfiguration = OWSURLSession.defaultConfigurationWithoutCaching
-                urlSessionConfiguration.timeoutIntervalForRequest = 600
-
                 let baseUrl: URL
                 let censorshipCircumventionPathPrefix: String
                 switch cdnNumber {
@@ -293,13 +325,14 @@ public class OWSSignalService: OWSSignalServiceProtocol {
                         censorshipCircumventionPathPrefix: censorshipCircumventionPathPrefix,
                         shouldUseSignalCertificate: true,
                     ),
-                    configuration: urlSessionConfiguration,
+                    configuration: nil,
                     // Optimistically attempt HTTP/3 (QUIC) for CDN requests.
                     // CDN endpoints (Cloudflare) advertise h3 via Alt-Svc, but
                     // ephemeral sessions don't persist the Alt-Svc cache. This
                     // enables QUIC racing from the first request.
                     assumesHTTP3Capable: true,
                     shouldHandleRemoteDeprecation: false,
+                    canBypassReflectors: true,
                     onFailureCallback: { [weak self] error in
                         Task {
                             if error.isNetworkFailure {
@@ -345,6 +378,12 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             self,
             selector: #selector(isSignalProxyReadyDidChange),
             name: .isSignalProxyReadyDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(reachabilityDidChange),
+            name: SSKReachability.owsReachabilityDidChange,
             object: nil,
         )
     }
@@ -468,11 +507,17 @@ public class OWSSignalService: OWSSignalServiceProtocol {
         }
     }
 
+    @objc
+    private func reachabilityDidChange() {
+        directRequestFailedUntil = nil
+    }
+
     // MARK: - Constants
 
     private enum Constants {
         static let isCensorshipCircumventionManuallyActivatedKey = "kTSStorageManager_isCensorshipCircumventionManuallyActivated"
         static let isCensorshipCircumventionManuallyDisabledKey = "kTSStorageManager_isCensorshipCircumventionManuallyDisabled"
         static let manualCensorshipCircumventionCountryCodeKey = "kTSStorageManager_ManualCensorshipCircumventionCountryCode"
+        static let directRequestFailureCooldown: TimeInterval = 5 * .minute
     }
 }

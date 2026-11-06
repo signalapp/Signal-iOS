@@ -62,13 +62,12 @@ class ConversationSearchViewController: OWSViewController {
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
-        tableView.autoPinHeight(toHeightOf: view)
-        tableViewHorizontalEdgeConstraints = [
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: tableView.trailingAnchor),
-        ]
-        NSLayoutConstraint.activate(tableViewHorizontalEdgeConstraints)
-        updateTableViewPaddingIfNeeded()
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
 
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
@@ -80,6 +79,7 @@ class ConversationSearchViewController: OWSViewController {
         )
 
         updateSeparators()
+        updateListCellAppearance()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -96,7 +96,10 @@ class ConversationSearchViewController: OWSViewController {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        updateTableViewPaddingIfNeeded()
+
+        if traitCollection.horizontalSizeClass != previousTraitCollection?.horizontalSizeClass {
+            updateListCellAppearance()
+        }
     }
 
     override func themeDidChange() {
@@ -116,30 +119,20 @@ class ConversationSearchViewController: OWSViewController {
 
     private let tableView = UITableView(frame: .zero, style: .grouped)
 
-    /// Set to `true` when list is displayed in split view controller's "sidebar" on iOS 26 and later.
-    /// Setting this to `true` would add an extra padding on both sides of the table view.
-    /// This value is also passed down to table view cells that make their own layout choices based on the value.
-    private var useSidebarTableViewCellAppearance = false {
-        didSet {
-            guard oldValue != useSidebarTableViewCellAppearance else { return }
-            tableViewHorizontalEdgeConstraints.forEach {
-                $0.constant = useSidebarTableViewCellAppearance ? 16 : 0
-            }
-            tableView.reloadData()
-        }
-    }
+    /// Contains `true` when the view is displayed in an expanded split view controller on iOS 26 and later.
+    /// This flag is passed down to table view cells so that they could use appropriate appearance.
+    private var useSidebarListCellAppearance = false
 
-    private var tableViewHorizontalEdgeConstraints: [NSLayoutConstraint] = []
-
-    /// iOS 26+: checks if this VC is displayed in the collapsed split view controller and updates `useSidebarCallListCellAppearance` accordingly.
-    /// Does nothing on prior iOS versions.
-    private func updateTableViewPaddingIfNeeded() {
+    /// Checks whether view is displayed in an expanded or collapsed split view
+    /// and updates `useSidebarTableViewCellAppearance` accordingly.
+    /// No-op on versions below iOS 26.
+    private func updateListCellAppearance() {
         guard #available(iOS 26, *) else { return }
 
         if let splitViewController = presentingViewController?.splitViewController, !splitViewController.isCollapsed {
-            useSidebarTableViewCellAppearance = true
+            useSidebarListCellAppearance = true
         } else {
-            useSidebarTableViewCellAppearance = false
+            useSidebarListCellAppearance = false
         }
     }
 
@@ -442,7 +435,7 @@ extension ConversationSearchViewController: UITableViewDataSource {
 
             let cellContentToken = cellContentToken(forConfiguration: configuration)
             cell.configure(cellContentToken: cellContentToken, spoilerAnimationManager: spoilerAnimationManager)
-            cell.useSidebarAppearance = useSidebarTableViewCellAppearance
+            cell.useSidebarAppearance = useSidebarListCellAppearance
             return cell
         }
     }
@@ -707,7 +700,7 @@ class EmptySearchResultCell: UITableViewCell {
 
     func configure(searchText: String) {
         if searchText.isEmpty {
-            activityIndicator.color = Theme.primaryIconColor
+            activityIndicator.color = .Signal.label
             activityIndicator.isHidden = false
             activityIndicator.startAnimating()
             messageLabel.isHidden = true

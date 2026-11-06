@@ -14,6 +14,7 @@ struct DebugLogDumper {
     fileprivate var backupPlanManager: (any BackupPlanManager)?
     fileprivate var db: (any DB)?
     fileprivate var deviceStore: OWSDeviceStore?
+    fileprivate var supportKeyValueStore: SupportKeyValueStore?
 
     static func preLaunch() -> Self {
         return Self(appVersion: AppVersionImpl.shared)
@@ -26,17 +27,21 @@ struct DebugLogDumper {
             backupPlanManager: DependenciesBridge.shared.backupPlanManager,
             db: DependenciesBridge.shared.db,
             deviceStore: DependenciesBridge.shared.deviceStore,
+            supportKeyValueStore: SupportKeyValueStore(),
         )
     }
 
     func challengeReceivedRecently() -> Bool {
-        guard let db else {
+        guard let db, let supportKeyValueStore else {
             return false
         }
 
         let challengeFloorDate = Date().addingTimeInterval(.day * -3)
         return db.read { tx in
-            SupportKeyValueStore().lastChallengeWithinTimeframe(transaction: tx, lastChallengeFloor: challengeFloorDate)
+            supportKeyValueStore.lastChallengeWithinTimeframe(
+                lastChallengeFloor: challengeFloorDate,
+                tx: tx,
+            )
         }
     }
 

@@ -186,6 +186,9 @@ public enum ThemeIcon: UInt {
     case memberLabel
 
     case stickerPack
+
+    case favorite
+    case favoriteSlash
 }
 
 // MARK: -
@@ -547,6 +550,10 @@ public extension Theme {
             return "tag"
         case .stickerPack:
             return "stickerpack"
+        case .favorite:
+            return "favorite"
+        case .favoriteSlash:
+            return "favorite-slash"
         }
     }
 }

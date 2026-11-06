@@ -15,17 +15,6 @@ public enum RemoteDeleteAuthor: Equatable {
 public class AdminDeleteManager {
     public typealias RecipientAddressStates = [SignalServiceAddress: TSOutgoingMessageRecipientState]
 
-    public struct DeleteType: OptionSet {
-        public init(rawValue: Int) {
-            self.rawValue = rawValue
-        }
-
-        public let rawValue: Int
-
-        public static let admin = DeleteType(rawValue: 1 << 1)
-        public static let regular = DeleteType(rawValue: 1 << 2)
-    }
-
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let tsAccountManager: TSAccountManager
     private let kvStore: NewKeyValueStore
@@ -137,30 +126,6 @@ public class AdminDeleteManager {
             )
             return signalRecipient?.aci
         }
-    }
-
-    public func canAdminDeleteMessage(
-        message: TSMessage,
-        thread: TSThread,
-        tx: DBReadTransaction,
-    ) -> Bool {
-        guard let groupThread = thread as? TSGroupThread else {
-            return false
-        }
-
-        guard let localAci = tsAccountManager.localIdentifiers(tx: tx)?.aci else {
-            return false
-        }
-
-        guard groupThread.groupModel.groupMembership.isFullMemberAndAdministrator(localAci) else {
-            return false
-        }
-
-        guard message.canBeRemotelyDeletedByAdmin else {
-            return false
-        }
-
-        return true
     }
 
     public func insertAdminDeleteForSignalRecipient(

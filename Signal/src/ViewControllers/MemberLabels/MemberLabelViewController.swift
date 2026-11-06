@@ -23,6 +23,10 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate, CVCompo
         button.configuration?.titleTextAttributesTransformer = .defaultFont(.dynamicTypeTitle3Clamped)
         button.setContentHuggingHorizontalHigh()
         button.setCompressionResistanceHorizontalHigh()
+        button.accessibilityLabel = OWSLocalizedString(
+            "MEMBER_LABEL_EMOJI_BUTTON_ACCESSIBILITY_LABEL",
+            comment: "Accessibility label for the button that chooses an emoji for a member label.",
+        )
         return button
     }()
 
@@ -70,6 +74,10 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate, CVCompo
         button.tintColor = UIColor.Signal.tertiaryLabel
         button.setContentHuggingHorizontalHigh()
         button.setCompressionResistanceHorizontalHigh()
+        button.accessibilityLabel = OWSLocalizedString(
+            "MEMBER_LABEL_CLEAR_BUTTON_ACCESSIBILITY_LABEL",
+            comment: "Accessibility label for the button that clears the member label text and emoji.",
+        )
         return button
     }()
 
@@ -272,13 +280,7 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate, CVCompo
             textFieldStack.layer.cornerRadius = OWSTableViewController2.cellRounding
         }
 
-        if let initialEmoji {
-            addEmojiButton.configuration?.image = nil
-            addEmojiButton.configuration?.title = initialEmoji
-        } else {
-            addEmojiButton.configuration?.title = nil
-            addEmojiButton.configuration?.image = UIImage(resource: .emojiPlus)
-        }
+        updateEmojiButton(emoji: initialEmoji)
 
         characterCountLabel.isHidden = true
         if let count = initialMemberLabel?.count {
@@ -387,8 +389,7 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate, CVCompo
         textField.text = ""
         updatedMemberLabel = nil
         updatedEmoji = nil
-        addEmojiButton.configuration?.title = nil
-        addEmojiButton.configuration?.image = UIImage(resource: .emojiPlus)
+        updateEmojiButton(emoji: nil)
 
         reloadMessagePreview()
         reloadDoneButtonStatus()
@@ -407,14 +408,24 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate, CVCompo
         })
     }
 
+    private func updateEmojiButton(emoji: String?) {
+        if let emoji {
+            addEmojiButton.configuration?.image = nil
+            addEmojiButton.configuration?.title = emoji
+        } else {
+            addEmojiButton.configuration?.title = nil
+            addEmojiButton.configuration?.image = UIImage(resource: .emojiPlus)
+        }
+        addEmojiButton.accessibilityValue = emoji
+    }
+
     private func didTapEmojiPicker() {
         let picker = EmojiPickerSheet(message: nil, allowReactionConfiguration: false) { [weak self] emoji in
             guard let emojiString = emoji?.rawValue else {
                 return
             }
             self?.updatedEmoji = emojiString
-            self?.addEmojiButton.configuration?.image = nil
-            self?.addEmojiButton.configuration?.title = emojiString
+            self?.updateEmojiButton(emoji: emojiString)
             self?.reloadDoneButtonStatus()
             self?.reloadMessagePreview()
         }

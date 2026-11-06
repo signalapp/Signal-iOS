@@ -4,10 +4,10 @@
 //
 
 import SignalServiceKit
-public import SignalUI
+import SignalUI
 import StoreKit
 
-public class ChatListViewController: OWSViewController, HomeTabViewController {
+class ChatListViewController: OWSViewController, HomeTabViewController {
     init(
         chatListMode: ChatListMode,
     ) {
@@ -28,17 +28,17 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         viewState.configure()
     }
 
-    override public var canBecomeFirstResponder: Bool {
+    override var canBecomeFirstResponder: Bool {
         true
     }
 
     // MARK: View Lifecycle
 
-    override public func loadView() {
+    override func loadView() {
         view = containerView
     }
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = .Signal.background
@@ -101,13 +101,13 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         updateExpirationReminderView()
         updatePaymentReminderView()
         updateUsernameReminderView()
-        updateTableViewPaddingIfNeeded()
+        updateListCellAppearance()
         observeNotifications()
     }
 
     private var viewHasAppeared = false
 
-    override public func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         isViewVisible = true
@@ -233,7 +233,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
     }
 
-    override public func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         defer {
             hasEverAppeared = true
@@ -263,7 +263,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         tableDataSource.updateAndSetRefreshTimer()
     }
 
-    override public func viewWillDisappear(_ animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         leaveMultiselectMode()
         tableDataSource.stopRefreshTimer()
 
@@ -273,7 +273,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         searchResultsController.viewWillDisappear(animated)
     }
 
-    override public func viewDidDisappear(_ animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
         searchResultsController.viewDidDisappear(animated)
@@ -283,13 +283,13 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         viewState.localFileBackupExportProgressView.didDisappear()
     }
 
-    override public func viewIsAppearing(_ animated: Bool) {
+    override func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
 
         updateFilterControl(animated: false)
     }
 
-    override public func viewDidLayoutSubviews() {
+    override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
         let bottomInset = if let getStartedBanner, getStartedBanner.isViewLoaded, getStartedBanner.view.alpha > 0 {
@@ -308,46 +308,30 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     // MARK: Theme, content size, and layout changes
 
-    override public func contentSizeCategoryDidChange() {
+    override func contentSizeCategoryDidChange() {
         super.contentSizeCategoryDidChange()
 
         // This is expensive but this event is very rare.
         reloadTableDataAndResetCellContentCache()
     }
 
-    override public func themeDidChange() {
+    override func themeDidChange() {
         super.themeDidChange()
 
         reloadTableDataAndResetCellContentCache()
         applyThemeToContextMenuAndToolbar()
     }
 
-    override public func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
         guard isViewLoaded else { return }
 
         containerView.willTransition(to: size, with: coordinator)
 
-        // There is a subtle difference in when the split view controller
-        // transitions between collapsed and expanded state on iPad vs
-        // when it does on iPhone. We reloadData here in order to ensure
-        // the background color of all of our cells is updated to reflect
-        // the current state, so it's important that we're only doing this
-        // once the state is ready, otherwise there will be a flash of the
-        // wrong background color. For iPad, this moment is _before_ the
-        // transition occurs. For iPhone, this moment is _during_ the
-        // transition. We reload in the right places accordingly.
-        if UIDevice.current.isIPad {
-            updateTableViewPaddingIfNeeded()
-            reloadTableDataAndResetCellContentCache()
-        }
-
         coordinator.animate { context in
-            if !UIDevice.current.isIPad {
-                self.updateTableViewPaddingIfNeeded()
-                self.reloadTableDataAndResetCellContentCache()
-            }
+            self.updateListCellAppearance()
+            self.reloadTableDataAndResetCellContentCache()
 
             // The Get Started banner will occupy most of the screen in landscape
             // If we're transitioning to landscape, fade out the view (if it exists)
@@ -522,7 +506,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             databaseStorage: db,
             badgeColor: badgeColor,
             onDidDismissContextMenu: onDidDismissContextMenu,
-            buildActions: { settingsAction -> [UIMenuElement] in
+            buildActions: {
                 var contextMenuActions: [UIMenuElement] = []
 
                 if viewState.settingsButtonCreator.showBackupsFailedMenuItem {
@@ -628,14 +612,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                     )
                 }
 
-                // FIXME: combine viewState.inboxFilter and renderState.viewInfo.inboxFilter to avoid bugs with them getting out of sync
-                switch viewState.inboxFilter {
-                case .unread:
-                    contextMenuActions.append(.disableChatListFilter(target: self))
-                case .unfiltered, nil:
-                    contextMenuActions.append(.enableChatListFilter(target: self))
-                }
-
                 if viewState.settingsButtonCreator.hasInboxChats {
                     contextMenuActions.append(
                         UIAction(
@@ -651,22 +627,26 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                     )
                 }
 
-                contextMenuActions.append(settingsAction)
-
-                if viewState.settingsButtonCreator.hasArchivedChats {
-                    contextMenuActions.append(
-                        UIAction(
-                            title: OWSLocalizedString(
-                                "HOME_VIEW_TITLE_ARCHIVE",
-                                comment: "Title for the conversation list's 'archive' mode.",
-                            ),
-                            image: Theme.iconImage(.contextMenuArchive),
-                            handler: { [weak self] _ in
-                                self?.showArchivedConversations(offerMultiSelectMode: true)
-                            },
-                        ),
-                    )
+                // FIXME: combine viewState.inboxFilter and renderState.viewInfo.inboxFilter to avoid bugs with them getting out of sync
+                switch viewState.inboxFilter {
+                case .unread:
+                    contextMenuActions.append(.disableChatListFilter(target: self))
+                case .unfiltered, nil:
+                    contextMenuActions.append(.enableChatListFilter(target: self))
                 }
+
+                contextMenuActions.append(
+                    UIAction(
+                        title: OWSLocalizedString(
+                            "HOME_VIEW_TITLE_ARCHIVE",
+                            comment: "Title for the conversation list's 'archive' mode.",
+                        ),
+                        image: Theme.iconImage(.contextMenuArchive),
+                        handler: { [weak self] _ in
+                            self?.showArchivedConversations(offerMultiSelectMode: true)
+                        },
+                    ),
+                )
 
                 return contextMenuActions
             },
@@ -686,16 +666,12 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     }
 
     func reloadTableDataAndResetCellContentCache() {
-        AssertIsOnMainThread()
-
         cellContentCache.clear()
         conversationCellHeightCache = nil
         reloadTableData()
     }
 
     func reloadTableData(previouslySelectedThreadUniqueIds: [String] = []) {
-        AssertIsOnMainThread()
-
         tableView.reloadData()
 
         let selectedThreadIds: Set<String> = Set(previouslySelectedThreadUniqueIds)
@@ -721,8 +697,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     }
 
     func updateCellVisibility() {
-        AssertIsOnMainThread()
-
         for cell in tableView.visibleCells {
             guard let cell = cell as? ChatListCell else {
                 continue
@@ -732,14 +706,10 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     }
 
     func updateCellVisibility(cell: ChatListCell, isCellVisible: Bool) {
-        AssertIsOnMainThread()
-
         cell.isCellVisible = isViewVisible && isCellVisible
     }
 
     private func ensureCellAnimations() {
-        AssertIsOnMainThread()
-
         for cell in tableView.visibleCells {
             guard let cell = cell as? ChatListCell else {
                 continue
@@ -748,10 +718,10 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
     }
 
-    /// iOS 26+: checks if this VC is displayed in the collapsed split view controller
-    /// and updates `containerView.tableViewHorizontalInset` accordingly.
-    /// Does nothing on prior iOS versions.
-    private func updateTableViewPaddingIfNeeded() {
+    /// Checks whether this view controller is displayed in an expanded or collapsed split view controller
+    /// and updates `tableDataSource.useSideBarChatListCellAppearance` accordingly.
+    /// No-op on versions below iOS 26.
+    private func updateListCellAppearance() {
         guard #available(iOS 26, *) else { return }
 
         let useSidebarChatListCellAppearance: Bool
@@ -760,10 +730,9 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         } else {
             useSidebarChatListCellAppearance = false
         }
-        // We need to add/remove horizotal padding around table view...
-        containerView.tableViewHorizontalInset = useSidebarChatListCellAppearance ? 16 : 0
-        // ... and tell ChatListCell to use rounded corners if there is non-zero padding.
-        tableDataSource.useSideBarChatListCellAppearance = useSidebarChatListCellAppearance
+        // CLVTableDataSource will tell ChatListCell to use different selected state background appearance
+        // (rounded corners, inset) if chat list is presented in an expanded UISplitViewController.
+        tableDataSource.useSideBarListCellAppearance = useSidebarChatListCellAppearance
     }
 
     // MARK: UI Helpers
@@ -775,14 +744,13 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     var lastViewedThreadUniqueId: String?
 
     func updateBarButtonItems() {
-        updateLeftBarButtonItem()
+        updateSettingsBarButtonItem()
         updateRightBarButtonItems()
     }
 
-    private func updateLeftBarButtonItem() {
+    func updateSettingsBarButtonItem() {
         guard viewState.chatListMode == .inbox, !viewState.multiSelectState.isActive else { return }
 
-        // Settings button.
         navigationItem.leftBarButtonItem = settingsBarButtonItem()
     }
 
@@ -1353,7 +1321,7 @@ extension ChatListViewController {
 
 extension ChatListViewController: ChatListSettingsButtonDelegate {
     func didUpdateButton(_ settingsButtonCreator: ChatListSettingsButtonState) {
-        updateLeftBarButtonItem()
+        updateSettingsBarButtonItem()
     }
 }
 
@@ -1502,24 +1470,24 @@ extension ChatListViewController {
 }
 
 extension ChatListViewController: UIScrollViewDelegate {
-    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         filterControl?.draggingWillBegin(in: scrollView)
         cancelSearch()
     }
 
-    public func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         filterControl?.draggingWillEnd(in: scrollView)
     }
 
-    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate: Bool) {
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate: Bool) {
         filterControl?.draggingDidEnd(in: scrollView)
     }
 
-    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         filterControl?.scrollingDidStop(in: scrollView)
     }
 
-    public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
         filterControl?.scrollingDidStop(in: scrollView)
     }
 }

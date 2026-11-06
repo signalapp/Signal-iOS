@@ -16,6 +16,7 @@ final class ContactSharingPickerViewModel {
     typealias ContactsAccessRequester = () async -> Void
     typealias ContactsAuthorizationStatusProvider = () -> RawContactAuthorizationStatus
     typealias DisplayNamesForRecipientsProvider = ([SignalRecipient], DBReadTransaction) -> [DisplayName]
+    typealias PreferContactAvatarsProvider = (DBReadTransaction) -> Bool
     typealias SignalAvatarDataProvider = (OWSUserProfile) -> Data?
     typealias SystemContactsProvider = (RawContactAuthorizationStatus) -> [SystemContact]
     typealias SystemContactsRefresher = () async -> Void
@@ -34,6 +35,7 @@ final class ContactSharingPickerViewModel {
     private let nicknameRecordStore: any NicknameRecordStore
     private let phoneNumberUtil: PhoneNumberUtil
     private let phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher
+    private let preferContactAvatarsProvider: PreferContactAvatarsProvider
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientHidingManager: any RecipientHidingManager
     private let searchDebounceInterval: DispatchQueue.SchedulerTimeType.Stride
@@ -60,6 +62,7 @@ final class ContactSharingPickerViewModel {
     private let stateSubject = CurrentValueSubject<State, Never>(.initial)
     private let searchTextSubject = CurrentValueSubject<String, Never>("")
     private var loadedContactsAuthorizationStatus: RawContactAuthorizationStatus?
+    private lazy var preferContactAvatars = db.read { tx in preferContactAvatarsProvider(tx) }
     private var cancellables = Set<AnyCancellable>()
 
     var state: State { stateSubject.value }
@@ -112,6 +115,7 @@ final class ContactSharingPickerViewModel {
         notificationCenter: NotificationCenter = .default,
         phoneNumberUtil: PhoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef,
         phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher = DependenciesBridge.shared.phoneNumberVisibilityFetcher,
+        preferContactAvatarsProvider: PreferContactAvatarsProvider? = nil,
         profileManager: any ProfileManager = SSKEnvironment.shared.profileManagerRef,
         recipientDatabaseTable: RecipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable,
         recipientHidingManager: any RecipientHidingManager = DependenciesBridge.shared.recipientHidingManager,
@@ -138,6 +142,9 @@ final class ContactSharingPickerViewModel {
         self.nicknameRecordStore = nicknameRecordStore
         self.phoneNumberUtil = phoneNumberUtil
         self.phoneNumberVisibilityFetcher = phoneNumberVisibilityFetcher
+        self.preferContactAvatarsProvider = preferContactAvatarsProvider ?? { tx in
+            SSKPreferences.preferContactAvatars(transaction: tx)
+        }
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientHidingManager = recipientHidingManager
         self.searchDebounceInterval = searchDebounceInterval
@@ -402,6 +409,7 @@ final class ContactSharingPickerViewModel {
         case .signalContact(let signalContact, let systemContact):
             if
                 let systemContact,
+                preferContactAvatars,
                 let addressBookAvatarImage = contactManager.avatarImage(for: systemContact.systemContact.cnContactId)
             {
                 return addressBookAvatarImage

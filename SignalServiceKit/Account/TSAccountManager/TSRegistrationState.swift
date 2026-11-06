@@ -14,11 +14,6 @@ public enum TSRegistrationState {
     /// state is not maintained here.
     case unregistered
 
-    /// Re-registering after becoming deregistered.
-    case reregistering(ReregisteringLocalIdentifiers)
-    /// Re-linking after becoming delinked.
-    case relinking(ReregisteringLocalIdentifiers)
-
     /// Registered as a primary device. "Normal" state.
     case registered(LocalIdentifiers)
     /// Provisioned as a linked device. "Normal" state.
@@ -68,7 +63,6 @@ extension TSRegistrationState {
             return false
         case
             .registered, .provisioned,
-            .reregistering, .relinking,
             .deregistered, .delinked,
             .transferringPrimaryOutgoing, .transferringLinkedOutgoing,
             .transferred:
@@ -85,9 +79,9 @@ extension TSRegistrationState {
         case .transferred:
             // Irrelevant what this was, return nil.
             return nil
-        case .registered, .deregistered, .reregistering, .transferringPrimaryOutgoing:
+        case .registered, .deregistered, .transferringPrimaryOutgoing:
             return .primary
-        case .provisioned, .delinked, .relinking, .transferringLinkedOutgoing:
+        case .provisioned, .delinked, .transferringLinkedOutgoing:
             return .linked
         }
     }
@@ -132,10 +126,6 @@ extension TSRegistrationState {
             return "delinked"
         case .transferred:
             return "transferred"
-        case .reregistering:
-            return "reregistering"
-        case .relinking:
-            return "relinking"
         }
     }
 }

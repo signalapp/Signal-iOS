@@ -331,27 +331,9 @@ extension ForwardMessageViewController {
     }
 
     private func send(item: ForwardMessageItem, toOutgoingMessageRecipientThreads outgoingMessageRecipientThreads: [TSThread]) async throws {
-        let stickerManager = DependenciesBridge.shared.stickerManager
-        let db = DependenciesBridge.shared.db
-
         if let stickerMetadata = item.stickerMetadata {
-            let stickerInfo = stickerMetadata.stickerInfo
-            let isStickerInstalled = db.read { tx in
-                stickerManager.isStickerInstalled(stickerInfo: stickerInfo, transaction: tx)
-            }
-
-            if isStickerInstalled {
-                await enqueueMessageViaThreadUtil(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
-                    self.send(installedSticker: stickerInfo, thread: recipientThread)
-                }
-            } else {
-                guard let stickerAttachment = item.stickerAttachment else {
-                    throw OWSAssertionError("Missing stickerAttachment.")
-                }
-                let stickerData = try stickerAttachment.decryptedRawData()
-                await enqueueMessageViaThreadUtil(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
-                    self.send(uninstalledSticker: stickerMetadata, stickerData: stickerData, thread: recipientThread)
-                }
+            await enqueueMessageViaThreadUtil(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
+                self.send(stickerMetadata: stickerMetadata, thread: recipientThread)
             }
         } else if let contactShare = item.contactShare {
             await enqueueMessageViaThreadUtil(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
@@ -402,12 +384,8 @@ extension ForwardMessageViewController {
         ThreadUtil.enqueueMessage(withContactShare: contactShare, thread: thread)
     }
 
-    private func send(installedSticker stickerInfo: StickerInfo, thread: TSThread) {
-        ThreadUtil.enqueueMessage(withInstalledSticker: stickerInfo, quotedReplyDraft: nil, thread: thread)
-    }
-
-    private func send(uninstalledSticker stickerMetadata: any StickerMetadata, stickerData: Data, thread: TSThread) {
-        ThreadUtil.enqueueMessage(withUninstalledSticker: stickerMetadata, stickerData: stickerData, thread: thread)
+    private func send(stickerMetadata: any StickerMetadata, thread: TSThread) {
+        ThreadUtil.enqueueMessage(withSticker: stickerMetadata, quotedReplyDraft: nil, thread: thread)
     }
 
     private func enqueueMessageViaThreadUtil(

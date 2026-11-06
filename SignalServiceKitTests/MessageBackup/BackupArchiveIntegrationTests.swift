@@ -1,0 +1,472 @@
+//
+// Copyright 2024 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+//
+
+import LibSignalClient
+import SignalMessageBackupTests
+import XCTest
+
+@testable import SignalServiceKit
+
+class BackupArchiveIntegrationTests: XCTestCase {
+    override func setUp() {
+        /// By default, we cap test runs to 60s in CI. This test might run
+        /// longer, since we have very many integration test cases, so this
+        /// extends the time allowance specifically for this test.
+        ///
+        /// As an alternative, we could avoid running all the integration test
+        /// cases in one giant test. For example, in Swift Testing we can
+        /// "parameterize" tests, for example parameterizing over the list of
+        /// integration test cases, such that there's one "test" per integration
+        /// test case. I tried that, but unfortunately at the time of writing
+        /// Xcode struggles mightily with highly parameterized tests; the tests
+        /// ran very slowly, and Xcode itself beach-balled.
+        ///
+        /// In the future, if Xcode supports this better, we can move this test
+        /// to use Swift Testing and parameterization.
+        ///
+        /// - SeeAlso
+        /// The `-test-timeouts-enabled`, `-default-test-execution-time-allowance`,
+        /// and `-default-test-execution-time-allowance` command-line arguments
+        /// passed during CI.
+        executionTimeAllowance = 300
+
+        DDLog.add(DDTTYLogger.sharedInstance!)
+    }
+
+    // MARK: -
+
+    /// Describes what output to log if LibSignal reports a test failure.
+    private enum LibSignalComparisonFailureLogOutput {
+        /// Log the full backup JSONs returned by LibSignal, for external
+        /// analysis via `parse-libsignal-comparator-failure.py`.
+        case fullLibSignalJSON
+
+        /// Log a minimal diff of the backup JSONs returned by LibSignal, for
+        /// inline analysis in the Xcode logs.
+        case minimalDiff
+    }
+
+    /// The preferred log output for test failures.
+    ///
+    /// Set by default to `.minimalDiff` to reduce log noise in automated test
+    /// runs. Toggle to `.fullLibSignalJSON` if desired during local
+    /// development, for more thorough inspection of the failure case.
+    private let preferredFailureLogOutput: LibSignalComparisonFailureLogOutput = .minimalDiff
+
+    /// Specifies which integration test cases to run. If empty, runs them all.
+    ///
+    /// Populate this during local development with a subset of test cases as
+    /// useful, but never commit this as anything other than empty.
+    ///
+    /// Passing a prefix (e.g., `account_data`) will run any test cases that
+    /// match said prefix.
+    private let whichIntegrationTestCases: [String] = []
+
+    /// Test cases that we knowingly skip.
+    private let knownSkippedTestCases: [String] = [
+        // Not relevant for iOS
+        "android_account_data",
+        // Not implemented yet
+        "chat_folder",
+        "chat_item_standard_message_standard_attachments_incremental_mac",
+        "notification_profile",
+        // These include group updates that include fields that iOS doesn't
+        // store, but that Desktop uses. Those fields are probably removable by
+        // Desktop, but that's complicated, so instead we've kept them in the
+        // tests and iOS is skipping the problematic test cases.
+        //
+        // (Note that Android persists the actual change action protos, rather
+        // than a reinterpretation thereof, so they generally don't care what's
+        // in them for round-trip purposes.)
+        //
+        // 09, 43, and 44 include `GroupMemberAddedUpdate`, which includes the
+        // fields `hadOpenInvitation` and `inviterAci`.
+        //
+        // 10, 47, and 48 include `GroupInvitationRevokedUpdate`, which includes
+        // the fields `inviteeAci` and `inviterPni`.
+        "chat_item_group_change_chat_multiple_update_09",
+        "chat_item_group_change_chat_multiple_update_10",
+        "chat_item_group_change_chat_update_43",
+        "chat_item_group_change_chat_update_44",
+        "chat_item_group_change_chat_update_47",
+        "chat_item_group_change_chat_update_48",
+    ]
+
+    // MARK: -
+
+    /// Performs a round-trip import/export test on all `.binproto` integration
+    /// test cases.
+    func testIntegrationTestCases() async throws {
+        let binProtoFileUrls: [URL] = {
+            let allBinprotoUrls = MessageBackupTestCases.bundle.urls(
+                forResourcesWithExtension: "binproto",
+                subdirectory: "test-cases",
+            ) ?? []
+
+            return allBinprotoUrls.filter { binprotoUrl in
+                let binprotoName = (binprotoUrl.lastPathComponent as NSString).deletingPathExtension
+
+                if
+                    knownSkippedTestCases.contains(where: { testCasePrefix in
+                        binprotoName.starts(with: testCasePrefix)
+                    })
+                {
+                    return false
+                }
+
+                if whichIntegrationTestCases.isEmpty {
+                    return true
+                }
+
+                return whichIntegrationTestCases.contains { testCasePrefix in
+                    binprotoName.starts(with: testCasePrefix)
+                }
+            }
+        }()
+
+        guard binProtoFileUrls.count > 0 else {
+            XCTFail("Failed to find binprotos in test bundle!")
+            return
+        }
+
+        for binprotoFileUrl in binProtoFileUrls {
+            let filename = (binprotoFileUrl.lastPathComponent as NSString).deletingPathExtension
+
+            /// Separate the `Logger` and `XCTFail` steps. We want the test to
+            /// fail, but `XCTFail` is slow to get its output into the console,
+            /// so we'll log the interesting failure message separately so it's
+            /// sequential with whatever else is being logged (such as the next
+            /// test starting).
+            func logFailure(_ message: String) {
+                Logger.error(message)
+                XCTFail(filename)
+            }
+
+            do {
+                Logger.info("""
+
+
+                [TestCase] Running test case: \(filename)
+
+                """)
+
+                try await runRoundTripTest(
+                    testCaseFileUrl: binprotoFileUrl,
+                    failureLogOutput: preferredFailureLogOutput,
+                )
+            } catch TestError.failure(let message) {
+                logFailure("""
+
+                ------------
+
+                Test case failed: \(filename)!
+
+                \(message)
+
+                ------------
+                """)
+            } catch let error {
+                logFailure("""
+
+                ------------
+
+                Test case failed with unexpected error: \(filename)!
+
+                \(error)
+
+                ------------
+                """)
+            }
+        }
+
+        /// Ensure we write all log output before the test finishes.
+        Logger.flush()
+    }
+
+    // MARK: -
+
+    private enum TestError: Error {
+        case failure(String)
+    }
+
+    private var deps: DependenciesBridge { .shared }
+
+    /// Runs a round-trip import/export test for the given `.binproto` file.
+    ///
+    /// The round-trip test imports the given `.binproto` into an empty app,
+    /// then exports the app's state into another `.binproto`. The
+    /// originally-imported and recently-exported `.binprotos` are then compared
+    /// by LibSignal. They should be equivalent; any disparity indicates that
+    /// some data was dropped or modified as part of the import/export process,
+    /// which should be idempotent.
+    @MainActor
+    private func runRoundTripTest(
+        testCaseFileUrl: URL,
+        failureLogOutput: LibSignalComparisonFailureLogOutput,
+    ) async throws {
+
+        /// Backup files hardcode timestamps, some of which are interpreted
+        /// relative to "now". For example, "deleted" story distribution lists
+        /// are marked as deleted for a period of time before being actually
+        /// deleted; when these frames are restored from a Backup, their
+        /// deletion timestamp is compared to "now" to determine if they should
+        /// be deleted.
+        ///
+        /// Consequently, in order for tests to remain stable over time we need
+        /// to "anchor" them with an unchanging timestamp. To that end, we'll
+        /// extract the `backupTimeMs` field from the Backup header, and use
+        /// that as our "now" during import.
+        let backupTimeMs = try await readBackupTimeMs(testCaseFileUrl: testCaseFileUrl)
+
+        let oldContext = CurrentAppContext()
+        await initializeApp(dateProvider: { Date(millisecondsSince1970: backupTimeMs) })
+        let result = await Result {
+            try await self._runRoundTripTest(
+                testCaseFileUrl: testCaseFileUrl,
+                backupTimeMs: backupTimeMs,
+                failureLogOutput: failureLogOutput,
+            )
+        }
+        await deinitializeApp(oldContext: oldContext)
+        try result.get()
+    }
+
+    private func _runRoundTripTest(
+        testCaseFileUrl: URL,
+        backupTimeMs: UInt64,
+        failureLogOutput: LibSignalComparisonFailureLogOutput,
+    ) async throws {
+        /// A backup doesn't contain our own local identifiers. Rather, those
+        /// are determined as part of registration for a backup import, and are
+        /// already-known for a backup export.
+        ///
+        /// Consequently, we can use any local identifiers for our test
+        /// purposes without worrying about the contents of each test case's
+        /// backup file.
+        let localIdentifiers: LocalIdentifiers = .forUnitTests
+
+        try await deps.backupArchiveManager.importPlaintextBackupForTests(
+            fileUrl: testCaseFileUrl,
+            localIdentifiers: localIdentifiers,
+        )
+
+        let exportedBackupUrl = try await deps.backupArchiveManager
+            .exportPlaintextBackupForTests(localIdentifiers: localIdentifiers)
+
+        try compareViaLibsignal(
+            sharedTestCaseBackupUrl: testCaseFileUrl,
+            exportedBackupUrl: exportedBackupUrl,
+            failureLogOutput: failureLogOutput,
+        )
+    }
+
+    /// Compare the canonical representation of the Backups at the two given
+    /// file URLs, via `LibSignal`.
+    ///
+    /// - Throws
+    /// If there are errors reading or validating either Backup, or if the
+    /// Backups' canonical representations are not equal.
+    private func compareViaLibsignal(
+        sharedTestCaseBackupUrl: URL,
+        exportedBackupUrl: URL,
+        failureLogOutput: LibSignalComparisonFailureLogOutput,
+    ) throws {
+#if targetEnvironment(simulator)
+        let sharedTestCaseBackup = try ComparableBackup(url: sharedTestCaseBackupUrl)
+        let exportedBackup = try ComparableBackup(url: exportedBackupUrl)
+
+        guard sharedTestCaseBackup.unknownFields.fields.isEmpty else {
+            throw TestError.failure("Unknown fields: \(sharedTestCaseBackup.unknownFields)!")
+        }
+
+        let sharedTestCaseBackupString = sharedTestCaseBackup.comparableString()
+        let exportedBackupString = exportedBackup.comparableString()
+
+        let jsonEncoder = JSONEncoder()
+        jsonEncoder.outputFormatting = .prettyPrinted
+
+        if sharedTestCaseBackupString != exportedBackupString {
+            switch failureLogOutput {
+            case .fullLibSignalJSON:
+                throw TestError.failure("""
+                Copy the JSON lines below and run `pbpaste | parse-libsignal-comparator-failure.py`.
+
+                \(sharedTestCaseBackupString.removeCharacters(characterSet: .whitespacesAndNewlines))
+                \(exportedBackupString.removeCharacters(characterSet: .whitespacesAndNewlines))
+                """)
+            case .minimalDiff:
+                let jsonStringDiff: LineByLineStringDiff = .diffing(
+                    lhs: sharedTestCaseBackupString,
+                    rhs: exportedBackupString,
+                )
+
+                let prettyDiff = jsonStringDiff.prettyPrint(
+                    lhsLabel: "testcase",
+                    rhsLabel: "exported",
+                    diffGroupDivider: "************",
+                )
+
+                throw TestError.failure("""
+                JSON diff:
+
+                \(prettyDiff)
+                """)
+            }
+        }
+#else
+        throw XCTSkip("LibSignalClient.ComparableBackup is only available in the simulator.")
+#endif
+    }
+
+    // MARK: -
+
+    /// Read the `backupTimeMs` field from the header of the Backup file at the
+    /// given local URL.
+    private func readBackupTimeMs(testCaseFileUrl: URL) async throws -> UInt64 {
+        let plaintextProtoStreamProvider = BackupArchivePlaintextProtoStreamProvider()
+
+        let stream: BackupArchiveProtoInputStream = try plaintextProtoStreamProvider.openPlaintextInputFileStream(
+            fileUrl: testCaseFileUrl,
+            frameRestoreProgress: nil,
+        )
+
+        let backupInfo: BackupProto_BackupInfo
+        switch stream.readHeader() {
+        case .success(let _backupInfo, _):
+            backupInfo = _backupInfo
+        case .emptyFinalFrame:
+            throw TestError.failure("Invalid empty header frame!")
+        case .protoDeserializationError(let error):
+            throw TestError.failure("Proto deserialization error: \(error)!")
+        }
+
+        return backupInfo.backupTimeMs
+    }
+
+    // MARK: -
+
+    @MainActor
+    private func initializeApp(dateProvider: DateProvider?) async {
+        let appReadiness = AppReadinessMock()
+
+        /// We use crashy versions of dependencies that should never be called
+        /// during backups, and no-op implementations of payments because those
+        /// are bound to the SignalUI target.
+        await MockSSKEnvironment.activate(
+            appReadiness: appReadiness,
+            callMessageHandler: CrashyMocks.MockCallMessageHandler(),
+            currentCallProvider: CrashyMocks.MockCurrentCallThreadProvider(),
+            notificationPresenter: CrashyMocks.MockNotificationPresenter(),
+            testDependencies: AppSetup.TestDependencies(
+                backupAttachmentCoordinator: MockBackupAttachmentCoordinator(),
+                dateProvider: dateProvider,
+                networkManager: CrashyMocks.MockNetworkManager(appReadiness: appReadiness, libsignalNet: nil),
+                storageServiceManager: FakeStorageServiceManager(),
+                webSocketFactory: CrashyMocks.MockWebSocketFactory(),
+            ),
+        )
+
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            _ = TSPrivateStoryThread.getOrCreateMyStory(transaction: tx)
+        }
+    }
+
+    private func deinitializeApp(oldContext: any AppContext) async {
+        await MockSSKEnvironment.deactivateAsync(oldContext: oldContext)
+    }
+}
+
+// MARK: -
+
+#if targetEnvironment(simulator)
+private extension LibSignalClient.ComparableBackup {
+    convenience init(url: URL) throws {
+        let fileHandle = try FileHandle(forReadingFrom: url)
+        let fileLength = try fileHandle.seekToEnd()
+        try fileHandle.seek(toOffset: 0)
+
+        try self.init(
+            purpose: .remoteBackup,
+            length: fileLength,
+            stream: fileHandle,
+        )
+    }
+}
+#endif
+
+// MARK: - CrashyMocks
+
+private func failTest<T>(
+    _ type: T.Type,
+    _ function: StaticString = #function,
+) -> Never {
+    let message = "Unexpectedly called \(type)#\(function)!"
+    XCTFail(message)
+    owsFail(message)
+}
+
+/// As a rule, integration tests for message backup should not mock out their
+/// dependencies as their goal is to validate how the real, production app will
+/// behave with respect to Backups.
+///
+/// These mocks are the exceptions to that rule, and encompass managers that
+/// should never be invoked during Backup import or export.
+private enum CrashyMocks {
+    final class MockNetworkManager: NetworkManager {
+        override func asyncRequestImpl(_ request: TSRequest, retryPolicy: RetryPolicy) async throws -> HTTPResponse { failTest(Self.self) }
+    }
+
+    final class MockWebSocketFactory: WebSocketFactory {
+        var canBuildWebSocket: Bool { failTest(Self.self) }
+        func buildSocket(request: WebSocketRequest, callbackScheduler: any Scheduler) -> (any SSKWebSocket)? { failTest(Self.self) }
+    }
+
+    final class MockCallMessageHandler: CallMessageHandler {
+        func receivedEnvelope(_ envelope: SSKProtoEnvelope, callEnvelope: CallEnvelopeType, from caller: (aci: Aci, deviceId: DeviceId), toLocalIdentity localIdentity: OWSIdentity, plaintextData: Data, wasReceivedByUD: Bool, sentAtTimestamp: UInt64, serverReceivedTimestamp: UInt64, serverDeliveryTimestamp: UInt64, tx: DBWriteTransaction) { failTest(Self.self) }
+        func receivedGroupCallUpdateMessage(_ updateMessage: SSKProtoDataMessageGroupCallUpdate, forGroupId groupId: GroupIdentifier, serverReceivedTimestamp: UInt64) async { failTest(Self.self) }
+    }
+
+    final class MockCurrentCallThreadProvider: CurrentCallProvider {
+        var hasCurrentCall: Bool { failTest(Self.self) }
+        var currentGroupThreadCallGroupId: GroupIdentifier? { failTest(Self.self) }
+    }
+
+    final class MockNotificationPresenter: NotificationPresenter {
+        func registerNotificationSettings() async { failTest(Self.self) }
+        func notifyUser(forIncomingMessage: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
+        func notifyUser(forIncomingMessage: TSIncomingMessage, editTarget: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
+        func notifyUser(forReleaseNotesMessage: TSReleaseNotesMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
+        func notifyUser(forReaction: OWSReaction, onOutgoingMessage: TSOutgoingMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
+        func notifyUser(forErrorMessage: TSErrorMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
+        func notifyUser(forTSMessage: TSMessage, thread: TSThread, wantsSound: Bool, transaction: DBWriteTransaction) { failTest(Self.self) }
+        func notifyUser(forPreviewableInteraction: any TSInteraction & OWSPreviewText, thread: TSThread, wantsSound: Bool, transaction: DBWriteTransaction) { failTest(Self.self) }
+        func notifyTestPopulation(ofErrorMessage errorString: String) { failTest(Self.self) }
+        func notifyUser(forFailedStorySend: StoryMessage, to: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
+        func notifyUserOfFailedSend(inThread thread: TSThread) { failTest(Self.self) }
+        func notifyUserOfMissedCall(notificationInfo: CallNotificationInfo, offerMediaType: TSRecentCallOfferType, sentAt timestamp: Date, tx: DBReadTransaction) { failTest(Self.self) }
+        func notifyUserOfMissedCallBecauseOfNewIdentity(notificationInfo: CallNotificationInfo, tx: DBWriteTransaction) { failTest(Self.self) }
+        func notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(notificationInfo: CallNotificationInfo, tx: DBWriteTransaction) { failTest(Self.self) }
+        func notifyForGroupCallSafetyNumberChange(callTitle: String, threadUniqueId: String?, roomId: Data?, presentAtJoin: Bool) { failTest(Self.self) }
+        func notifyUserOfPollEnd(forMessage message: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
+        func notifyUserOfPollVote(forMessage message: TSOutgoingMessage, voteAuthor: Aci, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
+        func scheduleUnreadReminder(threadUniqueId: String, threadIdentifier: String?, title: String?, body: String, initialDelay: TimeInterval, latestFireDate: Date, tx: DBWriteTransaction) { failTest(Self.self) }
+        func cancelUnreadReminder(threadUniqueId: String, tx: DBReadTransaction) { failTest(Self.self) }
+        func scheduleNotifyForNewLinkedDevice(deviceLinkTimestamp: Date) { failTest(Self.self) }
+        func scheduleNotifyForBackupsEnabled(backupsTimestamp: Date) { failTest(Self.self) }
+        func notifyUserOfBackupsMediaError() { failTest(Self.self) }
+        func notifyUserToRelaunchAfterTransfer(completion: @escaping () -> Void) { failTest(Self.self) }
+        func notifyUserOfDeregistration(tx: DBWriteTransaction) { failTest(Self.self) }
+        func clearAllNotifications() { failTest(Self.self) }
+        func clearNotificationsForAppActivate() { failTest(Self.self) }
+        func clearDeliveredNewLinkedDevicesNotifications() { failTest(Self.self) }
+        func cancelNotifications(threadId: String) { failTest(Self.self) }
+        func cancelNotifications(messageIds: [String]) { failTest(Self.self) }
+        func cancelNotifications(reactionId: String) { failTest(Self.self) }
+        func cancelNotificationsForMissedCalls(threadUniqueId: String) { failTest(Self.self) }
+        func cancelNotifications(for storyMessage: StoryMessage) { failTest(Self.self) }
+        func notifyUserOfAttachmentBackfill(threadUniqueId: String, messageUniqueId: String, body: String) { failTest(Self.self) }
+        func notifyUserOfMediaTierQuotaConsumed() { failTest(Self.self) }
+    }
+}

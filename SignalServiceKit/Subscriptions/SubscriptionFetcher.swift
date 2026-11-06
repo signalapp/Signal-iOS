@@ -36,11 +36,9 @@ public struct SubscriptionFetcher {
                 return nil
             }
 
-            let chargeFailureDict: [String: Any]? = try parser.optional(key: "chargeFailure")
-
             return try Subscription(
                 subscriptionDict: subscriptionDict,
-                chargeFailureDict: chargeFailureDict,
+                chargeFailure: .decode(responseBody: response.responseBodyData),
             )
         default:
             throw OWSAssertionError("Got bad response code! \(response.responseStatusCode)")
@@ -67,15 +65,30 @@ private extension TSRequest {
 /// Represents a *recurring* subscription, associated with a subscriber ID and
 /// fetched from the service using that ID.
 public struct Subscription: Equatable {
-    public struct ChargeFailure: Equatable {
+    public struct ChargeFailure: Equatable, Decodable {
         /// The error code reported by the server.
         ///
         /// If nil, we know there was a charge failure but don't know the code. This is unusual,
         /// but can happen if the server sends an invalid response.
         public let code: String?
 
-        init(jsonDictionary: [String: Any]) {
-            code = try? ParamParser(jsonDictionary).optional(key: "code")
+        private enum CodingKeys: String, CodingKey {
+            case code
+        }
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            code = try? container.decodeIfPresent(String.self, forKey: .code)
+        }
+
+        /// Decodes the `chargeFailure` field from a response body, if present.
+        public static func decode(responseBody: Data?) -> ChargeFailure? {
+            struct ResponseBody: Decodable {
+                let chargeFailure: ChargeFailure?
+            }
+
+            guard let responseBody else { return nil }
+            return (try? JSONDecoder().decode(ResponseBody.self, from: responseBody))?.chargeFailure
         }
     }
 
@@ -156,7 +169,7 @@ public struct Subscription: Equatable {
         ].joined(separator: ". ")
     }
 
-    public init(subscriptionDict: [String: Any], chargeFailureDict: [String: Any]?) throws {
+    public init(subscriptionDict: [String: Any], chargeFailure: ChargeFailure?) throws {
         let params = ParamParser(subscriptionDict)
         level = try params.required(key: "level")
         let currencyCode: Currency.Code = try {
@@ -202,11 +215,6 @@ public struct Subscription: Equatable {
         }
 
         isPaymentProcessing = try params.required(key: "paymentProcessing")
-
-        if let chargeFailureDict {
-            chargeFailure = ChargeFailure(jsonDictionary: chargeFailureDict)
-        } else {
-            chargeFailure = nil
-        }
+        self.chargeFailure = chargeFailure
     }
 }

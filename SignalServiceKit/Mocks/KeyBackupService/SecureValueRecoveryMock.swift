@@ -25,10 +25,10 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         try await backUpMasterKeyMock(pin, masterKey, authMethod)
     }
 
-    public var restoreKeysMock: ((_ pin: String, _ authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>)?
+    public var restoreMasterKeyMock: ((_ pin: String, _ authMethod: SVR.AuthMethod) async throws -> MasterKey)?
 
-    public func restoreKeys(pin: String, authMethod: SVR.AuthMethod) async -> SVR.RestoreKeysResult {
-        return await restoreKeysMock!(pin, authMethod).awaitable()
+    public func restoreMasterKey(pin: String, authMethod: SVR.AuthMethod) async throws -> MasterKey {
+        return try await restoreMasterKeyMock!(pin, authMethod)
     }
 
     public func invalidateBackupAttemptForEveryEnclave(tx: DBWriteTransaction) {

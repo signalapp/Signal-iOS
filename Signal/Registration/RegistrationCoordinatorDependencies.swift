@@ -44,6 +44,7 @@ public struct RegistrationCoordinatorDependencies {
     public let sessionManager: RegistrationSessionManager
     public let signalService: OWSSignalServiceProtocol
     public let storageServiceManager: RegistrationCoordinatorImpl.Shims.StorageServiceManager
+    let supportKeyValueStore: SupportKeyValueStore
     public let svr: SecureValueRecovery
     public let svrLocalStorage: SVRLocalStorage
     public let svrAuthCredentialManager: SVRAuthCredentialManager
@@ -94,6 +95,7 @@ public struct RegistrationCoordinatorDependencies {
             sessionManager: DependenciesBridge.shared.registrationSessionManager,
             signalService: SSKEnvironment.shared.signalServiceRef,
             storageServiceManager: RegistrationCoordinatorImpl.Wrappers.StorageServiceManager(SSKEnvironment.shared.storageServiceManagerRef),
+            supportKeyValueStore: SupportKeyValueStore(),
             svr: DependenciesBridge.shared.svr,
             svrLocalStorage: DependenciesBridge.shared.svrLocalStorage,
             svrAuthCredentialManager: DependenciesBridge.shared.svrAuthCredentialManager,

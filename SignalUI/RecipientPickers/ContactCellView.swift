@@ -26,6 +26,8 @@ public class ContactCellView: ManualStackView {
 
         public var attributedSubtitle: NSAttributedString?
 
+        public var subtitleAccessibilityLabel: String?
+
         public var shouldShowContactIcon = false
 
         public var allowUserInteraction = false
@@ -212,6 +214,7 @@ public class ContactCellView: ManualStackView {
                         signalSymbolRange: nil,
                         onTap: nil,
                     )
+                    memberLabelLabel.isUserInteractionEnabled = false
 
                     textStackSubviews.append(memberLabelLabel)
                     let memberLabelSize = memberLabelLabel.labelSize(maxWidth: .greatestFiniteMagnitude)
@@ -219,6 +222,7 @@ public class ContactCellView: ManualStackView {
                     textStackSubviewInfos.append(memberLabelSize.asManualSubviewInfo)
                 } else if let attributedSubtitle = configuration.attributedSubtitle?.nilIfEmpty {
                     subtitleLabel.attributedText = attributedSubtitle
+                    subtitleLabel.accessibilityLabel = configuration.subtitleAccessibilityLabel
 
                     textStackSubviews.append(subtitleLabel)
                     let subtitleSize = subtitleLabel.sizeThatFits(.square(.greatestFiniteMagnitude))
@@ -377,6 +381,7 @@ public class ContactCellView: ManualStackView {
 
         nameLabel.text = nil
         subtitleLabel.text = nil
+        subtitleLabel.accessibilityLabel = nil
         accessoryLabel.text = nil
     }
 }

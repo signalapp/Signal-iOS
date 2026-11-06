@@ -69,13 +69,13 @@ class ChatsSettingsViewController: OWSTableViewController2 {
 
         let contactSection = OWSTableSection()
         contactSection.footerTitle = OWSLocalizedString(
-            "SETTINGS_APPEARANCE_AVATAR_FOOTER",
-            comment: "Footer for avatar section in appearance settings",
+            "SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_FOOTER",
+            comment: "Footer below the switch in Chats settings that chooses between contact photos from the phone's address book and Signal profile photos.",
         )
         contactSection.add(.switch(
             withText: OWSLocalizedString(
-                "SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL",
-                comment: "Title for switch to toggle preference between contact and profile avatars",
+                "SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_LABEL",
+                comment: "Label for the switch in Chats settings that, when on, shows contact photos from the phone's address book instead of Signal profile photos.",
             ),
             isOn: {
                 SSKEnvironment.shared.databaseStorageRef.read { SSKPreferences.preferContactAvatars(transaction: $0) }

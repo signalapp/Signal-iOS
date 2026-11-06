@@ -26,6 +26,7 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
         self.init(
             stickerPackInfo: stickerPackInfo,
             stickerManager: DependenciesBridge.shared.stickerManager,
+            stickerDownloader: DependenciesBridge.shared.stickerDownloader,
             db: DependenciesBridge.shared.db,
         )
     }
@@ -33,6 +34,7 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
     init(
         stickerPackInfo: StickerPackInfo,
         stickerManager: StickerManager,
+        stickerDownloader: any StickerDownloader,
         db: DB,
     ) {
         self.stickerPackInfo = stickerPackInfo
@@ -41,6 +43,7 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
         self.dataSource = TransientStickerPackDataSource(
             stickerPackInfo: stickerPackInfo,
             shouldDownloadAllStickers: true,
+            stickerDownloader: stickerDownloader,
             stickerManager: stickerManager,
             db: db,
         )
@@ -219,7 +222,7 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
 
     private let navBarDefaultPackImage = UIImageView(image: .official)
 
-    private let stickerCollectionView = StickerPackCollectionView(placeholderColor: .ows_blackAlpha60)
+    private let stickerCollectionView = StickerPackCollectionView(placeholderColor: .ows_blackAlpha60, shouldShowSectionHeaders: false)
 
     private func updateCollectionViewContentInset() {
         stickerCollectionView.layoutIfNeeded()
@@ -517,24 +520,41 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
     // MARK: - StickerPackCollectionViewDelegate
 
     func didSelectSticker(_ stickerMetadata: any StickerMetadata) {
+        var actions: [StickerDetailSheet.Action] = []
+        actions.append(
+            StickerDetailSheet.Action(
+                icon: .buttonForward,
+                title: OWSLocalizedString(
+                    "SEND_STICKER_BUTTON_TITLE",
+                    comment: "Label for the button to send a sticker message",
+                ),
+                handler: { [weak self] in
+                    guard let self else { return }
+                    self.sendStickerFlow = SendStickerFlow(stickerMetadata: stickerMetadata, stickerManager: stickerManager, db: db)
+                    self.sendStickerFlow?.present(from: self)
+                },
+            ),
+        )
+
+        if BuildFlags.stickerFavorites {
+            if
+                let favoriteAction = StickerDetailSheet.Action.favoriteAction(
+                    stickerMetadata: stickerMetadata,
+                    db: db,
+                    stickerManager: stickerManager,
+                    presentingVC: self,
+                    stickerContext: .stickerPack,
+                )
+            {
+                actions.append(favoriteAction)
+            }
+        }
+
         let stickerDetailsSheet = StickerDetailSheet(
             db: db,
             stickerMetadata: stickerMetadata,
             stickerManager: stickerManager,
-            actions: [
-                StickerDetailSheet.Action(
-                    icon: .buttonForward,
-                    title: OWSLocalizedString(
-                        "SEND_STICKER_BUTTON_TITLE",
-                        comment: "Label for the button to send a sticker message",
-                    ),
-                    handler: { [weak self] in
-                        guard let self else { return }
-                        self.sendStickerFlow = SendStickerFlow(stickerMetadata: stickerMetadata, stickerManager: stickerManager, db: db)
-                        self.sendStickerFlow?.present(from: self)
-                    },
-                ),
-            ],
+            actions: actions,
         )
         present(stickerDetailsSheet, animated: true)
     }

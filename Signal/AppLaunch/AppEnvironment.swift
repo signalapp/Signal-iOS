@@ -226,6 +226,7 @@ public class AppEnvironment: NSObject {
         self.screenshotBlockingManager = ScreenshotBlockingManager(
             dateProvider: Date.provider,
             db: DependenciesBridge.shared.db,
+            remoteConfigProvider: SSKEnvironment.shared.remoteConfigManagerRef,
             windowManager: windowManagerRef,
         )
 

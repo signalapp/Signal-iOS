@@ -197,13 +197,13 @@ extension ConversationViewController {
         NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
     }
 
-    func sendSticker(_ stickerInfo: StickerInfo) {
+    func sendSticker(_ stickerMetadata: any StickerMetadata) {
         AssertIsOnMainThread()
 
         ImpactHapticFeedback.impactOccurred(style: .light)
 
         ThreadUtil.enqueueMessage(
-            withInstalledSticker: stickerInfo,
+            withSticker: stickerMetadata,
             quotedReplyDraft: inputToolbar?.quotedReplyDraft,
             thread: thread,
         )

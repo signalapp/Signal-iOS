@@ -16,16 +16,13 @@ public protocol RegistrationSessionManager {
     func beginOrRestoreSession(e164: E164, apnsToken: String?, logger: PrefixedLogger) async throws -> RegistrationSession
 
     /// Fulfill a challenge for the session (e.g. a captcha).
-    /// See `Registration.UpdateSessionResponse` for possible responses, including errors.
     func fulfillChallenge(for session: inout RegistrationSession, fulfillment: Registration.ChallengeFulfillment, logger: PrefixedLogger) async throws
 
     /// Request a verification code be sent to the session's phone number, for some transport.
-    /// See `Registration.UpdateSessionResponse` for possible responses, including errors.
-    func requestVerificationCode(for session: RegistrationSession, transport: Registration.CodeTransport, logger: PrefixedLogger) async -> Registration.UpdateSessionResponse
+    func requestVerificationCode(for session: inout RegistrationSession, transport: Registration.CodeTransport, logger: PrefixedLogger) async throws
 
     /// Submit a verification code that was previously requested.
-    /// See `Registration.UpdateSessionResponse` for possible responses, including errors.
-    func submitVerificationCode(for session: RegistrationSession, code: String, logger: PrefixedLogger) async -> Registration.UpdateSessionResponse
+    func submitVerificationCode(for session: inout RegistrationSession, code: String, logger: PrefixedLogger) async throws
 
     /// Completes a session, wiping it from future restoration.
     /// Typically called once the session is verified and is used to complete registration.
@@ -48,47 +45,30 @@ public enum Registration {
 
     public static let challengeRejectedErrorCode = 403
 
-    public struct MissingSessionError: Error {}
+    public struct MissingSessionError: Error {
+        public init() {}
+    }
 
-    /// Collapses a few different error responses possible from the server down to only those
-    /// relevant to the registration flow, in other words those that should have distinct error behaviors.
-    public enum UpdateSessionResponse: Equatable {
-        case success(RegistrationSession)
-        /// Some input was incorrect or otherwise rejected; typically
-        /// should have the user update and retry.
-        /// `RegistrationSession` state should be checked regardless, as
-        /// (for example) a new challenge may have been requested.
-        case rejectedArgument(RegistrationSession)
-        /// This happens when the attempted operation cannot be fulfilled
-        /// given the current session state, and a different operation must
-        /// be completed first, such as a challenge.
-        /// For example, a verification code may have been submitted
-        /// despite no code being available for submission.
-        case disallowed(RegistrationSession)
-        /// This happens when the provided transport is rejected,
-        /// for example if attempting to send a verification code sms
-        /// to a landline number.
-        /// The user can retry with an alternative transport method.
-        case transportError(RegistrationSession)
-        /// The request was made before the required timeout; it should be
-        /// made again after the time specified in the `RegistrationSession`.
-        case retryAfterTimeout(RegistrationSession, retryAfterHeader: TimeInterval?)
-        /// The provided session has timed out or is otherwise invalid, and a new
-        /// session needs to be started, throwing away all current session state.
-        case invalidSession
-        /// Something went wrong on the server or an external service.
-        /// If non-permanent, a retry after some delay is allowed.
-        /// Otherwise, registration may not be possible.
-        case serverFailure(ServerFailureResponse)
-        /// A network failure.
-        case networkFailure
-        /// Some other generic unknown error.
-        case genericError
+    public enum RequestVerificationCodeErrorCode: Int {
+        case notYetAllowed = 409
+        case notEverSupported = 418
+        case rateLimited = 429
+    }
+
+    public struct RequestRejectedByProviderError: Error {
+        public let failureResponse: ServerFailureResponse
+    }
+
+    public enum SubmitVerificationCodeErrorCode: Int {
+        case notAllowed = 409
+        case rateLimited = 429
+    }
+
+    public struct CodeRejectedError: Error {
+        public init() {}
     }
 
     public struct ServerFailureResponse: Equatable {
-        public let session: RegistrationSession
-
         /// If true, whatever failure occurred isn't likely to be resolved by retrying.
         /// Otherwise a retry after some delay is appropriate. (e.g. let the user retry)
         public let isPermanent: Bool
@@ -105,6 +85,41 @@ public enum Registration {
             case illegalArgument
             /// A provider was unavailable, typically temporary.
             case providerUnavailable
+        }
+    }
+
+    // TODO: The user-visible error messages don't match the behavior.
+    public enum VerificationCodeError: Error {
+        /// The user tried to submit a verification code, but we've never actually
+        /// sent a code, so no submission could possibly be correct.
+        ///
+        /// The error that's shown indicates that the code is wrong.
+        case wrongCode
+        /// The user can no longer submit a verification code. This could be because
+        /// the previously sent code expired, or because they used up their
+        /// verification code attempts. In either case, they need to send a new code
+        /// to proceed.
+        ///
+        /// The error that's shown indicates too many attempts have been made.
+        case tooManyAttempts
+        /// We received a session that indicates we won't be able to use it to
+        /// request a code.
+        case providerFailure
+    }
+
+    public struct UnknownChallengeError: Error {
+        public init() {}
+    }
+
+    /// The user had completed registration, but before finishing
+    /// post-registration steps they were deregistered, likely by another device
+    /// registering on the same number. The only path forward is to reset
+    /// _everything_ and re-register.
+    public struct BecameDeregisteredError: Error {
+        public let localIdentifiers: ReregisteringLocalIdentifiers
+
+        public init(localIdentifiers: ReregisteringLocalIdentifiers) {
+            self.localIdentifiers = localIdentifiers
         }
     }
 }

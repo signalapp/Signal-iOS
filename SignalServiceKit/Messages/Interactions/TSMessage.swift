@@ -289,47 +289,62 @@ public extension TSMessage {
 
     // MARK: - Remote Delete
 
-    // A message can be remotely deleted iff:
-    //  * you sent this message
-    //  * you haven't already remotely deleted this message
-    //  * it's not a message with a gift badge
-    //  * it has been less than 24 hours since you sent the message
-    //    * this includes messages sent in the future
-    var canBeRemotelyDeletedByNonAdmin: Bool {
-        guard let outgoingMessage = self as? TSOutgoingMessage else { return false }
-        guard !outgoingMessage.wasRemotelyDeleted else { return false }
-        guard outgoingMessage.giftBadge == nil else { return false }
-
-        let (elapsedTime, isInFuture) = Date.ows_millisecondTimestamp().subtractingReportingOverflow(outgoingMessage.timestamp)
-
-        let normalDeleteLimit = RemoteConfig.current.normalDeleteMaxAgeInSeconds * TimeInterval(MSEC_PER_SEC)
-        guard isInFuture || (TimeInterval(elapsedTime) <= normalDeleteLimit) else { return false }
-
-        return true
+    enum DeleteForEveryoneType {
+        /// The local user deletes their own message.
+        case regular
+        /// The local user deletes a message as a group admin.
+        case admin
     }
 
-    var canBeRemotelyDeletedByAdmin: Bool {
-        guard isIncoming || isOutgoing else { return false }
+    /// How the local user may delete this message for everyone in `thread`,
+    /// if at all. Prefers a regular delete to an admin delete.
+    func deleteForEveryoneType(
+        thread: TSThread,
+        localIdentifiers: LocalIdentifiers,
+        remoteConfig: RemoteConfig,
+        now: Date,
+    ) -> DeleteForEveryoneType? {
+        if
+            let contactThread = thread as? TSContactThread,
+            localIdentifiers.contains(address: contactThread.contactAddress)
+        {
+            // There's no one else to delete for in Note to Self.
+            return nil
+        }
+        if thread.isTerminatedGroup {
+            return nil
+        }
+        if wasRemotelyDeleted {
+            return nil
+        }
+        if giftBadge != nil {
+            return nil
+        }
 
-        var timestampOfMessage: UInt64 = self.timestamp
-
+        // Messages "sent in the future" are always within a delete window.
+        let adminDeleteReferenceDate: Date
         if let incomingMessage = self as? TSIncomingMessage {
-            if let serverTimestamp = incomingMessage.serverTimestamp {
-                timestampOfMessage = serverTimestamp.uint64Value
+            adminDeleteReferenceDate = Date(
+                millisecondsSince1970: incomingMessage.serverTimestamp?.uint64Value ?? timestamp,
+            )
+        } else if self is TSOutgoingMessage {
+            let sentDate = Date(millisecondsSince1970: timestamp)
+            if now.timeIntervalSince(sentDate) <= remoteConfig.normalDeleteMaxAgeInSeconds {
+                return .regular
             }
-            guard !incomingMessage.wasRemotelyDeleted else { return false }
+            adminDeleteReferenceDate = sentDate
+        } else {
+            return nil
         }
 
-        if let outgoingMessage = self as? TSOutgoingMessage {
-            guard !outgoingMessage.wasRemotelyDeleted else { return false }
+        guard
+            let groupThread = thread as? TSGroupThread,
+            groupThread.groupModel.groupMembership.isFullMemberAndAdministrator(localIdentifiers.aci),
+            now.timeIntervalSince(adminDeleteReferenceDate) <= remoteConfig.adminDeleteMaxAgeInSeconds
+        else {
+            return nil
         }
-
-        let (elapsedTime, isInFuture) = Date.ows_millisecondTimestamp().subtractingReportingOverflow(timestampOfMessage)
-
-        let adminDeleteLimit = RemoteConfig.current.adminDeleteMaxAgeInSeconds * TimeInterval(MSEC_PER_SEC)
-        guard isInFuture || (TimeInterval(elapsedTime) <= adminDeleteLimit) else { return false }
-
-        return true
+        return .admin
     }
 
     enum RemoteDeleteError: Int, Error {

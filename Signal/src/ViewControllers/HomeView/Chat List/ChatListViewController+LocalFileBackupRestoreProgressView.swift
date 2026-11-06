@@ -6,13 +6,12 @@
 import PureLayout
 import SignalServiceKit
 import SignalUI
-import UIKit
 
-public class CLVLocalFileBackupRestoreProgressView: LocalFileBackupRestoreProgressView.Delegate {
+@MainActor
+class CLVLocalFileBackupRestoreProgressView: LocalFileBackupRestoreProgressView.Delegate {
 
     private struct State {
         var isVisible: Bool = false
-        var deviceSleepBlock: DeviceSleepBlockObject?
         var completeBannerByteCount: UInt64?
 
         var latestProgress: OWSProgress?
@@ -21,23 +20,25 @@ public class CLVLocalFileBackupRestoreProgressView: LocalFileBackupRestoreProgre
 
     private let state: AtomicValue<State>
 
-    public weak var chatListViewController: ChatListViewController?
+    weak var chatListViewController: ChatListViewController?
     private let localFileBackupRestoreProgressView: LocalFileBackupRestoreProgressView
 
     private let localFileBackupAttachmentRestoreProgress: LocalFileBackupAttachmentRestoreProgress
-    private let deviceSleepManager: DeviceSleepManager
+    private let deviceSleepBlocker: DeviceSleepBlocker
     private var observer: LocalFileBackupAttachmentRestoreProgressObserver?
 
     init() {
-        AssertIsOnMainThread()
-
         guard let deviceSleepManager = DependenciesBridge.shared.deviceSleepManager else {
             owsFail("Unexpectedly missing device sleep manager in main app!")
         }
 
         self.state = AtomicValue(State(), lock: .init())
         self.localFileBackupAttachmentRestoreProgress = DependenciesBridge.shared.localFileBackupAttachmentRestoreProgress
-        self.deviceSleepManager = deviceSleepManager
+        self.deviceSleepBlocker = DeviceSleepBlocker(
+            blockReason: "CLVLocalFileBackupRestoreProgressView",
+            maxBlockDuration: .infinity,
+            deviceSleepManager: deviceSleepManager,
+        )
         self.localFileBackupRestoreProgressView = LocalFileBackupRestoreProgressView(viewState: nil)
         self.localFileBackupRestoreProgressView.delegate = self
     }
@@ -63,7 +64,6 @@ public class CLVLocalFileBackupRestoreProgressView: LocalFileBackupRestoreProgre
 
     // MARK: -
 
-    @MainActor
     func startTracking() {
         let observer = localFileBackupAttachmentRestoreProgress.addObserver { [weak self] progress in
             Task { @MainActor in
@@ -73,7 +73,6 @@ public class CLVLocalFileBackupRestoreProgressView: LocalFileBackupRestoreProgre
         self.observer = observer
     }
 
-    @MainActor
     private func onProgress(_ progress: OWSProgress) {
         state.update {
             $0.latestProgress = progress
@@ -81,7 +80,6 @@ public class CLVLocalFileBackupRestoreProgressView: LocalFileBackupRestoreProgre
         }
     }
 
-    @MainActor
     func willAppear() {
         state.update { _state in
             _state.isVisible = true
@@ -89,7 +87,6 @@ public class CLVLocalFileBackupRestoreProgressView: LocalFileBackupRestoreProgre
         }
     }
 
-    @MainActor
     func didDisappear() {
         state.update { _state in
             _state.isVisible = false
@@ -101,7 +98,6 @@ public class CLVLocalFileBackupRestoreProgressView: LocalFileBackupRestoreProgre
 
     private let updateViewStateTaskQueue = SerialTaskQueue()
 
-    @MainActor
     private func updateViewState(state: inout State) {
         let oldViewState = state.currentViewState
         let newViewState = viewStateForRestoreState(state: state)
@@ -143,26 +139,16 @@ public class CLVLocalFileBackupRestoreProgressView: LocalFileBackupRestoreProgre
         )
     }
 
-    @MainActor
     private func manageDeviceSleepBlock(state: inout State) {
-        let shouldBlockDeviceSleep = state.currentViewState != nil && state.isVisible
-
-        if
-            shouldBlockDeviceSleep,
-            state.deviceSleepBlock == nil
-        {
-            let deviceSleepBlock = DeviceSleepBlockObject(blockReason: "CLVLocalFileBackupRestoreProgressView")
-            deviceSleepManager.addBlock(blockObject: deviceSleepBlock)
-            state.deviceSleepBlock = deviceSleepBlock
-        } else if
-            !shouldBlockDeviceSleep,
-            let deviceSleepBlock = state.deviceSleepBlock.take()
-        {
-            deviceSleepManager.removeBlock(blockObject: deviceSleepBlock)
+        let shouldBlockDeviceSleep = switch state.currentViewState {
+        case .restoring: true
+        case .complete: false
+        case nil: false
         }
+
+        deviceSleepBlocker.setShouldBlock(shouldBlockDeviceSleep && state.isVisible)
     }
 
-    @MainActor
     func didTapDismiss() {
         state.update {
             $0.isVisible = false
@@ -174,8 +160,8 @@ public class CLVLocalFileBackupRestoreProgressView: LocalFileBackupRestoreProgre
 // MARK: -
 
 private class LocalFileBackupRestoreProgressView: ChatListBackupProgressView {
+    @MainActor
     protocol Delegate: AnyObject {
-        @MainActor
         func didTapDismiss()
     }
 

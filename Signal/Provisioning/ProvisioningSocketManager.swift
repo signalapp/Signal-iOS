@@ -172,7 +172,7 @@ class ProvisioningSocketManager: ProvisioningConnectionListener {
             switch DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction {
             case .unregistered:
                 return true
-            case .delinked, .relinking:
+            case .delinked:
                 // We don't allow relinking secondaries to link'n'sync.
                 return false
             case .transferred:
@@ -181,7 +181,6 @@ class ProvisioningSocketManager: ProvisioningConnectionListener {
             case
                 .registered,
                 .provisioned,
-                .reregistering,
                 .transferringIncoming,
                 .transferringLinkedOutgoing,
                 .transferringPrimaryOutgoing,

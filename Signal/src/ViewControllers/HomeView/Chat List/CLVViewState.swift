@@ -149,7 +149,6 @@ class CLVViewState {
         inboxFilter = viewInfo.inboxFilter
         settingsButtonCreator.updateState(
             hasInboxChats: viewInfo.inboxCount > 0,
-            hasArchivedChats: viewInfo.archiveCount > 0,
         )
     }
 }
@@ -175,7 +174,7 @@ extension ChatListViewController {
 
     // MARK: - Views
 
-    var tableView: CLVTableView { tableDataSource.tableView }
+    var tableView: UITableView { tableDataSource.tableView }
 
     var searchBar: UISearchBar { viewState.searchController.searchBar }
     var searchResultsController: ConversationSearchViewController { viewState.searchResultsController }

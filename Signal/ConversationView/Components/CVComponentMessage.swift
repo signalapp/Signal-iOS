@@ -3241,7 +3241,6 @@ private class SwipeToReplyIndicatorView: UIView {
     var backgroundEffect: UIVisualEffect? = nil {
         didSet {
             // Show/hide background.
-            let imageName: String
             if let backgroundEffect {
                 if let backgroundView {
                     backgroundView.effect = backgroundEffect
@@ -3258,18 +3257,15 @@ private class SwipeToReplyIndicatorView: UIView {
                 backgroundView?.contentView.addSubview(imageView)
 
                 // Smaller icon when we there is a background.
-                imageName = "reply-20"
+                imageView.image = .reply20
             } else {
                 backgroundView?.effect = nil
                 backgroundView?.isHidden = true
                 addSubview(imageView)
 
                 // Larger - 24 dp - icon.
-                imageName = "reply"
+                imageView.image = .reply
             }
-
-            // Update icon:
-            imageView.image = UIImage(named: imageName)?.withRenderingMode(.alwaysTemplate)
 
             invalidateIntrinsicContentSize()
             setNeedsLayout()
@@ -3291,7 +3287,7 @@ private class SwipeToReplyIndicatorView: UIView {
     }
 
     override var intrinsicContentSize: CGSize {
-        let size: CGFloat = (backgroundView?.isHidden ?? true) ? 34 : 24
+        let size: CGFloat = (backgroundView?.isHidden ?? true) ? 24 : 34
         return .square(size)
     }
 

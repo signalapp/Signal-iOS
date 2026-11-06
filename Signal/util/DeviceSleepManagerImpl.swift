@@ -55,3 +55,83 @@ class DeviceSleepManagerImpl: DeviceSleepManager {
         UIApplication.shared.isIdleTimerDisabled = shouldBeBlocking
     }
 }
+
+// MARK: -
+
+/// Blocks device sleep while toggled on, for at most `maxBlockDuration`. Once
+/// expired, sleep isn't blocked again until this is toggled off and back on.
+@MainActor
+final class DeviceSleepBlocker {
+    private enum State {
+        case blocking(DeviceSleepBlockObject, expirationTask: Task<Void, Never>)
+        case expired
+    }
+
+    private let blockReason: String
+    private let maxBlockDuration: TimeInterval
+    private let deviceSleepManager: DeviceSleepManager
+    private let sleepFn: @MainActor (TimeInterval) async throws -> Void
+
+    private var state: State?
+
+    init(
+        blockReason: String,
+        maxBlockDuration: TimeInterval,
+        deviceSleepManager: DeviceSleepManager,
+        sleepFn: @escaping @MainActor (TimeInterval) async throws -> Void = {
+            try await Task.sleep(nanoseconds: $0.clampedNanoseconds)
+        },
+    ) {
+        self.blockReason = blockReason
+        self.maxBlockDuration = maxBlockDuration
+        self.deviceSleepManager = deviceSleepManager
+        self.sleepFn = sleepFn
+    }
+
+    func setShouldBlock(_ shouldBlock: Bool) {
+        if shouldBlock {
+            switch state {
+            case .blocking, .expired:
+                break
+            case nil:
+                let blockObject = DeviceSleepBlockObject(blockReason: blockReason)
+                deviceSleepManager.addBlock(blockObject: blockObject)
+
+                let expirationTask = Task { [weak self, sleepFn, maxBlockDuration] in
+                    try? await sleepFn(maxBlockDuration)
+                    guard !Task.isCancelled else { return }
+                    self?.expire()
+                }
+                state = .blocking(blockObject, expirationTask: expirationTask)
+            }
+        } else {
+            switch state {
+            case nil, .expired:
+                break
+            case .blocking(let blockObject, let expirationTask):
+                expirationTask.cancel()
+                deviceSleepManager.removeBlock(blockObject: blockObject)
+            }
+            state = nil
+        }
+    }
+
+    private func expire() {
+        switch state {
+        case nil, .expired:
+            break
+        case .blocking(let blockObject, _):
+            deviceSleepManager.removeBlock(blockObject: blockObject)
+            state = .expired
+        }
+    }
+
+#if TESTABLE_BUILD
+    var expirationTaskForTesting: Task<Void, Never>? {
+        switch state {
+        case nil, .expired: nil
+        case .blocking(_, let expirationTask): expirationTask
+        }
+    }
+#endif
+}

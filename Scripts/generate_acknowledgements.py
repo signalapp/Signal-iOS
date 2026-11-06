@@ -7,7 +7,6 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_PATH = REPO_ROOT / "Signal/Settings.bundle/Acknowledgements.plist"
-PODS_PATH = REPO_ROOT / "Pods"
 THIRD_PARTY_PATH = REPO_ROOT / "ThirdParty"
 WORKSPACE_PATH = REPO_ROOT / "Signal.xcworkspace"
 PACKAGE_RESOLVED_PATH = WORKSPACE_PATH / "xcshareddata/swiftpm/Package.resolved"
@@ -21,31 +20,26 @@ SWIFT_PACKAGE_LICENSE_PATHS = {
     },
 }
 
-POD_TARGETS = [
-    "Signal",
-    "SignalNSE",
-    "SignalServiceKit",
-    "SignalServiceKitTests",
-    "SignalTests",
-    "SignalUI",
-    "SignalUITests",
-]
+TEST_ONLY_SWIFT_PACKAGES = {
+    "signal-message-backup-tests",
+}
+
+HEADER_SPECIFIER = {
+    "Type": "PSGroupSpecifier",
+    "Title": "Acknowledgements",
+    "FooterText": "This application makes use of the following third party libraries:",
+}
 
 
-def get_pod_acknowledgements_paths(source_packages_path):
-    paths = [
-        PODS_PATH
-        / "Target Support Files"
-        / f"Pods-{target}"
-        / f"Pods-{target}-acknowledgements.plist"
-        for target in POD_TARGETS
+def get_acknowledgements_paths(source_packages_path, workspace_state):
+    return [
+        get_checkout_path(source_packages_path, workspace_state, "libsignal")
+        / "acknowledgments/acknowledgments-ios.plist",
+        get_checkout_path(source_packages_path, workspace_state, "ringrtc")
+        / "acknowledgments/acknowledgments.plist",
+        get_artifact_path(workspace_state, "ringrtc", "WebRTC")
+        / "acknowledgments-webrtc-ios.plist",
     ]
-    paths += [
-        source_packages_path / "checkouts/libsignal/acknowledgments/acknowledgments-ios.plist",
-        PODS_PATH / "SignalRingRTC/acknowledgments/acknowledgments.plist",
-        PODS_PATH / "SignalRingRTC/out/release/acknowledgments-webrtc-ios.plist",
-    ]
-    return paths
 
 
 def get_specifier_groups(paths):
@@ -98,6 +92,45 @@ def get_source_packages_path():
     return build_path.parent.parent / "SourcePackages"
 
 
+def get_workspace_state(source_packages_path):
+    with open(source_packages_path / "workspace-state.json", "r", encoding="utf8") as file:
+        return json.load(file)["object"]
+
+
+def get_dependency(workspace_state, identity):
+    for dependency in workspace_state["dependencies"]:
+        if dependency["packageRef"]["identity"] == identity:
+            return dependency
+    raise Exception(f"No checkout for {identity}")
+
+
+def get_checkout_path(source_packages_path, workspace_state, identity):
+    dependency = get_dependency(workspace_state, identity)
+    return source_packages_path / "checkouts" / dependency["subpath"]
+
+
+def verify_checkouts(pins, workspace_state):
+    for pin in pins:
+        identity = pin["identity"]
+        expected = pin["state"]["revision"]
+        actual = get_dependency(workspace_state, identity)["state"]["checkoutState"]["revision"]
+        if actual != expected:
+            raise Exception(
+                f"{identity} is checked out at {actual} but Package.resolved pins "
+                f"{expected}; resolve packages in Xcode and try again"
+            )
+
+
+def get_artifact_path(workspace_state, identity, target_name):
+    for artifact in workspace_state["artifacts"]:
+        if (
+            artifact["packageRef"]["identity"] == identity
+            and artifact["targetName"] == target_name
+        ):
+            return Path(artifact["path"])
+    raise Exception(f"No artifact for {identity} {target_name}")
+
+
 def get_license_paths(directory):
     return [p for p in directory.iterdir() if LICENSE_FILE_PATTERN.match(p.name)]
 
@@ -135,25 +168,16 @@ def get_swift_package_name(checkout_path):
     return json.loads(output)["name"]
 
 
-def get_swift_package_specifiers(source_packages_path):
-    with open(PACKAGE_RESOLVED_PATH, "r", encoding="utf8") as file:
-        pins = json.load(file)["pins"]
-
-    workspace_state_path = source_packages_path / "workspace-state.json"
-    with open(workspace_state_path, "r", encoding="utf8") as file:
-        dependencies = {
-            dependency["packageRef"]["identity"]: dependency
-            for dependency in json.load(file)["object"]["dependencies"]
-        }
-
+def get_swift_package_specifiers(source_packages_path, workspace_state, pins):
     specifiers = []
     for pin in pins:
         identity = pin["identity"]
         if pin["kind"] != "remoteSourceControl":
             raise Exception(f"Unsupported kind for {identity}: {pin['kind']}")
+        if identity in TEST_ONLY_SWIFT_PACKAGES:
+            continue
 
-        dependency = dependencies[identity]
-        checkout_path = source_packages_path / "checkouts" / dependency["subpath"]
+        checkout_path = get_checkout_path(source_packages_path, workspace_state, identity)
         license_paths = SWIFT_PACKAGE_LICENSE_PATHS.get(identity)
         if license_paths is None:
             specifiers.append(
@@ -197,27 +221,27 @@ def group_by_license(specifiers):
             grouped_specifier["License"] = license
         grouped_specifiers.append(grouped_specifier)
 
-    return sorted(
-        grouped_specifiers, key=lambda s: (s["Title"].lower(), s["FooterText"])
-    )
+    return grouped_specifiers
 
 
 def main():
     source_packages_path = get_source_packages_path()
-    specifier_groups = get_specifier_groups(
-        get_pod_acknowledgements_paths(source_packages_path)
-    )
+    workspace_state = get_workspace_state(source_packages_path)
+    with open(PACKAGE_RESOLVED_PATH, "r", encoding="utf8") as file:
+        pins = json.load(file)["pins"]
+    verify_checkouts(pins, workspace_state)
 
-    header_specifier = specifier_groups[0][0]
-    footer_specifier = specifier_groups[0][-1]
+    specifier_groups = get_specifier_groups(
+        get_acknowledgements_paths(source_packages_path, workspace_state)
+    )
 
     specifiers = [s for group in specifier_groups for s in group[1:-1]]
     specifiers += get_third_party_specifiers()
-    specifiers += get_swift_package_specifiers(source_packages_path)
+    specifiers = group_by_license(specifiers)
+    specifiers += get_swift_package_specifiers(source_packages_path, workspace_state, pins)
+    specifiers.sort(key=lambda s: (s["Title"].lower(), s["FooterText"]))
 
-    final_specifiers = (
-        [header_specifier] + group_by_license(specifiers) + [footer_specifier]
-    )
+    final_specifiers = [HEADER_SPECIFIER] + specifiers
 
     subprocess.run(
         ["plutil", "-convert", "xml1", "-o", OUTPUT_PATH, "-"],

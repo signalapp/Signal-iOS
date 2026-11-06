@@ -82,16 +82,18 @@ public class SignalApp {
     @objc
     private func spamChallenge() {
         let db = DependenciesBridge.shared.db
+        let supportKeyValueStore = SupportKeyValueStore()
         let windowManager = AppEnvironment.shared.windowManagerRef
 
         let frontmostViewController = windowManager.captchaWindow.findFrontmostViewController(ignoringAlerts: true)!
         SpamCaptchaViewController.presentActionSheet(from: frontmostViewController)
 
         db.write { tx in
-            SupportKeyValueStore().setLastChallengeDate(value: Date(), transaction: tx)
+            supportKeyValueStore.setLastChallengeDate(value: Date(), tx: tx)
         }
     }
 
+    @MainActor
     func showRegistration(
         loader: RegistrationCoordinatorLoader,
         desiredMode: RegistrationMode,

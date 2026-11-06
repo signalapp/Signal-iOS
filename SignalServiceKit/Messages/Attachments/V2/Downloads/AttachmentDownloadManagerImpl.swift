@@ -1809,7 +1809,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private class DownloadQueue {
         private let signalService: OWSSignalServiceProtocol
 
-        private let resumeDataCache: LRUCache<DownloadState, Data> = LRUCache(maxSize: 5)
+        private let resumeDataCache: LRUCache<DownloadState, (requestUrl: URL, data: Data)> = LRUCache(maxSize: 5)
 
         init(signalService: OWSSignalServiceProtocol) {
             self.signalService = signalService
@@ -1871,36 +1871,35 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     throw AttachmentDownloads.Error.expiredCredentials
                 }
 
-                let resumeData = resumeDataCache.object(forKey: downloadState)
                 let urlSession = await self.signalService.sharedUrlSessionForCdn(cdnNumber: downloadState.cdnNumber())
-
-                let downloadOperation: (OWSURLSession.ProgressBlock) async throws -> OWSUrlDownloadResponse
-                if let resumeData {
-                    let request = try urlSession.endpoint.buildRequest(urlPath, method: .get, headers: headers)
-                    guard let requestUrl = request.url else {
-                        throw OWSAssertionError("Request missing url.")
-                    }
-                    downloadOperation = {
-                        return try await urlSession.performDownload(
-                            requestUrl: requestUrl,
-                            resumeData: resumeData,
-                            maxResponseSize: maxDownloadSizeBytes,
-                            progressBlock: $0,
-                        )
-                    }
-                } else {
-                    downloadOperation = {
-                        return try await urlSession.performDownload(
-                            urlPath,
-                            method: .get,
-                            headers: headers,
-                            maxResponseSize: maxDownloadSizeBytes,
-                            progressBlock: $0,
-                        )
-                    }
+                let request = try urlSession.endpoint.buildRequest(urlPath, method: .get, headers: headers)
+                guard let requestUrl = request.url else {
+                    throw OWSAssertionError("Request missing url.")
                 }
 
-                let downloadResponse = try await downloadOperation(progressBlock)
+                let downloadResponse: OWSUrlDownloadResponse
+                do {
+                    // Resume data contains the original request, so don't reuse it after a route change.
+                    if let resumeData = resumeDataCache.object(forKey: downloadState), resumeData.requestUrl == requestUrl {
+                        downloadResponse = try await urlSession.performDownload(
+                            requestUrl: requestUrl,
+                            resumeData: resumeData.data,
+                            maxResponseSize: maxDownloadSizeBytes,
+                            progressBlock: progressBlock,
+                        )
+                    } else {
+                        downloadResponse = try await urlSession.performDownload(
+                            request: request,
+                            maxResponseSize: maxDownloadSizeBytes,
+                            progressBlock: progressBlock,
+                        )
+                    }
+                } catch {
+                    if let resumeData = ((error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data)?.nilIfEmpty {
+                        resumeDataCache.set(key: downloadState, value: (requestUrl, resumeData))
+                    }
+                    throw error
+                }
 
                 let downloadUrl = downloadResponse.downloadUrl
                 let tmpFile = OWSFileSystem.temporaryFileUrl(
@@ -1912,10 +1911,6 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             } onError: { error, attemptCount in
                 // Avoid logging the whole error, as it may contain the CDN URL.
                 Logger.warn("Error: \(error.shortDescription)")
-
-                if let resumeData = ((error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data)?.nilIfEmpty {
-                    resumeDataCache.set(key: downloadState, value: resumeData)
-                }
 
                 let maxAttemptCount = 16
                 guard attemptCount < maxAttemptCount, error.isNetworkFailureOrTimeout else {

@@ -10,66 +10,6 @@ public enum RegistrationServiceResponses {
 
     // MARK: - Registration Session Endpoints
 
-    public enum FetchSessionResponseCodes: Int, UnknownEnumCodable {
-        /// Success. Response body has `RegistrationSession` object.
-        case success = 200
-        /// No session was found with the given ID. A new session should be initiated.
-        case missingSession = 404
-        case unexpectedError = -1
-
-        public static var unknown: Self { .unexpectedError }
-    }
-
-    public enum RequestVerificationCodeResponseCodes: Int, UnknownEnumCodable {
-        /// Success. Response body has `RegistrationSession` object.
-        case success = 200
-        case malformedRequest = 400
-        /// No session was found with the given ID. A new session should be initiated.
-        case missingSession = 404
-        /// The current session state disallows requesting a code.
-        /// The client may have to fulfill some challenge before proceeding,
-        /// or the session might already be verified. Check the session object to know.
-        /// Response body has `RegistrationSession` object.
-        case disallowed = 409
-        /// The chosen transport mode is not supported (likely scoped to the e164),
-        /// but another transport may be supported.
-        case transportError = 418
-        /// May need to wait before trying again; check session object for timeouts.
-        /// If no timeout is specified, a different transport or starting a fresh session may be required.
-        /// Response body has `RegistrationSession` object.
-        case retry = 429
-        /// The attempt to send a verification code failed because an external service (e.g. the SMS provider) refused to deliver the code.
-        /// Response body has `SendVerificationCodeFailedResponse` with more detailed information.
-        case providerFailure = 440
-        case unexpectedError = -1
-
-        public static var unknown: Self { .unexpectedError }
-    }
-
-    public enum SubmitVerificationCodeResponseCodes: Int, UnknownEnumCodable {
-        /// The code was valid, but may not be correct. The
-        /// `isVerified` field on the session object indicates
-        /// correctness.
-        /// Response body has `RegistrationSession` object.
-        case success = 200
-        /// The code was illegally formatted.
-        case malformedRequest = 400
-        /// No session was found with the given ID. A new session should be initiated.
-        case missingSession = 404
-        /// This session will not accept additional verification code submissions either because no code has been sent for this session
-        /// (clients must request and presumably receive a verification code before submitting a code)
-        /// or because the phone number has already been verified with another code.
-        /// Response body has `RegistrationSession` object.
-        case newCodeRequired = 409
-        /// May need to wait before trying again; check session object for timeouts.
-        /// If no timeout is specified, sending a new code or starting a fresh session may be required.
-        /// Response body has `RegistrationSession` object.
-        case retry = 429
-        case unexpectedError = -1
-
-        public static var unknown: Self { .unexpectedError }
-    }
-
     public struct RegistrationSession: Codable {
         /// An opaque identifier for this session.
         /// Clients will need to provide this ID to the API for subsequent operations.

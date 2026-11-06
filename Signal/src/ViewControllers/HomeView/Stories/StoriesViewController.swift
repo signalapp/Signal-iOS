@@ -75,14 +75,14 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
         tableView.delegate = self
         tableView.dataSource = self
         tableView.backgroundView = emptyStateView
+        tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
-        tableView.autoPinHeight(toHeightOf: view)
-        tableViewHorizontalEdgeConstraints = [
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: tableView.trailingAnchor),
-        ]
-        NSLayoutConstraint.activate(tableViewHorizontalEdgeConstraints)
-        updateTableViewPaddingIfNeeded()
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
 
         // Search
         searchController.searchResultsUpdater = self
@@ -144,12 +144,8 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        // We could be changing between collapsed and expanded
-        // split view state, so we must re-apply the theme.
-        coordinator.animate { _ in
-            self.applyTheme()
-        } completion: { _ in
-            self.applyTheme()
+        coordinator.animate { context in
+            self.updateListCellAppearance()
         }
     }
 
@@ -171,11 +167,6 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
             searchController.isActive = false
             dataSource.setSearchText(nil)
         }
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        updateTableViewPaddingIfNeeded()
     }
 
     private func applyTheme() {
@@ -210,39 +201,34 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
     }
 
     /// Set to `true` when list is displayed in split view controller's "sidebar" on iOS 26 and later.
-    /// Setting this to `true` would add an extra padding on both sides of the table view.
-    /// This value is also passed down to table view cells that make their own layout choices based on the value.
-    private var useSidebarStoryListCellAppearance = false {
+    /// This value is then passed down to table view cells that make their own layout choices based on the value.
+    private var useSideBarListCellAppearance = false {
         didSet {
-            guard oldValue != useSidebarStoryListCellAppearance else { return }
-            tableViewHorizontalEdgeConstraints.forEach {
-                $0.constant = useSidebarStoryListCellAppearance ? 16 : 0
-            }
+            guard oldValue != useSideBarListCellAppearance, isViewLoaded else { return }
             tableView.reloadData()
         }
     }
 
-    private var tableViewHorizontalEdgeConstraints: [NSLayoutConstraint] = []
-
-    /// iOS 26+: checks if this VC is displayed in the collapsed split view controller and updates `useSidebarCallListCellAppearance` accordingly.
-    /// Does nothing on prior iOS versions.
-    private func updateTableViewPaddingIfNeeded() {
+    /// Checks whether this view controller is displayed in an expanded or collapsed split view controller
+    /// and updates `useSideBarListCellAppearance` accordingly.
+    /// No-op on versions below iOS 26.
+    private func updateListCellAppearance() {
         guard #available(iOS 26, *) else { return }
 
         if let splitViewController, !splitViewController.isCollapsed {
-            useSidebarStoryListCellAppearance = true
+            useSideBarListCellAppearance = true
         } else {
-            useSidebarStoryListCellAppearance = false
+            useSideBarListCellAppearance = false
         }
     }
 
     @objc
-    private func profileDidChange() { updateNavigationBar() }
+    private func profileDidChange() { updateSettingsBarButtonItem() }
 
-    func updateNavigationBar() {
+    func updateSettingsBarButtonItem() {
         navigationItem.leftBarButtonItem = createSettingsBarButtonItem(
             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-            buildActions: { settingsAction -> [UIMenuElement] in
+            buildActions: {
                 return [
                     UIAction(
                         title: OWSLocalizedString(
@@ -254,21 +240,29 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
                             self?.showPrivacySettings()
                         },
                     ),
-                    settingsAction,
                 ]
             },
             showAppSettings: { [weak self] in
                 self?.showAppSettings()
             },
         )
+    }
+
+    func updateNavigationBar() {
+        updateSettingsBarButtonItem()
 
         let cameraButton = UIBarButtonItem.button(icon: .buttonCamera) { [weak self] in
             self?.showCameraView()
         }
-        cameraButton.accessibilityLabel = OWSLocalizedString("CAMERA_BUTTON_LABEL", comment: "Accessibility label for camera button.")
-        cameraButton.accessibilityHint = OWSLocalizedString("CAMERA_BUTTON_HINT", comment: "Accessibility hint describing what you can do with the camera button")
-
-        navigationItem.rightBarButtonItems = [cameraButton]
+        cameraButton.accessibilityLabel = OWSLocalizedString(
+            "CAMERA_BUTTON_LABEL",
+            comment: "Accessibility label for camera button.",
+        )
+        cameraButton.accessibilityHint = OWSLocalizedString(
+            "CAMERA_BUTTON_HINT",
+            comment: "Accessibility hint describing what you can do with the camera button",
+        )
+        navigationItem.rightBarButtonItem = cameraButton
     }
 
     private func showCameraView() {
@@ -560,7 +554,7 @@ extension StoriesViewController: UITableViewDataSource {
                 owsFailDebug("Missing my story model")
                 return cell
             }
-            cell.useSidebarAppearance = useSidebarStoryListCellAppearance
+            cell.useSidebarAppearance = useSideBarListCellAppearance
             cell.configure(with: myStoryModel, spoilerState: spoilerState) { [weak self] in self?.showCameraView() }
             return cell
         case .hiddenStories:
@@ -580,7 +574,7 @@ extension StoriesViewController: UITableViewDataSource {
                 owsFailDebug("Missing model for story")
                 return cell
             }
-            cell.useSidebarAppearance = useSidebarStoryListCellAppearance
+            cell.useSidebarAppearance = useSideBarListCellAppearance
             cell.configure(with: model, spoilerState: spoilerState)
             return cell
         case .none:

@@ -100,6 +100,15 @@ class StoryCell: UITableViewCell {
         if state.isSelected || state.isHighlighted {
             configuration.backgroundColor = OWSTableViewController2.cellSelectedBackgroundColor
             if useSidebarAppearance {
+                let contentMargin: CGFloat = 12
+                let leading = directionalLayoutMargins.leading - contentMargin
+                let trailing = directionalLayoutMargins.trailing - contentMargin
+                configuration.backgroundInsets = .init(
+                    top: 0,
+                    leading: leading,
+                    bottom: 0,
+                    trailing: trailing,
+                )
                 configuration.cornerRadius = 24
             }
         } else {

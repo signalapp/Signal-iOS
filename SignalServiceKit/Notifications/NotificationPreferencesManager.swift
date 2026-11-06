@@ -359,6 +359,11 @@ public struct NotificationPreferencesManager {
         comment: "Label for the switch controlling whether replies to your messages notify in muted chats.",
     )
 
+    public static let unreadRemindersTitle = OWSLocalizedString(
+        "SETTINGS_NOTIFICATIONS_UNREAD_REMINDERS",
+        comment: "Label for the switch controlling whether reminders about unread messages in muted chats are shown",
+    )
+
     public func whileMutedEnabledString(thread: TSThread? = nil, tx: DBReadTransaction) -> String {
         let notifyForCalls = if let thread {
             notifyForCallsWhenMuted(thread: thread, tx: tx)

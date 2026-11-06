@@ -1580,6 +1580,22 @@ Yritä uudelleen %1$d tunnin kuluttua.</string>
 Yritä uudelleen %1$d tunnin kuluttua.</string>
 		</dict>
 	</dict>
+	<key>STICKER_FAVORITE_MAX_TOAST_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>You can only add %1$d sticker to Favorites</string>
+			<key>other</key>
+			<string>You can only add %1$d stickers to Favorites</string>
+		</dict>
+	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

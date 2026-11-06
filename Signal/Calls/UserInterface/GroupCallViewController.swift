@@ -1303,19 +1303,15 @@ final class GroupCallViewController: UIViewController {
 
     /// The view controller to present new view controllers from.
     private var presenter: UIViewController {
-        presentedViewController ?? self
+        topMostPresentedViewController()
     }
 
     private func presentApprovalRequestDetails(approvalRequest: CallLinkApprovalRequest) {
-        let presenter = self.presenter
-        // Present request details on top of the bulk request sheet by checking
-        // one layer deeper than `presenter`.
-        let presentingViewController = presenter.presentedViewController ?? presenter
         CallLinkApprovalRequestDetailsSheet(
             approvalRequest: approvalRequest,
-            approvalViewModel: self.callLinkApprovalViewModel,
+            approvalViewModel: callLinkApprovalViewModel,
         )
-        .present(from: presentingViewController, dismissalDelegate: self)
+        .present(from: presenter, dismissalDelegate: self)
     }
 
     private func presentBulkApprovalSheet() {

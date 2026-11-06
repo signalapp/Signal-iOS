@@ -813,6 +813,7 @@ public enum StorageServiceProtoManifestRecordKeyType: SwiftProtobuf.Enum {
     case account // 4
     case storyDistributionList // 5
     case callLink // 7
+    case favoriteStickerPack // 11
     case UNRECOGNIZED(Int)
 
     public init() {
@@ -828,6 +829,7 @@ public enum StorageServiceProtoManifestRecordKeyType: SwiftProtobuf.Enum {
             case 4: self = .account
             case 5: self = .storyDistributionList
             case 7: self = .callLink
+            case 11: self = .favoriteStickerPack
             default: self = .UNRECOGNIZED(rawValue)
         }
     }
@@ -841,6 +843,7 @@ public enum StorageServiceProtoManifestRecordKeyType: SwiftProtobuf.Enum {
             case .account: return 4
             case .storyDistributionList: return 5
             case .callLink: return 7
+            case .favoriteStickerPack: return 11
             case .UNRECOGNIZED(let i): return i
         }
     }
@@ -855,6 +858,7 @@ private func StorageServiceProtoManifestRecordKeyTypeWrap(_ value: StorageServic
     case .account: return .account
     case .storyDistributionList: return .storyDistributionList
     case .callLink: return .callLink
+    case .favoriteStickerPack: return .favoriteStickerPack
     case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
     }
 }
@@ -868,6 +872,7 @@ private func StorageServiceProtoManifestRecordKeyTypeUnwrap(_ value: StorageServ
     case .account: return .account
     case .storyDistributionList: return .storyDistributionList
     case .callLink: return .callLink
+    case .favoriteStickerPack: return .favoriteStickerPack
     case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
     }
 }
@@ -1171,6 +1176,7 @@ public enum StorageServiceProtoStorageRecordOneOfRecord {
     case account(StorageServiceProtoAccountRecord)
     case storyDistributionList(StorageServiceProtoStoryDistributionListRecord)
     case callLink(StorageServiceProtoCallLinkRecord)
+    case sticker(StorageServiceProtoFavoriteStickerRecord)
 }
 
 private func StorageServiceProtoStorageRecordOneOfRecordWrap(_ value: StorageServiceProtos_StorageRecord.OneOf_Record) -> StorageServiceProtoStorageRecordOneOfRecord {
@@ -1181,6 +1187,7 @@ private func StorageServiceProtoStorageRecordOneOfRecordWrap(_ value: StorageSer
     case .account(let value): return .account(StorageServiceProtoAccountRecord(value))
     case .storyDistributionList(let value): return .storyDistributionList(StorageServiceProtoStoryDistributionListRecord(value))
     case .callLink(let value): return .callLink(StorageServiceProtoCallLinkRecord(value))
+    case .sticker(let value): return .sticker(StorageServiceProtoFavoriteStickerRecord(value))
     }
 }
 
@@ -1192,6 +1199,7 @@ private func StorageServiceProtoStorageRecordOneOfRecordUnwrap(_ value: StorageS
     case .account(let value): return .account(value.proto)
     case .storyDistributionList(let value): return .storyDistributionList(value.proto)
     case .callLink(let value): return .callLink(value.proto)
+    case .sticker(let value): return .sticker(value.proto)
     }
 }
 
@@ -4609,6 +4617,172 @@ extension StorageServiceProtoCallLinkRecord {
 
 extension StorageServiceProtoCallLinkRecordBuilder {
     public func buildIgnoringErrors() -> StorageServiceProtoCallLinkRecord? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - StorageServiceProtoFavoriteStickerRecord
+
+public struct StorageServiceProtoFavoriteStickerRecord: Codable, CustomDebugStringConvertible {
+
+    fileprivate let proto: StorageServiceProtos_FavoriteStickerRecord
+
+    public var packID: Data? {
+        guard hasPackID else {
+            return nil
+        }
+        return proto.packID
+    }
+    public var hasPackID: Bool {
+        return !proto.packID.isEmpty
+    }
+
+    public var packKey: Data? {
+        guard hasPackKey else {
+            return nil
+        }
+        return proto.packKey
+    }
+    public var hasPackKey: Bool {
+        return !proto.packKey.isEmpty
+    }
+
+    public var stickerID: UInt32 {
+        return proto.stickerID
+    }
+    public var favoritedAtTimestamp: UInt64 {
+        return proto.favoritedAtTimestamp
+    }
+    public var deletedAtTimestamp: UInt64 {
+        return proto.deletedAtTimestamp
+    }
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: StorageServiceProtos_FavoriteStickerRecord) {
+        self.proto = proto
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try StorageServiceProtos_FavoriteStickerRecord(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate init(_ proto: StorageServiceProtos_FavoriteStickerRecord) {
+        self.init(proto: proto)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension StorageServiceProtoFavoriteStickerRecord {
+    public static func builder() -> StorageServiceProtoFavoriteStickerRecordBuilder {
+        return StorageServiceProtoFavoriteStickerRecordBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> StorageServiceProtoFavoriteStickerRecordBuilder {
+        var builder = StorageServiceProtoFavoriteStickerRecordBuilder()
+        if let _value = packID {
+            builder.setPackID(_value)
+        }
+        if let _value = packKey {
+            builder.setPackKey(_value)
+        }
+        builder.setStickerID(stickerID)
+        builder.setFavoritedAtTimestamp(favoritedAtTimestamp)
+        builder.setDeletedAtTimestamp(deletedAtTimestamp)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct StorageServiceProtoFavoriteStickerRecordBuilder {
+
+    private var proto = StorageServiceProtos_FavoriteStickerRecord()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setPackID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.packID = valueParam
+    }
+
+    public mutating func setPackID(_ valueParam: Data) {
+        proto.packID = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setPackKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.packKey = valueParam
+    }
+
+    public mutating func setPackKey(_ valueParam: Data) {
+        proto.packKey = valueParam
+    }
+
+    public mutating func setStickerID(_ valueParam: UInt32) {
+        proto.stickerID = valueParam
+    }
+
+    public mutating func setFavoritedAtTimestamp(_ valueParam: UInt64) {
+        proto.favoritedAtTimestamp = valueParam
+    }
+
+    public mutating func setDeletedAtTimestamp(_ valueParam: UInt64) {
+        proto.deletedAtTimestamp = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func buildInfallibly() -> StorageServiceProtoFavoriteStickerRecord {
+        return StorageServiceProtoFavoriteStickerRecord(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try StorageServiceProtoFavoriteStickerRecord(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension StorageServiceProtoFavoriteStickerRecord {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoFavoriteStickerRecordBuilder {
+    public func buildIgnoringErrors() -> StorageServiceProtoFavoriteStickerRecord? {
         return self.buildInfallibly()
     }
 }

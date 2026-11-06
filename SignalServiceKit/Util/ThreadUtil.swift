@@ -112,14 +112,11 @@ public extension ThreadUtil {
 
     @discardableResult
     class func enqueueMessage(
-        withInstalledSticker stickerInfo: StickerInfo,
+        withSticker stickerMetadata: any StickerMetadata,
         quotedReplyDraft: DraftQuotedReplyModel?,
         thread: TSThread,
     ) -> TSOutgoingMessage {
         AssertIsOnMainThread()
-
-        let stickerManager = DependenciesBridge.shared.stickerManager
-
         let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread)
         let message = SSKEnvironment.shared.databaseStorageRef.read { tx in
             applyDisappearingMessagesConfiguration(to: builder, tx: tx)
@@ -127,28 +124,17 @@ public extension ThreadUtil {
         }
 
         Self.enqueueSendQueue.enqueue {
-            let stickerDraft: MessageStickerDraft? = SSKEnvironment.shared.databaseStorageRef.read { tx in
-                guard let stickerMetadata = stickerManager.installedStickerMetadata(stickerInfo: stickerInfo, transaction: tx) else {
-                    owsFailDebug("Could not find sticker file.")
-                    return nil
-                }
-
-                guard let stickerData = try? stickerMetadata.readStickerData() else {
-                    owsFailDebug("Couldn't load sticker data.")
-                    return nil
-                }
-
-                return MessageStickerDraft(
-                    info: stickerInfo,
-                    stickerData: stickerData,
-                    stickerType: stickerMetadata.stickerType,
-                    emoji: stickerMetadata.firstEmoji,
-                )
-            }
-
-            guard let stickerDraft else {
+            guard let stickerData = try? stickerMetadata.readStickerData() else {
+                owsFailDebug("Couldn't load sticker data.")
                 return
             }
+
+            let stickerDraft = MessageStickerDraft(
+                info: stickerMetadata.stickerInfo,
+                stickerData: stickerData,
+                stickerType: stickerMetadata.stickerType,
+                emoji: stickerMetadata.firstEmoji,
+            )
 
             let stickerDataSource: MessageStickerDataSource
             do {
@@ -169,51 +155,6 @@ public extension ThreadUtil {
                     message,
                     stickerDataSource: stickerDataSource,
                     quotedReplyDraft: quotedReplyDraft,
-                    thread: thread,
-                    tx: tx,
-                )
-            }
-        }
-
-        return message
-    }
-
-    @discardableResult
-    class func enqueueMessage(
-        withUninstalledSticker stickerMetadata: any StickerMetadata,
-        stickerData: Data,
-        thread: TSThread,
-    ) -> TSOutgoingMessage {
-        AssertIsOnMainThread()
-
-        let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread)
-        let message = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            applyDisappearingMessagesConfiguration(to: builder, tx: tx)
-            return builder.build(transaction: tx)
-        }
-
-        let stickerDraft = MessageStickerDraft(
-            info: stickerMetadata.stickerInfo,
-            stickerData: stickerData,
-            stickerType: stickerMetadata.stickerType,
-            emoji: stickerMetadata.firstEmoji,
-        )
-
-        Self.enqueueSendQueue.enqueue {
-            let stickerDataSource: MessageStickerDataSource
-            do {
-                stickerDataSource = try await DependenciesBridge.shared.messageStickerManager.buildDataSource(
-                    fromDraft: stickerDraft,
-                )
-            } catch {
-                owsFailDebug("Failed to build sticker!")
-                return
-            }
-            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                self.enqueueMessage(
-                    message,
-                    stickerDataSource: stickerDataSource,
-                    quotedReplyDraft: nil,
                     thread: thread,
                     tx: tx,
                 )

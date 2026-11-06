@@ -728,31 +728,22 @@ public class GroupsV2Impl: GroupsV2 {
             // from local data.
             let startingAtRevision: UInt32
             let includeFirstState: Bool
-            let dropFirstRevision: Bool
             switch source {
             case .groupMessage:
                 startingAtRevision = groupModel.revision + 1
                 includeFirstState = false
-                dropFirstRevision = false
             case .other:
-                startingAtRevision = groupModel.revision
                 includeFirstState = groupRecord.owsFailUnwrap("must exist if group model exists").shouldFetchSnapshot()
-                // We always fetch at least one revision (even if we drop it) to ensure the
-                // response contains GSEs.
-                dropFirstRevision = !includeFirstState
+                startingAtRevision = groupModel.revision + (includeFirstState ? 0 : 1)
             }
             do {
-                var response = try await _fetchSomeGroupChangeActions(
+                return try await _fetchSomeGroupChangeActions(
                     secretParams: secretParams,
                     startingAtRevision: startingAtRevision,
                     upThroughRevision: upThroughRevision,
                     includeFirstState: includeFirstState,
                     gseExpiration: gseExpiration,
                 )
-                if dropFirstRevision {
-                    response.groupChanges = Array(response.groupChanges.dropFirst())
-                }
-                return response
             } catch GroupsV2Error.localUserNotInGroup {
                 // If we can't fetch starting at the next version, we might have been
                 // removed and re-added, so we should figure out if we're back in the group

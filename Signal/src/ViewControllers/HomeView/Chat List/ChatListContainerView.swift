@@ -17,17 +17,6 @@ final class ChatListContainerView: UIView {
     private var observation: NSKeyValueObservation?
     private var _filterControl: ChatListFilterControl?
 
-    /// Set an extra padding on both sides of the table view.
-    /// This is used when chat list is displayed in split view controller's "sidebar".
-    var tableViewHorizontalInset: CGFloat = 0 {
-        didSet {
-            guard oldValue != tableViewHorizontalInset else { return }
-            tableViewHorizontalEdgeConstraints.forEach { $0.constant = tableViewHorizontalInset }
-        }
-    }
-
-    private var tableViewHorizontalEdgeConstraints: [NSLayoutConstraint] = []
-
     var filterControl: ChatListFilterControl? {
         _filterControl
     }
@@ -39,13 +28,14 @@ final class ChatListContainerView: UIView {
         self.tableView = tableView
         super.init(frame: .zero)
 
+        tableView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(tableView)
-        tableView.autoPinHeight(toHeightOf: self)
-        tableViewHorizontalEdgeConstraints = [
-            tableView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: tableViewHorizontalInset),
-            trailingAnchor.constraint(equalTo: tableView.trailingAnchor, constant: tableViewHorizontalInset),
-        ]
-        NSLayoutConstraint.activate(tableViewHorizontalEdgeConstraints)
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
 
         let filterControl = ChatListFilterControl(container: self, scrollView: tableView)
         _filterControl = filterControl
@@ -59,7 +49,6 @@ final class ChatListContainerView: UIView {
         }
     }
 
-    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

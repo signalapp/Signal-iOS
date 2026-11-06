@@ -9,7 +9,6 @@ public protocol StickerHorizontalListViewItem {
     var view: UIView { get }
     var didSelectBlock: () -> Void { get }
     var isSelected: Bool { get }
-    var accessibilityName: String { get }
 }
 
 // MARK: -
@@ -67,11 +66,6 @@ public class StickerHorizontalListViewItemSticker: StickerHorizontalListViewItem
     public var isSelected: Bool {
         return isSelectedBlock()
     }
-
-    public var accessibilityName: String {
-        // We just need a stable identifier.
-        return "pack." + stickerInfo.asKey()
-    }
 }
 
 // MARK: -
@@ -98,9 +92,31 @@ public class StickerHorizontalListViewItemRecents: StickerHorizontalListViewItem
     public var isSelected: Bool {
         return isSelectedBlock()
     }
+}
 
-    public var accessibilityName: String {
-        return "recents"
+// MARK: -
+
+public class StickerHorizontalListViewItemFavorites: StickerHorizontalListViewItem {
+
+    public let didSelectBlock: () -> Void
+    public let isSelectedBlock: () -> Bool
+
+    public init(
+        didSelectBlock: @escaping () -> Void,
+        isSelectedBlock: @escaping () -> Bool,
+    ) {
+        self.didSelectBlock = didSelectBlock
+        self.isSelectedBlock = isSelectedBlock
+    }
+
+    public var view: UIView {
+        let imageView = UIImageView(image: UIImage(named: "favorite"))
+        imageView.tintColor = .Signal.label
+        return imageView
+    }
+
+    public var isSelected: Bool {
+        return isSelectedBlock()
     }
 }
 

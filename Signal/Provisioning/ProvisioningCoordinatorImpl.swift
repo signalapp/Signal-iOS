@@ -83,14 +83,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         switch registrationState {
         case .unregistered:
             break
-        case .relinking(let localIdentifiers):
-            // Secondary devices must be re-linked to a primary with the same ACI.
-            if let oldAci = localIdentifiers.aci {
-                guard oldAci == provisionMessage.aci else {
-                    Logger.warn("can't re-link with a different aci")
-                    throw .previouslyLinkedWithDifferentAccount
-                }
-            }
         case .delinked(let localIdentifiers):
             // Secondary devices must be re-linked to a primary with the same ACI.
             if let oldAci = localIdentifiers.aci {
@@ -99,19 +91,13 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                     throw .previouslyLinkedWithDifferentAccount
                 }
             }
-            guard let reregisteringLocalIdentifiers = localIdentifiers.asReregisteringLocalIdentifiers else {
-                throw .genericError(OWSAssertionError("can't re-link without any identifiers"))
-            }
-            await self.db.awaitableWrite { tx in
-                registrationStateChangeManager.resetForReregistration(
-                    localIdentifiers: reregisteringLocalIdentifiers,
-                    isPrimaryDevice: false,
-                    tx: tx,
-                )
-                preferences.unsetRecordedAPNSTokens(tx: tx)
-            }
         default:
             owsFail("can't link with state: \(registrationState)")
+        }
+
+        await self.db.awaitableWrite { tx in
+            registrationStateChangeManager.resetForRegistration(isPrimaryDevice: false, tx: tx)
+            preferences.unsetRecordedAPNSTokens(tx: tx)
         }
 
         let result = try await completeProvisioning_updateCensorshipCircumvention(

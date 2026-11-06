@@ -45,6 +45,7 @@ enum RegistrationUtils {
         ProvisioningController.presentProvisioningFlow(skipOnboarding: true)
     }
 
+    @MainActor
     static func showReRegistration(deregisteredState: DeregisteredState) {
         let logger = PrefixedLogger(prefix: "[ReReg]")
         logger.info("showReRegistration")

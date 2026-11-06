@@ -581,12 +581,14 @@ struct ConversationHeaderBuilder {
         config.attributedTitle = AttributedString(title)
         config.titleLineBreakMode = .byWordWrapping
         config.baseForegroundColor = UIColor.Signal.label
-        let action: UIAction? = if delegate.canTapThreadName {
-            UIAction { [weak delegate] _ in
-                delegate?.didTapThreadName()
-            }
-        } else {
-            nil
+        guard delegate.canTapThreadName else {
+            let button = UIButton(configuration: config)
+            button.isUserInteractionEnabled = false
+            button.accessibilityTraits = .header
+            return button
+        }
+        let action = UIAction { [weak delegate] _ in
+            delegate?.didTapThreadName()
         }
         return UIButton(configuration: config, primaryAction: action)
     }

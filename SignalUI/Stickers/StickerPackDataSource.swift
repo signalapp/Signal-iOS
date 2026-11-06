@@ -338,17 +338,20 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
     // This should only be accessed on the main thread.
     private var stickerMetadataMap = [String: any StickerMetadata]()
     private let stickerManager: StickerManager
+    private let stickerDownloader: any StickerDownloader
     private let db: DB
 
     public init(
         stickerPackInfo: StickerPackInfo,
         shouldDownloadAllStickers: Bool,
+        stickerDownloader: any StickerDownloader,
         stickerManager: StickerManager,
         db: DB,
     ) {
         self.stickerPackInfo = stickerPackInfo
         self.shouldDownloadAllStickers = shouldDownloadAllStickers
         self.stickerManager = stickerManager
+        self.stickerDownloader = stickerDownloader
         self.db = db
 
         self.installedDataSource = InstalledStickerPackDataSource(
@@ -419,11 +422,11 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
         }
         downloadKeySet.insert(key)
 
-        stickerManager.tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
-            .done(on: DispatchQueue.main) { [weak self] stickerPack in
-                guard let self else {
-                    return
-                }
+        Task { @MainActor [weak self, stickerDownloader, stickerPackInfo] in
+            do {
+                let stickerPack = try await stickerDownloader.downloadStickerPack(stickerPackInfo: stickerPackInfo)
+
+                guard let self else { return }
                 guard self.stickerPack == nil else {
                     return
                 }
@@ -432,11 +435,9 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
                 self.downloadKeySet.remove(key)
                 self.ensureState()
                 self.fireDidChange()
-            }.catch { [weak self] error in
+            } catch {
+                guard let self else { return }
                 owsFailDebug("error: \(error)")
-                guard let self else {
-                    return
-                }
                 assert(self.downloadKeySet.contains(key))
                 self.downloadKeySet.remove(key)
                 // Sticker pack downloads may fail permanently,
@@ -445,6 +446,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
                 // the data source change may not have changed.
                 self.fireDidChange()
             }
+        }
     }
 
     // Returns true if sticker is already downloaded.
@@ -470,27 +472,23 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
         downloadKeySet.insert(key)
 
         // This sticker is not downloaded; try to download now.
-        firstly(on: DispatchQueue.global()) {
-            self.stickerManager.tryToDownloadSticker(stickerInfo: stickerInfo)
-        }.done(on: DispatchQueue.main) { [weak self] stickerData in
-            guard let self else {
-                return
+        Task { @MainActor [weak self, stickerDownloader] in
+            do {
+                let stickerData = try await stickerDownloader.downloadSticker(stickerInfo: stickerInfo)
+                guard let self else { return }
+                assert(self.downloadKeySet.contains(key))
+                self.downloadKeySet.remove(key)
+                self.set(
+                    stickerInfo: stickerInfo,
+                    stickerPackItem: stickerPackItem,
+                    stickerData: stickerData,
+                )
+            } catch {
+                guard let self else { return }
+                owsFailDebug("error: \(error)")
+                assert(self.downloadKeySet.contains(key))
+                self.downloadKeySet.remove(key)
             }
-
-            assert(self.downloadKeySet.contains(key))
-            self.downloadKeySet.remove(key)
-            self.set(
-                stickerInfo: stickerInfo,
-                stickerPackItem: stickerPackItem,
-                stickerData: stickerData,
-            )
-        }.catch { [weak self] error in
-            owsFailDebug("error: \(error)")
-            guard let self else {
-                return
-            }
-            assert(self.downloadKeySet.contains(key))
-            self.downloadKeySet.remove(key)
         }
         return false
     }
@@ -698,6 +696,84 @@ extension RecentStickerPackDataSource: StickerPackDataSource {
         // don't bother checking that the sticker data resides on disk.
         return db.read { tx in
             stickerManager.installedStickerMetadata(stickerInfo: stickerInfo, transaction: tx)
+        }
+    }
+}
+
+// Supplies sticker pack data for favorited stickers.
+public class FavoritesStickerPackDataSource: BaseStickerPackDataSource, StickerPackDataSource {
+    private let stickerManager: StickerManager
+    private let db: DB
+
+    public init(stickerManager: StickerManager, db: DB) {
+        self.stickerManager = stickerManager
+        self.db = db
+
+        super.init()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(favoriteStickersDidChange),
+            name: StickerManager.favoriteStickersDidChange,
+            object: nil,
+        )
+
+        ensureState()
+    }
+
+    private func ensureState() {
+        db.read { tx in
+            stickerInfos = stickerManager.fetchAllFavoritedStickerInfos(tx: tx)
+        }
+    }
+
+    // MARK: Events
+
+    @objc
+    private func favoriteStickersDidChange() {
+        AssertIsOnMainThread()
+
+        ensureState()
+    }
+
+    // MARK: - StickerPackDataSource
+
+    public var info: StickerPackInfo? {
+        owsFailDebug("This method should never be called.")
+        return nil
+    }
+
+    public var title: String? {
+        owsFailDebug("This method should never be called.")
+        return nil
+    }
+
+    public var author: String? {
+        owsFailDebug("This method should never be called.")
+        return nil
+    }
+
+    public func getStickerPack() -> StickerPackRecord? {
+        owsFailDebug("This method should never be called.")
+        return nil
+    }
+
+    public var installedCoverInfo: StickerInfo? {
+        owsFailDebug("This method should never be called.")
+        return nil
+    }
+
+    public var installedStickerInfos: [StickerInfo] {
+        AssertIsOnMainThread()
+
+        return stickerInfos
+    }
+
+    public func metadata(forSticker stickerInfo: StickerInfo) -> (any StickerMetadata)? {
+        AssertIsOnMainThread()
+
+        return db.read { tx in
+            stickerManager.favoriteStickerMetadata(stickerInfo: stickerInfo, transaction: tx)
         }
     }
 }

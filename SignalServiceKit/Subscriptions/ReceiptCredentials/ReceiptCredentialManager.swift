@@ -143,10 +143,7 @@ public struct ReceiptCredentialManager {
 
         if
             case .paymentFailed = errorCode,
-            let httpResponseData = error.httpResponseData,
-            let httpResponseDict = try? JSONSerialization.jsonObject(with: httpResponseData) as? [String: Any],
-            let chargeFailureDict = httpResponseDict["chargeFailure"] as? [String: Any],
-            let chargeFailureCode = chargeFailureDict["code"] as? String
+            let chargeFailureCode = Subscription.ChargeFailure.decode(responseBody: error.httpResponseData)?.code
         {
             return ReceiptCredentialRequestError(
                 errorCode: errorCode,

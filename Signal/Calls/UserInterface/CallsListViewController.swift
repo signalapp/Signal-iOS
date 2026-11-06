@@ -126,14 +126,14 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         tableView.register(CreateCallLinkCell.self, forCellReuseIdentifier: Self.createCallLinkReuseIdentifier)
         tableView.register(CallCell.self, forCellReuseIdentifier: Self.callCellReuseIdentifier)
         tableView.dataSource = dataSource
+        tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
-        tableView.autoPinHeight(toHeightOf: view)
-        tableViewHorizontalEdgeConstraints = [
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: tableView.trailingAnchor),
-        ]
-        NSLayoutConstraint.activate(tableViewHorizontalEdgeConstraints)
-        updateTableViewPaddingIfNeeded()
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
 
         view.addSubview(emptyStateMessageView)
         emptyStateMessageView.autoCenterInSuperview()
@@ -148,6 +148,11 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        if tableView.isEditing == false, let selectedIndexPath = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: selectedIndexPath, animated: animated)
+        }
+
         updateTimeSensitiveStateForAllCallCells()
         clearMissedCallsIfNecessary()
         isPeekingEnabled = true
@@ -161,18 +166,21 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         isPeekingEnabled = false
     }
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        updateTableViewPaddingIfNeeded()
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        coordinator.animate { context in
+            self.updateListCellAppearance()
+        }
     }
 
     func updateBarButtonItems() {
+        updateSettingsBarButtonItem()
+
         if tableView.isEditing {
-            navigationItem.leftBarButtonItem = cancelMultiselectButton()
             navigationItem.rightBarButtonItem = deleteAllCallsButton
             updateMultiselectButtons()
         } else {
-            navigationItem.leftBarButtonItem = profileBarButtonItem()
             navigationItem.rightBarButtonItem = newCallButton()
         }
 
@@ -183,12 +191,20 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         }
     }
 
-    // MARK: Profile button
+    // MARK: Settings nav bar button
 
-    private func profileBarButtonItem() -> UIBarButtonItem {
+    func updateSettingsBarButtonItem() {
+        if tableView.isEditing {
+            navigationItem.leftBarButtonItem = cancelMultiselectButton()
+        } else {
+            navigationItem.leftBarButtonItem = settingsBarButtonItem()
+        }
+    }
+
+    private func settingsBarButtonItem() -> UIBarButtonItem {
         createSettingsBarButtonItem(
             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-            buildActions: { settingsAction -> [UIMenuElement] in
+            buildActions: {
                 return [
                     UIAction(
                         title: Strings.selectCallsButtonTitle,
@@ -197,7 +213,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                             self?.startMultiselect()
                         },
                     ),
-                    settingsAction,
                 ]
             },
             showAppSettings: { [weak self] in
@@ -1517,29 +1532,24 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     let tableView = UITableView(frame: .zero, style: .plain)
 
     /// Set to `true` when call list is displayed in split view controller's "sidebar" on iOS 26 and later.
-    /// Setting this to `true` would add an extra padding on both sides of the table view.
-    /// This value is also passed down to table view cells that make their own layout choices based on the value.
-    private var useSidebarCallListCellAppearance = false {
+    /// This value is then passed down to table view cells that make their own layout choices based on the value.
+    private var useSideBarListCellAppearance = false {
         didSet {
-            guard oldValue != useSidebarCallListCellAppearance else { return }
-            tableViewHorizontalEdgeConstraints.forEach {
-                $0.constant = useSidebarCallListCellAppearance ? 18 : 0
-            }
+            guard oldValue != useSideBarListCellAppearance, isViewLoaded else { return }
             tableView.reloadData()
         }
     }
 
-    private var tableViewHorizontalEdgeConstraints: [NSLayoutConstraint] = []
-
-    /// iOS 26+: checks if this VC is displayed in the collapsed split view controller and updates `useSidebarCallListCellAppearance` accordingly.
-    /// Does nothing on prior iOS versions.
-    private func updateTableViewPaddingIfNeeded() {
+    /// Checks whether this view controller is displayed in an expanded or collapsed split view controller
+    /// and updates `useSideBarListCellAppearance` accordingly.
+    /// No-op on versions below iOS 26.
+    private func updateListCellAppearance() {
         guard #available(iOS 26, *) else { return }
 
         if let splitViewController, !splitViewController.isCollapsed {
-            useSidebarCallListCellAppearance = true
+            useSideBarListCellAppearance = true
         } else {
-            useSidebarCallListCellAppearance = false
+            useSideBarListCellAppearance = false
         }
     }
 
@@ -1561,7 +1571,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                     for: indexPath,
                 ) as? CreateCallLinkCell else { return nil }
 
-            createCallLinkCell.useSidebarAppearance = useSidebarCallListCellAppearance
+            createCallLinkCell.useSidebarAppearance = useSideBarListCellAppearance
             return createCallLinkCell
 
         case .existingCalls:
@@ -1571,7 +1581,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                     for: indexPath,
                 ) as? CallCell else { return nil }
 
-            callCell.useSidebarAppearance = useSidebarCallListCellAppearance
+            callCell.useSidebarAppearance = useSideBarListCellAppearance
             // These loads should be sufficiently fast that doing them here,
             // synchronously, is fine.
             loadMoreCallsIfNecessary(indexToBeDisplayed: indexPath.row)
@@ -1782,13 +1792,12 @@ extension CallsListViewController: UITableViewDelegate {
             return
         }
 
-        tableView.deselectRow(at: indexPath, animated: true)
-
         switch Section(rawValue: indexPath.section) {
         case .createCallLink:
             createCallLink()
         case .existingCalls, .none:
             guard let viewModel = viewModelWithSneakyTransaction(at: indexPath) else {
+                tableView.deselectRow(at: indexPath, animated: true)
                 return
             }
             showCallInfo(from: viewModel)
@@ -2573,6 +2582,15 @@ private extension CallsListViewController {
             if state.isSelected || state.isHighlighted {
                 configuration.backgroundColor = OWSTableViewController2.cellSelectedBackgroundColor
                 if useSidebarAppearance {
+                    let contentMargin: CGFloat = 12
+                    let leading = directionalLayoutMargins.leading - contentMargin
+                    let trailing = directionalLayoutMargins.trailing - contentMargin
+                    configuration.backgroundInsets = .init(
+                        top: 0,
+                        leading: leading,
+                        bottom: 0,
+                        trailing: trailing,
+                    )
                     configuration.cornerRadius = 36
                 }
             } else {

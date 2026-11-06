@@ -374,6 +374,7 @@ public class GRDBSchemaMigrator {
         case addLastSnapshotAt
         case removeLocalFileBackupLastEnumeratedAttachmentId
         case addLocalKeyAndSizeToInstalledSticker
+        case addFavoriteStickerTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -508,7 +509,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 165
+    public static let grdbSchemaVersionLatest: UInt = 166
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5744,6 +5745,35 @@ public class GRDBSchemaMigrator {
                 $0.add(column: "localKey", .blob)
                 $0.add(column: "plaintextLength", .integer)
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addFavoriteStickerTable) { tx in
+            try tx.database.create(table: FavoriteStickerRecord.databaseTableName) { table in
+                table.autoIncrementedPrimaryKey("id")
+                table.column("emojiString", .text)
+                table.column("contentType", .text)
+                table.column("localKey", .blob)
+                table.column("plaintextLength", .integer)
+                table.column("favoritedAt", .integer)
+                table.column("unfavoritedAt", .integer)
+                table.column("packId", .blob).notNull()
+                table.column("packKey", .blob)
+                table.column("stickerId", .integer).notNull()
+            }
+
+            try tx.database.create(
+                index: "FavoriteStickerRecord_packId_stickerId",
+                on: FavoriteStickerRecord.databaseTableName,
+                columns: ["packId", "stickerId"],
+                unique: true,
+            )
+
+            try tx.database.create(
+                index: "FavoriteStickerRecord_unfavoritedAt",
+                on: FavoriteStickerRecord.databaseTableName,
+                columns: ["unfavoritedAt"],
+            )
             return .success(())
         }
 
