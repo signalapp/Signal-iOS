@@ -2230,18 +2230,39 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         e164: E164,
     ) async throws -> RegistrationStep {
         let reglockToken = self.reglockToken(for: e164)
-        return try await makeRegisterOrChangeNumberRequest(
-            .recoveryPassword(.phoneNumber(e164), regRecoveryPw),
-            reglockToken: reglockToken,
-            responseHandler: { accountResponse in
-                return await self.handleCreateAccountResponseFromRegRecoveryPassword(
-                    accountResponse,
-                    regRecoveryPw: regRecoveryPw,
-                    e164: e164,
-                    reglockToken: reglockToken,
+        switch mode {
+        case .registering, .reRegistering:
+            let accountResponse = try await makeRegisterRequest(
+                .recoveryPassword(.phoneNumber(e164), regRecoveryPw),
+                reglockToken: reglockToken,
+            )
+            return await self.handleCreateAccountResponseFromRegRecoveryPassword(
+                accountResponse,
+                regRecoveryPw: regRecoveryPw,
+                e164: e164,
+                reglockToken: reglockToken,
+            )
+        case .changingNumber(let changeNumberState):
+            if let pniState = changeNumberState.pniState {
+                // We had an in flight change number that was interrupted, recover.
+                try await recoverPendingPniChangeNumberState(
+                    changeNumberState: changeNumberState,
+                    pniState: pniState,
                 )
-            },
-        )
+                return await nextStep()
+            }
+            let accountResponse = try await makeChangeNumberRequest(
+                .recoveryPassword(.phoneNumber(e164), regRecoveryPw),
+                reglockToken: reglockToken,
+                changeNumberState: changeNumberState,
+            )
+            return await self.handleCreateAccountResponseFromRegRecoveryPassword(
+                accountResponse,
+                regRecoveryPw: regRecoveryPw,
+                e164: e164,
+                reglockToken: reglockToken,
+            )
+        }
     }
 
     private func handleCreateAccountResponseFromRegRecoveryPassword(
@@ -2879,17 +2900,37 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             ))
         }
         let reglockToken = reglockToken(for: session.e164)
-        return try await makeRegisterOrChangeNumberRequest(
-            .sessionId(session.e164, session.id),
-            reglockToken: reglockToken,
-            responseHandler: { accountResponse in
-                return await self.handleCreateAccountResponseFromSession(
-                    accountResponse,
-                    sessionFromBeforeRequest: session,
-                    reglockTokenUsedInRequest: reglockToken,
+        switch mode {
+        case .registering, .reRegistering:
+            let accountResponse = try await makeRegisterRequest(
+                .sessionId(session.e164, session.id),
+                reglockToken: reglockToken,
+            )
+            return await self.handleCreateAccountResponseFromSession(
+                accountResponse,
+                sessionFromBeforeRequest: session,
+                reglockTokenUsedInRequest: reglockToken,
+            )
+        case .changingNumber(let changeNumberState):
+            if let pniState = changeNumberState.pniState {
+                // We had an in flight change number that was interrupted, recover.
+                try await recoverPendingPniChangeNumberState(
+                    changeNumberState: changeNumberState,
+                    pniState: pniState,
                 )
-            },
-        )
+                return await nextStep()
+            }
+            let accountResponse = try await makeChangeNumberRequest(
+                .sessionId(session.e164, session.id),
+                reglockToken: reglockToken,
+                changeNumberState: changeNumberState,
+            )
+            return await self.handleCreateAccountResponseFromSession(
+                accountResponse,
+                sessionFromBeforeRequest: session,
+                reglockTokenUsedInRequest: reglockToken,
+            )
+        }
     }
 
     private func handleCreateAccountResponseFromSession(
@@ -3719,24 +3760,22 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 do {
                     return try await Retry.performWithBackoff(maxAttempts: Constants.networkErrorRetries + 1) {
-                        return try await makeRegisterOrChangeNumberRequest(
+                        let accountResponse = try await makeRegisterRequest(
                             .receiptCredential(receiptCredentialPresentation),
                             reglockToken: nil,
-                            responseHandler: { response in
-                                switch response {
-                                case .success(let accountIdentity):
-                                    deps.db.write { tx in
-                                        updatePersistedState(tx) {
-                                            $0.signalLoginState = nil
-                                            $0.accountIdentity = accountIdentity
-                                        }
-                                    }
-                                    return await nextStep()
-                                default:
-                                    owsFail("couldn't create account: \(response)")
-                                }
-                            },
                         )
+                        switch accountResponse {
+                        case .success(let accountIdentity):
+                            deps.db.write { tx in
+                                updatePersistedState(tx) {
+                                    $0.signalLoginState = nil
+                                    $0.accountIdentity = accountIdentity
+                                }
+                            }
+                            return await nextStep()
+                        default:
+                            owsFail("couldn't create account: \(accountResponse)")
+                        }
                     }
                 } catch {
                     owsFail("couldn't create account: \(error)")
@@ -4468,103 +4507,95 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // MARK: - Register/Change Number Requests
 
-    private func makeRegisterOrChangeNumberRequest(
+    private func makeRegisterRequest(
         _ method: RegistrationRequestFactory.VerificationMethod,
         reglockToken: RegistrationLock?,
-        responseHandler: @MainActor (AccountResponse) async -> RegistrationStep,
-    ) async throws -> RegistrationStep {
+    ) async throws -> AccountResponse {
         logger.info("")
 
         switch mode {
         case .registering, .reRegistering:
-            db.write { tx in
-                deps.registrationStateChangeManager.resetForRegistration(isPrimaryDevice: true, tx: tx)
-            }
-
-            // The auth token we use going forwards for chat server auth headers
-            // is generated by the client. We do that here and put it on the
-            // AccountIdentity we generate after success so that we eventually
-            // write it to TSAccountManager when all is said and done, and use
-            // it for requests we need to make between now and then.
-            let authToken = generateServerAuthToken()
-
-            let apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?
-            do {
-                apnRegistrationId = try await fetchApnRegistrationId()
-            } catch {
-                return .showError(error)
-            }
-            // Either manual message fetch is true, or apns tokens are set.
-            // Otherwise the request will fail.
-            let isManualMessageFetchEnabled = apnRegistrationId == nil
-            inMemoryState.isManualMessageFetchEnabled = isManualMessageFetchEnabled
-            if isManualMessageFetchEnabled {
-                db.write { tx in
-                    self.deps.tsAccountManager.setIsManualMessageFetchEnabled(true, tx: tx)
-                }
-            }
-
-            let accountAttributes = makeAccountAttributes(
-                verificationMethod: method,
-                isManualMessageFetchEnabled: isManualMessageFetchEnabled,
-                reglockToken: reglockToken,
-            )
-            do {
-                try await sendRestoreMethodIfNecessary()
-            } catch {
-                return .showError(error)
-            }
-            let accountResponse = try await makeCreateAccountRequestAndFinalizePreKeys(
-                verificationMethod: method,
-                authPassword: authToken,
-                accountAttributes: accountAttributes,
-                skipDeviceTransfer: shouldSkipDeviceTransfer(),
-                apnRegistrationId: apnRegistrationId,
-            )
-            return await responseHandler(accountResponse)
-
-        case .changingNumber(let changeNumberState):
-            if let pniState = changeNumberState.pniState {
-                // We had an in flight change number that was interrupted, recover.
-                try await recoverPendingPniChangeNumberState(
-                    changeNumberState: changeNumberState,
-                    pniState: pniState,
-                )
-                return await nextStep()
-            }
-            let accountResponse = await Result(catching: {
-                return try await generatePniStateAndMakeChangeNumberRequest(
-                    verificationMethod: method,
-                    reglockToken: reglockToken,
-                    changeNumberState: changeNumberState,
-                )
-            })
-            switch accountResponse {
-            case .success(.success):
-                // Pni state will get finalized and cleaned up later in the normal course
-                // of action.
-                break
-            case .failure(let error) where error.httpStatusCode == 429:
-                fallthrough
-            case .success(.reglockFailure), .success(.rejectedVerificationMethod):
-                // Explicit rejection by the server, we can safely wipe our local PNI state
-                // and regenerate when we retry.
-                db.write { tx in
-                    self._unsafeToModify_mode = .changingNumber(loader.savePendingChangeNumber(
-                        oldState: changeNumberState,
-                        pniState: nil,
-                        transaction: tx,
-                    ))
-                }
-            case .success(.deviceTransferPossible):
-                owsFail("can't get device transfer response on change number request")
-            case .failure:
-                // We don't know what went wrong, so PNI state may be set server side.
-                // Don't wipe PNI state so we try and recover.
-                break
-            }
-            return await responseHandler(try accountResponse.get())
+            break
+        case .changingNumber:
+            owsFail("not supported")
         }
+
+        db.write { tx in
+            deps.registrationStateChangeManager.resetForRegistration(isPrimaryDevice: true, tx: tx)
+        }
+
+        // The auth token we use going forwards for chat server auth headers
+        // is generated by the client. We do that here and put it on the
+        // AccountIdentity we generate after success so that we eventually
+        // write it to TSAccountManager when all is said and done, and use
+        // it for requests we need to make between now and then.
+        let authToken = generateServerAuthToken()
+
+        let apnRegistrationId = try await fetchApnRegistrationId()
+        // Either manual message fetch is true, or apns tokens are set.
+        // Otherwise the request will fail.
+        let isManualMessageFetchEnabled = apnRegistrationId == nil
+        inMemoryState.isManualMessageFetchEnabled = isManualMessageFetchEnabled
+        if isManualMessageFetchEnabled {
+            db.write { tx in
+                self.deps.tsAccountManager.setIsManualMessageFetchEnabled(true, tx: tx)
+            }
+        }
+
+        let accountAttributes = makeAccountAttributes(
+            verificationMethod: method,
+            isManualMessageFetchEnabled: isManualMessageFetchEnabled,
+            reglockToken: reglockToken,
+        )
+        try await sendRestoreMethodIfNecessary()
+        return try await makeCreateAccountRequestAndFinalizePreKeys(
+            verificationMethod: method,
+            authPassword: authToken,
+            accountAttributes: accountAttributes,
+            skipDeviceTransfer: shouldSkipDeviceTransfer(),
+            apnRegistrationId: apnRegistrationId,
+        )
+    }
+
+    private func makeChangeNumberRequest(
+        _ method: RegistrationRequestFactory.VerificationMethod,
+        reglockToken: RegistrationLock?,
+        changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState,
+    ) async throws -> AccountResponse {
+        logger.info("")
+
+        let accountResponse = await Result(catching: {
+            return try await generatePniStateAndMakeChangeNumberRequest(
+                verificationMethod: method,
+                reglockToken: reglockToken,
+                changeNumberState: changeNumberState,
+            )
+        })
+        switch accountResponse {
+        case .success(.success):
+            // Pni state will get finalized and cleaned up later in the normal course
+            // of action.
+            break
+        case .failure(let error) where error.httpStatusCode == 429:
+            fallthrough
+        case .success(.reglockFailure), .success(.rejectedVerificationMethod):
+            // Explicit rejection by the server, we can safely wipe our local PNI state
+            // and regenerate when we retry.
+            db.write { tx in
+                self._unsafeToModify_mode = .changingNumber(loader.savePendingChangeNumber(
+                    oldState: changeNumberState,
+                    pniState: nil,
+                    transaction: tx,
+                ))
+            }
+        case .success(.deviceTransferPossible):
+            owsFail("can't get device transfer response on change number request")
+        case .failure:
+            // We don't know what went wrong, so PNI state may be set server side.
+            // Don't wipe PNI state so we try and recover.
+            break
+        }
+        return try accountResponse.get()
     }
 
     /// Send the restore method back to the other device in non-transfer restore scenarios.
@@ -4671,7 +4702,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             localDeviceId: changeNumberState.localDeviceId,
         )
 
-        return try await makeChangeNumberRequest(
+        return try await _makeChangeNumberRequest(
             verificationMethod: verificationMethod,
             reglockToken: reglockToken,
             changeNumberState: changeNumberState,
@@ -4680,7 +4711,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         )
     }
 
-    private func makeChangeNumberRequest(
+    private func _makeChangeNumberRequest(
         verificationMethod: RegistrationRequestFactory.VerificationMethod,
         reglockToken: RegistrationLock?,
         changeNumberState: RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState,
