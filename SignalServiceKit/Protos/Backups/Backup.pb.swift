@@ -195,7 +195,7 @@ public nonisolated struct BackupProto_BackupInfo: Sendable {
 ///    LTR locales), but can appear anywhere relative to other frames respecting
 ///    rule 2 (after Recipients and Chats).
 ///
-/// Recipients, Chats, StickerPacks, AdHocCalls, and NotificationProfiles
+/// Recipients, Chats, StickerPacks, AdHocCalls, NotificationProfiles, and FavoriteStickerList
 /// can be in any order. (But must respect rule 2.)
 ///
 /// For example, Chats may all be together at the beginning,
@@ -272,6 +272,14 @@ public nonisolated struct BackupProto_Frame: Sendable {
     set {item = .chatFolder(newValue)}
   }
 
+  public var favoriteStickerList: BackupProto_FavoriteStickerList {
+    get {
+      if case .favoriteStickerList(let v)? = item {return v}
+      return BackupProto_FavoriteStickerList()
+    }
+    set {item = .favoriteStickerList(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// If unset, importers should skip this frame without throwing an error.
@@ -284,6 +292,7 @@ public nonisolated struct BackupProto_Frame: Sendable {
     case adHocCall(BackupProto_AdHocCall)
     case notificationProfile(BackupProto_NotificationProfile)
     case chatFolder(BackupProto_ChatFolder)
+    case favoriteStickerList(BackupProto_FavoriteStickerList)
 
   }
 
@@ -6231,6 +6240,37 @@ public nonisolated struct BackupProto_StickerPack: Sendable {
   public init() {}
 }
 
+public nonisolated struct BackupProto_FavoriteStickerList: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// At most 500 stickers
+  public var favoriteSticker: [BackupProto_FavoriteStickerList.FavoriteSticker] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public nonisolated struct FavoriteSticker: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    public var packID: Data = Data()
+
+    public var packKey: Data = Data()
+
+    public var stickerID: UInt32 = 0
+
+    public var favoritedAtTimestamp: UInt64 = 0
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public init() {}
+  }
+
+  public init() {}
+}
+
 public nonisolated struct BackupProto_ChatStyle: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -6870,7 +6910,7 @@ nonisolated extension BackupProto_BackupInfo: SwiftProtobuf.Message, SwiftProtob
 
 nonisolated extension BackupProto_Frame: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Frame"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}account\0\u{1}recipient\0\u{1}chat\0\u{1}chatItem\0\u{1}stickerPack\0\u{1}adHocCall\0\u{1}notificationProfile\0\u{1}chatFolder\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}account\0\u{1}recipient\0\u{1}chat\0\u{1}chatItem\0\u{1}stickerPack\0\u{1}adHocCall\0\u{1}notificationProfile\0\u{1}chatFolder\0\u{2}\u{2}favoriteStickerList\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6982,6 +7022,19 @@ nonisolated extension BackupProto_Frame: SwiftProtobuf.Message, SwiftProtobuf._M
           self.item = .chatFolder(v)
         }
       }()
+      case 10: try {
+        var v: BackupProto_FavoriteStickerList?
+        var hadOneofValue = false
+        if let current = self.item {
+          hadOneofValue = true
+          if case .favoriteStickerList(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.item = .favoriteStickerList(v)
+        }
+      }()
       default: break
       }
     }
@@ -7024,6 +7077,10 @@ nonisolated extension BackupProto_Frame: SwiftProtobuf.Message, SwiftProtobuf._M
     case .chatFolder?: try {
       guard case .chatFolder(let v)? = self.item else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
+    }()
+    case .favoriteStickerList?: try {
+      guard case .favoriteStickerList(let v)? = self.item else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
     }()
     case nil: break
     }
@@ -14476,6 +14533,81 @@ nonisolated extension BackupProto_StickerPack: SwiftProtobuf.Message, SwiftProto
   public static func ==(lhs: BackupProto_StickerPack, rhs: BackupProto_StickerPack) -> Bool {
     if lhs.packID != rhs.packID {return false}
     if lhs.packKey != rhs.packKey {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension BackupProto_FavoriteStickerList: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".FavoriteStickerList"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}favoriteSticker\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.favoriteSticker) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.favoriteSticker.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.favoriteSticker, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_FavoriteStickerList, rhs: BackupProto_FavoriteStickerList) -> Bool {
+    if lhs.favoriteSticker != rhs.favoriteSticker {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension BackupProto_FavoriteStickerList.FavoriteSticker: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = BackupProto_FavoriteStickerList.protoMessageName + ".FavoriteSticker"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}packId\0\u{1}packKey\0\u{1}stickerId\0\u{1}favoritedAtTimestamp\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.packID) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.packKey) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.stickerID) }()
+      case 4: try { try decoder.decodeSingularUInt64Field(value: &self.favoritedAtTimestamp) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.packID.isEmpty {
+      try visitor.visitSingularBytesField(value: self.packID, fieldNumber: 1)
+    }
+    if !self.packKey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.packKey, fieldNumber: 2)
+    }
+    if self.stickerID != 0 {
+      try visitor.visitSingularUInt32Field(value: self.stickerID, fieldNumber: 3)
+    }
+    if self.favoritedAtTimestamp != 0 {
+      try visitor.visitSingularUInt64Field(value: self.favoritedAtTimestamp, fieldNumber: 4)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_FavoriteStickerList.FavoriteSticker, rhs: BackupProto_FavoriteStickerList.FavoriteSticker) -> Bool {
+    if lhs.packID != rhs.packID {return false}
+    if lhs.packKey != rhs.packKey {return false}
+    if lhs.stickerID != rhs.stickerID {return false}
+    if lhs.favoritedAtTimestamp != rhs.favoritedAtTimestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

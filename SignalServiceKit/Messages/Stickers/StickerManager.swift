@@ -152,6 +152,7 @@ public class StickerManager {
             block: { [weak self] _ in
                 guard let self else { return }
                 downloadPendingStickerPacks()
+                scheduleDownloadPendingFavoritedStickers()
             },
         )
     }
@@ -1308,6 +1309,23 @@ public class StickerManager {
         }
     }
 
+    public func addFavoritesStickerPlaceholder(
+        stickerInfo: StickerInfo,
+        favoritedAtTimestamp: UInt64,
+        existingRecord: FavoriteStickerRecord?,
+        tx: DBWriteTransaction,
+    ) {
+        stickerFavoriteStore.addStickerToFavorites(
+            stickerInfo: stickerInfo,
+            contentType: existingRecord?.contentType ?? nil,
+            emojiString: existingRecord?.emojiString ?? nil,
+            localKey: existingRecord?.localKey ?? nil,
+            plaintextLength: existingRecord?.plaintextLength ?? nil,
+            favoritedAtTimestamp: favoritedAtTimestamp,
+            tx: tx,
+        )
+    }
+
     /// Adds a placeholder database entry to the favorites stickers table.
     public func mergeFavoriteStickerFromStorageServiceAndCheckNeedsUpdate(
         packID: Data,
@@ -1338,13 +1356,10 @@ public class StickerManager {
 
             let stickerInfo = StickerInfo(packId: packID, packKey: packKey, stickerId: storageServiceRecord.stickerID)
 
-            stickerFavoriteStore.addStickerToFavorites(
+            addFavoritesStickerPlaceholder(
                 stickerInfo: stickerInfo,
-                contentType: existingRecord?.contentType ?? nil,
-                emojiString: existingRecord?.emojiString ?? nil,
-                localKey: existingRecord?.localKey ?? nil,
-                plaintextLength: existingRecord?.plaintextLength ?? nil,
                 favoritedAtTimestamp: storageServiceRecord.favoritedAtTimestamp,
+                existingRecord: existingRecord,
                 tx: tx,
             )
 
@@ -1558,6 +1573,13 @@ public class StickerManager {
             let stickerInfo = StickerInfo(packId: $0.packId, packKey: packKey, stickerId: $0.stickerId)
             return stickerInfo
         }
+    }
+
+    func enumerateAllStickerFavorites(
+        tx: DBReadTransaction,
+        block: (FavoriteStickerRecord) throws(CancellationError) -> Bool,
+    ) throws(CancellationError) {
+        try stickerFavoriteStore.enumerateAllStickerFavorites(tx: tx, block: block)
     }
 
     // MARK: - StickerPack Download Task Queue

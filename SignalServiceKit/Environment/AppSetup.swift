@@ -1679,6 +1679,7 @@ extension AppSetup.GlobalsContinuation {
                 threadStore: backupThreadStore,
             ),
             encryptedProtoStreamProvider: BackupArchiveEncryptedProtoStreamProvider(),
+            favoriteStickerArchiver: BackupArchiveFavoriteStickerArchiver(stickerManager: stickerManager),
             fullTextSearchIndexer: BackupArchiveFullTextSearchIndexerImpl(
                 appReadiness: appReadiness,
                 dateProvider: dateProviderMonotonic,

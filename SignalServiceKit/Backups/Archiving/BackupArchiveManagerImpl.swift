@@ -50,6 +50,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let disappearingMessagesExpirationJob: DisappearingMessagesExpirationJob
     private let distributionListRecipientArchiver: BackupArchiveDistributionListRecipientArchiver
     private let encryptedProtoStreamProvider: BackupArchiveEncryptedProtoStreamProvider
+    private let favoriteStickerArchiver: BackupArchiveFavoriteStickerArchiver
     private let fullTextSearchIndexer: BackupArchiveFullTextSearchIndexer
     private let groupRecipientArchiver: BackupArchiveGroupRecipientArchiver
     private let jsonLinesStreamProvider: BackupArchiveJsonLinesStreamProvider
@@ -93,6 +94,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         disappearingMessagesExpirationJob: DisappearingMessagesExpirationJob,
         distributionListRecipientArchiver: BackupArchiveDistributionListRecipientArchiver,
         encryptedProtoStreamProvider: BackupArchiveEncryptedProtoStreamProvider,
+        favoriteStickerArchiver: BackupArchiveFavoriteStickerArchiver,
         fullTextSearchIndexer: BackupArchiveFullTextSearchIndexer,
         groupRecipientArchiver: BackupArchiveGroupRecipientArchiver,
         jsonLinesStreamProvider: BackupArchiveJsonLinesStreamProvider,
@@ -132,6 +134,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.disappearingMessagesExpirationJob = disappearingMessagesExpirationJob
         self.distributionListRecipientArchiver = distributionListRecipientArchiver
         self.encryptedProtoStreamProvider = encryptedProtoStreamProvider
+        self.favoriteStickerArchiver = favoriteStickerArchiver
         self.fullTextSearchIndexer = fullTextSearchIndexer
         self.groupRecipientArchiver = groupRecipientArchiver
         self.jsonLinesStreamProvider = jsonLinesStreamProvider
@@ -784,6 +787,20 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 throw BackupError()
             }
 
+            let favoriteStickerArchiveResult = try favoriteStickerArchiver.archiveFavoriteStickers(
+                stream: stream,
+                context: archivingContext,
+            )
+            switch favoriteStickerArchiveResult {
+            case .success:
+                break
+            case .partialSuccess(let partialFailures):
+                errors.append(contentsOf: partialFailures)
+            case .completeFailure(let error):
+                errors.append(error)
+                throw BackupError()
+            }
+
             try stream.closeFileStream()
 
             logger.info("Finished exporting backup")
@@ -1078,6 +1095,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 let customChatColor: BackupArchive.CustomChatColorRestoringContext
                 let recipient: BackupArchive.RecipientRestoringContext
                 let stickerPack: BackupArchive.RestoringContext
+                let stickerFavorites: BackupArchive.RestoringContext
 
                 init(
                     localIdentifiers: LocalIdentifiers,
@@ -1136,6 +1154,14 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                         tx: tx,
                     )
                     stickerPack = BackupArchive.RestoringContext(
+                        localIdentifiers: localIdentifiers,
+                        startDate: startDate,
+                        remoteConfig: remoteConfig,
+                        attachmentByteCounter: attachmentByteCounter,
+                        isPrimaryDevice: isPrimaryDevice,
+                        tx: tx,
+                    )
+                    stickerFavorites = BackupArchive.RestoringContext(
                         localIdentifiers: localIdentifiers,
                         startDate: startDate,
                         remoteConfig: remoteConfig,
@@ -1337,6 +1363,22 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                             // Chat folders are unsupported on iOS and
                             // we do not even round trip them per spec.
                             break
+                        case .favoriteStickerList(let backupProtoFavoriteStickerList):
+                            let favoriteStickerResult = favoriteStickerArchiver.restore(
+                                backupProtoFavoriteStickerList,
+                                context: contexts.stickerFavorites,
+                            )
+                            switch favoriteStickerResult {
+                            case .success:
+                                return
+                            case .unrecognizedEnum(let error):
+                                frameErrors.append(error)
+                                return
+                            case .partialRestore(let errors):
+                                frameErrors.append(contentsOf: errors)
+                            case .failure(let errors):
+                                frameErrors.append(contentsOf: errors)
+                            }
                         }
                     }
                 }

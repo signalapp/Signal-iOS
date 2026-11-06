@@ -809,6 +809,9 @@ extension BackupArchive {
 
                 /// The admin delete author had an invalid non-contact address
                 case adminDeleteAuthorNotContact
+
+                /// A sticker favorite had invalid pack info
+                case invalidFavoriteStickerPackInfo
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -968,7 +971,8 @@ extension BackupArchive {
                     .pinMessageAuthorNotContact,
                     .invalidNumberOfPinnedMessages,
                     .sentTimestampOverflowedLocalType,
-                    .adminDeleteAuthorNotContact:
+                    .adminDeleteAuthorNotContact,
+                    .invalidFavoriteStickerPackInfo:
                     return typeLogString
                 }
             case .referencedChatThreadNotFound, .referencedGroupThreadNotFound, .failedToCreateAttachment:
@@ -1084,7 +1088,8 @@ extension BackupArchive {
                     .pinMessageAuthorNotContact,
                     .invalidNumberOfPinnedMessages,
                     .sentTimestampOverflowedLocalType,
-                    .adminDeleteAuthorNotContact:
+                    .adminDeleteAuthorNotContact,
+                    .invalidFavoriteStickerPackInfo:
                     return .error
                 case .quotedMessageEmptyContent:
                     // It was historically possible to end up with a quote that

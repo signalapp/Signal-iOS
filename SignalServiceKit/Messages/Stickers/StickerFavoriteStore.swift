@@ -149,6 +149,19 @@ public class StickerFavoriteStore {
         }
     }
 
+    func enumerateAllStickerFavorites(
+        tx: DBReadTransaction,
+        block: (FavoriteStickerRecord) throws(CancellationError) -> Bool,
+    ) throws(CancellationError) {
+        var cursor = FailIfThrowsRecordCursor {
+            return try FavoriteStickerRecord
+                .filter(Column(FavoriteStickerRecord.CodingKeys.favoritedAt) != nil)
+                .fetchCursor(tx.database)
+        }
+
+        while let stickerFavorite = cursor.next(), try block(stickerFavorite) {}
+    }
+
     // MARK: - Expiration of unfavorited stickers
 
     func oldestUnfavoritedSticker(tx: DBReadTransaction) -> FavoriteStickerRecord? {
