@@ -1427,7 +1427,9 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
                 completion: { context in
                     // Unload secondary at the end of transition that wasn't canceled.
                     if column == .secondary, context.isCancelled == false {
-                        self.resetSecondaryViewControllerIfNeeded()
+                        DispatchQueue.main.async {
+                            self.resetSecondaryViewControllerIfNeeded()
+                        }
                     }
                 },
             )
