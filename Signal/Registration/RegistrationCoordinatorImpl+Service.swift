@@ -41,7 +41,7 @@ extension RegistrationCoordinatorImpl {
             pniPreKeyBundle: RegistrationPreKeyUploadBundle?,
             networkManager: any NetworkManagerProtocol,
             logger: PrefixedLogger,
-        ) async throws -> AccountResponse {
+        ) async throws -> AccountIdentityResponse {
             let request = RegistrationRequestFactory.createAccountRequest(
                 verificationMethod: verificationMethod,
                 authPassword: authPassword,
@@ -55,19 +55,21 @@ extension RegistrationCoordinatorImpl {
             let response: HTTPResponse
             do {
                 response = try await networkManager.asyncRequest(request)
-            } catch where error.httpStatusCode == 401 {
+            } catch where error.httpStatusCode == 401 && verificationMethod.hasSessionId {
                 /// The Authorization header was invalid or the provided credentials were
                 /// insufficient to verify ownership of the given phone number. Response
                 /// body has an optional string error message.
-                return .rejectedVerificationMethod
-            } catch where error.httpStatusCode == 403 {
+                throw Registration.SessionRejectedError()
+            } catch where error.httpStatusCode == 401 && verificationMethod.hasReceiptCredential {
+                throw Registration.ReceiptCredentialRejectedError()
+            } catch where error.httpStatusCode == 403 && verificationMethod.hasRecoveryPassword {
                 /// The provided registration recovery password is either incorrect or
                 /// registration via reg recovery password is impossible for this number.
-                return .rejectedVerificationMethod
+                throw Registration.RecoveryPasswordRejectedError()
             } catch where error.httpStatusCode == 409 {
                 /// The caller has not explicitly elected to skip transferring data from
                 /// another device, but a device transfer is technically possible.
-                return .deviceTransferPossible
+                throw Registration.DeviceTransferPossibleError()
             } catch where error.httpStatusCode == 423 {
                 /// An account with the given phone number already exists and has a
                 /// registration lock, and the client has not provided appropriate reglock
@@ -79,30 +81,24 @@ extension RegistrationCoordinatorImpl {
                     RegistrationServiceResponses.RegistrationLockFailureResponse.self,
                     from: error.httpResponseData ?? Data(),
                 )
-                return .reglockFailure(parsedResponse)
+                throw Registration.ReglockError(failureResponse: parsedResponse)
             }
             guard response.responseStatusCode == 200 else {
                 throw response.asError()
             }
-            let parsedResponse = try JSONDecoder().decode(
+            return try JSONDecoder().decode(
                 AccountIdentityResponse.self,
                 from: response.responseBodyData ?? Data(),
             )
-            return .success(AccountIdentity(
-                localIdentifiers: parsedResponse.localIdentifiers,
-                authPassword: authPassword,
-                hasPreviouslyUsedSVR: parsedResponse.storageCapable,
-            ))
         }
 
         static func makeChangeNumberRequest(
             _ verificationMethod: RegistrationRequestFactory.VerificationMethod,
             reglockToken: RegistrationLock?,
-            authPassword: String,
             pniChangeNumberParameters: PniDistribution.Parameters,
             networkManager: any NetworkManagerProtocol,
             logger: PrefixedLogger,
-        ) async throws -> AccountResponse {
+        ) async throws -> AccountIdentityResponse {
             let request = RegistrationRequestFactory.changeNumberRequest(
                 verificationMethod: verificationMethod,
                 reglockToken: reglockToken,
@@ -112,14 +108,14 @@ extension RegistrationCoordinatorImpl {
             let response: HTTPResponse
             do {
                 response = try await networkManager.asyncRequest(request)
-            } catch where error.httpStatusCode == 401 {
+            } catch where error.httpStatusCode == 401 && verificationMethod.hasSessionId {
                 /// The provided credentials were insufficient to verify ownership of the
                 /// given phone number.
-                return .rejectedVerificationMethod
-            } catch where error.httpStatusCode == 403 {
+                throw Registration.SessionRejectedError()
+            } catch where error.httpStatusCode == 403 && verificationMethod.hasRecoveryPassword {
                 /// The provided registration recovery password is either incorrect or
                 /// registration via reg recovery password is impossible for this number.
-                return .rejectedVerificationMethod
+                throw Registration.RecoveryPasswordRejectedError()
             } catch where error.httpStatusCode == 409 {
                 /// The devices to notify in the request did not match the known linked
                 /// devices.
@@ -143,20 +139,15 @@ extension RegistrationCoordinatorImpl {
                     RegistrationServiceResponses.RegistrationLockFailureResponse.self,
                     from: error.httpResponseData ?? Data(),
                 )
-                return .reglockFailure(parsedResponse)
+                throw Registration.ReglockError(failureResponse: parsedResponse)
             }
             guard response.responseStatusCode == 200 else {
                 throw response.asError()
             }
-            let parsedResponse = try JSONDecoder().decode(
+            return try JSONDecoder().decode(
                 AccountIdentityResponse.self,
                 from: response.responseBodyData ?? Data(),
             )
-            return .success(AccountIdentity(
-                localIdentifiers: parsedResponse.localIdentifiers,
-                authPassword: authPassword,
-                hasPreviouslyUsedSVR: parsedResponse.storageCapable,
-            ))
         }
 
         static func makeWhoAmIRequest(

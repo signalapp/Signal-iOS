@@ -218,6 +218,33 @@ public enum RegistrationRequestFactory {
                 return true
             }
         }
+
+        public var hasSessionId: Bool {
+            switch self {
+            case .sessionId:
+                return true
+            case .recoveryPassword, .receiptCredential:
+                return false
+            }
+        }
+
+        public var hasRecoveryPassword: Bool {
+            switch self {
+            case .recoveryPassword:
+                return true
+            case .sessionId, .receiptCredential:
+                return false
+            }
+        }
+
+        public var hasReceiptCredential: Bool {
+            switch self {
+            case .receiptCredential:
+                return true
+            case .sessionId, .recoveryPassword:
+                return false
+            }
+        }
     }
 
     public struct ApnRegistrationId: Codable {

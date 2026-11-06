@@ -122,4 +122,28 @@ public enum Registration {
             self.localIdentifiers = localIdentifiers
         }
     }
+
+    public struct DeviceTransferPossibleError: Error {
+        public init() {}
+    }
+
+    public struct SessionRejectedError: Error {
+        public init() {}
+    }
+
+    public struct RecoveryPasswordRejectedError: Error {
+        public init() {}
+    }
+
+    public struct ReceiptCredentialRejectedError: Error {
+        public init() {}
+    }
+
+    public struct ReglockError: Error {
+        public let failureResponse: RegistrationServiceResponses.RegistrationLockFailureResponse
+
+        public init(failureResponse: RegistrationServiceResponses.RegistrationLockFailureResponse) {
+            self.failureResponse = failureResponse
+        }
+    }
 }

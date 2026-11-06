@@ -620,7 +620,7 @@ public class RegistrationCoordinatorTest {
         let expectedRecoveryPwRequest = createAccountWithRecoveryPw(aep.getMasterKey().deriveRegistrationRecoveryPassword())
         networkManagerMock.asyncRequestHandlers.append(MockNetworkManager.mockResponse(
             matchingRequest: { $0.url == expectedRecoveryPwRequest.url },
-            statusCode: 401,
+            statusCode: 403,
         ))
 
         // Once the first request fails, it should try an start a session. Resolve with a session.
