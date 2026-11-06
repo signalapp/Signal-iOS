@@ -913,19 +913,6 @@ class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<Authentic
         }
     }
 
-    private var _keepaliveSenderTask: Task<Void, Never>?
-    private var keepaliveSenderTask: Task<Void, Never>? {
-        get {
-            assertOnQueue(serialQueue)
-            return _keepaliveSenderTask
-        }
-        set {
-            assertOnQueue(serialQueue)
-            _keepaliveSenderTask?.cancel()
-            _keepaliveSenderTask = newValue
-        }
-    }
-
     var onRegistrationStateChange: ((_ isDelinkedOrDeregisterd: Bool, _ tx: DBWriteTransaction) -> Void)?
 
     private let accountManager: TSAccountManager
@@ -1130,9 +1117,7 @@ class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<Authentic
                         self.onRegistrationStateChange?(false, tx)
                     }
                 }
-                keepaliveSenderTask = makeKeepaliveTask(service)
             case .closed(task: _):
-                keepaliveSenderTask = nil
                 _hasEmptiedInitialQueue = false
             }
         }
@@ -1157,52 +1142,6 @@ class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<Authentic
         // a lock that needs to be released in that case.
         if let oldValue {
             self.connectionLock.unlock(oldValue)
-        }
-    }
-
-    /// Starts a task to call `/v1/keepalive` at regular intervals to allow the server to do some consistency checks.
-    ///
-    /// This is on top of the websocket pings libsignal already uses to keep connections alive.
-    func makeKeepaliveTask(_ chat: AuthenticatedChatConnection) -> Task<Void, Never> {
-        let keepaliveInterval: TimeInterval = 30
-        return Task(priority: .low) { [logPrefix = self.logPrefix, weak chat] in
-            while true {
-                do {
-                    // This does not quite send keepalives "every 30 seconds".
-                    // Instead, it sends the next keepalive *at least 30 seconds* after the *response* for the previous one arrives.
-                    try await Task.sleep(nanoseconds: keepaliveInterval.clampedNanoseconds)
-                    guard let chat else {
-                        // We've disconnected.
-                        return
-                    }
-
-                    // Skip the full overhead of makeRequest(...).
-                    // We don't need keepalives to count as background activity or anything like that.
-                    // This 30-second timeout doesn't inherently need to match the send interval above,
-                    // but neither do we need an especially tight timeout here either.
-                    let request = ChatConnection.Request(method: "GET", pathAndQuery: "/v1/keepalive", timeout: 30)
-                    Logger.debug("\(logPrefix) Sending /v1/keepalive")
-                    _ = try await chat.send(request)
-
-                } catch is CancellationError,
-                    SignalError.chatServiceInactive(_)
-                {
-                    // No action necessary, we're done with this service.
-                    return
-                } catch SignalError.rateLimitedError(retryAfter: let delay, message: _) {
-                    // Not likely to happen, but best to be careful about it if it does.
-                    if delay > keepaliveInterval {
-                        // Wait out the part of the delay longer than 30s.
-                        // Ignore cancellation here; when we get back to the top of the loop we'll check it then.
-                        _ = try? await Task.sleep(nanoseconds: (delay - keepaliveInterval).clampedNanoseconds)
-                    }
-                } catch {
-                    // Also no action necessary! Log just in case the failure has something interesting going on,
-                    // but continue to rely on libsignal reporting disconnects via delegate callback.
-                    // Importantly, we will continue to send keepalives until disconnected, in case this was a temporary thing.
-                    Logger.info("\(logPrefix) /v1/keepalive failed: \(error)")
-                }
-            }
         }
     }
 
