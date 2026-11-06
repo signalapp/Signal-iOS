@@ -710,12 +710,25 @@ public class StickerManager {
         emojiString: String?,
     ) async -> Bool {
         return await installStickerOperationQueue.runWithoutTaskCancellationHandler(forKey: stickerInfo.asKey()) {
-            let alreadyInstalled = db.read { tx in
-                isStickerInstalled(stickerInfo: stickerInfo, transaction: tx)
+            let oldInstalledSticker = db.read { tx in
+                fetchInstalledSticker(stickerInfo: stickerInfo, transaction: tx)
             }
 
-            guard !alreadyInstalled else {
+            if
+                let oldInstalledSticker,
+                stickerDataUrl(forInstalledSticker: oldInstalledSticker, verifyExists: true) != nil
+            {
+                // Already installed, stored in DB and on-disk.
                 return false
+            }
+
+            if let oldInstalledSticker {
+                // If we have an old sticker record, but no file on-disk, remove the record
+                // to make sure we always match the local key between the file on disk and DB.
+                Logger.warn("Replacing installed sticker record with missing file.")
+                await db.awaitableWrite { tx in
+                    oldInstalledSticker.anyRemove(transaction: tx)
+                }
             }
 
             let stickerLocalKey: AttachmentKey
@@ -728,6 +741,7 @@ public class StickerManager {
                     isFavorites: false,
                 )
             } catch {
+                Logger.warn("Failed to write sticker to disk: \(error)")
                 return false
             }
 
@@ -740,7 +754,7 @@ public class StickerManager {
             )
 
             return await db.awaitableWrite { transaction -> Bool in
-                installedSticker.anyUpsert(transaction: transaction)
+                installedSticker.anyInsert(transaction: transaction)
 
                 // For every attachment referencing this sticker, we can now enqueue a "download"
                 // that's really just a local file clone, from the newly installed sticker.
