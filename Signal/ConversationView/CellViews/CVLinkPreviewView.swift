@@ -20,6 +20,7 @@ class CVLinkPreviewView: ManualStackViewWithLayer {
     private var configurationSize: CGSize?
     private var shouldReconfigureForBounds = false
 
+    fileprivate let headerStack = ManualStackView(name: "headerStack")
     fileprivate let textStack = ManualStackView(name: "textStack")
 
     fileprivate let linkPreviewImageView = CVLinkPreviewImageView()
@@ -67,6 +68,14 @@ class CVLinkPreviewView: ManualStackViewWithLayer {
         }
         if linkPreview.hasLoadedImageOrBlurHash, sentIsHero(linkPreview: linkPreview) {
             return CVLinkPreviewViewAdapterLarge(linkPreview: linkPreview, isIncoming: isIncoming)
+        }
+        if
+            linkPreview.hasLoadedImageOrBlurHash,
+            linkPreview.title != nil,
+            linkPreview.previewDescription != nil,
+            !isSticker(linkPreview: linkPreview)
+        {
+            return CVLinkPreviewViewAdapterHeader(linkPreview: linkPreview, isIncoming: isIncoming)
         }
         return CVLinkPreviewViewAdapterCompact(linkPreview: linkPreview, isIncoming: isIncoming)
     }
@@ -136,6 +145,9 @@ class CVLinkPreviewView: ManualStackViewWithLayer {
 
     override func reset() {
         super.reset()
+
+        headerStack.reset()
+        headerStack.removeFromSuperview()
 
         textStack.reset()
         textStack.removeFromSuperview()
@@ -602,6 +614,130 @@ private class CVLinkPreviewViewAdapterCompact: CVLinkPreviewViewAdapter {
         rootStackSubviews.append(textStack)
 
         return rootStackSubviews
+    }
+}
+
+// MARK: -
+
+// Compact thumbnail and title side by side, with the description and domain below at full width.
+//
+// Long descriptions (e.g. the text of a post) are much easier to read when they
+// aren't squeezed into the space next to the thumbnail.
+private class CVLinkPreviewViewAdapterHeader: CVLinkPreviewViewAdapter {
+
+    // Vertical stack.
+    override var rootStackConfig: ManualStackView.Config {
+        ManualStackView.Config(
+            axis: .vertical,
+            alignment: .fill,
+            spacing: 8,
+            layoutMargins: UIEdgeInsets(margin: 10),
+        )
+    }
+
+    private var headerStackConfig: ManualStackView.Config {
+        ManualStackView.Config(
+            axis: .horizontal,
+            alignment: .center,
+            spacing: 12,
+            layoutMargins: .zero,
+        )
+    }
+
+    private static var measurementKey_headerStack: String { "LinkPreviewView.measurementKey_headerStack" }
+
+    override var descriptionNumberOfLines: Int { Self.fullWidthDescriptionNumberOfLines }
+
+    override func rootStackSubviewInfos(
+        maxWidth: CGFloat,
+        measurementBuilder: CVCellMeasurement.Builder,
+    ) -> [ManualStackSubviewInfo] {
+        let maxContentWidth = max(0, maxWidth - rootStackConfig.layoutMargins.totalWidth)
+
+        let imageSize = Self.sentNonHeroImageSize
+        var headerStackSubviewInfos = [CGSize.square(imageSize).asManualSubviewInfo(hasFixedSize: true)]
+        if let titleLabelConfig = sentTitleLabelConfig() {
+            let maxTitleWidth = max(0, maxContentWidth - (imageSize + headerStackConfig.spacing))
+            let titleSize = CVText.measureLabel(config: titleLabelConfig, maxWidth: maxTitleWidth)
+            headerStackSubviewInfos.append(titleSize.asManualSubviewInfo)
+        }
+        let headerStackSize = ManualStackView.measure(
+            config: headerStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_headerStack,
+            subviewInfos: headerStackSubviewInfos,
+        ).measuredSize
+
+        let textStackSize = measureTextStack(
+            maxWidth: max(0, maxContentWidth - textStackConfig.layoutMargins.totalWidth),
+            measurementBuilder: measurementBuilder,
+        )
+
+        return [
+            headerStackSize.asManualSubviewInfo,
+            textStackSize.asManualSubviewInfo,
+        ]
+    }
+
+    override func rootStackSubviews(
+        linkPreviewView: CVLinkPreviewView,
+        cellMeasurement: CVCellMeasurement,
+    ) -> [UIView] {
+        var headerStackSubviews = [UIView]()
+
+        let linkPreviewImageView = linkPreviewView.linkPreviewImageView
+        if let imageView = linkPreviewImageView.configure(linkPreview: linkPreview, cornerStyle: .rounded(radius: 6)) {
+            imageView.clipsToBounds = true
+            headerStackSubviews.append(imageView)
+        } else {
+            owsFailDebug("Could not load image.")
+            headerStackSubviews.append(UIView.transparentSpacer())
+        }
+        if let titleLabel = sentTitleLabel() {
+            headerStackSubviews.append(titleLabel)
+        }
+
+        let headerStack = linkPreviewView.headerStack
+        headerStack.configure(
+            config: headerStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_headerStack,
+            subviews: headerStackSubviews,
+        )
+
+        let textStack = configureTextStack(
+            linkPreviewView: linkPreviewView,
+            cellMeasurement: cellMeasurement,
+        )
+
+        return [headerStack, textStack]
+    }
+
+    // The title is part of the header, so the text stack only has the description and domain.
+
+    override func textStackSubviewInfos(maxWidth: CGFloat) -> [ManualStackSubviewInfo] {
+        var subviewInfos = [ManualStackSubviewInfo]()
+
+        if let labelConfig = sentDescriptionLabelConfig() {
+            let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: maxWidth)
+            subviewInfos.append(labelSize.asManualSubviewInfo)
+        }
+        let labelConfig = sentDomainLabelConfig()
+        let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: maxWidth)
+        subviewInfos.append(labelSize.asManualSubviewInfo)
+
+        return subviewInfos
+    }
+
+    override func textStackSubviews() -> [CVLabel] {
+        var subviews = [CVLabel]()
+
+        if let descriptionLabel = sentDescriptionLabel() {
+            subviews.append(descriptionLabel)
+        }
+        subviews.append(sentDomainLabel())
+
+        return subviews
     }
 }
 
