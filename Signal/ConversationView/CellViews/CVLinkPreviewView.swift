@@ -192,6 +192,13 @@ private class CVLinkPreviewViewAdapter {
 
     fileprivate static let sentNonHeroImageSize: CGFloat = 64
 
+    // Descriptions laid out beside a thumbnail are kept short.
+    //
+    // Subclasses that give the description the full width of the preview can override to show more.
+    var descriptionNumberOfLines: Int { 3 }
+
+    fileprivate static let fullWidthDescriptionNumberOfLines = 15
+
     // Default config is a horizontal stack designed to show a small image followed by vertical stack of text.
     //
     // Subclasses can override for different link layout.
@@ -346,7 +353,7 @@ private class CVLinkPreviewViewAdapter {
             text,
             font: UIFont.dynamicTypeFootnote,
             textColor: textColor,
-            numberOfLines: 3,
+            numberOfLines: descriptionNumberOfLines,
             lineBreakMode: .byTruncatingTail,
         )
     }
@@ -467,6 +474,8 @@ private class CVLinkPreviewViewAdapterLarge: CVLinkPreviewViewAdapter {
         )
     }
 
+    override var descriptionNumberOfLines: Int { Self.fullWidthDescriptionNumberOfLines }
+
     override func rootStackSubviewInfos(
         maxWidth: CGFloat,
         measurementBuilder: CVCellMeasurement.Builder,
@@ -536,6 +545,11 @@ private class CVLinkPreviewViewAdapterLarge: CVLinkPreviewViewAdapter {
 
 // Compact thumbnail along the leading edge followed by default vertical text stack.
 private class CVLinkPreviewViewAdapterCompact: CVLinkPreviewViewAdapter {
+
+    // Without a thumbnail, the text stack spans the full width.
+    override var descriptionNumberOfLines: Int {
+        linkPreview.hasLoadedImageOrBlurHash ? super.descriptionNumberOfLines : Self.fullWidthDescriptionNumberOfLines
+    }
 
     override func rootStackSubviewInfos(
         maxWidth: CGFloat,
