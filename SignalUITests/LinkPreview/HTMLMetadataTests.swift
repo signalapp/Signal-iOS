@@ -59,6 +59,7 @@ class HTMLMetadataTests: XCTestCase {
             "<  meta  name  =  \"description\" \n\n\n content=\"Spaced Description\" />": "Spaced Description",
             "<meta name=\"description\" content=\"DescriptionText\" /><meta name=\"description\" content=\"Repeat\" />": "DescriptionText",
             "<meta property=\"description\" content=\"DescriptionText\" />": nil,
+            "<meta name=\"description\" content=\"First line\n\nSecond line\" />": "First line\n\nSecond line",
         ]
 
         testSet.forEach { test, expectedResult in
@@ -75,6 +76,7 @@ class HTMLMetadataTests: XCTestCase {
             "<meta content=\"FlippedTitle\" property=\"og:title\">": "FlippedTitle",
             "<meta garbage1\t=\ngarbage property=\"og:title\" garbage2 = garbage content=\"TitleWithGarbage\" garbage3=garbage kafdjadk>": "TitleWithGarbage",
             "<meta property=\"og:title\" content=\"Title\"><meta property=\"og:title\" content=\"Repeat\">": "Title",
+            "<meta property=\"og:title\" content=\"First line\nSecond line\">": "First line\nSecond line",
         ]
 
         testSet.forEach { test, expectedResult in

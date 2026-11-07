@@ -74,7 +74,7 @@ extension HTMLMetadata {
 
         return metaContentRegex
             .parseFirstMatch(inText: matchedTag)
-            .flatMap { decodeHTMLEntities(in: String($0)) }
+            .flatMap { decodeHTMLEntities(inAttributeValue: String($0)) }
     }
 
     private static func parseMetaProperties(in rawHTML: String) -> [String: String] {
@@ -89,8 +89,14 @@ extension HTMLMetadata {
                 guard builder[ogType] == nil else { return }
                 guard let content = metaContentRegex.parseFirstMatch(inText: fullTag) else { return }
 
-                builder[ogType] = decodeHTMLEntities(in: content)
+                builder[ogType] = decodeHTMLEntities(inAttributeValue: content)
             }
+    }
+
+    // Line breaks in an attribute value are part of the value, but the HTML
+    // parser collapses them into spaces like any other whitespace in text.
+    private static func decodeHTMLEntities(inAttributeValue value: String) -> String? {
+        decodeHTMLEntities(in: value.replacingOccurrences(of: "\n", with: "<br>"))
     }
 
     private static func decodeHTMLEntities(in string: String) -> String? {
