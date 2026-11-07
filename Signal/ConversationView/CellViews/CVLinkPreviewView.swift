@@ -347,7 +347,11 @@ private class CVLinkPreviewViewAdapter {
     }
 
     final func sentDescriptionLabelConfig() -> CVLabelConfig? {
-        guard let text = linkPreview.previewDescription else { return nil }
+        guard var text = linkPreview.previewDescription else { return nil }
+        // Descriptions beside a thumbnail only get a few lines, so don't spend them on line breaks.
+        if descriptionNumberOfLines < Self.fullWidthDescriptionNumberOfLines {
+            text = text.split(whereSeparator: \.isNewline).joined(separator: " ")
+        }
         let textColor: UIColor = isIncoming ? .Signal.secondaryLabel : .Signal.ColorBase.labelInvertedSecondary
         return CVLabelConfig.unstyledText(
             text,
