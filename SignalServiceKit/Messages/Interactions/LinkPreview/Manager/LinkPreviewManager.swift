@@ -222,7 +222,7 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
             }
         }
         if let rawDescription = proto.previewDescription, proto.title != proto.previewDescription {
-            let normalizedDescription = LinkPreviewHelper.normalizeString(rawDescription, maxLines: 3)
+            let normalizedDescription = LinkPreviewHelper.normalizeString(rawDescription, maxLines: 15)
             if !normalizedDescription.isEmpty {
                 previewDescription = normalizedDescription
             }
