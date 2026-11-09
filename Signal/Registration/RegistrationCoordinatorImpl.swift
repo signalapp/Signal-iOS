@@ -3758,6 +3758,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func fetchReceiptLevel(forTransaction transaction: StoreKit.Transaction) -> LoginReceiptLevel {
+        guard TSConstants.isUsingProductionService else {
+            return .normal
+        }
         if #available(iOS 16, *) {
             return transaction.environment == .sandbox ? .sandbox : .normal
         } else {
