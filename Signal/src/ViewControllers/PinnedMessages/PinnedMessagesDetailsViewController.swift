@@ -21,6 +21,11 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
 
     static let goToMessageButtonSize: CGFloat = 36
 
+    /// A container for this view's owned subviews, which it removes/re-adds.
+    /// Without a container, other subviews (e.g., toasts) end up removed
+    /// incidentally.
+    private let contentView = UIView()
+
     init(
         pinnedMessages: [TSMessage],
         threadViewModel: ThreadViewModel,
@@ -40,6 +45,8 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
         super.init()
 
         view.backgroundColor = .Signal.groupedBackground
+        view.addSubview(contentView)
+        contentView.autoPinEdgesToSuperviewEdges()
 
         databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
@@ -69,7 +76,7 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
 
     private func layoutPinnedMessages(tx: DBReadTransaction) {
         messageLongPressDelegates = []
-        view.subviews.forEach { $0.removeFromSuperview() }
+        contentView.subviews.forEach { $0.removeFromSuperview() }
 
         let scrollView = UIScrollView()
         let paddedContainerView = UIView()
@@ -114,7 +121,7 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
 
         paddedContainerView.addSubview(stack)
         scrollView.addSubview(paddedContainerView)
-        view.addSubview(scrollView)
+        contentView.addSubview(scrollView)
 
         scrollView.autoPinEdgesToSuperviewSafeArea()
         paddedContainerView.autoPinEdgesToSuperviewEdges()
@@ -133,7 +140,7 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
             },
         )
         if !threadViewModel.threadRecord.isTerminatedGroup {
-            view.addSubview(unpinAllButton)
+            contentView.addSubview(unpinAllButton)
             unpinAllButton.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
                 unpinAllButton.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor, constant: -16),

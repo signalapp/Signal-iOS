@@ -98,6 +98,8 @@ public enum BuildFlags {
     public static let stickerFavorites = build <= .internal
 
     public static let chatFolders = build <= .internal
+
+    public static let deleteForMeToast = build <= .internal
 }
 
 // MARK: -

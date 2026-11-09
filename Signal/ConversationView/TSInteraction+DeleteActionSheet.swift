@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import GRDB
 import LibSignalClient
 import SignalServiceKit
 import SignalUI
@@ -81,6 +82,7 @@ extension TSInteraction {
         actionSheet.addAction(deleteForMeAction(
             title: deleteActionTitle,
             thread: thread,
+            fromViewController: fromViewController,
         ))
         actionSheet.addAction(.cancel)
 
@@ -105,6 +107,7 @@ extension TSInteraction {
         actionSheetController.addAction(deleteForMeAction(
             title: CommonStrings.deleteForMeButton,
             thread: thread,
+            fromViewController: fromViewController,
         ))
 
         if let deleteForEveryoneAction = buildDeleteForEveryoneAction(thread: thread) {
@@ -121,6 +124,7 @@ extension TSInteraction {
     private func deleteForMeAction(
         title: String,
         thread: TSThread,
+        fromViewController: UIViewController,
     ) -> ActionSheetAction {
         let db = DependenciesBridge.shared.db
         let interactionDeleteManager = DependenciesBridge.shared.interactionDeleteManager
@@ -128,14 +132,20 @@ extension TSInteraction {
         return ActionSheetAction(
             title: CommonStrings.deleteForMeButton,
             style: .destructive,
-        ) { [weak self] _ in
+        ) { [weak self, weak fromViewController] _ in
             guard let self else { return }
 
-            db.asyncWrite { tx in
+            let deletedForMeMessages = db.write { tx -> [DeletedForMeMessage]? in
                 guard
                     let freshSelf = TSInteraction.fetchViaCache(uniqueId: self.uniqueId, transaction: tx),
                     let freshThread = TSThread.fetchViaCache(uniqueId: thread.uniqueId, transaction: tx)
-                else { return }
+                else { return nil }
+
+                let deletedForMeMessages = Self.buildDeletedForMeMessages(
+                    interactions: [freshSelf],
+                    thread: freshThread,
+                    tx: tx,
+                )
 
                 interactionDeleteManager.delete(
                     interactions: [freshSelf],
@@ -143,6 +153,16 @@ extension TSInteraction {
                         deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: freshThread),
                     ),
                     tx: tx,
+                )
+
+                return deletedForMeMessages
+            }
+
+            if let fromViewController {
+                Self.presentDeletedForMeToast(
+                    deletedForMeMessages: deletedForMeMessages,
+                    thread: thread,
+                    fromViewController: fromViewController,
                 )
             }
         }
@@ -243,13 +263,32 @@ extension TSInteraction {
 
         guard shouldShowAdminDeleteConfirmation || shouldShowRegularDeleteConfirmation else { return completion() }
 
+        let deleteType: TSMessage.DeleteForEveryoneType = shouldShowAdminDeleteConfirmation ? .admin : .regular
+        showDeleteForEveryoneConfirmation(deleteType: deleteType) {
+            switch deleteType {
+            case .admin:
+                db.write { tx in
+                    adminDeleteManager.setAdminDeleteEducationRead(tx: tx, updateStorageService: true)
+                }
+            case .regular:
+                preferences.setWasDeleteForEveryoneConfirmationShown()
+            }
+            completion()
+        }
+    }
+
+    private static func showDeleteForEveryoneConfirmation(
+        deleteType: TSMessage.DeleteForEveryoneType,
+        onConfirm: @escaping () -> Void,
+    ) {
         let message: String
-        if shouldShowAdminDeleteConfirmation {
+        switch deleteType {
+        case .admin:
             message = OWSLocalizedString(
                 "DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_ADMIN_MESSAGE",
                 comment: "Message for a sheet confirming that the user, as a group admin, wants to delete messages for everyone.",
             )
-        } else {
+        case .regular:
             message = OWSLocalizedString(
                 "DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_MESSAGE",
                 comment: "Message for a sheet confirming that the user wants to delete their message for everyone.",
@@ -265,14 +304,7 @@ extension TSInteraction {
             proceedTitle: CommonStrings.deleteForEveryoneButton,
             proceedStyle: .destructive,
         ) { _ in
-            if shouldShowAdminDeleteConfirmation {
-                db.write { tx in
-                    adminDeleteManager.setAdminDeleteEducationRead(tx: tx, updateStorageService: true)
-                }
-            } else {
-                preferences.setWasDeleteForEveryoneConfirmationShown()
-            }
-            completion()
+            onConfirm()
         }
     }
 
@@ -375,6 +407,209 @@ extension TSInteraction {
         )
         return true
     }
+
+    // MARK: -
+
+    /// Snapshots `interactions`, which are about to be deleted for the local
+    /// user, if they could all instead be deleted for everyone.
+    static func buildDeletedForMeMessages(
+        interactions: [TSInteraction],
+        thread: TSThread,
+        tx: DBReadTransaction,
+    ) -> [DeletedForMeMessage]? {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+        guard
+            BuildFlags.deleteForMeToast,
+            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
+        else {
+            return nil
+        }
+
+        let now = Date()
+        var deletedForMeMessages = [DeletedForMeMessage]()
+        for interaction in interactions {
+            guard
+                let message = interaction as? TSOutgoingMessage,
+                let rowId = message.sqliteRowId
+            else {
+                return nil
+            }
+
+            switch message.deleteForEveryoneType(
+                thread: thread,
+                localIdentifiers: localIdentifiers,
+                remoteConfig: RemoteConfig.current,
+                now: now,
+            ) {
+            case .regular:
+                break
+            case .admin, nil:
+                return nil
+            }
+
+            deletedForMeMessages.append(DeletedForMeMessage(
+                rowId: rowId,
+                uniqueId: message.uniqueId,
+                timestamp: message.timestamp,
+                receivedAtTimestamp: message.receivedAtTimestamp,
+                expiresInSeconds: message.expiresInSeconds,
+                expireStartedAt: message.expireStartedAt,
+                storyAuthorAci: message.storyAuthorAci?.wrappedAciValue,
+                storyTimestamp: message.storyTimestamp?.uint64Value,
+            ))
+        }
+        return deletedForMeMessages
+    }
+
+    /// - Parameter deletedForMeMessages: If present, the toast offers to
+    /// delete them for everyone.
+    static func presentDeletedForMeToast(
+        deletedForMeMessages: [DeletedForMeMessage]?,
+        thread: TSThread,
+        fromViewController: UIViewController,
+    ) {
+        guard BuildFlags.deleteForMeToast, !thread.isNoteToSelf else {
+            return
+        }
+
+        let text = OWSLocalizedString(
+            "DELETED_FOR_ME_TOAST_TEXT",
+            comment: "Text for a toast shown after the user deletes messages for themselves only.",
+        )
+        let button = deletedForMeMessages.map { deletedForMeMessages in
+            ToastController.Button(
+                title: OWSLocalizedString(
+                    "DELETED_FOR_ME_TOAST_DELETE_FOR_EVERYONE_BUTTON_TITLE",
+                    comment: "Title for a button in a toast shown after the user deletes messages for themselves only.",
+                ),
+                onPrimaryAction: {
+                    Self.deleteForEveryone(
+                        deletedForMeMessages: deletedForMeMessages,
+                        threadUniqueId: thread.uniqueId,
+                    )
+                },
+            )
+        }
+
+        if let conversationViewController = fromViewController as? ConversationViewController {
+            conversationViewController.presentToastCVC(text, button: button)
+        } else {
+            fromViewController.presentToast(text: text, button: button)
+        }
+    }
+
+    private static func deleteForEveryone(
+        deletedForMeMessages: [DeletedForMeMessage],
+        threadUniqueId: String,
+    ) {
+        let db = DependenciesBridge.shared.db
+
+        showDeleteForEveryoneConfirmation(
+            deleteType: .regular,
+            onConfirm: {
+                db.write { tx in
+                    guard let thread = TSThread.fetchViaCache(uniqueId: threadUniqueId, transaction: tx) else {
+                        owsFailDebug("Missing thread.")
+                        return
+                    }
+                    for deletedForMeMessage in deletedForMeMessages {
+                        Self.enqueueDeleteForEveryone(
+                            deletedForMeMessage: deletedForMeMessage,
+                            thread: thread,
+                            tx: tx,
+                        )
+                    }
+                }
+            },
+        )
+    }
+
+    private static func enqueueDeleteForEveryone(
+        deletedForMeMessage: DeletedForMeMessage,
+        thread: TSThread,
+        tx: DBWriteTransaction,
+    ) {
+        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
+
+        let message = insertRemotelyDeletedMessage(
+            deletedForMeMessage: deletedForMeMessage,
+            thread: thread,
+            tx: tx,
+        )
+
+        let deleteMessage = OutgoingDeleteMessage(thread: thread, message: message, tx: tx)
+        message.updateWithRecipientAddressStates(deleteMessage.recipientAddressStates, tx: tx)
+
+        messageSenderJobQueue.add(
+            message: PreparedOutgoingMessage.preprepared(
+                transientMessageWithoutAttachments: deleteMessage,
+            ),
+            transaction: tx,
+        )
+    }
+
+    /// Restores `deletedForMeMessage` in its original row, as if it had been
+    /// deleted for everyone.
+    static func insertRemotelyDeletedMessage(
+        deletedForMeMessage: DeletedForMeMessage,
+        thread: TSThread,
+        tx: DBWriteTransaction,
+    ) -> TSOutgoingMessage {
+        let disappearingMessagesExpirationJob = DependenciesBridge.shared.disappearingMessagesExpirationJob
+
+        let builder: TSOutgoingMessageBuilder = .withDefaultValues(
+            thread: thread,
+            timestamp: deletedForMeMessage.timestamp,
+            receivedAtTimestamp: deletedForMeMessage.receivedAtTimestamp,
+            expiresInSeconds: deletedForMeMessage.expiresInSeconds,
+            expireStartedAt: deletedForMeMessage.expireStartedAt,
+            wasRemotelyDeleted: true,
+            storyAuthorAci: deletedForMeMessage.storyAuthorAci,
+            storyTimestamp: deletedForMeMessage.storyTimestamp,
+        )
+        let message = TSOutgoingMessage(
+            outgoingMessageWith: builder,
+            recipientAddressStates: [:],
+        )
+        message.replaceRowId(deletedForMeMessage.rowId, uniqueId: deletedForMeMessage.uniqueId)
+        message.replaceSortId(UInt64(deletedForMeMessage.rowId))
+
+        // Insert directly, avoiding insert side effects (e.g., unarchiving the
+        // thread). This message replaces the one deleted from this row, so
+        // treat it as an update instead.
+        message.anyWillUpdate(with: tx)
+        failIfThrows {
+            try message.asRecord().insert(tx.database)
+        }
+        message.anyDidUpdate(with: tx)
+
+        if deletedForMeMessage.expireStartedAt > 0 {
+            tx.addSyncCompletion {
+                disappearingMessagesExpirationJob.restart()
+            }
+        }
+
+        return message
+    }
+}
+
+// MARK: -
+
+/// An outgoing message that was deleted for the local user, but which could
+/// still be deleted for everyone.
+struct DeletedForMeMessage {
+    let rowId: Int64
+    let uniqueId: String
+
+    let timestamp: UInt64
+    let receivedAtTimestamp: UInt64
+
+    let expiresInSeconds: UInt32
+    let expireStartedAt: UInt64
+
+    let storyAuthorAci: Aci?
+    let storyTimestamp: UInt64?
 }
 
 // MARK: -

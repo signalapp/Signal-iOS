@@ -144,8 +144,16 @@ extension ConversationViewController {
 
     // MARK: - Toast
 
-    func presentToastCVC(_ toastText: String, image: UIImage? = nil) {
-        let toastController = ToastController(text: toastText, image: image)
+    func presentToastCVC(
+        _ toastText: String,
+        image: UIImage? = nil,
+        button: ToastController.Button? = nil,
+    ) {
+        let toastController = ToastController(
+            text: toastText,
+            image: image,
+            button: button,
+        )
         let kToastInset: CGFloat = 10
         let bottomInset = kToastInset + collectionView.contentInset.bottom + view.layoutMargins.bottom
         toastController.presentToastView(from: .bottom, of: self.view, inset: bottomInset)
