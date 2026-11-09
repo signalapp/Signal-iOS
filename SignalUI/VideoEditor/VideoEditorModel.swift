@@ -37,6 +37,10 @@ class VideoEditorModel: NSObject {
 
     let naturalSize: CGSize
 
+    let hasAudio: Bool
+
+    private(set) var isMuted = false
+
     let displaySize: CGSize
 
     static let minimumDurationSeconds: TimeInterval = 1
@@ -93,11 +97,18 @@ class VideoEditorModel: NSObject {
 
         self.untrimmedDuration = duration
         self.naturalSize = naturalSize
+        self.hasAudio = !asset.tracks(withMediaType: .audio).isEmpty
         self.displaySize = displaySize
         self.trimmedStartSeconds = 0
         self.trimmedEndSeconds = duration.seconds
 
         super.init()
+    }
+
+    func setIsMuted(_ isMuted: Bool) {
+        self.isMuted = isMuted
+
+        fireModelDidChange()
     }
 
     func trimToStartSeconds(_ value: TimeInterval) {
@@ -146,7 +157,7 @@ class VideoEditorModel: NSObject {
 
     // MARK: - Editing
 
-    var isEdited: Bool { isTrimmed }
+    var isEdited: Bool { isTrimmed || isMuted }
 
     /// The source video with all edits applied.
     @MainActor
@@ -162,7 +173,12 @@ class VideoEditorModel: NSObject {
 
         let composition = AVMutableComposition()
         let videoTracks = try await source.loadTracks(withMediaType: .video)
-        let audioTracks = try await source.loadTracks(withMediaType: .audio)
+        let audioTracks: [AVAssetTrack]
+        if isMuted {
+            audioTracks = []
+        } else {
+            audioTracks = try await source.loadTracks(withMediaType: .audio)
+        }
         let sourceTracks = videoTracks + audioTracks
         for sourceTrack in sourceTracks {
             guard

@@ -174,6 +174,10 @@ class VideoEditorView: UIView, AttachmentPrepContentView, VideoPlaybackState, Vi
 
     // MARK: - Video
 
+    func updateIsMuted() {
+        playerView.videoPlayer?.isMuted = model.isMuted
+    }
+
     var trimmedStartSeconds: TimeInterval {
         return model.trimmedStartSeconds
     }

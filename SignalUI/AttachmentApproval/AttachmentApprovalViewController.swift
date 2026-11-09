@@ -372,6 +372,10 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
             UIAction { [weak self] _ in self?.didTapAddMedia() },
             for: .primaryActionTriggered,
         )
+        bottomToolView.buttonMute.addAction(
+            UIAction { [weak self] _ in self?.didTapMute() },
+            for: .primaryActionTriggered,
+        )
         bottomToolView.buttonViewOnce.addAction(
             UIAction { [weak self] _ in self?.didToggleViewOnce() },
             for: .primaryActionTriggered,
@@ -504,6 +508,7 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
         guard let currentPageViewController else { return }
 
         let isScreenNotFinal = options.contains(.isNotFinalScreen)
+        let videoEditorModel = currentPageViewController.attachmentApprovalItem.videoEditorModel
         let configuration = AttachmentApprovalToolbar.Configuration(
             isAddMoreVisible: isAddMoreVisible,
             isMediaStripVisible: attachmentApprovalItems.count > 1,
@@ -512,6 +517,8 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
             canToggleViewOnce: options.contains(.canToggleViewOnce),
             canChangeMediaQuality: options.contains(.canChangeQualityLevel),
             canSaveMedia: currentPageViewController.canSaveMedia,
+            canToggleMute: videoEditorModel?.hasAudio == true,
+            isMuted: videoEditorModel?.isMuted == true,
             proceedButtonIcon: isScreenNotFinal ? .next : .send,
         )
         bottomToolView.update(
@@ -898,6 +905,12 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
 
     private func didTapAddMedia() {
         approvalDelegate?.attachmentApprovalDidTapAddMore(self)
+    }
+
+    private func didTapMute() {
+        guard let videoEditorModel = currentItem?.videoEditorModel else { return }
+        videoEditorModel.setIsMuted(!videoEditorModel.isMuted)
+        updateBottomToolView(animated: true)
     }
 
     private func didToggleViewOnce() {

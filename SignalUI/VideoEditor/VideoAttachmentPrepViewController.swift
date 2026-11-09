@@ -69,13 +69,6 @@ class VideoAttachmentPrepViewController: AttachmentPrepViewController, VideoEdit
         editorView.pauseIfPlaying()
     }
 
-    override var canSaveMedia: Bool {
-        if model.isEdited {
-            return true
-        }
-        return super.canSaveMedia
-    }
-
     private(set) var videoThumbnails: [UIImage]?
 
     private var shouldResumeVideoPlaybackOnScrubbingEnd = false
@@ -225,6 +218,7 @@ class VideoAttachmentPrepViewController: AttachmentPrepViewController, VideoEdit
 
     func videoEditorModelDidChange(_ model: VideoEditorModel) {
         timelineView.updateContents()
+        editorView.updateIsMuted()
     }
 
     // MARK: - VideoEditorViewControllerProviding
