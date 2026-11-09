@@ -616,30 +616,48 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
     }
 
     private func updateContentViewLayoutMargins() {
+        let vMargin = 0.5 * (LayoutMetrics.initialToolbarHeight - LayoutMetrics.initialTextBoxHeight)
+
+        guard iOS26Layout else {
+            // On legacy (15-18) iOS vesions buttons on both ends of the bar have decent margins
+            // on all sides (easier to tap). Making margins smaller than system default
+            // would make button glyphs appear nicely aligned to system layout margins.
+            // This margin would only be used if layout doesn't have non-zero
+            // horizontal safe area insets because there's no need to inset UI further inwards
+            // if there's empty space on the sides.
+            let horizontalMargin: CGFloat = OWSTableViewController2.defaultHOuterMargin - 4
+            contentView.directionalLayoutMargins = NSDirectionalEdgeInsets(
+                top: vMargin,
+                leading: safeAreaInsets.leading > 0 ? 0 : horizontalMargin,
+                bottom: safeAreaInsets.bottom + vMargin,
+                trailing: safeAreaInsets.trailing > 0 ? 0 : horizontalMargin,
+            )
+            return
+        }
+
         // This is the leading, trailing and bottom margin for non-home button devices running iOS 26+
         // when keyboard is not visible. The idea is to make glass panels concentric with screen corners.
-        // Note that amount if this margin is smaller than typical bottom safe area inset - 34 dp -
-        // that's on purpose.
-        let bottomAndSideMarginiOS26: CGFloat = 28
+        //
+        // Note that amount if this margin is smaller than typical bottom safe area inset (34 dp).
+        // By setting `usesBottomSafeArea` to `false` on keyboard layout guide we can make distance
+        // to the bottom of the screen smaller than UIKit provided bottom safe area inset.
+        // At the same time make sure we're not increasing the bottom padding from what UIKit has provided.
+        let concentricCornersMargin: CGFloat = min(28, safeAreaInsets.bottom)
 
-        // On legacy (15-18) iOS vesions buttons on both ends of the bar have decent margins
-        // on all sides (easier to tap). Compensate for that by making margins smaller than system default.
-        let horizontalMarginLegacyiOS: CGFloat = OWSTableViewController2.defaultHOuterMargin - 4
-
-        // This is how we tell apart home screen device (bottom safe area inset is always 0)
-        // vs modern device with the keyboard up.
-        let isHomeButtonDevice = (window?.safeAreaInsets.bottom ?? -1) == 0
-        let horizontalMarginHomeButtonDevice: CGFloat = 12
+        // Use fixed horizonal margins for iOS 26+ layouts when bottom safea area inset is zero, which is when:
+        // * keyboard is up.
+        // * device is a home button iPhone.
+        let standardHorizonalMargin: CGFloat = OWSTableViewController2.defaultHOuterMargin - 4
 
         var layoutMargins = NSDirectionalEdgeInsets()
-        layoutMargins.top = 0.5 * (LayoutMetrics.initialToolbarHeight - LayoutMetrics.initialTextBoxHeight)
+        layoutMargins.top = vMargin
         if safeAreaInsets.bottom == 0 {
             // Two possible scenarios:
             // 1. Device with a home button and no on-screen keyboard.
             // 2. Any device with on-screen keyboard up.
             // In both cases we need to center `contentView` vertically by making
             // bottom margin same size as top margin.
-            layoutMargins.bottom = layoutMargins.top
+            layoutMargins.bottom = vMargin
         } else if safeAreaInsets.bottom > 40 {
             // Now it is possible that there is a tabbar occupying the bottom of the screen
             // (plus/max devices in landscape). There's no easy way to detect that for sure,
@@ -648,15 +666,9 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
             // Whenever that happens we need to clear that bottom area and leave the same vertical
             // gap we would leave above the on-screen keyboard.
             // Use 40 dp as a cutoff for empty bottom safe area instead vs non-empty.
-            layoutMargins.bottom = safeAreaInsets.bottom + layoutMargins.top
-        } else if iOS26Layout {
-            // We set `usesBottomSafeArea` to `false` on keyboard layout guide - that allows us
-            // to make distance to screen bottom smaller than bottom safe area inset.
-            // Also make sure we're not making the bottom padding larger than system-provided inset.
-            layoutMargins.bottom = min(bottomAndSideMarginiOS26, safeAreaInsets.bottom)
+            layoutMargins.bottom = safeAreaInsets.bottom + vMargin
         } else {
-            // On legacy iOS versions simply use default safe area inset.
-            layoutMargins.bottom = safeAreaInsets.bottom
+            layoutMargins.bottom = concentricCornersMargin
         }
 
         // For leading and trailing non-zero safe area insets there are two possible scenarios:
@@ -671,41 +683,28 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         // Assume that larger leading safe area margins mean split view layout.
         // Use 84 as cutoff amount based on 62dp trailing safe area on 18 Pro Max in landscape
         // and 84dp trailing safe area inset on iPhone Duo.
-
         let splitViewDetectionCutoff: CGFloat = 84
 
-        if safeAreaInsets.leading > splitViewDetectionCutoff, iOS26Layout {
+        if safeAreaInsets.leading > splitViewDetectionCutoff {
             // TODO: make sure this aligns well with chat message bubbles.
-            layoutMargins.leading = 16
+            layoutMargins.leading = standardHorizonalMargin
         } else if safeAreaInsets.leading > 0 {
             // TODO: explore extending leading edge futher outwards.
             layoutMargins.leading = 0
-        } else if iOS26Layout {
-            // Portrait orientation, home button device in landscape.
-            layoutMargins.leading = isHomeButtonDevice ? horizontalMarginHomeButtonDevice : bottomAndSideMarginiOS26
-            if safeAreaInsets.bottom > 0 {
-                // In case bottom safe area inset is there, but it's smaller than our 28dp.
-                // Eg iPad, non-max iPhones in landscape, folded Duo.
-                layoutMargins.leading = min(layoutMargins.leading, safeAreaInsets.bottom)
-            }
+        } else if safeAreaInsets.bottom > 0 {
+            layoutMargins.leading = concentricCornersMargin
         } else {
-            layoutMargins.leading = horizontalMarginLegacyiOS
+            layoutMargins.leading = standardHorizonalMargin
         }
+
         // Trailing doesn't need the cutoff check because it doesn't get large.
         if safeAreaInsets.trailing > 0 {
             // TODO: explore extending leading edge futher outwards.
             layoutMargins.trailing = 0
-        } else if iOS26Layout {
-            // Portrait orientation, home button device in landscape.
-            layoutMargins.trailing = isHomeButtonDevice ? horizontalMarginHomeButtonDevice : bottomAndSideMarginiOS26
-            if safeAreaInsets.bottom > 0 {
-                // We still want equal margins around the input field
-                // when bottom safe area inset is there, but is smaller than our 28dp:
-                // eg iPad, non-max iPhones in landscape, folded Duo.
-                layoutMargins.trailing = min(layoutMargins.trailing, safeAreaInsets.bottom)
-            }
+        } else if safeAreaInsets.bottom > 0 {
+            layoutMargins.trailing = concentricCornersMargin
         } else {
-            layoutMargins.trailing = horizontalMarginLegacyiOS
+            layoutMargins.trailing = standardHorizonalMargin
         }
         contentView.directionalLayoutMargins = layoutMargins
     }
