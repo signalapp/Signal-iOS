@@ -53,4 +53,24 @@ public struct ChatFolder: Equatable {
             return false
         }
     }
+
+    public static let maxNameLength = 32
+
+    public var displayName: String {
+        switch folderType {
+        case .all:
+            return OWSLocalizedString(
+                "CHAT_FOLDERS_ALL_CHATS",
+                comment: "Name of the default chat folder, which shows every chat.",
+            )
+        case .custom:
+            if let name = String(name.prefix(Self.maxNameLength)).filterForDisplay.nilIfEmpty {
+                return name
+            }
+            return OWSLocalizedString(
+                "CHAT_FOLDERS_UNNAMED_FOLDER",
+                comment: "Name shown for a chat folder whose name is empty.",
+            )
+        }
+    }
 }

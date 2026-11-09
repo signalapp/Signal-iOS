@@ -356,6 +356,10 @@ extension ChatListViewController: DatabaseChangeDelegate {
         if !databaseChanges.threadUniqueIdsForChatListUpdate.isEmpty {
             self.loadCoordinator.scheduleLoad(updatedThreadIds: databaseChanges.threadUniqueIdsForChatListUpdate)
         }
+
+        if ChatFolderStore.databaseTableNames.contains(where: { databaseChanges.didUpdate(tableName: $0) }) {
+            self.loadCoordinator.loadIfNecessary()
+        }
     }
 
     func databaseChangesDidUpdateExternally() {

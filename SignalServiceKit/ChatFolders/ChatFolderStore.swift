@@ -9,6 +9,11 @@ import GRDB
 public struct ChatFolderStore {
     public init() {}
 
+    public static let databaseTableNames: Set<String> = [
+        ChatFolderRecord.databaseTableName,
+        ChatFolderChatRecord.databaseTableName,
+    ]
+
     // MARK: - Reading folders
 
     /// Fetches all folders, including ones marked for deletion.

@@ -11,6 +11,9 @@ struct CLVViewInfo: Equatable {
     let archiveCount: UInt
     let inboxCount: UInt
     let inboxFilter: InboxFilter
+    let chatFolders: [ChatFolder]
+    /// `nil` for the All Chats folder
+    let selectedChatFolder: ChatFolder?
     let isMultiselectActive: Bool
     let hasVisibleReminders: Bool
     let shouldBackupDownloadProgressViewBeVisible: Bool
@@ -24,7 +27,13 @@ struct CLVViewInfo: Equatable {
         chatListMode == .inbox
             && !isMultiselectActive
             && inboxFilter == .unfiltered
+            && selectedChatFolder == nil
             && archiveCount > 0
+    }
+
+    var hasChatFolderPicker: Bool {
+        chatListMode == .inbox
+            && chatFolders.count > 1
     }
 
     static var empty: CLVViewInfo {
@@ -33,6 +42,8 @@ struct CLVViewInfo: Equatable {
             archiveCount: 0,
             inboxCount: 0,
             inboxFilter: .unfiltered,
+            chatFolders: [],
+            selectedChatFolder: nil,
             isMultiselectActive: false,
             hasVisibleReminders: false,
             shouldBackupDownloadProgressViewBeVisible: false,
@@ -47,6 +58,8 @@ struct CLVViewInfo: Equatable {
     static func build(
         chatListMode: ChatListMode,
         inboxFilter: InboxFilter,
+        chatFolders: [ChatFolder],
+        selectedChatFolderId: UUID?,
         isMultiselectActive: Bool,
         lastSelectedThreadId: String?,
         hasVisibleReminders: Bool,
@@ -56,10 +69,21 @@ struct CLVViewInfo: Equatable {
         shouldLocalFileBackupExportProgressViewBeVisible: Bool,
         transaction: DBReadTransaction,
     ) -> CLVViewInfo {
-        let requiredThreadIds: Set<String> = switch (inboxFilter, lastSelectedThreadId) {
-        case (.unread, .some(let lastSelectedThreadId)):
+        var selectedChatFolder: ChatFolder?
+        for chatFolder in chatFolders where chatFolder.chatFolderId == selectedChatFolderId {
+            if chatFolder.folderType == .custom {
+                selectedChatFolder = chatFolder
+            }
+            break
+        }
+
+        let isFilteringToUnread = switch inboxFilter {
+        case .unread: true
+        case .unfiltered: selectedChatFolder?.showOnlyUnread == true
+        }
+        let requiredThreadIds: Set<String> = if isFilteringToUnread, let lastSelectedThreadId {
             [lastSelectedThreadId]
-        case (.unread, nil), (.unfiltered, _):
+        } else {
             []
         }
         let threadFinder = ThreadFinder()
@@ -70,6 +94,8 @@ struct CLVViewInfo: Equatable {
             archiveCount: archiveCount,
             inboxCount: inboxCount,
             inboxFilter: inboxFilter,
+            chatFolders: chatFolders,
+            selectedChatFolder: selectedChatFolder,
             isMultiselectActive: isMultiselectActive,
             hasVisibleReminders: hasVisibleReminders,
             shouldBackupDownloadProgressViewBeVisible: shouldBackupDownloadProgressViewBeVisible,

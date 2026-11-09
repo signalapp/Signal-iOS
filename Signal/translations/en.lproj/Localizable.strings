@@ -2059,6 +2059,12 @@
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
 
+/* Name of the default chat folder, which shows every chat. */
+"CHAT_FOLDERS_ALL_CHATS" = "All Chats";
+
+/* Name shown for a chat folder whose name is empty. */
+"CHAT_FOLDERS_UNNAMED_FOLDER" = "Unnamed Folder";
+
 /* Message shown in an action sheet when the user tries to cancel a backup. */
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "Canceling your backup will not delete your backup. You can resume your backup at any time from Backup Settings.";
 

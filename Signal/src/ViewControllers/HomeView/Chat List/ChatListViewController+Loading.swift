@@ -109,6 +109,7 @@ extension ChatListViewController {
             .difference(from: previousRenderState.sections)
             .batchedChanges()
         let isChangingFilter = previousRenderState.viewInfo.inboxFilter != renderState.viewInfo.inboxFilter
+            || previousRenderState.viewInfo.selectedChatFolder?.chatFolderId != renderState.viewInfo.selectedChatFolder?.chatFolderId
 
         let tableView = self.tableView
         let threadViewModelCache = self.threadViewModelCache
@@ -260,12 +261,14 @@ private enum CLVLoadType {
 @MainActor
 class CLVLoadCoordinator {
     private let filterStore: ChatListFilterStore
+    private let chatFolderManager: ChatFolderManager
     private var loadInfoBuilder: CLVLoadInfoBuilder
 
     weak var viewController: ChatListViewController?
 
     init() {
         self.filterStore = ChatListFilterStore()
+        self.chatFolderManager = DependenciesBridge.shared.chatFolderManager
         self.loadInfoBuilder = CLVLoadInfoBuilder()
         self.loadInfoBuilder.shouldResetAll = true
     }
@@ -284,6 +287,7 @@ class CLVLoadCoordinator {
             loadCoordinator: CLVLoadCoordinator,
             chatListMode: ChatListMode,
             inboxFilter: InboxFilter?,
+            selectedChatFolderId: UUID?,
             isMultiselectActive: Bool,
             lastSelectedThreadId: String?,
             hasVisibleReminders: Bool,
@@ -296,9 +300,18 @@ class CLVLoadCoordinator {
         ) -> CLVLoadInfo {
             let inboxFilter = inboxFilter ?? loadCoordinator.filterStore.inboxFilter(transaction: transaction) ?? .unfiltered
 
+            let chatFolders: [ChatFolder]
+            if BuildFlags.chatFolders, chatListMode == .inbox {
+                chatFolders = loadCoordinator.chatFolderManager.fetchFoldersForDisplay(tx: transaction)
+            } else {
+                chatFolders = []
+            }
+
             let viewInfo = CLVViewInfo.build(
                 chatListMode: chatListMode,
                 inboxFilter: inboxFilter,
+                chatFolders: chatFolders,
+                selectedChatFolderId: selectedChatFolderId,
                 isMultiselectActive: isMultiselectActive,
                 lastSelectedThreadId: lastSelectedThreadId,
                 hasVisibleReminders: hasVisibleReminders,
@@ -311,7 +324,11 @@ class CLVLoadCoordinator {
 
             if shouldResetAll {
                 return CLVLoadInfo(viewInfo: viewInfo, loadType: .resetAll)
-            } else if !updatedThreadIds.isEmpty || viewInfo.inboxFilter != lastViewInfo.inboxFilter {
+            } else if
+                !updatedThreadIds.isEmpty
+                || viewInfo.inboxFilter != lastViewInfo.inboxFilter
+                || viewInfo.selectedChatFolder != lastViewInfo.selectedChatFolder
+            {
                 return CLVLoadInfo(viewInfo: viewInfo, loadType: .incrementalDiff(updatedThreadIds: updatedThreadIds))
             } else if viewInfo != lastViewInfo {
                 return CLVLoadInfo(viewInfo: viewInfo, loadType: .incrementalWithoutThreadUpdates)
@@ -393,6 +410,7 @@ class CLVLoadCoordinator {
                 loadCoordinator: self,
                 chatListMode: viewController.viewState.chatListMode,
                 inboxFilter: viewController.viewState.inboxFilter,
+                selectedChatFolderId: viewController.viewState.selectedChatFolderId,
                 isMultiselectActive: viewController.viewState.multiSelectState.isActive,
                 lastSelectedThreadId: viewController.viewState.lastSelectedThreadId,
                 hasVisibleReminders: viewController.viewState.reminderViews.hasVisibleReminders,

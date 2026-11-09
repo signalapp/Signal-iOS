@@ -30,10 +30,18 @@ public struct ChatFolderManager {
     // MARK: - Reading
 
     public func fetch(chatFolderId: UUID, tx: DBReadTransaction) -> ChatFolder? {
-        guard let record = chatFolderStore.fetchRecord(chatFolderId: chatFolderId, tx: tx) else {
-            return nil
+        chatFolderStore.fetchRecord(chatFolderId: chatFolderId, tx: tx).map {
+            chatFolder(record: $0, tx: tx)
         }
+    }
 
+    public func fetchFoldersForDisplay(tx: DBReadTransaction) -> [ChatFolder] {
+        chatFolderStore.fetchDisplayableRecords(tx: tx).map {
+            chatFolder(record: $0, tx: tx)
+        }
+    }
+
+    private func chatFolder(record: ChatFolderRecord, tx: DBReadTransaction) -> ChatFolder {
         var included = Set<Int64>()
         var excluded = Set<Int64>()
         for (membership, threadRowId) in resolveThreadRowIds(folderRowId: record.id, tx: tx) {
