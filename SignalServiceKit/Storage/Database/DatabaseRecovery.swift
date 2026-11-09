@@ -402,7 +402,9 @@ public enum DatabaseRecovery {
         // MARK: Copy essential tables
 
         static let tablesThatMustBeCopiedFlawlessly: [String] = [
-            // The app will be too unpredictable with strange key-value stores.
+            // The app will be too unpredictable with strange key-value stores, so we
+            // keep a partial copy only if it has every row in
+            // `keyValueCollectionsThatMustBeCopiedFlawlessly`.
             KeyValueStore.tableName,
             // If we get a disappearing timer wrong, users might send messages incorrectly.
             DisappearingMessagesConfigurationRecord.databaseTableName,
@@ -432,12 +434,125 @@ public enum DatabaseRecovery {
                     switch result {
                     case let .totalFailure(error), let .copiedSomeButHadTrouble(error, _):
                         Logger.warn("Couldn't copy tables flawlessly: \(error.grdbErrorForLogging)")
-                        let toThrow: DatabaseRecoveryError = error.isSqliteFullError ? .ranOutOfDiskSpace : .unrecoverablyCorrupted
-                        throw toThrow
+                        if error.isSqliteFullError {
+                            throw DatabaseRecoveryError.ranOutOfDiskSpace
+                        }
+                        if
+                            case .copiedSomeButHadTrouble = result,
+                            tableName == KeyValueStore.tableName,
+                            canKeepPartialKeyValueStore(oldDatabaseStorage: oldDatabaseStorage, newDatabaseStorage: newDatabaseStorage)
+                        {
+                            continue
+                        }
+                        throw DatabaseRecoveryError.unrecoverablyCorrupted
                     case .wentFlawlessly:
                         break
                     }
                 }
+            }
+        }
+
+        /// If any key-value store rows in these collections are lost, recovery
+        /// fails. Each must match the collection name used by its owner.
+        private static let keyValueCollectionsThatMustBeCopiedFlawlessly: Set<String> = [
+            // The account: identifiers, credentials, keys, and registration state.
+            "TSStorageUserAccountCollection",
+            "TSStorageManagerIdentityKeyStoreCollection",
+            "AccountEntropyPool",
+            "MediaRootBackupKey",
+            "AccountKey.Sync",
+            "2FA",
+            "SVR.Completed",
+            "kUDCollection",
+            "RegistrationCoordinator",
+            "RegistrationCoordinatorLoader",
+            "RegistrationSession",
+            // Pre-key ID counters. Losing one could reuse an ID and overwrite a key.
+            "TSStorageInternalSettingsCollection",
+            "TSStorageManagerPNIPreKeyMetadataCollection",
+            "TSStorageManagerSignedPreKeyMetadataCollection",
+            "TSStorageManagerPNISignedPreKeyMetadataCollection",
+            "SSKKyberPreKeyStoreACIMetadataStore",
+            "SSKKyberPreKeyStorePNIMetadataStore",
+            // Payments and backups, including key material and in-progress changes.
+            "Payments",
+            "OWSPaymentsLock",
+            "BackupSettingsStore",
+            "BackupDisablingManager",
+            // Security and privacy settings, which would otherwise silently revert to
+            // their defaults (and could then sync to linked devices).
+            "OWSScreenLock_Collection",
+            "NotificationPreferences",
+            "SignalProxy",
+            "SignalPreferences",
+            "SSKPreferences",
+            "OWSIdentityManager.shareMyPhoneNumberStore",
+            "OWSReadReceiptManagerCollection",
+            "TypingIndicators",
+            "blorp",
+            "StoryManager",
+            "KeyTransparency",
+            // Sets where losing some rows is worse than losing them all.
+            "TSPrivateStoryThread+DeletedAtTimestamp",
+            "AuthorMergeMissingAci",
+        ]
+
+        /// Whether a partial copy of the key-value store lost no rows in
+        /// `keyValueCollectionsThatMustBeCopiedFlawlessly`. The old database's
+        /// (collection, key) index is on different pages than its rows, so it can
+        /// usually still list the rows that were lost.
+        private static func canKeepPartialKeyValueStore(
+            oldDatabaseStorage: SDSDatabaseStorage,
+            newDatabaseStorage: SDSDatabaseStorage,
+        ) -> Bool {
+            let lostKeys: Set<KeyValueStoreKey>
+            do {
+                // This index covers the query, so the table's pages aren't read.
+                let oldKeys = try fetchKeyValueStoreKeys(
+                    databaseStorage: oldDatabaseStorage,
+                    sql: "SELECT collection, key FROM \(KeyValueStore.tableName) INDEXED BY index_key_value_store_on_collection_and_key",
+                )
+                let newKeys = try fetchKeyValueStoreKeys(
+                    databaseStorage: newDatabaseStorage,
+                    sql: "SELECT collection, key FROM \(KeyValueStore.tableName)",
+                )
+                lostKeys = oldKeys.subtracting(newKeys)
+            } catch {
+                logger.warn("Couldn't determine which key-value store rows were lost: \(error.grdbErrorForLogging)")
+                return false
+            }
+
+            let lostCollections = Set(lostKeys.map(\.collection))
+            let lostEssentialCollections = lostCollections.intersection(keyValueCollectionsThatMustBeCopiedFlawlessly)
+            guard lostEssentialCollections.isEmpty else {
+                logger.warn("Lost key-value store rows from essential collections: \(lostEssentialCollections.sorted())")
+                return false
+            }
+            logger.warn("Keeping partial key-value store. Lost \(lostKeys.count) row(s) from \(lostCollections.count) collection(s)")
+            return true
+        }
+
+        private struct KeyValueStoreKey: Hashable {
+            let collection: String
+            let key: String
+        }
+
+        private static func fetchKeyValueStoreKeys(
+            databaseStorage: SDSDatabaseStorage,
+            sql: String,
+        ) throws -> Set<KeyValueStoreKey> {
+            return try readIgnoringCommitError(databaseStorage: databaseStorage) { tx in
+                let rows = try Row.fetchAll(tx.database, sql: sql)
+                return try Set(rows.map { row in
+                    // A corrupted index could hold values of the wrong type.
+                    guard
+                        let collection = String.fromDatabaseValue(row[0]),
+                        let key = String.fromDatabaseValue(row[1])
+                    else {
+                        throw DatabaseError(resultCode: .SQLITE_CORRUPT, message: "Invalid key-value store key")
+                    }
+                    return KeyValueStoreKey(collection: collection, key: key)
+                })
             }
         }
 

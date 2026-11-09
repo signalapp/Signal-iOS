@@ -314,6 +314,51 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         XCTAssertEqual(Set(recoveredRows), Set(expectedRows))
     }
 
+    func testDumpAndRestoreWithCorruptedKeyValueStoreRow() throws {
+        let databaseStorage = try newDatabaseWithCorruptedKeyValueStoreRow(collection: "DatabaseRecoveryTest.Corrupted")
+
+        let dump = DatabaseRecovery.DumpAndRestoreOperation(
+            appReadiness: AppReadinessMock(),
+            corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
+            keychainStorage: databaseStorage.keychainStorage,
+        )
+        try dump.run()
+
+        let finishedDatabaseStorage = try cloneDatabaseStorage(databaseStorage)
+        try finishedDatabaseStorage.read { tx in
+            XCTAssertEqual(try keyValueRowCount(collection: "DatabaseRecoveryTest", tx: tx), rowCount - 1)
+            XCTAssertEqual(try keyValueRowCount(collection: "DatabaseRecoveryTest.Corrupted", tx: tx), 0)
+        }
+    }
+
+    func testDumpAndRestoreWithCorruptedEssentialKeyValueStoreRow() throws {
+        let databaseStorage = try newDatabaseWithCorruptedKeyValueStoreRow(collection: "TSStorageManagerIdentityKeyStoreCollection")
+
+        let dump = DatabaseRecovery.DumpAndRestoreOperation(
+            appReadiness: AppReadinessMock(),
+            corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
+            keychainStorage: databaseStorage.keychainStorage,
+        )
+        XCTAssertThrowsError(try dump.run()) { error in
+            XCTAssertEqual(error as? DatabaseRecoveryError, .unrecoverablyCorrupted)
+        }
+    }
+
+    private func newDatabaseWithCorruptedKeyValueStoreRow(collection: String) throws -> SDSDatabaseStorage {
+        let corruptedRow = 50
+        return try newDatabaseWithCorruptedRows([corruptedRow], tableName: "keyvalue") { db, i in
+            try db.execute(
+                sql: "INSERT INTO keyvalue (key, collection, value) VALUES (?, ?, ?)",
+                arguments: ["\(i)", i == corruptedRow ? collection : "DatabaseRecoveryTest", Randomness.generateRandomBytes(pageFillingValueSize)],
+            )
+        }
+    }
+
+    private func keyValueRowCount(collection: String, tx: DBReadTransaction) throws -> Int {
+        let sql = "SELECT COUNT(*) FROM keyvalue WHERE collection = ?"
+        return try XCTUnwrap(Int.fetchOne(tx.database, sql: sql, arguments: [collection]))
+    }
+
     func testMoreActionableErrorPrefersRunningOutOfSpace() {
         let full = DatabaseError(resultCode: .SQLITE_FULL)
         let corrupt = DatabaseError(resultCode: .SQLITE_CORRUPT)
