@@ -165,16 +165,86 @@ class VideoAttachmentPrepViewController: AttachmentPrepViewController, VideoEdit
         let generator = AVAssetImageGenerator(asset: asset)
         generator.maximumSize = CGSize(square: maxThumbnailSize)
         generator.appliesPreferredTrackTransform = true
-        var thumbnails = [UIImage]()
-        for index in 0..<thumbnailCount {
+
+        let times: [CMTime] = (0..<thumbnailCount).map { index in
             let thumbnailAlpha = Double(index) / Double(thumbnailCount - 1)
             let thumbnailTimeSeconds = thumbnailAlpha * untrimmedDurationSeconds
-            let thumbnailCMTime = CMTime(seconds: thumbnailTimeSeconds, preferredTimescale: 1000)
-            let cgImage = try generator.copyCGImage(at: thumbnailCMTime, actualTime: nil)
-            let thumbnail = UIImage(cgImage: cgImage, scale: 1, orientation: .up)
-            thumbnails.append(thumbnail)
+            return CMTime(seconds: thumbnailTimeSeconds, preferredTimescale: 1000)
         }
-        return thumbnails
+
+        let cgImages = try await generateCGImages(generator: generator, times: times)
+        return cgImages.map { cgImage in
+            UIImage(cgImage: cgImage, scale: 1, orientation: .up)
+        }
+    }
+
+    /// Requests every image at once, so they can be generated concurrently
+    /// rather than one decode at a time.
+    @concurrent
+    private static func generateCGImages(
+        generator: AVAssetImageGenerator,
+        times: [CMTime],
+    ) async throws -> [CGImage] {
+        guard !times.isEmpty else {
+            return []
+        }
+
+        struct Results {
+            var cgImages: [CGImage?]
+            var remainingCount: Int
+            var error: Error?
+
+            /// Returns `self` once every requested image has been reported.
+            mutating func record(
+                index: Int?,
+                cgImage: CGImage?,
+                result: AVAssetImageGenerator.Result,
+                error: Error?,
+            ) -> Results? {
+                switch result {
+                case .succeeded:
+                    if let index {
+                        cgImages[index] = cgImage
+                    }
+                case .failed, .cancelled:
+                    fallthrough
+                @unknown default:
+                    self.error = self.error ?? error ?? OWSAssertionError("image generation failed")
+                }
+                remainingCount -= 1
+                return remainingCount == 0 ? self : nil
+            }
+        }
+        let results = AtomicValue(
+            Results(
+                cgImages: Array(repeating: nil, count: times.count),
+                remainingCount: times.count,
+            ),
+            lock: UnfairLock(),
+        )
+
+        return try await withCheckedThrowingContinuation { continuation in
+            generator.generateCGImagesAsynchronously(
+                forTimes: times.map { NSValue(time: $0) },
+            ) { requestedTime, cgImage, _, result, error in
+                let finishedResults = results.update { results in
+                    results.record(
+                        index: times.firstIndex(of: requestedTime),
+                        cgImage: cgImage,
+                        result: result,
+                        error: error,
+                    )
+                }
+                guard let finishedResults else {
+                    return
+                }
+                if let error = finishedResults.error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume(returning: finishedResults.cgImages.compacted())
+                }
+            }
+        }
     }
 
     // MARK: - VideoTimelineViewDelegate
