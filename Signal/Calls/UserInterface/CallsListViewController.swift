@@ -1394,12 +1394,19 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         reinitializeLoadedViewModels(debounceInterval: Constants.searchDebounceInterval, animated: true)
     }
 
-    private func reinitializeLoadedViewModels(debounceInterval: TimeInterval, animated: Bool) {
+    private func reinitializeLoadedViewModels(
+        debounceInterval: TimeInterval,
+        animated: Bool,
+        shouldReloadRows: Bool = false,
+    ) {
         self.reinitializeLoadedViewModelsTask?.cancel()
         self.reinitializeLoadedViewModelsTask = Task {
             do {
                 try await Task.sleep(nanoseconds: debounceInterval.clampedNanoseconds)
-                try await self._reinitializeLoadedViewModels(animated: true)
+                try await self._reinitializeLoadedViewModels(animated: animated)
+                if shouldReloadRows {
+                    self.reloadAllRows()
+                }
             } catch {
                 // A new reinitialize call was started, so bail out.
             }
@@ -2293,8 +2300,7 @@ extension CallsListViewController: DatabaseChangeDelegate {
     func databaseChangesDidUpdateExternally() {
         logger.info("Database changed externally, loading calls anew and reloading all rows.")
 
-        reinitializeLoadedViewModels(debounceInterval: 0, animated: false)
-        reloadAllRows()
+        reinitializeLoadedViewModels(debounceInterval: 0, animated: false, shouldReloadRows: true)
     }
 
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
