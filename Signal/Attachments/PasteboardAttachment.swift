@@ -187,7 +187,11 @@ enum PasteboardAttachment {
                 }
 
                 // [15M] TODO: Don't ignore errors for pasteboard videos.
-                return try? await PreviewableAttachment.compressVideoAsMp4(dataSource: dataSource, attachmentLimits: attachmentLimits)
+                return try? PreviewableAttachment.normalizedVideoAttachment(
+                    dataSource: dataSource,
+                    dataUTI: dataUTI,
+                    mustTranscode: true,
+                )
             }
         }
         for dataUTI in SignalAttachment.audioUTISet {

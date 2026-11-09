@@ -61,7 +61,6 @@ protocol CameraCaptureSessionDelegate: AnyObject {
 class CameraCaptureSession: NSObject {
 
     private weak var delegate: CameraCaptureSessionDelegate?
-    private let attachmentLimits: OutgoingAttachmentLimits
 
     // There can only ever be one `CapturePreviewView` per AVCaptureSession
     lazy var previewView = CapturePreviewView(session: avCaptureSession)
@@ -89,7 +88,6 @@ class CameraCaptureSession: NSObject {
         qrCodeSampleBufferScanner: QRCodeSampleBufferScanner,
     ) {
         self.delegate = delegate
-        self.attachmentLimits = attachmentLimits
         self.videoCapture = VideoCapture(
             attachmentLimits: attachmentLimits,
             qrCodeSampleBufferScanner: qrCodeSampleBufferScanner,
@@ -839,10 +837,10 @@ class CameraCaptureSession: NSObject {
     private func handleVideoRecording(at outputUrl: URL) throws {
         AssertIsOnMainThread()
         let dataSource = DataSourcePath(fileUrl: outputUrl, ownership: .owned)
-        let attachment = try PreviewableAttachment.videoAttachment(
+        let attachment = try PreviewableAttachment.normalizedVideoAttachment(
             dataSource: dataSource,
             dataUTI: UTType.mpeg4Movie.identifier,
-            attachmentLimits: self.attachmentLimits,
+            mustTranscode: false,
         )
         delegate?.cameraCaptureSession(self, didFinishProcessing: attachment)
     }

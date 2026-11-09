@@ -63,8 +63,11 @@ public class AttachmentApprovalItem {
     }
 
     private static func videoEditorModel(for attachment: PreviewableAttachment) -> VideoEditorModel? {
+        guard let normalizedVideo = attachment.normalizedVideo else {
+            return nil
+        }
         do {
-            return try VideoEditorModel(attachment)
+            return try VideoEditorModel(normalizedVideo: normalizedVideo)
         } catch {
             owsFailDebug("couldn't create video editor: \(error)")
             return nil

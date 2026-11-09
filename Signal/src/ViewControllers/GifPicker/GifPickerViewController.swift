@@ -535,7 +535,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UISearchR
     ) async throws -> PreviewableAttachment {
         let assetFileExtension = GiphyImageInfo.fileExtension
         let assetFilePath = asset.filePath
-        let assetTypeIdentifier = GiphyImageInfo.utiType
 
         let consumableFilePath = OWSFileSystem.temporaryFilePath(
             fileExtension: assetFileExtension,
@@ -544,8 +543,12 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UISearchR
         try FileManager.default.copyItem(atPath: assetFilePath, toPath: consumableFilePath)
         let dataSource = DataSourcePath(filePath: consumableFilePath, ownership: .owned)
 
-        let attachment = try PreviewableAttachment.buildAttachment(dataSource: dataSource, dataUTI: assetTypeIdentifier, attachmentLimits: attachmentLimits)
-        attachment.rawValue.isLoopingVideo = attachment.isVideo
+        let attachment = try PreviewableAttachment.finalizedVideoAttachment(
+            dataSource: dataSource,
+            dataUTI: GiphyImageInfo.utiType,
+            attachmentLimits: attachmentLimits,
+        )
+        attachment.rawValue.isLoopingVideo = true
         return attachment
     }
 

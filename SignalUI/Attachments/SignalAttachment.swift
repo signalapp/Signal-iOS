@@ -19,6 +19,7 @@ public enum SignalAttachmentError: Error {
     case couldNotRemoveMetadata
     case invalidFileFormat
     case couldNotResizeImage
+    case videoTooLong(maxDuration: TimeInterval)
 }
 
 // MARK: -
@@ -48,6 +49,13 @@ extension SignalAttachmentError: LocalizedError, UserErrorDescriptionProvider {
             return OWSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA", comment: "Attachment error message for image attachments in which metadata could not be removed")
         case .couldNotResizeImage:
             return OWSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE", comment: "Attachment error message for image attachments which could not be resized")
+        case .videoTooLong(let maxDuration):
+            let format = OWSLocalizedString(
+                "ATTACHMENT_ERROR_VIDEO_TOO_LONG_FORMAT",
+                comment: "Attachment error message for video attachments that are too long to send. Embeds {{ the maximum duration, e.g. '15 minutes' }}.",
+            )
+            let formattedDuration = String.formatDurationLossless(durationSeconds: UInt32(maxDuration))
+            return String(format: format, formattedDuration)
         }
     }
 }

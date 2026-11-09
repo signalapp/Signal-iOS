@@ -137,4 +137,5 @@ class SignalAttachmentTest: XCTestCase {
             "Result contained unexpected chunk",
         )
     }
+
 }

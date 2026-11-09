@@ -70,7 +70,7 @@ class VideoAttachmentPrepViewController: AttachmentPrepViewController, VideoEdit
     }
 
     override var canSaveMedia: Bool {
-        if model.needsRender {
+        if model.isEdited {
             return true
         }
         return super.canSaveMedia

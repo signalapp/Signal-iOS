@@ -257,7 +257,7 @@ extension RecentPhotosCollectionView: UICollectionViewDelegate, UICollectionView
                 self.fetchingAttachmentIndex = nil
             }
             do {
-                let attachment = try await collectionContents.outgoingAttachment(for: asset, attachmentLimits: attachmentLimits)
+                let attachment = try await collectionContents.outgoingAttachment(for: asset)
                 self.recentPhotosDelegate?.didSelectRecentPhoto(asset: asset, attachment: attachment, attachmentLimits: attachmentLimits)
             } catch {
                 Logger.warn("\(error)")

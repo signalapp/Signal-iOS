@@ -844,17 +844,24 @@ extension ConversationViewController {
 
         let attachmentLimits = OutgoingAttachmentLimits.currentLimits()
 
-        // Although we want to be able to send higher quality attachments through
-        // the document picker, it's more important that we ensure the sent format
-        // is one all clients can accept (e.g., *not* QuickTime .mov).
-        if SignalAttachment.videoUTISet.contains(contentTypeIdentifier) {
-            self.showApprovalDialogAfterProcessingVideo(dataSource: dataSource, attachmentLimits: attachmentLimits)
-            return
-        }
-
         let attachment: PreviewableAttachment
         do {
-            attachment = try PreviewableAttachment.buildAttachment(dataSource: dataSource, dataUTI: contentTypeIdentifier, attachmentLimits: attachmentLimits)
+            // Although we want to be able to send higher quality attachments through
+            // the document picker, it's more important that we ensure the sent format
+            // is one all clients can accept (e.g., *not* QuickTime .mov).
+            if SignalAttachment.videoUTISet.contains(contentTypeIdentifier) {
+                attachment = try PreviewableAttachment.normalizedVideoAttachment(
+                    dataSource: dataSource,
+                    dataUTI: contentTypeIdentifier,
+                    mustTranscode: true,
+                )
+            } else {
+                attachment = try PreviewableAttachment.buildAttachment(
+                    dataSource: dataSource,
+                    dataUTI: contentTypeIdentifier,
+                    attachmentLimits: attachmentLimits,
+                )
+            }
         } catch {
             DispatchQueue.main.async {
                 self.showErrorAlert(attachmentError: error as? SignalAttachmentError)
@@ -863,29 +870,6 @@ extension ConversationViewController {
         }
 
         showApprovalDialog(forAttachments: [attachment], attachmentLimits: attachmentLimits)
-    }
-
-    private func showApprovalDialogAfterProcessingVideo(dataSource: DataSourcePath, attachmentLimits: OutgoingAttachmentLimits) {
-        AssertIsOnMainThread()
-
-        ModalActivityIndicatorViewController.present(
-            fromViewController: self,
-            title: CommonStrings.preparingModal,
-            canCancel: true,
-            asyncBlock: { modalActivityIndicator in
-                do {
-                    let attachment = try await PreviewableAttachment.compressVideoAsMp4(dataSource: dataSource, attachmentLimits: attachmentLimits)
-                    modalActivityIndicator.dismissIfNotCanceled(completionIfNotCanceled: {
-                        self.showApprovalDialog(forAttachments: [attachment], attachmentLimits: attachmentLimits)
-                    })
-                } catch {
-                    owsFailDebug("Error: \(error).")
-                    modalActivityIndicator.dismissIfNotCanceled(completionIfNotCanceled: {
-                        self.showErrorAlert(attachmentError: error as? SignalAttachmentError)
-                    })
-                }
-            },
-        )
     }
 
     // MARK: - SendMediaNavDelegate

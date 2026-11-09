@@ -109,8 +109,10 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
         }
 
         if
-            ImageQualityLevel.maximumForCurrentAppContext() == .three,
-            attachmentApprovalItemCollection.attachmentApprovalItems.contains(where: { $0.attachment.isImage })
+            CurrentAppContext().isMainApp,
+            attachmentApprovalItemCollection.attachmentApprovalItems.contains(where: {
+                $0.attachment.isImage || $0.attachment.normalizedVideo?.mustTranscode == true
+            })
         {
             options.insert(.canChangeQualityLevel)
         }
@@ -155,11 +157,21 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
         attachmentApprovalItems: [AttachmentApprovalItem],
         attachmentLimits: OutgoingAttachmentLimits,
         options: AttachmentApprovalViewControllerOptions,
-    ) -> Self {
+    ) -> AttachmentApprovalViewController {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-        return Self(
+        // Quality preference is only available in the main app.
+        let defaultImageQuality: ImageQuality
+        if CurrentAppContext().isMainApp {
+            defaultImageQuality = databaseStorage.read { tx in
+                ImageQuality.fetchValue(tx: tx)
+            }
+        } else {
+            defaultImageQuality = .standard
+        }
+
+        return AttachmentApprovalViewController(
             attachmentApprovalItems: attachmentApprovalItems,
-            defaultImageQuality: databaseStorage.read(block: ImageQuality.fetchValue(tx:)),
+            defaultImageQuality: defaultImageQuality,
             attachmentLimits: attachmentLimits,
             options: options,
         )
@@ -685,30 +697,39 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
         return attachmentApprovalItemCollection.attachmentApprovalItems
     }
 
-    private func prepareAttachments() async throws -> [PreviewableAttachment] {
+    private func prepareAttachments(imageQuality: ImageQuality) async throws -> [PreviewableAttachment] {
         var results = [PreviewableAttachment]()
         for attachmentApprovalItem in attachmentApprovalItems {
             results.append(
-                try await self.prepareAttachment(attachmentApprovalItem: attachmentApprovalItem),
+                try await self.prepareAttachment(
+                    attachmentApprovalItem: attachmentApprovalItem,
+                    imageQuality: imageQuality,
+                ),
             )
         }
         return results
     }
 
     /// Returns a new SignalAttachment that reflects changes made in the editor.
-    private func prepareAttachment(attachmentApprovalItem: AttachmentApprovalItem) async throws -> PreviewableAttachment {
+    private func prepareAttachment(
+        attachmentApprovalItem: AttachmentApprovalItem,
+        imageQuality: ImageQuality,
+    ) async throws -> PreviewableAttachment {
         if let imageEditorModel = attachmentApprovalItem.imageEditorModel, imageEditorModel.isDirty {
             return try await self.prepareImageAttachment(
                 attachmentApprovalItem: attachmentApprovalItem,
                 imageEditorModel: imageEditorModel,
             )
         }
-        if let videoEditorModel = attachmentApprovalItem.videoEditorModel, videoEditorModel.needsRender {
+
+        if let normalizedVideo = attachmentApprovalItem.attachment.normalizedVideo {
             return try await self.prepareVideoAttachment(
                 attachmentApprovalItem: attachmentApprovalItem,
-                videoEditorModel: videoEditorModel,
+                normalizedVideo: normalizedVideo,
+                imageQuality: imageQuality,
             )
         }
+
         // No editor applies. Use original, un-edited attachment.
         return attachmentApprovalItem.attachment
     }
@@ -737,24 +758,26 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
 
     private func prepareVideoAttachment(
         attachmentApprovalItem: AttachmentApprovalItem,
-        videoEditorModel: VideoEditorModel,
+        normalizedVideo: NormalizedVideo,
+        imageQuality: ImageQuality,
     ) async throws -> PreviewableAttachment {
-        assert(videoEditorModel.needsRender)
-        let fileUrl = try await videoEditorModel.render()
-        let fileExtension = fileUrl.pathExtension
-        guard let dataUTI = MimeTypeUtil.utiTypeForFileExtension(fileExtension) else {
-            throw OWSAssertionError("Missing dataUTI.")
+        let editedAsset: AVAsset?
+        if let videoEditorModel = attachmentApprovalItem.videoEditorModel, videoEditorModel.isEdited {
+            editedAsset = try await videoEditorModel.editedAsset()
+        } else {
+            editedAsset = nil
         }
-        let dataSource = DataSourcePath(fileUrl: fileUrl, ownership: .owned)
-        // Rewrite the filename's extension to reflect the output file format.
-        var filename: String? = attachmentApprovalItem.attachment.rawValue.dataSource.sourceFilename?.filterFilename()
-        if let sourceFilename = attachmentApprovalItem.attachment.rawValue.dataSource.sourceFilename?.filterFilename() {
-            let sourceFilenameWithoutExtension = (sourceFilename as NSString).deletingPathExtension
-            filename = (sourceFilenameWithoutExtension as NSString).appendingPathExtension(fileExtension) ?? sourceFilenameWithoutExtension
-        }
-        dataSource.sourceFilename = filename
 
-        return try PreviewableAttachment.videoAttachment(dataSource: dataSource, dataUTI: dataUTI, attachmentLimits: attachmentLimits)
+        let finalizedVideo = try await normalizedVideo.finalizeVideo(
+            editedAsset: editedAsset,
+            imageQuality: imageQuality,
+            attachmentLimits: attachmentLimits,
+            progress: nil,
+        )
+        return try PreviewableAttachment.finalizedVideoAttachment(
+            finalizedVideo: finalizedVideo,
+            attachmentLimits: attachmentLimits,
+        )
     }
 
     func attachmentApprovalItem(before currentItem: AttachmentApprovalItem) -> AttachmentApprovalItem? {
@@ -892,12 +915,14 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
         ModalActivityIndicatorViewController.present(
             fromViewController: self,
             title: CommonStrings.preparingModal,
-            canCancel: false,
+            canCancel: attachmentApprovalItems.contains(where: {
+                $0.attachment.normalizedVideo?.mustTranscode == true
+            }),
             asyncBlock: { modalVC in
                 do {
                     let imageQuality = self.outputImageQuality
-                    let attachments = try await self.prepareAttachments()
-                    modalVC.dismiss {
+                    let attachments = try await self.prepareAttachments(imageQuality: imageQuality)
+                    modalVC.dismissIfNotCanceled {
                         let isViewOnce = self.options.contains(.canToggleViewOnce) && self.isViewOnceEnabled
                         let messageBody = self.mediaCaptionToolbar.messageBodyForSending
                         owsPrecondition(!isViewOnce || messageBody == nil)
@@ -915,10 +940,12 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
                             messageBody: messageBody,
                         )
                     }
+                } catch is CancellationError {
+                    // The modal dismisses itself when canceled.
                 } catch {
-                    owsFailDebug("Error: \(error)")
+                    Logger.warn("Error: \(error)")
 
-                    modalVC.dismiss {
+                    modalVC.dismissIfNotCanceled {
                         let actionSheet = ActionSheetController(
                             title: CommonStrings.errorAlertTitle,
                             message: (

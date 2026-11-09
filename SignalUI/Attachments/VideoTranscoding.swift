@@ -58,20 +58,29 @@ enum VideoTranscoding {
         let status: AVAssetWriter.Status
     }
 
-    struct VideoTooLongForSettingsError: Error {}
+    struct VideoTooLongForSettingsError: Error {
+        /// The longest duration allowed by any of the settings options.
+        let maxAllowedDuration: TimeInterval
+    }
 
     // MARK: -
 
     /// Transcodes the given `asset` to `outputUrl` with the given settings.
+    ///
+    /// - Parameter settings
+    /// Settings options. The first valid option is used.
+    @concurrent
     static func transcodeMp4(
         asset: AVAsset,
         settings settingChoices: [Settings],
         outputUrl: URL,
-        progress: Progress? = nil,
+        progress: Progress?,
     ) async throws {
         let duration = try await asset.load(.duration)
         guard let settings = settingChoices.first(where: { $0.maxAllowedDuration >= duration.seconds }) else {
-            throw VideoTooLongForSettingsError()
+            throw VideoTooLongForSettingsError(
+                maxAllowedDuration: settingChoices.map { $0.maxAllowedDuration }.max() ?? 0,
+            )
         }
 
         // Divide up the progress reporting for "time reading the input" and "time finalizing the output".
@@ -473,7 +482,8 @@ enum VideoTranscoding {
                 // We could optimistically fold this into the load above, but for a track that is NOT
                 // decodable this might produce an error. Better to check that first.
                 let size = try await track.load(.totalSampleDataLength)
-                if size > winnerSize {
+                // Composition tracks may report no sample data.
+                if winner == nil || size > winnerSize {
                     winnerSize = size
                     winner = track
                 }

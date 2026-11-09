@@ -68,6 +68,8 @@ public struct SendableAttachment {
                 mimeType: MimeTypeUtil.mimeTypeForDataSource(finalizedImage.dataSource, dataUTI: finalizedImage.dataUTI),
                 renderingFlag: attachment.renderingFlag,
             )
+        case .normalizedVideo:
+            throw OWSAssertionError("Videos must be finalized before sending.")
         case .other:
             break
         }
@@ -135,7 +137,11 @@ public struct SendableAttachment {
         let segments = try segmentFileUrls.map { url in
             let dataSource = DataSourcePath(fileUrl: url, ownership: .owned)
             // [15M] TODO: This doesn't transfer all SignalAttachment fields.
-            let attachment = try PreviewableAttachment.videoAttachment(dataSource: dataSource, dataUTI: self.dataUTI, attachmentLimits: attachmentLimits)
+            let attachment = try PreviewableAttachment.finalizedVideoAttachment(
+                dataSource: dataSource,
+                dataUTI: self.dataUTI,
+                attachmentLimits: attachmentLimits,
+            )
             return Self(nonImagePreviewableAttachment: attachment)
         }
         return SegmentAttachmentResult(self, segmented: segments)
