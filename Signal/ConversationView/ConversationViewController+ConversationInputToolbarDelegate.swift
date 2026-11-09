@@ -419,15 +419,6 @@ extension ConversationViewController {
             return false
         }
 
-        let imageQuality = approvedAttachments.imageQuality
-        let imageQualityLevel = ImageQualityLevel.resolvedValue(
-            imageQuality: imageQuality,
-            standardQualityLevel: attachmentLimits.standardQualityLevel,
-        )
-        let sendableAttachments = try await approvedAttachments.attachments.mapAsync {
-            return try await SendableAttachment.forPreviewableAttachment($0, imageQualityLevel: imageQualityLevel)
-        }
-
         if self.isBlockedConversation() {
             let isBlocked = await self.showUnblockConversationUI()
             if isBlocked {
@@ -447,6 +438,23 @@ extension ConversationViewController {
             // They're still untrusted, so stop trying to send.
             return false
         }
+
+        let imageQualityLevel = ImageQualityLevel.resolvedValue(
+            imageQuality: approvedAttachments.imageQuality,
+            standardQualityLevel: attachmentLimits.standardQualityLevel,
+        )
+        let sendableAttachments = try await ModalActivityIndicatorViewController
+            .presentAndPropagateResult(
+                from: viewController,
+                title: CommonStrings.preparingModal,
+            ) {
+                try await approvedAttachments.attachments.mapAsync {
+                    try await SendableAttachment.forPreviewableAttachment(
+                        $0,
+                        imageQualityLevel: imageQualityLevel,
+                    )
+                }
+            }
 
         let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
 
@@ -884,21 +892,15 @@ extension ConversationViewController {
         didApproveAttachments approvedAttachments: ApprovedAttachments,
         messageBody: MessageBody?,
     ) {
-        ModalActivityIndicatorViewController.present(
-            fromViewController: sendMediaNavigationController,
-            title: CommonStrings.preparingModal,
-            asyncBlock: { modal in
-                await self.sendAttachments(
-                    approvedAttachments,
-                    messageBody: messageBody,
-                    from: sendMediaNavigationController,
-                    attachmentLimits: sendMediaNavigationController.attachmentLimits,
-                )
-                modal.dismiss(completion: {
-                    self.dismiss(animated: true)
-                })
-            },
-        )
+        Task {
+            await self.sendAttachments(
+                approvedAttachments,
+                messageBody: messageBody,
+                from: sendMediaNavigationController,
+                attachmentLimits: sendMediaNavigationController.attachmentLimits,
+            )
+            self.dismiss(animated: true)
+        }
     }
 
     /// Attempts to send attachments. Handles prompting to unblock or un-verify safety numbers, as well as showing failure states.
