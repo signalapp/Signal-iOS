@@ -54,17 +54,8 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
     ) -> PinnedThreadId? {
         return _fetchPinnedThreadId(
             forThread: thread,
-            fetchOrCreateRecipient: {
-                if let aci = $0.contactAddress.serviceId as? Aci {
-                    return recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
-                }
-                if let phoneNumber = E164($0.contactAddress.phoneNumber) {
-                    return recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx)
-                }
-                if let pni = $0.contactAddress.serviceId as? Pni {
-                    return recipientFetcher.fetchOrCreate(serviceId: pni, tx: tx)
-                }
-                return nil
+            fetchOrCreateRecipient: { thread in
+                recipientFetcher.fetchOrCreate(contactThread: thread, tx: tx)
             },
         )
     }

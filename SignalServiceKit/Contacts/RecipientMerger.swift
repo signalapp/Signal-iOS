@@ -96,6 +96,7 @@ struct MergedRecipient {
 }
 
 class RecipientMergerImpl: RecipientMerger {
+    private let chatFolderManager: ChatFolderManager
     private let identityManager: OWSIdentityManager
     private let observers: Observers
     private let pinnedThreadMerger: any PinnedThreadMerger
@@ -113,6 +114,7 @@ class RecipientMergerImpl: RecipientMerger {
     /// which we learned about the new association, and they are notified in the
     /// order in which they are provided.
     init(
+        chatFolderManager: ChatFolderManager,
         identityManager: OWSIdentityManager,
         observers: Observers,
         pinnedThreadMerger: any PinnedThreadMerger,
@@ -123,6 +125,7 @@ class RecipientMergerImpl: RecipientMerger {
         storageServiceManager: StorageServiceManager,
         storyRecipientStore: StoryRecipientStore,
     ) {
+        self.chatFolderManager = chatFolderManager
         self.identityManager = identityManager
         self.observers = observers
         self.pinnedThreadMerger = pinnedThreadMerger
@@ -845,6 +848,7 @@ class RecipientMergerImpl: RecipientMerger {
 
                 storyRecipientStore.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx)
                 pinnedThreadMerger.mergeRecipientId(affectedRecipient.id, into: mergedRecipient.id, updateStorageService: shouldUpdateStorageService, tx: tx)
+                chatFolderManager.mergeRecipient(affectedRecipient.id, into: mergedRecipient.id, tx: tx)
                 recipientDatabaseTable.removeRecipient(affectedRecipient, transaction: tx)
             } else if oldRecipients.contains(where: { $0.uniqueId == affectedRecipient.uniqueId }) {
                 recipientDatabaseTable.updateRecipient(affectedRecipient, transaction: tx)

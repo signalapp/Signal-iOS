@@ -21,6 +21,10 @@ public struct GroupStore {
         return failIfThrows { try fetchRequest.fetchOne(tx.database) }
     }
 
+    func fetchGroup(rowId: GroupRecord.RowId, tx: DBReadTransaction) -> GroupRecord? {
+        return failIfThrows { try GroupRecord.fetchOne(tx.database, key: rowId) }
+    }
+
     public func fetchGroupOrInsert(
         groupId: AnyGroupIdentifier,
         refreshedAt: Date = GroupRecord.addingRefreshJitter(toDate: Date()),

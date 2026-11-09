@@ -31,6 +31,8 @@ private class MockStorageServiceManager: StorageServiceManager {
 }
 
 private class TestDependencies {
+    let chatFolderManager: ChatFolderManager
+    let chatFolderStore = ChatFolderStore()
     let identityManager: MockIdentityManager
     let mockDB = InMemoryDB()
     let recipientMerger: RecipientMerger
@@ -57,7 +59,14 @@ private class TestDependencies {
         threadMerger = ThreadMerger.forUnitTests(
             threadStore: threadStore,
         )
+        chatFolderManager = ChatFolderManager(
+            chatFolderStore: chatFolderStore,
+            recipientDatabaseTable: recipientDatabaseTable,
+            recipientFetcher: recipientFetcher,
+            threadStore: threadStore,
+        )
         recipientMerger = RecipientMergerImpl(
+            chatFolderManager: chatFolderManager,
             identityManager: identityManager,
             observers: RecipientMergerImpl.Observers(
                 preThreadMerger: [],
@@ -485,6 +494,59 @@ class RecipientMergerTest: XCTestCase {
 
         XCTAssertEqual(recipientTable.values.map({ $0.uniqueId }), [aciRecipient.uniqueId])
         XCTAssertEqual(d.identityManager.sessionSwitchoverMessages.count, 0)
+    }
+
+    func testChatFolderKeepsAChatWhoseRecipientMerges() throws {
+        let aci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
+        let phoneNumber = E164("+16505550101")!
+        let pni = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
+
+        let d = TestDependencies()
+
+        // Message a new contact by phone number, so we learn their PNI.
+        let thread = d.mockDB.write { tx in
+            _ = try! SignalRecipient.insertRecord(phoneNumber: phoneNumber, pni: pni, tx: tx)
+            let thread = TSContactThread(contactAddress: SignalServiceAddress(
+                serviceId: pni,
+                phoneNumber: phoneNumber.stringValue,
+                cache: SignalServiceAddressCache(),
+            ))
+            d.threadStore.insertThread(thread)
+            return thread
+        }
+
+        // Add their chat to a folder.
+        let folder = d.mockDB.write { tx in
+            let folder = d.chatFolderStore.insertCustomFolderRecord(
+                chatFolderId: UUID(),
+                name: "Work",
+                position: 1,
+                showOnlyUnread: false,
+                showMutedChats: true,
+                includeAllIndividualChats: false,
+                includeAllGroupChats: false,
+                deletedAtTimestampMs: 0,
+                tx: tx,
+            )
+            d.chatFolderManager.setMembership(.included, thread: thread, folderRowId: folder.id, tx: tx)
+            return folder
+        }
+
+        // They accept the message request and reply, so we learn their ACI.
+        // Their message creates a recipient for the ACI, and its PNI signature
+        // merges the two recipients.
+        let aciRecipient = d.mockDB.write { tx in
+            let aciRecipient = try! SignalRecipient.insertRecord(aci: aci, tx: tx)
+            d.recipientMerger.applyMergeFromPniSignature(localIdentifiers: .forUnitTests, aci: aci, pni: pni, tx: tx)
+            return aciRecipient
+        }
+
+        // The folder's membership moved to the merged recipient, and still
+        // shows the same chat.
+        let memberships = d.mockDB.read { d.chatFolderStore.fetchMemberships(folderRowId: folder.id, tx: $0) }
+        XCTAssertEqual(memberships.map(\.chat), [.contact(recipientRowId: aciRecipient.id)])
+        let fetched = try XCTUnwrap(d.mockDB.read { d.chatFolderManager.fetch(chatFolderId: folder.chatFolderId, tx: $0) })
+        XCTAssertEqual(fetched.includedThreadRowIds, [thread.sqliteRowId!])
     }
 
     func testPniSignatureMergeStatus() throws {
