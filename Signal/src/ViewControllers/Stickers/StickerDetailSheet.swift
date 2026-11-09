@@ -211,40 +211,35 @@ extension StickerDetailSheet.Action {
                         )
                     }
 
-                    if !isPackInstalled {
-                        let confirmActionSheet = ActionSheetController(
+                    let confirmActionSheet = ActionSheetController(
+                        title: OWSLocalizedString(
+                            "STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE",
+                            comment: "Title for an action sheet asking the user to confirm if they want to remove a sticker from favorites",
+                        ),
+                        message: OWSLocalizedString(
+                            "STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE",
+                            comment: "Message for an action sheet asking the user to confirm if they want to remove a sticker from favorites",
+                        ),
+                    )
+
+                    confirmActionSheet.addAction(
+                        ActionSheetAction(
                             title: OWSLocalizedString(
-                                "STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE",
-                                comment: "Title for an action sheet asking the user to confirm if they want to remove a sticker from favorites",
+                                "STICKER_CONFIRM_REMOVE_BUTTON",
+                                comment: "Button to confirm a user wants to remove a sticker",
                             ),
-                            message: OWSLocalizedString(
-                                "STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE",
-                                comment: "Message for an action sheet asking the user to confirm if they want to remove a sticker from favorites",
-                            ),
-                        )
+                            style: .destructive,
+                            handler: { _ in
+                                Task {
+                                    await stickerManager.removeStickerFromFavorites(stickerInfo: stickerInfo)
+                                    showToastAction()
+                                }
+                            },
+                        ),
+                    )
+                    confirmActionSheet.addAction(.cancel)
 
-                        confirmActionSheet.addAction(
-                            ActionSheetAction(
-                                title: OWSLocalizedString(
-                                    "STICKER_CONFIRM_REMOVE_BUTTON",
-                                    comment: "Button to confirm a user wants to remove a sticker",
-                                ),
-                                style: .destructive,
-                                handler: { _ in
-                                    Task {
-                                        await stickerManager.removeStickerFromFavorites(stickerInfo: stickerInfo)
-                                        showToastAction()
-                                    }
-                                },
-                            ),
-                        )
-                        confirmActionSheet.addAction(.cancel)
-
-                        presentingVC?.presentActionSheet(confirmActionSheet)
-                    } else {
-                        await stickerManager.removeStickerFromFavorites(stickerInfo: stickerInfo)
-                        showToastAction()
-                    }
+                    presentingVC?.presentActionSheet(confirmActionSheet)
                 }
             },
         )
