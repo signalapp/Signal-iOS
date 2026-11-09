@@ -274,6 +274,55 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         }
     }
 
+    func testDumpAndRestoreSkipsCorruptedRow() throws {
+        try assertDumpAndRestoreSkips(corruptedRows: [50])
+    }
+
+    func testDumpAndRestoreSkipsCorruptedFirstAndLastRows() throws {
+        // The first two rows share the root page until it splits, so corrupt both.
+        try assertDumpAndRestoreSkips(corruptedRows: [0, 1, rowCount - 1])
+    }
+
+    func testDumpAndRestoreSkipsAdjacentCorruptedRows() throws {
+        try assertDumpAndRestoreSkips(corruptedRows: [20, 21, 22])
+    }
+
+    func testDumpAndRestoreSkipsSeparateCorruptedRows() throws {
+        try assertDumpAndRestoreSkips(corruptedRows: [20, 70])
+    }
+
+    private func assertDumpAndRestoreSkips(corruptedRows: Set<Int>) throws {
+        let databaseStorage = try newDatabaseWithCorruptedRows(corruptedRows, tableName: "KeyTransparency") { db, i in
+            try db.execute(
+                sql: "INSERT INTO KeyTransparency (aci, libsignalBlob) VALUES (?, ?)",
+                arguments: [Data("\(i)".utf8), Randomness.generateRandomBytes(pageFillingValueSize)],
+            )
+        }
+
+        let dump = DatabaseRecovery.DumpAndRestoreOperation(
+            appReadiness: AppReadinessMock(),
+            corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
+            keychainStorage: databaseStorage.keychainStorage,
+        )
+        try dump.run()
+
+        let finishedDatabaseStorage = try cloneDatabaseStorage(databaseStorage)
+        let recoveredRows = try finishedDatabaseStorage.read { tx in
+            try Data.fetchAll(tx.database, sql: "SELECT aci FROM KeyTransparency").map { Int(String(decoding: $0, as: UTF8.self)) }
+        }
+        let expectedRows = (0..<rowCount).filter { !corruptedRows.contains($0) }
+        XCTAssertEqual(Set(recoveredRows), Set(expectedRows))
+    }
+
+    func testMoreActionableErrorPrefersRunningOutOfSpace() {
+        let full = DatabaseError(resultCode: .SQLITE_FULL)
+        let corrupt = DatabaseError(resultCode: .SQLITE_CORRUPT)
+        typealias Operation = DatabaseRecovery.DumpAndRestoreOperation
+        XCTAssertEqual((Operation.moreActionableError(nil, corrupt) as? DatabaseError)?.resultCode, .SQLITE_CORRUPT)
+        XCTAssertEqual((Operation.moreActionableError(corrupt, full) as? DatabaseError)?.resultCode, .SQLITE_FULL)
+        XCTAssertEqual((Operation.moreActionableError(full, corrupt) as? DatabaseError)?.resultCode, .SQLITE_FULL)
+    }
+
     func testDumpAndRestoreWithInvalidNonessentialTable() throws {
         let databaseStorage = try newDatabase()
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
