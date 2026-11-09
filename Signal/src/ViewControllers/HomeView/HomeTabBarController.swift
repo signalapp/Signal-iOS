@@ -186,9 +186,9 @@ class HomeTabBarController: UITabBarController, UINavigationControllerDelegate, 
 
     /// - returns: Currently selected split view controller.
     /// - warning: Use this property instead of `selectedViewController` because
-    /// `selectedViewController` will not return a `UISplitViewController` on iOS 15-16.
-    fileprivate var selectedSplitViewController: HomeTabSplitViewController? {
-        guard let selectedViewController else { return nil }
+    /// `selectedViewController` will not return a `UISplitViewController` on iOS 15-18.
+    var selectedSplitViewController: HomeTabSplitViewController? {
+        guard let selectedViewController = _selectedViewController else { return nil }
 
         // Unwrap UISplitViewController from HomeTabSplitContainerViewController
         if #unavailable(iOS 26), let splitContainerVC = selectedViewController as? HomeTabSplitContainerViewController {
@@ -196,6 +196,16 @@ class HomeTabBarController: UITabBarController, UINavigationControllerDelegate, 
         }
         return selectedViewController as? HomeTabSplitViewController
     }
+
+    @available(*, unavailable, message: "Use `selectedSplitViewController` instead")
+    override var selectedViewController: UIViewController? {
+        get { super.selectedViewController }
+        set { super.selectedViewController = newValue }
+    }
+
+    // We don't allow using `selectedViewController` from outside,
+    // but still need to access getter from the inside.
+    private var _selectedViewController: UIViewController? { (self as UITabBarController).selectedViewController }
 
     // There are two things going on here that require this code. The first is a stored property can't
     // conditionally include itself with an @available property, so some type erasing hoops need to be
@@ -345,7 +355,7 @@ class HomeTabBarController: UITabBarController, UINavigationControllerDelegate, 
 
         let animations = {
             self.tabBar.frame = self.tabBar.frame.offsetBy(dx: 0, dy: newMinY - oldFrame.y)
-            if let vc = self.selectedViewController {
+            if let vc = self._selectedViewController {
                 var additionalSafeAreaInsets = vc.additionalSafeAreaInsets
                 additionalSafeAreaInsets.bottom += additionalSafeArea
                 vc.additionalSafeAreaInsets = additionalSafeAreaInsets
@@ -1048,7 +1058,7 @@ class HomeTabBarController: UITabBarController, UINavigationControllerDelegate, 
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
         // Scroll primary to top when user taps on the currently selected tab.
         if
-            selectedViewController === viewController,
+            _selectedViewController === viewController,
             let homeTabBarController = tabBarController as? HomeTabBarController,
             let homeTabSplitViewController = homeTabBarController.selectedSplitViewController
         {
