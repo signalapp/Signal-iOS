@@ -27,4 +27,30 @@ public struct ChatFolder: Equatable {
     public var includeAllIndividualChats: Bool { record.includeAllIndividualChats }
     public var includeAllGroupChats: Bool { record.includeAllGroupChats }
     public var isDeleted: Bool { record.isDeleted }
+
+    func contains(_ thread: ThreadFinder.InboxThread, nowMs: UInt64) -> Bool {
+        if folderType == .all {
+            return true
+        }
+        guard let threadType = TSThreadType(rawValue: thread.recordType) else {
+            return false
+        }
+        if excludedThreadRowIds.contains(thread.id) {
+            return false
+        }
+        if UInt64(bitPattern: thread.mutedUntilTimestamp) > nowMs, !showMutedChats {
+            return false
+        }
+        if includedThreadRowIds.contains(thread.id) {
+            return true
+        }
+        switch threadType {
+        case .contactThread, .releaseNotesThread:
+            return includeAllIndividualChats
+        case .groupThread:
+            return includeAllGroupChats
+        case .thread, .privateStoryThread:
+            return false
+        }
+    }
 }
