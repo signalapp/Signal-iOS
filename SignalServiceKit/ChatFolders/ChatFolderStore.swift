@@ -51,6 +51,15 @@ public struct ChatFolderStore {
         }
     }
 
+    func fetchRecords(deletedBefore date: Date, tx: DBReadTransaction) -> [ChatFolderRecord] {
+        return failIfThrows {
+            try ChatFolderRecord
+                .filter(ChatFolderRecord.Columns.deletedAtTimestampMs > 0)
+                .filter(ChatFolderRecord.Columns.deletedAtTimestampMs < Int64(clamping: date.ows_millisecondsSince1970))
+                .fetchAll(tx.database)
+        }
+    }
+
     // MARK: - Reading membership
 
     func fetchMemberships(folderRowId: Int64, tx: DBReadTransaction) -> [ChatFolderChatRecord] {
@@ -96,6 +105,16 @@ public struct ChatFolderStore {
         }
     }
 
+    func deleteTombstone(_ record: ChatFolderRecord, tx: DBWriteTransaction) {
+        guard record.isDeleted else {
+            owsFailDebug("Only deleted folders can be deleted from the database.")
+            return
+        }
+        failIfThrows {
+            _ = try record.delete(tx.database)
+        }
+    }
+
     func fetchOrInsertAllChatsRecord(tx: DBWriteTransaction) -> ChatFolderRecord {
         if let record = fetchRecordForAllChatsFolder(tx: tx) {
             return record
@@ -112,6 +131,19 @@ public struct ChatFolderStore {
                 includeAllGroupChats: true,
                 deletedAtTimestampMs: 0,
                 tx: tx,
+            )
+        }
+    }
+
+    func setAllChatsChatFolderId(_ chatFolderId: UUID, tx: DBWriteTransaction) {
+        failIfThrows {
+            try tx.database.execute(
+                sql: """
+                UPDATE \(ChatFolderRecord.databaseTableName)
+                SET \(ChatFolderRecord.Columns.chatFolderId.name) = ?
+                WHERE \(ChatFolderRecord.Columns.folderType.name) = ?
+                """,
+                arguments: [chatFolderId, ChatFolderRecord.FolderType.all.rawValue],
             )
         }
     }
@@ -196,6 +228,17 @@ public struct ChatFolderStore {
     }
 
     // MARK: - Recipient merging
+
+    /// Folders that reference the recipient, either as include or exclude
+    func fetchChatFolderIds(recipientRowId: SignalRecipient.RowId, tx: DBReadTransaction) -> Set<UUID> {
+        return failIfThrows {
+            let chatFolderRowIds = try ChatFolderChatRecord
+                .select(ChatFolderChatRecord.Columns.chatFolderRowId, as: Int64.self)
+                .filter(ChatFolderChatRecord.Columns.recipientRowId == recipientRowId)
+                .fetchAll(tx.database)
+            return Set(try ChatFolderRecord.fetchAll(tx.database, keys: chatFolderRowIds).map(\.chatFolderId))
+        }
+    }
 
     func mergeRecipient(
         _ recipientRowId: SignalRecipient.RowId,

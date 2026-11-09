@@ -272,6 +272,7 @@ nonisolated struct StorageServiceProtos_ManifestRecord: Sendable {
       case account // = 4
       case storyDistributionList // = 5
       case callLink // = 7
+      case chatFolder // = 8
       case favoriteStickerPack // = 11
       case UNRECOGNIZED(Int)
 
@@ -288,6 +289,7 @@ nonisolated struct StorageServiceProtos_ManifestRecord: Sendable {
         case 4: self = .account
         case 5: self = .storyDistributionList
         case 7: self = .callLink
+        case 8: self = .chatFolder
         case 11: self = .favoriteStickerPack
         default: self = .UNRECOGNIZED(rawValue)
         }
@@ -302,6 +304,7 @@ nonisolated struct StorageServiceProtos_ManifestRecord: Sendable {
         case .account: return 4
         case .storyDistributionList: return 5
         case .callLink: return 7
+        case .chatFolder: return 8
         case .favoriteStickerPack: return 11
         case .UNRECOGNIZED(let i): return i
         }
@@ -316,6 +319,7 @@ nonisolated struct StorageServiceProtos_ManifestRecord: Sendable {
         .account,
         .storyDistributionList,
         .callLink,
+        .chatFolder,
         .favoriteStickerPack,
       ]
 
@@ -382,6 +386,14 @@ nonisolated struct StorageServiceProtos_StorageRecord: Sendable {
     set {record = .callLink(newValue)}
   }
 
+  var chatFolder: StorageServiceProtos_ChatFolderRecord {
+    get {
+      if case .chatFolder(let v)? = record {return v}
+      return StorageServiceProtos_ChatFolderRecord()
+    }
+    set {record = .chatFolder(newValue)}
+  }
+
   var sticker: StorageServiceProtos_FavoriteStickerRecord {
     get {
       if case .sticker(let v)? = record {return v}
@@ -399,6 +411,7 @@ nonisolated struct StorageServiceProtos_StorageRecord: Sendable {
     case account(StorageServiceProtos_AccountRecord)
     case storyDistributionList(StorageServiceProtos_StoryDistributionListRecord)
     case callLink(StorageServiceProtos_CallLinkRecord)
+    case chatFolder(StorageServiceProtos_ChatFolderRecord)
     case sticker(StorageServiceProtos_FavoriteStickerRecord)
 
   }
@@ -1413,6 +1426,141 @@ nonisolated struct StorageServiceProtos_FavoriteStickerRecord: Sendable {
   init() {}
 }
 
+nonisolated struct StorageServiceProtos_Recipient: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var identifier: StorageServiceProtos_Recipient.OneOf_Identifier? = nil
+
+  var contact: StorageServiceProtos_Recipient.Contact {
+    get {
+      if case .contact(let v)? = identifier {return v}
+      return StorageServiceProtos_Recipient.Contact()
+    }
+    set {identifier = .contact(newValue)}
+  }
+
+  var legacyGroupID: Data {
+    get {
+      if case .legacyGroupID(let v)? = identifier {return v}
+      return Data()
+    }
+    set {identifier = .legacyGroupID(newValue)}
+  }
+
+  var groupMasterKey: Data {
+    get {
+      if case .groupMasterKey(let v)? = identifier {return v}
+      return Data()
+    }
+    set {identifier = .groupMasterKey(newValue)}
+  }
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  nonisolated enum OneOf_Identifier: Equatable, Sendable {
+    case contact(StorageServiceProtos_Recipient.Contact)
+    case legacyGroupID(Data)
+    case groupMasterKey(Data)
+
+  }
+
+  nonisolated struct Contact: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var serviceID: String = String()
+
+    var e164: String = String()
+
+    /// service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
+    var serviceIDBinary: Data = Data()
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+  }
+
+  init() {}
+}
+
+nonisolated struct StorageServiceProtos_ChatFolderRecord: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var id: Data = Data()
+
+  var name: String = String()
+
+  /// Position order of folder, low-to-high from start-to-end
+  var position: UInt32 = 0
+
+  var showOnlyUnread: Bool = false
+
+  var showMutedChats: Bool = false
+
+  /// Folder includes all 1:1 chats, unless excluded
+  var includeAllIndividualChats: Bool = false
+
+  /// Folder includes all group chats, unless excluded
+  var includeAllGroupChats: Bool = false
+
+  var folderType: StorageServiceProtos_ChatFolderRecord.FolderType = .unknown
+
+  var includedRecipients: [StorageServiceProtos_Recipient] = []
+
+  var excludedRecipients: [StorageServiceProtos_Recipient] = []
+
+  /// When non-zero, `position` should be set to 4294967295 (2^32-1) and `includedRecipients` should be empty
+  var deletedAtTimestampMs: UInt64 = 0
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  /// Represents the default "All chats" folder record vs all other custom folders
+  nonisolated enum FolderType: SwiftProtobuf.Enum, Swift.CaseIterable {
+    typealias RawValue = Int
+    case unknown // = 0
+    case all // = 1
+    case custom // = 2
+    case UNRECOGNIZED(Int)
+
+    init() {
+      self = .unknown
+    }
+
+    init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .unknown
+      case 1: self = .all
+      case 2: self = .custom
+      default: self = .UNRECOGNIZED(rawValue)
+      }
+    }
+
+    var rawValue: Int {
+      switch self {
+      case .unknown: return 0
+      case .all: return 1
+      case .custom: return 2
+      case .UNRECOGNIZED(let i): return i
+      }
+    }
+
+    // The compiler won't synthesize support with the UNRECOGNIZED case.
+    static let allCases: [StorageServiceProtos_ChatFolderRecord.FolderType] = [
+      .unknown,
+      .all,
+      .custom,
+    ]
+
+  }
+
+  init() {}
+}
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate nonisolated let _protobuf_package = "StorageServiceProtos"
@@ -1685,12 +1833,12 @@ nonisolated extension StorageServiceProtos_ManifestRecord.Key: SwiftProtobuf.Mes
 }
 
 nonisolated extension StorageServiceProtos_ManifestRecord.Key.TypeEnum: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}CONTACT\0\u{1}GROUPV1\0\u{1}GROUPV2\0\u{1}ACCOUNT\0\u{1}STORY_DISTRIBUTION_LIST\0\u{2}\u{2}CALL_LINK\0\u{2}\u{4}FAVORITE_STICKER_PACK\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}CONTACT\0\u{1}GROUPV1\0\u{1}GROUPV2\0\u{1}ACCOUNT\0\u{1}STORY_DISTRIBUTION_LIST\0\u{2}\u{2}CALL_LINK\0\u{1}CHAT_FOLDER\0\u{2}\u{3}FAVORITE_STICKER_PACK\0")
 }
 
 nonisolated extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".StorageRecord"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contact\0\u{1}groupV1\0\u{1}groupV2\0\u{1}account\0\u{1}storyDistributionList\0\u{2}\u{2}callLink\0\u{2}\u{4}sticker\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contact\0\u{1}groupV1\0\u{1}groupV2\0\u{1}account\0\u{1}storyDistributionList\0\u{2}\u{2}callLink\0\u{1}chatFolder\0\u{2}\u{3}sticker\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1776,6 +1924,19 @@ nonisolated extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message,
           self.record = .callLink(v)
         }
       }()
+      case 8: try {
+        var v: StorageServiceProtos_ChatFolderRecord?
+        var hadOneofValue = false
+        if let current = self.record {
+          hadOneofValue = true
+          if case .chatFolder(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.record = .chatFolder(v)
+        }
+      }()
       case 11: try {
         var v: StorageServiceProtos_FavoriteStickerRecord?
         var hadOneofValue = false
@@ -1823,6 +1984,10 @@ nonisolated extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message,
     case .callLink?: try {
       guard case .callLink(let v)? = self.record else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+    }()
+    case .chatFolder?: try {
+      guard case .chatFolder(let v)? = self.record else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
     }()
     case .sticker?: try {
       guard case .sticker(let v)? = self.record else { preconditionFailure() }
@@ -3141,4 +3306,202 @@ nonisolated extension StorageServiceProtos_FavoriteStickerRecord: SwiftProtobuf.
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+nonisolated extension StorageServiceProtos_Recipient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".Recipient"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}contact\0\u{1}legacyGroupId\0\u{1}groupMasterKey\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try {
+        var v: StorageServiceProtos_Recipient.Contact?
+        var hadOneofValue = false
+        if let current = self.identifier {
+          hadOneofValue = true
+          if case .contact(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.identifier = .contact(v)
+        }
+      }()
+      case 2: try {
+        var v: Data?
+        try decoder.decodeSingularBytesField(value: &v)
+        if let v = v {
+          if self.identifier != nil {try decoder.handleConflictingOneOf()}
+          self.identifier = .legacyGroupID(v)
+        }
+      }()
+      case 3: try {
+        var v: Data?
+        try decoder.decodeSingularBytesField(value: &v)
+        if let v = v {
+          if self.identifier != nil {try decoder.handleConflictingOneOf()}
+          self.identifier = .groupMasterKey(v)
+        }
+      }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    switch self.identifier {
+    case .contact?: try {
+      guard case .contact(let v)? = self.identifier else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    }()
+    case .legacyGroupID?: try {
+      guard case .legacyGroupID(let v)? = self.identifier else { preconditionFailure() }
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
+    }()
+    case .groupMasterKey?: try {
+      guard case .groupMasterKey(let v)? = self.identifier else { preconditionFailure() }
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
+    }()
+    case nil: break
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: StorageServiceProtos_Recipient, rhs: StorageServiceProtos_Recipient) -> Bool {
+    if lhs.identifier != rhs.identifier {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension StorageServiceProtos_Recipient.Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = StorageServiceProtos_Recipient.protoMessageName + ".Contact"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}serviceId\0\u{1}e164\0\u{1}serviceIdBinary\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.serviceID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.e164) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self.serviceIDBinary) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.serviceID.isEmpty {
+      try visitor.visitSingularStringField(value: self.serviceID, fieldNumber: 1)
+    }
+    if !self.e164.isEmpty {
+      try visitor.visitSingularStringField(value: self.e164, fieldNumber: 2)
+    }
+    if !self.serviceIDBinary.isEmpty {
+      try visitor.visitSingularBytesField(value: self.serviceIDBinary, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: StorageServiceProtos_Recipient.Contact, rhs: StorageServiceProtos_Recipient.Contact) -> Bool {
+    if lhs.serviceID != rhs.serviceID {return false}
+    if lhs.e164 != rhs.e164 {return false}
+    if lhs.serviceIDBinary != rhs.serviceIDBinary {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension StorageServiceProtos_ChatFolderRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ChatFolderRecord"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}name\0\u{1}position\0\u{1}showOnlyUnread\0\u{1}showMutedChats\0\u{1}includeAllIndividualChats\0\u{1}includeAllGroupChats\0\u{1}folderType\0\u{1}includedRecipients\0\u{1}excludedRecipients\0\u{1}deletedAtTimestampMs\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.id) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.position) }()
+      case 4: try { try decoder.decodeSingularBoolField(value: &self.showOnlyUnread) }()
+      case 5: try { try decoder.decodeSingularBoolField(value: &self.showMutedChats) }()
+      case 6: try { try decoder.decodeSingularBoolField(value: &self.includeAllIndividualChats) }()
+      case 7: try { try decoder.decodeSingularBoolField(value: &self.includeAllGroupChats) }()
+      case 8: try { try decoder.decodeSingularEnumField(value: &self.folderType) }()
+      case 9: try { try decoder.decodeRepeatedMessageField(value: &self.includedRecipients) }()
+      case 10: try { try decoder.decodeRepeatedMessageField(value: &self.excludedRecipients) }()
+      case 11: try { try decoder.decodeSingularUInt64Field(value: &self.deletedAtTimestampMs) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.id.isEmpty {
+      try visitor.visitSingularBytesField(value: self.id, fieldNumber: 1)
+    }
+    if !self.name.isEmpty {
+      try visitor.visitSingularStringField(value: self.name, fieldNumber: 2)
+    }
+    if self.position != 0 {
+      try visitor.visitSingularUInt32Field(value: self.position, fieldNumber: 3)
+    }
+    if self.showOnlyUnread != false {
+      try visitor.visitSingularBoolField(value: self.showOnlyUnread, fieldNumber: 4)
+    }
+    if self.showMutedChats != false {
+      try visitor.visitSingularBoolField(value: self.showMutedChats, fieldNumber: 5)
+    }
+    if self.includeAllIndividualChats != false {
+      try visitor.visitSingularBoolField(value: self.includeAllIndividualChats, fieldNumber: 6)
+    }
+    if self.includeAllGroupChats != false {
+      try visitor.visitSingularBoolField(value: self.includeAllGroupChats, fieldNumber: 7)
+    }
+    if self.folderType != .unknown {
+      try visitor.visitSingularEnumField(value: self.folderType, fieldNumber: 8)
+    }
+    if !self.includedRecipients.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.includedRecipients, fieldNumber: 9)
+    }
+    if !self.excludedRecipients.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.excludedRecipients, fieldNumber: 10)
+    }
+    if self.deletedAtTimestampMs != 0 {
+      try visitor.visitSingularUInt64Field(value: self.deletedAtTimestampMs, fieldNumber: 11)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: StorageServiceProtos_ChatFolderRecord, rhs: StorageServiceProtos_ChatFolderRecord) -> Bool {
+    if lhs.id != rhs.id {return false}
+    if lhs.name != rhs.name {return false}
+    if lhs.position != rhs.position {return false}
+    if lhs.showOnlyUnread != rhs.showOnlyUnread {return false}
+    if lhs.showMutedChats != rhs.showMutedChats {return false}
+    if lhs.includeAllIndividualChats != rhs.includeAllIndividualChats {return false}
+    if lhs.includeAllGroupChats != rhs.includeAllGroupChats {return false}
+    if lhs.folderType != rhs.folderType {return false}
+    if lhs.includedRecipients != rhs.includedRecipients {return false}
+    if lhs.excludedRecipients != rhs.excludedRecipients {return false}
+    if lhs.deletedAtTimestampMs != rhs.deletedAtTimestampMs {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension StorageServiceProtos_ChatFolderRecord.FolderType: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0UNKNOWN\0\u{1}ALL\0\u{1}CUSTOM\0")
 }

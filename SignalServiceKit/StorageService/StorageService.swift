@@ -135,6 +135,15 @@ public struct StorageService {
             return record
         }
 
+        public var chatFolderRecord: StorageServiceProtoChatFolderRecord? {
+            guard case .chatFolder = type else { return nil }
+            guard case .chatFolder(let record) = record.record else {
+                owsFailDebug("unexpectedly missing chat folder record")
+                return nil
+            }
+            return record
+        }
+
         public var favoriteStickerRecord: StorageServiceProtoFavoriteStickerRecord? {
             guard case .favoriteStickerPack = type else { return nil }
             guard case .sticker(let record) = record.record else {
@@ -177,6 +186,12 @@ public struct StorageService {
         public init(identifier: StorageIdentifier, callLink: StorageServiceProtoCallLinkRecord) {
             var storageRecord = StorageServiceProtoStorageRecord.builder()
             storageRecord.setRecord(.callLink(callLink))
+            self.init(identifier: identifier, record: storageRecord.buildInfallibly())
+        }
+
+        public init(identifier: StorageIdentifier, chatFolder: StorageServiceProtoChatFolderRecord) {
+            var storageRecord = StorageServiceProtoStorageRecord.builder()
+            storageRecord.setRecord(.chatFolder(chatFolder))
             self.init(identifier: identifier, record: storageRecord.buildInfallibly())
         }
 
@@ -561,6 +576,8 @@ extension StorageServiceProtoManifestRecordKeyType: CustomStringConvertible {
             return ".storyDistributionList"
         case .callLink:
             return ".callLink"
+        case .chatFolder:
+            return ".chatFolder"
         case .favoriteStickerPack:
             return "favoriteStickerPack"
         case .UNRECOGNIZED:

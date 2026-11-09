@@ -285,6 +285,37 @@ final class ChatFolderStoreTest {
         #expect(names(insertionOrder: [0, 1]) == names(insertionOrder: [1, 0]))
     }
 
+    @Test
+    func testFetchRecordsDeletedBeforeSkipsLiveAndRecentFolders() {
+        insertFolder(name: "Live", position: 1)
+        let old = insertFolder(name: "Old", position: 2)
+        let recent = insertFolder(name: "Recent", position: 3)
+        inMemoryDB.write { tx in
+            store.markDeleted(chatFolderId: old.chatFolderId, deletedAtTimestampMs: 1000, tx: tx)
+            store.markDeleted(chatFolderId: recent.chatFolderId, deletedAtTimestampMs: 3000, tx: tx)
+        }
+
+        let records = inMemoryDB.read { store.fetchRecords(deletedBefore: Date(timeIntervalSince1970: 2), tx: $0) }
+        #expect(records.map(\.chatFolderId) == [old.chatFolderId])
+    }
+
+    @Test
+    func testDeleteTombstoneRemovesTheFolder() throws {
+        let live = insertFolder(name: "Live", position: 1)
+        let deleted = insertFolder(name: "Deleted", position: 2)
+        inMemoryDB.write { tx in
+            store.markDeleted(chatFolderId: deleted.chatFolderId, deletedAtTimestampMs: 1000, tx: tx)
+        }
+        let tombstone = try #require(inMemoryDB.read { store.fetchRecord(chatFolderId: deleted.chatFolderId, tx: $0) })
+
+        inMemoryDB.write { tx in
+            store.deleteTombstone(tombstone, tx: tx)
+        }
+
+        #expect(inMemoryDB.read { store.fetchRecord(chatFolderId: deleted.chatFolderId, tx: $0) } == nil)
+        #expect(inMemoryDB.read { store.fetchRecord(chatFolderId: live.chatFolderId, tx: $0) } != nil)
+    }
+
     // MARK: - Membership
 
     @Test

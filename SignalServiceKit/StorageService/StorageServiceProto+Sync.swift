@@ -68,11 +68,16 @@ enum StorageServiceMergeResult<IdType> {
     /// which it pertains, it's invalid and should be deleted.
     case invalid
 
-    /// The merge completed successfully. The first associated value indicates
-    /// whether or not there are changes on the local device that should be
-    /// synced. The second associated value indicates the identifier for the
-    /// item that was merged.
-    case merged(needsUpdate: Bool, IdType)
+    /// The merge completed successfully.
+    /// - Parameter needsUpdate:
+    /// Whether or not there are changes on the local device for the merged
+    /// item that should be synced.
+    /// - Parameter localId:
+    /// The "local" identifier for the item that was merged.
+    /// - Parameter replacedId:
+    /// The identifier of a local item that the merged item replaced, and whose
+    /// record should therefore be deleted.
+    case merged(needsUpdate: Bool, _ localId: IdType, replacedId: IdType? = nil)
 }
 
 // MARK: - Contact Record
@@ -2615,6 +2620,290 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
         }
         self.callLinkStore.update(callLink, tx: tx)
         return .merged(needsUpdate: false, rootKey.bytes)
+    }
+}
+
+// MARK: - Chat Folder Record
+
+class StorageServiceChatFolderRecordUpdater: StorageServiceRecordUpdater {
+    typealias IdType = UUID
+    typealias RecordType = StorageServiceProtoChatFolderRecord
+
+    let chatFolderStore: ChatFolderStore
+    private let groupStore = GroupStore()
+    private let recipientDatabaseTable: RecipientDatabaseTable
+    private let recipientFetcher: RecipientFetcher
+
+    init(
+        chatFolderStore: ChatFolderStore,
+        recipientDatabaseTable: RecipientDatabaseTable,
+        recipientFetcher: RecipientFetcher,
+    ) {
+        self.chatFolderStore = chatFolderStore
+        self.recipientDatabaseTable = recipientDatabaseTable
+        self.recipientFetcher = recipientFetcher
+    }
+
+    func unknownFields(for record: StorageServiceProtoChatFolderRecord) -> UnknownStorage? { record.unknownFields }
+
+    func buildStorageItem(for record: StorageServiceProtoChatFolderRecord) -> StorageService.StorageItem {
+        return StorageService.StorageItem(identifier: .generate(type: .chatFolder), chatFolder: record)
+    }
+
+    // MARK: - Building
+
+    func buildRecord(
+        for chatFolderId: UUID,
+        unknownFields: UnknownStorage?,
+        transaction tx: DBReadTransaction,
+    ) -> StorageServiceProtoChatFolderRecord? {
+        guard let folder = chatFolderStore.fetchRecord(chatFolderId: chatFolderId, tx: tx) else {
+            return nil
+        }
+
+        var builder = StorageServiceProtoChatFolderRecord.builder()
+        builder.setId(chatFolderId.data)
+        builder.setName(folder.name)
+        builder.setPosition(folder.position)
+        builder.setShowOnlyUnread(folder.showOnlyUnread)
+        builder.setShowMutedChats(folder.showMutedChats)
+        builder.setIncludeAllIndividualChats(folder.includeAllIndividualChats)
+        builder.setIncludeAllGroupChats(folder.includeAllGroupChats)
+        switch folder.folderType {
+        case .all: builder.setFolderType(.all)
+        case .custom: builder.setFolderType(.custom)
+        }
+        if folder.isDeleted {
+            builder.setDeletedAtTimestampMs(UInt64(clamping: folder.deletedAtTimestampMs))
+        } else {
+            var included = [StorageServiceProtoRecipient]()
+            var excluded = [StorageServiceProtoRecipient]()
+            for (membershipType, recipient) in recipientProtos(folderRowId: folder.id, tx: tx) {
+                switch membershipType {
+                case .included: included.append(recipient)
+                case .excluded: excluded.append(recipient)
+                }
+            }
+            builder.setIncludedRecipients(included)
+            builder.setExcludedRecipients(excluded)
+        }
+        if let unknownFields {
+            builder.setUnknownFields(unknownFields)
+        }
+        return builder.buildInfallibly()
+    }
+
+    private func recipientProtos(
+        folderRowId: Int64,
+        tx: DBReadTransaction,
+    ) -> [(ChatFolder.MembershipType, StorageServiceProtoRecipient)] {
+        let memberships = chatFolderStore.fetchMemberships(folderRowId: folderRowId, tx: tx)
+        return memberships.compactMap { membership in
+            let identifier: StorageServiceProtoRecipientOneOfIdentifier
+            switch membership.chat {
+            case .contact(let recipientRowId):
+                guard let contactProto = contactProto(recipientRowId: recipientRowId, tx: tx) else {
+                    return nil
+                }
+                identifier = .contact(contactProto)
+            case .group(let groupRowId):
+                guard let masterKey = groupStore.fetchGroup(rowId: groupRowId, tx: tx)?.masterKey else {
+                    return nil
+                }
+                identifier = .groupMasterKey(masterKey.serialize())
+            }
+            var builder = StorageServiceProtoRecipient.builder()
+            builder.setIdentifier(identifier)
+            return (membership.membershipType, builder.buildInfallibly())
+        }
+    }
+
+    private func contactProto(
+        recipientRowId: SignalRecipient.RowId,
+        tx: DBReadTransaction,
+    ) -> StorageServiceProtoRecipientContact? {
+        guard
+            let recipient = recipientDatabaseTable.fetchRecipient(rowId: recipientRowId, tx: tx),
+            let address = NormalizedDatabaseRecordAddress(
+                aci: recipient.aci,
+                phoneNumber: recipient.phoneNumber?.stringValue,
+                pni: recipient.pni,
+            ),
+            let serviceId = address.serviceId
+        else {
+            return nil
+        }
+        var builder = StorageServiceProtoRecipientContact.builder()
+        builder.setServiceIDBinary(serviceId.serviceIdBinary)
+        if let phoneNumber = address.phoneNumber {
+            builder.setE164(phoneNumber)
+        }
+        return builder.buildInfallibly()
+    }
+
+    // MARK: - Merging
+
+    func mergeRecord(
+        _ record: StorageServiceProtoChatFolderRecord,
+        transaction tx: DBWriteTransaction,
+    ) -> StorageServiceMergeResult<UUID> {
+        guard
+            let id = record.id,
+            let (uuid, byteCount) = UUID.from(data: id),
+            byteCount == id.count
+        else {
+            return .invalid
+        }
+
+        let folderType: ChatFolderRecord.FolderType
+        switch record.folderType {
+        case .all: folderType = .all
+        case .custom: folderType = .custom
+        case .unknown, .UNRECOGNIZED: return .invalid
+        }
+
+        let deletedAtTimestampMs = Int64(clamping: record.deletedAtTimestampMs)
+
+        var localRecord = chatFolderStore.fetchRecord(chatFolderId: uuid, tx: tx)
+        var replacedId: UUID?
+        if localRecord == nil, folderType == .all {
+            // localRecord is nil, meaning we don't have a local record
+            // _with this ID_, but we should still already have a .all folder
+            // _with a different ID_.
+            replacedId = chatFolderStore.fetchOrInsertAllChatsRecord(tx: tx).chatFolderId
+            chatFolderStore.setAllChatsChatFolderId(uuid, tx: tx)
+            localRecord = chatFolderStore.fetchRecord(chatFolderId: uuid, tx: tx)
+        }
+
+        let isDeleted = deletedAtTimestampMs > 0
+
+        if folderType == .all, isDeleted {
+            // All Chats shouldn't ever be deleted, so fix it if it happened.
+            return .merged(needsUpdate: true, uuid, replacedId: replacedId)
+        }
+
+        if let localRecord, localRecord.isDeleted {
+            // Earliest deletion wins. If the local record is deleted but it
+            // isn't deleted remotely, push that.
+            let needsUpdate = !isDeleted || deletedAtTimestampMs > localRecord.deletedAtTimestampMs
+            if isDeleted, deletedAtTimestampMs < localRecord.deletedAtTimestampMs {
+                chatFolderStore.markDeleted(
+                    chatFolderId: uuid,
+                    deletedAtTimestampMs: deletedAtTimestampMs,
+                    tx: tx,
+                )
+            }
+            return .merged(needsUpdate: needsUpdate, uuid, replacedId: replacedId)
+        }
+
+        if isDeleted {
+            if let localRecord {
+                chatFolderStore.markDeleted(
+                    chatFolderId: localRecord.chatFolderId,
+                    deletedAtTimestampMs: deletedAtTimestampMs,
+                    tx: tx,
+                )
+            } else {
+                _ = chatFolderStore.insertCustomFolderRecord(
+                    chatFolderId: uuid,
+                    name: record.name ?? "",
+                    position: ChatFolderRecord.deletedPosition,
+                    showOnlyUnread: record.showOnlyUnread,
+                    showMutedChats: record.showMutedChats,
+                    includeAllIndividualChats: record.includeAllIndividualChats,
+                    includeAllGroupChats: record.includeAllGroupChats,
+                    deletedAtTimestampMs: deletedAtTimestampMs,
+                    tx: tx,
+                )
+            }
+            return .merged(needsUpdate: false, uuid, replacedId: replacedId)
+        }
+
+        let updated: ChatFolderRecord
+        if var localRecord {
+            localRecord.name = record.name ?? ""
+            localRecord.showOnlyUnread = record.showOnlyUnread
+            localRecord.showMutedChats = record.showMutedChats
+            localRecord.includeAllIndividualChats = record.includeAllIndividualChats
+            localRecord.includeAllGroupChats = record.includeAllGroupChats
+            localRecord.position = record.position
+            chatFolderStore.update(localRecord, tx: tx)
+            updated = localRecord
+        } else {
+            // All Chats always has a local record by now, so this is a new
+            // custom folder.
+            updated = chatFolderStore.insertCustomFolderRecord(
+                chatFolderId: uuid,
+                name: record.name ?? "",
+                position: record.position,
+                showOnlyUnread: record.showOnlyUnread,
+                showMutedChats: record.showMutedChats,
+                includeAllIndividualChats: record.includeAllIndividualChats,
+                includeAllGroupChats: record.includeAllGroupChats,
+                deletedAtTimestampMs: 0,
+                tx: tx,
+            )
+        }
+
+        chatFolderStore.replaceMemberships(
+            folderRowId: updated.id,
+            includedChats: chats(record.includedRecipients, tx: tx),
+            excludedChats: chats(record.excludedRecipients, tx: tx),
+            tx: tx,
+        )
+
+        return .merged(needsUpdate: false, uuid, replacedId: replacedId)
+    }
+
+    /// Chats are members through their SignalRecipient or GroupRecord, which
+    /// are created if needed, so they're kept even if their thread doesn't
+    /// exist yet.
+    private func chats(
+        _ recipients: [StorageServiceProtoRecipient],
+        tx: DBWriteTransaction,
+    ) -> Set<ChatFolderChatRecord.Chat> {
+        var chats = Set<ChatFolderChatRecord.Chat>()
+        for recipient in recipients {
+            switch recipient.identifier {
+            case .contact(let contact)?:
+                let serviceId = ServiceId.parseFrom(
+                    serviceIdBinary: contact.serviceIDBinary,
+                    serviceIdString: contact.serviceID,
+                )
+                // Prefer the ACI or PNI. A contact found by phone number alone
+                // has no service ID, so building the folder would leave it out.
+                // The record's phone number isn't trusted to link a PNI to it.
+                let signalRecipient: SignalRecipient
+                if let serviceId {
+                    signalRecipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
+                } else if let phoneNumber = E164(contact.e164) {
+                    signalRecipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx)
+                } else {
+                    Logger.warn("Dropping chat folder member with an invalid address")
+                    continue
+                }
+                chats.insert(.contact(recipientRowId: signalRecipient.id))
+            case .groupMasterKey(let masterKeyData)?:
+                guard let masterKey = try? GroupMasterKey(contents: masterKeyData) else {
+                    Logger.warn("Dropping chat folder group with an invalid master key")
+                    continue
+                }
+                let secretParams = GroupV2ContextInfo.deriveFrom(masterKey: masterKey).groupSecretParams
+                let groupRecord = groupStore.fetchGroupOrInsert(
+                    secretParams: secretParams,
+                    tx: tx,
+                )
+                chats.insert(.group(groupRowId: groupRecord.rowId))
+            case .legacyGroupID?:
+                // Legacy chats only appear in All chats, so a GV1 group from
+                // another client isn't kept. Editing the folder here uploads
+                // it without the group.
+                continue
+            case nil:
+                continue
+            }
+        }
+        return chats
     }
 }
 

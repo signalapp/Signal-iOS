@@ -10,17 +10,20 @@ public struct ChatFolderManager {
     private let groupStore = GroupStore()
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientFetcher: RecipientFetcher
+    private let storageServiceManager: any StorageServiceManager
     private let threadStore: ThreadStore
 
     init(
         chatFolderStore: ChatFolderStore,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
+        storageServiceManager: any StorageServiceManager,
         threadStore: ThreadStore,
     ) {
         self.chatFolderStore = chatFolderStore
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
+        self.storageServiceManager = storageServiceManager
         self.threadStore = threadStore
     }
 
@@ -152,8 +155,13 @@ public struct ChatFolderManager {
         into targetRecipientRowId: SignalRecipient.RowId,
         tx: DBWriteTransaction,
     ) {
-        _ = chatFolderStore.mergeRecipient(recipientRowId, into: targetRecipientRowId, tx: tx)
-        // [ChatFolders] TODO: Storage Service Sync
+        let mergedIds = chatFolderStore.mergeRecipient(recipientRowId, into: targetRecipientRowId, tx: tx)
+        storageServiceManager.recordPendingUpdates(chatFolderIds: mergedIds)
+    }
+
+    func recordPendingUpdates(forRecipientRowId recipientRowId: SignalRecipient.RowId, tx: DBReadTransaction) {
+        let chatFolderIds = chatFolderStore.fetchChatFolderIds(recipientRowId: recipientRowId, tx: tx)
+        storageServiceManager.recordPendingUpdates(chatFolderIds: chatFolderIds)
     }
 
     // MARK: - App launch
@@ -162,8 +170,9 @@ public struct ChatFolderManager {
         guard db.read(block: { chatFolderStore.fetchRecordForAllChatsFolder(tx: $0) }) == nil else {
             return
         }
-        db.write { tx in
-            _ = chatFolderStore.fetchOrInsertAllChatsRecord(tx: tx)
+        let allChats = db.write { tx in
+            chatFolderStore.fetchOrInsertAllChatsRecord(tx: tx)
         }
+        storageServiceManager.recordPendingUpdates(chatFolderIds: [allChats.chatFolderId])
     }
 }

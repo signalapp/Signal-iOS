@@ -813,6 +813,7 @@ public enum StorageServiceProtoManifestRecordKeyType: SwiftProtobuf.Enum {
     case account // 4
     case storyDistributionList // 5
     case callLink // 7
+    case chatFolder // 8
     case favoriteStickerPack // 11
     case UNRECOGNIZED(Int)
 
@@ -829,6 +830,7 @@ public enum StorageServiceProtoManifestRecordKeyType: SwiftProtobuf.Enum {
             case 4: self = .account
             case 5: self = .storyDistributionList
             case 7: self = .callLink
+            case 8: self = .chatFolder
             case 11: self = .favoriteStickerPack
             default: self = .UNRECOGNIZED(rawValue)
         }
@@ -843,6 +845,7 @@ public enum StorageServiceProtoManifestRecordKeyType: SwiftProtobuf.Enum {
             case .account: return 4
             case .storyDistributionList: return 5
             case .callLink: return 7
+            case .chatFolder: return 8
             case .favoriteStickerPack: return 11
             case .UNRECOGNIZED(let i): return i
         }
@@ -858,6 +861,7 @@ private func StorageServiceProtoManifestRecordKeyTypeWrap(_ value: StorageServic
     case .account: return .account
     case .storyDistributionList: return .storyDistributionList
     case .callLink: return .callLink
+    case .chatFolder: return .chatFolder
     case .favoriteStickerPack: return .favoriteStickerPack
     case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
     }
@@ -872,6 +876,7 @@ private func StorageServiceProtoManifestRecordKeyTypeUnwrap(_ value: StorageServ
     case .account: return .account
     case .storyDistributionList: return .storyDistributionList
     case .callLink: return .callLink
+    case .chatFolder: return .chatFolder
     case .favoriteStickerPack: return .favoriteStickerPack
     case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
     }
@@ -1176,6 +1181,7 @@ public enum StorageServiceProtoStorageRecordOneOfRecord {
     case account(StorageServiceProtoAccountRecord)
     case storyDistributionList(StorageServiceProtoStoryDistributionListRecord)
     case callLink(StorageServiceProtoCallLinkRecord)
+    case chatFolder(StorageServiceProtoChatFolderRecord)
     case sticker(StorageServiceProtoFavoriteStickerRecord)
 }
 
@@ -1187,6 +1193,7 @@ private func StorageServiceProtoStorageRecordOneOfRecordWrap(_ value: StorageSer
     case .account(let value): return .account(StorageServiceProtoAccountRecord(value))
     case .storyDistributionList(let value): return .storyDistributionList(StorageServiceProtoStoryDistributionListRecord(value))
     case .callLink(let value): return .callLink(StorageServiceProtoCallLinkRecord(value))
+    case .chatFolder(let value): return .chatFolder(StorageServiceProtoChatFolderRecord(value))
     case .sticker(let value): return .sticker(StorageServiceProtoFavoriteStickerRecord(value))
     }
 }
@@ -1199,6 +1206,7 @@ private func StorageServiceProtoStorageRecordOneOfRecordUnwrap(_ value: StorageS
     case .account(let value): return .account(value.proto)
     case .storyDistributionList(let value): return .storyDistributionList(value.proto)
     case .callLink(let value): return .callLink(value.proto)
+    case .chatFolder(let value): return .chatFolder(value.proto)
     case .sticker(let value): return .sticker(value.proto)
     }
 }
@@ -4783,6 +4791,592 @@ extension StorageServiceProtoFavoriteStickerRecord {
 
 extension StorageServiceProtoFavoriteStickerRecordBuilder {
     public func buildIgnoringErrors() -> StorageServiceProtoFavoriteStickerRecord? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - StorageServiceProtoRecipientContact
+
+public struct StorageServiceProtoRecipientContact: Codable, CustomDebugStringConvertible {
+
+    fileprivate let proto: StorageServiceProtos_Recipient.Contact
+
+    public var serviceID: String? {
+        guard hasServiceID else {
+            return nil
+        }
+        return proto.serviceID
+    }
+    public var hasServiceID: Bool {
+        return !proto.serviceID.isEmpty
+    }
+
+    public var e164: String? {
+        guard hasE164 else {
+            return nil
+        }
+        return proto.e164
+    }
+    public var hasE164: Bool {
+        return !proto.e164.isEmpty
+    }
+
+    public var serviceIDBinary: Data? {
+        guard hasServiceIDBinary else {
+            return nil
+        }
+        return proto.serviceIDBinary
+    }
+    public var hasServiceIDBinary: Bool {
+        return !proto.serviceIDBinary.isEmpty
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: StorageServiceProtos_Recipient.Contact) {
+        self.proto = proto
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try StorageServiceProtos_Recipient.Contact(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate init(_ proto: StorageServiceProtos_Recipient.Contact) {
+        self.init(proto: proto)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension StorageServiceProtoRecipientContact {
+    public static func builder() -> StorageServiceProtoRecipientContactBuilder {
+        return StorageServiceProtoRecipientContactBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> StorageServiceProtoRecipientContactBuilder {
+        var builder = StorageServiceProtoRecipientContactBuilder()
+        if let _value = serviceID {
+            builder.setServiceID(_value)
+        }
+        if let _value = e164 {
+            builder.setE164(_value)
+        }
+        if let _value = serviceIDBinary {
+            builder.setServiceIDBinary(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct StorageServiceProtoRecipientContactBuilder {
+
+    private var proto = StorageServiceProtos_Recipient.Contact()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setServiceID(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.serviceID = valueParam
+    }
+
+    public mutating func setServiceID(_ valueParam: String) {
+        proto.serviceID = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setE164(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.e164 = valueParam
+    }
+
+    public mutating func setE164(_ valueParam: String) {
+        proto.e164 = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setServiceIDBinary(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.serviceIDBinary = valueParam
+    }
+
+    public mutating func setServiceIDBinary(_ valueParam: Data) {
+        proto.serviceIDBinary = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func buildInfallibly() -> StorageServiceProtoRecipientContact {
+        return StorageServiceProtoRecipientContact(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try StorageServiceProtoRecipientContact(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension StorageServiceProtoRecipientContact {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoRecipientContactBuilder {
+    public func buildIgnoringErrors() -> StorageServiceProtoRecipientContact? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - StorageServiceProtoRecipientOneOfIdentifier
+
+public enum StorageServiceProtoRecipientOneOfIdentifier {
+    case contact(StorageServiceProtoRecipientContact)
+    case legacyGroupID(Data)
+    case groupMasterKey(Data)
+}
+
+private func StorageServiceProtoRecipientOneOfIdentifierWrap(_ value: StorageServiceProtos_Recipient.OneOf_Identifier) -> StorageServiceProtoRecipientOneOfIdentifier {
+    switch value {
+    case .contact(let value): return .contact(StorageServiceProtoRecipientContact(value))
+    case .legacyGroupID(let value): return .legacyGroupID(value)
+    case .groupMasterKey(let value): return .groupMasterKey(value)
+    }
+}
+
+private func StorageServiceProtoRecipientOneOfIdentifierUnwrap(_ value: StorageServiceProtoRecipientOneOfIdentifier) -> StorageServiceProtos_Recipient.OneOf_Identifier {
+    switch value {
+    case .contact(let value): return .contact(value.proto)
+    case .legacyGroupID(let value): return .legacyGroupID(value)
+    case .groupMasterKey(let value): return .groupMasterKey(value)
+    }
+}
+
+// MARK: - StorageServiceProtoRecipient
+
+public struct StorageServiceProtoRecipient: Codable, CustomDebugStringConvertible {
+
+    fileprivate let proto: StorageServiceProtos_Recipient
+
+    public var identifier: StorageServiceProtoRecipientOneOfIdentifier? {
+        guard let identifier = proto.identifier else {
+            return nil
+        }
+        return StorageServiceProtoRecipientOneOfIdentifierWrap(identifier)
+    }
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: StorageServiceProtos_Recipient) {
+        self.proto = proto
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try StorageServiceProtos_Recipient(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate init(_ proto: StorageServiceProtos_Recipient) {
+        self.init(proto: proto)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension StorageServiceProtoRecipient {
+    public static func builder() -> StorageServiceProtoRecipientBuilder {
+        return StorageServiceProtoRecipientBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> StorageServiceProtoRecipientBuilder {
+        var builder = StorageServiceProtoRecipientBuilder()
+        if let _value = identifier {
+            builder.setIdentifier(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct StorageServiceProtoRecipientBuilder {
+
+    private var proto = StorageServiceProtos_Recipient()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setIdentifier(_ valueParam: StorageServiceProtoRecipientOneOfIdentifier?) {
+        guard let valueParam = valueParam else { return }
+        proto.identifier = StorageServiceProtoRecipientOneOfIdentifierUnwrap(valueParam)
+    }
+
+    public mutating func setIdentifier(_ valueParam: StorageServiceProtoRecipientOneOfIdentifier) {
+        proto.identifier = StorageServiceProtoRecipientOneOfIdentifierUnwrap(valueParam)
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func buildInfallibly() -> StorageServiceProtoRecipient {
+        return StorageServiceProtoRecipient(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try StorageServiceProtoRecipient(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension StorageServiceProtoRecipient {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoRecipientBuilder {
+    public func buildIgnoringErrors() -> StorageServiceProtoRecipient? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
+// MARK: - StorageServiceProtoChatFolderRecordFolderType
+
+public enum StorageServiceProtoChatFolderRecordFolderType: SwiftProtobuf.Enum {
+    public typealias RawValue = Int
+    case unknown // 0
+    case all // 1
+    case custom // 2
+    case UNRECOGNIZED(Int)
+
+    public init() {
+        self = .unknown
+    }
+
+    public init?(rawValue: Int) {
+        switch rawValue {
+            case 0: self = .unknown
+            case 1: self = .all
+            case 2: self = .custom
+            default: self = .UNRECOGNIZED(rawValue)
+        }
+    }
+
+    public var rawValue: Int {
+        switch self {
+            case .unknown: return 0
+            case .all: return 1
+            case .custom: return 2
+            case .UNRECOGNIZED(let i): return i
+        }
+    }
+}
+
+private func StorageServiceProtoChatFolderRecordFolderTypeWrap(_ value: StorageServiceProtos_ChatFolderRecord.FolderType) -> StorageServiceProtoChatFolderRecordFolderType {
+    switch value {
+    case .unknown: return .unknown
+    case .all: return .all
+    case .custom: return .custom
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
+private func StorageServiceProtoChatFolderRecordFolderTypeUnwrap(_ value: StorageServiceProtoChatFolderRecordFolderType) -> StorageServiceProtos_ChatFolderRecord.FolderType {
+    switch value {
+    case .unknown: return .unknown
+    case .all: return .all
+    case .custom: return .custom
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
+// MARK: - StorageServiceProtoChatFolderRecord
+
+public struct StorageServiceProtoChatFolderRecord: Codable, CustomDebugStringConvertible {
+
+    fileprivate let proto: StorageServiceProtos_ChatFolderRecord
+
+    public let includedRecipients: [StorageServiceProtoRecipient]
+
+    public let excludedRecipients: [StorageServiceProtoRecipient]
+
+    public var id: Data? {
+        guard hasID else {
+            return nil
+        }
+        return proto.id
+    }
+    public var hasID: Bool {
+        return !proto.id.isEmpty
+    }
+
+    public var name: String? {
+        guard hasName else {
+            return nil
+        }
+        return proto.name
+    }
+    public var hasName: Bool {
+        return !proto.name.isEmpty
+    }
+
+    public var position: UInt32 {
+        return proto.position
+    }
+    public var showOnlyUnread: Bool {
+        return proto.showOnlyUnread
+    }
+    public var showMutedChats: Bool {
+        return proto.showMutedChats
+    }
+    public var includeAllIndividualChats: Bool {
+        return proto.includeAllIndividualChats
+    }
+    public var includeAllGroupChats: Bool {
+        return proto.includeAllGroupChats
+    }
+    public var folderType: StorageServiceProtoChatFolderRecordFolderType {
+        return StorageServiceProtoChatFolderRecordFolderTypeWrap(proto.folderType)
+    }
+    public var deletedAtTimestampMs: UInt64 {
+        return proto.deletedAtTimestampMs
+    }
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: StorageServiceProtos_ChatFolderRecord,
+                 includedRecipients: [StorageServiceProtoRecipient],
+                 excludedRecipients: [StorageServiceProtoRecipient]) {
+        self.proto = proto
+        self.includedRecipients = includedRecipients
+        self.excludedRecipients = excludedRecipients
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try StorageServiceProtos_ChatFolderRecord(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate init(_ proto: StorageServiceProtos_ChatFolderRecord) {
+        var includedRecipients: [StorageServiceProtoRecipient] = []
+        includedRecipients = proto.includedRecipients.map { StorageServiceProtoRecipient($0) }
+
+        var excludedRecipients: [StorageServiceProtoRecipient] = []
+        excludedRecipients = proto.excludedRecipients.map { StorageServiceProtoRecipient($0) }
+
+        self.init(proto: proto,
+                  includedRecipients: includedRecipients,
+                  excludedRecipients: excludedRecipients)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension StorageServiceProtoChatFolderRecord {
+    public static func builder() -> StorageServiceProtoChatFolderRecordBuilder {
+        return StorageServiceProtoChatFolderRecordBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> StorageServiceProtoChatFolderRecordBuilder {
+        var builder = StorageServiceProtoChatFolderRecordBuilder()
+        if let _value = id {
+            builder.setId(_value)
+        }
+        if let _value = name {
+            builder.setName(_value)
+        }
+        builder.setPosition(position)
+        builder.setShowOnlyUnread(showOnlyUnread)
+        builder.setShowMutedChats(showMutedChats)
+        builder.setIncludeAllIndividualChats(includeAllIndividualChats)
+        builder.setIncludeAllGroupChats(includeAllGroupChats)
+        builder.setFolderType(folderType)
+        builder.setIncludedRecipients(includedRecipients)
+        builder.setExcludedRecipients(excludedRecipients)
+        builder.setDeletedAtTimestampMs(deletedAtTimestampMs)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct StorageServiceProtoChatFolderRecordBuilder {
+
+    private var proto = StorageServiceProtos_ChatFolderRecord()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setId(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.id = valueParam
+    }
+
+    public mutating func setId(_ valueParam: Data) {
+        proto.id = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setName(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.name = valueParam
+    }
+
+    public mutating func setName(_ valueParam: String) {
+        proto.name = valueParam
+    }
+
+    public mutating func setPosition(_ valueParam: UInt32) {
+        proto.position = valueParam
+    }
+
+    public mutating func setShowOnlyUnread(_ valueParam: Bool) {
+        proto.showOnlyUnread = valueParam
+    }
+
+    public mutating func setShowMutedChats(_ valueParam: Bool) {
+        proto.showMutedChats = valueParam
+    }
+
+    public mutating func setIncludeAllIndividualChats(_ valueParam: Bool) {
+        proto.includeAllIndividualChats = valueParam
+    }
+
+    public mutating func setIncludeAllGroupChats(_ valueParam: Bool) {
+        proto.includeAllGroupChats = valueParam
+    }
+
+    public mutating func setFolderType(_ valueParam: StorageServiceProtoChatFolderRecordFolderType) {
+        proto.folderType = StorageServiceProtoChatFolderRecordFolderTypeUnwrap(valueParam)
+    }
+
+    public mutating func addIncludedRecipients(_ valueParam: StorageServiceProtoRecipient) {
+        proto.includedRecipients.append(valueParam.proto)
+    }
+
+    public mutating func setIncludedRecipients(_ wrappedItems: [StorageServiceProtoRecipient]) {
+        proto.includedRecipients = wrappedItems.map { $0.proto }
+    }
+
+    public mutating func addExcludedRecipients(_ valueParam: StorageServiceProtoRecipient) {
+        proto.excludedRecipients.append(valueParam.proto)
+    }
+
+    public mutating func setExcludedRecipients(_ wrappedItems: [StorageServiceProtoRecipient]) {
+        proto.excludedRecipients = wrappedItems.map { $0.proto }
+    }
+
+    public mutating func setDeletedAtTimestampMs(_ valueParam: UInt64) {
+        proto.deletedAtTimestampMs = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func buildInfallibly() -> StorageServiceProtoChatFolderRecord {
+        return StorageServiceProtoChatFolderRecord(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try StorageServiceProtoChatFolderRecord(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension StorageServiceProtoChatFolderRecord {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoChatFolderRecordBuilder {
+    public func buildIgnoringErrors() -> StorageServiceProtoChatFolderRecord? {
         return self.buildInfallibly()
     }
 }

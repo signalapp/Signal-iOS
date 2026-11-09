@@ -10,6 +10,8 @@ import XCTest
 @testable import SignalServiceKit
 
 private class MockStorageServiceManager: StorageServiceManager {
+    var chatFolderIds = Set<UUID>()
+
     func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiers) {}
     func registerForCron(_ cron: Cron) {}
     func currentManifestVersion(tx: DBReadTransaction) -> UInt64 { 0 }
@@ -20,6 +22,7 @@ private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingInsertions(forGroupMasterKeys groupMasterKeys: [GroupMasterKey]) {}
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) {}
     func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey]) {}
+    func recordPendingUpdates(chatFolderIds: some Collection<UUID>) { self.chatFolderIds.formUnion(chatFolderIds) }
     func recordPendingUpdates(favoriteStickerIds: [FavoriteStickerId]) {}
     func recordPendingLocalAccountUpdates() {}
     func backupPendingChanges(authedAccount: AuthedAccount) {}
@@ -40,12 +43,12 @@ private class TestDependencies {
     let recipientFetcher: RecipientFetcher
     let recipientIdFinder: RecipientIdFinder
     let sessionStore: SignalServiceKit.SessionStore
+    let storageServiceManager = MockStorageServiceManager()
     let threadStore: MockThreadStore
     let threadMerger: ThreadMerger
 
     init(observers: [RecipientMergeObserver] = []) {
         let searchableNameIndexer = MockSearchableNameIndexer()
-        let storageServiceManager = MockStorageServiceManager()
         recipientFetcher = RecipientFetcher(
             recipientDatabaseTable: recipientDatabaseTable,
             searchableNameIndexer: searchableNameIndexer,
@@ -63,6 +66,7 @@ private class TestDependencies {
             chatFolderStore: chatFolderStore,
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
+            storageServiceManager: storageServiceManager,
             threadStore: threadStore,
         )
         recipientMerger = RecipientMergerImpl(
@@ -547,6 +551,79 @@ class RecipientMergerTest: XCTestCase {
         XCTAssertEqual(memberships.map(\.chat), [.contact(recipientRowId: aciRecipient.id)])
         let fetched = try XCTUnwrap(d.mockDB.read { d.chatFolderManager.fetch(chatFolderId: folder.chatFolderId, tx: $0) })
         XCTAssertEqual(fetched.includedThreadRowIds, [thread.sqliteRowId!])
+        XCTAssertEqual(d.storageServiceManager.chatFolderIds, [folder.chatFolderId])
+    }
+
+    func testChatFolderIsUpdatedWhenAMemberLearnsItsAci() {
+        let d = TestDependencies()
+        let folder = insertChatFolders(d, memberPhoneNumber: phone1, memberPni: pni1)
+
+        d.mockDB.write { tx in
+            _ = d.recipientMerger.applyMergeFromContactDiscovery(localIdentifiers: .forUnitTests, phoneNumber: phone1, pni: pni1, aci: aci1, tx: tx)
+        }
+
+        XCTAssertEqual(d.storageServiceManager.chatFolderIds, [folder.chatFolderId])
+    }
+
+    func testChatFolderIsNotUpdatedWhenAMemberKeepsItsIdentifiers() {
+        let d = TestDependencies()
+        insertChatFolders(d, memberAci: aci1, memberPhoneNumber: phone1, memberPni: pni1)
+
+        d.mockDB.write { tx in
+            _ = d.recipientMerger.applyMergeFromContactDiscovery(localIdentifiers: .forUnitTests, phoneNumber: phone1, pni: pni1, aci: aci1, tx: tx)
+        }
+
+        XCTAssertEqual(d.storageServiceManager.chatFolderIds, [])
+    }
+
+    func testChatFolderIsUpdatedWhenAMemberLosesAStalePni() {
+        let d = TestDependencies()
+        let folder = insertChatFolders(d, memberPhoneNumber: phone2, memberPni: pni1)
+
+        // The PNI now belongs to another phone number.
+        d.mockDB.write { tx in
+            _ = d.recipientMerger.applyMergeFromContactDiscovery(localIdentifiers: .forUnitTests, phoneNumber: phone1, pni: pni1, aci: nil, tx: tx)
+        }
+
+        let member = d.mockDB.read { d.recipientDatabaseTable.fetchRecipient(phoneNumber: phone2.stringValue, transaction: $0) }
+        XCTAssertNil(member?.pni)
+        XCTAssertEqual(d.storageServiceManager.chatFolderIds, [folder.chatFolderId])
+    }
+
+    private let aci1 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
+    private let pni1 = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
+    private let phone1 = E164("+16505550101")!
+    private let phone2 = E164("+16505550102")!
+
+    /// Inserts a folder with a member, and another folder without it.
+    @discardableResult
+    private func insertChatFolders(
+        _ d: TestDependencies,
+        memberAci: Aci? = nil,
+        memberPhoneNumber: E164?,
+        memberPni: Pni?,
+    ) -> ChatFolderRecord {
+        return d.mockDB.write { tx in
+            let member = try! SignalRecipient.insertRecord(aci: memberAci, phoneNumber: memberPhoneNumber, pni: memberPni, tx: tx)
+            let folder = insertChatFolder(d, name: "Meow", position: 1, tx: tx)
+            _ = insertChatFolder(d, name: "Purr", position: 2, tx: tx)
+            d.chatFolderStore.setMembership(.included, chat: .contact(recipientRowId: member.id), folderRowId: folder.id, tx: tx)
+            return folder
+        }
+    }
+
+    private func insertChatFolder(_ d: TestDependencies, name: String, position: UInt32, tx: DBWriteTransaction) -> ChatFolderRecord {
+        return d.chatFolderStore.insertCustomFolderRecord(
+            chatFolderId: UUID(),
+            name: name,
+            position: position,
+            showOnlyUnread: false,
+            showMutedChats: true,
+            includeAllIndividualChats: false,
+            includeAllGroupChats: false,
+            deletedAtTimestampMs: 0,
+            tx: tx,
+        )
     }
 
     func testPniSignatureMergeStatus() throws {

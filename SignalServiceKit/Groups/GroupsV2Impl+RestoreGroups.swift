@@ -171,7 +171,7 @@ public extension GroupsV2Impl {
                         unreadReminderManager: DependenciesBridge.shared.unreadReminderManager,
                     )
                     switch recordUpdater.mergeRecord(groupRecord, transaction: tx) {
-                    case .merged(needsUpdate: true, let mergedMasterKeyData):
+                    case .merged(needsUpdate: true, let mergedMasterKeyData, _):
                         do {
                             let mergedMasterKey = try GroupMasterKey(contents: mergedMasterKeyData)
                             SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(
@@ -180,7 +180,7 @@ public extension GroupsV2Impl {
                         } catch {
                             owsFailDebug("invalid master key: \(error)")
                         }
-                    case .merged(needsUpdate: false, _), .invalid:
+                    case .merged(needsUpdate: false, _, _), .invalid:
                         break
                     }
                 }

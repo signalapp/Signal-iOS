@@ -13,6 +13,7 @@ final class ChatFolderManagerTest {
     private let inMemoryDB = InMemoryDB()
     private let store = ChatFolderStore()
     private let threadStore = MockThreadStore()
+    private let storageServiceManager = ChatFolderRecordingStorageServiceManager()
     private let manager: ChatFolderManager
 
     init() {
@@ -24,6 +25,7 @@ final class ChatFolderManagerTest {
                 recipientDatabaseTable: recipientDatabaseTable,
                 searchableNameIndexer: MockSearchableNameIndexer(),
             ),
+            storageServiceManager: storageServiceManager,
             threadStore: threadStore,
         )
     }
@@ -326,5 +328,32 @@ final class ChatFolderManagerTest {
         #expect(allChats.showMutedChats)
         #expect(!allChats.showOnlyUnread)
         #expect(!allChats.isDeleted)
+    }
+
+    @Test
+    func testCreatingAllChatsUploadsIt() throws {
+        manager.createAllChatsFolderIfNeeded(db: inMemoryDB)
+
+        let allChats = try #require(inMemoryDB.read { store.fetchRecordForAllChatsFolder(tx: $0) })
+        #expect(storageServiceManager.chatFolderIds == [allChats.chatFolderId])
+    }
+
+    @Test
+    func testExistingAllChatsIsNotUploadedAgain() {
+        inMemoryDB.write { tx in
+            _ = store.fetchOrInsertAllChatsRecord(tx: tx)
+        }
+
+        manager.createAllChatsFolderIfNeeded(db: inMemoryDB)
+
+        #expect(storageServiceManager.chatFolderIds.isEmpty)
+    }
+}
+
+private class ChatFolderRecordingStorageServiceManager: FakeStorageServiceManager {
+    var chatFolderIds = Set<UUID>()
+
+    override func recordPendingUpdates(chatFolderIds: some Collection<UUID>) {
+        self.chatFolderIds.formUnion(chatFolderIds)
     }
 }

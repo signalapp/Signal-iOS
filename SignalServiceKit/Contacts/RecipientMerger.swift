@@ -866,6 +866,11 @@ class RecipientMergerImpl: RecipientMerger {
             searchableNameIndexer.insert(mergedRecipient, tx: tx)
         }
 
+        // Chat folder records include their members' identifiers.
+        for affectedRecipient in otherUpdatedRecipients + [mergedRecipient] where !affectedRecipient.isEmpty {
+            chatFolderManager.recordPendingUpdates(forRecipientRowId: affectedRecipient.id, tx: tx)
+        }
+
         if shouldUpdateStorageService {
             let affectedRecipients = otherUpdatedRecipients + [mergedRecipient]
             storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: affectedRecipients.map { $0.uniqueId })

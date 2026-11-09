@@ -96,6 +96,8 @@ public enum BuildFlags {
 
     public static let stickerReply = true
     public static let stickerFavorites = build <= .internal
+
+    public static let chatFolders = build <= .dev
 }
 
 // MARK: -

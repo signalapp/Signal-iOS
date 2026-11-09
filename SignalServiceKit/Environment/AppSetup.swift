@@ -1063,6 +1063,7 @@ extension AppSetup.GlobalsContinuation {
             chatFolderStore: chatFolderStore,
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
+            storageServiceManager: storageServiceManager,
             threadStore: threadStore,
         )
 
