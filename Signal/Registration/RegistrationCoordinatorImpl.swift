@@ -3663,17 +3663,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // We need a durable AEP to ensure idempotency for retries when creating
             // the account. We store it in Signal Login-scoped state to avoid
             // intefering with other registration flows that store AEPs.
-            let accountEntropyPool = deps.accountEntropyPoolGenerator()
+            let aep = deps.accountEntropyPoolGenerator()
             return .setSignalLoginState(.redeemCredential(
-                accountEntropyPool: accountEntropyPool,
+                aep: aep,
                 receiptCredential: receiptCredential,
             ))
 
-        case .redeemCredential(let accountEntropyPool, let receiptCredential):
+        case .redeemCredential(let aep, let receiptCredential):
             // If we crash, we need to restore the AEP before retrying the request.
-            inMemoryState.accountEntropyPool = accountEntropyPool
+            inMemoryState.accountEntropyPool = aep
             deps.db.write { tx in
-                updateMasterKeyAndLocalState(masterKey: accountEntropyPool.getMasterKey(), tx: tx)
+                updateMasterKeyAndLocalState(masterKey: aep.getMasterKey(), tx: tx)
             }
             let serverParams = TSConstants.serverPublicParams()
             let receiptOperations = ClientZkReceiptOperations(serverPublicParams: serverParams)
@@ -3684,19 +3684,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 ))
             }
             return .setSignalLoginState(.reviewAndConfirmLogin(
-                accountEntropyPool: accountEntropyPool,
+                aep: aep,
                 accountIdentity: accountIdentity,
             ))
 
-        case .reviewAndConfirmLogin(let accountEntropyPool, let accountIdentity):
+        case .reviewAndConfirmLogin(let aep, let accountIdentity):
             return .registrationStep(.reviewAndConfirmSignalLogin(RegistrationSignalLoginDetailsState(
                 aci: accountIdentity.localIdentifiers.aci,
-                aep: accountEntropyPool,
+                aep: aep,
                 confirmLogin: { [self] in
                     deps.db.write { tx in
                         updatePersistedState(tx) {
                             setSignalLoginState(nil, alsoUpdating: &$0)
-                            $0.liveAccountEntropyPool = accountEntropyPool
+                            $0.liveAccountEntropyPool = aep
                             $0.accountIdentity = accountIdentity
                         }
                     }
@@ -5237,12 +5237,12 @@ private enum InMemorySignalLoginState {
     /// This state transitions to the account setup process (i.e., it sets
     /// `accountIdentity` to the result from creating the account).
     case redeemCredential(
-        accountEntropyPool: SignalServiceKit.AccountEntropyPool,
+        aep: SignalServiceKit.AccountEntropyPool,
         receiptCredential: ReceiptCredential,
     )
 
     case reviewAndConfirmLogin(
-        accountEntropyPool: SignalServiceKit.AccountEntropyPool,
+        aep: SignalServiceKit.AccountEntropyPool,
         accountIdentity: RegistrationCoordinatorImpl.AccountIdentity,
     )
 
@@ -5262,12 +5262,12 @@ private enum InMemorySignalLoginState {
             )
         case .redeemCredential(let state):
             self = .redeemCredential(
-                accountEntropyPool: state.accountEntropyPool,
+                aep: state.aep,
                 receiptCredential: state.receiptCredential.wrappedValue,
             )
         case .reviewAndConfirmLogin(let state):
             self = .reviewAndConfirmLogin(
-                accountEntropyPool: state.accountEntropyPool,
+                aep: state.aep,
                 accountIdentity: state.accountIdentity,
             )
         }
@@ -5286,14 +5286,14 @@ private enum InMemorySignalLoginState {
                 receiptLevel: CodableLoginReceiptLevel(wrappedValue: receiptLevel),
                 receiptCredentialRequestContext: ByteArrayCodable(receiptCredentialRequestContext),
             ))
-        case .redeemCredential(let accountEntropyPool, let receiptCredential):
+        case .redeemCredential(let aep, let receiptCredential):
             return .redeemCredential(PersistedSignalLoginState.RedeemCredential(
-                accountEntropyPool: accountEntropyPool,
+                aep: aep,
                 receiptCredential: ByteArrayCodable(receiptCredential),
             ))
-        case .reviewAndConfirmLogin(let accountEntropyPool, let accountIdentity):
+        case .reviewAndConfirmLogin(let aep, let accountIdentity):
             return .reviewAndConfirmLogin(PersistedSignalLoginState.ReviewAndConfirmLogin(
-                accountEntropyPool: accountEntropyPool,
+                aep: aep,
                 accountIdentity: accountIdentity,
             ))
         case .logIn:
@@ -5317,14 +5317,14 @@ enum PersistedSignalLoginState: Codable {
     case redeemCredential(RedeemCredential)
 
     struct RedeemCredential: Codable {
-        let accountEntropyPool: SignalServiceKit.AccountEntropyPool
+        let aep: SignalServiceKit.AccountEntropyPool
         let receiptCredential: ByteArrayCodable<ReceiptCredential>
     }
 
     case reviewAndConfirmLogin(ReviewAndConfirmLogin)
 
     struct ReviewAndConfirmLogin: Codable {
-        let accountEntropyPool: SignalServiceKit.AccountEntropyPool
+        let aep: SignalServiceKit.AccountEntropyPool
         let accountIdentity: RegistrationCoordinatorImpl.AccountIdentity
     }
 }
