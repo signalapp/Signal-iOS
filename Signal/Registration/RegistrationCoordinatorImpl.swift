@@ -1171,6 +1171,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         var deprecatedBackupKeyAccountEntropyPool: DeprecatedAccountEntropyPool?
 
+        /// The AEP in use by the "live" account.
+        ///
+        /// The "live" AEP is the one active on the account (e.g., the one from
+        /// which the RRP has been derived), and this is the one that continues to
+        /// be used after completing registration. This AEP is distinct from the
+        /// "backup" AEP (e.g., the one used to encrypt a particular backup).
+        ///
+        /// As of now, this is only used during the Signal Login purchase flow,
+        /// where it is essential that we maintain the same AEP.
+        var liveAccountEntropyPool: SignalServiceKit.AccountEntropyPool?
+
         struct SessionState: Codable {
             let sessionId: String
 
@@ -3676,6 +3687,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 updatePersistedState(tx) {
                     setSignalLoginState(nil, alsoUpdating: &$0)
                     $0.accountIdentity = accountIdentity
+                    $0.liveAccountEntropyPool = accountEntropyPool
                 }
             }
             return .done
@@ -3964,7 +3976,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // If the AccountEntropyPool doesn't exist yet, create one.
         return db.write { tx in
             let accountEntropyPool: SignalServiceKit.AccountEntropyPool
-            if let _accountEntropyPool = deps.accountKeyStore.getAccountEntropyPool(tx: tx) {
+            if let _accountEntropyPool = persistedState.liveAccountEntropyPool {
+                accountEntropyPool = _accountEntropyPool
+            } else if let _accountEntropyPool = deps.accountKeyStore.getAccountEntropyPool(tx: tx) {
                 accountEntropyPool = _accountEntropyPool
             } else {
                 accountEntropyPool = deps.accountEntropyPoolGenerator()
