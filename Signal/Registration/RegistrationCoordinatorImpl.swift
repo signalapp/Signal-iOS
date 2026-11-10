@@ -135,32 +135,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     public func registerWithoutNumber() {
         logger.info("")
-
-        deps.db.write { tx in
-            updatePersistedState(tx) {
-                $0.signalLoginState = .splash
-            }
-        }
+        setSignalLoginState(.splash)
     }
 
     public func exitSignalLogin() {
         logger.info("")
-
-        deps.db.write { tx in
-            updatePersistedState(tx) {
-                $0.signalLoginState = nil
-            }
-        }
+        setSignalLoginState(nil)
     }
 
     public func beginSignalLogin(useExisting: Bool) {
         logger.info("")
-
-        deps.db.write { tx in
-            updatePersistedState(tx) {
-                $0.signalLoginState = useExisting ? .login : .purchase
-            }
-        }
+        setSignalLoginState(useExisting ? .logIn : .purchase)
     }
 
     public func submitProspectiveChangeNumberE164(_ e164: E164) {
@@ -1018,6 +1003,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         var session: RegistrationSession?
 
+        var signalLoginState: InMemorySignalLoginState?
+
         // If we try and resend a code (NOT the original SMS code automatically sent
         // at the start of every session), but hit a challenge, we write this var
         // so that when we complete the challenge we send the code right away.
@@ -1272,58 +1259,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         var sessionState: SessionState?
 
-        enum SignalLoginState: Codable {
-            /// The user chose "Register Without Number", but they haven't yet chosen to
-            /// purchase a new Signal Login or use an existing Signal Login.
-            case splash
-
-            /// The user chose to purchase a new Signal Login, so we must present the
-            /// StoreKit interface for completing a purchase. This state transitions
-            /// back to `splash` if the user cancels the purchase. This state
-            /// transitions to `redeemTransaction` if the purchase is successful.
-            case purchase
-
-            case login
-
-            /// We've successfully completed a purchase, and now we need to anonymously
-            /// and durably redeem it for a receipt credential. This state transitions
-            /// to `redeemCredential`.
-            case redeemTransaction(
-                transactionId: StoreKit.Transaction.ID,
-                purchaseDate: Date,
-                receiptLevel: CodableLoginReceiptLevel,
-                receiptCredentialRequestContext: ByteArrayCodable<ReceiptCredentialRequestContext>,
-            )
-
-            enum CodableLoginReceiptLevel: Int64, Codable {
-                case normal = 0
-                case sandbox = 1
-
-                init(wrappedValue: LoginReceiptLevel) {
-                    switch wrappedValue {
-                    case .normal: self = .normal
-                    case .sandbox: self = .sandbox
-                    }
-                }
-
-                var wrappedValue: LoginReceiptLevel {
-                    switch self {
-                    case .normal: .normal
-                    case .sandbox: .sandbox
-                    }
-                }
-            }
-
-            /// We have a receipt credential, and we need to redeem it for an account.
-            /// This state transitions to the account setup process (i.e., it sets
-            /// `accountIdentity` to the result from creating the account).
-            case redeemCredential(
-                accountEntropyPool: SignalServiceKit.AccountEntropyPool,
-                receiptCredential: ByteArrayCodable<ReceiptCredential>,
-            )
-        }
-
-        var signalLoginState: SignalLoginState?
+        var signalLoginState: PersistedSignalLoginState?
 
         /// Once we get an account identity response from the server
         /// for registering, re-registering, or changing phone number,
@@ -1451,6 +1387,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 owsFailDebug("couldn't decode registration state: \(error)")
                 return nil
             }
+        }
+
+        inMemoryState.signalLoginState = persistedState.signalLoginState.map {
+            return InMemorySignalLoginState(persistedState: $0)
         }
 
         // Ideally this would be in the below transaction, but OWSProfileManager
@@ -1849,7 +1789,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// Verifying via SMS code using a `RegistrationSession`.
         /// Used as a fallback if the above paths are unavailable or fail.
         case session(RegistrationSession)
-        case signalLogin(PersistedState.SignalLoginState)
+        case signalLogin(InMemorySignalLoginState)
         /// After registration is done, all the steps involving setting up
         /// profile state (which may not be needed). Profile name,
         /// setting up a PIN, etc.
@@ -1923,7 +1863,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // to e.g. the profile setup, we _must_ clear out the session.
             return .session(session)
         }
-        if let signalLoginState = persistedState.signalLoginState {
+        if let signalLoginState = inMemoryState.signalLoginState {
             return .signalLogin(signalLoginState)
         }
         if let accountIdentity = persistedState.accountIdentity {
@@ -3588,18 +3528,42 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     // MARK: - Receipt Credential Pathway
 
     private func setSignalLoginState(
-        _ signalLoginState: PersistedState.SignalLoginState,
-        in localValue: inout PersistedState.SignalLoginState,
+        _ signalLoginState: InMemorySignalLoginState,
+        alsoUpdating localValue: inout InMemorySignalLoginState,
     ) {
         localValue = signalLoginState
+        setSignalLoginState(signalLoginState)
+    }
+
+    private func setSignalLoginState(
+        _ signalLoginState: InMemorySignalLoginState?,
+    ) {
+        inMemoryState.signalLoginState = signalLoginState
+        let persistedState: PersistedSignalLoginState?
+        if let signalLoginState {
+            guard let _persistedState = signalLoginState.asPersistedState else {
+                return
+            }
+            persistedState = _persistedState
+        } else {
+            persistedState = nil
+        }
         deps.db.write { tx in
             updatePersistedState(tx) {
-                $0.signalLoginState = signalLoginState
+                $0.signalLoginState = persistedState
             }
         }
     }
 
-    private func nextStepForSignalLogin(_ currentState: PersistedState.SignalLoginState) async -> RegistrationStep {
+    private func setSignalLoginState(
+        _ signalLoginState: InMemorySignalLoginState?,
+        alsoUpdating persistedState: inout PersistedState,
+    ) {
+        inMemoryState.signalLoginState = signalLoginState
+        persistedState.signalLoginState = signalLoginState?.asPersistedState
+    }
+
+    private func nextStepForSignalLogin(_ currentState: InMemorySignalLoginState) async -> RegistrationStep {
         var currentState = currentState
         while true {
             switch currentState {
@@ -3614,9 +3578,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 return .signalLoginSplash(RegistrationSignalLoginSplashState(
                     formattedPrice: product.displayPrice,
                 ))
-
-            case .login:
-                return .promptForLogin(RegistrationSignalLoginState(aci: nil, aep: nil))
 
             case .purchase:
                 let product: StoreKit.Product
@@ -3634,7 +3595,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 } catch Product.PurchaseError.productUnavailable, StoreKitError.notAvailableInStorefront {
                     owsFail("purchase not available")
                 } catch StoreKitError.userCancelled {
-                    setSignalLoginState(.splash, in: &currentState)
+                    setSignalLoginState(.splash, alsoUpdating: &currentState)
                     continue
                 } catch {
                     owsFail("unknown error: \(error)")
@@ -3644,7 +3605,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case .success(let _verificationResult):
                     verificationResult = _verificationResult
                 case .userCancelled:
-                    setSignalLoginState(.splash, in: &currentState)
+                    setSignalLoginState(.splash, alsoUpdating: &currentState)
                     continue
                 case .pending:
                     return .showError(OWSGenericError("purchase pending"))
@@ -3662,9 +3623,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 setSignalLoginState(.redeemTransaction(
                     transactionId: verificationResult.unsafePayloadValue.id,
                     purchaseDate: verificationResult.unsafePayloadValue.purchaseDate,
-                    receiptLevel: PersistedState.SignalLoginState.CodableLoginReceiptLevel(wrappedValue: receiptLevel),
-                    receiptCredentialRequestContext: ByteArrayCodable(requestContext),
-                ), in: &currentState)
+                    receiptLevel: receiptLevel,
+                    receiptCredentialRequestContext: requestContext,
+                ), alsoUpdating: &currentState)
 
             case .redeemTransaction(let transactionId, let purchaseDate, let receiptLevel, let receiptCredentialRequestContext):
                 let product: StoreKit.Product
@@ -3681,8 +3642,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 if let latestTransaction = await product.latestTransaction, latestTransaction.unsafePayloadValue.id == transactionId {
                     await latestTransaction.unsafePayloadValue.finish()
                 }
-                let receiptLevel = receiptLevel.wrappedValue
-                let receiptCredentialRequestContext = receiptCredentialRequestContext.wrappedValue
                 let receiptCredential: ReceiptCredential
                 do {
                     receiptCredential = try await deps.serviceProvider.withUnauthService(.loginPurchase) {
@@ -3701,14 +3660,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 // We need a durable AEP to ensure idempotency for retries when creating
                 // the account. We store it in Signal Login-scoped state to avoid
                 // intefering with other registration flows that store AEPs.
-                let accountEntropyPool = getOrGenerateAccountEntropyPool()
+                let accountEntropyPool = deps.accountEntropyPoolGenerator()
                 setSignalLoginState(.redeemCredential(
                     accountEntropyPool: accountEntropyPool,
-                    receiptCredential: ByteArrayCodable(receiptCredential),
-                ), in: &currentState)
+                    receiptCredential: receiptCredential,
+                ), alsoUpdating: &currentState)
 
             case .redeemCredential(let accountEntropyPool, let receiptCredential):
-                let receiptCredential = receiptCredential.wrappedValue
                 // If we crash, we need to restore the AEP before retrying the request.
                 inMemoryState.accountEntropyPool = accountEntropyPool
                 deps.db.write { tx in
@@ -3736,11 +3694,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 deps.db.write { tx in
                     updatePersistedState(tx) {
-                        $0.signalLoginState = nil
+                        setSignalLoginState(nil, alsoUpdating: &$0)
                         $0.accountIdentity = accountIdentity
                     }
                 }
                 return await nextStep()
+
+            case .logIn:
+                return .promptForLogin(RegistrationSignalLoginState(aci: nil, aep: nil))
             }
         }
     }
@@ -5243,6 +5204,120 @@ extension Error {
             return true
         default:
             return false
+        }
+    }
+}
+
+private enum InMemorySignalLoginState {
+    /// The user chose "Register Without Number", but they haven't yet chosen to
+    /// purchase a new Signal Login or use an existing Signal Login.
+    case splash
+
+    /// The user chose to purchase a new Signal Login, so we must present the
+    /// StoreKit interface for completing a purchase. This state transitions
+    /// back to `splash` if the user cancels the purchase. This state
+    /// transitions to `redeemTransaction` if the purchase is successful.
+    case purchase
+
+    /// We've successfully completed a purchase, and now we need to anonymously
+    /// and durably redeem it for a receipt credential. This state transitions
+    /// to `redeemCredential`.
+    case redeemTransaction(
+        transactionId: StoreKit.Transaction.ID,
+        purchaseDate: Date,
+        receiptLevel: LoginReceiptLevel,
+        receiptCredentialRequestContext: ReceiptCredentialRequestContext,
+    )
+
+    /// We have a receipt credential, and we need to redeem it for an account.
+    /// This state transitions to the account setup process (i.e., it sets
+    /// `accountIdentity` to the result from creating the account).
+    case redeemCredential(
+        accountEntropyPool: SignalServiceKit.AccountEntropyPool,
+        receiptCredential: ReceiptCredential,
+    )
+
+    /// The user chose to use an existing Signal Login.
+    case logIn
+
+    init(persistedState: PersistedSignalLoginState) {
+        switch persistedState {
+        case .purchase:
+            self = .purchase
+        case .redeemTransaction(let state):
+            self = .redeemTransaction(
+                transactionId: state.transactionId,
+                purchaseDate: state.purchaseDate,
+                receiptLevel: state.receiptLevel.wrappedValue,
+                receiptCredentialRequestContext: state.receiptCredentialRequestContext.wrappedValue,
+            )
+        case .redeemCredential(let state):
+            self = .redeemCredential(
+                accountEntropyPool: state.accountEntropyPool,
+                receiptCredential: state.receiptCredential.wrappedValue,
+            )
+        }
+    }
+
+    var asPersistedState: PersistedSignalLoginState? {
+        switch self {
+        case .splash:
+            return nil
+        case .purchase:
+            return .purchase
+        case .redeemTransaction(let transactionId, let purchaseDate, let receiptLevel, let receiptCredentialRequestContext):
+            return .redeemTransaction(PersistedSignalLoginState.RedeemTransaction(
+                transactionId: transactionId,
+                purchaseDate: purchaseDate,
+                receiptLevel: CodableLoginReceiptLevel(wrappedValue: receiptLevel),
+                receiptCredentialRequestContext: ByteArrayCodable(receiptCredentialRequestContext),
+            ))
+        case .redeemCredential(let accountEntropyPool, let receiptCredential):
+            return .redeemCredential(PersistedSignalLoginState.RedeemCredential(
+                accountEntropyPool: accountEntropyPool,
+                receiptCredential: ByteArrayCodable(receiptCredential),
+            ))
+        case .logIn:
+            return nil
+        }
+    }
+}
+
+enum PersistedSignalLoginState: Codable {
+    case purchase
+
+    case redeemTransaction(RedeemTransaction)
+
+    struct RedeemTransaction: Codable {
+        let transactionId: StoreKit.Transaction.ID
+        let purchaseDate: Date
+        let receiptLevel: CodableLoginReceiptLevel
+        let receiptCredentialRequestContext: ByteArrayCodable<ReceiptCredentialRequestContext>
+    }
+
+    case redeemCredential(RedeemCredential)
+
+    struct RedeemCredential: Codable {
+        let accountEntropyPool: SignalServiceKit.AccountEntropyPool
+        let receiptCredential: ByteArrayCodable<ReceiptCredential>
+    }
+}
+
+enum CodableLoginReceiptLevel: Int64, Codable {
+    case normal = 0
+    case sandbox = 1
+
+    init(wrappedValue: LoginReceiptLevel) {
+        switch wrappedValue {
+        case .normal: self = .normal
+        case .sandbox: self = .sandbox
+        }
+    }
+
+    var wrappedValue: LoginReceiptLevel {
+        switch self {
+        case .normal: .normal
+        case .sandbox: .sandbox
         }
     }
 }
