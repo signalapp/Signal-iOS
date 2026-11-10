@@ -3535,14 +3535,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     // MARK: - Receipt Credential Pathway
 
     private func setSignalLoginState(
-        _ signalLoginState: InMemorySignalLoginState,
-        alsoUpdating localValue: inout InMemorySignalLoginState,
-    ) {
-        localValue = signalLoginState
-        setSignalLoginState(signalLoginState)
-    }
-
-    private func setSignalLoginState(
         _ signalLoginState: InMemorySignalLoginState?,
     ) {
         inMemoryState.signalLoginState = signalLoginState
@@ -3573,106 +3565,123 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func nextStepForSignalLogin(_ currentState: InMemorySignalLoginState) async throws -> RegistrationStep {
         var currentState = currentState
         while true {
-            switch currentState {
-            case .splash:
-                let product = try await fetchSignalLoginProduct()
-                return .signalLoginSplash(RegistrationSignalLoginSplashState(
-                    formattedPrice: product.displayPrice,
-                ))
-
-            case .purchase:
-                let product = try await fetchSignalLoginProduct()
-                let purchaseResult: StoreKit.Product.PurchaseResult
-                do {
-                    purchaseResult = try await product.purchase()
-                } catch Product.PurchaseError.purchaseNotAllowed {
-                    owsFail("purchase not allowed")
-                } catch Product.PurchaseError.productUnavailable, StoreKitError.notAvailableInStorefront {
-                    owsFail("purchase not available")
-                } catch StoreKitError.userCancelled {
-                    setSignalLoginState(.splash, alsoUpdating: &currentState)
-                    continue
-                }
-                let verificationResult: StoreKit.VerificationResult<StoreKit.Transaction>
-                switch purchaseResult {
-                case .success(let _verificationResult):
-                    verificationResult = _verificationResult
-                case .userCancelled:
-                    setSignalLoginState(.splash, alsoUpdating: &currentState)
-                    continue
-                case .pending:
-                    throw OWSGenericError("purchase pending")
-                @unknown default:
-                    throw OWSAssertionError("couldn't complete purchase due to unknown error")
-                }
-                // Create (and persist!) the receipt credential request context. We must
-                // use the same context when retrying `createLoginReceiptCredential`
-                // requests for the same `transactionId`.
-                let serverParams = TSConstants.serverPublicParams()
-                let receiptSerial = failIfThrows { try ReceiptSerial(contents: Randomness.generateRandomBytes(UInt(ReceiptSerial.SIZE))) }
-                let receiptOperations = ClientZkReceiptOperations(serverPublicParams: serverParams)
-                let requestContext = failIfThrows { try receiptOperations.createReceiptCredentialRequestContext(receiptSerial: receiptSerial) }
-                let receiptLevel = fetchReceiptLevel(forTransaction: verificationResult.unsafePayloadValue)
-                setSignalLoginState(.redeemTransaction(
-                    transactionId: verificationResult.unsafePayloadValue.id,
-                    purchaseDate: verificationResult.unsafePayloadValue.purchaseDate,
-                    receiptLevel: receiptLevel,
-                    receiptCredentialRequestContext: requestContext,
-                ), alsoUpdating: &currentState)
-
-            case .redeemTransaction(let transactionId, let purchaseDate, let receiptLevel, let receiptCredentialRequestContext):
-                let product = try await fetchSignalLoginProduct()
-                // We've now persisted the transaction ID, so we no longer need access to
-                // the payment. We do this as the first step of this state rather than the
-                // last step of the prior state to ensure it happens if the app crashes
-                // while it's in progress (i.e., after we call setSignalLoginState).
-                if let latestTransaction = await product.latestTransaction, latestTransaction.unsafePayloadValue.id == transactionId {
-                    await latestTransaction.unsafePayloadValue.finish()
-                }
-                let receiptCredential = try await deps.serviceProvider.withUnauthService(.loginPurchase) {
-                    return try await $0.createLoginReceiptCredential(
-                        paymentProcessor: .appleAppStore,
-                        purchaseIdentifier: String(transactionId),
-                        receiptCredentialRequestContext: receiptCredentialRequestContext,
-                        serverParams: TSConstants.serverPublicParams(),
-                        purchaseTime: purchaseDate,
-                        expectedLevel: receiptLevel,
-                    )
-                }
-                // We need a durable AEP to ensure idempotency for retries when creating
-                // the account. We store it in Signal Login-scoped state to avoid
-                // intefering with other registration flows that store AEPs.
-                let accountEntropyPool = deps.accountEntropyPoolGenerator()
-                setSignalLoginState(.redeemCredential(
-                    accountEntropyPool: accountEntropyPool,
-                    receiptCredential: receiptCredential,
-                ), alsoUpdating: &currentState)
-
-            case .redeemCredential(let accountEntropyPool, let receiptCredential):
-                // If we crash, we need to restore the AEP before retrying the request.
-                inMemoryState.accountEntropyPool = accountEntropyPool
-                deps.db.write { tx in
-                    updateMasterKeyAndLocalState(masterKey: accountEntropyPool.getMasterKey(), tx: tx)
-                }
-                let serverParams = TSConstants.serverPublicParams()
-                let receiptOperations = ClientZkReceiptOperations(serverPublicParams: serverParams)
-                let receiptCredentialPresentation = try receiptOperations.createReceiptCredentialPresentation(receiptCredential: receiptCredential)
-                let accountIdentity = try await Retry.performWithBackoff(maxAttempts: Constants.networkErrorRetries + 1) {
-                    return try await makeRegisterRequest(.receiptCredential(
-                        receiptCredentialPresentation: receiptCredentialPresentation,
-                    ))
-                }
-                deps.db.write { tx in
-                    updatePersistedState(tx) {
-                        setSignalLoginState(nil, alsoUpdating: &$0)
-                        $0.accountIdentity = accountIdentity
-                    }
-                }
+            let nextAction = try await _nextStepForSignalLogin(currentState)
+            switch nextAction {
+            case .setSignalLoginState(let newState):
+                currentState = newState
+                setSignalLoginState(newState)
+            case .registrationStep(let result):
+                return result
+            case .done:
                 return await nextStep()
-
-            case .logIn:
-                return .promptForLogin(RegistrationSignalLoginState(aci: nil, aep: nil))
             }
+        }
+    }
+
+    private enum NextSignalLoginAction {
+        case setSignalLoginState(InMemorySignalLoginState)
+        case registrationStep(RegistrationStep)
+        case done
+    }
+
+    private func _nextStepForSignalLogin(_ currentState: InMemorySignalLoginState) async throws -> NextSignalLoginAction {
+        switch currentState {
+        case .splash:
+            let product = try await fetchSignalLoginProduct()
+            return .registrationStep(.signalLoginSplash(RegistrationSignalLoginSplashState(
+                formattedPrice: product.displayPrice,
+            )))
+
+        case .purchase:
+            let product = try await fetchSignalLoginProduct()
+            let purchaseResult: StoreKit.Product.PurchaseResult
+            do {
+                purchaseResult = try await product.purchase()
+            } catch Product.PurchaseError.purchaseNotAllowed {
+                owsFail("purchase not allowed")
+            } catch Product.PurchaseError.productUnavailable, StoreKitError.notAvailableInStorefront {
+                owsFail("purchase not available")
+            } catch StoreKitError.userCancelled {
+                return .setSignalLoginState(.splash)
+            }
+            let verificationResult: StoreKit.VerificationResult<StoreKit.Transaction>
+            switch purchaseResult {
+            case .success(let _verificationResult):
+                verificationResult = _verificationResult
+            case .userCancelled:
+                return .setSignalLoginState(.splash)
+            case .pending:
+                throw OWSGenericError("purchase pending")
+            @unknown default:
+                throw OWSAssertionError("couldn't complete purchase due to unknown error")
+            }
+            // Create (and persist!) the receipt credential request context. We must
+            // use the same context when retrying `createLoginReceiptCredential`
+            // requests for the same `transactionId`.
+            let serverParams = TSConstants.serverPublicParams()
+            let receiptSerial = failIfThrows { try ReceiptSerial(contents: Randomness.generateRandomBytes(UInt(ReceiptSerial.SIZE))) }
+            let receiptOperations = ClientZkReceiptOperations(serverPublicParams: serverParams)
+            let requestContext = failIfThrows { try receiptOperations.createReceiptCredentialRequestContext(receiptSerial: receiptSerial) }
+            let receiptLevel = fetchReceiptLevel(forTransaction: verificationResult.unsafePayloadValue)
+            return .setSignalLoginState(.redeemTransaction(
+                transactionId: verificationResult.unsafePayloadValue.id,
+                purchaseDate: verificationResult.unsafePayloadValue.purchaseDate,
+                receiptLevel: receiptLevel,
+                receiptCredentialRequestContext: requestContext,
+            ))
+
+        case .redeemTransaction(let transactionId, let purchaseDate, let receiptLevel, let receiptCredentialRequestContext):
+            let product = try await fetchSignalLoginProduct()
+            // We've now persisted the transaction ID, so we no longer need access to
+            // the payment. We do this as the first step of this state rather than the
+            // last step of the prior state to ensure it happens if the app crashes
+            // while it's in progress (i.e., after we call setSignalLoginState).
+            if let latestTransaction = await product.latestTransaction, latestTransaction.unsafePayloadValue.id == transactionId {
+                await latestTransaction.unsafePayloadValue.finish()
+            }
+            let receiptCredential = try await deps.serviceProvider.withUnauthService(.loginPurchase) {
+                return try await $0.createLoginReceiptCredential(
+                    paymentProcessor: .appleAppStore,
+                    purchaseIdentifier: String(transactionId),
+                    receiptCredentialRequestContext: receiptCredentialRequestContext,
+                    serverParams: TSConstants.serverPublicParams(),
+                    purchaseTime: purchaseDate,
+                    expectedLevel: receiptLevel,
+                )
+            }
+            // We need a durable AEP to ensure idempotency for retries when creating
+            // the account. We store it in Signal Login-scoped state to avoid
+            // intefering with other registration flows that store AEPs.
+            let accountEntropyPool = deps.accountEntropyPoolGenerator()
+            return .setSignalLoginState(.redeemCredential(
+                accountEntropyPool: accountEntropyPool,
+                receiptCredential: receiptCredential,
+            ))
+
+        case .redeemCredential(let accountEntropyPool, let receiptCredential):
+            // If we crash, we need to restore the AEP before retrying the request.
+            inMemoryState.accountEntropyPool = accountEntropyPool
+            deps.db.write { tx in
+                updateMasterKeyAndLocalState(masterKey: accountEntropyPool.getMasterKey(), tx: tx)
+            }
+            let serverParams = TSConstants.serverPublicParams()
+            let receiptOperations = ClientZkReceiptOperations(serverPublicParams: serverParams)
+            let receiptCredentialPresentation = try receiptOperations.createReceiptCredentialPresentation(receiptCredential: receiptCredential)
+            let accountIdentity = try await Retry.performWithBackoff(maxAttempts: Constants.networkErrorRetries + 1) {
+                return try await makeRegisterRequest(.receiptCredential(
+                    receiptCredentialPresentation: receiptCredentialPresentation,
+                ))
+            }
+            deps.db.write { tx in
+                updatePersistedState(tx) {
+                    setSignalLoginState(nil, alsoUpdating: &$0)
+                    $0.accountIdentity = accountIdentity
+                }
+            }
+            return .done
+
+        case .logIn:
+            return .registrationStep(.promptForLogin(RegistrationSignalLoginState(aci: nil, aep: nil)))
         }
     }
 
