@@ -160,7 +160,6 @@ public class DependenciesBridge {
     public let pinnedMessageManager: PinnedMessageManager
     public let pinnedMessageExpirationJob: PinnedMessageExpirationJob
     public let pinnedThreadManager: PinnedThreadManager
-    let pinnedThreadMerger: any PinnedThreadMerger
     let pinnedThreadStore: PinnedThreadStore
     public let plaintextTakeoutManager: PlaintextTakeoutManager
     public let pollMessageManager: PollMessageManager
@@ -318,7 +317,7 @@ public class DependenciesBridge {
         phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher,
         pinnedMessageManager: PinnedMessageManager,
         pinnedMessageExpirationJob: PinnedMessageExpirationJob,
-        pinnedThreadManager: any PinnedThreadManager & PinnedThreadMerger,
+        pinnedThreadManager: any PinnedThreadManager,
         pinnedThreadStore: PinnedThreadStore,
         plaintextTakeoutManager: PlaintextTakeoutManager,
         pollMessageManager: PollMessageManager,
@@ -476,7 +475,6 @@ public class DependenciesBridge {
         self.pinnedMessageManager = pinnedMessageManager
         self.pinnedMessageExpirationJob = pinnedMessageExpirationJob
         self.pinnedThreadManager = pinnedThreadManager
-        self.pinnedThreadMerger = pinnedThreadManager
         self.pinnedThreadStore = pinnedThreadStore
         self.plaintextTakeoutManager = plaintextTakeoutManager
         self.pollMessageManager = pollMessageManager

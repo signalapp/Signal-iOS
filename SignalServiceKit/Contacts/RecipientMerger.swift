@@ -95,17 +95,36 @@ struct MergedRecipient {
     let newRecipient: SignalRecipient
 }
 
+protocol RecipientMergeApplier {
+    /// Merge some data for `recipient` into `targetRecipient`.
+    ///
+    /// Things that point to `recipient` should be updated to point to
+    /// `targetRecipient`. For example, if `recipient` is a member of a story
+    /// distribution list, `recipient` should be removed from that list and
+    /// `targetRecipient` should be added to that list.
+    ///
+    /// - Parameter shouldUpdateStorageService: If true, the source of the merge
+    /// isn't storage service, so the local client is responsible for updating
+    /// storage service. Note: Contacts (i.e., `SignalRecipient`s) don't need to
+    /// be scheduled for an update because RecipientMerger will update them.
+    func mergeRecipient(
+        _ recipient: SignalRecipient,
+        into targetRecipient: inout SignalRecipient,
+        shouldUpdateStorageService: Bool,
+        tx: DBWriteTransaction,
+    )
+}
+
 class RecipientMergerImpl: RecipientMerger {
+    private let appliers: [any RecipientMergeApplier]
     private let chatFolderManager: ChatFolderManager
     private let identityManager: OWSIdentityManager
     private let observers: Observers
-    private let pinnedThreadMerger: any PinnedThreadMerger
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientFetcher: RecipientFetcher
     private let searchableNameIndexer: any SearchableNameIndexer
     private let sessionStore: SessionStore
     private let storageServiceManager: StorageServiceManager
-    private let storyRecipientStore: StoryRecipientStore
 
     /// Initializes a RecipientMerger.
     ///
@@ -114,27 +133,42 @@ class RecipientMergerImpl: RecipientMerger {
     /// which we learned about the new association, and they are notified in the
     /// order in which they are provided.
     init(
+        appliers: [any RecipientMergeApplier],
         chatFolderManager: ChatFolderManager,
         identityManager: OWSIdentityManager,
         observers: Observers,
-        pinnedThreadMerger: any PinnedThreadMerger,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         searchableNameIndexer: any SearchableNameIndexer,
         sessionStore: SessionStore,
         storageServiceManager: StorageServiceManager,
-        storyRecipientStore: StoryRecipientStore,
     ) {
+        self.appliers = appliers
         self.chatFolderManager = chatFolderManager
         self.identityManager = identityManager
         self.observers = observers
-        self.pinnedThreadMerger = pinnedThreadMerger
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
         self.searchableNameIndexer = searchableNameIndexer
         self.sessionStore = sessionStore
         self.storageServiceManager = storageServiceManager
-        self.storyRecipientStore = storyRecipientStore
+    }
+
+    static func buildAppliers(
+        chatFolderManager: ChatFolderManager,
+        identityManager: OWSIdentityManagerImpl,
+        pinnedThreadManager: PinnedThreadManagerImpl,
+        sessionStore: SessionStore,
+        storyRecipientStore: StoryRecipientStore,
+    ) -> [any RecipientMergeApplier] {
+        return [
+            SessionStoreRecipientMergeApplier(sessionStore: sessionStore, localIdentity: .aci),
+            identityManager,
+            RecipientStatusMergeApplier(),
+            storyRecipientStore,
+            pinnedThreadManager,
+            chatFolderManager,
+        ]
     }
 
     struct Observers {
@@ -826,29 +860,14 @@ class RecipientMergerImpl: RecipientMerger {
         for affectedRecipient in otherUpdatedRecipients {
             if affectedRecipient.isEmpty {
                 // TODO: Should we clean up any more state related to the discarded recipient?
-                sessionStore.mergeRecipientId(affectedRecipient.id, into: mergedRecipient.id, localIdentity: .aci, tx: tx)
-                identityManager.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx)
-
-                switch (affectedRecipient.status, mergedRecipient.status) {
-                case (.unspecified, _):
-                    // Old recipient has no status to take precedence.
-                    break
-                case (_, .blocked):
-                    // Don't undo blocking as a result of merging.
-                    break
-                case (.whitelisted, .whitelisted):
-                    break
-                case (.blocked, .unspecified), (.blocked, .whitelisted):
-                    mergedRecipient.status = .blocked
-                    mergedRecipient.blockedAt = affectedRecipient.blockedAt
-                case (.whitelisted, .unspecified):
-                    mergedRecipient.status = .whitelisted
-                    mergedRecipient.blockedAt = .unspecified
+                for applier in appliers {
+                    applier.mergeRecipient(
+                        affectedRecipient,
+                        into: &mergedRecipient,
+                        shouldUpdateStorageService: shouldUpdateStorageService,
+                        tx: tx,
+                    )
                 }
-
-                storyRecipientStore.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx)
-                pinnedThreadMerger.mergeRecipientId(affectedRecipient.id, into: mergedRecipient.id, updateStorageService: shouldUpdateStorageService, tx: tx)
-                chatFolderManager.mergeRecipient(affectedRecipient.id, into: mergedRecipient.id, tx: tx)
                 recipientDatabaseTable.removeRecipient(affectedRecipient, transaction: tx)
             } else if oldRecipients.contains(where: { $0.uniqueId == affectedRecipient.uniqueId }) {
                 recipientDatabaseTable.updateRecipient(affectedRecipient, transaction: tx)
@@ -1019,6 +1038,58 @@ class RecipientMergerImpl: RecipientMerger {
             return pni.serviceIdString
         }
         return "aci"
+    }
+}
+
+// MARK: - Appliers
+
+struct SessionStoreRecipientMergeApplier: RecipientMergeApplier {
+    private let sessionStore: SessionStore
+    private let localIdentity: OWSIdentity
+
+    init(sessionStore: SessionStore, localIdentity: OWSIdentity) {
+        self.sessionStore = sessionStore
+        self.localIdentity = localIdentity
+    }
+
+    func mergeRecipient(
+        _ recipient: SignalRecipient,
+        into targetRecipient: inout SignalRecipient,
+        shouldUpdateStorageService: Bool,
+        tx: DBWriteTransaction,
+    ) {
+        sessionStore.mergeRecipientId(
+            recipient.id,
+            into: targetRecipient.id,
+            localIdentity: localIdentity,
+            tx: tx,
+        )
+    }
+}
+
+struct RecipientStatusMergeApplier: RecipientMergeApplier {
+    func mergeRecipient(
+        _ recipient: SignalRecipient,
+        into targetRecipient: inout SignalRecipient,
+        shouldUpdateStorageService: Bool,
+        tx: DBWriteTransaction,
+    ) {
+        switch (recipient.status, targetRecipient.status) {
+        case (.unspecified, _):
+            // Old recipient has no status to take precedence.
+            break
+        case (_, .blocked):
+            // Don't undo blocking as a result of merging.
+            break
+        case (.whitelisted, .whitelisted):
+            break
+        case (.blocked, .unspecified), (.blocked, .whitelisted):
+            targetRecipient.status = .blocked
+            targetRecipient.blockedAt = recipient.blockedAt
+        case (.whitelisted, .unspecified):
+            targetRecipient.status = .whitelisted
+            targetRecipient.blockedAt = .unspecified
+        }
     }
 }
 

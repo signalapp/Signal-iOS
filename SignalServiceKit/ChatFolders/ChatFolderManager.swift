@@ -5,6 +5,8 @@
 
 import Foundation
 
+extension ChatFolderManager: RecipientMergeApplier {}
+
 public struct ChatFolderManager {
     private let chatFolderStore: ChatFolderStore
     private let groupStore = GroupStore()
@@ -159,11 +161,12 @@ public struct ChatFolderManager {
     // MARK: - Recipient merging
 
     func mergeRecipient(
-        _ recipientRowId: SignalRecipient.RowId,
-        into targetRecipientRowId: SignalRecipient.RowId,
+        _ recipient: SignalRecipient,
+        into targetRecipient: inout SignalRecipient,
+        shouldUpdateStorageService: Bool,
         tx: DBWriteTransaction,
     ) {
-        let mergedIds = chatFolderStore.mergeRecipient(recipientRowId, into: targetRecipientRowId, tx: tx)
+        let mergedIds = chatFolderStore.mergeRecipient(recipient.id, into: targetRecipient.id, tx: tx)
         storageServiceManager.recordPendingUpdates(chatFolderIds: mergedIds)
     }
 

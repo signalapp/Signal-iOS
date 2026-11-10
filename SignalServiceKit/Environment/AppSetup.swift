@@ -1096,6 +1096,13 @@ extension AppSetup.GlobalsContinuation {
 
         let authorMergeHelper = AuthorMergeHelper()
         let recipientMerger = RecipientMergerImpl(
+            appliers: RecipientMergerImpl.buildAppliers(
+                chatFolderManager: chatFolderManager,
+                identityManager: identityManager,
+                pinnedThreadManager: pinnedThreadManager,
+                sessionStore: sessionStore,
+                storyRecipientStore: storyRecipientStore,
+            ),
             chatFolderManager: chatFolderManager,
             identityManager: identityManager,
             observers: RecipientMergerImpl.buildObservers(
@@ -1117,13 +1124,11 @@ extension AppSetup.GlobalsContinuation {
                 wallpaperImageStore: wallpaperImageStore,
                 wallpaperStore: wallpaperStore,
             ),
-            pinnedThreadMerger: pinnedThreadManager,
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             searchableNameIndexer: searchableNameIndexer,
             sessionStore: sessionStore,
             storageServiceManager: storageServiceManager,
-            storyRecipientStore: storyRecipientStore,
         )
 
         let accountEntropyPoolManager = AccountEntropyPoolManagerImpl(

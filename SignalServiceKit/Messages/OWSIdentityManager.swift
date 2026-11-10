@@ -42,7 +42,6 @@ public protocol OWSIdentityManager {
 
     func insertIdentityChangeInfoMessage(for serviceId: ServiceId, wasIdentityVerified: Bool, tx: DBWriteTransaction)
     func insertSessionSwitchoverEvent(for recipient: SignalRecipient, phoneNumber: String?, tx: DBWriteTransaction)
-    func mergeRecipient(_ recipient: SignalRecipient, into targetRecipient: SignalRecipient, tx: DBWriteTransaction)
 
     func untrustedIdentityForSending(
         to address: SignalServiceAddress,
@@ -206,6 +205,8 @@ private extension OWSIdentity {
         }
     }
 }
+
+extension OWSIdentityManagerImpl: RecipientMergeApplier {}
 
 public class OWSIdentityManagerImpl: OWSIdentityManager {
     private let appReadiness: AppReadiness
@@ -483,7 +484,12 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         sessionSwitchoverEvent.anyInsert(transaction: tx)
     }
 
-    public func mergeRecipient(_ recipient: SignalRecipient, into targetRecipient: SignalRecipient, tx: DBWriteTransaction) {
+    func mergeRecipient(
+        _ recipient: SignalRecipient,
+        into targetRecipient: inout SignalRecipient,
+        shouldUpdateStorageService: Bool,
+        tx: DBWriteTransaction,
+    ) {
         let recipientPair = MergePair(fromValue: recipient, intoValue: targetRecipient)
         let recipientIdentity = recipientPair.map {
             OWSRecipientIdentity.anyFetch(uniqueId: $0.uniqueId, transaction: tx)

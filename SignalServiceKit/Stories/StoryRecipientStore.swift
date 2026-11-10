@@ -6,6 +6,8 @@
 import Foundation
 import GRDB
 
+extension StoryRecipientStore: RecipientMergeApplier {}
+
 public struct StoryRecipientStore {
     public func insertRecipientId(
         _ recipientId: SignalRecipient.RowId,
@@ -66,7 +68,12 @@ public struct StoryRecipientStore {
         }
     }
 
-    public func mergeRecipient(_ recipient: SignalRecipient, into targetRecipient: SignalRecipient, tx: DBWriteTransaction) {
+    func mergeRecipient(
+        _ recipient: SignalRecipient,
+        into targetRecipient: inout SignalRecipient,
+        shouldUpdateStorageService: Bool,
+        tx: DBWriteTransaction,
+    ) {
         let threadIds = fetchStoryThreadIds(forRecipientId: recipient.id, tx: tx)
         for threadId in threadIds {
             removeRecipientId(recipient.id, forStoryThreadId: threadId, tx: tx)

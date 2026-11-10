@@ -5,6 +5,7 @@
 
 import LibSignalClient
 import SignalRingRTC
+import Testing
 import XCTest
 
 @testable import SignalServiceKit
@@ -70,6 +71,11 @@ private class TestDependencies {
             threadStore: threadStore,
         )
         recipientMerger = RecipientMergerImpl(
+            appliers: [
+                SessionStoreRecipientMergeApplier(sessionStore: sessionStore, localIdentity: .aci),
+                identityManager,
+                chatFolderManager,
+            ],
             chatFolderManager: chatFolderManager,
             identityManager: identityManager,
             observers: RecipientMergerImpl.Observers(
@@ -77,13 +83,11 @@ private class TestDependencies {
                 threadMerger: threadMerger,
                 postThreadMerger: observers,
             ),
-            pinnedThreadMerger: MockPinnedThreadMerger(),
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             searchableNameIndexer: searchableNameIndexer,
             sessionStore: sessionStore,
             storageServiceManager: storageServiceManager,
-            storyRecipientStore: StoryRecipientStore(),
         )
     }
 }
@@ -626,64 +630,6 @@ class RecipientMergerTest: XCTestCase {
         )
     }
 
-    func testPniSignatureMergeStatus() throws {
-        let aci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
-        let phoneNumber = E164("+16505550101")!
-        let pni = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
-
-        let pniBlockedAt = BlockedTimestamp(clamping: 1000)
-        let aciBlockedAt = BlockedTimestamp(clamping: 2000)
-
-        struct TestCase {
-            let pniStatus: SignalRecipient.Status
-            let aciStatus: SignalRecipient.Status
-            let expectedStatus: SignalRecipient.Status
-            let expectedBlockedAt: BlockedTimestamp
-        }
-
-        let testCases: [TestCase] = [
-            TestCase(pniStatus: .unspecified, aciStatus: .unspecified, expectedStatus: .unspecified, expectedBlockedAt: .unspecified),
-            TestCase(pniStatus: .unspecified, aciStatus: .whitelisted, expectedStatus: .whitelisted, expectedBlockedAt: .unspecified),
-            TestCase(pniStatus: .unspecified, aciStatus: .blocked, expectedStatus: .blocked, expectedBlockedAt: aciBlockedAt),
-            TestCase(pniStatus: .whitelisted, aciStatus: .unspecified, expectedStatus: .whitelisted, expectedBlockedAt: .unspecified),
-            TestCase(pniStatus: .whitelisted, aciStatus: .whitelisted, expectedStatus: .whitelisted, expectedBlockedAt: .unspecified),
-            TestCase(pniStatus: .whitelisted, aciStatus: .blocked, expectedStatus: .blocked, expectedBlockedAt: aciBlockedAt),
-            TestCase(pniStatus: .blocked, aciStatus: .unspecified, expectedStatus: .blocked, expectedBlockedAt: pniBlockedAt),
-            TestCase(pniStatus: .blocked, aciStatus: .whitelisted, expectedStatus: .blocked, expectedBlockedAt: pniBlockedAt),
-            TestCase(pniStatus: .blocked, aciStatus: .blocked, expectedStatus: .blocked, expectedBlockedAt: aciBlockedAt),
-        ]
-
-        for testCase in testCases {
-            let d = TestDependencies()
-            d.mockDB.write { tx in
-                _ = try! SignalRecipient.insertRecord(
-                    aci: aci,
-                    status: testCase.aciStatus,
-                    blockedAt: testCase.aciStatus == .blocked ? aciBlockedAt : .unspecified,
-                    tx: tx,
-                )
-                _ = try! SignalRecipient.insertRecord(
-                    phoneNumber: phoneNumber,
-                    pni: pni,
-                    status: testCase.pniStatus,
-                    blockedAt: testCase.pniStatus == .blocked ? pniBlockedAt : .unspecified,
-                    tx: tx,
-                )
-            }
-
-            d.mockDB.write { tx in
-                d.recipientMerger.applyMergeFromPniSignature(localIdentifiers: .forUnitTests, aci: aci, pni: pni, tx: tx)
-            }
-
-            let mergedRecipient = d.mockDB.read { tx in
-                d.recipientDatabaseTable.fetchRecipient(serviceId: pni, transaction: tx)
-            }
-            XCTAssertEqual(mergedRecipient?.aci, aci, "\(testCase)")
-            XCTAssertEqual(mergedRecipient?.status, testCase.expectedStatus, "\(testCase)")
-            XCTAssertEqual(mergedRecipient?.blockedAt, testCase.expectedBlockedAt, "\(testCase)")
-        }
-    }
-
     func testStorageServiceMerges() throws {
         let aci1 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
         let aci2 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a2")
@@ -832,5 +778,55 @@ class RecipientMergerTest: XCTestCase {
             }
             XCTAssert(recipientTable.isEmpty)
         }
+    }
+}
+
+struct RecipientStatusMergeApplierTest {
+    struct TestCase {
+        let sourceStatus: SignalRecipient.Status
+        let targetStatus: SignalRecipient.Status
+        let expectedStatus: SignalRecipient.Status
+        let expectedBlockedAt: BlockedTimestamp
+    }
+
+    @Test(arguments: [
+        TestCase(sourceStatus: .unspecified, targetStatus: .unspecified, expectedStatus: .unspecified, expectedBlockedAt: .unspecified),
+        TestCase(sourceStatus: .unspecified, targetStatus: .whitelisted, expectedStatus: .whitelisted, expectedBlockedAt: .unspecified),
+        TestCase(sourceStatus: .unspecified, targetStatus: .blocked, expectedStatus: .blocked, expectedBlockedAt: BlockedTimestamp(clamping: 2000)),
+        TestCase(sourceStatus: .whitelisted, targetStatus: .unspecified, expectedStatus: .whitelisted, expectedBlockedAt: .unspecified),
+        TestCase(sourceStatus: .whitelisted, targetStatus: .whitelisted, expectedStatus: .whitelisted, expectedBlockedAt: .unspecified),
+        TestCase(sourceStatus: .whitelisted, targetStatus: .blocked, expectedStatus: .blocked, expectedBlockedAt: BlockedTimestamp(clamping: 2000)),
+        TestCase(sourceStatus: .blocked, targetStatus: .unspecified, expectedStatus: .blocked, expectedBlockedAt: BlockedTimestamp(clamping: 1000)),
+        TestCase(sourceStatus: .blocked, targetStatus: .whitelisted, expectedStatus: .blocked, expectedBlockedAt: BlockedTimestamp(clamping: 1000)),
+        TestCase(sourceStatus: .blocked, targetStatus: .blocked, expectedStatus: .blocked, expectedBlockedAt: BlockedTimestamp(clamping: 2000)),
+    ])
+    func testRecipientStatusMerge(testCase: TestCase) throws {
+        let db = InMemoryDB()
+        let sourceRecipient = try db.write { tx in
+            return try SignalRecipient.insertRecord(
+                status: testCase.sourceStatus,
+                blockedAt: testCase.sourceStatus == .blocked ? BlockedTimestamp(clamping: 1000) : .unspecified,
+                tx: tx,
+            )
+        }
+        var targetRecipient = try db.write { tx in
+            return try SignalRecipient.insertRecord(
+                status: testCase.targetStatus,
+                blockedAt: testCase.targetStatus == .blocked ? BlockedTimestamp(clamping: 2000) : .unspecified,
+                tx: tx,
+            )
+        }
+
+        db.write { tx in
+            RecipientStatusMergeApplier().mergeRecipient(
+                sourceRecipient,
+                into: &targetRecipient,
+                shouldUpdateStorageService: false,
+                tx: tx,
+            )
+        }
+
+        #expect(targetRecipient.status == testCase.expectedStatus)
+        #expect(targetRecipient.blockedAt == testCase.expectedBlockedAt)
     }
 }

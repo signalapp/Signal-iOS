@@ -59,14 +59,3 @@ public protocol PinnedThreadManager {
         tx: DBWriteTransaction,
     )
 }
-
-// MARK: -
-
-protocol PinnedThreadMerger {
-    func mergeRecipientId(
-        _ recipientId: SignalRecipient.RowId,
-        into targetRecipientId: SignalRecipient.RowId,
-        updateStorageService: Bool,
-        tx: DBWriteTransaction,
-    )
-}
