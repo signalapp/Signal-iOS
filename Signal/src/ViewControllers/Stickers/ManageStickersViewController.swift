@@ -91,8 +91,6 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
         )
 
         backgroundStyle = .none
-        tableView.allowsSelectionDuringEditing = true
-        tableView.allowsMultipleSelectionDuringEditing = true
         tableView.backgroundColor = cellBackgroundColor
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + iconSize + iconSpacing
         defaultSeparatorInsetTrailing = Self.cellHInnerMargin
@@ -114,6 +112,8 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
                 }
             }
 
+            tableView.allowsSelectionDuringEditing = true
+            tableView.allowsMultipleSelectionDuringEditing = false
             navigationItem.title = OWSLocalizedString("STICKERS_MANAGE_VIEW_TITLE", comment: "Title for the 'manage stickers' view.")
             navigationItem.titleView = filterPicker
             navigationItem.rightBarButtonItem = .cancelButton(dismissingFrom: self)
@@ -128,6 +128,8 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
             }
             navigationItem.hidesSearchBarWhenScrolling = false
         case .selection:
+            tableView.allowsSelectionDuringEditing = true
+            tableView.allowsMultipleSelectionDuringEditing = true
             navigationItem.titleView = nil
             navigationItem.leftBarButtonItem = .closeButton { [weak self] in self?.setUIMode(uiMode: .normal, animated: true) }
             navigationItem.rightBarButtonItem = nil
@@ -191,6 +193,7 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
     private func setUIMode(uiMode: UIMode, animated: Bool) {
         currentUIMode = uiMode
         setNavigationToolbar(animated: animated)
+        tableView.setEditing(false, animated: animated)
         buildTable(shouldReload: false, animated: animated)
     }
 
@@ -404,7 +407,10 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
         }
 
         self.installedStickerPackSources = installedStickerPacks.sorted {
-            $0.dateCreated > $1.dateCreated
+            if $0.sortOrder != $1.sortOrder {
+                return $0.sortOrder < $1.sortOrder
+            }
+            return $0.dateCreated > $1.dateCreated
         }.map {
             installedSource($0.info)
         }
@@ -437,7 +443,7 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
 
             switch currentUIMode {
             case .normal:
-                tableView.setEditing(false, animated: animated)
+                tableView.setEditing(true, animated: animated)
                 selectionBehavior = .actionWithAutoDeselect
 
                 contents.add(getInstalledSection(stickerPackSources: filteredInstalledStickerPackSources, forSelection: false))
@@ -899,6 +905,41 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
         return container
     }
 
+    // MARK: Reordering
+
+    func tableView(
+        _ tableView: UITableView,
+        canMoveRowAt indexPath: IndexPath,
+    ) -> Bool {
+        return currentUIMode == .normal && currentFilterMode == .installed && searchText.isEmpty
+    }
+
+    func tableView(
+        _ tableView: UITableView,
+        moveRowAt sourceIndexPath: IndexPath,
+        to destinationIndexPath: IndexPath,
+    ) {
+        guard sourceIndexPath != destinationIndexPath else { return }
+        let removedAt = installedStickerPackSources.remove(at: sourceIndexPath.row)
+        installedStickerPackSources.insert(removedAt, at: destinationIndexPath.row)
+        buildTable(shouldReload: false, animated: false)
+        reorder()
+    }
+
+    func tableView(
+        _ tableView: UITableView,
+        editingStyleForRowAt indexPath: IndexPath,
+    ) -> UITableViewCell.EditingStyle {
+        .none
+    }
+
+    func tableView(
+        _ tableView: UITableView,
+        shouldIndentWhileEditingRowAt indexPath: IndexPath,
+    ) -> Bool {
+        false
+    }
+
     // MARK: Context menu
 
     func contextMenuActionProvider(pack: StickerPackDataSource, indexPath: IndexPath? = nil) -> UIContextMenuActionProvider {
@@ -1030,6 +1071,13 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
         )
         // Retain the flow until it is complete.
         self.sendMessageFlow = sendMessageFlow
+    }
+
+    private func reorder() {
+        let packs = installedStickerPackSources.compactMap { $0.info }
+        db.write { transaction in
+            self.stickerManager.reorder(packInfos: packs, transaction: transaction)
+        }
     }
 
     private func install(stickerPack: StickerPackRecord) {

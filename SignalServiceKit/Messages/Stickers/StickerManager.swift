@@ -228,6 +228,12 @@ public class StickerManager {
     public func installedStickerPacks(transaction: DBReadTransaction) -> [StickerPackRecord] {
         return allStickerPacks(transaction: transaction).filter {
             $0.isInstalled
+        }.sorted {
+            if $0.sortOrder != $1.sortOrder {
+                $0.sortOrder < $1.sortOrder
+            } else {
+                $0.dateCreated > $1.dateCreated
+            }
         }
     }
 
@@ -327,6 +333,28 @@ public class StickerManager {
         }
     }
 
+    public func reorder(
+        packInfos: [StickerPackInfo],
+        transaction: DBWriteTransaction,
+    ) {
+        let packs: [StickerPackRecord] = packInfos.compactMap { info in
+            guard let stickerPack = fetchStickerPack(stickerPackInfo: info, transaction: transaction) else {
+                Logger.info("Can't find pack, skipping reordering for this pack.")
+                return nil
+            }
+            return stickerPack
+        }
+
+        for (index, pack) in packs.enumerated() {
+            pack.updateWith(sortOrder: Int64(index), tx: transaction)
+        }
+
+        transaction.addSyncCompletion {
+            // We only need to notify the sticker keyboard
+            self.stickersDidChangeEvent.requestNotify()
+        }
+    }
+
     private func upsertStickerPack(
         stickerPack stickerPackParam: StickerPackRecord,
         installMode: InstallMode,
@@ -400,7 +428,9 @@ public class StickerManager {
             return .value(())
         }
 
-        stickerPack.updateWith(isInstalled: true, tx: transaction)
+        // Put new packs at the end
+        let sortOrder = StickerPackRecord.maxInstalledSortOrder(tx: transaction).map { $0 + 1 } ?? 0
+        stickerPack.updateWith(isInstalled: true, sortOrder: sortOrder, tx: transaction)
 
         let promise = installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
 

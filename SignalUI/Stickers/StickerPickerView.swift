@@ -529,9 +529,7 @@ private class StickerPickerPageView: UIView {
         let hadFavorites = hasFavorites
 
         db.read { transaction in
-            self.stickerPacks = stickerManager.installedStickerPacks(transaction: transaction).sorted {
-                $0.dateCreated > $1.dateCreated
-            }
+            self.stickerPacks = stickerManager.installedStickerPacks(transaction: transaction)
             if BuildFlags.stickerFavorites {
                 self.hasFavorites = stickerManager.stickerFavoriteCount(tx: transaction) > 0
             }

@@ -376,6 +376,7 @@ public class GRDBSchemaMigrator {
         case addLocalKeyAndSizeToInstalledSticker
         case addFavoriteStickerTable
         case addChatFolderTables
+        case addSortOrderToStickerPack
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -510,7 +511,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 166
+    public static let grdbSchemaVersionLatest: UInt = 168
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5839,6 +5840,13 @@ public class GRDBSchemaMigrator {
                 options: [.unique],
                 condition: Column("groupRowId") != nil,
             )
+            return .success(())
+        }
+
+        migrator.registerMigration(.addSortOrderToStickerPack) { tx in
+            try tx.database.alter(table: "model_StickerPack") {
+                $0.add(column: "sortOrder", .integer).notNull().defaults(to: 0)
+            }
             return .success(())
         }
 
