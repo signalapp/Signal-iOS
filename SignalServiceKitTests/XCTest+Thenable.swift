@@ -7,7 +7,11 @@ public import SignalServiceKit
 public import XCTest
 
 extension Thenable {
-    func expect(timeout: TimeInterval, file: StaticString = #filePath, line: UInt = #line) -> Value {
+    func expect(
+        timeout: TimeInterval,
+        file: StaticString = #filePath,
+        line: UInt = #line,
+    ) throws -> Value {
         let expectation = XCTestExpectation(description: "\(file):\(line)")
         var result: Value?
         self.done {
@@ -17,7 +21,7 @@ extension Thenable {
             XCTFail("\($0)", file: file, line: line)
         }
         _ = XCTWaiter.wait(for: [expectation], timeout: timeout)
-        return try! XCTUnwrap(result, file: file, line: line)
+        return try XCTUnwrap(result, file: file, line: line)
     }
 }
 
