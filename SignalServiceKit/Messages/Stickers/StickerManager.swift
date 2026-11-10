@@ -954,7 +954,14 @@ public class StickerManager {
         NotificationCenter.default.postOnMainThread(name: Self.recentStickersDidChange, object: nil)
     }
 
-    private func removeFromRecentStickers(
+    public func removeAllRecentStickers(
+        transaction: DBWriteTransaction,
+    ) {
+        store.removeValue(forKey: Self.kRecentStickersKey, transaction: transaction)
+        NotificationCenter.default.postOnMainThread(name: Self.recentStickersDidChange, object: nil)
+    }
+
+    public func removeFromRecentStickers(
         _ stickerInfo: StickerInfo,
         transaction: DBWriteTransaction,
     ) {

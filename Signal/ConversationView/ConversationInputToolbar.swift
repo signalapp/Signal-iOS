@@ -15,6 +15,13 @@ protocol ConversationInputToolbarDelegate: AnyObject {
 
     func presentManageStickersView()
 
+    func didTapStickerPack(_ stickerPackInfo: StickerPackInfo)
+
+    func openStickerKeyboard(
+        page: StickerPickerPage?,
+        bouncing stickerInfo: StickerInfo?,
+    )
+
     func updateToolbarHeight()
 
     func isBlockedConversation() -> Bool
@@ -3441,6 +3448,23 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
     func stickerKeyboardDidRequestPresentManageStickersView(_ stickerKeyboard: StickerKeyboard) {
         AssertIsOnMainThread()
         inputToolbarDelegate?.presentManageStickersView()
+    }
+
+    func viewStickerPack(_ stickerPackInfo: StickerPackInfo) {
+        inputToolbarDelegate?.didTapStickerPack(stickerPackInfo)
+    }
+
+    func scrollToFavoritedSticker(_ stickerInfo: StickerInfo) {
+        inputToolbarDelegate?.openStickerKeyboard(page: .favorites, bouncing: stickerInfo)
+    }
+
+    func sendSticker(_ stickerMetadata: any StickerMetadata) {
+        inputToolbarDelegate?.sendSticker(stickerMetadata)
+    }
+
+    func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo) {
+        let messageBody = MessageBody(text: stickerPackInfo.shareUrl(), ranges: .empty)
+        setMessageBody(messageBody, animated: true)
     }
 
     // MARK: - AttachmentKeyboardDelegate

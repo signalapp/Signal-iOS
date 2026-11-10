@@ -10387,6 +10387,9 @@
 /* Label for button to remove sticker from favorites */
 "STICKER_BUTTON_REMOVE_FAVORITES" = "Remove From Favorites";
 
+/* Title for a button to remove a sticker from recents */
+"STICKER_BUTTON_REMOVE_FROM_RECENTS" = "Remove from Recents";
+
 /* Title for a button to view a sticker pack */
 "STICKER_BUTTON_VIEW_PACK" = "View Pack";
 
@@ -10405,6 +10408,9 @@
 /* Button to confirm a user wants to remove a sticker */
 "STICKER_CONFIRM_REMOVE_BUTTON" = "Remove";
 
+/* Label for the button to clear all sticker recents */
+"STICKER_KEYBOARD_BUTTON_CLEAR_RECENTS" = "Clear Recents";
+
 /* Toast shown when user tries to tap Favorites in sticker keyboard but has none */
 "STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "Press and hold a sticker to add to Favorites";
 
@@ -10416,6 +10422,12 @@
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Sticker Message";
+
+/* Button to confirm a user wants to clear recent stickers */
+"STICKER_PACK_CLEAR_RECENTS_BUTTON" = "Clear";
+
+/* Message for a sheet asking the user to confirm they want to clear recently used stickers */
+"STICKER_PACK_CONFIRM_CLEAR_RECENTS_MESSAGE" = "Clear recently used stickers?";
 
 /* Button to confirm a user wants to remove a sticker pack */
 "STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "Remove";
@@ -10449,6 +10461,9 @@
 
 /* Title for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
 "STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "Remove From Favorites?";
+
+/* Title for a button to remove a sticker pack */
+"STICKER_REMOVE_PACK_BUTTON" = "Remove";
 
 /* Text shown in a toast confirming a sticker was removed from favorites */
 "STICKER_REMOVED_FROM_FAVORITES_TOAST" = "Sticker removed from Favorites";

@@ -8,12 +8,21 @@ public import SignalServiceKit
 public protocol StickerPickerViewDelegate: StickerPickerDelegate {
 
     func presentManageStickersView(for: StickerPickerView)
+
+    func viewStickerPack(_ stickerPackInfo: StickerPackInfo)
+
+    func scrollToFavoritedSticker(_ stickerInfo: StickerInfo)
+
+    func sendSticker(_ stickerMetadata: any StickerMetadata)
+
+    func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo)
 }
 
 public class StickerPickerView: UIView {
 
     weak var delegate: StickerPickerViewDelegate?
     private let storyStickerConfigation: StoryStickerConfiguration
+    private let allowContextMenus: Bool
 
     var stickerPackCollectionViewPages: [UICollectionView] {
         stickerPageView.stickerPackCollectionViews
@@ -22,9 +31,11 @@ public class StickerPickerView: UIView {
     public init(
         delegate: StickerPickerViewDelegate,
         storyStickerConfiguration: StoryStickerConfiguration = .hide,
+        allowContextMenus: Bool,
     ) {
         self.delegate = delegate
         self.storyStickerConfigation = storyStickerConfiguration
+        self.allowContextMenus = allowContextMenus
 
         super.init(frame: .zero)
 
@@ -80,6 +91,7 @@ public class StickerPickerView: UIView {
     private lazy var stickerPageView = StickerPickerPageView(
         delegate: self,
         storyStickerConfiguration: storyStickerConfigation,
+        allowContextMenus: allowContextMenus,
     )
 
     override public func layoutMarginsDidChange() {
@@ -131,6 +143,22 @@ extension StickerPickerView: StickerPickerPageViewDelegate {
 
     public func didSelectSticker(_ stickerMetadata: any StickerMetadata) {
         delegate?.didSelectSticker(stickerMetadata)
+    }
+
+    public func viewStickerPack(_ stickerPackInfo: StickerPackInfo) {
+        delegate?.viewStickerPack(stickerPackInfo)
+    }
+
+    public func scrollToFavoritedSticker(_ stickerInfo: StickerInfo) {
+        delegate?.scrollToFavoritedSticker(stickerInfo)
+    }
+
+    public func sendSticker(_ stickerMetadata: any StickerMetadata) {
+        delegate?.sendSticker(stickerMetadata)
+    }
+
+    public func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo) {
+        delegate?.queueStickerPackForSending(stickerPackInfo)
     }
 }
 
@@ -366,6 +394,14 @@ private protocol StickerPickerPageViewDelegate: StickerPickerDelegate {
     func setItems(_ items: [StickerHorizontalListViewItem])
 
     func updateSelections(scrollToSelectedItem: Bool)
+
+    func viewStickerPack(_ stickerPackInfo: StickerPackInfo)
+
+    func scrollToFavoritedSticker(_ stickerInfo: StickerInfo)
+
+    func sendSticker(_ stickerMetadata: any StickerMetadata)
+
+    func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo)
 }
 
 public enum StickerPickerPage: Equatable {
@@ -385,6 +421,8 @@ private class StickerPickerPageView: UIView {
 
     private var pendingBounce: (page: StickerPickerPage, stickerInfo: StickerInfo)?
 
+    private let allowContextMenus: Bool
+
     private var selectedStickerPackPage: StickerPickerPage {
         didSet {
             selectedPackChanged(oldSelectedPack: oldValue)
@@ -394,9 +432,11 @@ private class StickerPickerPageView: UIView {
     init(
         delegate: StickerPickerPageViewDelegate,
         storyStickerConfiguration: StoryStickerConfiguration = .hide,
+        allowContextMenus: Bool,
     ) {
         self.delegate = delegate
         self.storyStickerConfiguration = storyStickerConfiguration
+        self.allowContextMenus = allowContextMenus
 
         // By default, show the "recent" stickers.
         selectedStickerPackPage = .recents
@@ -636,9 +676,9 @@ private class StickerPickerPageView: UIView {
     /// 1 - Current Page
     /// 2 - Next Page
     lazy var stickerPackCollectionViews: [StickerPackCollectionView] = [
-        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration, shouldShowSectionHeaders: true),
-        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration, shouldShowSectionHeaders: true),
-        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration, shouldShowSectionHeaders: true),
+        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration, shouldShowSectionHeaders: true, allowContextMenus: allowContextMenus),
+        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration, shouldShowSectionHeaders: true, allowContextMenus: allowContextMenus),
+        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration, shouldShowSectionHeaders: true, allowContextMenus: allowContextMenus),
     ]
     private var stickerPackCollectionViewConstraints = [NSLayoutConstraint]()
 
@@ -946,5 +986,21 @@ extension StickerPickerPageView: StickerPackCollectionViewDelegate {
 
     func stickerPreviewHasOverlay() -> Bool {
         return true
+    }
+
+    public func viewStickerPack(_ stickerPackInfo: StickerPackInfo) {
+        delegate?.viewStickerPack(stickerPackInfo)
+    }
+
+    public func scrollToFavoritedSticker(_ stickerInfo: StickerInfo) {
+        delegate?.scrollToFavoritedSticker(stickerInfo)
+    }
+
+    public func sendSticker(_ stickerMetadata: any StickerMetadata) {
+        delegate?.sendSticker(stickerMetadata)
+    }
+
+    public func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo) {
+        delegate?.queueStickerPackForSending(stickerPackInfo)
     }
 }
