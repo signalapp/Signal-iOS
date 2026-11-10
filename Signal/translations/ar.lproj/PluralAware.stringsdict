@@ -2391,17 +2391,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>لا يمكنك سوى إضافة %1$d مُلصَقات إلى المفضلة</string>
 			<key>one</key>
-			<string>You can only add %1$d sticker to Favorites</string>
+			<string>لا يمكنك سوى إضافة %1$d مُلصَق إلى المفضلة</string>
 			<key>two</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>لا يمكنك سوى إضافة %1$d مُلصَقين إلى المفضلة</string>
 			<key>few</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>لا يمكنك سوى إضافة %1$d مُلصَقات إلى المفضلة</string>
 			<key>many</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>لا يمكنك سوى إضافة %1$d مُلصَقًا إلى المفضلة</string>
 			<key>other</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>لا يمكنك سوى إضافة %1$d مًلصَق إلى المفضلة</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>

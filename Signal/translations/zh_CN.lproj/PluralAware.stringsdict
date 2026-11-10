@@ -1391,7 +1391,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>收藏夹中最多只能添加 %1$d 个贴纸</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>

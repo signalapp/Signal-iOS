@@ -3113,13 +3113,13 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ ئالاقىداشلىرىڭىزدىن ئۆچۈرىۋېتىلدى ۋە چىقىرىۋېتىلدى.";
 
 /* Message for a sheet confirming that the user, as a group admin, wants to delete messages for everyone. */
-"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_ADMIN_MESSAGE" = "Group members will see that you deleted these messages.";
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_ADMIN_MESSAGE" = "گۇرۇپپا ئەزالىرى سىزنىڭ بۇ ئۇچۇرلارنى ئۆچۈرگەنلىكىڭىزنى كۆرىدۇ.";
 
 /* Message for a sheet confirming that the user wants to delete their message for everyone. */
-"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_MESSAGE" = "This message will be deleted for everyone in the chat. They will be able to see that you deleted a message.";
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_MESSAGE" = "بۇ ئۇچۇر پاراڭ سەھىپىسىدىكى ھەممەيلەن ئۈچۈن ئۆچۈرۈلىدۇ. ئۇلار سىزنىڭ بىر ئۇچۇرنى ئۆچۈرگەنلىكىڭىزنى كۆرەلەيدۇ.";
 
 /* Title for a sheet confirming that the user wants to delete messages for everyone. */
-"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_TITLE" = "Delete for Everyone?";
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_TITLE" = "ھەممەيلەن ئۈچۈن ئۆچۈرەمسىز؟";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
 "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "ئۆچۈرۈش";
@@ -5060,7 +5060,7 @@
 "HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY" = "زاپاسلاش مۇشتەرىلىكى تېپىلمىدى";
 
 /* Title for the 'donate' action in the context menu of the settings button on home view tabs. */
-"HOME_VIEW_TITLE_DONATE" = "Donate to Signal";
+"HOME_VIEW_TITLE_DONATE" = "‫Signal غا ئىئانە قىلىڭ";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "زاپاسلاش مەغلۇب بولدى";
@@ -5783,7 +5783,7 @@
 "MEMBER_LABEL_AX_PREFIX" = "ئەزا بەلگىسى: ";
 
 /* Accessibility label for the button that clears the member label text and emoji. */
-"MEMBER_LABEL_CLEAR_BUTTON_ACCESSIBILITY_LABEL" = "Clear label";
+"MEMBER_LABEL_CLEAR_BUTTON_ACCESSIBILITY_LABEL" = "بەلگىنى تازىلاش";
 
 /* Button label on action sheet when attempting to change the group attributes access to 'administrator' and then continue */
 "MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "رۇخسەتنى ئۆزگەرتىش";
@@ -5798,7 +5798,7 @@
 "MEMBER_LABEL_EDIT" = "بەلگىڭىزنى تەھرىرلەڭ";
 
 /* Accessibility label for the button that chooses an emoji for a member label. */
-"MEMBER_LABEL_EMOJI_BUTTON_ACCESSIBILITY_LABEL" = "Choose emoji";
+"MEMBER_LABEL_EMOJI_BUTTON_ACCESSIBILITY_LABEL" = "emoji تاللاش";
 
 /* Error indicating member label could not save. */
 "MEMBER_LABEL_FAIL_TO_SAVE" = "ئەزا بەلگىسىنى ساقلىغىلى بولمىدى";
@@ -8792,55 +8792,55 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal نى ئاجرىتىڭ";
 
 /* Title for a button in a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_BLOCKED_TOAST_OPTIONS_BUTTON_TITLE" = "Options";
+"SCREENSHOT_BLOCKING_BLOCKED_TOAST_OPTIONS_BUTTON_TITLE" = "تاللاشلار";
 
 /* Text for a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_BLOCKED_TOAST_TEXT" = "Screenshot prevented by “Block Siri AI” setting";
+"SCREENSHOT_BLOCKING_BLOCKED_TOAST_TEXT" = "ئېكران رەسىمى تارتىش، «Siri AI نى چەكلەش» تەڭشىكى تەرىپىدىن توسۇپ قېلىندى";
 
 /* Title for a button in a sheet shown to confirm disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_ALLOW_BUTTON_TITLE" = "Allow Siri AI";
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_ALLOW_BUTTON_TITLE" = "Siri AI غا رۇخسەت قىلىش";
 
 /* Message for a sheet shown to confirm disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_MESSAGE" = "If allowed, Siri AI can automatically scan Signal content and use it for features that may not be private.";
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_MESSAGE" = "رۇخسەت قىلىنغاندا، Siri AI بولسا Signal دىكى مەزمۇنلارنى ئاپتوماتىك تەكشۈرۈپ، شەخسىي مەخپىيەتلىككە كىرمەيدىغان مەزمۇنلاردىن پايدىلىنىشى مۇمكىن.";
 
 /* Title for a sheet shown to confirm disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_TITLE" = "Allow Siri AI?";
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_TITLE" = "Siri AI غا رۇخسەت قىلامسىز؟";
 
 /* Text for a toast shown after disabling screenshot blocking for ten minutes. */
-"SCREENSHOT_BLOCKING_DISABLED_TEN_MINUTES_TOAST_TEXT" = "“Block Siri AI” turned off for 10 minutes";
+"SCREENSHOT_BLOCKING_DISABLED_TEN_MINUTES_TOAST_TEXT" = "«Siri AI نى چەكلەش» بولسا 10 مىنۇت تاقالدى";
 
 /* Text for a toast shown after disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLED_TOAST_TEXT" = "“Block Siri AI” turned off";
+"SCREENSHOT_BLOCKING_DISABLED_TOAST_TEXT" = "«Siri AI نى چەكلەش» تاقالدى";
 
 /* Title for a button that disables screenshot blocking, in a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_BUTTON_TITLE" = "Turn Off “Block Siri AI”";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_BUTTON_TITLE" = "«Siri AI نى چەكلەش»نى تاقاش";
 
 /* Title for a button that temporarily disables screenshot blocking, in a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_TEN_MINUTES_BUTTON_TITLE" = "Turn Off for 10 Minutes";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_TEN_MINUTES_BUTTON_TITLE" = "10 مىنۇت تاقاپ قويۇش";
 
 /* Message for a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_MESSAGE" = "This prevents Siri AI from automatically scanning Signal content. It also blocks you from taking screenshots in the app and App Switcher.";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_MESSAGE" = "بۇ Siri AI نىڭ Signal دىكى مەزمۇنلارنى ئاپتوماتىك تەكشۈرۈشىنىڭ ئالدىنى ئالىدۇ. بۇ يەنە ئەپ ئىچىدە ۋە ئەپ ئالماشتۇرغۇچتا ئېكران رەسىمى تارتىشىڭىزنى چەكلەيدۇ.";
 
 /* Title for a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_TITLE" = "Block Siri AI is On";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_TITLE" = "Siri AI نى چەكلەش ئوچۇق ھالەتتە";
 
 /* Option disabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_OPTION" = "Off";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_OPTION" = "تاقاق";
 
 /* Option temporarily disabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_TEN_MINUTES_OPTION" = "Off for 10 Minutes";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_TEN_MINUTES_OPTION" = "10 مىنۇت تاقالدى";
 
 /* Option enabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_ENABLED_OPTION" = "On";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_ENABLED_OPTION" = "ئاچ";
 
 /* Title for the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_TITLE" = "Block Siri AI";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_TITLE" = "Siri AI نى چەكلەش";
 
 /* Label for the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_TITLE" = "Block Siri AI";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_TITLE" = "Siri AI نى چەكلەش";
 
 /* Footer for the screenshot blocking section of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_SECTION_FOOTER" = "Prevent Siri AI from scanning Signal content. This will also block you from taking screenshots in the app and App Switcher.";
+"SCREENSHOT_BLOCKING_SETTINGS_SECTION_FOOTER" = "Siri AI نىڭ Signal دىكى مەزمۇنلارنى تەكشۈرۈشىدىن توسۇش. بۇ يەنە سىزنىڭ ئەپ ئىچىدە ۋە ئەپ ئالماشتۇرغۇچتا ئېكران رەسىمى تارتىشىڭىزنى چەكلەيدۇ.";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "نام، ئىشلەتكۈچى نامى، تېلېفون";
@@ -9263,10 +9263,10 @@
 "SETTINGS_CHATS_EXPORT_PROGRESS_TITLE" = "پاراڭلارنى ئېكسپورتلاۋاتىدۇ…";
 
 /* Footer below the switch in Chats settings that chooses between contact photos from the phone's address book and Signal profile photos. */
-"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_FOOTER" = "Prefer contact photos from your address book if available.";
+"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_FOOTER" = "ئادرېس خاتىرىڭىزدە ئالاقىلاشقۇچىلارنىڭ سۈرەتلىرى بولسا شۇلارنى تاللاش.";
 
 /* Label for the switch in Chats settings that, when on, shows contact photos from the phone's address book instead of Signal profile photos. */
-"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_LABEL" = "Prefer Address Book Photos";
+"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_LABEL" = "ئالاقە دەپتىرىدىكى سۈرەتنى تاللاش";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "سۆھبەت خاتىرەسىنى تازىلا";
@@ -10151,13 +10151,13 @@
 "SETTINGS_SCREEN_SECURITY" = "ئەپ ئالماشتۇرغۇچتا ئېكراننى يوشۇر";
 
 /* Message for a sheet shown when tapping the disabled screen security switch in privacy settings. */
-"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_MESSAGE" = "To protect your privacy, your screen is always hidden in the App Switcher when Block Siri AI is on. Turning off Block Siri AI will unlock this setting.";
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_MESSAGE" = "مەخپىيەتلىكىڭىزنى قوغداش ئۈچۈن، Siri AI نى چەكلەش ئىقتىدارى ئېچىلغاندا، ئەپ ئالماشتۇرغۇچتا ئېكرانىڭىز ھەمىشە يوشۇرۇن ھالەتتە تۇرىدۇ. Siri AI نى چەكلەش ئىقتىدارىنى ئۆچۈرۇش، بۇ تەڭشەكنى ئېچىۋېتىدۇ.";
 
 /* Title for a sheet shown when tapping the disabled screen security switch in privacy settings. */
-"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_TITLE" = "Block Siri AI is On";
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_TITLE" = "Siri AI نى چەكلەش ئوچۇق ھالەتتە";
 
 /* Title for a button in a sheet shown when tapping the disabled screen security switch in privacy settings. */
-"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_VIEW_SETTING_BUTTON_TITLE" = "View Setting";
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_VIEW_SETTING_BUTTON_TITLE" = "تەڭشەكنى كۆرۈش";
 
 /* Footer for table section */
 "SETTINGS_SECTION_FOOTER_CALLING" = " iOS تېلېفون ئەپنىڭ «يېقىنقى» تىزىمىدا چاقىرىشنى كۆرسىتىدۇ.";
@@ -10355,13 +10355,13 @@
 "SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "كاناي ئوچۇق";
 
 /* Text shown in a toast confirming a sticker was added to favorites */
-"STICKER_ADDED_TO_FAVORITES_TOAST" = "Sticker added to Favorites";
+"STICKER_ADDED_TO_FAVORITES_TOAST" = "چاپلاق، ياقتۇرغان تاللانمىلارغا قوشۇلدى";
 
 /* Label for button to add sticker to favorites */
-"STICKER_BUTTON_ADD_FAVORITES" = "Add to Favorites";
+"STICKER_BUTTON_ADD_FAVORITES" = "ياقتۇرغان تاللانمىلارغا قوشۇش";
 
 /* Label for button to remove sticker from favorites */
-"STICKER_BUTTON_REMOVE_FAVORITES" = "Remove From Favorites";
+"STICKER_BUTTON_REMOVE_FAVORITES" = "ياقتۇرغان تاللانمىلاردىن چىقىرىۋېتىش";
 
 /* Title for a button to view a sticker pack */
 "STICKER_BUTTON_VIEW_PACK" = "چاپلاق بولىقىنى كۆرۈش";
@@ -10379,16 +10379,16 @@
 "STICKER_CATEGORY_RECENTS_NAME" = "يېقىنقى";
 
 /* Button to confirm a user wants to remove a sticker */
-"STICKER_CONFIRM_REMOVE_BUTTON" = "Remove";
+"STICKER_CONFIRM_REMOVE_BUTTON" = "چىقىرىۋەت";
 
 /* Toast shown when user tries to tap Favorites in sticker keyboard but has none */
-"STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "Press and hold a sticker to add to Favorites";
+"STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "چاپلاقنى بېسىپ تۇرۇپ، ياقتۇرغان تاللانمىلارغا قوشۇۋېلىڭ";
 
 /* Section header for favorites in the sticker keyboard */
-"STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "Favorites";
+"STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "ياقتۇرغان تاللانمىلار";
 
 /* Section header for recents in the sticker keyboard */
-"STICKER_KEYBOARD_SECTION_HEADER_LABEL_RECENTS" = "Recently Used";
+"STICKER_KEYBOARD_SECTION_HEADER_LABEL_RECENTS" = "يېقىندا ئىشلىتىلدى";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "چاپلاق ئۇچۇرى";
@@ -10421,13 +10421,13 @@
 "STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Signal ئارقىلىق ئەۋەتىىش";
 
 /* Message for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
-"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "You can’t send it or add it to Favorites again without a link or sticker message.";
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "بۇنى ئۇلىنىشسىز ياكى چاپلاق ئۇچۇرىسىز باشقىلارغا يوللىيالمايسىز ياكى ياقتۇرغان تاللانمىلارغا قوشالمايسىز.";
 
 /* Title for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
-"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "Remove From Favorites?";
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "ياقتۇرغان تاللانمىلاردىن چىقىرىۋېتەمسىز؟";
 
 /* Text shown in a toast confirming a sticker was removed from favorites */
-"STICKER_REMOVED_FROM_FAVORITES_TOAST" = "Sticker removed from Favorites";
+"STICKER_REMOVED_FROM_FAVORITES_TOAST" = "چاپلاق بولاقلىرى ياقتۇرغان تاللانمىلاردىن چىقىرىۋېتىلدى";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
 "STICKER_UNAVAILABLE_MESSAGE_LABEL" = "چاپلاقنى ئىشلەتكىلى بولمايدۇ";
@@ -10439,10 +10439,10 @@
 "STICKERS_INSTALL_BUTTON" = "چاپلاقلارنى قوشۇش";
 
 /* Placeholder text for the search bar in the sticker pack management. */
-"STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "Search stickers";
+"STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "چاپلاق ئىزدە";
 
 /* Label for a view explaining that no search results were found. Embeds {{ the search term }}. */
-"STICKERS_MANAGE_SEARCH_NO_RESULTS" = "No results found for '%1$@'";
+"STICKERS_MANAGE_SEARCH_NO_RESULTS" = "«%1$@» ئۈچۈن ھېچقانداق نەتىجە تېپىلمىدى";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal ئارتىس يۈرۈشلۈكى";
@@ -10454,16 +10454,16 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "سىز بىلەن ھەمبەھىرلىگەن";
 
 /* The title for a context menu item that installs a sticker pack. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_ADD" = "Add";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_ADD" = "قوشۇش";
 
 /* The title for a context menu item that copies the sticker pack link. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_COPY" = "Copy Link";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_COPY" = "ئۇلانما كۆچۈرۈش";
 
 /* The title for a context menu item that uninstalls a sticker pack. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "Remove";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "چىقىرىۋەت";
 
 /* The title for a context menu item that sends the sticker pack link to someone else. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "Send";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "ئەۋەت";
 
 /* Label indicating that one or more known sticker packs failed to load. */
 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "بەزى چاپلاق بوغچىلىرىنى يۈكلىيەلمىدى";

@@ -3113,13 +3113,13 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "Ο χρήστης %1$@ διαγράφηκε από τις επαφές σου και αφαιρέθηκε.";
 
 /* Message for a sheet confirming that the user, as a group admin, wants to delete messages for everyone. */
-"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_ADMIN_MESSAGE" = "Group members will see that you deleted these messages.";
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_ADMIN_MESSAGE" = "Τα μέλη της ομάδας θα δουν ότι διέγραψες αυτά τα μηνύματα.";
 
 /* Message for a sheet confirming that the user wants to delete their message for everyone. */
-"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_MESSAGE" = "This message will be deleted for everyone in the chat. They will be able to see that you deleted a message.";
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_MESSAGE" = "Αυτό το μήνυμα θα διαγραφεί για όλους/ες στη συνομιλία. Θα μπορούν να δουν ότι διέγραψες το μήνυμα.";
 
 /* Title for a sheet confirming that the user wants to delete messages for everyone. */
-"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_TITLE" = "Delete for Everyone?";
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_TITLE" = "Διαγραφή για όλους;";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
 "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "Διαγραφή";
@@ -5060,7 +5060,7 @@
 "HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY" = "Δεν βρέθηκε συνδρομή αντιγράφων ασφαλείας";
 
 /* Title for the 'donate' action in the context menu of the settings button on home view tabs. */
-"HOME_VIEW_TITLE_DONATE" = "Donate to Signal";
+"HOME_VIEW_TITLE_DONATE" = "Κάνε μια δωρεά στο Signal";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Αποτυχία δημιουργίας αντιγράφων ασφαλείας";
@@ -5783,7 +5783,7 @@
 "MEMBER_LABEL_AX_PREFIX" = "Ετικέτα μέλους: ";
 
 /* Accessibility label for the button that clears the member label text and emoji. */
-"MEMBER_LABEL_CLEAR_BUTTON_ACCESSIBILITY_LABEL" = "Clear label";
+"MEMBER_LABEL_CLEAR_BUTTON_ACCESSIBILITY_LABEL" = "Εκκαθάριση ετικέτας";
 
 /* Button label on action sheet when attempting to change the group attributes access to 'administrator' and then continue */
 "MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "Αλλαγή δικαιώματος";
@@ -5798,7 +5798,7 @@
 "MEMBER_LABEL_EDIT" = "Επεξεργασία της ετικέτας σου";
 
 /* Accessibility label for the button that chooses an emoji for a member label. */
-"MEMBER_LABEL_EMOJI_BUTTON_ACCESSIBILITY_LABEL" = "Choose emoji";
+"MEMBER_LABEL_EMOJI_BUTTON_ACCESSIBILITY_LABEL" = "Επιλογή emoji";
 
 /* Error indicating member label could not save. */
 "MEMBER_LABEL_FAIL_TO_SAVE" = "Δεν ήταν δυνατή η αποθήκευση της ετικέτας μέλους";
@@ -8792,55 +8792,55 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Ξεκλείδωμα του Signal";
 
 /* Title for a button in a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_BLOCKED_TOAST_OPTIONS_BUTTON_TITLE" = "Options";
+"SCREENSHOT_BLOCKING_BLOCKED_TOAST_OPTIONS_BUTTON_TITLE" = "Επιλογές";
 
 /* Text for a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_BLOCKED_TOAST_TEXT" = "Screenshot prevented by “Block Siri AI” setting";
+"SCREENSHOT_BLOCKING_BLOCKED_TOAST_TEXT" = "Η λήψη στιγμιότυπου οθόνης αποκλείστηκε από τη ρύθμιση «Αποκλεισμός Siri AI»";
 
 /* Title for a button in a sheet shown to confirm disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_ALLOW_BUTTON_TITLE" = "Allow Siri AI";
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_ALLOW_BUTTON_TITLE" = "Να επιτρέπεται το Siri AI";
 
 /* Message for a sheet shown to confirm disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_MESSAGE" = "If allowed, Siri AI can automatically scan Signal content and use it for features that may not be private.";
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_MESSAGE" = "Αν το επιτρέψεις, το Siri AI μπορεί να σαρώνει αυτόματα το περιεχόμενο του Signal και να το χρησιμοποιεί για λειτουργίες που ενδέχεται να μην προστατεύουν το απόρρητό σου.";
 
 /* Title for a sheet shown to confirm disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_TITLE" = "Allow Siri AI?";
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_TITLE" = "Να επιτρέπεται το Siri AI;";
 
 /* Text for a toast shown after disabling screenshot blocking for ten minutes. */
-"SCREENSHOT_BLOCKING_DISABLED_TEN_MINUTES_TOAST_TEXT" = "“Block Siri AI” turned off for 10 minutes";
+"SCREENSHOT_BLOCKING_DISABLED_TEN_MINUTES_TOAST_TEXT" = "Η λειτουργία «Αποκλεισμός Siri AI» απενεργοποιήθηκε για 10 λεπτά";
 
 /* Text for a toast shown after disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLED_TOAST_TEXT" = "“Block Siri AI” turned off";
+"SCREENSHOT_BLOCKING_DISABLED_TOAST_TEXT" = "Η λειτουργία «Αποκλεισμός Siri AI» απενεργοποιήθηκε";
 
 /* Title for a button that disables screenshot blocking, in a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_BUTTON_TITLE" = "Turn Off “Block Siri AI”";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_BUTTON_TITLE" = "Απενεργοποίηση λειτουργίας «Αποκλεισμός Siri AI»";
 
 /* Title for a button that temporarily disables screenshot blocking, in a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_TEN_MINUTES_BUTTON_TITLE" = "Turn Off for 10 Minutes";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_TEN_MINUTES_BUTTON_TITLE" = "Απενεργοποίηση για 10 λεπτά";
 
 /* Message for a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_MESSAGE" = "This prevents Siri AI from automatically scanning Signal content. It also blocks you from taking screenshots in the app and App Switcher.";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_MESSAGE" = "Αυτό εμποδίζει το Siri AI να σαρώνει αυτόματα το περιεχόμενο του Signal. Επίσης, αποκλείει τη λήψη στιγμιότυπων οθόνης στην εφαρμογή και στην Εναλλαγή εφαρμογών.";
 
 /* Title for a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_TITLE" = "Block Siri AI is On";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_TITLE" = "Ο «Αποκλεισμός Siri AI» είναι ενεργοποιημένος";
 
 /* Option disabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_OPTION" = "Off";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_OPTION" = "Ανενεργό";
 
 /* Option temporarily disabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_TEN_MINUTES_OPTION" = "Off for 10 Minutes";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_TEN_MINUTES_OPTION" = "Απενεργοποιήθηκε για 10 λεπτά";
 
 /* Option enabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_ENABLED_OPTION" = "On";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_ENABLED_OPTION" = "Ενεργό";
 
 /* Title for the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_TITLE" = "Block Siri AI";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_TITLE" = "Αποκλεισμός Siri AI";
 
 /* Label for the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_TITLE" = "Block Siri AI";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_TITLE" = "Αποκλεισμός Siri AI";
 
 /* Footer for the screenshot blocking section of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_SECTION_FOOTER" = "Prevent Siri AI from scanning Signal content. This will also block you from taking screenshots in the app and App Switcher.";
+"SCREENSHOT_BLOCKING_SETTINGS_SECTION_FOOTER" = "Αποτροπή σάρωσης του περιεχομένου του Signal από το Siri AI. Αυτό θα αποκλείει επίσης τη λήψη στιγμιότυπων οθόνης στην εφαρμογή και στην Εναλλαγή εφαρμογών.";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Όνομα, όνομα χρήστη ή αριθμός";
@@ -9263,10 +9263,10 @@
 "SETTINGS_CHATS_EXPORT_PROGRESS_TITLE" = "Εξαγωγή συνομιλιών...";
 
 /* Footer below the switch in Chats settings that chooses between contact photos from the phone's address book and Signal profile photos. */
-"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_FOOTER" = "Prefer contact photos from your address book if available.";
+"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_FOOTER" = "Προτίμησε φωτογραφίες επαφών από τη λίστα επαφών αν είναι διαθέσιμες.";
 
 /* Label for the switch in Chats settings that, when on, shows contact photos from the phone's address book instead of Signal profile photos. */
-"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_LABEL" = "Prefer Address Book Photos";
+"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_LABEL" = "Προτίμηση φωτογραφιών λίστας επαφών";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Εκκαθάριση ιστορικού συνομιλιών";
@@ -10151,13 +10151,13 @@
 "SETTINGS_SCREEN_SECURITY" = "Απόκρυψη οθόνης στην Εναλλαγή εφαρμογών";
 
 /* Message for a sheet shown when tapping the disabled screen security switch in privacy settings. */
-"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_MESSAGE" = "To protect your privacy, your screen is always hidden in the App Switcher when Block Siri AI is on. Turning off Block Siri AI will unlock this setting.";
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_MESSAGE" = "Για την προστασία του απορρήτου σου, η οθόνη σου αποκρύπτεται πάντα στην Εναλλαγή εφαρμογών όταν είναι ενεργοποιημένη η λειτουργία «Αποκλεισμός του Siri AI». Η απενεργοποίηση της λειτουργίας «Αποκλεισμός του Siri AI» θα ξεκλειδώσει αυτήν τη ρύθμιση.";
 
 /* Title for a sheet shown when tapping the disabled screen security switch in privacy settings. */
-"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_TITLE" = "Block Siri AI is On";
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_TITLE" = "Ο «Αποκλεισμός Siri AI» είναι ενεργοποιημένος";
 
 /* Title for a button in a sheet shown when tapping the disabled screen security switch in privacy settings. */
-"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_VIEW_SETTING_BUTTON_TITLE" = "View Setting";
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_VIEW_SETTING_BUTTON_TITLE" = "Προβολή ρύθμισης";
 
 /* Footer for table section */
 "SETTINGS_SECTION_FOOTER_CALLING" = "Εμφάνιση των κλήσεων στα \"Πρόσφατα\" της εφαρμογής τηλεφώνου του iOS.";
@@ -10355,13 +10355,13 @@
 "SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "Ηχείο ενεργό";
 
 /* Text shown in a toast confirming a sticker was added to favorites */
-"STICKER_ADDED_TO_FAVORITES_TOAST" = "Sticker added to Favorites";
+"STICKER_ADDED_TO_FAVORITES_TOAST" = "Το αυτοκόλλητο προστέθηκε στα Αγαπημένα";
 
 /* Label for button to add sticker to favorites */
-"STICKER_BUTTON_ADD_FAVORITES" = "Add to Favorites";
+"STICKER_BUTTON_ADD_FAVORITES" = "Προσθήκη στα Αγαπημένα";
 
 /* Label for button to remove sticker from favorites */
-"STICKER_BUTTON_REMOVE_FAVORITES" = "Remove From Favorites";
+"STICKER_BUTTON_REMOVE_FAVORITES" = "Κατάργηση από τα Αγαπημένα";
 
 /* Title for a button to view a sticker pack */
 "STICKER_BUTTON_VIEW_PACK" = "Προβολή πακέτου";
@@ -10379,16 +10379,16 @@
 "STICKER_CATEGORY_RECENTS_NAME" = "Πρόσφατα";
 
 /* Button to confirm a user wants to remove a sticker */
-"STICKER_CONFIRM_REMOVE_BUTTON" = "Remove";
+"STICKER_CONFIRM_REMOVE_BUTTON" = "Αφαίρεση";
 
 /* Toast shown when user tries to tap Favorites in sticker keyboard but has none */
-"STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "Press and hold a sticker to add to Favorites";
+"STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "Πάτα παρατεταμένα ένα αυτοκόλλητο για προσθήκη στα Αγαπημένα";
 
 /* Section header for favorites in the sticker keyboard */
-"STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "Favorites";
+"STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "Αγαπημένα";
 
 /* Section header for recents in the sticker keyboard */
-"STICKER_KEYBOARD_SECTION_HEADER_LABEL_RECENTS" = "Recently Used";
+"STICKER_KEYBOARD_SECTION_HEADER_LABEL_RECENTS" = "Πρόσφατα χρησιμοποιημένα";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Μήνυμα αυτοκόλλητου";
@@ -10421,13 +10421,13 @@
 "STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Αποστολή στο Signal";
 
 /* Message for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
-"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "You can’t send it or add it to Favorites again without a link or sticker message.";
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "Δεν μπορείς να το στείλεις ή να το προσθέσεις ξανά στα Αγαπημένα χωρίς σύνδεσμο ή μήνυμα με αυτοκόλλητο.";
 
 /* Title for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
-"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "Remove From Favorites?";
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "Κατάργηση από τα Αγαπημένα;";
 
 /* Text shown in a toast confirming a sticker was removed from favorites */
-"STICKER_REMOVED_FROM_FAVORITES_TOAST" = "Sticker removed from Favorites";
+"STICKER_REMOVED_FROM_FAVORITES_TOAST" = "Το αυτοκόλλητο αφαιρέθηκε από τα Αγαπημένα";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
 "STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Το αυτοκόλλητο δεν είναι διαθέσιμο";
@@ -10439,10 +10439,10 @@
 "STICKERS_INSTALL_BUTTON" = "Προσθήκη αυτοκόλλητων";
 
 /* Placeholder text for the search bar in the sticker pack management. */
-"STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "Search stickers";
+"STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "Αναζήτηση αυτοκολλήτων";
 
 /* Label for a view explaining that no search results were found. Embeds {{ the search term }}. */
-"STICKERS_MANAGE_SEARCH_NO_RESULTS" = "No results found for '%1$@'";
+"STICKERS_MANAGE_SEARCH_NO_RESULTS" = "Δεν βρέθηκαν αποτελέσματα για «%1$@»";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Σειρά καλλιτεχνών Signal";
@@ -10454,16 +10454,16 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Κοινοποιήθηκαν σε σένα";
 
 /* The title for a context menu item that installs a sticker pack. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_ADD" = "Add";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_ADD" = "Προσθήκη";
 
 /* The title for a context menu item that copies the sticker pack link. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_COPY" = "Copy Link";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_COPY" = "Αντιγραφή συνδέσμου";
 
 /* The title for a context menu item that uninstalls a sticker pack. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "Remove";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "Αφαίρεση";
 
 /* The title for a context menu item that sends the sticker pack link to someone else. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "Send";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "Αποστολή";
 
 /* Label indicating that one or more known sticker packs failed to load. */
 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Απέτυχε η φόρτωση κάποιων πακέτων αυτοκόλλητων";

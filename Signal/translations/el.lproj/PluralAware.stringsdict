@@ -1591,9 +1591,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can only add %1$d sticker to Favorites</string>
+			<string>Μπορείς να προσθέσεις μόνο %1$d αυτοκόλλητο στα Αγαπημένα</string>
 			<key>other</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>Μπορείς να προσθέσεις μόνο %1$d αυτοκόλλητα στα Αγαπημένα</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>

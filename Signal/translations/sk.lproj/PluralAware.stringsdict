@@ -1991,13 +1991,13 @@ Skúste to znova o %1$d hodín.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can only add %1$d sticker to Favorites</string>
+			<string>Do Obľúbených môžete pridať iba %1$d nálepku</string>
 			<key>few</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>Do Obľúbených môžete pridať iba %1$d nálepky</string>
 			<key>many</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>Do Obľúbených môžete pridať iba %1$d nálepiek</string>
 			<key>other</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>Do Obľúbených môžete pridať iba %1$d nálepiek</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>

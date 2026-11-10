@@ -3113,13 +3113,13 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ ना आपल्या संपर्कांमधून हटवले आणि काढून टाकले.";
 
 /* Message for a sheet confirming that the user, as a group admin, wants to delete messages for everyone. */
-"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_ADMIN_MESSAGE" = "Group members will see that you deleted these messages.";
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_ADMIN_MESSAGE" = "गट सदस्यांना तुम्ही हे संदेश हटवून टाकल्याचे दिसेल.";
 
 /* Message for a sheet confirming that the user wants to delete their message for everyone. */
-"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_MESSAGE" = "This message will be deleted for everyone in the chat. They will be able to see that you deleted a message.";
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_MESSAGE" = "हा संदेश चॅटमधील सर्वांसाठी हटवला जाईल. तुम्ही हा संदेश हटवलात हे त्यांना पाहता येईल.";
 
 /* Title for a sheet confirming that the user wants to delete messages for everyone. */
-"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_TITLE" = "Delete for Everyone?";
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_TITLE" = "सर्वांसाठी हटवायचा?";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
 "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "हटवा";
@@ -5060,7 +5060,7 @@
 "HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY" = "बॅकअप सदस्यत्व सापडले नाही";
 
 /* Title for the 'donate' action in the context menu of the settings button on home view tabs. */
-"HOME_VIEW_TITLE_DONATE" = "Donate to Signal";
+"HOME_VIEW_TITLE_DONATE" = "Signal ला देणगी द्या";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "बॅकअप घेता आला नाही";
@@ -5783,7 +5783,7 @@
 "MEMBER_LABEL_AX_PREFIX" = "सदस्य लेबल: ";
 
 /* Accessibility label for the button that clears the member label text and emoji. */
-"MEMBER_LABEL_CLEAR_BUTTON_ACCESSIBILITY_LABEL" = "Clear label";
+"MEMBER_LABEL_CLEAR_BUTTON_ACCESSIBILITY_LABEL" = "लेबल साफ करा";
 
 /* Button label on action sheet when attempting to change the group attributes access to 'administrator' and then continue */
 "MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "अनुमती बदला";
@@ -5798,7 +5798,7 @@
 "MEMBER_LABEL_EDIT" = "तुमचे लेबल संपादित करा";
 
 /* Accessibility label for the button that chooses an emoji for a member label. */
-"MEMBER_LABEL_EMOJI_BUTTON_ACCESSIBILITY_LABEL" = "Choose emoji";
+"MEMBER_LABEL_EMOJI_BUTTON_ACCESSIBILITY_LABEL" = "इमोजी निवडा";
 
 /* Error indicating member label could not save. */
 "MEMBER_LABEL_FAIL_TO_SAVE" = "सदस्य लेबल जतन करता आले नाही";
@@ -8792,55 +8792,55 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal अनलॉक करा";
 
 /* Title for a button in a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_BLOCKED_TOAST_OPTIONS_BUTTON_TITLE" = "Options";
+"SCREENSHOT_BLOCKING_BLOCKED_TOAST_OPTIONS_BUTTON_TITLE" = "पर्याय";
 
 /* Text for a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_BLOCKED_TOAST_TEXT" = "Screenshot prevented by “Block Siri AI” setting";
+"SCREENSHOT_BLOCKING_BLOCKED_TOAST_TEXT" = "स्क्रीनशॉट \"Siri AI ब्लॉक करा\" सेटिंगमुळे काढता आला नाही";
 
 /* Title for a button in a sheet shown to confirm disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_ALLOW_BUTTON_TITLE" = "Allow Siri AI";
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_ALLOW_BUTTON_TITLE" = "Siri AIला अनुमती द्या";
 
 /* Message for a sheet shown to confirm disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_MESSAGE" = "If allowed, Siri AI can automatically scan Signal content and use it for features that may not be private.";
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_MESSAGE" = "अनुमती दिल्यास, Siri AI आपोआप Signal मजकूर स्कॅन करू शकते आणि गोपनीय नसणाऱ्या वैशिष्ट्यांसाठी त्याचा वापर करू शकते.";
 
 /* Title for a sheet shown to confirm disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_TITLE" = "Allow Siri AI?";
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_TITLE" = "Siri AIला अनुमती द्यायची का?";
 
 /* Text for a toast shown after disabling screenshot blocking for ten minutes. */
-"SCREENSHOT_BLOCKING_DISABLED_TEN_MINUTES_TOAST_TEXT" = "“Block Siri AI” turned off for 10 minutes";
+"SCREENSHOT_BLOCKING_DISABLED_TEN_MINUTES_TOAST_TEXT" = "\"Siri AI ब्लॉक करा\" 10 मिनिटांसाठी बंद केले";
 
 /* Text for a toast shown after disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLED_TOAST_TEXT" = "“Block Siri AI” turned off";
+"SCREENSHOT_BLOCKING_DISABLED_TOAST_TEXT" = "\"Siri AI ब्लॉक करा\" बंद केले";
 
 /* Title for a button that disables screenshot blocking, in a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_BUTTON_TITLE" = "Turn Off “Block Siri AI”";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_BUTTON_TITLE" = "\"Siri AI ब्लॉक करा\" बंद करा";
 
 /* Title for a button that temporarily disables screenshot blocking, in a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_TEN_MINUTES_BUTTON_TITLE" = "Turn Off for 10 Minutes";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_TEN_MINUTES_BUTTON_TITLE" = "10 मिनिटांसाठी बंद करा";
 
 /* Message for a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_MESSAGE" = "This prevents Siri AI from automatically scanning Signal content. It also blocks you from taking screenshots in the app and App Switcher.";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_MESSAGE" = "हे Siri AIला Signal मजकूर आपोआप स्कॅन करू देण्यापासून रोखते. हे ॲप आणि अॅप स्विचर मध्ये स्क्रीनशॉट्स घेण्यापासूनही तुम्हाला अडवते.";
 
 /* Title for a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_TITLE" = "Block Siri AI is On";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_TITLE" = "Siri AI ब्लॉक करणे चालू आहे";
 
 /* Option disabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_OPTION" = "Off";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_OPTION" = "बंद";
 
 /* Option temporarily disabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_TEN_MINUTES_OPTION" = "Off for 10 Minutes";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_TEN_MINUTES_OPTION" = "10 मिनिटांसाठी बंद";
 
 /* Option enabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_ENABLED_OPTION" = "On";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_ENABLED_OPTION" = "चालू";
 
 /* Title for the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_TITLE" = "Block Siri AI";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_TITLE" = "Siri AI ब्लॉक करा";
 
 /* Label for the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_TITLE" = "Block Siri AI";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_TITLE" = "Siri AI ब्लॉक करा";
 
 /* Footer for the screenshot blocking section of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_SECTION_FOOTER" = "Prevent Siri AI from scanning Signal content. This will also block you from taking screenshots in the app and App Switcher.";
+"SCREENSHOT_BLOCKING_SETTINGS_SECTION_FOOTER" = "Siri AIला Signal मजकूर स्कॅन करण्यापासून रोखा. हे केल्याने तुम्हाला ॲपमध्ये आणि अॅप स्विचरमध्ये स्क्रीनशॉट्ससुद्धा घेता येणार नाहीत.";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "नाव, वापरकर्तानाव, किंवा नंबर";
@@ -9263,10 +9263,10 @@
 "SETTINGS_CHATS_EXPORT_PROGRESS_TITLE" = "चॅट्स एक्सपोर्ट होत आहेत…";
 
 /* Footer below the switch in Chats settings that chooses between contact photos from the phone's address book and Signal profile photos. */
-"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_FOOTER" = "Prefer contact photos from your address book if available.";
+"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_FOOTER" = "उपलब्ध असल्यास तुमच्या ॲड्रेस बुकमधील संपर्क फोटोंना प्राधान्य द्या.";
 
 /* Label for the switch in Chats settings that, when on, shows contact photos from the phone's address book instead of Signal profile photos. */
-"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_LABEL" = "Prefer Address Book Photos";
+"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_LABEL" = "ॲड्रेस बुकमधील फोटोंना प्राधान्य द्या";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "चॅट इतिहास साफ करा";
@@ -10151,13 +10151,13 @@
 "SETTINGS_SCREEN_SECURITY" = "अॅप स्विचरमध्ये स्क्रीन लपवा";
 
 /* Message for a sheet shown when tapping the disabled screen security switch in privacy settings. */
-"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_MESSAGE" = "To protect your privacy, your screen is always hidden in the App Switcher when Block Siri AI is on. Turning off Block Siri AI will unlock this setting.";
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_MESSAGE" = "तुमच्या गोपनीयतेचे रक्षण करण्यासाठी, Siri AI ब्लॉक करणे चालू असताना अॅप स्विचर मध्ये तुमचा स्क्रीन नेहमी लपलेला राहतो. Siri AI ब्लॉक करणे बंद केल्यावर हे सेटिंग अनलॉक होईल.";
 
 /* Title for a sheet shown when tapping the disabled screen security switch in privacy settings. */
-"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_TITLE" = "Block Siri AI is On";
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_TITLE" = "Siri AI ब्लॉक करणे चालू आहे";
 
 /* Title for a button in a sheet shown when tapping the disabled screen security switch in privacy settings. */
-"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_VIEW_SETTING_BUTTON_TITLE" = "View Setting";
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_VIEW_SETTING_BUTTON_TITLE" = "सेटिंग पाहा";
 
 /* Footer for table section */
 "SETTINGS_SECTION_FOOTER_CALLING" = "iOS फोन अॅपमध्ये कॉल \"अलीकडील\" यादीमध्ये दाखवा.";
@@ -10355,13 +10355,13 @@
 "SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "स्पीकर सुरू";
 
 /* Text shown in a toast confirming a sticker was added to favorites */
-"STICKER_ADDED_TO_FAVORITES_TOAST" = "Sticker added to Favorites";
+"STICKER_ADDED_TO_FAVORITES_TOAST" = "स्टिकर आवडीमध्ये जोडला";
 
 /* Label for button to add sticker to favorites */
-"STICKER_BUTTON_ADD_FAVORITES" = "Add to Favorites";
+"STICKER_BUTTON_ADD_FAVORITES" = "आवडीमध्ये समाविष्ट करा";
 
 /* Label for button to remove sticker from favorites */
-"STICKER_BUTTON_REMOVE_FAVORITES" = "Remove From Favorites";
+"STICKER_BUTTON_REMOVE_FAVORITES" = "आवडीमधून हटवून टाका";
 
 /* Title for a button to view a sticker pack */
 "STICKER_BUTTON_VIEW_PACK" = "पॅक पाहा";
@@ -10379,16 +10379,16 @@
 "STICKER_CATEGORY_RECENTS_NAME" = "अलीकडील";
 
 /* Button to confirm a user wants to remove a sticker */
-"STICKER_CONFIRM_REMOVE_BUTTON" = "Remove";
+"STICKER_CONFIRM_REMOVE_BUTTON" = "काढून टाका";
 
 /* Toast shown when user tries to tap Favorites in sticker keyboard but has none */
-"STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "Press and hold a sticker to add to Favorites";
+"STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "आवडीमध्ये समाविष्ट करण्यासाठी स्टिकर दाबून धरा";
 
 /* Section header for favorites in the sticker keyboard */
-"STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "Favorites";
+"STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "आवडीचे";
 
 /* Section header for recents in the sticker keyboard */
-"STICKER_KEYBOARD_SECTION_HEADER_LABEL_RECENTS" = "Recently Used";
+"STICKER_KEYBOARD_SECTION_HEADER_LABEL_RECENTS" = "अलीकडील वापरलेले";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "स्टिकर संदेश";
@@ -10421,13 +10421,13 @@
 "STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Signal मध्ये पाठवा";
 
 /* Message for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
-"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "You can’t send it or add it to Favorites again without a link or sticker message.";
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "तुम्ही लिंकशिवाय किंवा स्टिकर संदेशाशिवाय तो पुन्हा पाठवू शकत नाही किंवा आवडीमध्ये समाविष्ट करू शकत नाही.";
 
 /* Title for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
-"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "Remove From Favorites?";
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "आवडीमधून हटवून टाकायचा का?";
 
 /* Text shown in a toast confirming a sticker was removed from favorites */
-"STICKER_REMOVED_FROM_FAVORITES_TOAST" = "Sticker removed from Favorites";
+"STICKER_REMOVED_FROM_FAVORITES_TOAST" = "स्टिकर आवडीमधून काढून टाकला";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
 "STICKER_UNAVAILABLE_MESSAGE_LABEL" = "स्टिकर उपलब्ध नाही";
@@ -10439,10 +10439,10 @@
 "STICKERS_INSTALL_BUTTON" = "स्टिकर समाविष्ट करा";
 
 /* Placeholder text for the search bar in the sticker pack management. */
-"STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "Search stickers";
+"STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "स्टिकर शोधा";
 
 /* Label for a view explaining that no search results were found. Embeds {{ the search term }}. */
-"STICKERS_MANAGE_SEARCH_NO_RESULTS" = "No results found for '%1$@'";
+"STICKERS_MANAGE_SEARCH_NO_RESULTS" = "'%1$@' करिता कुठलेही परिणाम नाहीत";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal कलाकार सिरीझ";
@@ -10454,16 +10454,16 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "तुम्हाला पाठवलेले";
 
 /* The title for a context menu item that installs a sticker pack. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_ADD" = "Add";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_ADD" = "जोडा";
 
 /* The title for a context menu item that copies the sticker pack link. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_COPY" = "Copy Link";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_COPY" = "लिंक कॉपी करा";
 
 /* The title for a context menu item that uninstalls a sticker pack. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "Remove";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "काढून टाका";
 
 /* The title for a context menu item that sends the sticker pack link to someone else. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "Send";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "पाठवा";
 
 /* Label indicating that one or more known sticker packs failed to load. */
 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "काही स्टिकर पॅक लोड होण्यात अयशस्वी";

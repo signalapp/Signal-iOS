@@ -1591,9 +1591,9 @@ Prøv igjen om %1$d timer.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can only add %1$d sticker to Favorites</string>
+			<string>Du kan kun legge til %1$d klistremerke som favoritt</string>
 			<key>other</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>Du kan kun legge til %1$d klistremerker som favoritter</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>

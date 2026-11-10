@@ -3113,13 +3113,13 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ удалён(-на) из контактов и из списка.";
 
 /* Message for a sheet confirming that the user, as a group admin, wants to delete messages for everyone. */
-"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_ADMIN_MESSAGE" = "Group members will see that you deleted these messages.";
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_ADMIN_MESSAGE" = "Участники группы увидят, что вы удалили эти сообщения.";
 
 /* Message for a sheet confirming that the user wants to delete their message for everyone. */
-"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_MESSAGE" = "This message will be deleted for everyone in the chat. They will be able to see that you deleted a message.";
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_MESSAGE" = "Это сообщение будет удалено для всех в этом чате. Они смогут увидеть, что вы удалили сообщение.";
 
 /* Title for a sheet confirming that the user wants to delete messages for everyone. */
-"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_TITLE" = "Delete for Everyone?";
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_TITLE" = "Удалить для всех?";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
 "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "Удалить";
@@ -5060,7 +5060,7 @@
 "HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY" = "Подписка на резервное копирование не найдена";
 
 /* Title for the 'donate' action in the context menu of the settings button on home view tabs. */
-"HOME_VIEW_TITLE_DONATE" = "Donate to Signal";
+"HOME_VIEW_TITLE_DONATE" = "Поддержите Signal";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Не удалось выполнить резервное копирование";
@@ -5783,7 +5783,7 @@
 "MEMBER_LABEL_AX_PREFIX" = "Значок участника: ";
 
 /* Accessibility label for the button that clears the member label text and emoji. */
-"MEMBER_LABEL_CLEAR_BUTTON_ACCESSIBILITY_LABEL" = "Clear label";
+"MEMBER_LABEL_CLEAR_BUTTON_ACCESSIBILITY_LABEL" = "Удалить значок";
 
 /* Button label on action sheet when attempting to change the group attributes access to 'administrator' and then continue */
 "MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "Изменить разрешения";
@@ -5798,7 +5798,7 @@
 "MEMBER_LABEL_EDIT" = "Измените свой значок";
 
 /* Accessibility label for the button that chooses an emoji for a member label. */
-"MEMBER_LABEL_EMOJI_BUTTON_ACCESSIBILITY_LABEL" = "Choose emoji";
+"MEMBER_LABEL_EMOJI_BUTTON_ACCESSIBILITY_LABEL" = "Выбрать эмодзи";
 
 /* Error indicating member label could not save. */
 "MEMBER_LABEL_FAIL_TO_SAVE" = "Не удалось сохранить значок участника";
@@ -8792,55 +8792,55 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Разблокировать Signal";
 
 /* Title for a button in a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_BLOCKED_TOAST_OPTIONS_BUTTON_TITLE" = "Options";
+"SCREENSHOT_BLOCKING_BLOCKED_TOAST_OPTIONS_BUTTON_TITLE" = "Варианты";
 
 /* Text for a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_BLOCKED_TOAST_TEXT" = "Screenshot prevented by “Block Siri AI” setting";
+"SCREENSHOT_BLOCKING_BLOCKED_TOAST_TEXT" = "Снимок экрана заблокирован настройкой «Заблокировать Siri AI»";
 
 /* Title for a button in a sheet shown to confirm disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_ALLOW_BUTTON_TITLE" = "Allow Siri AI";
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_ALLOW_BUTTON_TITLE" = "Разрешить Siri AI";
 
 /* Message for a sheet shown to confirm disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_MESSAGE" = "If allowed, Siri AI can automatically scan Signal content and use it for features that may not be private.";
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_MESSAGE" = "Если это разрешение дано, Siri AI сможет сканировать содержимое Signal и использовать его для работы функций, которые, возможно, не обеспечивают конфиденциальность.";
 
 /* Title for a sheet shown to confirm disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_TITLE" = "Allow Siri AI?";
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_TITLE" = "Разрешить Siri AI?";
 
 /* Text for a toast shown after disabling screenshot blocking for ten minutes. */
-"SCREENSHOT_BLOCKING_DISABLED_TEN_MINUTES_TOAST_TEXT" = "“Block Siri AI” turned off for 10 minutes";
+"SCREENSHOT_BLOCKING_DISABLED_TEN_MINUTES_TOAST_TEXT" = "Функция «Заблокировать Siri AI» выключена на 10 минут";
 
 /* Text for a toast shown after disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLED_TOAST_TEXT" = "“Block Siri AI” turned off";
+"SCREENSHOT_BLOCKING_DISABLED_TOAST_TEXT" = "Функция «Заблокировать Siri AI» выключена";
 
 /* Title for a button that disables screenshot blocking, in a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_BUTTON_TITLE" = "Turn Off “Block Siri AI”";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_BUTTON_TITLE" = "Выключить «Заблокировать Siri AI»";
 
 /* Title for a button that temporarily disables screenshot blocking, in a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_TEN_MINUTES_BUTTON_TITLE" = "Turn Off for 10 Minutes";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_TEN_MINUTES_BUTTON_TITLE" = "Выключить на 10 минут";
 
 /* Message for a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_MESSAGE" = "This prevents Siri AI from automatically scanning Signal content. It also blocks you from taking screenshots in the app and App Switcher.";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_MESSAGE" = "Это не позволяет Siri AI автоматически сканировать содержимое Signal. Это также не позволяет делать снимки экрана в приложении и в функции переключения приложений.";
 
 /* Title for a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_TITLE" = "Block Siri AI is On";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_TITLE" = "Блокировка Siri AI включена";
 
 /* Option disabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_OPTION" = "Off";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_OPTION" = "Отключено";
 
 /* Option temporarily disabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_TEN_MINUTES_OPTION" = "Off for 10 Minutes";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_TEN_MINUTES_OPTION" = "Выключить на 10 минут";
 
 /* Option enabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_ENABLED_OPTION" = "On";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_ENABLED_OPTION" = "Включено";
 
 /* Title for the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_TITLE" = "Block Siri AI";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_TITLE" = "Заблокировать Siri AI";
 
 /* Label for the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_TITLE" = "Block Siri AI";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_TITLE" = "Заблокировать Siri AI";
 
 /* Footer for the screenshot blocking section of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_SECTION_FOOTER" = "Prevent Siri AI from scanning Signal content. This will also block you from taking screenshots in the app and App Switcher.";
+"SCREENSHOT_BLOCKING_SETTINGS_SECTION_FOOTER" = "Запретить Siri AI сканировать содержимое Signal. Это также не позволит делать снимки экрана в приложении и в функции переключения приложений.";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Имя, имя пользов-ля или номер";
@@ -9263,10 +9263,10 @@
 "SETTINGS_CHATS_EXPORT_PROGRESS_TITLE" = "Экспорт чатов…";
 
 /* Footer below the switch in Chats settings that chooses between contact photos from the phone's address book and Signal profile photos. */
-"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_FOOTER" = "Prefer contact photos from your address book if available.";
+"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_FOOTER" = "Отдавать предпочтение фото контактов из вашей адресной книги, если они доступны.";
 
 /* Label for the switch in Chats settings that, when on, shows contact photos from the phone's address book instead of Signal profile photos. */
-"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_LABEL" = "Prefer Address Book Photos";
+"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_LABEL" = "Отдавать предпочтение фото из адресной книги";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Очистить историю чатов";
@@ -10151,13 +10151,13 @@
 "SETTINGS_SCREEN_SECURITY" = "Скрыть экран в переключателе программ";
 
 /* Message for a sheet shown when tapping the disabled screen security switch in privacy settings. */
-"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_MESSAGE" = "To protect your privacy, your screen is always hidden in the App Switcher when Block Siri AI is on. Turning off Block Siri AI will unlock this setting.";
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_MESSAGE" = "Для защиты вашей конфиденциальности экран всегда скрыт в функции переключения приложений, когда функция «Заблокировать Siri AI» включена. Выключение функции «Заблокировать Siri AI» откроет доступ к этой настройке.";
 
 /* Title for a sheet shown when tapping the disabled screen security switch in privacy settings. */
-"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_TITLE" = "Block Siri AI is On";
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_TITLE" = "Блокировка Siri AI включена";
 
 /* Title for a button in a sheet shown when tapping the disabled screen security switch in privacy settings. */
-"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_VIEW_SETTING_BUTTON_TITLE" = "View Setting";
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_VIEW_SETTING_BUTTON_TITLE" = "Просмотреть настройку";
 
 /* Footer for table section */
 "SETTINGS_SECTION_FOOTER_CALLING" = "Показывать звонки в списке «Недавние» в приложении «Tелефон» iOS.";
@@ -10355,13 +10355,13 @@
 "SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "Звук включён";
 
 /* Text shown in a toast confirming a sticker was added to favorites */
-"STICKER_ADDED_TO_FAVORITES_TOAST" = "Sticker added to Favorites";
+"STICKER_ADDED_TO_FAVORITES_TOAST" = "Стикер добавлен в избранное";
 
 /* Label for button to add sticker to favorites */
-"STICKER_BUTTON_ADD_FAVORITES" = "Add to Favorites";
+"STICKER_BUTTON_ADD_FAVORITES" = "Добавить в избранное";
 
 /* Label for button to remove sticker from favorites */
-"STICKER_BUTTON_REMOVE_FAVORITES" = "Remove From Favorites";
+"STICKER_BUTTON_REMOVE_FAVORITES" = "Удалить из избранного";
 
 /* Title for a button to view a sticker pack */
 "STICKER_BUTTON_VIEW_PACK" = "Посмотреть набор";
@@ -10379,16 +10379,16 @@
 "STICKER_CATEGORY_RECENTS_NAME" = "Недавние";
 
 /* Button to confirm a user wants to remove a sticker */
-"STICKER_CONFIRM_REMOVE_BUTTON" = "Remove";
+"STICKER_CONFIRM_REMOVE_BUTTON" = "Удалить";
 
 /* Toast shown when user tries to tap Favorites in sticker keyboard but has none */
-"STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "Press and hold a sticker to add to Favorites";
+"STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "Нажмите и удерживайте стикер, чтобы добавить его в избранное";
 
 /* Section header for favorites in the sticker keyboard */
-"STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "Favorites";
+"STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "Избранное";
 
 /* Section header for recents in the sticker keyboard */
-"STICKER_KEYBOARD_SECTION_HEADER_LABEL_RECENTS" = "Recently Used";
+"STICKER_KEYBOARD_SECTION_HEADER_LABEL_RECENTS" = "Недавно использованные";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Сообщение со стикером";
@@ -10421,13 +10421,13 @@
 "STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Отправить в Signal";
 
 /* Message for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
-"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "You can’t send it or add it to Favorites again without a link or sticker message.";
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "Отправить или добавить его снова в избранное можно будет только по ссылке или через стикер-сообщение.";
 
 /* Title for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
-"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "Remove From Favorites?";
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "Удалить из избранного?";
 
 /* Text shown in a toast confirming a sticker was removed from favorites */
-"STICKER_REMOVED_FROM_FAVORITES_TOAST" = "Sticker removed from Favorites";
+"STICKER_REMOVED_FROM_FAVORITES_TOAST" = "Стикер удалён из избранного";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
 "STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Стикер недоступен";
@@ -10439,10 +10439,10 @@
 "STICKERS_INSTALL_BUTTON" = "Добавить стикеры";
 
 /* Placeholder text for the search bar in the sticker pack management. */
-"STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "Search stickers";
+"STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "Искать стикеры";
 
 /* Label for a view explaining that no search results were found. Embeds {{ the search term }}. */
-"STICKERS_MANAGE_SEARCH_NO_RESULTS" = "No results found for '%1$@'";
+"STICKERS_MANAGE_SEARCH_NO_RESULTS" = "Не найдено результатов для «%1$@»";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Стикеры от художников Signal";
@@ -10454,16 +10454,16 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Стикеры от друзей";
 
 /* The title for a context menu item that installs a sticker pack. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_ADD" = "Add";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_ADD" = "Добавить";
 
 /* The title for a context menu item that copies the sticker pack link. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_COPY" = "Copy Link";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_COPY" = "Копировать ссылку";
 
 /* The title for a context menu item that uninstalls a sticker pack. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "Remove";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "Удалить";
 
 /* The title for a context menu item that sends the sticker pack link to someone else. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "Send";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "Отправить";
 
 /* Label indicating that one or more known sticker packs failed to load. */
 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Не удалось загрузить некоторые наборы стикеров";

@@ -1991,13 +1991,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can only add %1$d sticker to Favorites</string>
+			<string>Вы можаце дадаць толькі %1$d стыкер у Абраныя</string>
 			<key>few</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>Вы можаце дадаць толькі %1$d стыкеры ў Абраныя</string>
 			<key>many</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>Вы можаце дадаць толькі %1$d стыкераў у Абраныя</string>
 			<key>other</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>Вы можаце дадаць толькі %1$d стыкераў у Абраныя</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>

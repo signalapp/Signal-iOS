@@ -1591,9 +1591,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can only add %1$d sticker to Favorites</string>
+			<string>আপনি ফেভারিটস-এ সর্বোচ্চ %1$d-টি স্টিকার যোগ করতে পারবেন</string>
 			<key>other</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>আপনি ফেভারিটস-এ সর্বোচ্চ %1$d-টি স্টিকার যোগ করতে পারবেন</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>

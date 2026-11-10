@@ -1991,13 +1991,13 @@ Spróbuj ponownie za %1$d godziny.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can only add %1$d sticker to Favorites</string>
+			<string>Do Ulubionych możesz dodać maksymalnie %1$d naklejkę</string>
 			<key>few</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>Do Ulubionych możesz dodać maksymalnie %1$d naklejki</string>
 			<key>many</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>Do Ulubionych możesz dodać maksymalnie %1$d naklejek</string>
 			<key>other</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>Do Ulubionych możesz dodać maksymalnie %1$d naklejek</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>

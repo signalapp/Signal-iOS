@@ -1391,7 +1391,7 @@ Hãy thử lại sau %1$d giờ.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>Bạn chỉ có thể thêm %1$d nhãn dán vào Yêu thích</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>

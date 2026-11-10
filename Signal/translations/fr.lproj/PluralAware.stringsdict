@@ -1591,9 +1591,9 @@ Veuillez réessayer dans %1$d heures.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can only add %1$d sticker to Favorites</string>
+			<string>Vous ne pouvez ajouter que %1$d sticker aux favoris</string>
 			<key>other</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>Vous ne pouvez ajouter que %1$d stickers aux favoris</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>

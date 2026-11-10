@@ -1591,9 +1591,9 @@ Próbáld meg %1$d óra múlva.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can only add %1$d sticker to Favorites</string>
+			<string>Csak %1$d matricát adhatsz hozzá a Kedvencekhez</string>
 			<key>other</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>Csak %1$d matricát adhatsz hozzá a Kedvencekhez</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>

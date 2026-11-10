@@ -1391,7 +1391,7 @@ Coba lagi dalam %1$d jam.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>Hanya dapat menambahkan %1$d stiker ke Favorit</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
