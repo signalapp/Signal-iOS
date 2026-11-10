@@ -7,17 +7,12 @@ import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
-// MARK: - RegistrationSignalLoginDetailsPresenter
-
-protocol RegistrationSignalLoginDetailsPresenter: AnyObject {
-    // TODO[#less]: Add callbacks to move to 'manuallly save login' step, or to continue with registration
-}
-
 // MARK: - RegistrationSignalLoginDetailsState
 
-public struct RegistrationSignalLoginDetailsState: Equatable {
+public struct RegistrationSignalLoginDetailsState {
     let aci: Aci
     let aep: SignalServiceKit.AccountEntropyPool
+    let confirmLogin: @MainActor () -> Void
 }
 
 // MARK: - RegistrationSignalLoginDetailsViewController
@@ -37,14 +32,14 @@ class RegistrationSignalLoginDetailsViewController: OWSViewController {
     }
 
     private let state: RegistrationSignalLoginDetailsState
-    private weak var presenter: RegistrationSignalLoginDetailsPresenter?
+    private let goToNextStep: @MainActor () -> Void
 
     init(
         state: RegistrationSignalLoginDetailsState,
-        presenter: RegistrationSignalLoginDetailsPresenter,
+        goToNextStep: @escaping @MainActor () -> Void,
     ) {
         self.state = state
-        self.presenter = presenter
+        self.goToNextStep = goToNextStep
 
         super.init()
         navigationItem.hidesBackButton = true
@@ -320,7 +315,13 @@ class RegistrationSignalLoginDetailsViewController: OWSViewController {
     // MARK: Actions
 
     private func didTapViewDetails() {
-        // TODO[#less]: Show the full account ID and recovery key.
+        let viewController = RegistrationSignalLoginFullDetailsViewController(
+            state: RegistrationSignalLoginFullDetailsState(
+                aci: state.aci,
+                aep: state.aep,
+            ),
+        )
+        self.present(UINavigationController(rootViewController: viewController), animated: true)
     }
 
     private func didTapSaveToPasswordManager() {
@@ -329,6 +330,9 @@ class RegistrationSignalLoginDetailsViewController: OWSViewController {
 
     private func didTapSaveManually() {
         // TODO[#less]: Manually save the Signal Login.
+        // For now, proceed to the rest of the registration flow.
+        state.confirmLogin()
+        goToNextStep()
     }
 }
 
@@ -336,20 +340,17 @@ class RegistrationSignalLoginDetailsViewController: OWSViewController {
 
 #if DEBUG
 
-private class PreviewRegistrationSignalLoginDetailsPresenter: RegistrationSignalLoginDetailsPresenter {
-}
-
 @available(iOS 17, *)
 #Preview {
     let state = RegistrationSignalLoginDetailsState(
         aci: Aci.randomForTesting(),
         aep: AccountEntropyPool(),
+        confirmLogin: {},
     )
-    let presenter = PreviewRegistrationSignalLoginDetailsPresenter()
     return UINavigationController(
         rootViewController: RegistrationSignalLoginDetailsViewController(
             state: state,
-            presenter: presenter,
+            goToNextStep: {},
         ),
     )
 }

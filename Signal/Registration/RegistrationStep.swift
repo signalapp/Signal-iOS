@@ -56,6 +56,8 @@ public enum RegistrationStep: CustomStringConvertible {
     /// PIN guesses got used up), we have no choice but to wait out the reglock.
     case reglockTimeout(RegistrationReglockTimeoutState)
 
+    case reviewAndConfirmSignalLogin(RegistrationSignalLoginDetailsState)
+
     // MARK: From Backup
 
     /// If the user elects to restore from backup and doesn't have their old phone,
@@ -139,6 +141,7 @@ public enum RegistrationStep: CustomStringConvertible {
         case .pinAttemptsExhaustedWithoutReglock: return "pinAttemptsExhaustedWithoutReglock"
         case .captchaChallenge: return "captchaChallenge"
         case .reglockTimeout: return "reglockTimeout"
+        case .reviewAndConfirmSignalLogin: return "reviewAndConfirmSignalLogin"
         case .enterRecoveryKey: return "enterRecoveryKey"
         case .chooseRestoreMethod(let restorePath): return "chooseRestoreMethod(\(restorePath.logSafeString))"
         case .confirmRestoreFromBackup: return "confirmRestoreFromBackup"

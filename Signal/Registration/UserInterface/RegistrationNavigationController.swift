@@ -414,6 +414,17 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // No state to update.
                 update: nil,
             )
+        case .reviewAndConfirmSignalLogin(let state):
+            return Controller(
+                type: RegistrationSignalLoginDetailsViewController.self,
+                make: { presenter in
+                    return RegistrationSignalLoginDetailsViewController(
+                        state: state,
+                        goToNextStep: { [unowned presenter] in presenter.pushNextStepController() },
+                    )
+                },
+                update: nil,
+            )
         case .enterRecoveryKey(let state):
             return Controller(
                 type: RegistrationEnterAccountEntropyPoolViewController.self,

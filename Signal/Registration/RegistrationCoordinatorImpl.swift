@@ -3683,14 +3683,25 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     receiptCredentialPresentation: receiptCredentialPresentation,
                 ))
             }
-            deps.db.write { tx in
-                updatePersistedState(tx) {
-                    setSignalLoginState(nil, alsoUpdating: &$0)
-                    $0.accountIdentity = accountIdentity
-                    $0.liveAccountEntropyPool = accountEntropyPool
-                }
-            }
-            return .done
+            return .setSignalLoginState(.reviewAndConfirmLogin(
+                accountEntropyPool: accountEntropyPool,
+                accountIdentity: accountIdentity,
+            ))
+
+        case .reviewAndConfirmLogin(let accountEntropyPool, let accountIdentity):
+            return .registrationStep(.reviewAndConfirmSignalLogin(RegistrationSignalLoginDetailsState(
+                aci: accountIdentity.localIdentifiers.aci,
+                aep: accountEntropyPool,
+                confirmLogin: { [self] in
+                    deps.db.write { tx in
+                        updatePersistedState(tx) {
+                            setSignalLoginState(nil, alsoUpdating: &$0)
+                            $0.liveAccountEntropyPool = accountEntropyPool
+                            $0.accountIdentity = accountIdentity
+                        }
+                    }
+                },
+            )))
 
         case .logIn:
             return .registrationStep(.promptForLogin(RegistrationSignalLoginState(aci: nil, aep: nil)))
@@ -5230,6 +5241,11 @@ private enum InMemorySignalLoginState {
         receiptCredential: ReceiptCredential,
     )
 
+    case reviewAndConfirmLogin(
+        accountEntropyPool: SignalServiceKit.AccountEntropyPool,
+        accountIdentity: RegistrationCoordinatorImpl.AccountIdentity,
+    )
+
     /// The user chose to use an existing Signal Login.
     case logIn
 
@@ -5248,6 +5264,11 @@ private enum InMemorySignalLoginState {
             self = .redeemCredential(
                 accountEntropyPool: state.accountEntropyPool,
                 receiptCredential: state.receiptCredential.wrappedValue,
+            )
+        case .reviewAndConfirmLogin(let state):
+            self = .reviewAndConfirmLogin(
+                accountEntropyPool: state.accountEntropyPool,
+                accountIdentity: state.accountIdentity,
             )
         }
     }
@@ -5269,6 +5290,11 @@ private enum InMemorySignalLoginState {
             return .redeemCredential(PersistedSignalLoginState.RedeemCredential(
                 accountEntropyPool: accountEntropyPool,
                 receiptCredential: ByteArrayCodable(receiptCredential),
+            ))
+        case .reviewAndConfirmLogin(let accountEntropyPool, let accountIdentity):
+            return .reviewAndConfirmLogin(PersistedSignalLoginState.ReviewAndConfirmLogin(
+                accountEntropyPool: accountEntropyPool,
+                accountIdentity: accountIdentity,
             ))
         case .logIn:
             return nil
@@ -5293,6 +5319,13 @@ enum PersistedSignalLoginState: Codable {
     struct RedeemCredential: Codable {
         let accountEntropyPool: SignalServiceKit.AccountEntropyPool
         let receiptCredential: ByteArrayCodable<ReceiptCredential>
+    }
+
+    case reviewAndConfirmLogin(ReviewAndConfirmLogin)
+
+    struct ReviewAndConfirmLogin: Codable {
+        let accountEntropyPool: SignalServiceKit.AccountEntropyPool
+        let accountIdentity: RegistrationCoordinatorImpl.AccountIdentity
     }
 }
 
