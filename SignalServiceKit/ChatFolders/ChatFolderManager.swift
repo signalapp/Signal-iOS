@@ -9,6 +9,7 @@ extension ChatFolderManager: RecipientMergeApplier {}
 
 public struct ChatFolderManager {
     private let chatFolderStore: ChatFolderStore
+    private let dateProvider: DateProvider
     private let groupStore = GroupStore()
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientFetcher: RecipientFetcher
@@ -17,12 +18,14 @@ public struct ChatFolderManager {
 
     init(
         chatFolderStore: ChatFolderStore,
+        dateProvider: @escaping DateProvider,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         storageServiceManager: any StorageServiceManager,
         threadStore: ThreadStore,
     ) {
         self.chatFolderStore = chatFolderStore
+        self.dateProvider = dateProvider
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
         self.storageServiceManager = storageServiceManager
@@ -81,6 +84,114 @@ public struct ChatFolderManager {
             }
             return (membership, threadRowId)
         }
+    }
+
+    // MARK: - Editing
+
+    /// Saves a new custom folder with a position after all existing folders.
+    @discardableResult
+    public func save(_ draft: ChatFolderDraft, tx: DBWriteTransaction) -> ChatFolderRecord {
+        let lastPosition = chatFolderStore.fetchDisplayableRecords(tx: tx).last?.position
+        let position = lastPosition.map { UInt32(clamping: Int64($0) + 1) } ?? 0
+
+        let record = chatFolderStore.insertCustomFolderRecord(
+            chatFolderId: UUID(),
+            name: draft.name,
+            position: position,
+            showOnlyUnread: draft.showOnlyUnread,
+            showMutedChats: draft.showMutedChats,
+            includeAllIndividualChats: draft.includeAllIndividualChats,
+            includeAllGroupChats: draft.includeAllGroupChats,
+            deletedAtTimestampMs: 0,
+            tx: tx,
+        )
+        updateMemberships(
+            folderRowId: record.id,
+            includedThreadRowIds: draft.includedThreadRowIds,
+            excludedThreadRowIds: draft.excludedThreadRowIds,
+            removedThreadRowIds: [],
+            tx: tx,
+        )
+        storageServiceManager.recordPendingUpdates(chatFolderIds: [record.chatFolderId])
+        return record
+    }
+
+    /// Saves a draft to an existing chat folder. Note that memberships without
+    /// threads are preserved even when not included in the draft.
+    public func update(chatFolderId: UUID, draft: ChatFolderDraft, tx: DBWriteTransaction) {
+        guard
+            let folder = fetch(chatFolderId: chatFolderId, tx: tx),
+            folder.folderType == .custom,
+            !folder.isDeleted
+        else {
+            owsFailDebug("Updating a folder that can't be edited!")
+            return
+        }
+        var record = folder.record
+        record.name = draft.name
+        record.showOnlyUnread = draft.showOnlyUnread
+        record.showMutedChats = draft.showMutedChats
+        record.includeAllIndividualChats = draft.includeAllIndividualChats
+        record.includeAllGroupChats = draft.includeAllGroupChats
+        chatFolderStore.update(record, tx: tx)
+        updateMemberships(
+            folderRowId: record.id,
+            includedThreadRowIds: draft.includedThreadRowIds,
+            excludedThreadRowIds: draft.excludedThreadRowIds,
+            removedThreadRowIds: folder.includedThreadRowIds
+                .union(folder.excludedThreadRowIds)
+                .subtracting(draft.includedThreadRowIds)
+                .subtracting(draft.excludedThreadRowIds),
+            tx: tx,
+        )
+        storageServiceManager.recordPendingUpdates(chatFolderIds: [chatFolderId])
+    }
+
+    public func delete(chatFolderId: UUID, tx: DBWriteTransaction) {
+        guard
+            let record = chatFolderStore.fetchRecord(chatFolderId: chatFolderId, tx: tx),
+            record.folderType == .custom,
+            !record.isDeleted
+        else {
+            return
+        }
+        chatFolderStore.markDeleted(
+            chatFolderId: chatFolderId,
+            deletedAtTimestampMs: Int64(clamping: dateProvider().ows_millisecondsSince1970),
+            tx: tx,
+        )
+        let movedChatFolderIds = assignSequentialPositions(chatFolderStore.fetchDisplayableRecords(tx: tx), tx: tx)
+        storageServiceManager.recordPendingUpdates(chatFolderIds: [chatFolderId] + movedChatFolderIds)
+    }
+
+    public func reorder(chatFolderIds: [UUID], tx: DBWriteTransaction) {
+        let records = chatFolderStore.fetchDisplayableRecords(tx: tx)
+        let indexes = Dictionary(
+            chatFolderIds.enumerated().map { ($1, $0) },
+            uniquingKeysWith: { first, _ in first },
+        )
+        let sorted = records.enumerated().sorted { lhs, rhs in
+            let lhsKey = (indexes[lhs.element.chatFolderId] ?? Int.max, lhs.offset)
+            let rhsKey = (indexes[rhs.element.chatFolderId] ?? Int.max, rhs.offset)
+            return lhsKey < rhsKey
+        }.map(\.element)
+
+        let movedChatFolderIds = assignSequentialPositions(sorted, tx: tx)
+        storageServiceManager.recordPendingUpdates(chatFolderIds: movedChatFolderIds)
+    }
+
+    private func assignSequentialPositions(_ records: [ChatFolderRecord], tx: DBWriteTransaction) -> [UUID] {
+        var movedChatFolderIds = [UUID]()
+        for (position, record) in records.enumerated() {
+            var record = record
+            guard record.position != UInt32(position) else {
+                continue
+            }
+            record.position = UInt32(position)
+            chatFolderStore.update(record, tx: tx)
+            movedChatFolderIds.append(record.chatFolderId)
+        }
+        return movedChatFolderIds
     }
 
     // MARK: - Writing

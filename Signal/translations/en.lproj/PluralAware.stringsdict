@@ -333,6 +333,54 @@
 			<string>This color is used in %d chats. Do you want to save changes for all chats?</string>
 		</dict>
 	</dict>
+	<key>CHAT_FOLDERS_CHAT_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d Chat</string>
+			<key>other</key>
+			<string>%d Chats</string>
+		</dict>
+	</dict>
+	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d Chat Type</string>
+			<key>other</key>
+			<string>%d Chat Types</string>
+		</dict>
+	</dict>
+	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d Chat Excluded</string>
+			<key>other</key>
+			<string>%d Chats Excluded</string>
+		</dict>
+	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

@@ -73,4 +73,90 @@ public struct ChatFolder: Equatable {
             )
         }
     }
+
+    public var contentsSummary: String? {
+        guard folderType == .custom else {
+            return nil
+        }
+
+        var parts = [String]()
+
+        let chatTypeCount = (includeAllIndividualChats ? 1 : 0) + (includeAllGroupChats ? 1 : 0)
+        if chatTypeCount > 0 {
+            parts.append(String.localizedStringWithFormat(
+                OWSLocalizedString(
+                    "CHAT_FOLDERS_CHAT_TYPE_COUNT_%d",
+                    tableName: "PluralAware",
+                    comment: "Describes how many types of chats (1:1 chats, groups) a chat folder includes. Embeds {{ number of chat types }}.",
+                ),
+                chatTypeCount,
+            ))
+        }
+        if !includedThreadRowIds.isEmpty {
+            parts.append(String.localizedStringWithFormat(
+                OWSLocalizedString(
+                    "CHAT_FOLDERS_CHAT_COUNT_%d",
+                    tableName: "PluralAware",
+                    comment: "Describes how many chats were added to a chat folder. Embeds {{ number of chats }}.",
+                ),
+                includedThreadRowIds.count,
+            ))
+        }
+        if !excludedThreadRowIds.isEmpty {
+            parts.append(String.localizedStringWithFormat(
+                OWSLocalizedString(
+                    "CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d",
+                    tableName: "PluralAware",
+                    comment: "Describes how many chats are excluded from a chat folder. Embeds {{ number of chats }}.",
+                ),
+                excludedThreadRowIds.count,
+            ))
+        }
+
+        return parts.formatted(.list(type: .and, width: .narrow)).nilIfEmpty
+    }
+}
+
+// MARK: -
+
+public struct ChatFolderDraft: Equatable {
+    public var name: String
+    public var showOnlyUnread: Bool
+    public var showMutedChats: Bool
+    public var includeAllIndividualChats: Bool
+    public var includeAllGroupChats: Bool
+    public var includedThreadRowIds: Set<Int64>
+    public var excludedThreadRowIds: Set<Int64>
+
+    public init(
+        name: String = "",
+        showOnlyUnread: Bool = false,
+        showMutedChats: Bool = true,
+        includeAllIndividualChats: Bool = false,
+        includeAllGroupChats: Bool = false,
+        includedThreadRowIds: Set<Int64> = [],
+        excludedThreadRowIds: Set<Int64> = [],
+    ) {
+        self.name = name
+        self.showOnlyUnread = showOnlyUnread
+        self.showMutedChats = showMutedChats
+        self.includeAllIndividualChats = includeAllIndividualChats
+        self.includeAllGroupChats = includeAllGroupChats
+        self.includedThreadRowIds = includedThreadRowIds
+        self.excludedThreadRowIds = excludedThreadRowIds
+    }
+}
+
+extension ChatFolder {
+    public var draft: ChatFolderDraft {
+        return ChatFolderDraft(
+            name: name,
+            showOnlyUnread: showOnlyUnread,
+            showMutedChats: showMutedChats,
+            includeAllIndividualChats: includeAllIndividualChats,
+            includeAllGroupChats: includeAllGroupChats,
+            includedThreadRowIds: includedThreadRowIds,
+            excludedThreadRowIds: excludedThreadRowIds,
+        )
+    }
 }

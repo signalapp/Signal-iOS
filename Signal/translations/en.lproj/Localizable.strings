@@ -2074,6 +2074,51 @@
 /* Name of the default chat folder, which shows every chat. */
 "CHAT_FOLDERS_ALL_CHATS" = "All Chats";
 
+/* Action that deletes a chat folder. */
+"CHAT_FOLDERS_DELETE_FOLDER" = "Delete Folder";
+
+/* Title of the confirmation shown before deleting a chat folder. */
+"CHAT_FOLDERS_DELETE_FOLDER_CONFIRMATION_TITLE" = "Delete this chat folder?";
+
+/* Button in chat folder settings to add a suggested chat folder. */
+"CHAT_FOLDERS_SETTINGS_ADD_SUGGESTED_FOLDER" = "Add";
+
+/* Button in chat folder settings to create a new chat folder. */
+"CHAT_FOLDERS_SETTINGS_CREATE_FOLDER" = "Create a Folder";
+
+/* Description at the top of the chat folders settings screen. */
+"CHAT_FOLDERS_SETTINGS_DESCRIPTION" = "Organize your chats into folders and quickly switch between them on your chat list.";
+
+/* Toast shown after adding a suggested chat folder. Embeds {{ folder name }}. */
+"CHAT_FOLDERS_SETTINGS_FOLDER_ADDED_TOAST_FORMAT" = "%@ folder added";
+
+/* Header for the list of chat folders in chat folder settings. */
+"CHAT_FOLDERS_SETTINGS_FOLDERS_HEADER" = "Folders";
+
+/* Header for the list of suggested chat folders in chat folder settings. */
+"CHAT_FOLDERS_SETTINGS_SUGGESTED_HEADER" = "Suggested Folders";
+
+/* Title for the chat folders settings screen. */
+"CHAT_FOLDERS_SETTINGS_TITLE" = "Chat Folders";
+
+/* Describes the suggested chat folder that shows group chats. */
+"CHAT_FOLDERS_SUGGESTED_GROUPS_DESCRIPTION" = "Only messages from group chats";
+
+/* Name of the suggested chat folder that shows group chats. */
+"CHAT_FOLDERS_SUGGESTED_GROUPS_NAME" = "Groups";
+
+/* Describes the suggested chat folder that shows 1:1 chats. */
+"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_DESCRIPTION" = "Only messages from direct chats";
+
+/* Name of the suggested chat folder that shows 1:1 chats. */
+"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_NAME" = "1:1 Chats";
+
+/* Describes the suggested chat folder that shows unread chats. */
+"CHAT_FOLDERS_SUGGESTED_UNREAD_DESCRIPTION" = "Unread messages from all chats";
+
+/* Name of the suggested chat folder that shows unread chats. */
+"CHAT_FOLDERS_SUGGESTED_UNREAD_NAME" = "Unread";
+
 /* Name shown for a chat folder whose name is empty. */
 "CHAT_FOLDERS_UNNAMED_FOLDER" = "Unnamed Folder";
 
@@ -9249,6 +9294,9 @@
 
 /* Title for the 'chats' link in settings. */
 "SETTINGS_CHATS" = "Chats";
+
+/* Footer for the chat folders row in chats settings. */
+"SETTINGS_CHATS_CHAT_FOLDERS_FOOTER" = "Create folders for different sets of chats and quickly switch between them.";
 
 /* Title for a button in Chats settings that starts exporting the user's chat history. */
 "SETTINGS_CHATS_EXPORT_BUTTON" = "Export Chats";

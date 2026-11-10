@@ -65,6 +65,7 @@ private class TestDependencies {
         )
         chatFolderManager = ChatFolderManager(
             chatFolderStore: chatFolderStore,
+            dateProvider: Date.provider,
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             storageServiceManager: storageServiceManager,

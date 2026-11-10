@@ -23,6 +23,7 @@ struct StorageServiceChatFolderRecordUpdaterTest {
         )
         self.manager = ChatFolderManager(
             chatFolderStore: store,
+            dateProvider: Date.provider,
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             storageServiceManager: FakeStorageServiceManager(),

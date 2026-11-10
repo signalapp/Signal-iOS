@@ -1061,6 +1061,7 @@ extension AppSetup.GlobalsContinuation {
         let chatFolderStore = ChatFolderStore()
         let chatFolderManager = ChatFolderManager(
             chatFolderStore: chatFolderStore,
+            dateProvider: dateProvider,
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             storageServiceManager: storageServiceManager,

@@ -16,10 +16,13 @@ final class ChatFolderManagerTest {
     private let storageServiceManager = ChatFolderRecordingStorageServiceManager()
     private let manager: ChatFolderManager
 
+    private static let now = Date(millisecondsSince1970: 1_700_000_000_000)
+
     init() {
         let recipientDatabaseTable = RecipientDatabaseTable()
         manager = ChatFolderManager(
             chatFolderStore: store,
+            dateProvider: { Self.now },
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: RecipientFetcher(
                 recipientDatabaseTable: recipientDatabaseTable,
@@ -305,6 +308,227 @@ final class ChatFolderManagerTest {
         }
 
         #expect(inMemoryDB.read { RecipientDatabaseTable().fetchRecipient(serviceId: aci, transaction: $0) } == nil)
+    }
+
+    // MARK: - Editing
+
+    @discardableResult
+    private func add(
+        _ name: String,
+        included: Set<Int64> = [],
+        excluded: Set<Int64> = [],
+    ) -> ChatFolderRecord {
+        return inMemoryDB.write { tx in
+            manager.save(
+                ChatFolderDraft(name: name, includedThreadRowIds: included, excludedThreadRowIds: excluded),
+                tx: tx,
+            )
+        }
+    }
+
+    private func displayedNames() -> [String] {
+        return inMemoryDB.read { store.fetchDisplayableRecords(tx: $0) }.map(\.name)
+    }
+
+    private func displayedPositions() -> [UInt32] {
+        return inMemoryDB.read { store.fetchDisplayableRecords(tx: $0) }.map(\.position)
+    }
+
+    private func insertContactThreadRowId() -> Int64 {
+        return insertContactThread(insertRecipient().aci!).sqliteRowId!
+    }
+
+    @Test
+    func testAddAppendsAfterExistingFolders() {
+        manager.createAllChatsFolderIfNeeded(db: inMemoryDB)
+        let included = insertContactThreadRowId()
+        let excluded = insertContactThreadRowId()
+
+        let work = add("Work", included: [included], excluded: [excluded])
+        add("Family")
+
+        #expect(displayedNames() == ["", "Work", "Family"])
+        #expect(displayedPositions() == [0, 1, 2])
+
+        let fetched = fetch(work)
+        #expect(fetched.includedThreadRowIds == [included])
+        #expect(fetched.excludedThreadRowIds == [excluded])
+    }
+
+    @Test
+    func testAddIgnoresDeletedFoldersPosition() {
+        manager.createAllChatsFolderIfNeeded(db: inMemoryDB)
+        let work = add("Work")
+        let family = add("Family")
+        inMemoryDB.write { manager.delete(chatFolderId: family.chatFolderId, tx: $0) }
+
+        let friends = add("Friends")
+
+        #expect(displayedNames() == ["", "Work", "Friends"])
+        #expect(friends.position == work.position + 1)
+    }
+
+    @Test
+    func testAddLeavesExistingPositionsAlone() {
+        manager.createAllChatsFolderIfNeeded(db: inMemoryDB)
+        inMemoryDB.write { tx in
+            _ = store.insertCustomFolderRecord(
+                chatFolderId: UUID(),
+                name: "Merged",
+                position: 5,
+                showOnlyUnread: false,
+                showMutedChats: true,
+                includeAllIndividualChats: false,
+                includeAllGroupChats: false,
+                deletedAtTimestampMs: 0,
+                tx: tx,
+            )
+        }
+        storageServiceManager.chatFolderIds = []
+
+        let work = add("Work")
+
+        #expect(displayedNames() == ["", "Merged", "Work"])
+        #expect(displayedPositions() == [0, 5, 6])
+        #expect(storageServiceManager.chatFolderIds == [work.chatFolderId])
+    }
+
+    @Test
+    func testAddAfterAFolderAtTheLastPosition() {
+        manager.createAllChatsFolderIfNeeded(db: inMemoryDB)
+        inMemoryDB.write { tx in
+            _ = store.insertCustomFolderRecord(
+                chatFolderId: UUID(),
+                name: "Merged",
+                position: .max,
+                showOnlyUnread: false,
+                showMutedChats: true,
+                includeAllIndividualChats: false,
+                includeAllGroupChats: false,
+                deletedAtTimestampMs: 0,
+                tx: tx,
+            )
+        }
+
+        add("Work")
+
+        // Both folders share the last position, so their order isn't defined.
+        #expect(Set(displayedNames()) == ["", "Merged", "Work"])
+        #expect(displayedPositions() == [0, .max, .max])
+    }
+
+    @Test
+    func testUpdateReplacesSettingsAndMembership() {
+        let threadRowIds = (0..<3).map { _ in insertContactThreadRowId() }
+        let work = add("Work", included: [threadRowIds[0], threadRowIds[1]])
+
+        inMemoryDB.write { tx in
+            manager.update(
+                chatFolderId: work.chatFolderId,
+                draft: ChatFolderDraft(
+                    name: "Job",
+                    showOnlyUnread: true,
+                    includedThreadRowIds: [threadRowIds[2]],
+                    excludedThreadRowIds: [threadRowIds[0]],
+                ),
+                tx: tx,
+            )
+        }
+
+        let fetched = fetch(work)
+        #expect(fetched.name == "Job")
+        #expect(fetched.showOnlyUnread)
+        #expect(fetched.includedThreadRowIds == [threadRowIds[2]])
+        #expect(fetched.excludedThreadRowIds == [threadRowIds[0]])
+    }
+
+    @Test
+    func testUpdateKeepsChatsWithoutAThread() {
+        let work = add("Work")
+        let threadless = insertRecipient()
+        setMembership(.included, .contact(recipientRowId: threadless.id), in: work)
+
+        inMemoryDB.write { tx in
+            manager.update(
+                chatFolderId: work.chatFolderId,
+                draft: ChatFolderDraft(name: "Job"),
+                tx: tx,
+            )
+        }
+
+        #expect(memberships(work) == [.contact(recipientRowId: threadless.id): .included])
+    }
+
+    @Test
+    func testDeleteTombstonesWithTheCurrentTime() {
+        manager.createAllChatsFolderIfNeeded(db: inMemoryDB)
+        let work = add("Work", included: [insertContactThreadRowId()])
+
+        inMemoryDB.write { manager.delete(chatFolderId: work.chatFolderId, tx: $0) }
+
+        #expect(displayedNames() == [""])
+        let deleted = fetch(work)
+        #expect(deleted.record.deletedAtTimestampMs == Int64(Self.now.ows_millisecondsSince1970))
+        #expect(memberships(work).isEmpty)
+    }
+
+    @Test
+    func testDeleteMovesLaterFoldersUp() {
+        manager.createAllChatsFolderIfNeeded(db: inMemoryDB)
+        add("Work")
+        let family = add("Family")
+        let friends = add("Friends")
+        let school = add("School")
+        storageServiceManager.chatFolderIds = []
+
+        inMemoryDB.write { manager.delete(chatFolderId: family.chatFolderId, tx: $0) }
+
+        #expect(displayedNames() == ["", "Work", "Friends", "School"])
+        #expect(displayedPositions() == [0, 1, 2, 3])
+        // The folders that moved are synced along with the deletion.
+        #expect(storageServiceManager.chatFolderIds == [family.chatFolderId, friends.chatFolderId, school.chatFolderId])
+    }
+
+    @Test
+    func testDeleteLeavesAnAlreadyDeletedFolderAlone() {
+        manager.createAllChatsFolderIfNeeded(db: inMemoryDB)
+        let work = add("Work")
+        inMemoryDB.write { store.markDeleted(chatFolderId: work.chatFolderId, deletedAtTimestampMs: 1, tx: $0) }
+        storageServiceManager.chatFolderIds = []
+
+        inMemoryDB.write { manager.delete(chatFolderId: work.chatFolderId, tx: $0) }
+
+        #expect(fetch(work).record.deletedAtTimestampMs == 1)
+        #expect(storageServiceManager.chatFolderIds.isEmpty)
+    }
+
+    @Test
+    func testReorderAssignsSequentialPositions() throws {
+        manager.createAllChatsFolderIfNeeded(db: inMemoryDB)
+        let work = add("Work")
+        let family = add("Family")
+        let allChats = try #require(inMemoryDB.read { store.fetchRecordForAllChatsFolder(tx: $0) })
+
+        inMemoryDB.write { tx in
+            manager.reorder(chatFolderIds: [family.chatFolderId, allChats.chatFolderId, work.chatFolderId], tx: tx)
+        }
+
+        #expect(displayedNames() == ["Family", "", "Work"])
+        #expect(displayedPositions() == [0, 1, 2])
+    }
+
+    @Test
+    func testReorderKeepsUnlistedFoldersAtTheEnd() {
+        manager.createAllChatsFolderIfNeeded(db: inMemoryDB)
+        add("Work")
+        let family = add("Family")
+        add("Friends")
+
+        inMemoryDB.write { tx in
+            manager.reorder(chatFolderIds: [family.chatFolderId, UUID()], tx: tx)
+        }
+
+        #expect(displayedNames() == ["Family", "", "Work", "Friends"])
     }
 
     // MARK: - All chats
