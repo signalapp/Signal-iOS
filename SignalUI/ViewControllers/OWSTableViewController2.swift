@@ -36,8 +36,10 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
         applyContents(shouldReload: shouldReload)
     }
 
+    open var tableViewStyle: UITableView.Style { .insetGrouped }
+
     public lazy var tableView: UITableView = {
-        let tableView = OWSTableView(frame: .zero, style: .insetGrouped)
+        let tableView = OWSTableView(frame: .zero, style: tableViewStyle)
         tableView.tableViewDelegate = self
         return tableView
     }()
@@ -81,6 +83,8 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
     private var defaultLastSectionFooter: CGFloat = 20
 
     public var defaultSeparatorInsetLeading: CGFloat = OWSTableViewController2.cellHInnerMargin
+
+    public var defaultSeparatorInsetTrailing: CGFloat = 0
 
     public var defaultCellHeight: CGFloat = 50
 
@@ -487,6 +491,7 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
         separatorLayer: CAShapeLayer,
         view: UIView,
         sectionSeparatorInsetLeading: CGFloat?,
+        sectionSeparatorInsetTrailing: CGFloat?,
         separatorColor: UIColor,
     ) {
         separatorLayer.frame = view.bounds
@@ -499,9 +504,10 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
         separatorFrame.size.height = separatorThickness
 
         let separatorInsetLeading = sectionSeparatorInsetLeading ?? self.defaultSeparatorInsetLeading
+        let separatorInsetTrailing = sectionSeparatorInsetTrailing ?? self.defaultSeparatorInsetTrailing
 
         separatorFrame.x += separatorInsetLeading
-        separatorFrame.size.width -= separatorInsetLeading
+        separatorFrame.size.width -= separatorInsetLeading + separatorInsetTrailing
         separatorLayer.path = UIBezierPath(rect: separatorFrame).cgPath
     }
 
@@ -522,6 +528,7 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
                     separatorLayer: separatorLayer,
                     view: view,
                     sectionSeparatorInsetLeading: section.separatorInsetLeading,
+                    sectionSeparatorInsetTrailing: section.separatorInsetTrailing,
                     separatorColor: Self.separatorColor,
                 )
             }
@@ -741,7 +748,8 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
             return buildDefaultHeaderOrFooter(height: customHeaderHeight)
         } else if
             let defaultSpacingBetweenSections,
-            defaultSpacingBetweenSections > 0, !section.items.isEmpty
+            defaultSpacingBetweenSections > 0,
+            !section.items.isEmpty
         {
             return buildDefaultHeaderOrFooter(height: defaultSpacingBetweenSections)
         } else {

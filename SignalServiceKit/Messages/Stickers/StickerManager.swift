@@ -240,40 +240,54 @@ public class StickerManager {
         wasLocallyInitiated: Bool,
         transaction: DBWriteTransaction,
     ) {
-        guard let stickerPack = fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction) else {
-            Logger.info("Skipping uninstall; not saved or installed.")
-            return
-        }
+        uninstallStickerPacks(stickerPackInfos: [stickerPackInfo], wasLocallyInitiated: wasLocallyInitiated, transaction: transaction)
+    }
 
-        let isDefaultStickerPack = DefaultStickerPack.isDefaultStickerPack(packId: stickerPackInfo.packId)
-        let shouldRemove = !isDefaultStickerPack
-
-        if shouldRemove {
-            uninstallSticker(stickerInfo: stickerPack.coverInfo, transaction: transaction)
-
-            for stickerInfo in stickerPack.stickerInfos() {
-                if stickerInfo == stickerPack.coverInfo {
-                    // Don't uninstall the cover for saved packs.
-                    continue
-                }
-                uninstallSticker(stickerInfo: stickerInfo, transaction: transaction)
+    public func uninstallStickerPacks(
+        stickerPackInfos: [StickerPackInfo],
+        wasLocallyInitiated: Bool,
+        transaction: DBWriteTransaction,
+    ) {
+        let packs: [StickerPackInfo] = stickerPackInfos.compactMap { stickerPackInfo in
+            guard let stickerPack = fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction) else {
+                Logger.info("Skipping uninstall; not saved or installed.")
+                return nil
             }
 
-            stickerPack.anyRemove(transaction: transaction)
-        } else {
-            stickerPack.updateWith(isInstalled: false, tx: transaction)
+            let isDefaultStickerPack = DefaultStickerPack.isDefaultStickerPack(packId: stickerPackInfo.packId)
+            let shouldRemove = !isDefaultStickerPack
+
+            if shouldRemove {
+                uninstallSticker(stickerInfo: stickerPack.coverInfo, transaction: transaction)
+
+                for stickerInfo in stickerPack.stickerInfos() {
+                    if stickerInfo == stickerPack.coverInfo {
+                        // Don't uninstall the cover for saved packs.
+                        continue
+                    }
+                    uninstallSticker(stickerInfo: stickerInfo, transaction: transaction)
+                }
+
+                stickerPack.anyRemove(transaction: transaction)
+            } else {
+                stickerPack.updateWith(isInstalled: false, tx: transaction)
+            }
+
+            return stickerPackInfo
         }
 
-        if wasLocallyInitiated {
-            enqueueStickerSyncMessage(
-                operationType: .remove,
-                packs: [stickerPackInfo],
-                transaction: transaction,
-            )
-        }
+        if !packs.isEmpty {
+            if wasLocallyInitiated {
+                enqueueStickerSyncMessage(
+                    operationType: .remove,
+                    packs: packs,
+                    transaction: transaction,
+                )
+            }
 
-        transaction.addSyncCompletion {
-            self.packsDidChangeEvent.requestNotify()
+            transaction.addSyncCompletion {
+                self.packsDidChangeEvent.requestNotify()
+            }
         }
     }
 

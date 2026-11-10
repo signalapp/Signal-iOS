@@ -1596,6 +1596,54 @@ Try again in %d hours.</string>
 			<string>You can only add %d stickers to Favorites</string>
 		</dict>
 	</dict>
+	<key>STICKER_PACK_REMOVE_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>This will remove the sticker pack. You can't add it again without a link or sticker message.</string>
+			<key>other</key>
+			<string>This will remove the sticker packs. You can't add them again without a link or sticker message.</string>
+		</dict>
+	</dict>
+	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Remove sticker pack?</string>
+			<key>other</key>
+			<string>Remove %d sticker packs?</string>
+		</dict>
+	</dict>
+	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Sticker pack removed</string>
+			<key>other</key>
+			<string>Sticker packs removed</string>
+		</dict>
+	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1610,6 +1658,22 @@ Try again in %d hours.</string>
 			<string>%d sticker</string>
 			<key>other</key>
 			<string>%d stickers</string>
+		</dict>
+	</dict>
+	<key>STICKER_PACK_TOOLBAR_CAPTION_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%d Selected</string>
+			<key>other</key>
+			<string>%d Selected</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
