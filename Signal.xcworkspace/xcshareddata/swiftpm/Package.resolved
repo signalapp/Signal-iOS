@@ -1,5 +1,5 @@
 {
-  "originHash" : "5e68ac760d43dd903d3ddb9de67aef4477190f1d23112be4072d50c45aaea2d7",
+  "originHash" : "e69f0739d9ceff2807a03a47aade68dac4643cb2f9b7e618c7c2e3a81973dea0",
   "pins" : [
     {
       "identity" : "bonmot",
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/signalapp/libsignal",
       "state" : {
-        "revision" : "904c8dc8216073b078a5f2f5090e3da8382e6a92",
-        "version" : "0.106.1"
+        "revision" : "850942581c06fa65c0323fd52029afa02fa1a1ba",
+        "version" : "0.106.2"
       }
     },
     {
