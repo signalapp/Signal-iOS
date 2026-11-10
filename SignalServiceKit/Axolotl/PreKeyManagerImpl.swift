@@ -124,17 +124,16 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     public func checkPreKeysIfNecessary() async throws {
-        try await checkPreKeys(shouldThrottle: true)
+        try await _checkPreKeysIfNecessary()
     }
 
-    fileprivate func checkPreKeys(shouldThrottle: Bool) async throws {
+    private func _checkPreKeysIfNecessary() async throws {
         guard CurrentAppContext().isMainAppAndActive else {
             throw OWSGenericError("must be the main app")
         }
 
         let shouldCheckOneTimePreKeys = {
             if
-                shouldThrottle,
                 let lastOneTimePreKeyCheckTimestamp = lastOneTimePreKeyCheckTimestamp.get(),
                 fabs(lastOneTimePreKeyCheckTimestamp.timeIntervalSinceNow) < Constants.oneTimePreKeyCheckFrequencySeconds
             {
@@ -146,7 +145,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         // If we can throttle this check, and if we're changing our number, assume
         // that the change number will refresh our pre keys. (This check is
         // optional, so it's fine to skip it.)
-        let shouldSkipPniPreKeyCheck = shouldThrottle && changeNumberState.update(block: { $0.isChangingNumber })
+        let shouldSkipPniPreKeyCheck = changeNumberState.update(block: { $0.isChangingNumber })
         if shouldSkipPniPreKeyCheck {
             logger.warn("Skipping PNI pre key check due to change number.")
         }
@@ -274,15 +273,3 @@ public class PreKeyManagerImpl: PreKeyManager {
         )
     }
 }
-
-// MARK: - Debug UI
-
-#if TESTABLE_BUILD
-
-public extension PreKeyManagerImpl {
-    func checkPreKeysImmediately() async throws {
-        try await checkPreKeys(shouldThrottle: false)
-    }
-}
-
-#endif
