@@ -95,15 +95,22 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     public func nextStep() async -> RegistrationStep {
+        let result: RegistrationStep
         do {
-            try deps.appExpiry.checkExpiration(now: deps.dateProvider())
+            result = try await _nextStep()
         } catch {
-            return logStep(.showError(error))
+            Logger.warn("\(error)")
+            result = .showError(error)
         }
+        _ = logStep(result)
+        return result
+    }
 
+    private func _nextStep() async throws -> RegistrationStep {
+        try deps.appExpiry.checkExpiration(now: deps.dateProvider())
         // Always start by restoring state.
         await restoreStateIfNeeded()
-        return logStep(await nextStep(pathway: getPathway()))
+        return try await nextStep(pathway: getPathway())
     }
 
     private func logStep(_ step: RegistrationStep) -> RegistrationStep {
@@ -1908,7 +1915,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     }
 
-    private func nextStep(pathway: Pathway) async -> RegistrationStep {
+    private func nextStep(pathway: Pathway) async throws -> RegistrationStep {
         logger.info("Going to next step for \(pathway) pathway")
 
         switch pathway {
@@ -1930,7 +1937,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .session(let session):
             return await nextStepForSessionPath(session)
         case .signalLogin(let signalLoginState):
-            return await nextStepForSignalLogin(signalLoginState)
+            return try await nextStepForSignalLogin(signalLoginState)
         case .profileSetup(let accountIdentity):
             return await nextStepForProfileSetup(accountIdentity)
         }
@@ -3563,30 +3570,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         persistedState.signalLoginState = signalLoginState?.asPersistedState
     }
 
-    private func nextStepForSignalLogin(_ currentState: InMemorySignalLoginState) async -> RegistrationStep {
+    private func nextStepForSignalLogin(_ currentState: InMemorySignalLoginState) async throws -> RegistrationStep {
         var currentState = currentState
         while true {
             switch currentState {
             case .splash:
-                let product: StoreKit.Product
-                do {
-                    product = try await fetchSignalLoginProduct()
-                } catch {
-                    owsFailDebug("couldn't fetch product")
-                    return .showError(error)
-                }
+                let product = try await fetchSignalLoginProduct()
                 return .signalLoginSplash(RegistrationSignalLoginSplashState(
                     formattedPrice: product.displayPrice,
                 ))
 
             case .purchase:
-                let product: StoreKit.Product
-                do {
-                    product = try await fetchSignalLoginProduct()
-                } catch {
-                    owsFailDebug("couldn't fetch product")
-                    return .showError(error)
-                }
+                let product = try await fetchSignalLoginProduct()
                 let purchaseResult: StoreKit.Product.PurchaseResult
                 do {
                     purchaseResult = try await product.purchase()
@@ -3597,8 +3592,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 } catch StoreKitError.userCancelled {
                     setSignalLoginState(.splash, alsoUpdating: &currentState)
                     continue
-                } catch {
-                    owsFail("unknown error: \(error)")
                 }
                 let verificationResult: StoreKit.VerificationResult<StoreKit.Transaction>
                 switch purchaseResult {
@@ -3608,9 +3601,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     setSignalLoginState(.splash, alsoUpdating: &currentState)
                     continue
                 case .pending:
-                    return .showError(OWSGenericError("purchase pending"))
+                    throw OWSGenericError("purchase pending")
                 @unknown default:
-                    return .showError(OWSAssertionError("couldn't complete purchase due to unknown error"))
+                    throw OWSAssertionError("couldn't complete purchase due to unknown error")
                 }
                 // Create (and persist!) the receipt credential request context. We must
                 // use the same context when retrying `createLoginReceiptCredential`
@@ -3628,13 +3621,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 ), alsoUpdating: &currentState)
 
             case .redeemTransaction(let transactionId, let purchaseDate, let receiptLevel, let receiptCredentialRequestContext):
-                let product: StoreKit.Product
-                do {
-                    product = try await fetchSignalLoginProduct()
-                } catch {
-                    owsFailDebug("couldn't fetch product")
-                    return .showError(error)
-                }
+                let product = try await fetchSignalLoginProduct()
                 // We've now persisted the transaction ID, so we no longer need access to
                 // the payment. We do this as the first step of this state rather than the
                 // last step of the prior state to ensure it happens if the app crashes
@@ -3642,20 +3629,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 if let latestTransaction = await product.latestTransaction, latestTransaction.unsafePayloadValue.id == transactionId {
                     await latestTransaction.unsafePayloadValue.finish()
                 }
-                let receiptCredential: ReceiptCredential
-                do {
-                    receiptCredential = try await deps.serviceProvider.withUnauthService(.loginPurchase) {
-                        return try await $0.createLoginReceiptCredential(
-                            paymentProcessor: .appleAppStore,
-                            purchaseIdentifier: String(transactionId),
-                            receiptCredentialRequestContext: receiptCredentialRequestContext,
-                            serverParams: TSConstants.serverPublicParams(),
-                            purchaseTime: purchaseDate,
-                            expectedLevel: receiptLevel,
-                        )
-                    }
-                } catch {
-                    owsFail("\(error)")
+                let receiptCredential = try await deps.serviceProvider.withUnauthService(.loginPurchase) {
+                    return try await $0.createLoginReceiptCredential(
+                        paymentProcessor: .appleAppStore,
+                        purchaseIdentifier: String(transactionId),
+                        receiptCredentialRequestContext: receiptCredentialRequestContext,
+                        serverParams: TSConstants.serverPublicParams(),
+                        purchaseTime: purchaseDate,
+                        expectedLevel: receiptLevel,
+                    )
                 }
                 // We need a durable AEP to ensure idempotency for retries when creating
                 // the account. We store it in Signal Login-scoped state to avoid
@@ -3674,23 +3656,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
                 let serverParams = TSConstants.serverPublicParams()
                 let receiptOperations = ClientZkReceiptOperations(serverPublicParams: serverParams)
-                let receiptCredentialPresentation: ReceiptCredentialPresentation
-                do {
-                    receiptCredentialPresentation = try receiptOperations.createReceiptCredentialPresentation(receiptCredential: receiptCredential)
-                } catch {
-                    owsFailDebug("couldn't present credential: \(error)")
-                    return .showError(error)
-                }
-                let accountIdentity: AccountIdentity
-                do {
-                    accountIdentity = try await Retry.performWithBackoff(maxAttempts: Constants.networkErrorRetries + 1) {
-                        return try await makeRegisterRequest(.receiptCredential(
-                            receiptCredentialPresentation: receiptCredentialPresentation,
-                        ))
-                    }
-                } catch {
-                    Logger.warn("couldn't create account: \(error)")
-                    return .showError(error)
+                let receiptCredentialPresentation = try receiptOperations.createReceiptCredentialPresentation(receiptCredential: receiptCredential)
+                let accountIdentity = try await Retry.performWithBackoff(maxAttempts: Constants.networkErrorRetries + 1) {
+                    return try await makeRegisterRequest(.receiptCredential(
+                        receiptCredentialPresentation: receiptCredentialPresentation,
+                    ))
                 }
                 deps.db.write { tx in
                     updatePersistedState(tx) {
