@@ -15,8 +15,8 @@ enum CDNDownloadOperation {
 
     // MARK: -
 
-    static let kMaxStickerDataDownloadSize: UInt64 = 1000 * 1000
-    static let kMaxStickerPackDownloadSize: UInt64 = 1000 * 1000
+    static let kMaxStickerDataDownloadSize: UInt64 = 1024 * 1024
+    static let kMaxStickerPackDownloadSize: UInt64 = 1024 * 1024
 
     static func tryToDownload(urlPath: String, maxDownloadSize: UInt64) async throws -> URL {
         guard !isCorrupt(urlPath: urlPath) else {
