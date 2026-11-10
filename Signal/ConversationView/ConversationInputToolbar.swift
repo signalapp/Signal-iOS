@@ -2453,6 +2453,7 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         stickersListView.items = currentSuggestedStickers.map { stickerMetadata in
             StickerHorizontalListViewItemSticker(
                 stickerInfo: stickerMetadata.stickerInfo,
+                accessibilityLabel: stickerMetadata.localizedAccessibilityLabel,
                 didSelectBlock: { [weak self] in
                     self?.didSelectSuggestedSticker(stickerMetadata)
                 },

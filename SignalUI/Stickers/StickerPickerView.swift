@@ -379,6 +379,10 @@ private class StickerPacksToolbar: UIView {
         button.setContentHuggingHigh()
         button.setCompressionResistanceHigh()
         button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "manageButton")
+        button.accessibilityLabel = OWSLocalizedString(
+            "STICKER_KEYBOARD_MANAGE_BUTTON_ACCESSIBILITY_LABEL",
+            comment: "Accessibility label for the button in the sticker keyboard that opens the screen for managing sticker packs.",
+        )
         return button
     }()
 
@@ -559,6 +563,10 @@ private class StickerPickerPageView: UIView {
         items += stickerPacks.map { stickerPack in
             StickerHorizontalListViewItemSticker(
                 stickerInfo: stickerPack.coverInfo,
+                accessibilityLabel: stickerPack.title?.nilIfEmpty ?? OWSLocalizedString(
+                    "STICKERS_PACK_DEFAULT_TITLE",
+                    comment: "Default title for sticker packs.",
+                ),
                 didSelectBlock: { [weak self] in
                     self?.updateSelectedStickerPack(.pack(stickerPack))
                 },
@@ -856,6 +864,12 @@ private class StickerPickerPageView: UIView {
         if !isScrollingChange { applyPendingPageChangeUpdates() }
 
         updatePageConstraints()
+
+        // When we scroll to a new sticker page, focus voiceover on the first section header.
+        let header = currentPageCollectionView
+            .visibleSupplementaryViews(ofKind: UICollectionView.elementKindSectionHeader)
+            .first
+        UIAccessibility.post(notification: .layoutChanged, argument: header)
     }
 
     private func resetStickerPages() {

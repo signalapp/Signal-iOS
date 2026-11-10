@@ -162,6 +162,13 @@ public class StickerPackCollectionView: UICollectionView {
         // Context menus replace the long-press preview where they're enabled.
         if !allowContextMenus {
             addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress)))
+        } else {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(favoriteStickersDidChange),
+                name: StickerManager.favoriteStickersDidChange,
+                object: nil,
+            )
         }
     }
 
@@ -376,6 +383,13 @@ public class StickerPackCollectionView: UICollectionView {
         super.reloadData()
 
         updateEmptyState()
+    }
+
+    @objc
+    private func favoriteStickersDidChange() {
+        // Rebuild the cells' accessibility custom actions so the
+        // favorite/unfavorite action reflects the current state.
+        reconfigureItems(at: indexPathsForVisibleItems)
     }
 
     // MARK: Sticker Preview
@@ -604,11 +618,27 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
         cell.contentView.addSubview(cellView)
         cellView.autoPinEdgesToSuperviewEdges()
 
+        cell.isAccessibilityElement = true
+        cell.accessibilityTraits = .button
+        cell.accessibilityLabel = stickerAccessibilityLabel(for: stickerInfo)
+        cell.accessibilityHint = OWSLocalizedString("ACCESSIBILITY_HINT_STICKER", comment: "AX hint letting a user know this button sends a sticker")
+
+        if allowContextMenus {
+            cell.accessibilityCustomActions = stickerActions(stickerInfo: stickerInfo).map(\.accessibilityAction)
+        }
+
         if !cell.interactions.contains(where: { $0 is UIContextMenuInteraction }) {
             cell.addInteraction(UIContextMenuInteraction(delegate: self))
         }
 
         return cell
+    }
+
+    private func stickerAccessibilityLabel(for stickerInfo: StickerInfo) -> String {
+        if let stickerMetadata = stickerPackDataSource?.metadata(forSticker: stickerInfo) {
+            return stickerMetadata.localizedAccessibilityLabel
+        }
+        return OWSLocalizedString("ACCESSIBILITY_LABEL_STICKER", comment: "Accessibility label for stickers.")
     }
 
     public func collectionView(
@@ -643,7 +673,11 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
         )
 
         if let headerView = headerView as? StickerPickerHeaderView {
-            headerView.configure(text: self.headerText(for: indexPath.section), menu: self.headerMenu())
+            var axMenuItems: [UIAccessibilityCustomAction]?
+            if allowContextMenus {
+                axMenuItems = headerMenuActions().map(\.accessibilityAction)
+            }
+            headerView.configure(text: self.headerText(for: indexPath.section), menu: self.headerMenu(), accessibilityActions: axMenuItems)
         }
 
         return headerView
@@ -730,18 +764,26 @@ private class StickerPickerHeaderView: UICollectionReusableView {
         menuButton.accessibilityTraits = .header
         addSubview(menuButton)
         menuButton.autoPinEdges(toEdgesOf: label)
+        isAccessibilityElement = true
+        accessibilityTraits = .header
+    }
+
+    override var accessibilityLabel: String? {
+        get { label.text }
+        set { super.accessibilityLabel = newValue }
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(text: String?, menu: UIMenu?) {
+    func configure(text: String?, menu: UIMenu?, accessibilityActions: [UIAccessibilityCustomAction]?) {
         label.text = text
         menuButton.menu = menu
         menuButton.isHidden = menu == nil
         menuButton.accessibilityLabel = text
         label.isAccessibilityElement = menu == nil
+        accessibilityCustomActions = accessibilityActions
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
@@ -785,8 +827,6 @@ extension StickerPackCollectionView {
     }
 }
 
-// MARK: - Context Menu Support
-
 extension StickerPackCollectionView: StickerPackDataSourceDelegate {
 
     public func stickerPackDataDidChange() {
@@ -794,75 +834,95 @@ extension StickerPackCollectionView: StickerPackDataSourceDelegate {
     }
 }
 
+// MARK: - Context Menu Support
+
 extension StickerPackCollectionView: UIContextMenuInteractionDelegate {
-    private func headerMenu() -> UIMenu? {
-        guard allowContextMenus else {
-            return nil
+
+    /// A struct to generalize StickerMenuActions so they can be shared between
+    /// the context menu and custom accessibility menu items.
+    private struct StickerMenuAction {
+        let title: String
+        let image: UIImage?
+        var attributes: UIMenuElement.Attributes = []
+        let handler: () -> Void
+
+        var menuAction: UIAction {
+            UIAction(title: title, image: image, attributes: attributes) { _ in handler() }
         }
 
+        var accessibilityAction: UIAccessibilityCustomAction {
+            UIAccessibilityCustomAction(name: title, image: image) { _ in
+                handler()
+                return true
+            }
+        }
+    }
+
+    private func headerMenuActions() -> [StickerMenuAction] {
         switch stickerPackDataSource {
         case is FavoritesStickerPackDataSource:
-            return nil
+            return []
         case is RecentStickerPackDataSource:
-            return UIMenu(children: [
-                UIAction(
-                    title: OWSLocalizedString("STICKER_KEYBOARD_BUTTON_CLEAR_RECENTS", comment: "Label for the button to clear all sticker recents"),
-                    image: UIImage(named: "trash"),
-                    attributes: .destructive,
-                ) { [weak self] _ in
-                    let confirmClearRecentsSheet = ActionSheetController(
-                        message: OWSLocalizedString(
-                            "STICKER_PACK_CONFIRM_CLEAR_RECENTS_MESSAGE",
-                            comment: "Message for a sheet asking the user to confirm they want to clear recently used stickers",
-                        ),
-                    )
+            return [StickerMenuAction(
+                title: OWSLocalizedString(
+                    "STICKER_KEYBOARD_BUTTON_CLEAR_RECENTS",
+                    comment: "Label for the button to clear all sticker recents",
+                ),
+                image: UIImage(named: "trash"),
+                attributes: .destructive,
+            ) { [weak self] in
+                let confirmClearRecentsSheet = ActionSheetController(
+                    message: OWSLocalizedString(
+                        "STICKER_PACK_CONFIRM_CLEAR_RECENTS_MESSAGE",
+                        comment: "Message for a sheet asking the user to confirm they want to clear recently used stickers",
+                    ),
+                )
 
-                    confirmClearRecentsSheet.addAction(
-                        ActionSheetAction(
-                            title: OWSLocalizedString(
-                                "STICKER_PACK_CLEAR_RECENTS_BUTTON",
-                                comment: "Button to confirm a user wants to clear recent stickers",
-                            ),
-                            style: .destructive,
-                            handler: { [weak self] _ in
-                                self?.db.write { tx in
-                                    self?.stickerManager.removeAllRecentStickers(transaction: tx)
-                                }
-                            },
+                confirmClearRecentsSheet.addAction(
+                    ActionSheetAction(
+                        title: OWSLocalizedString(
+                            "STICKER_PACK_CLEAR_RECENTS_BUTTON",
+                            comment: "Button to confirm a user wants to clear recent stickers",
                         ),
-                    )
-                    confirmClearRecentsSheet.addAction(.cancel)
-                    OWSActionSheets.showActionSheet(confirmClearRecentsSheet)
-                },
-            ])
+                        style: .destructive,
+                        handler: { [weak self] _ in
+                            self?.db.write { tx in
+                                self?.stickerManager.removeAllRecentStickers(transaction: tx)
+                            }
+                        },
+                    ),
+                )
+                confirmClearRecentsSheet.addAction(.cancel)
+                OWSActionSheets.showActionSheet(confirmClearRecentsSheet)
+            }]
         case is TransientStickerPackDataSource, is InstalledStickerPackDataSource:
-            return UIMenu(children: [
-                UIAction(
+            return [
+                StickerMenuAction(
                     title: OWSLocalizedString("SEND_BUTTON_TITLE", comment: "Label for the button to send a message"),
                     image: UIImage(named: "arrow-circle-up"),
-                ) { [weak self] _ in
+                ) { [weak self] in
                     if let stickerPackInfo = self?.stickerPackDataSource?.info {
                         self?.stickerDelegate?.queueStickerPackForSending(stickerPackInfo)
                     }
                 },
-                UIAction(
+                StickerMenuAction(
                     title: OWSLocalizedString(
                         "STICKER_BUTTON_VIEW_PACK",
                         comment: "Title for a button to view a sticker pack",
                     ),
                     image: UIImage(named: "stickerpack"),
-                ) { [weak self] _ in
+                ) { [weak self] in
                     if let stickerPackInfo = self?.stickerPackDataSource?.info {
                         self?.stickerDelegate?.viewStickerPack(stickerPackInfo)
                     }
                 },
-                UIAction(
+                StickerMenuAction(
                     title: OWSLocalizedString(
                         "STICKER_REMOVE_PACK_BUTTON",
                         comment: "Title for a button to remove a sticker pack",
                     ),
                     image: UIImage(named: "minus-circle"),
-                ) { [weak self] _ in
+                ) { [weak self] in
                     let confirmUninstallSheet = ActionSheetController(
                         title: OWSLocalizedString(
                             "STICKER_PACK_CONFIRM_REMOVE_TITLE",
@@ -893,24 +953,35 @@ extension StickerPackCollectionView: UIContextMenuInteractionDelegate {
                     confirmUninstallSheet.addAction(.cancel)
                     OWSActionSheets.showActionSheet(confirmUninstallSheet)
                 },
-            ])
+            ]
         default:
             owsFailDebug("Unexpected data source: \(type(of: stickerPackDataSource))")
-            return nil
+            return []
         }
     }
 
-    private func getFavoriteActionForSticker(stickerInfo: StickerInfo) -> UIAction {
+    private func headerMenu() -> UIMenu? {
+        guard allowContextMenus else {
+            return nil
+        }
+        let actions = headerMenuActions()
+        if actions.isEmpty {
+            return nil
+        }
+        return UIMenu(children: actions.map(\.menuAction))
+    }
+
+    private func getFavoriteActionForSticker(stickerInfo: StickerInfo) -> StickerMenuAction {
         let isStickerFavorited = db.read { tx in stickerManager.isStickerFavorited(stickerInfo: stickerInfo, tx: tx) }
 
         if !isStickerFavorited {
-            return UIAction(
+            return StickerMenuAction(
                 title: OWSLocalizedString(
                     "STICKER_BUTTON_ADD_FAVORITES",
                     comment: "Label for button to add sticker to favorites",
                 ),
                 image: UIImage(named: "favorite"),
-            ) { [weak self] _ in
+            ) { [weak self] in
                 guard
                     let stickerMetadata = self?.stickerPackDataSource?.metadata(forSticker: stickerInfo)
                 else {
@@ -947,17 +1018,75 @@ extension StickerPackCollectionView: UIContextMenuInteractionDelegate {
             }
         }
 
-        return UIAction(
+        return StickerMenuAction(
             title: OWSLocalizedString(
                 "STICKER_BUTTON_REMOVE_FAVORITES",
                 comment: "Label for button to remove sticker from favorites",
             ),
             image: UIImage(named: "favorite-slash"),
-        ) { [weak self] _ in
+        ) { [weak self] in
             Task {
                 await self?.stickerManager.removeStickerFromFavorites(stickerInfo: stickerInfo)
             }
         }
+    }
+
+    private func stickerActions(stickerInfo: StickerInfo) -> [StickerMenuAction] {
+        var actions: [StickerMenuAction] = []
+        actions.append(
+            StickerMenuAction(
+                title: OWSLocalizedString("SEND_STICKER_BUTTON_TITLE", comment: "Label for the button to send a sticker message"),
+                image: UIImage(named: "arrow-circle-up"),
+            ) { [weak self] in
+                guard
+                    let stickerMetadata = self?.stickerPackDataSource?.metadata(forSticker: stickerInfo)
+                else {
+                    owsFailDebug("invalid sticker on long press")
+                    return
+                }
+                self?.stickerDelegate?.sendSticker(stickerMetadata)
+            },
+        )
+
+        if BuildFlags.stickerFavorites {
+            let stickerFavoriteAction = self.getFavoriteActionForSticker(stickerInfo: stickerInfo)
+            actions.append(stickerFavoriteAction)
+        }
+
+        actions.append(
+            contentsOf: [
+                StickerMenuAction(
+                    title: OWSLocalizedString(
+                        "STICKER_BUTTON_VIEW_PACK",
+                        comment: "Title for a button to view a sticker pack",
+                    ),
+                    image: UIImage(named: "stickerpack"),
+                ) { [weak self] in
+                    let stickerPackInfo = StickerPackInfo(packId: stickerInfo.packId, packKey: stickerInfo.packKey)
+                    self?.stickerDelegate?.viewStickerPack(stickerPackInfo)
+                },
+            ],
+        )
+
+        if self.stickerPackDataSource is RecentStickerPackDataSource {
+            actions.append(
+                contentsOf: [
+                    StickerMenuAction(
+                        title: OWSLocalizedString(
+                            "STICKER_BUTTON_REMOVE_FROM_RECENTS",
+                            comment: "Title for a button to remove a sticker from recents",
+                        ),
+                        image: UIImage(named: "trash"),
+                        attributes: .destructive,
+                    ) { [weak self] in
+                        self?.db.write { tx in
+                            self?.stickerManager.removeFromRecentStickers(stickerInfo, transaction: tx)
+                        }
+                    },
+                ],
+            )
+        }
+        return actions
     }
 
     private func contextMenuConfigForSticker(stickerInfo: StickerInfo) -> UIContextMenuConfiguration? {
@@ -966,62 +1095,9 @@ extension StickerPackCollectionView: UIContextMenuInteractionDelegate {
             previewProvider: nil,
             actionProvider: { [weak self] _ in
                 guard let self else { return UIMenu(children: []) }
-                var actions: [UIAction] = []
-                actions.append(
-                    UIAction(
-                        title: OWSLocalizedString("SEND_STICKER_BUTTON_TITLE", comment: "Label for the button to send a sticker message"),
-                        image: UIImage(named: "arrow-circle-up"),
-                    ) { [weak self] _ in
-                        guard
-                            let stickerMetadata = self?.stickerPackDataSource?.metadata(forSticker: stickerInfo)
-                        else {
-                            owsFailDebug("invalid sticker on long press")
-                            return
-                        }
-                        self?.stickerDelegate?.sendSticker(stickerMetadata)
-                    },
-                )
 
-                if BuildFlags.stickerFavorites {
-                    let stickerFavoriteAction = self.getFavoriteActionForSticker(stickerInfo: stickerInfo)
-                    actions.append(stickerFavoriteAction)
-                }
-
-                actions.append(
-                    contentsOf: [
-                        UIAction(
-                            title: OWSLocalizedString(
-                                "STICKER_BUTTON_VIEW_PACK",
-                                comment: "Title for a button to view a sticker pack",
-                            ),
-                            image: UIImage(named: "stickerpack"),
-                        ) { [weak self] _ in
-                            let stickerPackInfo = StickerPackInfo(packId: stickerInfo.packId, packKey: stickerInfo.packKey)
-                            self?.stickerDelegate?.viewStickerPack(stickerPackInfo)
-                        },
-                    ],
-                )
-
-                if self.stickerPackDataSource is RecentStickerPackDataSource {
-                    actions.append(
-                        contentsOf: [
-                            UIAction(
-                                title: OWSLocalizedString(
-                                    "STICKER_BUTTON_REMOVE_FROM_RECENTS",
-                                    comment: "Title for a button to remove a sticker from recents",
-                                ),
-                                image: UIImage(named: "trash"),
-                                attributes: .destructive,
-                            ) { [weak self] _ in
-                                self?.db.write { tx in
-                                    self?.stickerManager.removeFromRecentStickers(stickerInfo, transaction: tx)
-                                }
-                            },
-                        ],
-                    )
-                }
-
-                return UIMenu(children: actions)
+                let stickerActions = stickerActions(stickerInfo: stickerInfo)
+                return UIMenu(children: stickerActions.map(\.menuAction))
             },
         )
     }

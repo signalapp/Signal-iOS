@@ -96,6 +96,19 @@ extension StickerMetadata {
     public var mimeType: String {
         stickerType.mimeType
     }
+
+    public var localizedAccessibilityLabel: String {
+        if let firstEmoji {
+            return String.nonPluralLocalizedStringWithFormat(
+                OWSLocalizedString(
+                    "ACCESSIBILITY_LABEL_STICKER_FORMAT",
+                    comment: "Accessibility label for stickers. Embeds {{ name of top emoji the sticker resembles }}",
+                ),
+                firstEmoji,
+            )
+        }
+        return OWSLocalizedString("ACCESSIBILITY_LABEL_STICKER", comment: "Accessibility label for stickers.")
+    }
 }
 
 /// Deprecated.

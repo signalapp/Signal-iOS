@@ -10,6 +10,9 @@
 /* Label for forward button in media control panel */
 "ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "Forward";
 
+/* AX hint letting a user know this button sends a sticker */
+"ACCESSIBILITY_HINT_STICKER" = "Sends this sticker";
+
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "Attachment";
 
@@ -10410,6 +10413,9 @@
 
 /* Label for the button to clear all sticker recents */
 "STICKER_KEYBOARD_BUTTON_CLEAR_RECENTS" = "Clear Recents";
+
+/* Accessibility label for the button in the sticker keyboard that opens the screen for managing sticker packs. */
+"STICKER_KEYBOARD_MANAGE_BUTTON_ACCESSIBILITY_LABEL" = "Manage stickers";
 
 /* Toast shown when user tries to tap Favorites in sticker keyboard but has none */
 "STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "Press and hold a sticker to add to Favorites";
