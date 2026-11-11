@@ -1179,9 +1179,9 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
         stack.spacing = 10
         stack.layoutMargins = UIEdgeInsets(
             top: OWSTableViewController2.cellVInnerMargin,
-            left: OWSTableViewController2.cellOuterInset(in: view),
+            leading: OWSTableViewController2.cellHInnerMargin,
             bottom: OWSTableViewController2.cellVInnerMargin,
-            right: OWSTableViewController2.cellOuterInset(in: view),
+            trailing: OWSTableViewController2.cellHInnerMargin,
         )
         stack.isLayoutMarginsRelativeArrangement = true
         paymentsBannerView.addSubview(stack)

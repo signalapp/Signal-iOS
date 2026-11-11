@@ -281,15 +281,12 @@ extension MyStoriesViewController: UITableViewDataSource {
         textView.font = OWSTableViewController2.defaultHeaderFont
         textView.text = StoryManager.storyName(for: thread)
 
-        var textContainerInset = OWSTableViewController2.cellOuterInsets(in: tableView)
+        var textContainerInset = view.layoutMargins
         textContainerInset.top = 32
         textContainerInset.bottom = 10
 
         textContainerInset.left += OWSTableViewController2.cellHInnerMargin * 0.5
-        textContainerInset.left += tableView.safeAreaInsets.left
-
         textContainerInset.right += OWSTableViewController2.cellHInnerMargin * 0.5
-        textContainerInset.right += tableView.safeAreaInsets.right
 
         textView.textContainerInset = textContainerInset
 

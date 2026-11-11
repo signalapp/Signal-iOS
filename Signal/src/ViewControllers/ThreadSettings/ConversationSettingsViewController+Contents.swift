@@ -397,7 +397,7 @@ extension ConversationSettingsViewController {
                 stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
 
                 let totalSpacerSize = CGFloat(self.maximumRecentMedia - 1) * stackView.spacing
-                let availableWidth = self.view.width - ((Self.cellHInnerMargin * 2) + self.cellOuterInsets.totalWidth + self.view.safeAreaInsets.totalWidth)
+                let availableWidth = self.tableViewContentWidth - Self.cellHInnerMargin * 2
                 let imageWidth = (availableWidth - totalSpacerSize) / CGFloat(self.maximumRecentMedia)
 
                 for referencedAttachment in self.recentMedia {

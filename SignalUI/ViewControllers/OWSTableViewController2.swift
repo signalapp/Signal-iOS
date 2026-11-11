@@ -110,6 +110,7 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
         tableView.delegate = self
         tableView.dataSource = self
         tableView.estimatedRowHeight = defaultCellHeight
+        tableView.preservesSuperviewLayoutMargins = true
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.sectionIndexColor = .Signal.label
         tableView.separatorColor = .clear
@@ -299,12 +300,6 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
         hasViewAppeared = true
     }
 
-    override open func viewIsAppearing(_ animated: Bool) {
-        super.viewIsAppearing(animated)
-        // Fixes iPads not having the proper width at first presentation
-        self.updateTableMargins()
-    }
-
     private func section(for index: Int) -> OWSTableSection? {
         guard let section = contents.sections[safe: index] else {
             owsFailDebug("Missing section: \(index)")
@@ -327,16 +322,7 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
 
     public var shouldDeferInitialLoad = true
 
-    public func updateTableMargins() {
-        tableView.insetsLayoutMarginsFromSafeArea = false
-        let hMargin = Self.cellOuterInset(in: view)
-        tableView.directionalLayoutMargins.leading = hMargin + view.safeAreaInsets.leading
-        tableView.directionalLayoutMargins.trailing = hMargin + view.safeAreaInsets.trailing
-    }
-
     private func applyContents(shouldReload: Bool = true) {
-        updateTableMargins()
-
         if let title = contents.title?.nilIfEmpty {
             self.title = title
         }
@@ -564,27 +550,9 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
     /// tables, this is only an approximation and its use should be avoided.
     public static let cellRounding: CGFloat = if #available(iOS 26, *) { 22 } else { 10 }
 
-    public static var maximumInnerWidth: CGFloat { 496 }
-
     public static var defaultHOuterMargin: CGFloat {
         UIDevice.current.isPlusSizePhone ? 20 : 16
     }
-
-    // The distance from the edge of the view to the cell border.
-    public static func cellOuterInsets(in view: UIView) -> UIEdgeInsets {
-        UIEdgeInsets(hMargin: cellOuterInset(in: view), vMargin: 0)
-    }
-
-    public static func cellOuterInset(in view: UIView) -> CGFloat {
-        var inset = defaultHOuterMargin
-        let totalInnerWidth = view.width - (inset * 2) - view.safeAreaInsets.totalWidth
-        if totalInnerWidth > maximumInnerWidth {
-            inset += (totalInnerWidth - maximumInnerWidth) / 2
-        }
-        return inset
-    }
-
-    public var cellOuterInsets: UIEdgeInsets { Self.cellOuterInsets(in: view) }
 
     // The distance from the cell border to the cell content.
     public static var cellHInnerMargin: CGFloat {
@@ -593,6 +561,11 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
 
     // The distance from the cell border to the cell content.
     public static var cellVInnerMargin: CGFloat { 13 }
+
+    public var tableViewContentWidth: CGFloat {
+        // Use `view` and not `tableView` because `tableView` might not have its final frame yet.
+        view.width - view.directionalLayoutMargins.totalWidth
+    }
 
     private var automaticDimension: CGFloat { UITableView.automaticDimension }
 
@@ -813,6 +786,7 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
             // Get around a bug sizing UITextView in iOS 16 by manually sizing instead
             // of relying on UITableView.automaticDimension
             let insets = headerTextContainerInsets(for: section)
+            let maxWidth = tableViewContentWidth - insets.totalWidth
             // Reuse sizing code for CVText even though we aren't using a CVText here.
             let height = CVText.measureLabel(
                 config: CVLabelConfig.unstyledText(
@@ -823,13 +797,14 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
                     lineBreakMode: .byWordWrapping,
                     textAlignment: .natural,
                 ),
-                maxWidth: tableView.frame.width - tableView.layoutMargins.totalWidth - insets.totalWidth,
+                maxWidth: maxWidth,
             ).height
             return height + insets.totalHeight
         } else if let headerTitle = section.headerAttributedTitle, !headerTitle.isEmpty {
             // Get around a bug sizing UITextView in iOS 16 by manually sizing instead
             // of relying on UITableView.automaticDimension
             let insets = headerTextContainerInsets(for: section)
+            let maxWidth = tableViewContentWidth - insets.totalWidth
             // Reuse sizing code for CVText even though we aren't using a CVText here.
             let height = CVText.measureLabel(
                 config: CVLabelConfig(
@@ -841,7 +816,7 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
                     lineBreakMode: .byWordWrapping,
                     textAlignment: .natural,
                 ),
-                maxWidth: tableView.frame.width - tableView.layoutMargins.totalWidth - insets.totalWidth,
+                maxWidth: maxWidth,
             ).height
             return height + insets.totalHeight
         } else if nil != self.tableView(tableView, viewForHeaderInSection: sectionIndex) {
@@ -864,6 +839,7 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
             // Get around a bug sizing UITextView in iOS 16 by manually sizing instead
             // of relying on UITableView.automaticDimension
             let insets = footerTextContainerInsets(for: section)
+            let maxWidth = tableViewContentWidth - insets.totalWidth
             // Reuse sizing code for CVText even though we aren't using a CVText here.
             let height = CVText.measureLabel(
                 config: CVLabelConfig.unstyledText(
@@ -874,13 +850,14 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
                     lineBreakMode: .byWordWrapping,
                     textAlignment: .natural,
                 ),
-                maxWidth: tableView.frame.width - tableView.layoutMargins.totalWidth - insets.totalWidth,
+                maxWidth: maxWidth,
             ).height
             return height + insets.totalHeight
         } else if let footerTitle = section.footerAttributedTitle, !footerTitle.isEmpty {
             // Get around a bug sizing UITextView in iOS 16 by manually sizing instead
             // of relying on UITableView.automaticDimension
             let insets = footerTextContainerInsets(for: section)
+            let maxWidth = tableViewContentWidth - insets.totalWidth
             // Reuse sizing code for CVText even though we aren't using a CVText here.
             let height = CVText.measureLabel(
                 config: CVLabelConfig(
@@ -892,7 +869,7 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
                     lineBreakMode: .byWordWrapping,
                     textAlignment: .natural,
                 ),
-                maxWidth: tableView.frame.width - tableView.layoutMargins.totalWidth - insets.totalWidth,
+                maxWidth: maxWidth,
             ).height
             return height + insets.totalHeight
         } else if nil != self.tableView(tableView, viewForFooterInSection: sectionIndex) {
@@ -1075,11 +1052,6 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
         }
     }
 
-    override open func viewSafeAreaInsetsDidChange() {
-        super.viewSafeAreaInsetsDidChange()
-        updateTableMargins()
-    }
-
     public func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         if
             let item = self.item(for: indexPath),
@@ -1124,6 +1096,11 @@ private class OWSTableView: UITableView {
                 tableViewDelegate?.tableViewDidChangeWidth()
             }
         }
+    }
+
+    override func layoutMarginsDidChange() {
+        super.layoutMarginsDidChange()
+        tableViewDelegate?.tableViewDidChangeWidth()
     }
 }
 

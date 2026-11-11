@@ -68,7 +68,7 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
         updateTableContents(shouldReload: true)
     }
 
-    override public func viewDidLayoutSubviews() {
+    override open func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
         // The table view might not have its final size when this method is called.
