@@ -12,9 +12,15 @@ import SignalUI
 
 public struct RegistrationSignalLoginState {
     let aci: Aci?
+    let canEditAci: Bool
     let aep: SignalServiceKit.AccountEntropyPool?
-    let goBack: @MainActor () -> Void
+    let backAction: BackAction
     let submitLogin: @MainActor (_ aci: Aci, _ aep: SignalServiceKit.AccountEntropyPool) -> Void
+
+    enum BackAction {
+        case exitRegistration
+        case updateStateAndGoToNextStep(@MainActor () -> Void)
+    }
 }
 
 // MARK: - RegistrationCaptchaViewController
@@ -29,6 +35,7 @@ class RegistrationSignalLoginViewController: OWSViewController {
 
     private let state: RegistrationSignalLoginState
     private let goToNextStep: @MainActor () -> Void
+    private let exitRegistration: @MainActor () -> Void
 
     private var titleImageView: UIImageView!
 
@@ -41,9 +48,11 @@ class RegistrationSignalLoginViewController: OWSViewController {
     init(
         state: RegistrationSignalLoginState,
         goToNextStep: @escaping @MainActor () -> Void,
+        exitRegistration: @escaping @MainActor () -> Void,
     ) {
         self.state = state
         self.goToNextStep = goToNextStep
+        self.exitRegistration = exitRegistration
 
         super.init()
         navigationItem.hidesBackButton = true
@@ -140,6 +149,7 @@ class RegistrationSignalLoginViewController: OWSViewController {
         let displayableAEP = state.aep.map(DisplayableAccountEntropyPool.init(aep:))
         let loginView = SignalLoginView(
             aci: state.aci,
+            canEditAci: state.canEditAci,
             displayableAEP: displayableAEP,
         )
         stackView.addArrangedSubview(loginView)
@@ -226,8 +236,13 @@ class RegistrationSignalLoginViewController: OWSViewController {
     }
 
     private func didTapClose() {
-        state.goBack()
-        goToNextStep()
+        switch state.backAction {
+        case .exitRegistration:
+            exitRegistration()
+        case .updateStateAndGoToNextStep(let updateState):
+            updateState()
+            goToNextStep()
+        }
     }
 
     private func didTapNext() {
@@ -278,11 +293,18 @@ private func submitLoginBlock() -> (@MainActor (_ aci: Aci, _ aep: SignalService
 
 @available(iOS 17, *)
 #Preview("No Values") {
-    let state = RegistrationSignalLoginState(aci: nil, aep: nil, goBack: {}, submitLogin: submitLoginBlock())
+    let state = RegistrationSignalLoginState(
+        aci: nil,
+        canEditAci: true,
+        aep: nil,
+        backAction: .updateStateAndGoToNextStep({}),
+        submitLogin: submitLoginBlock(),
+    )
     return UINavigationController(
         rootViewController: RegistrationSignalLoginViewController(
             state: state,
             goToNextStep: {},
+            exitRegistration: {},
         ),
     )
 }
@@ -291,14 +313,16 @@ private func submitLoginBlock() -> (@MainActor (_ aci: Aci, _ aep: SignalService
 #Preview("AEP & ACI") {
     let state = RegistrationSignalLoginState(
         aci: Aci.randomForTesting(),
+        canEditAci: true,
         aep: AccountEntropyPool(),
-        goBack: {},
+        backAction: .updateStateAndGoToNextStep({}),
         submitLogin: submitLoginBlock(),
     )
     return UINavigationController(
         rootViewController: RegistrationSignalLoginViewController(
             state: state,
             goToNextStep: {},
+            exitRegistration: {},
         ),
     )
 }

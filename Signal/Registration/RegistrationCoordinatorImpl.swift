@@ -1411,9 +1411,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
         }
 
-        inMemoryState.signalLoginState = persistedState.signalLoginState.map {
-            return InMemorySignalLoginState(persistedState: $0)
-        }
+        inMemoryState.signalLoginState = { () -> InMemorySignalLoginState? in
+            if let persistedSignalLoginState = persistedState.signalLoginState {
+                return InMemorySignalLoginState(persistedState: persistedSignalLoginState)
+            }
+            if case .reRegistering(.phoneNumberless(let aci)) = mode {
+                return .logIn(aci: aci, aep: nil)
+            }
+            return nil
+        }()
 
         // Ideally this would be in the below transaction, but OWSProfileManager
         // isn't set up to do that and its a mess to untangle.
@@ -3695,10 +3701,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .logIn(let aci, let aep):
             return .registrationStep(.promptForLogin(RegistrationSignalLoginState(
                 aci: aci,
+                canEditAci: !isReregisteringSignalLogin(),
                 aep: aep,
-                goBack: { [self] in
+                backAction: isReregisteringSignalLogin() ? .exitRegistration : .updateStateAndGoToNextStep({ [self] in
                     setSignalLoginState(.splash)
-                },
+                }),
                 submitLogin: { [self] newAci, newAep in
                     setSignalLoginState(.reRegister(aci: newAci, aep: newAep))
                 },
@@ -3714,7 +3721,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         recoveryPassword: recoveryPassword,
                     ))
                 }
-            } catch is Registration.DeviceTransferPossibleError {
+            } catch is Registration.DeviceTransferPossibleError where !isReregisteringSignalLogin() {
                 return .registrationStep(.chooseRestoreMethod(.unspecified))
             } catch let error as Registration.RecoveryPasswordRejectedError {
                 // TODO: [#less] Show error on RegistrationSignalLoginViewController.
@@ -3751,6 +3758,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return transaction.environment == .sandbox ? .sandbox : .normal
         } else {
             return transaction.environmentStringRepresentation == "Sandbox" ? .sandbox : .normal
+        }
+    }
+
+    /// True if we're re-registering an account that didn't have a phone number.
+    private func isReregisteringSignalLogin() -> Bool {
+        switch mode {
+        case .reRegistering(.phoneNumberless):
+            return true
+        case .reRegistering(.phoneNumberfull), .registering, .changingNumber:
+            return false
         }
     }
 
@@ -5224,7 +5241,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // Wipe if you were previously registered, so we don't send you here
             // on every app launch. If you were deregistered, we _want_ to send
             // you here by default and save your progress, so don't wipe state.
-            return .allowed(shouldWipeState: inMemoryState.tsRegistrationState?.isRegistered == true)
+            return .allowed(shouldWipeState: inMemoryState.tsRegistrationState?.isRegistered == true || inMemoryState.signalLoginState != nil)
         case .changingNumber(let state):
             return state.pniState == nil ? .allowed(shouldWipeState: true) : .notAllowed
         }

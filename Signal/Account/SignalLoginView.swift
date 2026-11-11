@@ -63,6 +63,7 @@ class SignalLoginView:
 
     init(
         aci: Aci?,
+        canEditAci: Bool,
         displayableAEP: DisplayableAccountEntropyPool?,
     ) {
         stackView = UIStackView()
@@ -104,6 +105,7 @@ class SignalLoginView:
         stackView.addArrangedSubview(aciTextField)
         aciTextField.delegate = self
         aciTextField.text = aci?.serviceIdUppercaseString
+        aciTextField.isEnabled = canEditAci
 
         let divider = UIView()
         addSubview(divider)
@@ -262,9 +264,10 @@ class SignalLoginView:
 
     @discardableResult
     override func becomeFirstResponder() -> Bool {
-        let result = aciTextField.becomeFirstResponder()
-        let end = aciTextField.endOfDocument
-        aciTextField.selectedTextRange = aciTextField.textRange(from: end, to: end)
+        let firstResponder = aciTextField.isEnabled ? aciTextField : aepTextField
+        let result = firstResponder.becomeFirstResponder()
+        let end = firstResponder.endOfDocument
+        firstResponder.selectedTextRange = firstResponder.textRange(from: end, to: end)
         return result
     }
 

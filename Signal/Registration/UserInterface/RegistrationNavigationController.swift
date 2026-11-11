@@ -307,6 +307,7 @@ public class RegistrationNavigationController: OWSNavigationController {
                     return RegistrationSignalLoginViewController(
                         state: state,
                         goToNextStep: { [unowned presenter] in presenter.pushNextStepController() },
+                        exitRegistration: { [unowned presenter] in presenter.exitRegistration() },
                     )
                 },
                 update: nil,
