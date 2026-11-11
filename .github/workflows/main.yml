@@ -61,8 +61,19 @@ jobs:
         run: Scripts/build-and-test.sh
 
       - name: Check acknowledgements
+        env:
+          PUSH_BEFORE: ${{ github.event.before }}
         run: |
-          Scripts/generate_acknowledgements.py
+          ref=
+          case "$GITHUB_EVENT_NAME" in
+            pull_request)
+              # GITHUB_SHA is the PR's merge commit, whose first parent is the base.
+              git fetch --depth 2 origin "$GITHUB_SHA" && ref="$GITHUB_SHA^1" ;;
+            push)
+              # PUSH_BEFORE is the branch tip before this push.
+              git fetch --depth 1 origin "$PUSH_BEFORE" && ref="$PUSH_BEFORE" ;;
+          esac
+          Scripts/generate_acknowledgements.py ${ref:+--ref "$ref"}
           git diff --exit-code Signal/Settings.bundle/Acknowledgements.plist || {
             echo "::error file=Signal/Settings.bundle/Acknowledgements.plist::Out of date. Run Scripts/generate_acknowledgements.py."
             exit 1

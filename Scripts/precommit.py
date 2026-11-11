@@ -6,15 +6,10 @@ import subprocess
 import argparse
 from typing import Iterable
 from pathlib import Path
-from lint.util import EXTENSIONS_TO_CHECK
+from lint.util import EXTENSIONS_TO_CHECK, get_changed_paths
+import generate_acknowledgements
 
 CLANG_FORMAT_EXTS = set([".m", ".mm", ".h"])
-
-ACKNOWLEDGEMENTS_INPUT_PATHS = (
-    "Signal.xcworkspace/xcshareddata/swiftpm/Package.resolved",
-    "Scripts/generate_acknowledgements.py",
-    "ThirdParty/",
-)
 
 
 def sort_forward_decl_statement_block(text):
@@ -157,19 +152,6 @@ def process(filepath):
         f.write(text)
 
 
-def get_file_paths_for_commit(commit):
-    return (
-        subprocess.run(
-            ["git", "diff", "--name-only", "--diff-filter=ACMR", commit],
-            check=True,
-            capture_output=True,
-            encoding="utf8",
-        )
-        .stdout.rstrip()
-        .split("\n")
-    )
-
-
 def should_process_file(file_path: str) -> bool:
     if get_ext(file_path) not in EXTENSIONS_TO_CHECK:
         return False
@@ -183,14 +165,6 @@ def should_process_file(file_path: str) -> bool:
             return False
 
     return True
-
-
-def should_generate_acknowledgements(file_paths):
-    return any(
-        file_path.startswith(input_path)
-        for file_path in file_paths
-        for input_path in ACKNOWLEDGEMENTS_INPUT_PATHS
-    )
 
 
 def clang_format(file_paths):
@@ -233,7 +207,7 @@ if __name__ == "__main__":
     if len(ns.path) > 0:
         changed_paths = ns.path
     else:
-        changed_paths = get_file_paths_for_commit(ns.ref or "HEAD")
+        changed_paths = get_changed_paths(ns.ref or "HEAD", diff_filter="ACMR")
     file_paths = sorted(set(filter(should_process_file, changed_paths)))
 
     result = True
@@ -261,7 +235,7 @@ if __name__ == "__main__":
     if ns.skip_acknowledgements:
         print("Skipping acknowledgements!", flush=True)
         print("")
-    elif should_generate_acknowledgements(changed_paths):
+    elif generate_acknowledgements.has_changed_inputs(changed_paths):
         print("Generating acknowledgements...", flush=True)
         proc = subprocess.run(["Scripts/generate_acknowledgements.py"])
         if proc.returncode != 0:
