@@ -3359,19 +3359,8 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
     }
 
     private func stickerButtonPressed() {
-        let db = DependenciesBridge.shared.db
-        let stickerManager = DependenciesBridge.shared.stickerManager
-
         ImpactHapticFeedback.impactOccurred(style: .light)
 
-        var hasInstalledStickerPacks: Bool = false
-        db.read { transaction in
-            hasInstalledStickerPacks = !stickerManager.installedStickerPacks(transaction: transaction).isEmpty
-        }
-        guard hasInstalledStickerPacks else {
-            inputToolbarDelegate?.presentManageStickersView()
-            return
-        }
         toggleKeyboardType(.sticker, animated: true)
     }
 

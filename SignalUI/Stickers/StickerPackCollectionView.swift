@@ -698,6 +698,9 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
             }
         } else if shouldShowSectionHeaders {
             switch stickerPackDataSource {
+            case nil:
+                // Expected in the "no installed packs" case, we show an empty view.
+                return nil
             case is FavoritesStickerPackDataSource:
                 return OWSLocalizedString(
                     "STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES",
@@ -860,6 +863,9 @@ extension StickerPackCollectionView: UIContextMenuInteractionDelegate {
 
     private func headerMenuActions() -> [StickerMenuAction] {
         switch stickerPackDataSource {
+        case nil:
+            // Expected in the "no installed packs" case, we show an empty view.
+            return []
         case is FavoritesStickerPackDataSource:
             return []
         case is RecentStickerPackDataSource:

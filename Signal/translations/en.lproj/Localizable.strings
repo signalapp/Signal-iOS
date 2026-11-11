@@ -10468,6 +10468,12 @@
 /* Toast shown when user tries to tap Favorites in sticker keyboard but has none */
 "STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "Press and hold a sticker to add to Favorites";
 
+/* Text displayed in the sticker keyboard when no sticker packs are installed. */
+"STICKER_KEYBOARD_NO_PACKS" = "No sticker packs.\nAdd stickers to send to your friends.";
+
+/* Button in the sticker keyboard, shown when no sticker packs are installed, that opens the sticker pack manager. */
+"STICKER_KEYBOARD_NO_PACKS_ADD_BUTTON" = "Add Stickers";
+
 /* Section header for favorites in the sticker keyboard */
 "STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "Favorites";
 

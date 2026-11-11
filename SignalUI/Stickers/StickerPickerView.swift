@@ -94,6 +94,47 @@ public class StickerPickerView: UIView {
         allowContextMenus: allowContextMenus,
     )
 
+    private lazy var noStickerPacksView: UIView = {
+        let textLabel = UILabel.explanationTextLabel(text: OWSLocalizedString(
+            "STICKER_KEYBOARD_NO_PACKS",
+            comment: "Text displayed in the sticker keyboard when no sticker packs are installed.",
+        ))
+        textLabel.font = .dynamicTypeSubheadline
+
+        var addButtonConfig = UIButton.Configuration.smallSecondary(
+            title: OWSLocalizedString(
+                "STICKER_KEYBOARD_NO_PACKS_ADD_BUTTON",
+                comment: "Button in the sticker keyboard, shown when no sticker packs are installed, that opens the sticker pack manager.",
+            ),
+        )
+        addButtonConfig.background.backgroundColor = .Signal.tertiaryBackground
+
+        let addButton = UIButton(
+            configuration: addButtonConfig,
+            primaryAction: UIAction { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.presentManageStickersView(for: self)
+            },
+        )
+
+        let vStack = UIStackView(arrangedSubviews: [textLabel, addButton])
+        vStack.axis = .vertical
+        vStack.alignment = .center
+        vStack.spacing = 16
+        vStack.translatesAutoresizingMaskIntoConstraints = false
+
+        let view = UIView()
+        view.directionalLayoutMargins = .init(margin: 20)
+        view.addSubview(vStack)
+        NSLayoutConstraint.activate([
+            vStack.topAnchor.constraint(greaterThanOrEqualTo: view.layoutMarginsGuide.topAnchor),
+            vStack.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.centerYAnchor),
+            vStack.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            vStack.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+        ])
+        return view
+    }()
+
     override public func layoutMarginsDidChange() {
         super.layoutMarginsDidChange()
         updateStickerPageViewContentInsets()
@@ -119,7 +160,7 @@ public class StickerPickerView: UIView {
 
     // Update bottom inset separately - it depends on size and position of the toolbar.
     private func updateStickerPageViewBottomContentInset() {
-        guard toolbar.frame.height > 0 else { return }
+        guard !toolbar.isHidden, toolbar.frame.height > 0 else { return }
         let bottomInset = safeAreaLayoutGuide.layoutFrame.maxY - toolbar.frame.minY
         stickerPageView.stickerPageContentInset.bottom = bottomInset
     }
@@ -159,6 +200,24 @@ extension StickerPickerView: StickerPickerPageViewDelegate {
 
     public func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo) {
         delegate?.queueStickerPackForSending(stickerPackInfo)
+    }
+
+    func setHasInstalledStickerPacks(_ hasInstalledStickerPacks: Bool) {
+        if hasInstalledStickerPacks {
+            toolbar.isHidden = false
+            noStickerPacksView.removeFromSuperview()
+            setNeedsLayout()
+        } else {
+            toolbar.isHidden = true
+            addSubview(noStickerPacksView)
+            noStickerPacksView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                noStickerPacksView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+                noStickerPacksView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+                noStickerPacksView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
+                noStickerPacksView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+            ])
+        }
     }
 }
 
@@ -406,6 +465,8 @@ private protocol StickerPickerPageViewDelegate: StickerPickerDelegate {
     func sendSticker(_ stickerMetadata: any StickerMetadata)
 
     func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo)
+
+    func setHasInstalledStickerPacks(_ hasInstalledStickerPacks: Bool)
 }
 
 public enum StickerPickerPage: Equatable {
@@ -533,6 +594,13 @@ private class StickerPickerPageView: UIView {
             if BuildFlags.stickerFavorites {
                 self.hasFavorites = stickerManager.stickerFavoriteCount(tx: transaction) > 0
             }
+        }
+
+        // If there are no installed packs, hide the page view and notify the delegate to show replacement UI.
+        isHidden = stickerPacks.isEmpty
+        delegate?.setHasInstalledStickerPacks(!stickerPacks.isEmpty)
+        guard !stickerPacks.isEmpty else {
+            return
         }
 
         // These go (via delegate) as source data to the toolbar.
