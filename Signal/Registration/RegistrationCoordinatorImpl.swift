@@ -152,7 +152,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     public func beginSignalLogin(useExisting: Bool) {
         logger.info("")
-        setSignalLoginState(useExisting ? .logIn : .purchase)
+        setSignalLoginState(useExisting ? .logIn(aci: nil, aep: nil) : .purchase)
     }
 
     public func submitProspectiveChangeNumberE164(_ e164: E164) {
@@ -3694,8 +3694,42 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 },
             )))
 
-        case .logIn:
-            return .registrationStep(.promptForLogin(RegistrationSignalLoginState(aci: nil, aep: nil)))
+        case .logIn(let aci, let aep):
+            return .registrationStep(.promptForLogin(RegistrationSignalLoginState(
+                aci: aci,
+                aep: aep,
+                goBack: { [self] in
+                    setSignalLoginState(.splash)
+                },
+                submitLogin: { [self] newAci, newAep in
+                    setSignalLoginState(.reRegister(aci: newAci, aep: newAep))
+                },
+            )))
+
+        case .reRegister(let aci, let aep):
+            let recoveryPassword = aep.getMasterKey().deriveRegistrationRecoveryPassword()
+            let accountIdentity: AccountIdentity
+            do {
+                accountIdentity = try await Retry.performWithBackoff(maxAttempts: Constants.networkErrorRetries + 1) {
+                    return try await makeRegisterRequest(.signalLogin(
+                        aci: aci,
+                        recoveryPassword: recoveryPassword,
+                    ))
+                }
+            } catch is Registration.DeviceTransferPossibleError {
+                return .registrationStep(.chooseRestoreMethod(.unspecified))
+            } catch let error as Registration.RecoveryPasswordRejectedError {
+                // TODO: [#less] Show error on RegistrationSignalLoginViewController.
+                setSignalLoginState(.logIn(aci: aci, aep: aep))
+                throw error
+            } catch {
+                // TODO: [#less] Handle other errors.
+                // For other errors, show it, but don't automatically retry.
+                setSignalLoginState(.logIn(aci: aci, aep: aep))
+                throw error
+            }
+            exportSignalLoginState(accountIdentity: accountIdentity, aep: aep)
+            return .done
         }
     }
 
@@ -4446,6 +4480,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private enum RegistrationContext {
         case sessionId(phoneNumber: E164, sessionId: String, reglockToken: RegistrationLock?)
         case recoveryPassword(phoneNumber: E164, recoveryPassword: RegistrationRecoveryPassword, reglockToken: RegistrationLock?)
+        case signalLogin(aci: Aci, recoveryPassword: RegistrationRecoveryPassword)
         case receiptCredential(receiptCredentialPresentation: ReceiptCredentialPresentation, recoveryPassword: RegistrationRecoveryPassword)
     }
 
@@ -4515,6 +4550,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 pniPreKeyBundle: _pniPreKeyBundle,
             )
             reglockToken = _reglockToken
+            recoveryPassword = _recoveryPassword
+            pniRegistrationId = persistedState.pniRegistrationId.owsFailUnwrap("must exist")
+        case .signalLogin(let aci, let _recoveryPassword):
+            let _pniPreKeyBundle = await deps.preKeyManager.createPreKeysForRegistration(forIdentity: .pni)
+            pniPreKeyBundle = _pniPreKeyBundle
+            requestContext = .recoveryPassword(
+                accountIdentifier: .aci(aci),
+                recoveryPassword: _recoveryPassword,
+                pniPreKeyBundle: _pniPreKeyBundle,
+            )
+            reglockToken = nil
             recoveryPassword = _recoveryPassword
             pniRegistrationId = persistedState.pniRegistrationId.owsFailUnwrap("must exist")
         case .receiptCredential(let receiptCredentialPresentation, let _recoveryPassword):
@@ -5256,7 +5302,16 @@ private enum InMemorySignalLoginState {
     )
 
     /// The user chose to use an existing Signal Login.
-    case logIn
+    case logIn(
+        aci: Aci?,
+        aep: SignalServiceKit.AccountEntropyPool?,
+    )
+
+    /// The user submitted their existing Signal Login.
+    case reRegister(
+        aci: Aci,
+        aep: SignalServiceKit.AccountEntropyPool,
+    )
 
     init(persistedState: PersistedSignalLoginState) {
         switch persistedState {
@@ -5306,6 +5361,8 @@ private enum InMemorySignalLoginState {
                 accountIdentity: accountIdentity,
             ))
         case .logIn:
+            return nil
+        case .reRegister:
             return nil
         }
     }

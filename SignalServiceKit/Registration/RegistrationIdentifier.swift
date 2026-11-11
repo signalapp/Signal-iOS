@@ -4,8 +4,10 @@
 //
 
 import Foundation
+public import LibSignalClient
 
 /// An identifier for a pre-existing account used during registration.
 public enum RegistrationIdentifier {
+    case aci(Aci)
     case phoneNumber(E164)
 }

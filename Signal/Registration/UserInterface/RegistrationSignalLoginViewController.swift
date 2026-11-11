@@ -8,21 +8,13 @@ import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
-// MARK: - RegistrationCaptchaPresenter
-
-protocol RegistrationSignalLoginPresenter: AnyObject {
-    func exitSignalLogin()
-    func submitLogin(
-        aci: Aci,
-        aep: SignalServiceKit.AccountEntropyPool,
-    )
-}
-
 // MARK: - RegistrationEnterAccountViewState
 
 public struct RegistrationSignalLoginState {
     let aci: Aci?
     let aep: SignalServiceKit.AccountEntropyPool?
+    let goBack: @MainActor () -> Void
+    let submitLogin: @MainActor (_ aci: Aci, _ aep: SignalServiceKit.AccountEntropyPool) -> Void
 }
 
 // MARK: - RegistrationCaptchaViewController
@@ -36,7 +28,7 @@ class RegistrationSignalLoginViewController: OWSViewController {
     }
 
     private let state: RegistrationSignalLoginState
-    private weak var presenter: RegistrationSignalLoginPresenter?
+    private let goToNextStep: @MainActor () -> Void
 
     private var titleImageView: UIImageView!
 
@@ -48,10 +40,10 @@ class RegistrationSignalLoginViewController: OWSViewController {
 
     init(
         state: RegistrationSignalLoginState,
-        presenter: RegistrationSignalLoginPresenter,
+        goToNextStep: @escaping @MainActor () -> Void,
     ) {
         self.state = state
-        self.presenter = presenter
+        self.goToNextStep = goToNextStep
 
         super.init()
         navigationItem.hidesBackButton = true
@@ -65,7 +57,7 @@ class RegistrationSignalLoginViewController: OWSViewController {
         // X (cancel) --- "Next"
 
         navigationItem.leftBarButtonItem = .closeButton { [weak self] in
-            self?.presenter?.exitSignalLogin()
+            self?.didTapClose()
         }
 
         navigationItem.rightBarButtonItem = .nextButton { [weak self] in
@@ -233,10 +225,16 @@ class RegistrationSignalLoginViewController: OWSViewController {
         owsFail("This should not be called")
     }
 
+    private func didTapClose() {
+        state.goBack()
+        goToNextStep()
+    }
+
     private func didTapNext() {
         switch loginView.currentLoginValues {
         case (.valid(let aci), .valid(let aep)):
-            presenter?.submitLogin(aci: aci, aep: aep)
+            state.submitLogin(aci, aep)
+            goToNextStep()
         case
             (.valid, .partial),
             (.partial, .valid),
@@ -272,25 +270,19 @@ class RegistrationSignalLoginViewController: OWSViewController {
 
 #if DEBUG
 
-private class PreviewRegistrationEnterAccountPresenter: RegistrationSignalLoginPresenter {
-    func submitLogin(
-        aci: LibSignalClient.Aci,
-        aep: SignalServiceKit.AccountEntropyPool,
-    ) {
-        print("ACI: \(aci) \n AEP: \(aep)")
+private func submitLoginBlock() -> (@MainActor (_ aci: Aci, _ aep: SignalServiceKit.AccountEntropyPool) -> Void) {
+    return {
+        print("ACI: \($0) \n AEP: \($1)")
     }
-
-    func exitSignalLogin() { }
 }
 
 @available(iOS 17, *)
 #Preview("No Values") {
-    let state = RegistrationSignalLoginState(aci: nil, aep: nil)
-    let presenter = PreviewRegistrationEnterAccountPresenter()
+    let state = RegistrationSignalLoginState(aci: nil, aep: nil, goBack: {}, submitLogin: submitLoginBlock())
     return UINavigationController(
         rootViewController: RegistrationSignalLoginViewController(
             state: state,
-            presenter: presenter,
+            goToNextStep: {},
         ),
     )
 }
@@ -300,12 +292,13 @@ private class PreviewRegistrationEnterAccountPresenter: RegistrationSignalLoginP
     let state = RegistrationSignalLoginState(
         aci: Aci.randomForTesting(),
         aep: AccountEntropyPool(),
+        goBack: {},
+        submitLogin: submitLoginBlock(),
     )
-    let presenter = PreviewRegistrationEnterAccountPresenter()
     return UINavigationController(
         rootViewController: RegistrationSignalLoginViewController(
             state: state,
-            presenter: presenter,
+            goToNextStep: {},
         ),
     )
 }

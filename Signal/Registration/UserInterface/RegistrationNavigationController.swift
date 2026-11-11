@@ -304,7 +304,10 @@ public class RegistrationNavigationController: OWSNavigationController {
             return Controller(
                 type: RegistrationSignalLoginViewController.self,
                 make: { presenter in
-                    return RegistrationSignalLoginViewController(state: state, presenter: presenter)
+                    return RegistrationSignalLoginViewController(
+                        state: state,
+                        goToNextStep: { [unowned presenter] in presenter.pushNextStepController() },
+                    )
                 },
                 update: nil,
             )
@@ -841,10 +844,6 @@ extension RegistrationNavigationController: RegistrationRestoreFromBackupConfirm
             pushNextStepController(loadingMode: .restoringBackup(progressModal))
         }
     }
-}
-
-extension RegistrationNavigationController: RegistrationSignalLoginPresenter {
-    func submitLogin(aci: Aci, aep: SignalServiceKit.AccountEntropyPool) { }
 }
 
 extension RegistrationNavigationController: RegistrationSignalLoginSplashPresenter {

@@ -322,6 +322,8 @@ public enum RegistrationRequestFactory {
             request.sessionId = sessionId
         case .recoveryPassword(let identifier, let recoveryPassword, pniPreKeyBundle: _):
             switch identifier {
+            case .aci(let aci):
+                username = aci.serviceIdString
             case .phoneNumber(let phoneNumber):
                 username = phoneNumber.stringValue
             }
