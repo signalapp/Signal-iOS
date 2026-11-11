@@ -43,11 +43,15 @@ class CVCell: UICollectionViewCell, CVRootComponentHost {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        layoutMargins = .zero
-        contentView.layoutMargins = .zero
+        // Components lay out from the cell edges. While the window moves
+        // between displays, UIKit can derive margins from stale safe area
+        // insets (e.g. a split view sidebar or a display's side strip).
+        insetsLayoutMarginsFromSafeArea = false
+        contentView.insetsLayoutMarginsFromSafeArea = false
+        directionalLayoutMargins = .zero
+        contentView.directionalLayoutMargins = .zero
     }
 
-    @available(*, unavailable, message: "Unimplemented")
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -121,8 +125,8 @@ class CVCell: UICollectionViewCell, CVRootComponentHost {
         let isReusingDedicatedCell = componentView != nil && renderItem.rootComponent.isDedicatedCell
 
         if !isReusingDedicatedCell {
-            layoutMargins = .zero
-            contentView.layoutMargins = .zero
+            directionalLayoutMargins = .zero
+            contentView.directionalLayoutMargins = .zero
         }
 
         configureForHosting(
@@ -211,7 +215,7 @@ class CVCellView: UIView, CVRootComponentHost {
         componentDelegate: CVComponentDelegate,
     ) {
 
-        self.layoutMargins = .zero
+        directionalLayoutMargins = .zero
 
         let messageSwipeActionState = CVMessageSwipeActionState()
         configureForHosting(
@@ -222,7 +226,6 @@ class CVCellView: UIView, CVRootComponentHost {
         owsAssertDebug(componentView != nil)
     }
 
-    @available(*, unavailable, message: "Unimplemented")
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
