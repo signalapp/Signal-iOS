@@ -391,8 +391,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             owsFailBeta("Shouldn't be submitting captcha from non session paths.")
             return Guarantee.wrapAsync { await self.nextStep() }
         case .session(let session):
-            return Guarantee.wrapAsync {
-                return await self.submit(challengeFulfillment: .captcha(token), for: session)
+            return Guarantee.wrapAsync { () async -> RegistrationStep in
+                do {
+                    return try await self.submit(challengeFulfillment: .captcha(token), for: session)
+                } catch {
+                    return .showError(error)
+                }
             }
         }
     }
@@ -1946,7 +1950,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 authCredentials: credentials,
             )
         case .session(let session):
-            return await nextStepForSessionPath(session)
+            return try await nextStepForSessionPath(session)
         case .signalLogin(let signalLoginState):
             return try await nextStepForSignalLogin(signalLoginState)
         case .profileSetup(let accountIdentity):
@@ -2530,7 +2534,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // MARK: - RegistrationSession Pathway
 
-    private func nextStepForSessionPath(_ session: RegistrationSession) async -> RegistrationStep {
+    private func nextStepForSessionPath(_ session: RegistrationSession) async throws -> RegistrationStep {
         switch persistedState.sessionState?.reglockState ?? .none {
         case .none:
             break
@@ -2567,7 +2571,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             } else if let pinFromUser = inMemoryState.pinFromUser {
                 // Otherwise, if the user has a PIN, restore the master key from SVR
                 logger.info("Reglocked; restoring the master key from SVR with the user's PIN")
-                return await restoreSVRMasterSecretForSessionPathReglock(
+                return try await restoreSVRMasterSecretForSessionPathReglock(
                     session: session,
                     pin: pinFromUser,
                     svrAuthCredential: svrAuthCredential,
@@ -2641,8 +2645,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     db.write { self.resetSession($0) }
                 }
                 return await nextStep()
-            } catch {
-                return .showError(error)
             }
         }
 
@@ -2690,14 +2692,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         // try and do that, regardless of other state.
         if let pendingCodeTransport {
             guard session.allowedToRequestCode else {
-                return await attemptToFulfillAvailableChallengesWaitingIfNeeded(for: session)
+                return try await attemptToFulfillAvailableChallengesWaitingIfNeeded(for: session)
             }
 
             // If we have pending transport and can send, send.
             switch pendingCodeTransport {
             case .sms:
                 if let nextSMSDate = session.nextSMSDate, nextSMSDate <= deps.dateProvider() {
-                    return await requestSessionCode(session: session, transport: pendingCodeTransport)
+                    return try await requestSessionCode(session: session, transport: pendingCodeTransport)
                 } else {
                     // Inability to send puts on the verification entry screen, so the
                     // user can try the alternate transport manually.
@@ -2708,7 +2710,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
             case .voice:
                 if let nextCallDate = session.nextCallDate, nextCallDate <= deps.dateProvider() {
-                    return await requestSessionCode(session: session, transport: pendingCodeTransport)
+                    return try await requestSessionCode(session: session, transport: pendingCodeTransport)
                 } else {
                     // Inability to send puts on the verification entry screen, so the
                     // user can try the alternate transport manually.
@@ -3031,7 +3033,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func requestSessionCode(
         session: RegistrationSession,
         transport: Registration.CodeTransport,
-    ) async -> RegistrationStep {
+    ) async throws -> RegistrationStep {
         var session = session
         do {
             try await Retry.performWithMinimumBackoff(
@@ -3090,7 +3092,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         } catch let error as Registration.MissingSessionError {
             self.inMemoryState.pendingCodeTransport = nil
             self.db.write { self.resetSession($0) }
-            return .showError(error)
+            throw error
         } catch let error as Registration.RequestRejectedByProviderError {
             let failureResponse = error.failureResponse
             db.write { tx in
@@ -3143,7 +3145,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 } else {
                     // Can't send a code, session is useless.
                     db.write { self.resetSession($0) }
-                    return .showError(error)
+                    throw error
                 }
             }
         } catch {
@@ -3151,7 +3153,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             db.write {
                 self.processSession(session, initialCodeRequestState: .failedToRequest, $0)
             }
-            return .showError(error)
+            throw error
         }
     }
 
@@ -3213,7 +3215,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func attemptToFulfillAvailableChallengesWaitingIfNeeded(
         for session: RegistrationSession,
-    ) async -> RegistrationStep {
+    ) async throws -> RegistrationStep {
         logger.info("Found \(session.requestedInformation.count) challenge(s)")
 
         var requestsPushChallenge = false
@@ -3237,7 +3239,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         if requestsPushChallenge, let unfulfilledPushChallengeToken {
             logger.info("Attempting to fulfill push challenge with a token we already have")
-            return await submit(
+            return try await submit(
                 challengeFulfillment: .pushChallenge(unfulfilledPushChallengeToken),
                 for: session,
             )
@@ -3246,7 +3248,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         func waitForPushTokenChallenge(
             timeout: TimeInterval,
             failChallengeIfTimedOut: Bool,
-        ) async -> RegistrationStep {
+        ) async throws -> RegistrationStep {
             logger.info("Attempting to fulfill push challenge with a token we don't have yet")
             do {
                 let challengeToken = try await withUncooperativeTimeout(seconds: timeout) {
@@ -3259,7 +3261,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         transaction: transaction,
                     )
                 }
-                return await submit(
+                return try await submit(
                     challengeFulfillment: .pushChallenge(challengeToken),
                     for: session,
                 )
@@ -3268,15 +3270,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 case is UncooperativeTimeoutError where failChallengeIfTimedOut:
                     logger.warn("No challenge token received in time. Resetting")
                     db.write { self.resetSession($0) }
-                    return .showError(error)
+                    throw error
                 default:
                     logger.warn("No challenge token received in time, falling back to next challenge")
-                    return await tryNonImmediatePushChallenge()
+                    return try await tryNonImmediatePushChallenge()
                 }
             }
         }
 
-        func tryNonImmediatePushChallenge() async -> RegistrationStep {
+        func tryNonImmediatePushChallenge() async throws -> RegistrationStep {
             // Our third choice: a captcha challenge
             if requestsCaptchaChallenge {
                 logger.info("Showing the CAPTCHA challenge to the user")
@@ -3293,7 +3295,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 deps.dateProvider() < timeToWaitUntil
             {
                 let timeout = timeToWaitUntil.timeIntervalSince(deps.dateProvider())
-                return await waitForPushTokenChallenge(
+                return try await waitForPushTokenChallenge(
                     timeout: timeout,
                     failChallengeIfTimedOut: true,
                 )
@@ -3306,7 +3308,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 db.write { tx in
                     self.processSession(session, initialCodeRequestState: .failedToRequest, tx)
                 }
-                return .showError(Registration.UnknownChallengeError())
+                throw Registration.UnknownChallengeError()
             } else {
                 logger.warn("Couldn't fulfill any challenges. Resetting the session")
                 db.write { resetSession($0) }
@@ -3330,17 +3332,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             deps.dateProvider() < timeToWaitUntil
         {
             let timeout = timeToWaitUntil.timeIntervalSince(deps.dateProvider())
-            return await waitForPushTokenChallenge(timeout: timeout, failChallengeIfTimedOut: false)
+            return try await waitForPushTokenChallenge(timeout: timeout, failChallengeIfTimedOut: false)
         }
 
         // Try the next choices.
-        return await tryNonImmediatePushChallenge()
+        return try await tryNonImmediatePushChallenge()
     }
 
     private func submit(
         challengeFulfillment fulfillment: Registration.ChallengeFulfillment,
         for session: RegistrationSession,
-    ) async -> RegistrationStep {
+    ) async throws -> RegistrationStep {
         var session = session
 
         switch fulfillment {
@@ -3364,7 +3366,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
             if sessionCanNeverRequestVerificationCode(session) {
                 db.write { resetSession($0) }
-                return .showError(Registration.VerificationCodeError.providerFailure)
+                throw Registration.VerificationCodeError.providerFailure
             }
 
             db.write { tx in
@@ -3385,12 +3387,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     $0.pushChallengeState = .rejected
                 }
             }
-            return .showError(error)
+            throw error
         } catch let error as Registration.MissingSessionError {
             db.write { self.resetSession($0) }
-            return .showError(error)
-        } catch {
-            return .showError(error)
+            throw error
         }
     }
 
@@ -3482,7 +3482,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         svrAuthCredential: SVRAuthCredential,
         reglockExpirationDate: Date,
         failureCount: Int,
-    ) async -> RegistrationStep {
+    ) async throws -> RegistrationStep {
         logger.info("Restoring the master key from SVR to get past reglock")
 
         do {
@@ -3538,8 +3538,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
             }
             return await nextStep()
-        } catch {
-            return .showError(error)
         }
     }
 
