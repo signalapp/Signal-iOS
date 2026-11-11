@@ -3670,17 +3670,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             ))
 
         case .redeemCredential(let aep, let receiptCredential):
-            // If we crash, we need to restore the AEP before retrying the request.
-            inMemoryState.accountEntropyPool = aep
-            deps.db.write { tx in
-                updateMasterKeyAndLocalState(masterKey: aep.getMasterKey(), tx: tx)
-            }
             let serverParams = TSConstants.serverPublicParams()
             let receiptOperations = ClientZkReceiptOperations(serverPublicParams: serverParams)
             let receiptCredentialPresentation = try receiptOperations.createReceiptCredentialPresentation(receiptCredential: receiptCredential)
+            let recoveryPassword = aep.getMasterKey().deriveRegistrationRecoveryPassword()
             let accountIdentity = try await Retry.performWithBackoff(maxAttempts: Constants.networkErrorRetries + 1) {
                 return try await makeRegisterRequest(.receiptCredential(
                     receiptCredentialPresentation: receiptCredentialPresentation,
+                    recoveryPassword: recoveryPassword,
                 ))
             }
             return .setSignalLoginState(.reviewAndConfirmLogin(
@@ -3693,13 +3690,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 aci: accountIdentity.localIdentifiers.aci,
                 aep: aep,
                 confirmLogin: { [self] in
-                    deps.db.write { tx in
-                        updatePersistedState(tx) {
-                            setSignalLoginState(nil, alsoUpdating: &$0)
-                            $0.liveAccountEntropyPool = aep
-                            $0.accountIdentity = accountIdentity
-                        }
-                    }
+                    exportSignalLoginState(accountIdentity: accountIdentity, aep: aep)
                 },
             )))
 
@@ -3728,6 +3719,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return transaction.environment == .sandbox ? .sandbox : .normal
         } else {
             return transaction.environmentStringRepresentation == "Sandbox" ? .sandbox : .normal
+        }
+    }
+
+    private func exportSignalLoginState(accountIdentity: AccountIdentity, aep: SignalServiceKit.AccountEntropyPool) {
+        inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = false
+        deps.db.write { tx in
+            updatePersistedState(tx) {
+                setSignalLoginState(nil, alsoUpdating: &$0)
+                $0.accountIdentity = accountIdentity
+                $0.liveAccountEntropyPool = aep
+            }
         }
     }
 
@@ -4444,7 +4446,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private enum RegistrationContext {
         case sessionId(phoneNumber: E164, sessionId: String, reglockToken: RegistrationLock?)
         case recoveryPassword(phoneNumber: E164, recoveryPassword: RegistrationRecoveryPassword, reglockToken: RegistrationLock?)
-        case receiptCredential(receiptCredentialPresentation: ReceiptCredentialPresentation)
+        case receiptCredential(receiptCredentialPresentation: ReceiptCredentialPresentation, recoveryPassword: RegistrationRecoveryPassword)
     }
 
     private func makeRegisterRequest(_ registrationContext: RegistrationContext) async throws -> AccountIdentity {
@@ -4490,6 +4492,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         let requestContext: RegistrationRequestFactory.CreateAccountRequestContext
         let reglockToken: RegistrationLock?
+        let recoveryPassword: RegistrationRecoveryPassword?
         let pniRegistrationId: UInt32?
         switch registrationContext {
         case .sessionId(let phoneNumber, let sessionId, let _reglockToken):
@@ -4501,29 +4504,34 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 pniPreKeyBundle: _pniPreKeyBundle,
             )
             reglockToken = _reglockToken
+            recoveryPassword = inMemoryState.regRecoveryPw
             pniRegistrationId = persistedState.pniRegistrationId.owsFailUnwrap("must exist")
-        case .recoveryPassword(let phoneNumber, let recoveryPassword, let _reglockToken):
+        case .recoveryPassword(let phoneNumber, let _recoveryPassword, let _reglockToken):
             let _pniPreKeyBundle = await deps.preKeyManager.createPreKeysForRegistration(forIdentity: .pni)
             pniPreKeyBundle = _pniPreKeyBundle
             requestContext = .recoveryPassword(
                 accountIdentifier: .phoneNumber(phoneNumber),
-                recoveryPassword: recoveryPassword,
+                recoveryPassword: _recoveryPassword,
                 pniPreKeyBundle: _pniPreKeyBundle,
             )
             reglockToken = _reglockToken
+            recoveryPassword = _recoveryPassword
             pniRegistrationId = persistedState.pniRegistrationId.owsFailUnwrap("must exist")
-        case .receiptCredential(let receiptCredentialPresentation):
+        case .receiptCredential(let receiptCredentialPresentation, let _recoveryPassword):
             pniPreKeyBundle = nil
             requestContext = .receiptCredential(
                 receiptCredentialPresentation: receiptCredentialPresentation,
             )
             reglockToken = nil
+            // Required to be provided atomically when purchasing a Signal Login.
+            recoveryPassword = _recoveryPassword
             pniRegistrationId = nil
         }
 
         let accountAttributes = makeAccountAttributes(
             isManualMessageFetchEnabled: isManualMessageFetchEnabled,
             reglockToken: reglockToken,
+            recoveryPassword: recoveryPassword,
             pniRegistrationId: pniRegistrationId,
         )
         let accountIdentityResponse = try await Service.makeCreateAccountRequest(
@@ -4784,6 +4792,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func makeAccountAttributes(
         isManualMessageFetchEnabled: Bool,
         reglockToken: RegistrationLock?,
+        recoveryPassword: RegistrationRecoveryPassword?,
         pniRegistrationId: UInt32?,
     ) -> AccountAttributes {
         return AccountAttributes(
@@ -4793,7 +4802,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             unidentifiedAccessKey: inMemoryState.udAccessKey.keyData.base64EncodedString(),
             unrestrictedUnidentifiedAccess: inMemoryState.allowUnrestrictedUD,
             reglockToken: reglockToken?.canonicalStringRepresentation,
-            registrationRecoveryPassword: inMemoryState.regRecoveryPw?.canonicalStringRepresentation,
+            registrationRecoveryPassword: recoveryPassword?.canonicalStringRepresentation,
             encryptedDeviceName: nil, // This class only deals in primary devices, which have no name
             discoverableByPhoneNumber: inMemoryState.phoneNumberDiscoverability,
             capabilities: AccountAttributes.Capabilities(hasSVRBackups: inMemoryState.didHaveSVRBackupsPriorToReg),
