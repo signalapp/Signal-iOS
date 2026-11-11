@@ -27,8 +27,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "LibSignalFfi",
-            url: "https://build-artifacts.signal.org/libraries/libsignal-client-ios-build-v0.106.2.xcframework.zip",
-            checksum: "416ca269870a0bb1e12784dfe96bbd548b585d4aa58f1c12d82b9e19da42a157",
+            url: "https://build-artifacts.signal.org/libraries/libsignal-client-ios-build-v0.107.0.xcframework.zip",
+            checksum: "c21686be0c5444a3e297ca8d1338428b951060319ab0b5adb647681650785712",
         ),
         ringRTCFfi,
     ],
