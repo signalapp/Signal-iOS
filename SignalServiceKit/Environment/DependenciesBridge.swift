@@ -168,6 +168,7 @@ public class DependenciesBridge {
     public let profileBadgeManager: ProfileBadgeManager
     public let quotedReplyManager: QuotedReplyManager
     public let reactionStore: any ReactionStore
+    public let recipientCapabilityStore: RecipientCapabilityStore
     public let recipientDatabaseTable: RecipientDatabaseTable
     public let recipientFetcher: RecipientFetcher
     public let recipientHidingManager: RecipientHidingManager
@@ -326,6 +327,7 @@ public class DependenciesBridge {
         profileBadgeManager: ProfileBadgeManager,
         quotedReplyManager: QuotedReplyManager,
         reactionStore: any ReactionStore,
+        recipientCapabilityStore: RecipientCapabilityStore,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         recipientHidingManager: RecipientHidingManager,
@@ -483,6 +485,7 @@ public class DependenciesBridge {
         self.profileBadgeManager = profileBadgeManager
         self.quotedReplyManager = quotedReplyManager
         self.reactionStore = reactionStore
+        self.recipientCapabilityStore = recipientCapabilityStore
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
         self.recipientHidingManager = recipientHidingManager

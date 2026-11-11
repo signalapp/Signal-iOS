@@ -379,6 +379,7 @@ public class GRDBSchemaMigrator {
         case addSortOrderToStickerPack
         case addVideoIsFastStartMp4ToAttachment
         case migrateSomeKeyValueStores2
+        case addRecipientCapabilityTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5961,6 +5962,25 @@ public class GRDBSchemaMigrator {
                 try migrator.migrateDate("BackupCDNMetadataSavedDate:media", tx: tx)
                 try migrator.migrateDate("BackupCDNMetadataSavedDate:messages", tx: tx)
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addRecipientCapabilityTable) { tx in
+            try tx.database.create(table: "RecipientCapability") { table in
+                table.column("recipientRowId", .integer).notNull()
+                    .references("model_SignalRecipient", column: "id", onDelete: .cascade, onUpdate: .cascade)
+                table.column("capability", .text).notNull()
+                table.column("isEnabled", .boolean).notNull()
+                table.primaryKey(["recipientRowId", "capability"])
+            }
+
+            // Lets a migration that retires a capability run
+            // `DELETE FROM RecipientCapability WHERE capability = ?`.
+            try tx.database.create(
+                index: "index_RecipientCapability_on_capability",
+                on: "RecipientCapability",
+                columns: ["capability"],
+            )
             return .success(())
         }
 

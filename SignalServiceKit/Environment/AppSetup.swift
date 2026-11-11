@@ -1492,6 +1492,8 @@ extension AppSetup.GlobalsContinuation {
             udManager: udManager,
         )
 
+        let recipientCapabilityStore = RecipientCapabilityStore()
+
         let profileFetcher = ProfileFetcherImpl(
             accountChecker: accountChecker,
             db: db,
@@ -1503,7 +1505,9 @@ extension AppSetup.GlobalsContinuation {
             paymentsHelper: paymentsHelper,
             profileManager: profileManager,
             reachabilityManager: reachabilityManager,
+            recipientCapabilityStore: recipientCapabilityStore,
             recipientDatabaseTable: recipientDatabaseTable,
+            recipientFetcher: recipientFetcher,
             syncManager: syncManager,
             threadStore: threadStore,
             tsAccountManager: tsAccountManager,
@@ -1998,6 +2002,7 @@ extension AppSetup.GlobalsContinuation {
             profileBadgeManager: profileBadgeManager,
             quotedReplyManager: quotedReplyManager,
             reactionStore: reactionStore,
+            recipientCapabilityStore: recipientCapabilityStore,
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             recipientHidingManager: recipientHidingManager,
