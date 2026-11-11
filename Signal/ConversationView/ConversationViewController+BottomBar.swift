@@ -187,11 +187,11 @@ extension ConversationViewController {
         case .notRegistered:
             let notRegisteredView = BlockingErrorBottomPanelView(
                 text: notRegisteredErrorText(),
-                onTap: { [unowned self] in
+                onTap: {
                     let tsAccountManager = DependenciesBridge.shared.tsAccountManager
                     let registrationState = tsAccountManager.registrationStateWithMaybeSneakyTransaction
                     let deregisteredState = registrationState.deregisteredState.owsFailUnwrap("must be deregistered")
-                    RegistrationUtils.showReRegistrationPrompt(fromViewController: self, deregisteredState: deregisteredState)
+                    RegistrationUtils.showReRegistration(deregisteredState: deregisteredState)
                 },
             )
             requestView = notRegisteredView
