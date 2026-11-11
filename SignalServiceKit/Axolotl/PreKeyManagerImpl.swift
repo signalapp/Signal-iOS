@@ -124,7 +124,9 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     public func checkPreKeysIfNecessary() async throws {
-        try await _checkPreKeysIfNecessary()
+        try await taskQueue.runWithThrowingTask {
+            try await _checkPreKeysIfNecessary()
+        }
     }
 
     private func _checkPreKeysIfNecessary() async throws {
@@ -165,18 +167,16 @@ public class PreKeyManagerImpl: PreKeyManager {
             targets.insert(target: .oneTimePreKey)
             targets.insert(target: .oneTimePqPreKey)
         }
-        try await taskQueue.runWithThrowingTask {
-            try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
+        try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
+        try Task.checkCancellation()
+        try await taskManager.refresh(identity: .aci, targets: targets, auth: .implicit())
+        if shouldCheckPniPreKeys, try tsAccountManager.registeredStateWithMaybeSneakyTransaction().localIdentifiers.hasPhoneNumber {
             try Task.checkCancellation()
-            try await taskManager.refresh(identity: .aci, targets: targets, auth: .implicit())
-            if shouldCheckPniPreKeys, try tsAccountManager.registeredStateWithMaybeSneakyTransaction().localIdentifiers.hasPhoneNumber {
-                try Task.checkCancellation()
-                try await self.waitUntilNotChangingNumberIfNeeded(targets: targets)
-                try await taskManager.refresh(identity: .pni, targets: targets, auth: .implicit())
-            }
-            if shouldCheckOneTimePreKeys, shouldCheckPniPreKeys {
-                self.refreshOneTimePreKeysCheckDidSucceed()
-            }
+            try await self.waitUntilNotChangingNumberIfNeeded(targets: targets)
+            try await taskManager.refresh(identity: .pni, targets: targets, auth: .implicit())
+        }
+        if shouldCheckOneTimePreKeys, shouldCheckPniPreKeys {
+            self.refreshOneTimePreKeysCheckDidSucceed()
         }
     }
 
@@ -200,7 +200,9 @@ public class PreKeyManagerImpl: PreKeyManager {
 
     public func rotateSignedPreKeysIfNeeded() async throws {
         logger.info("Rotating signed prekeys if needed")
-        try await _checkPreKeys(shouldCheckOneTimePreKeys: false, shouldCheckPniPreKeys: true)
+        try await taskQueue.runWithThrowingTask {
+            try await _checkPreKeys(shouldCheckOneTimePreKeys: false, shouldCheckPniPreKeys: true)
+        }
     }
 
     /// Refresh one-time pre-keys for the given identity, and optionally refresh
