@@ -174,37 +174,31 @@ public class PaymentsCurrenciesImpl: PaymentsCurrenciesSwift, PaymentsCurrencies
     }
 
     private func _updateConversionRates() async throws {
-        let request = OWSRequestFactory.currencyConversionRequest()
-        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
-
-        guard let parser = response.responseBodyParamParser else {
-            throw OWSAssertionError("Missing or invalid JSON")
+        let serviceProvider: any ServiceProvider = DependenciesBridge.shared.chatConnectionManager
+        let currencyConversions = try await serviceProvider.withAuthService(.payments) {
+            return try await $0.getCurrencyConversions()
         }
-        let timestamp: UInt64 = try parser.required(key: "timestamp")
-        let serviceDate = Date(millisecondsSince1970: timestamp)
-        let currencyObjects: [[String: Any]] = try parser.required(key: "currencies")
         var conversionRateMap = ConversionRateMap()
-        for currencyObject in currencyObjects {
-            let currencyParser = ParamParser(currencyObject)
-            let base: String = try currencyParser.required(key: "base")
-            guard base == PaymentsConstants.mobileCoinCurrencyIdentifier else {
+        for currencyObject in currencyConversions.currencies {
+            guard currencyObject.base == PaymentsConstants.mobileCoinCurrencyIdentifier else {
                 continue
             }
-            let conversionObjects: [String: NSNumber] = try currencyParser.required(key: "conversions")
-            for (currencyCode, nsExchangeRate) in conversionObjects {
+            for (currencyCode, exchangeRate) in currencyObject.conversions {
                 guard currencyCode.count == 3 else {
                     Logger.warn("Ignoring invalid currencyCode: \(currencyCode)")
                     continue
                 }
-                let exchangeRate = nsExchangeRate.doubleValue
-                guard exchangeRate > 0 else {
+                guard let exchangeRate = Double(exchangeRate), exchangeRate > 0 else {
                     Logger.warn("Ignoring invalid exchangeRate: \(exchangeRate), currencyCode: \(currencyCode)")
                     continue
                 }
                 conversionRateMap[currencyCode] = exchangeRate
             }
         }
-        self.setConversionRates(ConversionRates(conversionRateMap: conversionRateMap, serviceDate: serviceDate))
+        self.setConversionRates(ConversionRates(
+            conversionRateMap: conversionRateMap,
+            serviceDate: currencyConversions.timestamp,
+        ))
         Logger.info("Success.")
     }
 
