@@ -155,6 +155,12 @@ class ScreenLockUI {
         )
         NotificationCenter.default.addObserver(
             self,
+            selector: #selector(protectedDataDidBecomeAvailable),
+            name: UIApplication.protectedDataDidBecomeAvailableNotification,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
             selector: #selector(screenLockDidChange),
             name: ScreenLock.ScreenLockDidChange,
             object: nil,
@@ -306,6 +312,11 @@ class ScreenLockUI {
             return
         }
 
+        guard UIApplication.shared.isProtectedDataAvailable else {
+            // Never show the auth UI while the device is locked.
+            return
+        }
+
         Logger.info("try to unlock screen lock")
 
         isShowingScreenLockUI = true
@@ -454,6 +465,11 @@ class ScreenLockUI {
     @objc
     private func applicationDidEnterBackground(_ notification: Notification) {
         appIsInBackground = true
+    }
+
+    @objc
+    private func protectedDataDidBecomeAvailable(_ notification: Notification) {
+        ensureUI()
     }
 }
 
