@@ -236,7 +236,12 @@ extension ReferencedAttachment {
 
     /// Builds a `SSKProtoAttachmentPointer` representing this reference to an
     /// attachment, suitable for sending with a message.
-    func asProtoForSending() -> SSKProtoAttachmentPointer? {
+    ///
+    /// - Parameter includeIncrementalMac
+    /// Whether to include the attachment's incremental MAC, if it has one.
+    func asProtoForSending(
+        includeIncrementalMac: Bool = true,
+    ) -> SSKProtoAttachmentPointer? {
         guard let pointer = AttachmentTransitPointer(attachment: attachment) else {
             return nil
         }
@@ -297,7 +302,10 @@ extension ReferencedAttachment {
         builder.setDigest(ciphertextDigest)
         builder.setUploadTimestamp(pointer.uploadTimestamp)
 
-        if let incrementalMacInfo = pointer.info.incrementalMacInfo {
+        if
+            includeIncrementalMac,
+            let incrementalMacInfo = pointer.info.incrementalMacInfo
+        {
             builder.setIncrementalMac(incrementalMacInfo.mac)
             builder.setChunkSize(incrementalMacInfo.chunkSize)
         }

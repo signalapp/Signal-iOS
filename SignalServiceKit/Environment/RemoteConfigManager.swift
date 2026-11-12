@@ -399,6 +399,18 @@ public class RemoteConfig {
 
     // MARK: -
 
+    /// The maximum number of attachments in an outgoing envelope that may
+    /// include an incremental MAC.
+    public var maxIncrementalMacsPerEnvelope: Int {
+        let value = getUInt32Value(
+            forFlag: .maxIncrementalMacsPerEnvelope,
+            defaultValue: 10,
+        )
+        return Int(value)
+    }
+
+    // MARK: -
+
     public var wifiAwareDeviceTransferEnabled: Bool {
         return !isEnabled(.wifiAwareDeviceTransferKillSwitch, defaultValue: false) && BuildFlags.wifiAwareDeviceTransfer
     }
@@ -791,6 +803,7 @@ private enum ValueFlag: String, FlagType {
     case creditAndDebitCardDisabledRegions = "global.donations.ccDisabledRegions"
     case idealEnabledRegions = "global.donations.idealEnabledRegions"
     case maxGroupCallRingSize = "global.calling.maxGroupCallRingSize"
+    case maxIncrementalMacsPerEnvelope = "global.maxIncrementalMacsPerEnvelope"
     case maxGroupSizeHardLimit = "global.groupsv2.groupSizeHardLimit"
     case maxGroupSizeRecommended = "global.groupsv2.maxGroupSize"
     case maxNicknameLength = "global.nicknames.max"
@@ -844,6 +857,7 @@ private enum ValueFlag: String, FlagType {
         case .maxGroupCallRingSize: true
         case .maxGroupSizeHardLimit: true
         case .maxGroupSizeRecommended: true
+        case .maxIncrementalMacsPerEnvelope: true
         case .maxNicknameLength: false
         case .maxPollOptionReceiveCount: true
         case .maxPollOptionSendCount: true
