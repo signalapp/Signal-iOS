@@ -869,14 +869,32 @@ extension GRDBDatabaseStorageAdapter {
 
     /// Run database integrity checks and log their results.
     public static func checkIntegrity(databaseStorage: SDSDatabaseStorage) -> SqliteUtil.IntegrityCheckResult {
-        func read<T>(block: (Database) -> T) -> T {
-            return databaseStorage.read { block($0.database) }
+        // On a corrupted database, ending these transactions can fail. The usual
+        // `read` and `write` would owsFail, so we use the throwing variants. If a
+        // check ran, we use its result; if it couldn't run, it failed.
+        func read<T>(block: (Database) -> T) -> T? {
+            var result: T?
+            do {
+                try databaseStorage.readThrows(file: #file, function: #function, line: #line) { result = block($0.database) }
+            } catch {
+                Logger.warn("Integrity check read failed: \(error.grdbErrorForLogging)")
+            }
+            return result
         }
-        func write<T>(block: (Database) -> T) -> T {
-            return databaseStorage.write { block($0.database) }
+        func write<T>(block: (Database) -> T) -> T? {
+            var result: T?
+            do {
+                try databaseStorage.performWriteWithTxCompletion(file: #file, function: #function, line: #line) { tx in
+                    result = block(tx.database)
+                    return .commit
+                }
+            } catch {
+                Logger.warn("Integrity check write failed: \(error.grdbErrorForLogging)")
+            }
+            return result
         }
 
-        read { db in
+        _ = read { db in
             Logger.info("PRAGMA cipher_provider")
             Logger.info(SqliteUtil.cipherProvider(db: db))
         }
@@ -884,12 +902,12 @@ extension GRDBDatabaseStorageAdapter {
         let cipherIntegrityCheckResult = read { db in
             Logger.info("PRAGMA cipher_integrity_check")
             return SqliteUtil.cipherIntegrityCheck(db: db)
-        }
+        } ?? .notOk
 
         let quickCheckResult = write { db in
             Logger.info("PRAGMA quick_check")
             return SqliteUtil.quickCheck(db: db)
-        }
+        } ?? .notOk
 
         return cipherIntegrityCheckResult && quickCheckResult
     }
