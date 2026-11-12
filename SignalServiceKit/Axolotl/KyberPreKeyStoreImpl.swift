@@ -14,7 +14,7 @@ public class KyberPreKeyStoreImpl {
     }
 
     private let identity: OWSIdentity
-    private let metadataStore: KeyValueStore
+    private let metadataStore: NewKeyValueStore
     private let dateProvider: DateProvider
     private let preKeyStore: PreKeyStore
 
@@ -25,7 +25,7 @@ public class KyberPreKeyStoreImpl {
     ) {
         self.identity = identity
         self.dateProvider = dateProvider
-        self.metadataStore = KeyValueStore(collection: {
+        self.metadataStore = NewKeyValueStore(collection: {
             switch identity {
             case .aci: "SSKKyberPreKeyStoreACIMetadataStore"
             case .pni: "SSKKyberPreKeyStorePNIMetadataStore"
@@ -86,19 +86,19 @@ public class KyberPreKeyStoreImpl {
 
     func storeLastResortPreKeyFromChangeNumber(_ lastResortPreKey: LibSignalClient.KyberPreKeyRecord, tx: DBWriteTransaction) {
         storePreKeyRecords([lastResortPreKey], isLastResort: true, tx: tx)
-        metadataStore.setInt32(Int32(lastResortPreKey.id), key: Constants.lastKeyId, transaction: tx)
+        metadataStore.writeValue(Int64(safeCast: lastResortPreKey.id), forKey: Constants.lastKeyId, tx: tx)
     }
 
     func removeMetadata(tx: DBWriteTransaction) {
-        self.metadataStore.removeAll(transaction: tx)
+        self.metadataStore.removeAll(tx: tx)
     }
 
     func setLastSuccessfulRotationDate(_ date: Date, tx: DBWriteTransaction) {
-        self.metadataStore.setDate(date, key: Constants.lastKeyRotationDate, transaction: tx)
+        self.metadataStore.writeValue(date, forKey: Constants.lastKeyRotationDate, tx: tx)
     }
 
     func getLastSuccessfulRotationDate(tx: DBReadTransaction) -> Date? {
-        self.metadataStore.getDate(Constants.lastKeyRotationDate, transaction: tx)
+        return self.metadataStore.fetchValue(Date.self, forKey: Constants.lastKeyRotationDate, tx: tx)
     }
 
     func setReplacedAtToNowIfNil(exceptFor preKeyIds: [UInt32], isLastResort: Bool, tx: DBWriteTransaction) {

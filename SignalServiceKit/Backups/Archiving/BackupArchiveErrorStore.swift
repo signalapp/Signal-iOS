@@ -9,11 +9,11 @@
 /// internal-only UI. Take care if expanding this beyond internal.
 public struct BackupArchiveErrorStore {
 
-    private let kvStore: KeyValueStore
+    private let kvStore: NewKeyValueStore
     private static let hasPendingErrorsKey = "hasPendingErrors"
 
     public init() {
-        kvStore = KeyValueStore(collection: "BackupArchiveErrorStore")
+        kvStore = NewKeyValueStore(collection: "BackupArchiveErrorStore")
     }
 
     public func setHasError(_ value: Bool, tx: DBWriteTransaction) {
@@ -21,7 +21,7 @@ public struct BackupArchiveErrorStore {
             return
         }
 
-        kvStore.setBool(value, key: Self.hasPendingErrorsKey, transaction: tx)
+        kvStore.writeValue(value, forKey: Self.hasPendingErrorsKey, tx: tx)
     }
 
     public func hasError(tx: DBReadTransaction) -> Bool {
@@ -29,6 +29,6 @@ public struct BackupArchiveErrorStore {
             return false
         }
 
-        return kvStore.getBool(Self.hasPendingErrorsKey, defaultValue: false, transaction: tx)
+        return kvStore.fetchValue(Bool.self, forKey: Self.hasPendingErrorsKey, tx: tx) ?? false
     }
 }

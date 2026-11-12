@@ -26,7 +26,7 @@ class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearchIndexer
     private let dateProvider: DateProviderMonotonic
     private let db: any DB
     private let interactionStore: InteractionStore
-    private let kvStore: KeyValueStore
+    private let kvStore: NewKeyValueStore
     private let logger: PrefixedLogger
     private let searchableNameIndexer: SearchableNameIndexer
     private let taskQueue: SerialTaskQueue
@@ -42,7 +42,7 @@ class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearchIndexer
         self.dateProvider = dateProvider
         self.db = db
         self.interactionStore = interactionStore
-        self.kvStore = KeyValueStore(collection: "BackupFullTextSearchIndexerImpl")
+        self.kvStore = NewKeyValueStore(collection: "BackupFullTextSearchIndexerImpl")
         self.logger = PrefixedLogger(prefix: "[Backups]")
         self.searchableNameIndexer = searchableNameIndexer
         self.taskQueue = SerialTaskQueue()
@@ -185,31 +185,23 @@ class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearchIndexer
     // MARK: - State
 
     private func setMinInteractionRowIdExclusive(_ newValue: Int64?, tx: DBWriteTransaction) {
-        if let newValue {
-            kvStore.setInt64(newValue, key: Constants.minInteractionRowIdKey, transaction: tx)
-        } else {
-            kvStore.removeValue(forKey: Constants.minInteractionRowIdKey, transaction: tx)
-        }
+        kvStore.writeValue(newValue, forKey: Constants.minInteractionRowIdKey, tx: tx)
     }
 
     private func minInteractionRowIdExclusive(tx: DBReadTransaction) -> Int64? {
-        kvStore.getInt64(Constants.minInteractionRowIdKey, transaction: tx)
+        return kvStore.fetchValue(Int64.self, forKey: Constants.minInteractionRowIdKey, tx: tx)
     }
 
     private func setMaxInteractionRowIdInclusive(_ newValue: Int64?, tx: DBWriteTransaction) {
-        if let newValue {
-            kvStore.setInt64(newValue, key: Constants.maxInteractionRowIdKey, transaction: tx)
-        } else {
-            kvStore.removeValue(forKey: Constants.maxInteractionRowIdKey, transaction: tx)
-        }
+        kvStore.writeValue(newValue, forKey: Constants.maxInteractionRowIdKey, tx: tx)
     }
 
     private func maxInteractionRowIdInclusive(tx: DBReadTransaction) -> Int64? {
-        kvStore.getInt64(Constants.maxInteractionRowIdKey, transaction: tx)
+        return kvStore.fetchValue(Int64.self, forKey: Constants.maxInteractionRowIdKey, tx: tx)
     }
 
     private enum Constants {
-        /// Exclusive; this marke the last interaction row id we already indexed.
+        /// Exclusive; this marks the last interaction row id we already indexed.
         static let minInteractionRowIdKey = "minInteractionRowIdKey"
         /// Inclusive; this marks the highest unindexed row id.
         static let maxInteractionRowIdKey = "maxInteractionRowIdKey"

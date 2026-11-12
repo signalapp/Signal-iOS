@@ -4,16 +4,16 @@
 //
 
 public struct BackupListMediaStore {
-    private let kvStore: KeyValueStore
+    private let kvStore: NewKeyValueStore
 
     public init() {
-        self.kvStore = KeyValueStore(collection: "ListBackupMediaManager")
+        self.kvStore = NewKeyValueStore(collection: "ListBackupMediaManager")
     }
 
     // MARK: -
 
     func removeAll(tx: DBWriteTransaction) {
-        kvStore.removeAll(transaction: tx)
+        kvStore.removeAll(tx: tx)
     }
 
     // MARK: -
@@ -22,21 +22,15 @@ public struct BackupListMediaStore {
         _ newValue: ListMediaIntegrityCheckResult?,
         tx: DBWriteTransaction,
     ) {
-        if
-            let newValue,
-            let serializedValue = try? JSONEncoder().encode(newValue)
-        {
-            kvStore.setData(serializedValue, key: Constants.lastNonEmptyIntegrityCheckResultKey, transaction: tx)
-        } else {
-            kvStore.removeValue(forKey: Constants.lastNonEmptyIntegrityCheckResultKey, transaction: tx)
-        }
+        kvStore.writeValueAsJSON(newValue, forKey: Constants.lastNonEmptyIntegrityCheckResultKey, tx: tx)
     }
 
     public func getLastFailingIntegrityCheckResult(tx: DBReadTransaction) -> ListMediaIntegrityCheckResult? {
-        return kvStore.getData(Constants.lastNonEmptyIntegrityCheckResultKey, transaction: tx)
-            .flatMap { serializedValue in
-                try? JSONDecoder().decode(ListMediaIntegrityCheckResult.self, from: serializedValue)
-            }
+        return try? kvStore.fetchJSONAsValue(
+            ListMediaIntegrityCheckResult.self,
+            forKey: Constants.lastNonEmptyIntegrityCheckResultKey,
+            tx: tx,
+        )
     }
 
     // MARK: -
@@ -45,31 +39,25 @@ public struct BackupListMediaStore {
         _ newValue: ListMediaIntegrityCheckResult?,
         tx: DBWriteTransaction,
     ) {
-        if
-            let newValue,
-            let serializedValue = try? JSONEncoder().encode(newValue)
-        {
-            kvStore.setData(serializedValue, key: Constants.lastIntegrityCheckResultKey, transaction: tx)
-        } else {
-            kvStore.removeValue(forKey: Constants.lastIntegrityCheckResultKey, transaction: tx)
-        }
+        kvStore.writeValueAsJSON(newValue, forKey: Constants.lastIntegrityCheckResultKey, tx: tx)
     }
 
     public func getMostRecentIntegrityCheckResult(tx: DBReadTransaction) -> ListMediaIntegrityCheckResult? {
-        return kvStore.getData(Constants.lastIntegrityCheckResultKey, transaction: tx)
-            .flatMap { serializedValue in
-                try? JSONDecoder().decode(ListMediaIntegrityCheckResult.self, from: serializedValue)
-            }
+        return try? kvStore.fetchJSONAsValue(
+            ListMediaIntegrityCheckResult.self,
+            forKey: Constants.lastIntegrityCheckResultKey,
+            tx: tx,
+        )
     }
 
     // MARK: -
 
     public func setManualNeedsListMedia(_ newValue: Bool, tx: DBWriteTransaction) {
-        kvStore.setBool(newValue, key: Constants.manuallySetNeedsListMediaKey, transaction: tx)
+        kvStore.writeValue(newValue, forKey: Constants.manuallySetNeedsListMediaKey, tx: tx)
     }
 
     public func getManualNeedsListMedia(tx: DBReadTransaction) -> Bool {
-        return kvStore.getBool(Constants.manuallySetNeedsListMediaKey, defaultValue: false, transaction: tx)
+        return kvStore.fetchValue(Bool.self, forKey: Constants.manuallySetNeedsListMediaKey, tx: tx) ?? false
     }
 
     // MARK: -

@@ -378,6 +378,7 @@ public class GRDBSchemaMigrator {
         case addChatFolderTables
         case addSortOrderToStickerPack
         case addVideoIsFastStartMp4ToAttachment
+        case migrateSomeKeyValueStores2
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -512,7 +513,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 168
+    public static let grdbSchemaVersionLatest: UInt = 169
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5854,6 +5855,111 @@ public class GRDBSchemaMigrator {
         migrator.registerMigration(.addVideoIsFastStartMp4ToAttachment) { tx in
             try tx.database.alter(table: "Attachment") {
                 $0.add(column: "videoIsFastStartMp4", .boolean).notNull().defaults(to: false)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.migrateSomeKeyValueStores2) { tx in
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "TSStorageManagerCallKitIdToPhoneNumberCollection")
+                try migrator.fetchKeys(tx: tx).forEach { try migrator.migrateString($0, tx: tx) }
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "TSStorageManagerCallKitIdToUUIDCollection")
+                try migrator.fetchKeys(tx: tx).forEach { try migrator.migrateString($0, tx: tx) }
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "LinkedDevicePniKeyManagerImpl")
+                try migrator.migrateBool("hasSuspectedIssue", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "AvatarBuilder.contactCacheKeys")
+                try migrator.fetchKeys(tx: tx).forEach { try migrator.migrateString($0, tx: tx) }
+            }
+            for collection in ["SSKKyberPreKeyStoreACIMetadataStore", "SSKKyberPreKeyStorePNIMetadataStore"] {
+                let migrator = KeyValueStoreMigrator(collection: collection)
+                try migrator.migrateInt64("lastKeyId", tx: tx)
+                try migrator.migrateDate("lastKeyRotationDate", tx: tx)
+            }
+            for collection in ["TSStorageInternalSettingsCollection", "TSStorageManagerPNIPreKeyMetadataCollection"] {
+                let migrator = KeyValueStoreMigrator(collection: collection)
+                try migrator.migrateInt64("TSStorageInternalSettingsNextPreKeyId", tx: tx)
+            }
+            for collection in ["TSStorageManagerSignedPreKeyMetadataCollection", "TSStorageManagerPNISignedPreKeyMetadataCollection"] {
+                let migrator = KeyValueStoreMigrator(collection: collection)
+                try migrator.migrateInt64("TSStorageInternalSettingsNextPreKeyId", tx: tx)
+                try migrator.migrateDate("lastKeyRotationDate", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "SenderKeyStore_SendingDistributionId")
+                try migrator.fetchKeys(tx: tx).forEach { try migrator.migrateString($0, tx: tx) }
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "BackupArchiveErrorStore")
+                try migrator.migrateBool("hasPendingErrors", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "BackupFullTextSearchIndexerImpl")
+                try migrator.migrateInt64("minInteractionRowIdKey", tx: tx)
+                try migrator.migrateInt64("maxInteractionRowIdKey", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "MessageBackupManager")
+                try migrator.migrateBool("keyValueStoreNeedForwardSecrecyTokenFetchKey", tx: tx)
+                try migrator.migrateInt64("keyValueStoreRestoreStateKey", tx: tx)
+                try migrator.migrateUInt64("keyValueStoreEstimatedSizeKey", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "BackupAttachmentDownloadStoreImpl")
+                try migrator.migrateBool("didDismissDownloadCompleteBannerKey", tx: tx)
+                try migrator.migrateUInt64("downloadCompleteBannerByteCountSnapshotKey", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "BackupUploadEraStore")
+                try migrator.migrateString("currentUploadEra", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "ListBackupMediaManager")
+                try migrator.migrateBool("hasCompletedEnumeratingAttachmentsKey", tx: tx)
+                try migrator.migrateBool("hasCompletedListingMediaKey", tx: tx)
+                try migrator.migrateBool("hasEverRunListMedia", tx: tx)
+                try migrator.migrateBool("manuallySetNeedsListMediaKey", tx: tx)
+                try migrator.migrateInt64("lastEnumeratedAttachmentIdKey", tx: tx)
+                try migrator.migrateString("inProgressUploadEraKey", tx: tx)
+                try migrator.migrateString("lastListMediaUploadEra", tx: tx)
+                try migrator.migrateString("paginationCursorKey", tx: tx)
+                try migrator.migrateUInt64("inProgressListMediaTimestamp", tx: tx)
+                try migrator.migrateUInt64("lastListMediaTimestamp", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "BackupSettingsStore")
+                try migrator.migrateBool("hasConsumedMediaTierCapacity", tx: tx)
+                try migrator.migrateBool("haveEverBeenEnabledKey2", tx: tx)
+                try migrator.migrateBool("haveSetBackupID", tx: tx)
+                try migrator.migrateBool("isBackupAttachmentDownloadQueueSuspended", tx: tx)
+                try migrator.migrateBool("isBackupAttachmentUploadQueueSuspended", tx: tx)
+                try migrator.migrateBool("shouldAllowBackupDownloadsOnCellular", tx: tx)
+                try migrator.migrateBool("shouldAllowBackupUploadsOnCellular", tx: tx)
+                try migrator.migrateBool("shouldGenerateThumbnailsOnNextOffloading", tx: tx)
+                try migrator.migrateBool("shouldOverrideShowBackupsOnboarding", tx: tx)
+                try migrator.migrateDate("firstBackupDate", tx: tx)
+                try migrator.migrateDate("lastBackupDate", tx: tx)
+                try migrator.migrateDate("lastBackupKeyReminderDate", tx: tx)
+                try migrator.migrateInt64("planKey2", tx: tx)
+                try migrator.migrateUInt64("lastBackupFileSizeBytes", tx: tx)
+                try migrator.migrateUInt64("lastBackupSizeBytes", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "BackupSettingsErrorStateStore")
+                try migrator.migrateBool("avatar_muted", tx: tx)
+                try migrator.migrateBool("menu_muted", tx: tx)
+                try migrator.migrateInt64("backgroundBackupErrorCount", tx: tx)
+                try migrator.migrateInt64("interactiveBackupErrorCount", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "BackupCDNCredentialStore")
+                try migrator.migrateDate("BackupCDNMetadataSavedDate:media", tx: tx)
+                try migrator.migrateDate("BackupCDNMetadataSavedDate:messages", tx: tx)
             }
             return .success(())
         }

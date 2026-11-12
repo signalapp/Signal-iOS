@@ -8,16 +8,16 @@ public struct BackupCDNCredentialStore {
         static let cdnMetadataLifetime: TimeInterval = BackupCDNReadCredential.lifetime
     }
 
-    private let kvStore: KeyValueStore
+    private let kvStore: NewKeyValueStore
 
     public init() {
-        self.kvStore = KeyValueStore(collection: "BackupCDNCredentialStore")
+        self.kvStore = NewKeyValueStore(collection: "BackupCDNCredentialStore")
     }
 
     // MARK: -
 
     public func wipe(tx: DBWriteTransaction) {
-        kvStore.removeAll(transaction: tx)
+        kvStore.removeAll(tx: tx)
     }
 
     // MARK: -
@@ -35,23 +35,21 @@ public struct BackupCDNCredentialStore {
         now: Date,
         tx: DBReadTransaction,
     ) -> BackupCDNReadCredential? {
+        let cachedCredential: BackupCDNReadCredential?
         do {
-            let cachedCredential: BackupCDNReadCredential? = try kvStore.getCodableValue(
+            cachedCredential = try kvStore.fetchJSONAsValue(
+                BackupCDNReadCredential.self,
                 forKey: Self.backupCDNAuthCredentialKey(cdnNumber: cdnNumber, authType: authType),
-                transaction: tx,
+                tx: tx,
             )
-
-            if
-                let cachedCredential,
-                !cachedCredential.isExpired(now: now)
-            {
-                return cachedCredential
-            }
         } catch {
             Logger.warn("Failed to deserialize BackupCDNReadCredential!")
+            return nil
         }
-
-        return nil
+        guard let cachedCredential, !cachedCredential.isExpired(now: now) else {
+            return nil
+        }
+        return cachedCredential
     }
 
     func setBackupCDNReadCredential(
@@ -69,15 +67,11 @@ public struct BackupCDNCredentialStore {
             break
         }
 
-        do {
-            try kvStore.setCodable(
-                backupCDNReadCredential,
-                key: Self.backupCDNAuthCredentialKey(cdnNumber: cdnNumber, authType: authType),
-                transaction: tx,
-            )
-        } catch {
-            Logger.warn("Failed to serialize BackupCDNReadCredential! \(error)")
-        }
+        kvStore.writeValueAsJSON(
+            backupCDNReadCredential,
+            forKey: Self.backupCDNAuthCredentialKey(cdnNumber: cdnNumber, authType: authType),
+            tx: tx,
+        )
     }
 
     // MARK: -
@@ -100,7 +94,7 @@ public struct BackupCDNCredentialStore {
         let (metadataKey, metadataSavedDateKey) = Self.backupCDNMetadataKeys(authType: authType)
 
         if
-            let metadataSavedDate = kvStore.getDate(metadataSavedDateKey, transaction: tx),
+            let metadataSavedDate = kvStore.fetchValue(Date.self, forKey: metadataSavedDateKey, tx: tx),
             now > metadataSavedDate.addingTimeInterval(Constants.cdnMetadataLifetime)
         {
             // It's been long enough that we should skip the cached value.
@@ -108,14 +102,11 @@ public struct BackupCDNCredentialStore {
         }
 
         do {
-            if let metadata: BackupCDNMetadata = try kvStore.getCodableValue(forKey: metadataKey, transaction: tx) {
-                return metadata
-            }
+            return try kvStore.fetchJSONAsValue(BackupCDNMetadata.self, forKey: metadataKey, tx: tx)
         } catch {
             Logger.warn("Failed to deserialize BackupCDNMetadata! \(error)")
+            return nil
         }
-
-        return nil
     }
 
     func setBackupCDNMetadata(
@@ -135,11 +126,7 @@ public struct BackupCDNCredentialStore {
 
         let (metadataKey, metadataSavedDateKey) = Self.backupCDNMetadataKeys(authType: authType)
 
-        do {
-            try kvStore.setCodable(backupCDNMetadata, key: metadataKey, transaction: tx)
-            kvStore.setDate(now, key: metadataSavedDateKey, transaction: tx)
-        } catch {
-            Logger.warn("Failed to serialize BackupCDNMetadata! \(error)")
-        }
+        kvStore.writeValueAsJSON(backupCDNMetadata, forKey: metadataKey, tx: tx)
+        kvStore.writeValue(now, forKey: metadataSavedDateKey, tx: tx)
     }
 }

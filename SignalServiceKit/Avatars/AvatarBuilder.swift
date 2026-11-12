@@ -754,7 +754,7 @@ public class AvatarBuilder {
         ),
     )
 
-    private static let contactCacheKeys = KeyValueStore(collection: "AvatarBuilder.contactCacheKeys")
+    private static let contactCacheKeys = NewKeyValueStore(collection: "AvatarBuilder.contactCacheKeys")
 
     private func avatarImage(forAvatarContent avatarContent: AvatarContent, transaction: DBReadTransaction?) -> UIImage? {
         let cacheKey = avatarContent.cacheKey
@@ -770,9 +770,9 @@ public class AvatarBuilder {
                 let transaction
             {
                 let contentCacheKey = avatarContent.contentType.cacheKey
-                if contentCacheKey != Self.contactCacheKeys.getString(serviceIdString, transaction: transaction) {
+                if contentCacheKey != Self.contactCacheKeys.fetchValue(String.self, forKey: serviceIdString, tx: transaction) {
                     SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTransaction in
-                        Self.contactCacheKeys.setString(contentCacheKey, key: serviceIdString, transaction: writeTransaction)
+                        Self.contactCacheKeys.writeValue(contentCacheKey, forKey: serviceIdString, tx: writeTransaction)
                     }
                 }
             }
@@ -865,7 +865,7 @@ public class AvatarBuilder {
                     // for someone who's updated theirs. (This is the code path where we discover it's been updated!)
                     if
                         let serviceIdString = address.serviceIdUppercaseString,
-                        let cacheKey = Self.contactCacheKeys.getString(serviceIdString, transaction: transaction)
+                        let cacheKey = Self.contactCacheKeys.fetchValue(String.self, forKey: serviceIdString, tx: transaction)
                     {
                         return AvatarContentTypes(
                             contentType: .cachedContact(address: address, cacheKey: cacheKey),

@@ -8,7 +8,7 @@ import LibSignalClient
 
 public enum BackupArchive {}
 
-public enum BackupRestoreState: Int, Codable {
+public enum BackupRestoreState: Int64, Codable {
     /// Has never restored from a backup in this database's history
     case none = 0
     /// Finished restoring a backup but still has post-restore steps to complete.

@@ -13,15 +13,15 @@ final class IdentityKeyMismatchManagerTest: XCTestCase {
         private static let hasSuspectedIssueKey = "hasSuspectedIssue"
 
         private let db: any DB
-        private let kvStore: KeyValueStore
+        private let kvStore: NewKeyValueStore
 
         init(db: any DB) {
             self.db = db
-            self.kvStore = KeyValueStore(collection: "LinkedDevicePniKeyManagerImpl")
+            self.kvStore = NewKeyValueStore(collection: "LinkedDevicePniKeyManagerImpl")
         }
 
         func hasDecryptionError() -> Bool {
-            return db.read { kvStore.getBool(Self.hasSuspectedIssueKey, defaultValue: false, transaction: $0) }
+            return db.read { kvStore.fetchValue(Bool.self, forKey: Self.hasSuspectedIssueKey, tx: $0) ?? false }
         }
     }
 
