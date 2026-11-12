@@ -987,7 +987,7 @@ You should also get your employer (if you work as a programmer) or school, if an
 			<key>License</key>
 			<string>GNU Affero General Public License v3.0 only</string>
 			<key>Title</key>
-			<string>attest, device-transfer, libsignal-account-keys, libsignal-account-keys 0.1.0, libsignal-bridge, libsignal-bridge-macros, libsignal-bridge-testing, libsignal-bridge-types, libsignal-core, libsignal-core 0.1.0, libsignal-debug, libsignal-debug 0.99.1, libsignal-ffi, libsignal-ffi-impl, libsignal-keytrans, libsignal-message-backup, libsignal-message-backup-macros, libsignal-net, libsignal-net-chat, libsignal-net-grpc, libsignal-net-infra, libsignal-protocol, libsignal-provisioning, libsignal-svrb, mrp 2.74.0, partial-default 0.1.0, partial-default-derive 0.1.0, poksho, protobuf 2.74.0, regex-aot 0.1.0, ringrtc 2.74.0, signal-crypto, signal-media, usernames, zkcredential, zkgroup</string>
+			<string>attest, device-transfer, libsignal-account-keys, libsignal-account-keys 0.1.0, libsignal-bridge, libsignal-bridge-macros, libsignal-bridge-testing, libsignal-bridge-types, libsignal-core, libsignal-core 0.1.0, libsignal-debug, libsignal-debug 0.99.1, libsignal-ffi, libsignal-ffi-impl, libsignal-keytrans, libsignal-message-backup, libsignal-message-backup-macros, libsignal-net, libsignal-net-chat, libsignal-net-grpc, libsignal-net-infra, libsignal-protocol, libsignal-provisioning, libsignal-svrb, mrp 2.75.0, partial-default 0.1.0, partial-default-derive 0.1.0, poksho, protobuf 2.75.0, regex-aot 0.1.0, ringrtc 2.75.0, signal-crypto, signal-media, usernames, zkcredential, zkgroup</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
