@@ -3,13 +3,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
-// MARK: - RegistrationTwoFactorPasskeyPresenter
-
-protocol RegistrationTwoFactorPasskeyPresenter: RegistrationTwoFactorAuthPresenter {
-    func continueWithPasskey()
+public struct RegistrationWebAuthnState {
+    let authenticationParameters: WebAuthnAuthenticationParameters
+    let submitResponse: @MainActor (_ webAuthnResponse: String) -> Void
 }
 
 // MARK: - RegistrationTwoFactorPasskeyViewController
@@ -21,8 +21,6 @@ class RegistrationTwoFactorPasskeyViewController: OWSViewController {
         static let sectionSpacing: CGFloat = 8
         static let bodyLabelMargins: CGFloat = 20
     }
-
-    private weak var presenter: RegistrationTwoFactorPasskeyPresenter?
 
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView()
@@ -81,11 +79,18 @@ class RegistrationTwoFactorPasskeyViewController: OWSViewController {
         return bodyLabelContainer
     }()
 
-    init(presenter: RegistrationTwoFactorPasskeyPresenter) {
-        self.presenter = presenter
+    private var state: RegistrationWebAuthnState
+    private let goToNextStep: @MainActor () -> Void
 
+    init(state: RegistrationWebAuthnState, goToNextStep: @escaping @MainActor () -> Void) {
+        self.state = state
+        self.goToNextStep = goToNextStep
         super.init()
         navigationItem.hidesBackButton = true
+    }
+
+    func updateState(_ state: RegistrationWebAuthnState) {
+        self.state = state
     }
 
     override func viewDidLoad() {
@@ -110,14 +115,14 @@ class RegistrationTwoFactorPasskeyViewController: OWSViewController {
         // Continue & Cancel Buttons
         let continueButton = UIButton(
             configuration: .largePrimary(title: CommonStrings.continueButton),
-            primaryAction: UIAction { [weak self] _ in
-                self?.presenter?.continueWithPasskey()
+            primaryAction: UIAction { _ in
+                // TODO: [#less] Present the system UI for WebAuthn.
             },
         )
         let cancelButton = UIButton(
             configuration: .largeSecondary(title: CommonStrings.cancelButton),
-            primaryAction: UIAction { [weak self] _ in
-                self?.presenter?.cancelTwoFactorAuth()
+            primaryAction: UIAction { _ in
+                // TODO: [#less] Cancel.
             },
         )
 
@@ -141,19 +146,16 @@ class RegistrationTwoFactorPasskeyViewController: OWSViewController {
 
 #if DEBUG
 
-private class PreviewRegistrationTwoFactorPasskeyPresenter: RegistrationTwoFactorPasskeyPresenter {
-    func continueWithPasskey() {
-        print("continueWithPasskey")
-    }
-
-    func cancelTwoFactorAuth() { }
-}
-
 @available(iOS 17, *)
 #Preview {
-    let presenter = PreviewRegistrationTwoFactorPasskeyPresenter()
     return UINavigationController(
-        rootViewController: RegistrationTwoFactorPasskeyViewController(presenter: presenter),
+        rootViewController: RegistrationTwoFactorPasskeyViewController(
+            state: RegistrationWebAuthnState(
+                authenticationParameters: WebAuthnAuthenticationParameters(challenge: Data(), timeout: 30, allowedCredentialIds: []),
+                submitResponse: { print("response: \($0)") },
+            ),
+            goToNextStep: {},
+        ),
     )
 }
 

@@ -146,4 +146,17 @@ public enum Registration {
             self.failureResponse = failureResponse
         }
     }
+
+    public struct MfaError: Error {
+        public let failureResponse: RegistrationServiceResponses.RegistrationMfaFailureResponse
+
+        public init(failureResponse: RegistrationServiceResponses.RegistrationMfaFailureResponse) {
+            self.failureResponse = failureResponse
+        }
+    }
+
+    public enum Mfa {
+        case totp(code: Int32)
+        case webAuthn(response: String)
+    }
 }

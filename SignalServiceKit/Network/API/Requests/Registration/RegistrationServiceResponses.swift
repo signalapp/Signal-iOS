@@ -134,4 +134,15 @@ public enum RegistrationServiceResponses {
             self.svr2AuthCredential = .init(credential: svr2Credential)
         }
     }
+
+    public struct RegistrationMfaFailureResponse: Decodable {
+        public let webAuthnParameters: AuthenticationCeremonyParameters?
+        public let hasTotpKey: Bool
+
+        public struct AuthenticationCeremonyParameters: Decodable {
+            public let challenge: Data
+            public let timeoutSeconds: Int64
+            public let allowedCredentialIds: [Data]
+        }
+    }
 }

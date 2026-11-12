@@ -6,10 +6,10 @@
 import SignalServiceKit
 import SignalUI
 
-// MARK: - RegistrationTwoFactorAuthenticatorCodePresenter
+// MARK: -
 
-protocol RegistrationTwoFactorAuthenticatorCodePresenter: RegistrationTwoFactorAuthPresenter {
-    func submitAuthenticatorCode(_ code: String)
+public struct RegistrationTotpState {
+    let submitCode: @MainActor (Int32) -> Void
 }
 
 // MARK: - RegistrationTwoFactorAuthenticatorCodeViewController
@@ -22,8 +22,6 @@ class RegistrationTwoFactorAuthenticatorCodeViewController: OWSViewController {
         static let bodyLabelMargins: CGFloat = 20
         static let codeLength = 6
     }
-
-    private weak var presenter: RegistrationTwoFactorAuthenticatorCodePresenter?
 
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView()
@@ -86,10 +84,15 @@ class RegistrationTwoFactorAuthenticatorCodeViewController: OWSViewController {
         let codeEntryView = NumericCodeEntryView(codeLength: Constants.codeLength)
         codeEntryView.translatesAutoresizingMaskIntoConstraints = false
         codeEntryView.didEnterCompleteCode = { [weak self] code in
-            self?.presenter?.submitAuthenticatorCode(code)
+            self?.submitCode(code)
         }
         return codeEntryView
     }()
+
+    private func submitCode(_ code: Int32) {
+        state.submitCode(code)
+        goToNextStep()
+    }
 
     private lazy var codeEntryContainer = {
         let codeEntryContainer = UIView.transparentContainer()
@@ -109,7 +112,7 @@ class RegistrationTwoFactorAuthenticatorCodeViewController: OWSViewController {
         let cancelButton = UIButton(
             configuration: .mediumSecondary(title: CommonStrings.cancelButton),
             primaryAction: UIAction { [weak self] _ in
-                self?.presenter?.cancelTwoFactorAuth()
+                self?.cancelTwoFactorAuth()
             },
         )
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
@@ -127,6 +130,9 @@ class RegistrationTwoFactorAuthenticatorCodeViewController: OWSViewController {
         return cancelButtonContainer
     }()
 
+    private func cancelTwoFactorAuth() {
+    }
+
     private lazy var spacer: UIView = {
         let spacer = SpacerView()
         spacer.translatesAutoresizingMaskIntoConstraints = false
@@ -135,10 +141,22 @@ class RegistrationTwoFactorAuthenticatorCodeViewController: OWSViewController {
         return spacer
     }()
 
-    init(presenter: RegistrationTwoFactorAuthenticatorCodePresenter) {
-        self.presenter = presenter
+    private var state: RegistrationTotpState
+    private let goToNextStep: @MainActor () -> Void
+
+    init(
+        state: RegistrationTotpState,
+        goToNextStep: @escaping @MainActor () -> Void,
+    ) {
+        self.state = state
+        self.goToNextStep = goToNextStep
         super.init()
         navigationItem.hidesBackButton = true
+    }
+
+    func resetCodeAndUpdateState(_ state: RegistrationTotpState) {
+        self.state = state
+        self.codeEntryView.reset()
     }
 
     override func viewDidLoad() {
@@ -194,7 +212,7 @@ private class NumericCodeEntryView: UIView, UITextFieldDelegate {
         static let highlightBorderWidth: CGFloat = 2
     }
 
-    var didEnterCompleteCode: ((String) -> Void)?
+    var didEnterCompleteCode: ((Int32) -> Void)?
 
     private lazy var textField: UITextField = {
         let textField = NumericCodeTextField()
@@ -292,6 +310,11 @@ private class NumericCodeEntryView: UIView, UITextFieldDelegate {
         ])
     }
 
+    func reset() {
+        textField.text = ""
+        textDidChange()
+    }
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -364,7 +387,7 @@ private class NumericCodeEntryView: UIView, UITextFieldDelegate {
         updateCursor()
 
         if digits.count == codeLength {
-            didEnterCompleteCode?(code)
+            didEnterCompleteCode?(Int32(code).owsFailUnwrap("must be valid"))
         }
     }
 
@@ -526,19 +549,13 @@ private class NumericCodeTextField: OWSTextField {
 
 #if DEBUG
 
-private class PreviewRegistrationTwoFactorAuthenticatorCodePresenter: RegistrationTwoFactorAuthenticatorCodePresenter {
-    func submitAuthenticatorCode(_ code: String) {
-        print("code: \(code)")
-    }
-
-    func cancelTwoFactorAuth() { }
-}
-
 @available(iOS 17, *)
 #Preview {
-    let presenter = PreviewRegistrationTwoFactorAuthenticatorCodePresenter()
     return UINavigationController(
-        rootViewController: RegistrationTwoFactorAuthenticatorCodeViewController(presenter: presenter),
+        rootViewController: RegistrationTwoFactorAuthenticatorCodeViewController(
+            state: RegistrationTotpState(submitCode: { code in print("code: \(code)") }),
+            goToNextStep: {},
+        ),
     )
 }
 

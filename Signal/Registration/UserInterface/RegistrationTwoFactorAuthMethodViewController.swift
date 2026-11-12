@@ -6,24 +6,18 @@
 import SignalServiceKit
 import SignalUI
 
-// MARK: - RegistrationTwoFactorAuthPresenter
+// MARK: -
 
-/// Shared by every screen in the two-factor authentication flow.
-protocol RegistrationTwoFactorAuthPresenter: AnyObject {
-    func cancelTwoFactorAuth()
-}
-
-// MARK: - RegistrationTwoFactorAuthMethodPresenter
-
-protocol RegistrationTwoFactorAuthMethodPresenter: RegistrationTwoFactorAuthPresenter {
-    func didChooseTwoFactorAuthMethod(_ method: RegistrationTwoFactorAuthMethod)
+public struct RegistrationMfaState {
+    let chooseTotp: @MainActor () -> Void
+    let chooseWebAuthn: @MainActor () -> Void
 }
 
 // MARK: - RegistrationTwoFactorAuthMethod
 
 enum RegistrationTwoFactorAuthMethod: CaseIterable {
-    case passkey
-    case authenticatorApp
+    case webAuthn
+    case totp
 }
 
 // MARK: - RegistrationTwoFactorAuthMethodViewController
@@ -40,8 +34,6 @@ class RegistrationTwoFactorAuthMethodViewController: OWSViewController {
         static let sectionSpacing: CGFloat = 16
         static let bodyLabelMargins: CGFloat = 20
     }
-
-    private weak var presenter: RegistrationTwoFactorAuthMethodPresenter?
 
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView()
@@ -93,10 +85,18 @@ class RegistrationTwoFactorAuthMethodViewController: OWSViewController {
         return bodyLabelContainer
     }()
 
-    init(presenter: RegistrationTwoFactorAuthMethodPresenter) {
-        self.presenter = presenter
+    private var state: RegistrationMfaState
+    private let goToNextStep: @MainActor () -> Void
+
+    init(state: RegistrationMfaState, goToNextStep: @escaping @MainActor () -> Void) {
+        self.state = state
+        self.goToNextStep = goToNextStep
         super.init()
         navigationItem.hidesBackButton = true
+    }
+
+    func updateState(_ state: RegistrationMfaState) {
+        self.state = state
     }
 
     override func viewDidLoad() {
@@ -135,8 +135,8 @@ class RegistrationTwoFactorAuthMethodViewController: OWSViewController {
         // Cancel Button
         let cancelButton = UIButton(
             configuration: .mediumSecondary(title: CommonStrings.cancelButton),
-            primaryAction: UIAction { [weak self] _ in
-                self?.presenter?.cancelTwoFactorAuth()
+            primaryAction: UIAction { _ in
+                // TODO: [#less] Add support for cancellation.
             },
         )
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
@@ -161,7 +161,7 @@ class RegistrationTwoFactorAuthMethodViewController: OWSViewController {
 
     private func choiceButton(for method: RegistrationTwoFactorAuthMethod) -> UIButton {
         switch method {
-        case .passkey:
+        case .webAuthn:
             return UIButton.registrationChoiceButton(
                 title: OWSLocalizedString(
                     "ONBOARDING_TWO_FACTOR_AUTH_METHOD_PASSKEY_TITLE",
@@ -174,10 +174,10 @@ class RegistrationTwoFactorAuthMethodViewController: OWSViewController {
                 iconName: "person-key",
                 imageSize: 36.0,
                 primaryAction: UIAction { [weak self] _ in
-                    self?.presenter?.didChooseTwoFactorAuthMethod(.passkey)
+                    self?.chooseMethod(method)
                 },
             )
-        case .authenticatorApp:
+        case .totp:
             return UIButton.registrationChoiceButton(
                 title: OWSLocalizedString(
                     "ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_TITLE",
@@ -190,10 +190,20 @@ class RegistrationTwoFactorAuthMethodViewController: OWSViewController {
                 iconName: "device-phone",
                 imageSize: 36.0,
                 primaryAction: UIAction { [weak self] _ in
-                    self?.presenter?.didChooseTwoFactorAuthMethod(.authenticatorApp)
+                    self?.chooseMethod(method)
                 },
             )
         }
+    }
+
+    private func chooseMethod(_ method: RegistrationTwoFactorAuthMethod) {
+        switch method {
+        case .totp:
+            state.chooseTotp()
+        case .webAuthn:
+            state.chooseWebAuthn()
+        }
+        goToNextStep()
     }
 }
 
@@ -201,19 +211,16 @@ class RegistrationTwoFactorAuthMethodViewController: OWSViewController {
 
 #if DEBUG
 
-private class PreviewRegistrationTwoFactorAuthMethodPresenter: RegistrationTwoFactorAuthMethodPresenter {
-    func didChooseTwoFactorAuthMethod(_ method: RegistrationTwoFactorAuthMethod) {
-        print("method: \(method)")
-    }
-
-    func cancelTwoFactorAuth() { }
-}
-
 @available(iOS 17, *)
 #Preview("All Methods") {
-    let presenter = PreviewRegistrationTwoFactorAuthMethodPresenter()
     return UINavigationController(
-        rootViewController: RegistrationTwoFactorAuthMethodViewController(presenter: presenter),
+        rootViewController: RegistrationTwoFactorAuthMethodViewController(
+            state: RegistrationMfaState(
+                chooseTotp: { print("method: totp") },
+                chooseWebAuthn: { print("method: webAuthn") },
+            ),
+            goToNextStep: {},
+        ),
     )
 }
 

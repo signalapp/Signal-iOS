@@ -3707,11 +3707,55 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     setSignalLoginState(.splash)
                 }),
                 submitLogin: { [self] newAci, newAep in
-                    setSignalLoginState(.reRegister(aci: newAci, aep: newAep))
+                    setSignalLoginState(.reRegister(aci: newAci, aep: newAep, mfa: nil))
                 },
             )))
 
-        case .reRegister(let aci, let aep):
+        case .completeMfa(
+            let aci,
+            let aep,
+            let error,
+            let method,
+        ):
+            let response = error.failureResponse
+            // If we choose TOTP or can only use TOTP...
+            if response.hasTotpKey, method == .totp || response.webAuthnParameters == nil {
+                return .registrationStep(.promptForTotp(RegistrationTotpState(
+                    submitCode: { [self] code in
+                        setSignalLoginState(.reRegister(aci: aci, aep: aep, mfa: .totp(code: code)))
+                    },
+                )))
+            }
+            // If we chose WebAuthn or can only use WebAuthn...
+            if let webAuthnParameters = response.webAuthnParameters, method == .webAuthn || !response.hasTotpKey {
+                return .registrationStep(.promptForWebAuthn(RegistrationWebAuthnState(
+                    authenticationParameters: WebAuthnAuthenticationParameters(
+                        challenge: webAuthnParameters.challenge,
+                        timeout: TimeInterval(webAuthnParameters.timeoutSeconds),
+                        allowedCredentialIds: webAuthnParameters.allowedCredentialIds,
+                    ),
+                    submitResponse: { [self] response in
+                        setSignalLoginState(.reRegister(aci: aci, aep: aep, mfa: .webAuthn(response: response)))
+                    },
+                )))
+            }
+            // If both are available, ask.
+            if response.hasTotpKey, response.webAuthnParameters != nil {
+                owsAssertDebug(method == nil)
+                return .registrationStep(.promptForMfa(RegistrationMfaState(
+                    chooseTotp: { [self] in
+                        setSignalLoginState(.completeMfa(aci: aci, aep: aep, error: error, method: .totp))
+                    },
+                    chooseWebAuthn: { [self] in
+                        setSignalLoginState(.completeMfa(aci: aci, aep: aep, error: error, method: .webAuthn))
+                    },
+                )))
+            }
+            // If neither is available, throw an error.
+            setSignalLoginState(.logIn(aci: aci, aep: aep))
+            throw error
+
+        case .reRegister(let aci, let aep, let mfa):
             let recoveryPassword = aep.getMasterKey().deriveRegistrationRecoveryPassword()
             let accountIdentity: AccountIdentity
             do {
@@ -3719,10 +3763,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return try await makeRegisterRequest(.signalLogin(
                         aci: aci,
                         recoveryPassword: recoveryPassword,
+                        mfa: mfa,
                     ))
                 }
             } catch is Registration.DeviceTransferPossibleError where !isReregisteringSignalLogin() {
                 return .registrationStep(.chooseRestoreMethod(.unspecified))
+            } catch let error as Registration.MfaError {
+                if let mfa {
+                    // We submitted MFA but it was rejected; show an error and try again.
+                    setSignalLoginState(.completeMfa(aci: aci, aep: aep, error: error, method: .fromRegistrationMfa(mfa)))
+                    throw error
+                }
+                // We didn't try any MFA mechanism, but the server indicates one is
+                // necessary. Ask for one and try again.
+                return .setSignalLoginState(.completeMfa(aci: aci, aep: aep, error: error, method: nil))
             } catch let error as Registration.RecoveryPasswordRejectedError {
                 // TODO: [#less] Show error on RegistrationSignalLoginViewController.
                 setSignalLoginState(.logIn(aci: aci, aep: aep))
@@ -4495,7 +4549,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private enum RegistrationContext {
         case sessionId(phoneNumber: E164, sessionId: String, reglockToken: RegistrationLock?)
         case recoveryPassword(phoneNumber: E164, recoveryPassword: RegistrationRecoveryPassword, reglockToken: RegistrationLock?)
-        case signalLogin(aci: Aci, recoveryPassword: RegistrationRecoveryPassword)
+        case signalLogin(aci: Aci, recoveryPassword: RegistrationRecoveryPassword, mfa: Registration.Mfa?)
         case receiptCredential(receiptCredentialPresentation: ReceiptCredentialPresentation, recoveryPassword: RegistrationRecoveryPassword)
     }
 
@@ -4563,17 +4617,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 accountIdentifier: .phoneNumber(phoneNumber),
                 recoveryPassword: _recoveryPassword,
                 pniPreKeyBundle: _pniPreKeyBundle,
+                mfa: nil,
             )
             reglockToken = _reglockToken
             recoveryPassword = _recoveryPassword
             pniRegistrationId = persistedState.pniRegistrationId.owsFailUnwrap("must exist")
-        case .signalLogin(let aci, let _recoveryPassword):
+        case .signalLogin(let aci, let _recoveryPassword, let mfa):
             let _pniPreKeyBundle = await deps.preKeyManager.createPreKeysForRegistration(forIdentity: .pni)
             pniPreKeyBundle = _pniPreKeyBundle
             requestContext = .recoveryPassword(
                 accountIdentifier: .aci(aci),
                 recoveryPassword: _recoveryPassword,
                 pniPreKeyBundle: _pniPreKeyBundle,
+                mfa: mfa,
             )
             reglockToken = nil
             recoveryPassword = _recoveryPassword
@@ -5322,10 +5378,33 @@ private enum InMemorySignalLoginState {
         aep: SignalServiceKit.AccountEntropyPool?,
     )
 
+    /// The server requires MFA to succeed before proceeding.
+    case completeMfa(
+        aci: Aci,
+        aep: SignalServiceKit.AccountEntropyPool,
+        error: Registration.MfaError,
+        method: MfaMethod?,
+    )
+
+    enum MfaMethod {
+        case totp
+        case webAuthn
+
+        static func fromRegistrationMfa(_ mfa: Registration.Mfa) -> Self {
+            switch mfa {
+            case .totp:
+                return .totp
+            case .webAuthn:
+                return .webAuthn
+            }
+        }
+    }
+
     /// The user submitted their existing Signal Login.
     case reRegister(
         aci: Aci,
         aep: SignalServiceKit.AccountEntropyPool,
+        mfa: Registration.Mfa?,
     )
 
     init(persistedState: PersistedSignalLoginState) {
@@ -5376,6 +5455,8 @@ private enum InMemorySignalLoginState {
                 accountIdentity: accountIdentity,
             ))
         case .logIn:
+            return nil
+        case .completeMfa:
             return nil
         case .reRegister:
             return nil

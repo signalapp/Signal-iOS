@@ -312,6 +312,48 @@ public class RegistrationNavigationController: OWSNavigationController {
                 },
                 update: nil,
             )
+        case .promptForMfa(let state):
+            return Controller(
+                type: RegistrationTwoFactorAuthMethodViewController.self,
+                make: { presenter in
+                    return RegistrationTwoFactorAuthMethodViewController(
+                        state: state,
+                        goToNextStep: { [unowned presenter] in presenter.pushNextStepController() },
+                    )
+                },
+                update: { _, controller in
+                    controller.updateState(state)
+                    return nil
+                },
+            )
+        case .promptForTotp(let state):
+            return Controller(
+                type: RegistrationTwoFactorAuthenticatorCodeViewController.self,
+                make: { presenter in
+                    return RegistrationTwoFactorAuthenticatorCodeViewController(
+                        state: state,
+                        goToNextStep: { [unowned presenter] in presenter.pushNextStepController() },
+                    )
+                },
+                update: { _, controller in
+                    controller.resetCodeAndUpdateState(state)
+                    return nil
+                },
+            )
+        case .promptForWebAuthn(let state):
+            return Controller(
+                type: RegistrationTwoFactorPasskeyViewController.self,
+                make: { presenter in
+                    return RegistrationTwoFactorPasskeyViewController(
+                        state: state,
+                        goToNextStep: { [unowned presenter] in presenter.pushNextStepController() },
+                    )
+                },
+                update: { _, controller in
+                    controller.updateState(state)
+                    return nil
+                },
+            )
         case .pinEntry(let state):
             return Controller(
                 type: RegistrationPinViewController.self,
