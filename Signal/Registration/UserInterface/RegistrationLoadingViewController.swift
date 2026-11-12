@@ -8,34 +8,32 @@ import SignalUI
 
 class RegistrationLoadingViewController: OWSViewController, OWSNavigationChildController {
     enum RegistrationLoadingMode {
-        case generic
-        case submittingPhoneNumber(e164: String)
-        case submittingVerificationCode
         case restoringBackup(BackupRestoreProgressModal)
+        case progressView(LoadingText?)
+        enum LoadingText {
+            case submittingPhoneNumber(e164: String)
+            case submittingVerificationCode
+
+            var localizedString: String {
+                switch self {
+                case let .submittingPhoneNumber(e164):
+                    let format = OWSLocalizedString(
+                        "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT",
+                        comment: "Label for the progress spinner shown during phone number registration. Embeds {{phone number}}.",
+                    )
+                    return String.nonPluralLocalizedStringWithFormat(format, e164.e164FormattedAsPhoneNumberWithoutBreaks)
+                case .submittingVerificationCode:
+                    return OWSLocalizedString(
+                        "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL",
+                        comment: "Label for a progress spinner currently validating code",
+                    )
+                }
+            }
+        }
     }
 
-    init(mode: RegistrationLoadingMode) {
-        spinnerView = AnimatedProgressView(loadingText: {
-            switch mode {
-            case .generic:
-                return ""
-            case let .submittingPhoneNumber(e164):
-                let format = OWSLocalizedString(
-                    "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT",
-                    comment: "Label for the progress spinner shown during phone number registration. Embeds {{phone number}}.",
-                )
-                return String.nonPluralLocalizedStringWithFormat(format, e164.e164FormattedAsPhoneNumberWithoutBreaks)
-            case .submittingVerificationCode:
-                return OWSLocalizedString(
-                    "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL",
-                    comment: "Label for a progress spinner currently validating code",
-                )
-            case .restoringBackup:
-                // TODO: [Backups] localize
-                return "Restoring from backup…"
-                // comment: "Label for a progress spinner when restoring from backup"
-            }
-        }())
+    init(loadingText: RegistrationLoadingMode.LoadingText?) {
+        spinnerView = AnimatedProgressView(loadingText: loadingText?.localizedString ?? "")
 
         super.init()
 

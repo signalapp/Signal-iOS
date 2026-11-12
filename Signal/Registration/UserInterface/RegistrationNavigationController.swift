@@ -55,7 +55,7 @@ public class RegistrationNavigationController: OWSNavigationController {
 
     private func pushNextController(
         _ step: Guarantee<RegistrationStep>,
-        loadingMode: RegistrationLoadingViewController.RegistrationLoadingMode? = .generic,
+        loadingMode: RegistrationLoadingViewController.RegistrationLoadingMode? = .progressView(nil),
     ) {
         guard !isLoading else {
             owsFailDebug("Parallel loads not allowed", logger: logger)
@@ -74,9 +74,9 @@ public class RegistrationNavigationController: OWSNavigationController {
                 ) { [weak self] in
                     self?._pushNextController(step)
                 }
-            default:
+            case .progressView(let loadingText):
                 pushViewController(
-                    RegistrationLoadingViewController(mode: loadingMode),
+                    RegistrationLoadingViewController(loadingText: loadingText),
                     animated: false,
                 ) { [weak self] in
                     self?._pushNextController(step)
@@ -89,7 +89,7 @@ public class RegistrationNavigationController: OWSNavigationController {
     }
 
     private func pushNextStepController(
-        loadingMode: RegistrationLoadingViewController.RegistrationLoadingMode? = .generic,
+        loadingMode: RegistrationLoadingViewController.RegistrationLoadingMode? = .progressView(nil),
     ) {
         pushNextController(
             Guarantee.wrapAsync { [coordinator] in await coordinator.nextStep() },
@@ -597,7 +597,7 @@ extension RegistrationNavigationController: RegistrationPhoneNumberPresenter {
     func goToNextStep(withE164 e164: E164) {
         userActionLogger.info("Submitted phone number")
         coordinator.submitE164(e164)
-        pushNextStepController(loadingMode: .submittingPhoneNumber(e164: e164.stringValue))
+        pushNextStepController(loadingMode: .progressView(.submittingPhoneNumber(e164: e164.stringValue)))
     }
 
     func switchToDeviceLinking() {
@@ -624,7 +624,7 @@ extension RegistrationNavigationController: RegistrationChangePhoneNumberPresent
     func submitProspectiveChangeNumberE164(newE164: E164) {
         userActionLogger.info("Submitted prospective change-number number")
         coordinator.submitProspectiveChangeNumberE164(newE164)
-        pushNextStepController(loadingMode: .submittingPhoneNumber(e164: newE164.stringValue))
+        pushNextStepController(loadingMode: .progressView(.submittingPhoneNumber(e164: newE164.stringValue)))
     }
 }
 
@@ -633,7 +633,7 @@ extension RegistrationNavigationController: RegistrationChangePhoneNumberConfirm
     func confirmChangeNumber(newE164: E164) {
         userActionLogger.info("Confirmed new phone number")
         coordinator.submitE164(newE164)
-        pushNextStepController(loadingMode: .submittingPhoneNumber(e164: newE164.stringValue))
+        pushNextStepController(loadingMode: .progressView(.submittingPhoneNumber(e164: newE164.stringValue)))
     }
 }
 
@@ -667,7 +667,7 @@ extension RegistrationNavigationController: RegistrationVerificationPresenter {
 
     func submitVerificationCode(_ code: String) {
         userActionLogger.info("Submitted verification code")
-        pushNextController(coordinator.submitVerificationCode(code), loadingMode: .submittingVerificationCode)
+        pushNextController(coordinator.submitVerificationCode(code), loadingMode: .progressView(.submittingVerificationCode))
     }
 }
 
