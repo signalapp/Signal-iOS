@@ -88,7 +88,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             if rawDescription == rawTitle {
                 rawDescription = nil
             }
-            normalizedDescription = rawDescription.map { LinkPreviewHelper.normalizeString($0, maxLines: 3) }
+            normalizedDescription = rawDescription.map { LinkPreviewHelper.normalizeString($0, maxLines: 15) }
             dateForLinkPreview = content.dateForLinkPreview
 
             if
