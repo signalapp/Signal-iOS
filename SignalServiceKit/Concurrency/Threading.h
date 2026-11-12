@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+@import Foundation;
+
 NS_ASSUME_NONNULL_BEGIN
 
 /// Returns YES if the result returned from dispatch_get_current_queue() matches

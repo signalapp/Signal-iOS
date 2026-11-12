@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+@import Foundation;
+
 #import "OWSAddToProfileWhitelistOfferMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
