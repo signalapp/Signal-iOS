@@ -47,6 +47,18 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         XCTAssertEqual(newRowCounts, oldRowCounts)
     }
 
+    func testIntegrityCheckOnCorruptedDatabase() throws {
+        let databaseStorage = try newDatabaseWithCorruptedRows([50], tableName: "keyvalue") { db, i in
+            try db.execute(
+                sql: "INSERT INTO keyvalue (key, collection, value) VALUES (?, ?, ?)",
+                arguments: ["\(i)", "DatabaseRecoveryTest", Randomness.generateRandomBytes(pageFillingValueSize)],
+            )
+        }
+
+        let result = DatabaseRecovery.integrityCheck(databaseStorage: try cloneDatabaseStorage(databaseStorage))
+        XCTAssertEqual(result, .notOk)
+    }
+
     // MARK: - Dump and restore
 
     func testDumpedTables() throws {
@@ -262,6 +274,100 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         }
     }
 
+    func testDumpAndRestoreSkipsCorruptedRow() throws {
+        try assertDumpAndRestoreSkips(corruptedRows: [50])
+    }
+
+    func testDumpAndRestoreSkipsCorruptedFirstAndLastRows() throws {
+        // The first two rows share the root page until it splits, so corrupt both.
+        try assertDumpAndRestoreSkips(corruptedRows: [0, 1, rowCount - 1])
+    }
+
+    func testDumpAndRestoreSkipsAdjacentCorruptedRows() throws {
+        try assertDumpAndRestoreSkips(corruptedRows: [20, 21, 22])
+    }
+
+    func testDumpAndRestoreSkipsSeparateCorruptedRows() throws {
+        try assertDumpAndRestoreSkips(corruptedRows: [20, 70])
+    }
+
+    private func assertDumpAndRestoreSkips(corruptedRows: Set<Int>) throws {
+        let databaseStorage = try newDatabaseWithCorruptedRows(corruptedRows, tableName: "KeyTransparency") { db, i in
+            try db.execute(
+                sql: "INSERT INTO KeyTransparency (aci, libsignalBlob) VALUES (?, ?)",
+                arguments: [Data("\(i)".utf8), Randomness.generateRandomBytes(pageFillingValueSize)],
+            )
+        }
+
+        let dump = DatabaseRecovery.DumpAndRestoreOperation(
+            appReadiness: AppReadinessMock(),
+            corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
+            keychainStorage: databaseStorage.keychainStorage,
+        )
+        try dump.run()
+
+        let finishedDatabaseStorage = try cloneDatabaseStorage(databaseStorage)
+        let recoveredRows = try finishedDatabaseStorage.read { tx in
+            try Data.fetchAll(tx.database, sql: "SELECT aci FROM KeyTransparency").map { Int(String(decoding: $0, as: UTF8.self)) }
+        }
+        let expectedRows = (0..<rowCount).filter { !corruptedRows.contains($0) }
+        XCTAssertEqual(Set(recoveredRows), Set(expectedRows))
+    }
+
+    func testDumpAndRestoreWithCorruptedKeyValueStoreRow() throws {
+        let databaseStorage = try newDatabaseWithCorruptedKeyValueStoreRow(collection: "DatabaseRecoveryTest.Corrupted")
+
+        let dump = DatabaseRecovery.DumpAndRestoreOperation(
+            appReadiness: AppReadinessMock(),
+            corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
+            keychainStorage: databaseStorage.keychainStorage,
+        )
+        try dump.run()
+
+        let finishedDatabaseStorage = try cloneDatabaseStorage(databaseStorage)
+        try finishedDatabaseStorage.read { tx in
+            XCTAssertEqual(try keyValueRowCount(collection: "DatabaseRecoveryTest", tx: tx), rowCount - 1)
+            XCTAssertEqual(try keyValueRowCount(collection: "DatabaseRecoveryTest.Corrupted", tx: tx), 0)
+        }
+    }
+
+    func testDumpAndRestoreWithCorruptedEssentialKeyValueStoreRow() throws {
+        let databaseStorage = try newDatabaseWithCorruptedKeyValueStoreRow(collection: "TSStorageManagerIdentityKeyStoreCollection")
+
+        let dump = DatabaseRecovery.DumpAndRestoreOperation(
+            appReadiness: AppReadinessMock(),
+            corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
+            keychainStorage: databaseStorage.keychainStorage,
+        )
+        XCTAssertThrowsError(try dump.run()) { error in
+            XCTAssertEqual(error as? DatabaseRecoveryError, .unrecoverablyCorrupted)
+        }
+    }
+
+    private func newDatabaseWithCorruptedKeyValueStoreRow(collection: String) throws -> SDSDatabaseStorage {
+        let corruptedRow = 50
+        return try newDatabaseWithCorruptedRows([corruptedRow], tableName: "keyvalue") { db, i in
+            try db.execute(
+                sql: "INSERT INTO keyvalue (key, collection, value) VALUES (?, ?, ?)",
+                arguments: ["\(i)", i == corruptedRow ? collection : "DatabaseRecoveryTest", Randomness.generateRandomBytes(pageFillingValueSize)],
+            )
+        }
+    }
+
+    private func keyValueRowCount(collection: String, tx: DBReadTransaction) throws -> Int {
+        let sql = "SELECT COUNT(*) FROM keyvalue WHERE collection = ?"
+        return try XCTUnwrap(Int.fetchOne(tx.database, sql: sql, arguments: [collection]))
+    }
+
+    func testMoreActionableErrorPrefersRunningOutOfSpace() {
+        let full = DatabaseError(resultCode: .SQLITE_FULL)
+        let corrupt = DatabaseError(resultCode: .SQLITE_CORRUPT)
+        typealias Operation = DatabaseRecovery.DumpAndRestoreOperation
+        XCTAssertEqual((Operation.moreActionableError(nil, corrupt) as? DatabaseError)?.resultCode, .SQLITE_CORRUPT)
+        XCTAssertEqual((Operation.moreActionableError(corrupt, full) as? DatabaseError)?.resultCode, .SQLITE_FULL)
+        XCTAssertEqual((Operation.moreActionableError(full, corrupt) as? DatabaseError)?.resultCode, .SQLITE_FULL)
+    }
+
     func testDumpAndRestoreWithInvalidNonessentialTable() throws {
         let databaseStorage = try newDatabase()
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
@@ -366,6 +472,73 @@ final class DatabaseRecoveryTest: SSKBaseTest {
             ),
             keychainStorage: MockKeychainStorage(),
         )
+    }
+
+    private let rowCount = 100
+    /// More than half a 4096-byte SQLCipher page, so no two rows share a page.
+    private let pageFillingValueSize: UInt = 3000
+
+    /// Create a database with `rowCount` rows in `tableName`, some of which are
+    /// corrupted.
+    ///
+    /// `insertRow` inserts the `i`th row, which must be large enough to fill a
+    /// page on its own.
+    private func newDatabaseWithCorruptedRows(
+        _ corruptedRows: Set<Int>,
+        tableName: String,
+        insertRow: (Database, Int) throws -> Void,
+    ) throws -> SDSDatabaseStorage {
+        let databaseStorage = try newDatabase()
+        try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
+        let pool = databaseStorage.grdbStorage.pool
+
+        // Remove free pages, so each row is written to newly allocated pages.
+        try pool.writeWithoutTransaction { try $0.execute(sql: "VACUUM") }
+
+        var rowIds = [Int64]()
+        var pagesToCorrupt = [Int]()
+        for i in 0..<rowCount {
+            let newPages = try databaseStorage.write { tx in
+                let pageCountBefore = try XCTUnwrap(Int.fetchOne(tx.database, sql: "PRAGMA page_count"))
+                try insertRow(tx.database, i)
+                rowIds.append(tx.database.lastInsertedRowID)
+                let pageCountAfter = try XCTUnwrap(Int.fetchOne(tx.database, sql: "PRAGMA page_count"))
+                return (pageCountBefore + 1)..<(pageCountAfter + 1)
+            }
+            if corruptedRows.contains(i) {
+                pagesToCorrupt += newPages
+            }
+        }
+
+        let pageSize = try databaseStorage.read { try XCTUnwrap(Int.fetchOne($0.database, sql: "PRAGMA page_size")) }
+        _ = try pool.writeWithoutTransaction { try $0.checkpoint(.truncate) }
+        try XCTUnwrap(pool.close())
+
+        // This breaks each page's SQLCipher HMAC, so reading it fails with SQLITE_CORRUPT.
+        let fileHandle = try FileHandle(forWritingTo: databaseStorage.databaseFileUrl)
+        for page in pagesToCorrupt {
+            try fileHandle.seek(toOffset: UInt64((page - 1) * pageSize + pageSize / 2))
+            try fileHandle.write(contentsOf: Randomness.generateRandomBytes(64))
+        }
+        try fileHandle.close()
+
+        // Rows usually get a page each, but that depends on the database's
+        // layout, so check that we corrupted exactly the rows we meant to.
+        let corruptedDatabaseStorage = try cloneDatabaseStorage(databaseStorage)
+        let unreadableRows = (0..<rowCount).filter { i in
+            do {
+                try corruptedDatabaseStorage.readThrows(file: #file, function: #function, line: #line) { tx in
+                    _ = try Row.fetchOne(tx.database, sql: "SELECT * FROM \(tableName) WHERE rowid = ?", arguments: [rowIds[i]])
+                }
+                return false
+            } catch {
+                return true
+            }
+        }
+        XCTAssertEqual(Set(unreadableRows), corruptedRows)
+        try XCTUnwrap(corruptedDatabaseStorage.grdbStorage.pool.close())
+
+        return databaseStorage
     }
 
     func allNormalTableNames(tx: DBReadTransaction) throws -> Set<String> {

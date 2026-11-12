@@ -404,7 +404,9 @@ public enum DatabaseRecovery {
         // MARK: Copy essential tables
 
         static let tablesThatMustBeCopiedFlawlessly: [String] = [
-            // The app will be too unpredictable with strange key-value stores.
+            // The app will be too unpredictable with strange key-value stores, so we
+            // keep a partial copy only if it has every row in
+            // `keyValueCollectionsThatMustBeCopiedFlawlessly`.
             KeyValueStore.tableName,
             // If we get a disappearing timer wrong, users might send messages incorrectly.
             DisappearingMessagesConfigurationRecord.databaseTableName,
@@ -434,12 +436,125 @@ public enum DatabaseRecovery {
                     switch result {
                     case let .totalFailure(error), let .copiedSomeButHadTrouble(error, _):
                         Logger.warn("Couldn't copy tables flawlessly: \(error.grdbErrorForLogging)")
-                        let toThrow: DatabaseRecoveryError = error.isSqliteFullError ? .ranOutOfDiskSpace : .unrecoverablyCorrupted
-                        throw toThrow
+                        if error.isSqliteFullError {
+                            throw DatabaseRecoveryError.ranOutOfDiskSpace
+                        }
+                        if
+                            case .copiedSomeButHadTrouble = result,
+                            tableName == KeyValueStore.tableName,
+                            canKeepPartialKeyValueStore(oldDatabaseStorage: oldDatabaseStorage, newDatabaseStorage: newDatabaseStorage)
+                        {
+                            continue
+                        }
+                        throw DatabaseRecoveryError.unrecoverablyCorrupted
                     case .wentFlawlessly:
                         break
                     }
                 }
+            }
+        }
+
+        /// If any key-value store rows in these collections are lost, recovery
+        /// fails. Each must match the collection name used by its owner.
+        private static let keyValueCollectionsThatMustBeCopiedFlawlessly: Set<String> = [
+            // The account: identifiers, credentials, keys, and registration state.
+            "TSStorageUserAccountCollection",
+            "TSStorageManagerIdentityKeyStoreCollection",
+            "AccountEntropyPool",
+            "MediaRootBackupKey",
+            "AccountKey.Sync",
+            "2FA",
+            "SVR.Completed",
+            "kUDCollection",
+            "RegistrationCoordinator",
+            "RegistrationCoordinatorLoader",
+            "RegistrationSession",
+            // Pre-key ID counters. Losing one could reuse an ID and overwrite a key.
+            "TSStorageInternalSettingsCollection",
+            "TSStorageManagerPNIPreKeyMetadataCollection",
+            "TSStorageManagerSignedPreKeyMetadataCollection",
+            "TSStorageManagerPNISignedPreKeyMetadataCollection",
+            "SSKKyberPreKeyStoreACIMetadataStore",
+            "SSKKyberPreKeyStorePNIMetadataStore",
+            // Payments and backups, including key material and in-progress changes.
+            "Payments",
+            "OWSPaymentsLock",
+            "BackupSettingsStore",
+            "BackupDisablingManager",
+            // Security and privacy settings, which would otherwise silently revert to
+            // their defaults (and could then sync to linked devices).
+            "OWSScreenLock_Collection",
+            "NotificationPreferences",
+            "SignalProxy",
+            "SignalPreferences",
+            "SSKPreferences",
+            "OWSIdentityManager.shareMyPhoneNumberStore",
+            "OWSReadReceiptManagerCollection",
+            "TypingIndicators",
+            "blorp",
+            "StoryManager",
+            "KeyTransparency",
+            // Sets where losing some rows is worse than losing them all.
+            "TSPrivateStoryThread+DeletedAtTimestamp",
+            "AuthorMergeMissingAci",
+        ]
+
+        /// Whether a partial copy of the key-value store lost no rows in
+        /// `keyValueCollectionsThatMustBeCopiedFlawlessly`. The old database's
+        /// (collection, key) index is on different pages than its rows, so it can
+        /// usually still list the rows that were lost.
+        private static func canKeepPartialKeyValueStore(
+            oldDatabaseStorage: SDSDatabaseStorage,
+            newDatabaseStorage: SDSDatabaseStorage,
+        ) -> Bool {
+            let lostKeys: Set<KeyValueStoreKey>
+            do {
+                // This index covers the query, so the table's pages aren't read.
+                let oldKeys = try fetchKeyValueStoreKeys(
+                    databaseStorage: oldDatabaseStorage,
+                    sql: "SELECT collection, key FROM \(KeyValueStore.tableName) INDEXED BY index_key_value_store_on_collection_and_key",
+                )
+                let newKeys = try fetchKeyValueStoreKeys(
+                    databaseStorage: newDatabaseStorage,
+                    sql: "SELECT collection, key FROM \(KeyValueStore.tableName)",
+                )
+                lostKeys = oldKeys.subtracting(newKeys)
+            } catch {
+                logger.warn("Couldn't determine which key-value store rows were lost: \(error.grdbErrorForLogging)")
+                return false
+            }
+
+            let lostCollections = Set(lostKeys.map(\.collection))
+            let lostEssentialCollections = lostCollections.intersection(keyValueCollectionsThatMustBeCopiedFlawlessly)
+            guard lostEssentialCollections.isEmpty else {
+                logger.warn("Lost key-value store rows from essential collections: \(lostEssentialCollections.sorted())")
+                return false
+            }
+            logger.warn("Keeping partial key-value store. Lost \(lostKeys.count) row(s) from \(lostCollections.count) collection(s)")
+            return true
+        }
+
+        private struct KeyValueStoreKey: Hashable {
+            let collection: String
+            let key: String
+        }
+
+        private static func fetchKeyValueStoreKeys(
+            databaseStorage: SDSDatabaseStorage,
+            sql: String,
+        ) throws -> Set<KeyValueStoreKey> {
+            return try readIgnoringCommitError(databaseStorage: databaseStorage) { tx in
+                let rows = try Row.fetchAll(tx.database, sql: sql)
+                return try Set(rows.map { row in
+                    // A corrupted index could hold values of the wrong type.
+                    guard
+                        let collection = String.fromDatabaseValue(row[0]),
+                        let key = String.fromDatabaseValue(row[1])
+                    else {
+                        throw DatabaseError(resultCode: .SQLITE_CORRUPT, message: "Invalid key-value store key")
+                    }
+                    return KeyValueStoreKey(collection: collection, key: key)
+                })
             }
         }
 
@@ -580,6 +695,12 @@ public enum DatabaseRecovery {
             case wentFlawlessly(rowsCopied: UInt)
         }
 
+        private static let rowIdColumnAlias = "signalRecoveryRowId"
+        private static let maxUnreadableRangesToSkipPerTable = 1000
+
+        /// A corrupted page makes iteration fail partway through a table. For
+        /// tables with rowids, we then skip ahead to the next readable row and
+        /// keep copying, instead of losing every row after the corrupted page.
         private static func copyTable(
             tableName: String,
             from: SDSDatabaseStorage,
@@ -587,27 +708,90 @@ public enum DatabaseRecovery {
         ) -> TableCopyResult {
             owsPrecondition(SqliteUtil.isSafe(sqlName: tableName))
 
+            var startRowId: Int64? = hasRowIds(tableName: tableName, databaseStorage: from) ? .min : nil
+            var rowsCopied: UInt = 0
+            var reportedError: Error?
+            for skipCount in 0...maxUnreadableRangesToSkipPerTable {
+                let pass = copyRows(tableName: tableName, startingAtRowId: startRowId, from: from, to: to)
+                rowsCopied += pass.rowsCopied
+                if let error = pass.error {
+                    reportedError = moreActionableError(reportedError, error)
+                    if error.isSqliteFullError {
+                        break
+                    }
+                }
+                guard
+                    let lastRowIdBeforeFailure = pass.lastRowIdBeforeIterationFailed,
+                    let nextRowId = firstReadableRowId(tableName: tableName, after: lastRowIdBeforeFailure, databaseStorage: from)
+                else {
+                    break
+                }
+                guard skipCount < maxUnreadableRangesToSkipPerTable else {
+                    logger.warn("Too many unreadable ranges in \(tableName); not copying the rest")
+                    break
+                }
+                logger.warn("Skipping unreadable rowids \(lastRowIdBeforeFailure + 1)..<\(nextRowId) in \(tableName)")
+                startRowId = nextRowId
+            }
+
+            guard let reportedError else {
+                return .wentFlawlessly(rowsCopied: rowsCopied)
+            }
+            if rowsCopied == 0 {
+                return .totalFailure(error: reportedError)
+            }
+            return .copiedSomeButHadTrouble(error: reportedError, rowsCopied: rowsCopied)
+        }
+
+        private struct CopyPass {
+            var rowsCopied: UInt = 0
+            var error: Error?
+            /// If iteration failed, the last rowid read before it did (or, if no
+            /// rows were read, the rowid the pass started from).
+            var lastRowIdBeforeIterationFailed: Int64?
+        }
+
+        /// Copy rows until one can't be read.
+        ///
+        /// - Parameter startRowId: Copy rows with this rowid or greater, in rowid
+        ///   order. If nil, copy the whole table (for WITHOUT ROWID tables).
+        private static func copyRows(
+            tableName: String,
+            startingAtRowId startRowId: Int64?,
+            from: SDSDatabaseStorage,
+            to: SDSDatabaseStorage,
+        ) -> CopyPass {
+            var pass = CopyPass()
             do {
-                return try from.readThrows(
+                try from.readThrows(
                     file: #file,
                     function: #function,
                     line: #line,
-                ) { fromTransaction -> TableCopyResult in
+                ) { fromTransaction in
                     let fromDb = fromTransaction.database
 
                     let columnNames: [String]
                     let cursor: RowCursor
                     do {
                         columnNames = try getColumnNames(db: fromDb, tableName: tableName)
-                        cursor = try Row.fetchCursor(fromDb, sql: "SELECT * FROM \(tableName)")
+                        if let startRowId {
+                            cursor = try Row.fetchCursor(
+                                fromDb,
+                                sql: "SELECT rowid AS \(rowIdColumnAlias), * FROM \(tableName) WHERE rowid >= ? ORDER BY rowid",
+                                arguments: [startRowId],
+                            )
+                        } else {
+                            cursor = try Row.fetchCursor(fromDb, sql: "SELECT * FROM \(tableName)")
+                        }
                     } catch {
                         logger.warn("Could not create cursor for table \(tableName) with error: \(error)")
-                        return .totalFailure(error: error)
+                        pass.error = error
+                        return
                     }
 
                     let insertSql = insertSql(tableName: tableName, columnNames: columnNames)
 
-                    return to.write { toTransaction in
+                    to.write { toTransaction in
                         let toDb = toTransaction.database
 
                         let insertStatement: Statement
@@ -615,37 +799,174 @@ public enum DatabaseRecovery {
                             insertStatement = try toDb.makeStatement(sql: insertSql)
                         } catch {
                             logger.warn("Could not create prepared insert statement. \(error)")
-                            return .totalFailure(error: error)
+                            pass.error = error
+                            return
                         }
 
-                        var rowsCopied: UInt = 0
-                        var latestError: Error?
-
+                        var lastRowIdRead: Int64?
                         do {
                             try cursor.forEach { row in
-                                let statementArguments = StatementArguments(row.asDictionary)
+                                var values = row.asDictionary
+                                if let startRowId {
+                                    let rowId: Int64 = row[rowIdColumnAlias]
+                                    // A corrupted b-tree can return rowids out of order. Stop,
+                                    // so that we don't copy rows twice or loop forever.
+                                    guard rowId >= startRowId, rowId > lastRowIdRead ?? .min else {
+                                        throw DatabaseError(resultCode: .SQLITE_CORRUPT, message: "Rowid out of order")
+                                    }
+                                    lastRowIdRead = rowId
+                                    values.removeValue(forKey: rowIdColumnAlias)
+                                }
                                 do {
-                                    try insertStatement.execute(arguments: statementArguments)
-                                    rowsCopied += 1
+                                    try insertStatement.execute(arguments: StatementArguments(values))
+                                    pass.rowsCopied += 1
                                 } catch {
-                                    latestError = error
+                                    pass.error = moreActionableError(pass.error, error)
                                 }
                             }
                         } catch {
                             logger.warn("Error while iterating: \(error)")
-                            latestError = error
-                        }
-
-                        if let latestError {
-                            return .copiedSomeButHadTrouble(error: latestError, rowsCopied: rowsCopied)
-                        } else {
-                            return .wentFlawlessly(rowsCopied: rowsCopied)
+                            pass.error = moreActionableError(pass.error, error)
+                            if let startRowId {
+                                pass.lastRowIdBeforeIterationFailed = lastRowIdRead ?? startRowId
+                            }
                         }
                     }
                 }
             } catch {
+                // Ending the read can fail on a corrupted database. Rows we copied
+                // were already committed to the new database, so keep counting them.
                 logger.warn("Error when reading: \(error)")
-                return .totalFailure(error: error)
+                pass.error = moreActionableError(pass.error, error)
+            }
+            return pass
+        }
+
+        /// Running out of disk space is worth reporting over other errors, since
+        /// the user can do something about it.
+        static func moreActionableError(_ existingError: Error?, _ newError: Error) -> Error {
+            guard let existingError, !newError.isSqliteFullError else {
+                return newError
+            }
+            return existingError
+        }
+
+        private static func hasRowIds(tableName: String, databaseStorage: SDSDatabaseStorage) -> Bool {
+            // Preparing this fails for WITHOUT ROWID tables. If it fails for any
+            // other reason, we copy the table in a single pass, as before.
+            do {
+                try readIgnoringCommitError(databaseStorage: databaseStorage) { tx in
+                    _ = try tx.database.makeStatement(sql: "SELECT rowid FROM \(tableName)")
+                }
+                return true
+            } catch {
+                return false
+            }
+        }
+
+        private enum ProbeResult: Equatable {
+            case readable(rowId: Int64)
+            case noRowsAtOrAfter
+            case unreadable
+        }
+
+        /// Reads the whole row, so that most corruption in its overflow pages makes
+        /// it unreadable.
+        private static func probe(
+            tableName: String,
+            atOrAfter rowId: Int64,
+            databaseStorage: SDSDatabaseStorage,
+        ) -> ProbeResult {
+            do {
+                let row = try readIgnoringCommitError(databaseStorage: databaseStorage) { tx in
+                    try Row.fetchOne(
+                        tx.database,
+                        sql: "SELECT rowid AS \(rowIdColumnAlias), * FROM \(tableName) WHERE rowid >= ? ORDER BY rowid LIMIT 1",
+                        arguments: [rowId],
+                    )
+                }
+                guard let row else {
+                    return .noRowsAtOrAfter
+                }
+                let foundRowId: Int64 = row[rowIdColumnAlias]
+                // A corrupted b-tree can return a lower rowid than we asked for.
+                return foundRowId >= rowId ? .readable(rowId: foundRowId) : .unreadable
+            } catch {
+                return .unreadable
+            }
+        }
+
+        /// Find the first readable row after `rowId`, which couldn't be read.
+        ///
+        /// Probes exponentially further ahead until a probe succeeds, then binary
+        /// searches back for the earliest one that does. This assumes probes fail
+        /// up to some rowid and succeed after it, so readable rows between two
+        /// nearby corrupted ranges may be skipped.
+        private static func firstReadableRowId(
+            tableName: String,
+            after rowId: Int64,
+            databaseStorage: SDSDatabaseStorage,
+        ) -> Int64? {
+            func probeAt(_ rowId: Int64) -> ProbeResult {
+                return probe(tableName: tableName, atOrAfter: rowId, databaseStorage: databaseStorage)
+            }
+
+            // SQLite assigns positive rowids, so if no rows were read, galloping from
+            // `Int64.min` would overshoot the whole table.
+            //
+            // Probes at `low` fail; probes at `high` succeed, with `result`.
+            var low = max(rowId, 0)
+            var high = low
+            var result = ProbeResult.unreadable
+            var step: Int64 = 1
+            while result == .unreadable {
+                low = high
+                guard low < .max else {
+                    return nil
+                }
+                let (sum, overflowed) = low.addingReportingOverflow(step)
+                high = overflowed ? .max : sum
+                result = probeAt(high)
+                step = step <= .max / 2 ? step * 2 : .max
+            }
+
+            while low + 1 < high {
+                let mid = low + (high - low) / 2
+                let midResult = probeAt(mid)
+                if midResult == .unreadable {
+                    low = mid
+                } else {
+                    high = mid
+                    result = midResult
+                }
+            }
+
+            guard case .readable(let rowId) = result else {
+                return nil
+            }
+            return rowId
+        }
+
+        /// Read from a possibly-corrupted database. Ending the transaction can fail
+        /// even if the read succeeded; if so, return what was read.
+        private static func readIgnoringCommitError<T>(
+            databaseStorage: SDSDatabaseStorage,
+            block: (DBReadTransaction) throws -> T,
+        ) throws -> T {
+            // `T` may itself be optional; `result` is nil only if `block` didn't finish.
+            var result: T?
+            do {
+                return try databaseStorage.readThrows(file: #file, function: #function, line: #line) { tx in
+                    let value = try block(tx)
+                    result = value
+                    return value
+                }
+            } catch {
+                guard let result else {
+                    throw error
+                }
+                logger.warn("Ignoring error ending read: \(error.grdbErrorForLogging)")
+                return result
             }
         }
 
