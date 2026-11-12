@@ -297,6 +297,11 @@ extension ReferencedAttachment {
         builder.setDigest(ciphertextDigest)
         builder.setUploadTimestamp(pointer.uploadTimestamp)
 
+        if let incrementalMacInfo = pointer.info.incrementalMacInfo {
+            builder.setIncrementalMac(incrementalMacInfo.mac)
+            builder.setChunkSize(incrementalMacInfo.chunkSize)
+        }
+
         if let blurHash = pointer.attachment.blurHash {
             builder.setBlurHash(blurHash)
         }

@@ -19,26 +19,38 @@ public struct SendableAttachment {
     public let sourceFilename: FilteredFilename?
     public let mimeType: String
     public let renderingFlag: AttachmentReference.RenderingFlag
+    let isFastStartMp4: Bool
 
     private init(
         dataSource: DataSourcePath,
         dataUTI: String,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
+        isFastStartMp4: Bool,
     ) {
         self.dataSource = dataSource
         self.dataUTI = dataUTI
         self.sourceFilename = dataSource.sourceFilename.map(FilteredFilename.init(rawValue:))
         self.mimeType = mimeType
         self.renderingFlag = renderingFlag
+        self.isFastStartMp4 = isFastStartMp4
     }
 
     private init(nonImagePreviewableAttachment previewableAttachment: PreviewableAttachment) {
+        let isFastStartMp4: Bool
+        switch previewableAttachment.attachmentType {
+        case .finalizedVideo(let finalizedVideo):
+            isFastStartMp4 = finalizedVideo.isFastStartMp4
+        case .image, .animatedImage, .normalizedVideo, .other:
+            isFastStartMp4 = false
+        }
+
         self.init(
             dataSource: previewableAttachment.dataSource,
             dataUTI: previewableAttachment.dataUTI,
             mimeType: previewableAttachment.mimeType,
             renderingFlag: previewableAttachment.renderingFlag,
+            isFastStartMp4: isFastStartMp4,
         )
     }
 
@@ -56,10 +68,11 @@ public struct SendableAttachment {
                 dataUTI: attachment.dataUTI,
                 mimeType: attachment.mimeType,
                 renderingFlag: attachment.renderingFlag,
+                isFastStartMp4: false,
             )
         case .animatedImage:
             // Other animated images aren't re-encoded.
-            break
+            return SendableAttachment(nonImagePreviewableAttachment: attachment)
         case .image(let normalizedImage):
             let finalizedImage = try normalizedImage.finalizeImage(imageQuality: imageQualityLevel)
             return SendableAttachment(
@@ -67,13 +80,13 @@ public struct SendableAttachment {
                 dataUTI: finalizedImage.dataUTI,
                 mimeType: MimeTypeUtil.mimeTypeForDataSource(finalizedImage.dataSource, dataUTI: finalizedImage.dataUTI),
                 renderingFlag: attachment.renderingFlag,
+                isFastStartMp4: false,
             )
         case .normalizedVideo:
             throw OWSAssertionError("Videos must be finalized before sending.")
-        case .other:
-            break
+        case .finalizedVideo, .other:
+            return SendableAttachment(nonImagePreviewableAttachment: attachment)
         }
-        return Self(nonImagePreviewableAttachment: attachment)
     }
 
     /// A default filename to use if one isn't provided by the user.
@@ -140,9 +153,11 @@ public struct SendableAttachment {
             let attachment = try PreviewableAttachment.finalizedVideoAttachment(
                 dataSource: dataSource,
                 dataUTI: self.dataUTI,
+                // Segments are exported with network optimization.
+                isFastStartMp4: true,
                 attachmentLimits: attachmentLimits,
             )
-            return Self(nonImagePreviewableAttachment: attachment)
+            return SendableAttachment(nonImagePreviewableAttachment: attachment)
         }
         return SegmentAttachmentResult(self, segmented: segments)
     }
@@ -213,12 +228,15 @@ extension AttachmentContentValidator {
         _ sendableAttachment: SendableAttachment,
         shouldUseDefaultFilename: Bool,
     ) async throws -> AttachmentDataSource {
-        let pendingAttachment = try await validateDataSourceContents(
+        var pendingAttachment = try await validateDataSourceContents(
             sendableAttachment.dataSource,
             mimeType: sendableAttachment.mimeType,
             renderingFlag: sendableAttachment.renderingFlag,
             sourceFilename: sendableAttachment.sourceFilename?.rawValue ?? (shouldUseDefaultFilename ? sendableAttachment.defaultFilename : nil),
         )
+        if sendableAttachment.isFastStartMp4 {
+            pendingAttachment.markVideoAsFastStartMp4()
+        }
         return .pendingAttachment(pendingAttachment)
     }
 }

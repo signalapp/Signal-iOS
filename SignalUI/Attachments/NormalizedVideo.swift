@@ -13,17 +13,30 @@ import UniformTypeIdentifiers
 /// This type (via `finalizeVideo`) can be used to produce a video that's
 /// acceptable for sending via Signal.
 public struct NormalizedVideo {
+    public enum Source {
+        /// Recorded in-app.
+        case inAppRecording
+        /// From outside the app.
+        case external
+    }
+
     let dataSource: DataSourcePath
     let dataUTI: String
+    let source: Source
 
     /// If true, this video must be transcoded when finalizing it. Otherwise,
     /// it's sent as-is unless it has been edited.
-    let mustTranscode: Bool
+    var mustTranscode: Bool {
+        switch source {
+        case .inAppRecording: false
+        case .external: true
+        }
+    }
 
     static func forDataSource(
         _ dataSource: DataSourcePath,
         dataUTI: String,
-        mustTranscode: Bool,
+        source: Source,
     ) throws(SignalAttachmentError) -> Self {
         guard SignalAttachment.videoUTISet.contains(dataUTI) else {
             throw .invalidFileFormat
@@ -37,7 +50,7 @@ public struct NormalizedVideo {
         return NormalizedVideo(
             dataSource: dataSource,
             dataUTI: dataUTI,
-            mustTranscode: mustTranscode,
+            source: source,
         )
     }
 
@@ -48,9 +61,10 @@ public struct NormalizedVideo {
 
     // MARK: - Finalizing
 
-    struct FinalizedVideo {
+    public struct FinalizedVideo {
         let dataSource: DataSourcePath
         let dataUTI: String
+        let isFastStartMp4: Bool
     }
 
     /// - Parameter editedAsset
@@ -74,7 +88,15 @@ public struct NormalizedVideo {
         } else if let editedAsset {
             outputUrl = try await exportPassthrough(asset: editedAsset)
         } else {
-            return FinalizedVideo(dataSource: dataSource, dataUTI: dataUTI)
+            let isFastStartMp4 = switch source {
+            case .inAppRecording: true
+            case .external: false
+            }
+            return FinalizedVideo(
+                dataSource: dataSource,
+                dataUTI: dataUTI,
+                isFastStartMp4: isFastStartMp4,
+            )
         }
 
         let mp4DataSource = DataSourcePath(fileUrl: outputUrl, ownership: .owned)
@@ -85,9 +107,11 @@ public struct NormalizedVideo {
         {
             mp4DataSource.sourceFilename = mp4Filename
         }
+        // Both transcoding and passthrough export optimize for network use.
         return FinalizedVideo(
             dataSource: mp4DataSource,
             dataUTI: UTType.mpeg4Movie.identifier,
+            isFastStartMp4: true,
         )
     }
 

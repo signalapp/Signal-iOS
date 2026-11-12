@@ -4361,6 +4361,24 @@ nonisolated struct SignalServiceProtos_AttachmentPointer: @unchecked Sendable {
   /// Clears the value of `digest`. Subsequent reads from it will return its default value.
   mutating func clearDigest() {_uniqueStorage()._digest = nil}
 
+  var incrementalMac: Data {
+    get {_storage._incrementalMac ?? Data()}
+    set {_uniqueStorage()._incrementalMac = newValue}
+  }
+  /// Returns true if `incrementalMac` has been explicitly set.
+  var hasIncrementalMac: Bool {_storage._incrementalMac != nil}
+  /// Clears the value of `incrementalMac`. Subsequent reads from it will return its default value.
+  mutating func clearIncrementalMac() {_uniqueStorage()._incrementalMac = nil}
+
+  var chunkSize: UInt32 {
+    get {_storage._chunkSize ?? 0}
+    set {_uniqueStorage()._chunkSize = newValue}
+  }
+  /// Returns true if `chunkSize` has been explicitly set.
+  var hasChunkSize: Bool {_storage._chunkSize != nil}
+  /// Clears the value of `chunkSize`. Subsequent reads from it will return its default value.
+  mutating func clearChunkSize() {_uniqueStorage()._chunkSize = nil}
+
   var fileName: String {
     get {_storage._fileName ?? String()}
     set {_uniqueStorage()._fileName = newValue}
@@ -9399,7 +9417,7 @@ nonisolated extension SignalServiceProtos_SyncMessage.UsernameChange: SwiftProto
 
 nonisolated extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AttachmentPointer"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}cdnId\0\u{1}contentType\0\u{1}key\0\u{1}size\0\u{1}thumbnail\0\u{1}digest\0\u{1}fileName\0\u{1}flags\0\u{1}width\0\u{1}height\0\u{1}caption\0\u{1}blurHash\0\u{1}uploadTimestamp\0\u{1}cdnNumber\0\u{1}cdnKey\0\u{2}\u{5}clientUuid\0\u{1}audioWaveform\0\u{1}audioDurationSeconds\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}cdnId\0\u{1}contentType\0\u{1}key\0\u{1}size\0\u{1}thumbnail\0\u{1}digest\0\u{1}fileName\0\u{1}flags\0\u{1}width\0\u{1}height\0\u{1}caption\0\u{1}blurHash\0\u{1}uploadTimestamp\0\u{1}cdnNumber\0\u{1}cdnKey\0\u{2}\u{2}chunkSize\0\u{2}\u{2}incrementalMac\0\u{1}clientUuid\0\u{1}audioWaveform\0\u{1}audioDurationSeconds\0\u{c}\u{10}\u{1}\u{c}\u{12}\u{1}")
 
   fileprivate class _StorageClass {
     var _cdnID: UInt64? = nil
@@ -9410,6 +9428,8 @@ nonisolated extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Messa
     var _size: UInt32? = nil
     var _thumbnail: Data? = nil
     var _digest: Data? = nil
+    var _incrementalMac: Data? = nil
+    var _chunkSize: UInt32? = nil
     var _fileName: String? = nil
     var _flags: UInt32? = nil
     var _width: UInt32? = nil
@@ -9438,6 +9458,8 @@ nonisolated extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Messa
       _size = source._size
       _thumbnail = source._thumbnail
       _digest = source._digest
+      _incrementalMac = source._incrementalMac
+      _chunkSize = source._chunkSize
       _fileName = source._fileName
       _flags = source._flags
       _width = source._width
@@ -9481,6 +9503,8 @@ nonisolated extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Messa
         case 13: try { try decoder.decodeSingularUInt64Field(value: &_storage._uploadTimestamp) }()
         case 14: try { try decoder.decodeSingularUInt32Field(value: &_storage._cdnNumber) }()
         case 15: try { try decoder.decodeSingularStringField(value: &_storage._cdnKey) }()
+        case 17: try { try decoder.decodeSingularUInt32Field(value: &_storage._chunkSize) }()
+        case 19: try { try decoder.decodeSingularBytesField(value: &_storage._incrementalMac) }()
         case 20: try { try decoder.decodeSingularBytesField(value: &_storage._clientUuid) }()
         case 21: try { try decoder.decodeSingularBytesField(value: &_storage._audioWaveform) }()
         case 22: try { try decoder.decodeSingularFloatField(value: &_storage._audioDurationSeconds) }()
@@ -9541,6 +9565,12 @@ nonisolated extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Messa
       try { if let v = _storage._cdnKey {
         try visitor.visitSingularStringField(value: v, fieldNumber: 15)
       } }()
+      try { if let v = _storage._chunkSize {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 17)
+      } }()
+      try { if let v = _storage._incrementalMac {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 19)
+      } }()
       try { if let v = _storage._clientUuid {
         try visitor.visitSingularBytesField(value: v, fieldNumber: 20)
       } }()
@@ -9567,6 +9597,8 @@ nonisolated extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Messa
         if _storage._size != rhs_storage._size {return false}
         if _storage._thumbnail != rhs_storage._thumbnail {return false}
         if _storage._digest != rhs_storage._digest {return false}
+        if _storage._incrementalMac != rhs_storage._incrementalMac {return false}
+        if _storage._chunkSize != rhs_storage._chunkSize {return false}
         if _storage._fileName != rhs_storage._fileName {return false}
         if _storage._flags != rhs_storage._flags {return false}
         if _storage._width != rhs_storage._width {return false}

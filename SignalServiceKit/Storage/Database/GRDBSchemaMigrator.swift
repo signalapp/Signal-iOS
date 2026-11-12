@@ -377,6 +377,7 @@ public class GRDBSchemaMigrator {
         case addFavoriteStickerTable
         case addChatFolderTables
         case addSortOrderToStickerPack
+        case addVideoIsFastStartMp4ToAttachment
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -5846,6 +5847,13 @@ public class GRDBSchemaMigrator {
         migrator.registerMigration(.addSortOrderToStickerPack) { tx in
             try tx.database.alter(table: "model_StickerPack") {
                 $0.add(column: "sortOrder", .integer).notNull().defaults(to: 0)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addVideoIsFastStartMp4ToAttachment) { tx in
+            try tx.database.alter(table: "Attachment") {
+                $0.add(column: "videoIsFastStartMp4", .boolean).notNull().defaults(to: false)
             }
             return .success(())
         }

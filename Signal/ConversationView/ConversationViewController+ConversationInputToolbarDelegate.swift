@@ -861,7 +861,7 @@ extension ConversationViewController {
                 attachment = try PreviewableAttachment.normalizedVideoAttachment(
                     dataSource: dataSource,
                     dataUTI: contentTypeIdentifier,
-                    mustTranscode: true,
+                    source: .external,
                 )
             } else {
                 attachment = try PreviewableAttachment.buildAttachment(

@@ -840,7 +840,7 @@ class CameraCaptureSession: NSObject {
         let attachment = try PreviewableAttachment.normalizedVideoAttachment(
             dataSource: dataSource,
             dataUTI: UTType.mpeg4Movie.identifier,
-            mustTranscode: false,
+            source: .inAppRecording,
         )
         delegate?.cameraCaptureSession(self, didFinishProcessing: attachment)
     }

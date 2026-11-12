@@ -190,7 +190,7 @@ enum PasteboardAttachment {
                 return try? PreviewableAttachment.normalizedVideoAttachment(
                     dataSource: dataSource,
                     dataUTI: dataUTI,
-                    mustTranscode: true,
+                    source: .external,
                 )
             }
         }

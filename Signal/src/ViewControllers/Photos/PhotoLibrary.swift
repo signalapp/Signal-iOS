@@ -166,7 +166,7 @@ class PhotoAlbumContents {
             return try PreviewableAttachment.normalizedVideoAttachment(
                 dataSource: dataSource,
                 dataUTI: dataUTI,
-                mustTranscode: true,
+                source: .external,
             )
         case .unknown, .audio:
             fallthrough

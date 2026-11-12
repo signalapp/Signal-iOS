@@ -443,8 +443,7 @@ public class AttachmentUploadManagerImpl: AttachmentUploadManager {
                 cdnNumber: cdnNumber,
                 unencryptedByteCount: uploadResult.localUploadMetadata.plaintextDataLength,
                 plaintextHash: attachmentStream.plaintextHash,
-                // TODO: [Attachment Streaming] support incremental mac
-                incrementalMacInfo: nil,
+                incrementalMacInfo: uploadResult.incrementalMacInfo,
                 uploadEra: uploadEra,
                 lastDownloadAttemptTimestamp: nil,
             )
@@ -680,6 +679,7 @@ public class AttachmentUploadManagerImpl: AttachmentUploadManager {
                     cdnKey: metadata.cdnKey,
                     cdnNumber: metadata.cdnNumber,
                     localUploadMetadata: metadata,
+                    incrementalMacInfo: metadata.incrementalMacInfo,
                     beginTimestamp: dateProvider().ows_millisecondsSince1970,
                     finishTimestamp: dateProvider().ows_millisecondsSince1970,
                 ),
@@ -747,6 +747,14 @@ public class AttachmentUploadManagerImpl: AttachmentUploadManager {
                 progressBlock: progressBlock,
             )
 
+            // Must happen before cleaning up the temp file, below.
+            let incrementalMacInfo = await computeIncrementalMacIfNeeded(
+                localMetadata: localMetadata,
+                attachment: attachment,
+                type: type,
+                logger: logger,
+            )
+
             // On success, cleanup the temp file.  Temp files are only created for
             // new local metadata, otherwise the existing attachment file location is used.
             // TODO: Tie this in with OrphanedAttachmentRecord to track this
@@ -765,7 +773,10 @@ public class AttachmentUploadManagerImpl: AttachmentUploadManager {
                     }
                 }
             }
-            return (attachmentUploadRecord, result.asAttachmentResult)
+            return (
+                attachmentUploadRecord,
+                result.asAttachmentResult(incrementalMacInfo: incrementalMacInfo),
+            )
         } catch {
 
             // If the max number of upload failures was hit, give up and throw an error
@@ -913,6 +924,7 @@ public class AttachmentUploadManagerImpl: AttachmentUploadManager {
                     // on CDN. This only becomes a problem if we ever change padding
                     // values or they drift between clients.
                     encryptedDataLength: stream.encryptedByteCount,
+                    incrementalMacInfo: transitTierInfo.incrementalMacInfo,
                 ))
             } else {
                 let metadata = Upload.LocalUploadMetadata(
@@ -1009,6 +1021,38 @@ public class AttachmentUploadManagerImpl: AttachmentUploadManager {
         }
     }
 
+    /// Best-effort computation of the incremental mac for a completed
+    /// upload. Returns `nil` if not applicable or on failure.
+    @concurrent
+    private func computeIncrementalMacIfNeeded(
+        localMetadata: Upload.LocalUploadMetadata,
+        attachment: Attachment,
+        type: UploadType,
+        logger: PrefixedLogger,
+    ) async -> Attachment.IncrementalMacInfo? {
+        switch type {
+        case .transitTier, .mediaTier(_, isThumbnail: false):
+            break
+        case .mediaTier(_, isThumbnail: true):
+            return nil
+        }
+
+        guard attachment.streamInfo?.videoIsFastStartMp4 == true else {
+            return nil
+        }
+
+        do {
+            return try Cryptography.computeIncrementalMacOfEncryptedFile(
+                at: localMetadata.fileUrl,
+                encryptedLength: localMetadata.encryptedDataLength,
+                attachmentKey: try AttachmentKey(combinedKey: localMetadata.key),
+            )
+        } catch {
+            logger.warn("Failed to compute incremental mac: \(error)")
+            return nil
+        }
+    }
+
     private func fetchAttachment(
         attachmentId: Attachment.IDType,
         logger: PrefixedLogger,
@@ -1041,8 +1085,7 @@ public class AttachmentUploadManagerImpl: AttachmentUploadManager {
             // so prefer digest if we have both. If we don't, this attachment we just
             // uploaded to be able to send will fail to send.
             integrityCheck: .ciphertextDigest(result.localUploadMetadata.digest),
-            // TODO: [Attachment Streaming] support incremental mac
-            incrementalMacInfo: nil,
+            incrementalMacInfo: result.incrementalMacInfo,
             lastDownloadAttemptTimestamp: nil,
         )
 
@@ -1166,11 +1209,14 @@ public class AttachmentUploadManagerImpl: AttachmentUploadManager {
 
 extension Upload.Result where Metadata: AttachmentUploadMetadata {
 
-    var asAttachmentResult: Upload.AttachmentResult {
+    func asAttachmentResult(
+        incrementalMacInfo: Attachment.IncrementalMacInfo?,
+    ) -> Upload.AttachmentResult {
         return Upload.AttachmentResult(
             cdnKey: cdnKey,
             cdnNumber: cdnNumber,
             localUploadMetadata: localUploadMetadata,
+            incrementalMacInfo: incrementalMacInfo,
             beginTimestamp: beginTimestamp,
             finishTimestamp: finishTimestamp,
         )

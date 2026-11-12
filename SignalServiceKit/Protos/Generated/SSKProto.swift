@@ -18782,6 +18782,27 @@ public class SSKProtoAttachmentPointer: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
+    public var incrementalMac: Data? {
+        guard hasIncrementalMac else {
+            return nil
+        }
+        return proto.incrementalMac
+    }
+    @objc
+    public var hasIncrementalMac: Bool {
+        return proto.hasIncrementalMac
+    }
+
+    @objc
+    public var chunkSize: UInt32 {
+        return proto.chunkSize
+    }
+    @objc
+    public var hasChunkSize: Bool {
+        return proto.hasChunkSize
+    }
+
+    @objc
     public var fileName: String? {
         guard hasFileName else {
             return nil
@@ -18980,6 +19001,12 @@ extension SSKProtoAttachmentPointer {
         if let _value = digest {
             builder.setDigest(_value)
         }
+        if let _value = incrementalMac {
+            builder.setIncrementalMac(_value)
+        }
+        if hasChunkSize {
+            builder.setChunkSize(chunkSize)
+        }
         if let _value = fileName {
             builder.setFileName(_value)
         }
@@ -19099,6 +19126,22 @@ public class SSKProtoAttachmentPointerBuilder: NSObject {
 
     public func setDigest(_ valueParam: Data) {
         proto.digest = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setIncrementalMac(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.incrementalMac = valueParam
+    }
+
+    public func setIncrementalMac(_ valueParam: Data) {
+        proto.incrementalMac = valueParam
+    }
+
+    @objc
+    public func setChunkSize(_ valueParam: UInt32) {
+        proto.chunkSize = valueParam
     }
 
     @objc

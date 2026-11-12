@@ -546,6 +546,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UISearchR
         let attachment = try PreviewableAttachment.finalizedVideoAttachment(
             dataSource: dataSource,
             dataUTI: GiphyImageInfo.utiType,
+            isFastStartMp4: false,
             attachmentLimits: attachmentLimits,
         )
         attachment.rawValue.isLoopingVideo = true

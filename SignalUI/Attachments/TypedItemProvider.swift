@@ -415,7 +415,7 @@ public struct TypedItemProvider {
             return try PreviewableAttachment.normalizedVideoAttachment(
                 dataSource: dataSource,
                 dataUTI: dataUTI,
-                mustTranscode: true,
+                source: .external,
             )
         } else if mustBeVisualMedia {
             // If it's not a video but must be visual media, then we must parse it as
