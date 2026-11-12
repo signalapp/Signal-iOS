@@ -5945,7 +5945,7 @@
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Öppna gruppinbjudan";
 
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "Öppen länk";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "Öppna länk";
 
 /* Label for button to open a signal proxy. */
 "MESSAGE_ACTION_LINK_OPEN_PROXY" = "Öppna Signal-proxy";
