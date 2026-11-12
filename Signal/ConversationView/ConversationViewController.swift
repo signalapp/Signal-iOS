@@ -406,6 +406,12 @@ final class ConversationViewController: OWSViewController, OWSNavigationChildCon
         // recover status bar when returning from PhotoPicker, which is dark (uses light status bar)
         self.setNeedsStatusBarAppearanceUpdate()
 
+        // Clear the thread unread flag only when the conversation is
+        // (re)opened, not on every read timer tick while it is visible.
+        // Otherwise on iPad, marking the currently open chat as unread
+        // from the chat list would be reverted almost immediately.
+        self.clearThreadUnreadFlagIfNecessary()
+
         self.markVisibleMessagesAsRead()
         self.startReadTimer()
         self.updateNavigationBarSubtitleLabel()

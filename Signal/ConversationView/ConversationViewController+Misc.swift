@@ -475,9 +475,6 @@ extension ConversationViewController {
             return
         }
 
-        // Always clear the thread unread flag
-        clearThreadUnreadFlagIfNecessary()
-
         let lastVisibleSortId = self.lastVisibleSortId
         let isShowingUnreadMessage = lastVisibleSortId > self.lastSortIdMarkedRead
         if !self.isMarkingAsRead, isShowingUnreadMessage {
