@@ -291,6 +291,48 @@
 			<string>بۇ رەڭ %1$d پاراڭغا قوللىنىلغان. بۇ ئۆزگەرتىشنى ھەممە پاراڭغا قوللىنامسىز؟</string>
 		</dict>
 	</dict>
+	<key>CHAT_FOLDERS_CHAT_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>%1$d Chats</string>
+		</dict>
+	</dict>
+	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>%1$d Chat Types</string>
+		</dict>
+	</dict>
+	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>%1$d Chats Excluded</string>
+		</dict>
+	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1391,7 +1433,49 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>سىز پەقەت %1$d چاپلاقلارنىلا ياقتۇرغان تاللانمىلارغا قوشالايسىز</string>
+		</dict>
+	</dict>
+	<key>STICKER_PACK_REMOVE_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+		</dict>
+	</dict>
+	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>Remove %1$d sticker packs?</string>
+		</dict>
+	</dict>
+	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>Sticker packs removed</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -1406,6 +1490,20 @@
 			<string>d</string>
 			<key>other</key>
 			<string>%1$d چاپلاقلار</string>
+		</dict>
+	</dict>
+	<key>STICKER_PACK_TOOLBAR_CAPTION_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>%1$d Selected</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

@@ -333,6 +333,54 @@
 			<string>Denne farve bruges i %1$d chats. Vil du gemme ændringer for alle chats?</string>
 		</dict>
 	</dict>
+	<key>CHAT_FOLDERS_CHAT_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d Chat</string>
+			<key>other</key>
+			<string>%1$d Chats</string>
+		</dict>
+	</dict>
+	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d Chat Type</string>
+			<key>other</key>
+			<string>%1$d Chat Types</string>
+		</dict>
+	</dict>
+	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d Chat Excluded</string>
+			<key>other</key>
+			<string>%1$d Chats Excluded</string>
+		</dict>
+	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1591,9 +1639,57 @@ Prøv igen om %1$d timer.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can only add %1$d sticker to Favorites</string>
+			<string>Du kan kun føje %1$d klistermærke til Favoritter</string>
 			<key>other</key>
-			<string>You can only add %1$d stickers to Favorites</string>
+			<string>Du kan kun føje %1$d klistermærker til Favoritter</string>
+		</dict>
+	</dict>
+	<key>STICKER_PACK_REMOVE_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>This will remove the sticker pack. You can&apos;t add it again without a link or sticker message.</string>
+			<key>other</key>
+			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+		</dict>
+	</dict>
+	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Remove sticker pack?</string>
+			<key>other</key>
+			<string>Remove %1$d sticker packs?</string>
+		</dict>
+	</dict>
+	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Sticker pack removed</string>
+			<key>other</key>
+			<string>Sticker packs removed</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -1610,6 +1706,22 @@ Prøv igen om %1$d timer.</string>
 			<string>%1$d klistermærke</string>
 			<key>other</key>
 			<string>%1$d klistermærker</string>
+		</dict>
+	</dict>
+	<key>STICKER_PACK_TOOLBAR_CAPTION_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d Selected</string>
+			<key>other</key>
+			<string>%1$d Selected</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
