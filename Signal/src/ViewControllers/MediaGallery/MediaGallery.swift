@@ -934,6 +934,10 @@ class MediaGallery {
                     }
                 }
 
+                for message in messagesWithAttachmentsRemaining.keys {
+                    db.touch(interaction: message, shouldReindex: false, tx: tx)
+                }
+
                 if let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) {
                     deleteForMeOutgoingSyncMessageManager.send(
                         deletedAttachments: messagesWithAttachmentsRemaining,
