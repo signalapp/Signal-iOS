@@ -1087,7 +1087,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             return
         }
 
-        let reactor = recipientStore.fetchRecipient(rowId: reaction.id, tx: transaction).owsFailUnwrap("must exist")
+        let reactor = recipientStore.fetchRecipient(rowId: reaction.reactorId, tx: transaction).owsFailUnwrap("must exist")
 
         let notificationTitle = self.notificationTitle(
             for: notifiableThread,
