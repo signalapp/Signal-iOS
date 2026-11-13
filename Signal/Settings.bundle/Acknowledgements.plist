@@ -288,7 +288,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>adler2 2.0.1, anyhow 1.0.103, anyhow 1.0.104, async-trait 0.1.89, atomic-waker 1.1.2, auto_enums 0.8.9, curve25519-dalek-derive 0.1.1, derive_utils 0.15.1, displaydoc 0.2.6, displaydoc 0.2.7, dyn-clone 1.0.20, fastrand 2.4.1, fastrand 2.5.0, home 0.5.12, itoa 1.0.18, linkme 0.3.36, linkme 0.3.37, linkme-impl 0.3.36, linkme-impl 0.3.37, linux-raw-sys 0.12.1, linux-raw-sys 0.4.15, minimal-lexical 0.2.1, num_enum 0.7.6, num_enum_derive 0.7.6, once_cell 1.21.4, paste 1.0.15, pin-project 1.1.13, pin-project-internal 1.1.13, pin-project-lite 0.2.17, prettyplease 0.2.37, proc-macro-crate 3.5.0, proc-macro2 1.0.106, proc-macro2 1.0.107, quote 1.0.46, quote 1.0.47, ref-cast 1.0.25, ref-cast-impl 1.0.25, rustix 0.38.44, rustix 1.1.4, rustversion 1.0.23, semver 1.0.28, send_wrapper 0.6.0, serde 1.0.228, serde 1.0.229, serde_core 1.0.228, serde_core 1.0.229, serde_derive 1.0.228, serde_derive 1.0.229, serde_json 1.0.150, serde_json 1.0.151, simd_cesu8 1.2.0, syn 2.0.118, syn 2.0.119, syn 3.0.3, syn-mid 0.6.1, thiserror 1.0.69, thiserror 2.0.18, thiserror 2.0.19, thiserror-impl 1.0.69, thiserror-impl 2.0.18, thiserror-impl 2.0.19, unicode-ident 1.0.24, zmij 1.0.21, zmij 1.0.23</string>
+			<string>adler2 2.0.1, anyhow 1.0.103, anyhow 1.0.104, async-trait 0.1.89, atomic-waker 1.1.2, auto_enums 0.8.9, curve25519-dalek-derive 0.1.1, derive_utils 0.15.1, displaydoc 0.2.6, displaydoc 0.2.7, dyn-clone 1.0.20, fastrand 2.4.1, fastrand 2.5.0, home 0.5.12, itoa 1.0.18, linkme 0.3.36, linkme 0.3.37, linkme-impl 0.3.36, linkme-impl 0.3.37, linux-raw-sys 0.12.1, linux-raw-sys 0.4.15, minimal-lexical 0.2.1, num_enum 0.7.6, num_enum_derive 0.7.6, once_cell 1.21.4, paste 1.0.15, pin-project 1.1.13, pin-project-internal 1.1.13, pin-project-lite 0.2.17, prettyplease 0.2.37, proc-macro-crate 3.5.0, proc-macro2 1.0.106, proc-macro2 1.0.107, quote 1.0.46, quote 1.0.47, ref-cast 1.0.25, ref-cast-impl 1.0.25, rustix 0.38.44, rustix 1.1.4, rustix 1.1.6, rustversion 1.0.23, semver 1.0.28, send_wrapper 0.6.0, serde 1.0.228, serde 1.0.229, serde_core 1.0.228, serde_core 1.0.229, serde_derive 1.0.228, serde_derive 1.0.229, serde_json 1.0.150, serde_json 1.0.151, simd_cesu8 1.2.0, syn 2.0.118, syn 2.0.119, syn 3.0.3, syn-mid 0.6.1, thiserror 1.0.69, thiserror 2.0.18, thiserror 2.0.19, thiserror-impl 1.0.69, thiserror-impl 2.0.18, thiserror-impl 2.0.19, unicode-ident 1.0.24, zmij 1.0.21, zmij 1.0.23</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -1473,7 +1473,7 @@ limitations under the License.
 			<key>License</key>
 			<string>Apache License 2.0</string>
 			<key>Title</key>
-			<string>boring 5.3.0</string>
+			<string>boring 5.4.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -1721,7 +1721,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			<key>License</key>
 			<string>Apache License 2.0</string>
 			<key>Title</key>
-			<string>boring-sys 5.3.0</string>
+			<string>boring-sys 5.4.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -1757,7 +1757,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>boring-sys 5.3.0</string>
+			<string>boring-sys 5.4.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -4551,7 +4551,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>Apache License 2.0</string>
 			<key>Title</key>
-			<string>hax-lib 0.3.7, hax-lib-macros 0.3.7</string>
+			<string>hax-lib 0.3.7, hax-lib 0.5.0, hax-lib-macros 0.3.7, hax-lib-macros 0.5.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -10066,7 +10066,7 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 			<key>License</key>
 			<string>GNU Affero General Public License v3.0 only</string>
 			<key>Title</key>
-			<string>partial-default 0.1.0, partial-default-derive 0.1.0, poksho 0.7.0, signal-crypto 0.1.0, spqr 1.6.0, zkcredential 0.1.0, zkgroup 0.9.0</string>
+			<string>partial-default 0.1.0, partial-default-derive 0.1.0, poksho 0.7.0, signal-crypto 0.1.0, spqr 1.7.0, zkcredential 0.1.0, zkgroup 0.9.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -14390,7 +14390,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>tokio-boring 5.3.0</string>
+			<string>tokio-boring 5.4.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>

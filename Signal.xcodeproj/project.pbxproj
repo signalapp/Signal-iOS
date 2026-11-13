@@ -3489,7 +3489,7 @@
 			repositoryURL = "https://github.com/signalapp/libsignal";
 			requirement = {
 				kind = exactVersion;
-				version = 0.107.0;
+				version = 0.108.0;
 			};
 		};
 		631CB51B307EDA1300EA5851 /* XCRemoteSwiftPackageReference "swift-log" */ = {
