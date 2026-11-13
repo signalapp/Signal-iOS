@@ -16,7 +16,12 @@ protocol ConversationSearchViewDelegate: AnyObject {
     func conversationSearchDidSelectRow()
 }
 
-class ConversationSearchViewController: OWSViewController {
+class ConversationSearchViewController:
+    OWSViewController,
+    UITableViewDelegate,
+    UITableViewDataSource,
+    UIScrollViewDelegate
+{
 
     weak var delegate: ConversationSearchViewDelegate?
 
@@ -241,11 +246,8 @@ class ConversationSearchViewController: OWSViewController {
             return try FullTextSearcher.shared.searchForHomeScreen(searchText: searchText, tx: tx)
         }
     }
-}
 
-// MARK: -
-
-extension ConversationSearchViewController: UITableViewDelegate {
+    // MARK: - UITableViewDelegate
 
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         guard let searchSection = SearchSection(rawValue: indexPath.section) else {
@@ -328,11 +330,35 @@ extension ConversationSearchViewController: UITableViewDelegate {
 
         cell.isCellVisible = false
     }
-}
 
-// MARK: -
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard let threadViewModel = getThreadViewModelFor(indexPath: indexPath) else {
+            return nil
+        }
 
-extension ConversationSearchViewController: UITableViewDataSource {
+        return trailingSwipeActionsConfiguration(threadViewModel: threadViewModel)
+    }
+
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard let threadViewModel = getThreadViewModelFor(indexPath: indexPath) else {
+            return nil
+        }
+
+        return leadingSwipeActionsConfiguration(threadViewModel: threadViewModel)
+    }
+
+    private func getThreadViewModelFor(indexPath: IndexPath) -> ThreadViewModel? {
+        guard let searchSection = SearchSection(rawValue: indexPath.section) else { return nil }
+
+        if searchSection == .contactThreads {
+            return searchResultSet.contactThreadResults[indexPath.row].threadViewModel
+        } else if searchSection == .groupThreads {
+            return searchResultSet.groupThreadResults[indexPath.row].threadViewModel
+        }
+        return nil
+    }
+
+    // MARK: - UITableViewDataSource
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let searchSection = SearchSection(rawValue: section) else {
@@ -614,37 +640,7 @@ extension ConversationSearchViewController: UITableViewDataSource {
         UIView()
     }
 
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        guard let threadViewModel = getThreadViewModelFor(indexPath: indexPath) else {
-            return nil
-        }
-
-        return trailingSwipeActionsConfiguration(threadViewModel: threadViewModel)
-    }
-
-    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        guard let threadViewModel = getThreadViewModelFor(indexPath: indexPath) else {
-            return nil
-        }
-
-        return leadingSwipeActionsConfiguration(threadViewModel: threadViewModel)
-    }
-
-    private func getThreadViewModelFor(indexPath: IndexPath) -> ThreadViewModel? {
-        guard let searchSection = SearchSection(rawValue: indexPath.section) else { return nil }
-
-        if searchSection == .contactThreads {
-            return searchResultSet.contactThreadResults[indexPath.row].threadViewModel
-        } else if searchSection == .groupThreads {
-            return searchResultSet.groupThreadResults[indexPath.row].threadViewModel
-        }
-        return nil
-    }
-}
-
-// MARK: - UIScrollViewDelegate
-
-extension ConversationSearchViewController {
+    // MARK: - UIScrollViewDelegate
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         delegate?.conversationSearchViewWillBeginDragging()
