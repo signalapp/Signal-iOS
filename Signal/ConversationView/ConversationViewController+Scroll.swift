@@ -240,17 +240,15 @@ extension ConversationViewController {
         let bottomInset = collectionView.adjustedContentInset.bottom
         let collectionViewHeightUnobscuredByBottomBar = collectionView.height - bottomInset
 
-        let topDestinationY = topInset
-        let bottomDestinationY = safeContentHeight - collectionViewHeightUnobscuredByBottomBar
-
         let currentMinimumVisibleOffset = collectionView.contentOffset.y + topInset
         let currentMaximumVisibleOffset = collectionView.contentOffset.y + collectionViewHeightUnobscuredByBottomBar
 
         let rowIsEntirelyOnScreen = attributes.frame.minY > currentMinimumVisibleOffset
             && attributes.frame.maxY < currentMaximumVisibleOffset
 
-        // If the collection view contents aren't scrollable, do nothing.
-        guard safeContentHeight > collectionViewHeightUnobscuredByBottomBar else {
+        // If the collection view contents aren't scrollable, rest at the top.
+        guard maxContentOffsetY > minContentOffsetY else {
+            collectionView.setContentOffset(CGPoint(x: 0, y: minContentOffsetY), animated: animated)
             performMessageHighlightAnimationIfNeeded()
             focusVoiceoverElementAfterScroll()
             return
@@ -267,7 +265,7 @@ extension ConversationViewController {
         guard indexPath != lastIndexPathInLoadedWindow || !onScreenPercentage.isEqual(to: 1) else {
             // If we're scrolling to the last index AND we want it entirely on screen,
             // scroll directly to the bottom regardless of the requested destination.
-            let contentOffset = CGPoint(x: 0, y: bottomDestinationY)
+            let contentOffset = CGPoint(x: 0, y: maxContentOffsetY)
             collectionView.setContentOffset(contentOffset, animated: animated)
             updateLastKnownDistanceFromBottom()
             focusVoiceoverElementAfterScroll()
@@ -290,13 +288,7 @@ extension ConversationViewController {
             destinationY -= collectionView.height / 2
         }
 
-        // If the target destination would cause us to scroll beyond
-        // the top of the collection view, scroll to top
-        if destinationY < topDestinationY { destinationY = topDestinationY }
-
-        // If the target destination would cause us to scroll beyond
-        // the bottom of the collection view, scroll to bottom
-        else if destinationY > bottomDestinationY { destinationY = bottomDestinationY }
+        destinationY = destinationY.clamp(minContentOffsetY, maxContentOffsetY)
 
         let contentOffset = CGPoint(x: 0, y: destinationY)
         collectionView.setContentOffset(contentOffset, animated: animated)
