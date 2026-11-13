@@ -3185,7 +3185,8 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         if
             desiredKeyboardType == .system,
             inputTextView.isFirstResponder,
-            !CustomKeyboard.hasCachedHeight(forTraitCollection: traitCollection)
+            let window = CurrentAppContext().mainWindow,
+            !CustomKeyboard.hasCachedHeight(for: window)
         {
             calculateCustomKeyboardHeight()
         }
@@ -3234,11 +3235,15 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
     }
 
     private func calculateCustomKeyboardHeight() {
-        guard desiredKeyboardType == .system, inputTextView.isFirstResponder else { return }
+        guard
+            desiredKeyboardType == .system,
+            inputTextView.isFirstResponder,
+            let window = CurrentAppContext().mainWindow
+        else { return }
 
         let viewForKeyboardLayoutGuide = inputToolbarDelegate?.viewForKeyboardLayoutGuide() ?? self
         let keyboardHeight = viewForKeyboardLayoutGuide.keyboardLayoutGuide.layoutFrame.height
-        CustomKeyboard.setSystemKeyboardHeight(keyboardHeight, forTraitCollection: traitCollection)
+        CustomKeyboard.setSystemKeyboardHeight(keyboardHeight, for: window)
     }
 
     func clearDesiredKeyboard() {
