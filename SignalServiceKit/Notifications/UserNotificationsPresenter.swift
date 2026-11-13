@@ -358,8 +358,8 @@ public class UserNotificationPresenter {
 
     // MARK: - Cancellation
 
-    func cancelNotifications(threadId: String) async {
-        await cancel(cancellation: .threadId(threadId))
+    func cancelNotifications(threadId: String, exceptMessageId: String? = nil) async {
+        await cancel(cancellation: .threadId(threadId, exceptMessageId: exceptMessageId))
     }
 
     func cancelNotifications(messageIds: [String]) async {
@@ -441,7 +441,7 @@ public class UserNotificationPresenter {
     }
 
     private enum CancellationType: Equatable, Hashable {
-        case threadId(String)
+        case threadId(String, exceptMessageId: String?)
         case messageIds(Set<String>)
         case reactionId(ReactionRecord.RowId, uniqueId: String?)
         case missedCalls(inThreadWithUniqueId: String)
@@ -483,8 +483,12 @@ public class UserNotificationPresenter {
         let requestMatchesPredicate: (UNNotificationRequest) -> Bool = { request in
             let userInfo = AppNotificationUserInfo(request.content.userInfo)
             switch cancellationType {
-            case .threadId(let threadId):
-                if let requestThreadId = userInfo.threadId, requestThreadId == threadId {
+            case .threadId(let threadId, let exceptMessageId):
+                if
+                    let requestThreadId = userInfo.threadId,
+                    requestThreadId == threadId,
+                    exceptMessageId == nil || userInfo.messageId != exceptMessageId
+                {
                     return true
                 }
             case .messageIds(let messageIds):

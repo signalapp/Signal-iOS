@@ -1047,6 +1047,12 @@ extension AppSetup.GlobalsContinuation {
             threadStore: threadStore,
             tsAccountManager: tsAccountManager,
         )
+        let groupDataDeletionManager = GroupDataDeletionManagerImpl(
+            bulkDeleteInteractionJobQueue: bulkDeleteInteractionJobQueue,
+            notificationPresenter: notificationPresenter,
+            storyManager: ThreadDeletionManagerImpl.Wrappers.StoryManager(),
+            threadDeletionManager: threadDeletionManager,
+        )
         let deleteForMeIncomingSyncMessageManager = DeleteForMeIncomingSyncMessageManagerImpl(
             addressableMessageFinder: deleteForMeAddressableMessageFinder,
             attachmentManager: attachmentManager,
@@ -1955,6 +1961,7 @@ extension AppSetup.GlobalsContinuation {
             editMessageStore: editMessageStore,
             favoriteStickerExpirationJob: favoriteStickerExpirationJob,
             groupCallRecordManager: groupCallRecordManager,
+            groupDataDeletionManager: groupDataDeletionManager,
             groupMemberStore: groupMemberStore,
             groupMemberUpdater: groupMemberUpdater,
             groupSendEndorsementStore: groupSendEndorsementStore,

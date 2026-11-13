@@ -34,7 +34,10 @@ public protocol ThreadDeletionManager {
         tx: DBWriteTransaction,
     )
 
-    func removeIntentsForTerminatedGroup(threadUniqueId: String)
+    func removeIntents(threadUniqueId: String)
+
+    /// Removes the thread's text and voice message drafts.
+    func removeDrafts(thread: TSThread, tx: DBWriteTransaction)
 }
 
 public enum DeleteForMeSyncMessagePolicy {
@@ -158,8 +161,14 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
         }
     }
 
-    func removeIntentsForTerminatedGroup(threadUniqueId: String) {
+    func removeIntents(threadUniqueId: String) {
         intentsManager.deleteAllIntents(withGroupIdentifier: threadUniqueId)
+    }
+
+    func removeDrafts(thread: TSThread, tx: DBWriteTransaction) {
+        thread.clearDraft(transaction: tx)
+        threadReplyInfoStore.remove(for: thread.uniqueId, tx: tx)
+        VoiceMessageInterruptedDraftStore.clearDraft(for: thread, transaction: tx)
     }
 
     private func deleteThread(
@@ -182,11 +191,10 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
         if shouldHardDeleteThread(thread, localIdentifiers: localIdentifiers) {
             threadRemover.remove(thread, tx: tx)
         } else {
+            removeDrafts(thread: thread, tx: tx)
             thread.anyUpdate(transaction: tx) { thread in
-                thread.messageDraft = nil
                 thread.shouldThreadBeVisible = false
             }
-            threadReplyInfoStore.remove(for: thread.uniqueId, tx: tx)
         }
 
         if
@@ -200,7 +208,7 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
             storyManager.deleteAllStories(groupId: groupThread.groupId, tx: tx)
         }
 
-        intentsManager.deleteAllIntents(withGroupIdentifier: thread.uniqueId)
+        removeIntents(threadUniqueId: thread.uniqueId)
         unreadReminderManager.reconcile(thread: thread, tx: tx)
     }
 
@@ -320,7 +328,8 @@ final class _ThreadDeletionManagerImpl_IntentsManager_Wrapper: _ThreadDeletionMa
 open class MockThreadDeletionManager: ThreadDeletionManager {
     open func deleteThreads(_ threads: [TSThread], sendDeleteForMeSyncMessage: Bool, updateStorageService: Bool, localIdentifiers: LocalIdentifiers, tx: DBWriteTransaction) {}
     open func removeAllInteractions(thread: TSThread, deleteForMeSyncMessagePolicy: DeleteForMeSyncMessagePolicy?, tx: DBWriteTransaction) {}
-    open func removeIntentsForTerminatedGroup(threadUniqueId: String) {}
+    open func removeIntents(threadUniqueId: String) {}
+    open func removeDrafts(thread: TSThread, tx: DBWriteTransaction) {}
 }
 
 #endif

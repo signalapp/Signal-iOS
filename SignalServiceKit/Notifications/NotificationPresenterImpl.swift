@@ -1794,6 +1794,12 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
     }
 
+    public func cancelNotifications(threadId: String, exceptMessageId: String) {
+        enqueueNotificationAction {
+            await self.presenter.cancelNotifications(threadId: threadId, exceptMessageId: exceptMessageId)
+        }
+    }
+
     public func cancelNotifications(messageIds: [String]) {
         enqueueNotificationAction {
             await self.presenter.cancelNotifications(messageIds: messageIds)

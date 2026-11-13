@@ -99,6 +99,8 @@ public protocol NotificationPresenter {
 
     func cancelNotifications(threadId: String)
 
+    func cancelNotifications(threadId: String, exceptMessageId: String)
+
     func cancelNotifications(messageIds: [String])
 
     func cancelNotifications(reactionId: ReactionRecord.RowId, tx: DBReadTransaction)

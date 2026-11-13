@@ -120,6 +120,7 @@ public class DependenciesBridge {
     public let editMessageStore: EditMessageStore
     public let favoriteStickerExpirationJob: FavoriteStickerExpirationJob
     public let groupCallRecordManager: GroupCallRecordManager
+    public let groupDataDeletionManager: any GroupDataDeletionManager
     public let groupMemberStore: GroupMemberStore
     public let groupMemberUpdater: GroupMemberUpdater
     public let groupSendEndorsementStore: GroupSendEndorsementStore
@@ -278,6 +279,7 @@ public class DependenciesBridge {
         editMessageStore: EditMessageStore,
         favoriteStickerExpirationJob: FavoriteStickerExpirationJob,
         groupCallRecordManager: GroupCallRecordManager,
+        groupDataDeletionManager: any GroupDataDeletionManager,
         groupMemberStore: GroupMemberStore,
         groupMemberUpdater: GroupMemberUpdater,
         groupSendEndorsementStore: GroupSendEndorsementStore,
@@ -435,6 +437,7 @@ public class DependenciesBridge {
         self.editMessageStore = editMessageStore
         self.favoriteStickerExpirationJob = favoriteStickerExpirationJob
         self.groupCallRecordManager = groupCallRecordManager
+        self.groupDataDeletionManager = groupDataDeletionManager
         self.groupMemberStore = groupMemberStore
         self.groupMemberUpdater = groupMemberUpdater
         self.groupSendEndorsementStore = groupSendEndorsementStore

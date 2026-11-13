@@ -176,6 +176,8 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         Logger.warn("")
     }
 
+    public func cancelNotifications(threadId: String, exceptMessageId: String) {}
+
     public func cancelNotifications(messageIds: [String]) {
         Logger.warn("")
     }
