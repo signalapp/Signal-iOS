@@ -59,6 +59,21 @@ public enum EditorSticker {
                 .clockAnalog(.arabic),
             ]
         }
+
+        func accessibilityLabel() -> String {
+            switch self {
+            case .clockDigital:
+                return OWSLocalizedString(
+                    "ACCESSIBILITY_LABEL_DIGITAL_CLOCK_STICKER",
+                    comment: "Accessibility label for a custom featured sticker of a digital clock.",
+                )
+            case .clockAnalog:
+                return OWSLocalizedString(
+                    "ACCESSIBILITY_LABEL_ANALOG_CLOCK_STICKER",
+                    comment: "Accessibility label for a custom featured sticker of an analog clock.",
+                )
+            }
+        }
     }
 }
 

@@ -996,6 +996,12 @@ extension ConversationViewController {
         return navigationController
     }
 
+    func makeStickerPackViewController(for: StickerPickerSheet, stickerPack: StickerPackInfo) -> UIViewController {
+        let stickerPackViewController = StickerPackViewController(stickerPackInfo: stickerPack)
+        let navigationController = OWSNavigationController(rootViewController: stickerPackViewController)
+        return navigationController
+    }
+
     // MARK: - PollSendDelegate
 
     func sendPoll(question: String, options: [String], allowMultipleVotes: Bool) {

@@ -3445,12 +3445,34 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         inputToolbarDelegate?.presentManageStickersView()
     }
 
+    // MARK: - StickerPickerContextMenuDelegate
+
     func viewStickerPack(_ stickerPackInfo: StickerPackInfo) {
         inputToolbarDelegate?.didTapStickerPack(stickerPackInfo)
     }
 
-    func scrollToFavoritedSticker(_ stickerInfo: StickerInfo) {
-        inputToolbarDelegate?.openStickerKeyboard(page: .favorites, bouncing: stickerInfo)
+    func stickerFavoriteDidChange(_ stickerInfo: StickerInfo, change: StickerFavoriteChange) {
+        switch change {
+        case .added:
+            inputToolbarDelegate?.openStickerKeyboard(page: .favorites, bouncing: stickerInfo)
+        case .removed:
+            ToastController(
+                text: StickerToastStrings.removedFromFavorites,
+                image: UIImage(named: "favorite-slash"),
+            ).presentToastView(
+                from: .bottom,
+                of: stickerKeyboard,
+                inset: stickerKeyboard.safeAreaInsets.bottom + 48,
+            )
+        case .limitReached:
+            ToastController(
+                text: StickerToastStrings.favoriteLimitReached,
+            ).presentToastView(
+                from: .bottom,
+                of: stickerKeyboard,
+                inset: stickerKeyboard.safeAreaInsets.bottom + 48,
+            )
+        }
     }
 
     func sendSticker(_ stickerMetadata: any StickerMetadata) {

@@ -666,6 +666,13 @@ class SendMediaNavigationController: OWSNavigationController, AttachmentApproval
         let navigationController = OWSNavigationController(rootViewController: manageStickersView)
         return navigationController
     }
+
+    func makeStickerPackViewController(for: StickerPickerSheet, stickerPack: StickerPackInfo) -> UIViewController {
+        let stickerPackViewController = StickerPackViewController(stickerPackInfo: stickerPack)
+        let navigationController = OWSNavigationController(rootViewController: stickerPackViewController)
+        return navigationController
+    }
+
 }
 
 private struct PendingAttachment {

@@ -150,14 +150,7 @@ extension StickerDetailSheet.Action {
                         try await stickerManager.addStickerToFavorites(stickerMetadata: stickerMetadata)
                     } catch StickerFavoriteError.limitReached {
                         presentingVC?.presentToast(
-                            text: String.localizedStringWithFormat(
-                                OWSLocalizedString(
-                                    "STICKER_FAVORITE_MAX_TOAST_%d",
-                                    tableName: "PluralAware",
-                                    comment: "Text shown in a toast when the user has reached the max sticker favorite count and cannot add more. Embeds {{ max number of favorite stickers }}",
-                                ),
-                                StickerManager.maxStickerFavorites,
-                            ),
+                            text: StickerToastStrings.favoriteLimitReached,
                         )
                         return
                     } catch {
@@ -174,10 +167,7 @@ extension StickerDetailSheet.Action {
                         cvc.openStickerKeyboard(page: .favorites, bouncing: stickerMetadata.stickerInfo)
                     case .stickerPack:
                         presentingVC?.presentToast(
-                            text: OWSLocalizedString(
-                                "STICKER_ADDED_TO_FAVORITES_TOAST",
-                                comment: "Text shown in a toast confirming a sticker was added to favorites",
-                            ),
+                            text: StickerToastStrings.addedToFavorites,
                             image: .favorite,
                         )
                     }
@@ -203,10 +193,7 @@ extension StickerDetailSheet.Action {
                 Task {
                     let showToastAction = {
                         presentingVC?.presentToast(
-                            text: OWSLocalizedString(
-                                "STICKER_REMOVED_FROM_FAVORITES_TOAST",
-                                comment: "Text shown in a toast confirming a sticker was removed from favorites",
-                            ),
+                            text: StickerToastStrings.removedFromFavorites,
                             image: .favoriteSlash,
                         )
                     }

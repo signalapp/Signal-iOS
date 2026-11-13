@@ -13,6 +13,9 @@
 /* AX hint letting a user know this button sends a sticker */
 "ACCESSIBILITY_HINT_STICKER" = "Sends this sticker";
 
+/* Accessibility label for a custom featured sticker of an analog clock. */
+"ACCESSIBILITY_LABEL_ANALOG_CLOCK_STICKER" = "Analog Clock Sticker";
+
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "Attachment";
 
@@ -24,6 +27,9 @@
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
 "ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Contact for %@";
+
+/* Accessibility label for a custom featured sticker of a digital clock. */
+"ACCESSIBILITY_LABEL_DIGITAL_CLOCK_STICKER" = "Digital Clock Sticker";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "Media";
