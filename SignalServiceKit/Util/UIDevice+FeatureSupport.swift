@@ -7,68 +7,6 @@ public import UIKit
 
 public extension UIDevice {
 
-    var isPlusSizePhone: Bool {
-        guard !isIPad else { return false }
-
-        switch UIScreen.main.nativeBounds.height {
-        case 960:
-            //  iPad in iPhone compatibility mode (using old iPhone 4 screen size)
-            return false
-        case 1136:
-            // iPhone 5 or 5S or 5C
-            return false
-        case 1334:
-            // iPhone 6/6S/7/8
-            return false
-        case 1792:
-            // iPhone XR
-            return true
-        case 1920, 2208:
-            // iPhone 6+/6S+/7+/8+//
-            return true
-        case 2034:
-            // iPhone Duo
-            return true
-        case 2340:
-            // iPhone 12 Mini
-            return false
-        case 2436:
-            // iPhone X, iPhone XS
-            return false
-        case 2532:
-            // iPhone 12 Pro
-            return false
-        case 2556:
-            // iPhone 14 Pro
-            // iPhone 16
-            return false
-        case 2622:
-            // iPhone 16 Pro
-            // iPhone 17/Pro
-            return false
-        case 2688:
-            // iPhone X Max
-            return true
-        case 2736:
-            // iPhone Air
-            return true
-        case 2778:
-            // iPhone 12 Pro Max
-            return true
-        case 2796:
-            // iPhone 14 Pro Max
-            // iPhone 16 Plus
-            return true
-        case 2868:
-            // iPhone 16/17 Pro Max
-            return true
-        default:
-            // Verify all our IOS_DEVICE_CONSTANT tags make sense when adding a new device size.
-            owsFailDebug("unknown device format")
-            return false
-        }
-    }
-
     @objc
     var isIPad: Bool {
         return userInterfaceIdiom == .pad
