@@ -517,8 +517,12 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
             canToggleViewOnce: options.contains(.canToggleViewOnce),
             canChangeMediaQuality: options.contains(.canChangeQualityLevel),
             canSaveMedia: currentPageViewController.canSaveMedia,
+            isMuteButtonVisible: videoEditorModel != nil,
             canToggleMute: videoEditorModel?.hasAudio == true,
-            isMuted: videoEditorModel?.isMuted == true,
+            isMuted: {
+                guard let videoEditorModel else { return false }
+                return videoEditorModel.isMuted || !videoEditorModel.hasAudio
+            }(),
             proceedButtonIcon: isScreenNotFinal ? .next : .send,
         )
         bottomToolView.update(
