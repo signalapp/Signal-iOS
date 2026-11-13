@@ -1430,7 +1430,10 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
         if let transitionCoordinator = svc.transitionCoordinator {
             transitionCoordinator.animate(
                 alongsideTransition: { _ in
-                    if column == .primary {
+                    guard column == .primary else { return }
+                    if svc.isCollapsed {
+                        UIView.performWithoutAnimation { self.updateTabBar() }
+                    } else {
                         self.updateTabBar()
                     }
                 },
