@@ -33,6 +33,10 @@ extension BackupArchive {
             /// e.g. we try to archive a message to a recipient aci, but that aci has no ``BackupArchive.RecipientId``.
             case referencedRecipientIdMissing(RecipientArchivingContext.Address)
 
+            /// The object we are archiving references a recipient that should already have an id assigned
+            /// from having been archived, but does not.
+            case referencedRecipientIdMissing2(SignalRecipient.RowId)
+
             /// The object we are archiving references a chat that should already have an id assigned
             /// from having been archived, but does not.
             /// e.g. we try to archive a message to a thread, but that group has no ``BackupArchive.ChatId``.
@@ -104,9 +108,6 @@ extension BackupArchive {
             /// We only support backing up 1:1 story replies.
             case storyReplyInGroupThread
 
-            /// A reaction has an invalid or missing author address information, causing the
-            /// reaction to be skipped.
-            case invalidReactionAddress
             /// A reaction has an invalid (too large) timestamp.
             case invalidReactionTimestamp
 
@@ -293,6 +294,7 @@ extension BackupArchive {
             switch type {
             case
                 .referencedRecipientIdMissing,
+                .referencedRecipientIdMissing2,
                 .referencedThreadIdMissing,
                 .referencedCustomChatColorMissing,
                 .contactThreadMissingAddress,
@@ -323,7 +325,6 @@ extension BackupArchive {
                 .storyReplyAuthorMissingAci,
                 .storyReplyEmptyContents,
                 .storyReplyInGroupThread,
-                .invalidReactionAddress,
                 .invalidReactionTimestamp,
                 .emptyGroupUpdate,
                 .missingLocalProfile,
@@ -380,6 +381,7 @@ extension BackupArchive {
             case
                 .streamWriteError,
                 .referencedRecipientIdMissing,
+                .referencedRecipientIdMissing2,
                 .referencedThreadIdMissing,
                 .referencedCustomChatColorMissing,
                 .unableToFetchRecipientIdentity,
@@ -397,7 +399,6 @@ extension BackupArchive {
                 .storyReplyAuthorMissingAci,
                 .storyReplyEmptyContents,
                 .storyReplyInGroupThread,
-                .invalidReactionAddress,
                 .invalidReactionTimestamp,
                 .emptyGroupUpdate,
                 .missingLocalProfile,

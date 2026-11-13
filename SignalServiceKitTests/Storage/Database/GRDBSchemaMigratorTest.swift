@@ -3111,4 +3111,277 @@ struct GRDBSchemaMigratorTest {
             #expect(groupRecords.isEmpty)
         }
     }
+
+    @Test
+    func testMigrateReactions() throws {
+        let threadId1: Int64 = 1
+        let threadUniqueId1 = UUID().uuidString
+        let threadId2: Int64 = 2
+        let threadUniqueId2 = UUID().uuidString
+        // This one doesn't exist.
+        let threadUniqueId3 = UUID().uuidString
+
+        struct Thread {
+            var id: Int64
+            var uniqueId: String
+        }
+        let threads = [
+            Thread(id: threadId1, uniqueId: threadUniqueId1),
+            Thread(id: threadId2, uniqueId: threadUniqueId2),
+        ]
+
+        let messageId3: Int64 = 3
+        let messageUniqueId3 = UUID().uuidString
+        let messageId4: Int64 = 4
+        let messageUniqueId4 = UUID().uuidString
+        // This one doesn't exist.
+        let messageUniqueId5 = UUID().uuidString
+        // This one doesn't have a corresponding thread.
+        let messageId6: Int64 = 6
+        let messageUniqueId6 = UUID().uuidString
+
+        struct Interaction {
+            var id: Int64
+            var recordType: Int64
+            var uniqueId: String
+            var uniqueThreadId: String
+        }
+        let interactions = [
+            Interaction(id: messageId3, recordType: 21, uniqueId: messageUniqueId3, uniqueThreadId: threadUniqueId1),
+            Interaction(id: messageId4, recordType: 19, uniqueId: messageUniqueId4, uniqueThreadId: threadUniqueId2),
+            Interaction(id: messageId6, recordType: 21, uniqueId: messageUniqueId6, uniqueThreadId: threadUniqueId3),
+        ]
+
+        let reactorAci1 = Aci.randomForTesting()
+        let reactorPhoneNumber2 = E164("+16505550100")!
+        let reactorAci3 = Aci.randomForTesting()
+
+        let reactionUniqueId5 = UUID().uuidString
+        let reactionUniqueId7 = UUID().uuidString
+        let reactionUniqueId8 = UUID().uuidString
+
+        struct Reaction {
+            var id: Int64
+            var uniqueId: String
+            var emoji: String
+            var reactorE164: String?
+            var reactorUUID: String?
+            var sentAtTimestamp: Int64
+            var uniqueMessageId: String
+            var read: Bool
+        }
+        let reactions = [
+            // This one refers to a malformed recipient.
+            Reaction(
+                id: 1,
+                uniqueId: UUID().uuidString,
+                emoji: "A",
+                reactorE164: "Garbage",
+                reactorUUID: "Garbage",
+                sentAtTimestamp: 1234,
+                uniqueMessageId: messageUniqueId3,
+                read: false,
+            ),
+            // This one refers to a non-existent message.
+            Reaction(
+                id: 2,
+                uniqueId: UUID().uuidString,
+                emoji: "B",
+                reactorE164: nil,
+                reactorUUID: reactorAci1.serviceIdUppercaseString,
+                sentAtTimestamp: 1234,
+                uniqueMessageId: messageUniqueId5,
+                read: false,
+            ),
+            // This one refers to a non-existent thread.
+            Reaction(
+                id: 3,
+                uniqueId: UUID().uuidString,
+                emoji: "C",
+                reactorE164: nil,
+                reactorUUID: reactorAci1.serviceIdUppercaseString,
+                sentAtTimestamp: 1234,
+                uniqueMessageId: messageUniqueId6,
+                read: false,
+            ),
+            // This one is valid.
+            Reaction(
+                id: 4,
+                uniqueId: UUID().uuidString,
+                emoji: "D",
+                reactorE164: nil,
+                reactorUUID: reactorAci1.serviceIdUppercaseString,
+                sentAtTimestamp: 1234,
+                uniqueMessageId: messageUniqueId3,
+                read: false,
+            ),
+            // This one is for the same message but a different recipient.
+            Reaction(
+                id: 5,
+                uniqueId: reactionUniqueId5,
+                emoji: "E",
+                reactorE164: reactorPhoneNumber2.stringValue,
+                reactorUUID: nil,
+                sentAtTimestamp: 1234,
+                uniqueMessageId: messageUniqueId3,
+                read: true,
+            ),
+            // This one is a duplicate and should be pruned.
+            Reaction(
+                id: 7,
+                uniqueId: reactionUniqueId7,
+                emoji: "F",
+                reactorE164: nil,
+                reactorUUID: reactorAci1.serviceIdUppercaseString,
+                sentAtTimestamp: 1234,
+                uniqueMessageId: messageUniqueId3,
+                read: false,
+            ),
+            // This one is for an incoming message.
+            Reaction(
+                id: 8,
+                uniqueId: reactionUniqueId8,
+                emoji: "G",
+                reactorE164: nil,
+                reactorUUID: reactorAci3.serviceIdUppercaseString,
+                sentAtTimestamp: 2345,
+                uniqueMessageId: messageUniqueId4,
+                read: true,
+            ),
+        ]
+
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "model_OWSReaction" (
+              "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+              "uniqueId" TEXT NOT NULL UNIQUE ON CONFLICT FAIL,
+              "emoji" TEXT NOT NULL,
+              "reactorE164" TEXT,
+              "reactorUUID" TEXT,
+              "sentAtTimestamp" INTEGER NOT NULL,
+              "uniqueMessageId" TEXT NOT NULL,
+              "read" BOOLEAN NOT NULL DEFAULT 0
+            );
+
+            CREATE TABLE "model_TSThread" (
+              "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+              "uniqueId" TEXT NOT NULL UNIQUE ON CONFLICT FAIL
+            );
+
+            CREATE TABLE "model_TSInteraction" (
+              "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+              "recordType" INTEGER NOT NULL,
+              "uniqueId" TEXT NOT NULL UNIQUE ON CONFLICT FAIL,
+              "uniqueThreadId" TEXT NOT NULL
+            );
+
+            CREATE TABLE "model_SignalRecipient" (
+              "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+              "recordType" INTEGER NOT NULL,
+              "uniqueId" TEXT NOT NULL UNIQUE ON CONFLICT FAIL,
+              "devices" BLOB NOT NULL,
+              "recipientPhoneNumber" TEXT,
+              "recipientUUID" TEXT,
+              "pni" TEXT
+            );
+            """)
+
+            for thread in threads {
+                try db.execute(
+                    sql: """
+                    INSERT INTO "model_TSThread" (
+                        "id", "uniqueId"
+                    ) VALUES (?, ?)
+                    """,
+                    arguments: [thread.id, thread.uniqueId],
+                )
+            }
+
+            for interaction in interactions {
+                try db.execute(
+                    sql: """
+                    INSERT INTO "model_TSInteraction" (
+                        "id", "recordType", "uniqueId", "uniqueThreadId"
+                    ) VALUES (?, ?, ?, ?)
+                    """,
+                    arguments: [interaction.id, interaction.recordType, interaction.uniqueId, interaction.uniqueThreadId],
+                )
+            }
+
+            for reaction in reactions {
+                try db.execute(
+                    sql: """
+                    INSERT INTO "model_OWSReaction" (
+                        "id", "uniqueId", "emoji", "reactorE164", "reactorUUID", "sentAtTimestamp", "uniqueMessageId", "read"
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    arguments: [
+                        reaction.id,
+                        reaction.uniqueId,
+                        reaction.emoji,
+                        reaction.reactorE164,
+                        reaction.reactorUUID,
+                        reaction.sentAtTimestamp,
+                        reaction.uniqueMessageId,
+                        reaction.read,
+                    ],
+                )
+            }
+
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.addReaction(tx: tx)
+                try GRDBSchemaMigrator.addReactionUniqueId(tx: tx)
+                try GRDBSchemaMigrator.migrateReactions(tx: tx)
+                try GRDBSchemaMigrator.dropOWSReaction(tx: tx)
+            }
+
+            do {
+                var records = try Row.fetchAll(db, sql: "SELECT * FROM Reaction ORDER BY id")[...]
+                do {
+                    let record = records.removeFirst()
+                    #expect(record["id"] as Int64 == 5)
+                    #expect(record["messageId"] as Int64 == 3)
+                    #expect(record["reactorId"] as Int64 == 2)
+                    #expect(record["threadId"] as Int64 == 1)
+                    #expect(record["emoji"] as String == "E")
+                    #expect(record["sentTimestamp"] as Int64 == 1234)
+                    #expect(record["isRead"] as Bool? == true)
+                }
+                do {
+                    let record = records.removeFirst()
+                    #expect(record["id"] as Int64 == 7)
+                    #expect(record["messageId"] as Int64 == 3)
+                    #expect(record["reactorId"] as Int64 == 1)
+                    #expect(record["threadId"] as Int64 == 1)
+                    #expect(record["emoji"] as String == "F")
+                    #expect(record["sentTimestamp"] as Int64 == 1234)
+                    #expect(record["isRead"] as Bool? == false)
+                }
+                do {
+                    let record = records.removeFirst()
+                    #expect(record["id"] as Int64 == 8)
+                    #expect(record["messageId"] as Int64 == 4)
+                    #expect(record["reactorId"] as Int64 == 3)
+                    #expect(record["threadId"] as Int64 == 2)
+                    #expect(record["emoji"] as String == "G")
+                    #expect(record["sentTimestamp"] as Int64 == 2345)
+                    #expect(record["isRead"] as Bool? == nil)
+                }
+                #expect(records.isEmpty)
+            }
+
+            do {
+                var records = try Row.fetchAll(db, sql: "SELECT * FROM ReactionUniqueId ORDER BY id")[...]
+                do {
+                    let record = records.removeFirst()
+                    #expect(record["id"] as Int64 == 7)
+                    #expect(record["uniqueId"] as String == reactionUniqueId7)
+                }
+                #expect(records.isEmpty)
+            }
+        }
+    }
 }

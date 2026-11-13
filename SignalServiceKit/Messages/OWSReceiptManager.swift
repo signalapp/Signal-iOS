@@ -646,7 +646,12 @@ public class OWSReceiptManager: NSObject {
             if interactionFinder.hasUnreadMessage(beforeSortId: beforeSortId, tx: tx) {
                 return true
             }
-            if interactionFinder.hasMessageWithUnreadReactions(beforeSortId: beforeSortId, tx: tx) {
+            let anyUnreadReaction = ReactionFinder.fetchNextUnreadReaction(
+                inThreadId: thread.sqliteRowId.owsFailUnwrap("must exist"),
+                upThroughMessageId: Int64(beforeSortId),
+                tx: tx,
+            )
+            if anyUnreadReaction != nil {
                 return true
             }
             return false
@@ -785,42 +790,41 @@ public class OWSReceiptManager: NSObject {
         logger: PrefixedLogger,
     ) async -> MarkAsReadBatch {
         let db = DependenciesBridge.shared.db
-        let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
+        let notificationPresenter = SSKEnvironment.shared.notificationPresenterRef
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         return await db.awaitableWrite { tx -> MarkAsReadBatch in
             var batch = MarkAsReadBatch()
             let localAci = tsAccountManager.localIdentifiers(tx: tx)?.aci
             var receiptsForMessage = [LinkedDeviceReadReceipt]()
-            var cursor = interactionFinder.fetchMessagesWithUnreadReactions(
-                beforeSortId: beforeSortId,
-                tx: tx,
-            )
 
             while
                 batch.canReadMoreRecords,
-                let record = cursor.next()
+                let record = ReactionFinder.fetchNextUnreadReaction(
+                    inThreadId: thread.sqliteRowId.owsFailUnwrap("must exist"),
+                    upThroughMessageId: Int64(beforeSortId),
+                    tx: tx,
+                )
             {
                 batch.recordCount += 1
 
-                let nextInteraction: TSInteraction
-                do {
-                    nextInteraction = try TSInteraction.fromRecord(record)
-                } catch {
-                    owsFailDebug("Failed to instantiate TSInteraction with unread reactions! \(error)", logger: logger)
-                    continue
-                }
+                let interaction = InteractionFinder.fetch(rowId: record.messageId, transaction: tx)
+                    .owsFailUnwrap("must exist or this logic will loop infinitely")
 
-                guard let outgoingMessage = nextInteraction as? TSOutgoingMessage else {
-                    owsFailDebug("TSInteraction with unread reactions was not TSOutgoingMessage?", logger: logger)
-                    continue
+                let reactionFinder = ReactionFinder(messageId: record.messageId)
+                let unreadReactions = reactionFinder.fetchUnreadReactions(inThreadId: record.threadId, tx: tx)
+                for var unreadReaction in unreadReactions {
+                    notificationPresenter.cancelNotifications(reactionId: unreadReaction.id, tx: tx)
+                    unreadReaction.markRead(tx: tx)
                 }
-
-                outgoingMessage.markUnreadReactionsAsRead(transaction: tx)
                 batch.markedCount += 1
 
                 if let localAci {
+                    guard let outgoingMessage = interaction as? TSOutgoingMessage else {
+                        owsFailDebug("can't have reactions on \(type(of: interaction))", logger: logger)
+                        break
+                    }
                     receiptsForMessage.append(LinkedDeviceReadReceipt(
                         senderAci: localAci,
                         messageUniqueId: outgoingMessage.uniqueId,
@@ -899,6 +903,7 @@ public class OWSReceiptManager: NSObject {
         readTimestamp: UInt64,
         tx: DBWriteTransaction,
     ) {
+        let notificationPresenter = SSKEnvironment.shared.notificationPresenterRef
         switch message {
         case let incomingMessage as TSIncomingMessage:
             guard let thread = message.thread(tx: tx) else {
@@ -929,15 +934,26 @@ public class OWSReceiptManager: NSObject {
             )
 
             // Clear notifications for all the now-marked-read messages in one batch.
-            SSKEnvironment.shared.notificationPresenterRef.cancelNotifications(messageIds: [incomingMessage.uniqueId] + markedAsReadIds)
+            notificationPresenter.cancelNotifications(messageIds: [incomingMessage.uniqueId] + markedAsReadIds)
 
             // There may be nothing left to remind about
             unreadReminderManager.reconcile(thread: thread, tx: tx)
         case let outgoingMessage as TSOutgoingMessage:
+            guard let thread = message.thread(tx: tx) else {
+                break
+            }
             // Outgoing messages are always "read", but if we get a receipt
             // from our linked device about one that indicates that any reactions
             // we received on this message should also be marked read.
-            outgoingMessage.markUnreadReactionsAsRead(transaction: tx)
+            let messageId = outgoingMessage.sqliteRowId.owsFailUnwrap("must exist")
+            let unreadReactions = ReactionFinder(messageId: messageId).fetchUnreadReactions(
+                inThreadId: thread.sqliteRowId.owsFailUnwrap("must exist"),
+                tx: tx,
+            )
+            for var unreadReaction in unreadReactions {
+                notificationPresenter.cancelNotifications(reactionId: unreadReaction.id, tx: tx)
+                unreadReaction.markRead(tx: tx)
+            }
         default:
             owsFailDebug("Message was neither incoming nor outgoing!")
         }

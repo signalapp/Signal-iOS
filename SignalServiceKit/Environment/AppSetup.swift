@@ -1475,8 +1475,6 @@ extension AppSetup.GlobalsContinuation {
 
         let profileBadgeManager = ProfileBadgeManager()
 
-        let reactionStore: any ReactionStore = ReactionStoreImpl()
-
         let storageServiceRecordIkmMigrator = StorageServiceRecordIkmMigratorImpl(
             db: db,
             storageServiceManager: storageServiceManager,
@@ -1682,7 +1680,6 @@ extension AppSetup.GlobalsContinuation {
                 interactionStore: backupInteractionStore,
                 oversizeTextArchiver: backupsOversizeTextArchiver,
                 pollArchiver: pollArchiver,
-                reactionStore: reactionStore,
                 threadStore: backupThreadStore,
                 reactionArchiver: backupReactionArchiver,
                 pinnedMessageManager: pinnedMessageManager,
@@ -2001,7 +1998,6 @@ extension AppSetup.GlobalsContinuation {
             privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,
             profileBadgeManager: profileBadgeManager,
             quotedReplyManager: quotedReplyManager,
-            reactionStore: reactionStore,
             recipientCapabilityStore: recipientCapabilityStore,
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,

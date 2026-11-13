@@ -167,7 +167,6 @@ public class DependenciesBridge {
     public let privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager
     public let profileBadgeManager: ProfileBadgeManager
     public let quotedReplyManager: QuotedReplyManager
-    public let reactionStore: any ReactionStore
     public let recipientCapabilityStore: RecipientCapabilityStore
     public let recipientDatabaseTable: RecipientDatabaseTable
     public let recipientFetcher: RecipientFetcher
@@ -326,7 +325,6 @@ public class DependenciesBridge {
         privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager,
         profileBadgeManager: ProfileBadgeManager,
         quotedReplyManager: QuotedReplyManager,
-        reactionStore: any ReactionStore,
         recipientCapabilityStore: RecipientCapabilityStore,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
@@ -484,7 +482,6 @@ public class DependenciesBridge {
         self.privateStoryThreadDeletionManager = privateStoryThreadDeletionManager
         self.profileBadgeManager = profileBadgeManager
         self.quotedReplyManager = quotedReplyManager
-        self.reactionStore = reactionStore
         self.recipientCapabilityStore = recipientCapabilityStore
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher

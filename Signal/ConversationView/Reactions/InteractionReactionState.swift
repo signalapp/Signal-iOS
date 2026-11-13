@@ -12,8 +12,8 @@ final class InteractionReactionState: Equatable {
         let count: Int
     }
 
-    let reactions: [OWSReaction]
-    let emojiReactions: [Emoji: [OWSReaction]]
+    let reactions: [ReactionRecord]
+    let emojiReactions: [Emoji: [ReactionRecord]]
     let emojiCounts: [EmojiCount]
     let localUserEmojiVariant: String?
 
@@ -22,19 +22,25 @@ final class InteractionReactionState: Equatable {
         guard let message = interaction as? TSMessage else {
             return nil
         }
+        let messageId = message.sqliteRowId.owsFailUnwrap("must exist")
 
-        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress else {
-            owsFailDebug("missing local address")
+        let recipientStore = DependenciesBridge.shared.recipientDatabaseTable
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard
+            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx),
+            let localRecipient = recipientStore.fetchRecipient(serviceId: localIdentifiers.aci, transaction: tx)
+        else {
+            owsFailDebug("missing local identifiers")
             return nil
         }
 
-        let finder = ReactionFinder(uniqueMessageId: message.uniqueId)
-        let sortedReactions = finder.allReactions(transaction: tx)
-        let localUserReaction = sortedReactions.first(where: { $0.reactor == localAddress })
+        let finder = ReactionFinder(messageId: messageId)
+        let sortedReactions = finder.allReactions(tx: tx)
+        let localUserReaction = sortedReactions.first(where: { $0.reactorId == localRecipient.id })
         let localUserEmojiVariant = localUserReaction?.emoji
         let localUserEmoji = localUserEmojiVariant.flatMap { Emoji($0) }
 
-        var emojiReactions = [Emoji: [OWSReaction]]()
+        var emojiReactions = [Emoji: [ReactionRecord]]()
         // These are "partially ordered" because they are sorted in reverse
         // chronological order, but they are not sorted by frequency.
         var partiallyOrderedEmojis = [Emoji]()
@@ -55,7 +61,7 @@ final class InteractionReactionState: Equatable {
 
         let sortedEmojiCounts = partiallyOrderedEmojis.map {
             let reactions = emojiReactions[$0].owsFailUnwrap("must exist")
-            let reactionVariant: OWSReaction
+            let reactionVariant: ReactionRecord
             if $0 == localUserEmoji {
                 reactionVariant = localUserReaction.owsFailUnwrap("must exist when localUserEmoji does")
             } else {

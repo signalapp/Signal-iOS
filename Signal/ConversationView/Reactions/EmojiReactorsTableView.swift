@@ -31,12 +31,15 @@ class EmojiReactorsTableView: UITableView, UITableViewDataSource {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(for reactions: [OWSReaction], transaction: DBReadTransaction) {
-        reactorItems = reactions.compactMap { reaction in
-            let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: reaction.reactor, tx: transaction).resolvedValue()
+    func configure(for reactions: [ReactionRecord], tx: DBReadTransaction) {
+        let contactManager = SSKEnvironment.shared.contactManagerRef
+        let recipientStore = DependenciesBridge.shared.recipientDatabaseTable
+        reactorItems = reactions.map { reaction in
+            let recipient = recipientStore.fetchRecipient(rowId: reaction.reactorId, tx: tx).owsFailUnwrap("must exist")
+            let displayName = contactManager.displayName(for: recipient.address, tx: tx).resolvedValue()
 
             return ReactorItem(
-                address: reaction.reactor,
+                address: recipient.address,
                 displayName: displayName,
                 emoji: reaction.emoji,
             )

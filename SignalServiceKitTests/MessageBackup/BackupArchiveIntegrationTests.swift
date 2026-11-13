@@ -438,7 +438,7 @@ private enum CrashyMocks {
         func notifyUser(forIncomingMessage: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
         func notifyUser(forIncomingMessage: TSIncomingMessage, editTarget: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
         func notifyUser(forReleaseNotesMessage: TSReleaseNotesMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
-        func notifyUser(forReaction: OWSReaction, onOutgoingMessage: TSOutgoingMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
+        func notifyUser(forReaction: ReactionRecord, onOutgoingMessage: TSOutgoingMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
         func notifyUser(forErrorMessage: TSErrorMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
         func notifyUser(forTSMessage: TSMessage, thread: TSThread, wantsSound: Bool, transaction: DBWriteTransaction) { failTest(Self.self) }
         func notifyUser(forPreviewableInteraction: any TSInteraction & OWSPreviewText, thread: TSThread, wantsSound: Bool, transaction: DBWriteTransaction) { failTest(Self.self) }
@@ -463,7 +463,7 @@ private enum CrashyMocks {
         func clearDeliveredNewLinkedDevicesNotifications() { failTest(Self.self) }
         func cancelNotifications(threadId: String) { failTest(Self.self) }
         func cancelNotifications(messageIds: [String]) { failTest(Self.self) }
-        func cancelNotifications(reactionId: String) { failTest(Self.self) }
+        func cancelNotifications(reactionId: ReactionRecord.RowId, tx: DBReadTransaction) { failTest(Self.self) }
         func cancelNotificationsForMissedCalls(threadUniqueId: String) { failTest(Self.self) }
         func cancelNotifications(for storyMessage: StoryMessage) { failTest(Self.self) }
         func notifyUserOfAttachmentBackfill(threadUniqueId: String, messageUniqueId: String, body: String) { failTest(Self.self) }

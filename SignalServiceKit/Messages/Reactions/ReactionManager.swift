@@ -59,6 +59,8 @@ public class ReactionManager: NSObject {
         tx: DBWriteTransaction,
     ) throws -> OutgoingReactionMessage {
         assert(emoji.isSingleEmoji)
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         guard let message = TSMessage.fetchMessageViaCache(uniqueId: messageUniqueId, transaction: tx) else {
             throw OWSAssertionError("Can't find message for reaction.")
@@ -68,28 +70,29 @@ public class ReactionManager: NSObject {
             throw OWSAssertionError("Can't send reaction to thread.")
         }
 
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci else {
-            throw OWSAssertionError("missing local address")
-        }
+        // If we're not registered, the message send will fail; bail early.
+        let registeredState = try tsAccountManager.registeredState(tx: tx)
+        let localRecipient = recipientFetcher.fetchOrCreate(serviceId: registeredState.localIdentifiers.aci, tx: tx)
 
         let timestamp = MessageTimestampGenerator.sharedInstance.generateTimestamp()
 
-        let previousReaction = message.reaction(for: localAci, tx: tx)
-
-        let createdReaction: OWSReaction?
+        let oldReaction: ReactionRecord?
+        let newReaction: ReactionRecord?
         if isRemoving {
-            message.removeReaction(for: localAci, tx: tx)
-            createdReaction = nil
+            oldReaction = message.removeReaction(forReactorId: localRecipient.id, tx: tx)
+            newReaction = nil
         } else {
-            createdReaction = message.recordReaction(
-                for: localAci,
+            let recordedReaction = message.recordReaction(
+                forReactorId: localRecipient.id,
+                inThread: thread,
                 emoji: emoji,
                 sentAtTimestamp: timestamp,
+                // Always immediately mark outgoing reactions as read.
+                markAsRead: true,
                 tx: tx,
-            )?.newValue
-
-            // Always immediately mark outgoing reactions as read.
-            createdReaction?.markAsRead(transaction: tx)
+            )
+            oldReaction = recordedReaction?.oldValue
+            newReaction = recordedReaction?.newValue
         }
 
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
@@ -101,8 +104,8 @@ public class ReactionManager: NSObject {
             isRemoving: isRemoving,
             inThread: thread,
             onMessage: message,
-            newReaction: createdReaction,
-            oldReaction: previousReaction,
+            newReaction: newReaction,
+            oldReaction: oldReaction,
             // Though we generally don't parse the expiration timer from reaction
             // messages, older desktop instances will read it from the "unsupported"
             // message resulting in the timer clearing. So we populate it to ensure
@@ -123,12 +126,13 @@ public class ReactionManager: NSObject {
     public class func processIncomingReaction(
         _ reaction: SSKProtoDataMessageReaction,
         thread: TSThread,
-        reactor: Aci,
+        reactor reactorAci: Aci,
         timestamp: UInt64,
         serverTimestamp: UInt64,
         expiresInSeconds: UInt32,
         expireTimerVersion: UInt32,
         sentTranscript: OWSIncomingSentMessageTranscript?,
+        registeredState: RegisteredState,
         transaction: DBWriteTransaction,
     ) -> ReactionProcessingResult {
         guard SDS.fitsInInt64(reaction.timestamp) else {
@@ -182,25 +186,29 @@ public class ReactionManager: NSObject {
                 return .invalidReaction
             }
 
+            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+            let reactor = recipientFetcher.fetchOrCreate(serviceId: reactorAci, tx: transaction)
+
             // If this is a reaction removal, we want to remove *any* reaction from this author
             // on this message, regardless of the specified emoji.
             if reaction.hasRemove, reaction.remove {
-                message.removeReaction(for: reactor, tx: transaction)
+                message.removeReaction(forReactorId: reactor.id, tx: transaction)
             } else {
                 let reaction = message.recordReaction(
-                    for: reactor,
+                    forReactorId: reactor.id,
+                    inThread: thread,
                     emoji: emoji,
                     sentAtTimestamp: timestamp,
+                    markAsRead: registeredState.localIdentifiers.contains(serviceId: reactorAci),
                     tx: transaction,
                 )
 
                 // If this is a reaction to a message we sent, notify the user.
-                let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci
                 if
                     let reaction,
-                    reaction.oldValue?.sentAtTimestamp != reaction.newValue.sentAtTimestamp,
+                    reaction.oldValue?.sentTimestamp != reaction.newValue.sentTimestamp,
                     let message = message as? TSOutgoingMessage,
-                    reactor != localAci
+                    !registeredState.localIdentifiers.contains(serviceId: reactorAci)
                 {
                     SSKEnvironment.shared.notificationPresenterRef.notifyUser(
                         forReaction: reaction.newValue,
@@ -246,15 +254,14 @@ public class ReactionManager: NSObject {
 
             let message: TSMessage
 
-            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci
-            if reactor == localAci {
+            if registeredState.localIdentifiers.contains(serviceId: reactorAci) {
                 let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
                 populateStoryContext(on: builder)
                 message = builder.build(transaction: transaction)
             } else {
                 let builder: TSIncomingMessageBuilder = .withDefaultValues(
                     thread: thread,
-                    authorAci: reactor,
+                    authorAci: reactorAci,
                     serverTimestamp: serverTimestamp,
                 )
                 populateStoryContext(on: builder)
@@ -279,33 +286,5 @@ public class ReactionManager: NSObject {
             Logger.info("Received reaction for a message that doesn't exist \(timestamp)")
             return .associatedMessageMissing
         }
-    }
-
-    @objc
-    public class func tryToCleanupOrphanedReaction(
-        uniqueId: String,
-        thresholdDate: Date,
-        shouldPerformRemove: Bool,
-        transaction: DBWriteTransaction,
-    ) -> Bool {
-        guard let reaction = OWSReaction.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
-            // This could just be a race condition, but it should be very unlikely.
-            Logger.warn("Could not load reaction: \(uniqueId)")
-            return false
-        }
-
-        let creationDate = Date(millisecondsSince1970: reaction.sentAtTimestamp)
-        guard creationDate <= thresholdDate else {
-            Logger.info("Skipping orphan reaction due to age: \(-creationDate.timeIntervalSinceNow)")
-            return false
-        }
-
-        Logger.info("Removing orphan reaction: \(reaction.uniqueId)")
-
-        // Sometimes we cleanup orphaned data as an audit and don't actually
-        // perform the remove operation.
-        if shouldPerformRemove { reaction.anyRemove(transaction: transaction) }
-
-        return true
     }
 }

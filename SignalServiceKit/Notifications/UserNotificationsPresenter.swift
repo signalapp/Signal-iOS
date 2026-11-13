@@ -366,8 +366,8 @@ public class UserNotificationPresenter {
         await cancel(cancellation: .messageIds(Set(messageIds)))
     }
 
-    func cancelNotifications(reactionId: String) async {
-        await cancel(cancellation: .reactionId(reactionId))
+    func cancelNotifications(reactionId: ReactionRecord.RowId, reactionUniqueId: String?) async {
+        await cancel(cancellation: .reactionId(reactionId, uniqueId: reactionUniqueId))
     }
 
     func cancelNotificationsForMissedCalls(withThreadUniqueId threadId: String) async {
@@ -443,7 +443,7 @@ public class UserNotificationPresenter {
     private enum CancellationType: Equatable, Hashable {
         case threadId(String)
         case messageIds(Set<String>)
-        case reactionId(String)
+        case reactionId(ReactionRecord.RowId, uniqueId: String?)
         case missedCalls(inThreadWithUniqueId: String)
         case storyMessage(String)
     }
@@ -491,8 +491,11 @@ public class UserNotificationPresenter {
                 if let requestMessageId = userInfo.messageId, messageIds.contains(requestMessageId) {
                     return true
                 }
-            case .reactionId(let reactionId):
+            case .reactionId(let reactionId, let reactionUniqueId):
                 if let requestReactionId = userInfo.reactionId, requestReactionId == reactionId {
+                    return true
+                }
+                if let requestReactionUniqueId = userInfo.reactionUniqueId, requestReactionUniqueId == reactionUniqueId {
                     return true
                 }
             case .missedCalls(let threadUniqueId):

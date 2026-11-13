@@ -22,7 +22,7 @@ class ReactionsDetailSheet: InteractiveSheetViewController, UIScrollViewDelegate
     init(reactionState: InteractionReactionState, message: TSMessage) {
         self.reactionState = reactionState
         self.messageId = message.uniqueId
-        self.reactionFinder = ReactionFinder(uniqueMessageId: message.uniqueId)
+        self.reactionFinder = ReactionFinder(messageId: message.sqliteRowId.owsFailUnwrap("must exist"))
         super.init()
         self.animationsShouldBeInterruptible = true
     }
@@ -226,7 +226,7 @@ class ReactionsDetailSheet: InteractiveSheetViewController, UIScrollViewDelegate
         }
     }
 
-    private func findReactions(forEmoji emoji: Emoji?) -> [OWSReaction] {
+    private func findReactions(forEmoji emoji: Emoji?) -> [ReactionRecord] {
         guard let emoji else {
             return reactionState.reactions
         }
@@ -251,7 +251,7 @@ class ReactionsDetailSheet: InteractiveSheetViewController, UIScrollViewDelegate
             emojiReactorsViewConstraints.insert(emojiReactorsViewConstraints.removeLast(), at: 0)
 
             let previousPageReactions = findReactions(forEmoji: previousPageEmoji)
-            previousPageReactorsView.configure(for: previousPageReactions, transaction: transaction)
+            previousPageReactorsView.configure(for: previousPageReactions, tx: transaction)
 
             // We're paging forwards!
         } else if oldSelectedEmoji == previousPageEmoji, oldSelectedEmoji != selectedEmoji {
@@ -262,18 +262,18 @@ class ReactionsDetailSheet: InteractiveSheetViewController, UIScrollViewDelegate
             emojiReactorsViewConstraints.append(emojiReactorsViewConstraints.removeFirst())
 
             let nextPageReactions = findReactions(forEmoji: nextPageEmoji)
-            nextPageReactorsView.configure(for: nextPageReactions, transaction: transaction)
+            nextPageReactorsView.configure(for: nextPageReactions, tx: transaction)
 
             // We didn't get here through paging, stuff probably changed. Reload all the things.
         } else {
             let currentPageReactions = findReactions(forEmoji: selectedEmoji)
-            currentPageReactorsView.configure(for: currentPageReactions, transaction: transaction)
+            currentPageReactorsView.configure(for: currentPageReactions, tx: transaction)
 
             let previousPageReactions = findReactions(forEmoji: previousPageEmoji)
-            previousPageReactorsView.configure(for: previousPageReactions, transaction: transaction)
+            previousPageReactorsView.configure(for: previousPageReactions, tx: transaction)
 
             let nextPageReactions = findReactions(forEmoji: nextPageEmoji)
-            nextPageReactorsView.configure(for: nextPageReactions, transaction: transaction)
+            nextPageReactorsView.configure(for: nextPageReactions, tx: transaction)
         }
 
         updatePageConstraints()

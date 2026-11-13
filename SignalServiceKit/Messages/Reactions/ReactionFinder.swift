@@ -9,131 +9,77 @@ public import LibSignalClient
 
 // MARK: -
 
-public class ReactionFinder {
+public struct ReactionFinder {
 
-    public let uniqueMessageId: String
+    public let messageId: ReactionRecord.InteractionId
 
-    public init(uniqueMessageId: String) {
-        self.uniqueMessageId = uniqueMessageId
+    public init(messageId: ReactionRecord.InteractionId) {
+        self.messageId = messageId
+    }
+
+    private func baseQuery() -> QueryInterfaceRequest<ReactionRecord> {
+        return ReactionRecord.filter(ReactionRecord.Columns.messageId == self.messageId)
     }
 
     /// Returns the given users reaction if it exists, otherwise nil
-    public func reaction(for aci: Aci, tx: DBReadTransaction) -> OWSReaction? {
-        // If there is a reaction for the ACI, return it.
-        do {
-            let sql = """
-                SELECT * FROM \(OWSReaction.databaseTableName)
-                WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
-                AND \(OWSReaction.columnName(.reactorUUID)) = ?
-            """
-            let aciString = aci.serviceIdUppercaseString
-            if let result = try OWSReaction.fetchOne(tx.database, sql: sql, arguments: [uniqueMessageId, aciString]) {
-                return result
-            }
-        } catch {
-            owsFailDebug("Failed to fetch reaction \(error)")
+    public func reaction(
+        for aci: Aci,
+        recipientStore: RecipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable,
+        tx: DBReadTransaction,
+    ) -> ReactionRecord? {
+        // If there's no recipient, there can't be any reactions.
+        guard let recipient = recipientStore.fetchRecipient(serviceId: aci, transaction: tx) else {
             return nil
         }
-
-        // Otherwise, if there is a reaction for the phone number *without* an ACI,
-        // return it. (This handles cases where we saved a reaction before we knew
-        // the ACI that was associated with that phone number.)
-        guard let phoneNumber = SignalServiceAddress(aci).phoneNumber else {
-            return nil
-        }
-        do {
-            let sql = """
-                SELECT * FROM \(OWSReaction.databaseTableName)
-                WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
-                AND \(OWSReaction.columnName(.reactorUUID)) IS NULL
-                AND \(OWSReaction.columnName(.reactorE164)) = ?
-            """
-            if let result = try OWSReaction.fetchOne(tx.database, sql: sql, arguments: [uniqueMessageId, phoneNumber]) {
-                return result
-            }
-        } catch {
-            owsFailDebug("Failed to fetch reaction \(error)")
-            return nil
-        }
-
-        return nil
+        return reaction(for: recipient.id, tx: tx)
     }
 
-    /// Returns a list of all reactions to this message
-    public func allReactions(transaction: DBReadTransaction) -> [OWSReaction] {
-        let sql = """
-            SELECT * FROM \(OWSReaction.databaseTableName)
-            WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
-            ORDER BY \(OWSReaction.columnName(.id)) DESC
-        """
+    public func reaction(for reactorId: SignalRecipient.RowId, tx: DBReadTransaction) -> ReactionRecord? {
+        let query = baseQuery().filter(ReactionRecord.Columns.reactorId == reactorId)
+        return failIfThrows { try query.fetchOne(tx.database) }
+    }
 
-        var reactions = [OWSReaction]()
-
-        do {
-            let statement = try transaction.database.cachedStatement(sql: sql)
-            let cursor = try OWSReaction.fetchCursor(statement, arguments: [uniqueMessageId])
-            while let reaction = try cursor.next() {
-                reactions.append(reaction)
-            }
-        } catch {
-            owsFailDebug("unexpected error \(error)")
-        }
-
-        return reactions
+    /// Returns an ordered list of all reactions to this message
+    public func allReactions(tx: DBReadTransaction) -> [ReactionRecord] {
+        let query = baseQuery().order(ReactionRecord.Columns.id.desc)
+        return failIfThrows { try query.fetchAll(tx.database) }
     }
 
     /// Returns a list of reactions to this message that have yet to be read
-    public func unreadReactions(transaction: DBReadTransaction) -> [OWSReaction] {
-        let sql = """
-            SELECT * FROM \(OWSReaction.databaseTableName)
-            WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
-            AND \(OWSReaction.columnName(.read)) IS 0
-            ORDER BY \(OWSReaction.columnName(.id)) DESC
-        """
-
-        var reactions = [OWSReaction]()
-
-        do {
-            let cursor = try OWSReaction.fetchCursor(transaction.database, sql: sql, arguments: [uniqueMessageId])
-            while let reaction = try cursor.next() {
-                reactions.append(reaction)
-            }
-        } catch {
-            owsFailDebug("unexpected error \(error)")
-        }
-
-        return reactions
+    public func fetchUnreadReactions(
+        inThreadId threadId: TSThread.RowId,
+        tx: DBReadTransaction,
+    ) -> [ReactionRecord] {
+        let query = baseQuery()
+            .filter(ReactionRecord.Columns.threadId == threadId)
+            .filter(ReactionRecord.Columns.isRead == false)
+        return failIfThrows { try query.fetchAll(tx.database) }
     }
 
-    /// A list of all the unique reaction IDs linked to this message, ordered by creation from oldest to neweset
-    public func allUniqueIds(transaction: DBReadTransaction) -> [String] {
-        let sql = """
-            SELECT \(OWSReaction.columnName(.uniqueId))
-            FROM \(OWSReaction.databaseTableName)
-            WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
-        """
-        let sqlRequest = SQLRequest<Void>(sql: sql, arguments: [uniqueMessageId], cached: true)
-
-        do {
-            let rows = try Row.fetchAll(transaction.database, sqlRequest)
-            return rows.map { $0[0] }
-        } catch {
-            owsFailDebug("unexpected error \(error)")
-            return []
-        }
+    static func fetchNextUnreadReaction(
+        inThreadId threadId: ReactionRecord.ThreadId,
+        upThroughMessageId messageId: ReactionRecord.InteractionId,
+        tx: DBReadTransaction,
+    ) -> ReactionRecord? {
+        let query = ReactionRecord
+            .filter(ReactionRecord.Columns.threadId == threadId)
+            .filter(ReactionRecord.Columns.messageId <= messageId)
+            .filter(ReactionRecord.Columns.isRead == false)
+            .order(ReactionRecord.Columns.messageId.asc, ReactionRecord.Columns.id.asc)
+        return failIfThrows { try query.fetchOne(tx.database) }
     }
 
     /// Delete all reaction records associated with this message
-    public func deleteAllReactions(transaction tx: DBWriteTransaction) {
-        let sql = """
-            DELETE FROM \(OWSReaction.databaseTableName)
-            WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
-        """
-        failIfThrows {
-            try tx.database.execute(
-                sql: sql,
-                arguments: [uniqueMessageId],
-            )
-        }
+    public func deleteAllReactions(tx: DBWriteTransaction) {
+        let query = baseQuery()
+        failIfThrows { try query.deleteAll(tx.database) }
+    }
+
+    static func fetchReactions(
+        forReactorId reactorId: ReactionRecord.RecipientId,
+        tx: DBReadTransaction,
+    ) -> [ReactionRecord] {
+        let query = ReactionRecord.filter(ReactionRecord.Columns.reactorId == reactorId)
+        return failIfThrows { try query.fetchAll(tx.database) }
     }
 }

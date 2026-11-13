@@ -831,3 +831,98 @@ struct RecipientStatusMergeApplierTest {
         #expect(targetRecipient.blockedAt == testCase.expectedBlockedAt)
     }
 }
+
+struct ReactionMergeApplierTests {
+    @Test
+    func testReactionMerge() throws {
+        let db = InMemoryDB()
+        try db.write { tx in
+            let sourceRecipient = try SignalRecipient.insertRecord(tx: tx)
+            var targetRecipient = try SignalRecipient.insertRecord(tx: tx)
+            let unrelatedRecipient = try SignalRecipient.insertRecord(tx: tx)
+
+            let thread = TSGroupThread.forUnitTest(masterKey: try GroupSecretParams.generate().getMasterKey())
+            try thread.insert(tx.database)
+
+            let messageId1: Int64 = 1
+            try tx.database.execute(
+                sql: "INSERT INTO model_TSInteraction (id, recordType, uniqueId, uniqueThreadId, timestamp, receivedAtTimestamp) VALUES (?, ?, ?, ?, ?, ?)",
+                arguments: [messageId1, SDSRecordType.incomingMessage.rawValue, UUID().uuidString, thread.uniqueId, 1234, 2345],
+            )
+
+            let messageId2: Int64 = 2
+            try tx.database.execute(
+                sql: "INSERT INTO model_TSInteraction (id, recordType, uniqueId, uniqueThreadId, timestamp, receivedAtTimestamp) VALUES (?, ?, ?, ?, ?, ?)",
+                arguments: [messageId2, SDSRecordType.incomingMessage.rawValue, UUID().uuidString, thread.uniqueId, 1234, 2345],
+            )
+
+            let trivialReaction = ReactionRecord.insertRecord(
+                messageId: messageId2,
+                reactorId: sourceRecipient.id,
+                threadId: thread.id.owsFailUnwrap("must exist"),
+                emoji: "A",
+                timestamp: 1234,
+                isRead: nil,
+                tx: tx,
+            )
+            let unrelatedReaction = ReactionRecord.insertRecord(
+                messageId: messageId1,
+                reactorId: unrelatedRecipient.id,
+                threadId: thread.id.owsFailUnwrap("must exist"),
+                emoji: "B",
+                timestamp: 2345,
+                isRead: nil,
+                tx: tx,
+            )
+            _ = ReactionRecord.insertRecord(
+                messageId: messageId1,
+                reactorId: sourceRecipient.id,
+                threadId: thread.id.owsFailUnwrap("must exist"),
+                emoji: "C",
+                timestamp: 3456,
+                isRead: nil,
+                tx: tx,
+            )
+            let targetReaction = ReactionRecord.insertRecord(
+                messageId: messageId1,
+                reactorId: targetRecipient.id,
+                threadId: thread.id.owsFailUnwrap("must exist"),
+                emoji: "D",
+                timestamp: 4567,
+                isRead: nil,
+                tx: tx,
+            )
+
+            ReactionMergeApplier().mergeRecipient(
+                sourceRecipient,
+                into: &targetRecipient,
+                shouldUpdateStorageService: false,
+                tx: tx,
+            )
+
+            do {
+                var records = try ReactionRecord.order(ReactionRecord.Columns.id.asc).fetchAll(tx.database)[...]
+                do {
+                    let record = records.removeFirst()
+                    #expect(record.id == trivialReaction.id)
+                    #expect(record.messageId == messageId2)
+                    #expect(record.reactorId == targetRecipient.id)
+                }
+                do {
+                    let record = records.removeFirst()
+                    #expect(record.id == unrelatedReaction.id)
+                    #expect(record.messageId == messageId1)
+                    #expect(record.reactorId == unrelatedRecipient.id)
+                }
+                do {
+                    let record = records.removeFirst()
+                    #expect(record.id == targetReaction.id)
+                    #expect(record.messageId == messageId1)
+                    #expect(record.reactorId == targetRecipient.id)
+                    #expect(record.emoji == "D")
+                }
+                #expect(records.isEmpty)
+            }
+        }
+    }
+}

@@ -380,6 +380,7 @@ public class GRDBSchemaMigrator {
         case addVideoIsFastStartMp4ToAttachment
         case migrateSomeKeyValueStores2
         case addRecipientCapabilityTable
+        case addReaction
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -514,7 +515,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 169
+    public static let grdbSchemaVersionLatest: UInt = 170
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5984,6 +5985,14 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.addReaction) { tx in
+            try addReaction(tx: tx)
+            try addReactionUniqueId(tx: tx)
+            try migrateReactions(tx: tx)
+            try dropOWSReaction(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -8988,6 +8997,146 @@ public class GRDBSchemaMigrator {
         }
 
         StorageServiceOperation.recordPendingUpdates(updatedGroupV2MasterKeys: masterKeys, tx: tx)
+    }
+
+    static func addReaction(tx: DBWriteTransaction) throws {
+        let tableName = "Reaction"
+        try tx.database.create(table: tableName) {
+            $0.column("id", .integer).notNull().primaryKey(autoincrement: true)
+            $0.column("messageId", .integer).notNull()
+                .references("model_TSInteraction", column: "id", onDelete: .cascade, onUpdate: .cascade)
+            $0.column("reactorId", .integer).notNull()
+                .references("model_SignalRecipient", column: "id", onDelete: .restrict, onUpdate: .cascade)
+            $0.column("threadId", .integer).notNull()
+                .references("model_TSThread", column: "id", onDelete: .cascade, onUpdate: .cascade)
+            $0.column("emoji", .text).notNull()
+            $0.column("sentTimestamp", .integer).notNull()
+            $0.column("isRead", .boolean)
+        }
+        // For fetching unread reactions (and for the TSThread FOREIGN KEY).
+        try tx.database.create(
+            index: "Reaction_Unread",
+            on: tableName,
+            columns: ["threadId", "isRead", "messageId"],
+        )
+        // For the UNIQUE constraint (and for the TSInteraction FOREIGN KEY).
+        try tx.database.create(
+            index: "Reaction_Unique",
+            on: tableName,
+            columns: ["messageId", "reactorId"],
+            unique: true,
+        )
+        // For de-duping during decryption (and for the SignalRecipient FOREIGN KEY).
+        try tx.database.create(
+            index: "Reaction_Timestamp",
+            on: tableName,
+            columns: ["reactorId", "sentTimestamp"],
+        )
+    }
+
+    static func addReactionUniqueId(tx: DBWriteTransaction) throws {
+        let tableName = "ReactionUniqueId"
+        try tx.database.create(table: tableName) {
+            $0.column("id", .integer).notNull().primaryKey()
+                .references("Reaction", column: "id", onDelete: .cascade, onUpdate: .cascade)
+            $0.column("uniqueId", .text).notNull()
+        }
+    }
+
+    static func migrateReactions(tx: DBWriteTransaction) throws {
+        var messageUniqueIdToInteractionDetails = [String: (interactionId: Int64, isOutgoingMessage: Bool, threadId: Int64)?]()
+        let fetchInteraction = try tx.database.makeStatement(
+            sql: "SELECT id, recordType, uniqueThreadId FROM model_TSInteraction WHERE uniqueId = ?",
+        )
+        let fetchThreadId = try tx.database.makeStatement(
+            sql: "SELECT id FROM model_TSThread WHERE uniqueId = ?",
+        )
+        let insertReaction = try tx.database.makeStatement(
+            sql: "INSERT OR REPLACE INTO Reaction (id, messageId, reactorId, threadId, emoji, sentTimestamp, isRead) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        )
+        let insertReactionUniqueId = try tx.database.makeStatement(
+            sql: "INSERT INTO ReactionUniqueId (id, uniqueId) VALUES (?, ?)",
+        )
+        let cursor = try Row.fetchCursor(
+            tx.database,
+            sql: "SELECT id, uniqueId, emoji, reactorE164, reactorUUID, sentAtTimestamp, uniqueMessageId, read FROM model_OWSReaction ORDER BY id",
+        )
+        while let reaction = try cursor.next() {
+            let id = reaction[0] as Int64
+            let uniqueId = reaction[1] as String
+            let emoji = reaction[2] as String
+            let reactorE164 = reaction[3] as String?
+            let reactorUUID = reaction[4] as String?
+            let sentAtTimestamp = reaction[5] as Int64
+            let uniqueMessageId = reaction[6] as String
+            let read = reaction[7] as Bool
+
+            let reactorId = try fetchOrCreateRecipient(
+                .V2,
+                serviceId: Aci.parseFrom(aciString: reactorUUID),
+                phoneNumber: E164(reactorE164)?.stringValue,
+                tx: tx,
+            )
+            guard let reactorId else {
+                Logger.warn("skipping reaction with malformed reactor")
+                continue
+            }
+
+            let interactionId: Int64
+            let isOutgoingMessage: Bool
+            let threadId: Int64
+
+            if let interactionDetails = messageUniqueIdToInteractionDetails[uniqueMessageId] {
+                guard let interactionDetails else {
+                    // We've already looked this up and confirmed it doesn't exist.
+                    continue
+                }
+                interactionId = interactionDetails.interactionId
+                isOutgoingMessage = interactionDetails.isOutgoingMessage
+                threadId = interactionDetails.threadId
+            } else {
+                // If the cache gets large, reset it to limit memory consumption.
+                if messageUniqueIdToInteractionDetails.count >= 10_000 {
+                    messageUniqueIdToInteractionDetails = [:]
+                }
+                guard let interactionRow = try Row.fetchOne(fetchInteraction, arguments: [uniqueMessageId]) else {
+                    messageUniqueIdToInteractionDetails[uniqueMessageId] = .some(.none)
+                    continue
+                }
+                interactionId = interactionRow[0]
+                let recordType = interactionRow[1] as Int64
+                isOutgoingMessage = recordType == 21 || recordType == 68 || recordType == 79
+                let threadUniqueId = interactionRow[2] as String
+                guard let _threadId = try Int64.fetchOne(fetchThreadId, arguments: [threadUniqueId]) else {
+                    messageUniqueIdToInteractionDetails[uniqueMessageId] = .some(.none)
+                    continue
+                }
+                threadId = _threadId
+                messageUniqueIdToInteractionDetails[uniqueMessageId] = .some((
+                    interactionId: interactionId,
+                    isOutgoingMessage: isOutgoingMessage,
+                    threadId: threadId,
+                ))
+            }
+
+            try insertReaction.execute(arguments: [
+                id,
+                interactionId,
+                reactorId,
+                threadId,
+                emoji,
+                sentAtTimestamp,
+                isOutgoingMessage ? read : nil,
+            ])
+            if isOutgoingMessage, !read {
+                try insertReactionUniqueId.execute(arguments: [id, uniqueId])
+            }
+        }
+    }
+
+    static func dropOWSReaction(tx: DBWriteTransaction) throws {
+        let tableName = "model_OWSReaction"
+        try tx.database.drop(table: tableName)
     }
 
     static func dedupeSignalRecipients(tx: DBWriteTransaction) throws {

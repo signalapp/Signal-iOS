@@ -14,7 +14,7 @@ public protocol NotificationPresenter {
 
     func notifyUser(forReleaseNotesMessage: TSReleaseNotesMessage, thread: TSThread, transaction: DBWriteTransaction)
 
-    func notifyUser(forReaction: OWSReaction, onOutgoingMessage: TSOutgoingMessage, thread: TSThread, transaction: DBWriteTransaction)
+    func notifyUser(forReaction: ReactionRecord, onOutgoingMessage: TSOutgoingMessage, thread: TSThread, transaction: DBWriteTransaction)
 
     func notifyUser(forErrorMessage: TSErrorMessage, thread: TSThread, transaction: DBWriteTransaction)
 
@@ -101,7 +101,7 @@ public protocol NotificationPresenter {
 
     func cancelNotifications(messageIds: [String])
 
-    func cancelNotifications(reactionId: String)
+    func cancelNotifications(reactionId: ReactionRecord.RowId, tx: DBReadTransaction)
 
     func cancelNotificationsForMissedCalls(threadUniqueId: String)
 

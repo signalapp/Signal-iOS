@@ -43,7 +43,6 @@ class BackupArchiveChatItemArchiver {
     private let interactionStore: BackupArchiveInteractionStore
     private let oversizeTextArchiver: BackupArchiveInlinedOversizeTextArchiver
     private let pollArchiver: BackupArchivePollArchiver
-    private let reactionStore: ReactionStore
     private let threadStore: BackupArchiveThreadStore
     private let reactionArchiver: BackupArchiveReactionArchiver
     private let pinnedMessageManager: PinnedMessageManager
@@ -94,7 +93,6 @@ class BackupArchiveChatItemArchiver {
         interactionStore: BackupArchiveInteractionStore,
         oversizeTextArchiver: BackupArchiveInlinedOversizeTextArchiver,
         pollArchiver: BackupArchivePollArchiver,
-        reactionStore: ReactionStore,
         threadStore: BackupArchiveThreadStore,
         reactionArchiver: BackupArchiveReactionArchiver,
         pinnedMessageManager: PinnedMessageManager,
@@ -112,7 +110,6 @@ class BackupArchiveChatItemArchiver {
         self.interactionStore = interactionStore
         self.oversizeTextArchiver = oversizeTextArchiver
         self.pollArchiver = pollArchiver
-        self.reactionStore = reactionStore
         self.threadStore = threadStore
         self.reactionArchiver = reactionArchiver
         self.pinnedMessageManager = pinnedMessageManager

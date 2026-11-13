@@ -66,7 +66,10 @@ final class DatabaseRecoveryTest: SSKBaseTest {
             let databaseStorage = SSKEnvironment.shared.databaseStorageRef
             return try databaseStorage.read { try allNormalTableNames(tx: $0) }
         }()
-        XCTAssertEqual(allTableNamesSet, expectedTableNames)
+        let missingTables = allTableNamesSet.subtracting(expectedTableNames)
+        XCTAssertEqual(missingTables, [])
+        let extraTables = expectedTableNames.subtracting(allTableNamesSet)
+        XCTAssertEqual(extraTables, [])
     }
 
     func testColumnSafety() throws {
@@ -147,15 +150,19 @@ final class DatabaseRecoveryTest: SSKBaseTest {
             let message = messageBuilder.build()
             message.anyInsert(transaction: transaction)
 
+            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+            let localRecipient = recipientFetcher.fetchOrCreate(serviceId: localAci, tx: transaction)
+
             // Reaction
-            let reaction = OWSReaction(
-                uniqueMessageId: message.uniqueId,
+            _ = ReactionRecord.insertRecord(
+                messageId: message.sqliteRowId.owsFailUnwrap("must exist"),
+                reactorId: localRecipient.id,
+                threadId: contactThreadId,
                 emoji: "💽",
-                reactorAci: localAci,
-                reactorPhoneNumber: nil,
-                sentAtTimestamp: 1234,
+                timestamp: 1234,
+                isRead: nil,
+                tx: transaction,
             )
-            reaction.anyInsert(transaction: transaction)
 
             // Pending read receipts (not copied)
             var pendingReadReceipt = PendingReadReceiptRecord(
@@ -214,9 +221,9 @@ final class DatabaseRecoveryTest: SSKBaseTest {
             XCTAssertEqual(interaction.body, "test outgoing message")
 
             // Reaction
-            let reactions: [OWSReaction] = {
-                let finder = ReactionFinder(uniqueMessageId: interaction.uniqueId)
-                return finder.allReactions(transaction: transaction)
+            let reactions: [ReactionRecord] = {
+                let finder = ReactionFinder(messageId: interaction.sqliteRowId.owsFailUnwrap("must exist"))
+                return finder.allReactions(tx: transaction)
             }()
             XCTAssertEqual(reactions.count, 1)
             guard let reaction = reactions.first else {
@@ -266,7 +273,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         let databaseStorage = try newDatabase()
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
         databaseStorage.write { transaction in
-            try! transaction.database.drop(table: OWSReaction.databaseTableName)
+            try! transaction.database.drop(table: ReactionRecord.databaseTableName)
         }
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
@@ -283,7 +290,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
             keychainStorage: databaseStorage.keychainStorage,
         )
         finishedDatabaseStorage.read { transaction in
-            let sql = "SELECT EXISTS (SELECT 1 FROM \(OWSReaction.databaseTableName))"
+            let sql = "SELECT EXISTS (SELECT 1 FROM \(ReactionRecord.databaseTableName))"
             let database = transaction.database
             guard let anyRowExists = try? XCTUnwrap(Bool.fetchOne(database, sql: sql)) else {
                 XCTFail("Could not fetch boolean from test query")

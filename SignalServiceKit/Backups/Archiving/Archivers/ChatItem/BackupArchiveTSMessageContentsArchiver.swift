@@ -1128,6 +1128,7 @@ class BackupArchiveTSMessageContentsArchiver {
             downstreamObjectResults.append(reactionArchiver.restoreReactions(
                 text.reactions,
                 message: message,
+                threadId: thread.threadRowId,
                 context: context.recipientContext,
             ))
             if let oversizeText = text.body?.oversizeText {
@@ -1170,6 +1171,7 @@ class BackupArchiveTSMessageContentsArchiver {
             downstreamObjectResults.append(reactionArchiver.restoreReactions(
                 contactShare.reactions,
                 message: message,
+                threadId: thread.threadRowId,
                 context: context.recipientContext,
             ))
             if let avatarAttachment = contactShare.avatarAttachment {
@@ -1185,6 +1187,7 @@ class BackupArchiveTSMessageContentsArchiver {
             downstreamObjectResults.append(reactionArchiver.restoreReactions(
                 stickerMessage.reactions,
                 message: message,
+                threadId: thread.threadRowId,
                 context: context.recipientContext,
             ))
             downstreamObjectResults.append(attachmentsArchiver.restoreStickerAttachment(
@@ -1200,6 +1203,7 @@ class BackupArchiveTSMessageContentsArchiver {
             downstreamObjectResults.append(reactionArchiver.restoreReactions(
                 viewOnceMessage.reactions,
                 message: message,
+                threadId: thread.threadRowId,
                 context: context.recipientContext,
             ))
             switch viewOnceMessage.state {
@@ -1218,6 +1222,7 @@ class BackupArchiveTSMessageContentsArchiver {
             downstreamObjectResults.append(reactionArchiver.restoreReactions(
                 storyReply.reactions,
                 message: message,
+                threadId: thread.threadRowId,
                 context: context.recipientContext,
             ))
 
@@ -1239,6 +1244,7 @@ class BackupArchiveTSMessageContentsArchiver {
             downstreamObjectResults.append(reactionArchiver.restoreReactions(
                 poll.reactions,
                 message: message,
+                threadId: thread.threadRowId,
                 context: context.recipientContext,
             ))
 

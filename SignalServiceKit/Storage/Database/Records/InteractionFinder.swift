@@ -781,44 +781,6 @@ public class InteractionFinder: NSObject {
         }
     }
 
-    /// Whether ``fetchMessagesWithUnreadReactions(beforeSortId:tx:)`` will return any values.
-    public func hasMessageWithUnreadReactions(
-        beforeSortId: UInt64,
-        tx: DBReadTransaction,
-    ) -> Bool {
-        var unreadCursor = fetchMessagesWithUnreadReactions(beforeSortId: beforeSortId, tx: tx)
-        return unreadCursor.next() != nil
-    }
-
-    /// Returns all the messages with unread reactions in this thread before a given sort id,
-    /// sorted by sort id.
-    public func fetchMessagesWithUnreadReactions(
-        beforeSortId: UInt64,
-        tx: DBReadTransaction,
-    ) -> FailIfThrowsRecordCursor<InteractionRecord> {
-        let sql = """
-        SELECT interaction.*
-        FROM \(InteractionRecord.databaseTableName) AS interaction
-        \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
-        INNER JOIN \(OWSReaction.databaseTableName) AS reaction
-            ON interaction.\(interactionColumn: .uniqueId) = reaction.\(OWSReaction.columnName(.uniqueMessageId))
-            AND reaction.\(OWSReaction.columnName(.read)) IS 0
-        WHERE interaction.\(interactionColumn: .recordType) IS \(SDSRecordType.outgoingMessage.rawValue)
-        AND interaction.\(interactionColumn: .threadUniqueId) = ?
-        AND interaction.\(interactionColumn: .id) <= ?
-        GROUP BY interaction.\(interactionColumn: .id)
-        ORDER BY interaction.\(interactionColumn: .id)
-        """
-
-        return FailIfThrowsRecordCursor {
-            try InteractionRecord.fetchCursor(
-                tx.database,
-                sql: sql,
-                arguments: [threadUniqueId, beforeSortId],
-            )
-        }
-    }
-
     public func oldestUnreadInteraction(transaction: DBReadTransaction) throws -> TSInteraction? {
         let sql = """
         SELECT *

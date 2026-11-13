@@ -320,7 +320,6 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
             FullTextSearchIndexer.delete(message, tx: tx)
 
             message.removeAllAttachments(tx: tx)
-            message.removeAllReactions(transaction: tx)
             message.removeAllMentions(transaction: tx)
             message.touchStoryMessageIfNecessary(replyCountIncrement: .replyDeleted, transaction: tx)
         }

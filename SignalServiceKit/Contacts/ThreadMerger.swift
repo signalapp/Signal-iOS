@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import GRDB
 import LibSignalClient
 
 final class ThreadMerger {
@@ -59,6 +60,7 @@ final class ThreadMerger {
         mergeChatColors(threadPair, tx: tx)
         mergeWallpaper(threadPair, tx: tx)
         mergeCallRecords(threadPair, tx: tx)
+        mergeReactions(threadPair, tx: tx)
         sdsThreadMerger.mergeThread(thread, into: targetThread, tx: tx)
         let shouldInsertEvent = shouldInsertThreadMergeEvent(threadPair)
         targetThread.merge(from: thread)
@@ -180,6 +182,18 @@ final class ThreadMerger {
             intoThreadRowId: threadIdPair.intoValue,
             tx: tx,
         )
+    }
+
+    private func mergeReactions(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
+        let threadIdPair = threadPair.map {
+            return $0.id.owsFailUnwrap("must have rowid during thread merge")
+        }
+
+        failIfThrows {
+            try ReactionRecord
+                .filter(ReactionRecord.Columns.threadId == threadIdPair.fromValue)
+                .updateAll(tx.database, ReactionRecord.Columns.threadId.set(to: threadIdPair.intoValue))
+        }
     }
 
     private func shouldInsertThreadMergeEvent(_ threadPair: MergePair<TSContactThread>) -> Bool {

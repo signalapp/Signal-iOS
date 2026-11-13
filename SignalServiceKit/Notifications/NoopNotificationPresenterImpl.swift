@@ -40,7 +40,7 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
     }
 
     public func notifyUser(
-        forReaction reaction: OWSReaction,
+        forReaction reaction: ReactionRecord,
         onOutgoingMessage message: TSOutgoingMessage,
         thread: TSThread,
         transaction: DBWriteTransaction,
@@ -180,7 +180,7 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         Logger.warn("")
     }
 
-    public func cancelNotifications(reactionId: String) {
+    public func cancelNotifications(reactionId: ReactionRecord.RowId, tx: DBReadTransaction) {
         Logger.warn("")
     }
 

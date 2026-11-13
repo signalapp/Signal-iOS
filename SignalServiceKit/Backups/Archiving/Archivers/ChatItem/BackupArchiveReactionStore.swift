@@ -16,56 +16,38 @@ class BackupArchiveReactionStore {
     func allReactions(
         message: TSMessage,
         context: BackupArchive.RecipientArchivingContext,
-    ) -> [OWSReaction] {
+    ) -> [ReactionRecord] {
+        let messageId = message.sqliteRowId.owsFailUnwrap("must exist")
         let sql = """
-            SELECT * FROM \(OWSReaction.databaseTableName)
-            WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
-            ORDER BY \(OWSReaction.columnName(.id)) DESC
+        SELECT * FROM \(ReactionRecord.databaseTableName)
+        WHERE \(ReactionRecord.Columns.messageId.name) = ?
+        ORDER BY \(ReactionRecord.Columns.id.name) DESC
         """
         return failIfThrows {
             let statement = try context.tx.database.cachedStatement(sql: sql)
-            return try OWSReaction.fetchAll(statement, arguments: [message.uniqueId])
+            return try ReactionRecord.fetchAll(statement, arguments: [messageId])
         }
     }
 
     // MARK: - Restoring
 
     func createReaction(
-        uniqueMessageId: String,
+        message: TSMessage,
+        reactorId: SignalRecipient.RowId,
+        threadId: TSThread.RowId,
         emoji: String,
-        reactorAci: Aci,
         sentAtTimestamp: UInt64,
         context: BackupArchive.RecipientRestoringContext,
     ) {
-        let reaction = OWSReaction(
-            uniqueMessageId: uniqueMessageId,
+        let messageId = message.sqliteRowId.owsFailUnwrap("must exist")
+        _ = ReactionRecord.insertRecord(
+            messageId: messageId,
+            reactorId: reactorId,
+            threadId: threadId,
             emoji: emoji,
-            reactorAci: reactorAci,
-            reactorPhoneNumber: nil,
-            sentAtTimestamp: sentAtTimestamp,
+            timestamp: sentAtTimestamp,
+            isRead: ReactionRecord.isReadableMessage(message) ? false : nil,
+            tx: context.tx,
         )
-        failIfThrows {
-            try reaction.insert(context.tx.database)
-        }
-    }
-
-    /// In the olden days before the introduction of Acis, reactions were sent by e164s.
-    func createLegacyReaction(
-        uniqueMessageId: String,
-        emoji: String,
-        reactorE164: E164,
-        sentAtTimestamp: UInt64,
-        context: BackupArchive.RecipientRestoringContext,
-    ) {
-        let reaction = OWSReaction(
-            uniqueMessageId: uniqueMessageId,
-            emoji: emoji,
-            reactorAci: nil,
-            reactorPhoneNumber: reactorE164.stringValue,
-            sentAtTimestamp: sentAtTimestamp,
-        )
-        failIfThrows {
-            try reaction.insert(context.tx.database)
-        }
     }
 }
