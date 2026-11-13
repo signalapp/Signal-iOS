@@ -188,18 +188,20 @@ public class CVTextLabel {
     public class Measurement: CVMeasurementObject {
         public let size: CGSize
         public let lastLineRect: CGRect?
+        public let lastLineBaseline: CGFloat?
 
-        init(size: CGSize, lastLineRect: CGRect?) {
+        init(size: CGSize, lastLineRect: CGRect?, lastLineBaseline: CGFloat?) {
             self.size = size
             self.lastLineRect = lastLineRect
+            self.lastLineBaseline = lastLineBaseline
         }
 
-        static let empty = { Measurement(size: .zero, lastLineRect: nil) }()
+        static let empty = { Measurement(size: .zero, lastLineRect: nil, lastLineBaseline: nil) }()
 
         // MARK: - Equatable
 
         public static func ==(lhs: Measurement, rhs: Measurement) -> Bool {
-            lhs.size == rhs.size && lhs.lastLineRect == rhs.lastLineRect
+            lhs.size == rhs.size && lhs.lastLineRect == rhs.lastLineRect && lhs.lastLineBaseline == rhs.lastLineBaseline
         }
     }
 
@@ -234,20 +236,23 @@ public class CVTextLabel {
         return withExtendedLifetime(textStorage) {
             let glyphRange = layoutManager.glyphRange(for: textContainer)
             var lastLineRect: CGRect?
+            var lastLineBaseline: CGFloat?
             if
                 glyphRange.location != NSNotFound,
                 glyphRange.length > 0
             {
                 let lastGlyphIndex = glyphRange.length - 1
-                lastLineRect = layoutManager.lineFragmentUsedRect(
+                let lineRect = layoutManager.lineFragmentUsedRect(
                     forGlyphAt: lastGlyphIndex,
                     effectiveRange: nil,
                     withoutAdditionalLayout: true,
                 )
+                lastLineRect = lineRect
+                lastLineBaseline = lineRect.minY + layoutManager.location(forGlyphAt: lastGlyphIndex).y
             }
 
             let size = layoutManager.usedRect(for: textContainer).size.ceil
-            return Measurement(size: size, lastLineRect: lastLineRect)
+            return Measurement(size: size, lastLineRect: lastLineRect, lastLineBaseline: lastLineBaseline)
         }
     }
 
