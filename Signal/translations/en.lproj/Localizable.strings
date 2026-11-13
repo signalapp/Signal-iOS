@@ -2071,14 +2071,62 @@
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
 
+/* Button to choose chats to include in a chat folder. */
+"CHAT_FOLDERS_ADD_CHATS" = "Add Chats";
+
 /* Name of the default chat folder, which shows every chat. */
 "CHAT_FOLDERS_ALL_CHATS" = "All Chats";
+
+/* A type of chat a chat folder can include: every group chat. */
+"CHAT_FOLDERS_CHAT_TYPE_GROUPS" = "Groups";
+
+/* A type of chat a chat folder can include: every 1:1 chat. */
+"CHAT_FOLDERS_CHAT_TYPE_INDIVIDUAL" = "1:1 Chats";
 
 /* Action that deletes a chat folder. */
 "CHAT_FOLDERS_DELETE_FOLDER" = "Delete Folder";
 
 /* Title of the confirmation shown before deleting a chat folder. */
 "CHAT_FOLDERS_DELETE_FOLDER_CONFIRMATION_TITLE" = "Delete this chat folder?";
+
+/* Action that edits a chat folder. */
+"CHAT_FOLDERS_EDIT_FOLDER" = "Edit Folder";
+
+/* Title for the screen that edits an existing chat folder. */
+"CHAT_FOLDERS_EDIT_FOLDER_TITLE" = "Edit Folder";
+
+/* Button to choose chats to exclude from a chat folder. */
+"CHAT_FOLDERS_EXCLUDE_CHATS" = "Exclude Chats";
+
+/* Footer for the list of chats excluded from a chat folder. */
+"CHAT_FOLDERS_EXCLUDED_CHATS_FOOTER" = "Add chats to exclude from this folder.";
+
+/* Header for the list of chats excluded from a chat folder, and the title of the screen that chooses them. */
+"CHAT_FOLDERS_EXCLUDED_CHATS_HEADER" = "Exceptions";
+
+/* Header for the name field when creating or editing a chat folder. */
+"CHAT_FOLDERS_FOLDER_NAME_HEADER" = "Folder Name";
+
+/* Placeholder for the name field when creating or editing a chat folder. */
+"CHAT_FOLDERS_FOLDER_NAME_PLACEHOLDER" = "Folder Name";
+
+/* Chat folder setting that shows muted chats in the folder. */
+"CHAT_FOLDERS_INCLUDE_MUTED" = "Include Muted Chats";
+
+/* Footer for the list of chats included in a chat folder. */
+"CHAT_FOLDERS_INCLUDED_CHATS_FOOTER" = "Add chats or types of chats to include in this folder.";
+
+/* Header for the list of chats included in a chat folder, and the title of the screen that chooses them. */
+"CHAT_FOLDERS_INCLUDED_CHATS_HEADER" = "Included Chats";
+
+/* Header for additional chat folder settings. */
+"CHAT_FOLDERS_MORE_OPTIONS_HEADER" = "More Options";
+
+/* Chat folder setting that hides chats without unread messages. */
+"CHAT_FOLDERS_ONLY_UNREAD" = "Only Show Unread Chats";
+
+/* Footer for the chat folder setting that hides chats without unread messages. */
+"CHAT_FOLDERS_ONLY_UNREAD_FOOTER" = "Only chats with unread messages will be shown in this folder.";
 
 /* Button in chat folder settings to add a suggested chat folder. */
 "CHAT_FOLDERS_SETTINGS_ADD_SUGGESTED_FOLDER" = "Add";

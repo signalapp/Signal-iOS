@@ -282,6 +282,17 @@ final class ChatFoldersSettingsViewController:
         }
     }
 
+    // MARK: - Editing
+
+    private func showEditor(chatFolderId: UUID) {
+        let folder = db.read(block: { tx in
+            chatFolderManager.fetch(chatFolderId: chatFolderId, tx: tx)
+        })
+        guard let folder else { return }
+        let editor = ChatFolderEditorViewController(folder: folder)
+        presentFormSheet(OWSNavigationController(rootViewController: editor), animated: true)
+    }
+
     // MARK: - Adding
 
     private func addSuggestedFolder(_ suggestedFolder: SuggestedChatFolder) {
@@ -354,8 +365,37 @@ final class ChatFoldersSettingsViewController:
         }
     }
 
+    private func isSelectable(_ indexPath: IndexPath) -> Bool {
+        switch dataSource.itemIdentifier(for: indexPath) {
+        case .folder(let chatFolderId):
+            return folderRowsById[chatFolderId]?.isAllChats == false
+        case .createFolder:
+            // [Chat Folders] TODO: Allow creating new folders
+            return false
+        case .suggestedFolder, nil:
+            return false
+        }
+    }
+
     func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        return false
+        return isSelectable(indexPath)
+    }
+
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        return isSelectable(indexPath) ? indexPath : nil
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        switch dataSource.itemIdentifier(for: indexPath) {
+        case .folder(let chatFolderId):
+            showEditor(chatFolderId: chatFolderId)
+        case .createFolder:
+            // [Chat Folders] TODO: Allow creating new folders
+            break
+        case .suggestedFolder, nil:
+            break
+        }
     }
 
     func tableView(
@@ -399,7 +439,15 @@ final class ChatFoldersSettingsViewController:
 
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
             UIMenu(children: [
-                // [Chat Folders] TODO: Edit Folder action
+                UIAction(
+                    title: OWSLocalizedString(
+                        "CHAT_FOLDERS_EDIT_FOLDER",
+                        comment: "Action that edits a chat folder.",
+                    ),
+                    image: Theme.iconImage(.contextMenuEdit),
+                ) { _ in
+                    self?.showEditor(chatFolderId: chatFolderId)
+                },
                 UIAction(
                     title: OWSLocalizedString(
                         "CHAT_FOLDERS_DELETE_FOLDER",
