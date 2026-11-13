@@ -3693,6 +3693,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return .registrationStep(.reviewAndConfirmSignalLogin(RegistrationSignalLoginDetailsState(
                 aci: accountIdentity.localIdentifiers.aci,
                 aep: aep,
+                hideBackButton: true,
                 confirmLogin: { [self] in
                     exportSignalLoginState(accountIdentity: accountIdentity, aep: aep)
                 },

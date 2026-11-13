@@ -40,6 +40,14 @@ class AccountSettingsViewController: OWSTableViewController2 {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let tsRegistrationState = tsAccountManager.registrationStateWithMaybeSneakyTransaction
 
+        if
+            let registeredState = try? tsRegistrationState.registeredState(),
+            registeredState.isPrimary,
+            !registeredState.localIdentifiers.hasPhoneNumber
+        {
+            contents.add(signalLoginSection(registeredState: registeredState))
+        }
+
         // Show the change pin and reglock sections
         if
             let registeredState = try? tsRegistrationState.registeredState(),
@@ -244,6 +252,83 @@ class AccountSettingsViewController: OWSTableViewController2 {
     }
 
     // MARK: - Section contents
+
+    private func signalLoginSection(registeredState: RegisteredState) -> OWSTableSection {
+        let section = OWSTableSection()
+        section.headerTitle = OWSLocalizedString(
+            "SETTINGS_SIGNAL_LOGIN_TITLE",
+            comment: "Title for the 'Signal Login' section of the account settings.",
+        )
+        section.footerAttributedTitle = NSAttributedString.composed(of: [
+            OWSLocalizedString(
+                "SETTINGS_SIGNAL_LOGIN_FOOTER",
+                comment: "Footer for the 'Signal Login' section of the account settings.",
+            ),
+            " ",
+            // TODO[#less]: Link to a Signal Login support article once there is one.
+            CommonStrings.learnMore.styled(with: .link(URL.Support.generic)),
+        ])
+        .styled(with: Self.defaultFooterTextStyle)
+
+        section.add(OWSTableItem(customCellBlock: { [weak self] in
+            guard let self else { return UITableViewCell() }
+            return self.signalLoginCardCell()
+        }, actionBlock: { [weak self] in
+            guard let self else { return }
+            Task {
+                guard await LocalDeviceAuthentication(useCase: .viewRecoveryKey).performBiometricAuth() != nil else { return }
+                let state = RegistrationSignalLoginDetailsState(
+                    aci: registeredState.localIdentifiers.aci,
+                    aep: self.getAccountEntropyPool(),
+                    hideBackButton: false,
+                    confirmLogin: {},
+                )
+                let vc = RegistrationSignalLoginDetailsViewController(
+                    state: state,
+                    goToNextStep: {
+                        // TODO[#less]: Push into full login details
+                    },
+                )
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+        }))
+        return section
+    }
+
+    private func signalLoginCardCell() -> UITableViewCell {
+        let cell = OWSTableItem.newCell()
+        cell.accessoryType = .disclosureIndicator
+
+        let cardImage = UIImage.signalLoginCardSmall
+        let cardImageView = UIImageView(image: cardImage)
+        cardImageView.contentMode = .scaleAspectFit
+        cardImageView.translatesAutoresizingMaskIntoConstraints = false
+        let cardHeight: CGFloat = 40
+        NSLayoutConstraint.activate([
+            cardImageView.heightAnchor.constraint(equalToConstant: cardHeight),
+            cardImageView.widthAnchor.constraint(
+                equalToConstant: cardHeight * cardImage.size.width / max(cardImage.size.height, 1),
+            ),
+        ])
+
+        let titleLabel = UILabel()
+        titleLabel.text = OWSLocalizedString(
+            "SETTINGS_SIGNAL_LOGIN_ACCOUNT_AND_RECOVERY",
+            comment: "Label for the row in the 'Signal Login' section of the account settings.",
+        )
+        titleLabel.font = OWSTableItem.primaryLabelFont
+        titleLabel.textColor = .Signal.label
+        titleLabel.numberOfLines = 0
+
+        let hStack = UIStackView(arrangedSubviews: [cardImageView, titleLabel])
+        hStack.axis = .horizontal
+        hStack.alignment = .center
+        hStack.spacing = 12
+        cell.contentView.addSubview(hStack)
+        hStack.autoPinEdgesToSuperviewMargins()
+
+        return cell
+    }
 
     private func linkedDeviceCardCell() -> UITableViewCell {
         let cell = OWSTableItem.newCell()
@@ -595,5 +680,16 @@ class AccountSettingsViewController: OWSTableViewController2 {
             self.navigationController?.popToViewController(self, animated: true)
         }
         navigationController?.pushViewController(vc, animated: true)
+    }
+
+    private func getAccountEntropyPool() -> SignalServiceKit.AccountEntropyPool {
+        return context.db.read {
+            guard let accountEntropyPool = DependenciesBridge.shared.accountKeyStore.getAccountEntropyPool(tx: $0) else {
+                // This should be impossible; the only times you don't have
+                // an AEP are during registration.
+                owsFail("Can't provision without account entropy pool.")
+            }
+            return accountEntropyPool
+        }
     }
 }

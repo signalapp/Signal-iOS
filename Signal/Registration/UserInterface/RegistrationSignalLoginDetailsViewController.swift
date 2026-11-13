@@ -12,6 +12,7 @@ import SignalUI
 public struct RegistrationSignalLoginDetailsState {
     let aci: Aci
     let aep: SignalServiceKit.AccountEntropyPool
+    let hideBackButton: Bool
     let confirmLogin: @MainActor () -> Void
 }
 
@@ -42,7 +43,7 @@ class RegistrationSignalLoginDetailsViewController: OWSViewController {
         self.goToNextStep = goToNextStep
 
         super.init()
-        navigationItem.hidesBackButton = true
+        navigationItem.hidesBackButton = state.hideBackButton
     }
 
     @available(*, unavailable)
@@ -345,6 +346,7 @@ class RegistrationSignalLoginDetailsViewController: OWSViewController {
     let state = RegistrationSignalLoginDetailsState(
         aci: Aci.randomForTesting(),
         aep: AccountEntropyPool(),
+        hideBackButton: true,
         confirmLogin: {},
     )
     return UINavigationController(

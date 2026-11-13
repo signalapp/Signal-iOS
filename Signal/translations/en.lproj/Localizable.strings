@@ -10321,6 +10321,15 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
 
+/* Label for the row in the 'Signal Login' section of the account settings. */
+"SETTINGS_SIGNAL_LOGIN_ACCOUNT_AND_RECOVERY" = "Account & Recovery";
+
+/* Footer for the 'Signal Login' section of the account settings. */
+"SETTINGS_SIGNAL_LOGIN_FOOTER" = "Your Signal Login is used to recover and restore your account. Keep your login info stored safely in a password manager you trust.";
+
+/* Title for the 'Signal Login' section of the account settings. */
+"SETTINGS_SIGNAL_LOGIN_TITLE" = "Signal Login";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registration Lock";
 
