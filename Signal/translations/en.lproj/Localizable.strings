@@ -565,6 +565,12 @@
 /* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "Voice Message Not Available";
 
+/* Explains why the user should name an authenticator app for two-factor authentication. */
+"AUTHENTICATOR_APP_NAME_FOOTER" = "Choose a unique name for this authenticator app to help you identify it later.";
+
+/* Title for the screen where the user names an authenticator app for two-factor authentication. */
+"AUTHENTICATOR_APP_NAME_TITLE" = "Choose a Name";
+
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
 
@@ -10332,6 +10338,9 @@
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registration Lock";
+
+/* Placeholder for the field where the user names a two-factor authentication method. */
+"SETTINGS_TWO_FACTOR_METHODS_NAME_PLACEHOLDER" = "SETTINGS_TWO_FACTOR_METHODS_NAME_PLACEHOLDER";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Require your Signal PIN to register your phone number again with Signal.";
