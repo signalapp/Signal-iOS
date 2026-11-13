@@ -123,9 +123,6 @@ public class StickerPackCollectionView: UICollectionView {
             if contentInset.totalWidth != oldValue.totalWidth {
                 updateLayout()
             }
-            if let contentUnavailableViewConstraints {
-                contentUnavailableViewConstraints.update(with: contentInset)
-            }
         }
     }
 
@@ -298,87 +295,6 @@ public class StickerPackCollectionView: UICollectionView {
         cell.contentView.layer.add(animation, forKey: "bounceSticker")
     }
 
-    // MARK: Empty Content view
-
-    private struct EdgeConstraints {
-        let top: NSLayoutConstraint
-        let leading: NSLayoutConstraint
-        let bottom: NSLayoutConstraint
-        let trailing: NSLayoutConstraint
-
-        var constraints: [NSLayoutConstraint] {
-            [top, leading, bottom, trailing]
-        }
-
-        func update(with insets: UIEdgeInsets) {
-            top.constant = insets.top
-            leading.constant = insets.leading
-            bottom.constant = -insets.bottom
-            trailing.constant = -insets.trailing
-        }
-    }
-
-    private var contentUnavailableView: UIView?
-
-    private var contentUnavailableViewConstraints: EdgeConstraints?
-
-    private func createContentUnavailableView() -> UIView {
-        let view = UIView()
-        view.directionalLayoutMargins = .init(margin: 20)
-        let titleLabel = UILabel.explanationTextLabel(text: OWSLocalizedString(
-            "STICKER_CATEGORY_RECENTS_EMPTY_TITLE",
-            comment: "Title of the helper text displayed when Recent stickers are empty.",
-        ))
-        titleLabel.adjustsFontForContentSizeCategory = true
-        titleLabel.font = .dynamicTypeHeadline // slightly larger than subtitle
-        let subtitleLabel = UILabel.explanationTextLabel(text: OWSLocalizedString(
-            "STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE",
-            comment: "Subtitle of the helper text displayed when Recent stickers are empty.",
-        ))
-        subtitleLabel.adjustsFontForContentSizeCategory = true
-        let vStack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
-        vStack.axis = .vertical
-        vStack.spacing = 2
-        vStack.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(vStack)
-        NSLayoutConstraint.activate([
-            vStack.topAnchor.constraint(greaterThanOrEqualTo: view.layoutMarginsGuide.topAnchor),
-            vStack.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            vStack.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            vStack.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-        ])
-        return view
-    }
-
-    private func updateEmptyState() {
-        let isEmpty = stickerInfos.isEmpty
-
-        // "Content Unavailable" view is created on demand here.
-        if isEmpty, contentUnavailableView == nil {
-            let view = createContentUnavailableView()
-            view.translatesAutoresizingMaskIntoConstraints = false
-            addSubview(view)
-            let constraints = EdgeConstraints(
-                top: view.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
-                leading: view.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
-                bottom: view.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
-                trailing: view.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
-            )
-            constraints.update(with: contentInset)
-            NSLayoutConstraint.activate(constraints.constraints)
-
-            contentUnavailableView = view
-            contentUnavailableViewConstraints = constraints
-        }
-
-        if isEmpty, let contentUnavailableView {
-            bringSubviewToFront(contentUnavailableView)
-            contentUnavailableView.isHidden = false
-        } else {
-            contentUnavailableView?.isHidden = true
-        }
-    }
-
     // MARK: Events
 
     private func reloadStickers() {
@@ -405,12 +321,6 @@ public class StickerPackCollectionView: UICollectionView {
         } else {
             stickerInfos = installedStickerInfos
         }
-    }
-
-    override public func reloadData() {
-        super.reloadData()
-
-        updateEmptyState()
     }
 
     @objc
@@ -635,6 +545,9 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
                     comment: "The name for the sticker category 'Featured'",
                 )
             } else {
+                if stickerInfos.isEmpty {
+                    return nil
+                }
                 return OWSLocalizedString(
                     "STICKER_CATEGORY_RECENTS_NAME",
                     comment: "The name for the sticker category 'Recents'",

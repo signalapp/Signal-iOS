@@ -10495,12 +10495,6 @@
 /* The name for the sticker category 'Featured' */
 "STICKER_CATEGORY_FEATURED_NAME" = "Featured";
 
-/* Subtitle of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE" = "Send a sticker and it will appear here";
-
-/* Title of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_TITLE" = "No Recent Stickers";
-
 /* The name for the sticker category 'Recents' */
 "STICKER_CATEGORY_RECENTS_NAME" = "Recents";
 
@@ -10521,6 +10515,9 @@
 
 /* Button in the sticker keyboard, shown when no sticker packs are installed, that opens the sticker pack manager. */
 "STICKER_KEYBOARD_NO_PACKS_ADD_BUTTON" = "Add Stickers";
+
+/* Toast shown when user tries to tap Recents in sticker keyboard but has none */
+"STICKER_KEYBOARD_NO_RECENTS_TOAST" = "No recent stickers";
 
 /* Section header for favorites in the sticker keyboard */
 "STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "Favorites";

@@ -470,6 +470,7 @@ private class StickerPickerPageView: UIView {
 
     private var stickerPacks = [StickerPackRecord]()
     private var hasFavorites = false
+    private var hasRecents = false
 
     private var pendingBounce: (page: StickerPickerPage, stickerInfo: StickerInfo)?
 
@@ -491,6 +492,8 @@ private class StickerPickerPageView: UIView {
         self.contextMenuActions = contextMenuActions
 
         // By default, show the "recent" stickers.
+        // If we have no recents, we'll switch pages
+        // in reloadStickers().
         selectedStickerPackPage = .recents
 
         super.init(frame: .zero)
@@ -510,6 +513,12 @@ private class StickerPickerPageView: UIView {
             name: StickerManager.favoriteStickersDidChange,
             object: nil,
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(recentStickersDidChange),
+            name: StickerManager.recentStickersDidChange,
+            object: nil,
+        )
     }
 
     required init(coder: NSCoder) {
@@ -517,9 +526,9 @@ private class StickerPickerPageView: UIView {
     }
 
     func willBePresented() {
-        // If there are no recents, default to showing the first sticker pack.
-        if currentPageCollectionView.stickerCount < 1, let firstPack = stickerPacks.first {
-            updateSelectedStickerPack(.pack(firstPack))
+        // If the current page has no stickers, fallback to default.
+        if currentPageCollectionView.stickerCount < 1, let defaultPage {
+            updateSelectedStickerPack(defaultPage)
         }
     }
 
@@ -573,14 +582,14 @@ private class StickerPickerPageView: UIView {
         let db = DependenciesBridge.shared.db
         let stickerManager = DependenciesBridge.shared.stickerManager
 
-        let oldStickerPacks = stickerPacks
-        let hadFavorites = hasFavorites
+        let oldPages = orderedPages
 
         db.read { transaction in
             self.stickerPacks = stickerManager.installedStickerPacks(transaction: transaction)
             if BuildFlags.stickerFavorites {
                 self.hasFavorites = stickerManager.stickerFavoriteCount(tx: transaction) > 0
             }
+            self.hasRecents = stickerManager.recentStickers(transaction: transaction).count > 0
         }
 
         // If there are no installed packs, hide the page view and notify the delegate to show replacement UI.
@@ -647,21 +656,14 @@ private class StickerPickerPageView: UIView {
             stickerPacks = stickerPacks.reversed()
         }
 
-        guard oldStickerPacks != stickerPacks || hadFavorites != hasFavorites else { return }
+        guard oldPages != orderedPages else {
+            return
+        }
 
-        // If the selected pack was uninstalled, select the first pack.
-        switch (selectedStickerPackPage) {
-        case .favorites:
-            // If the last favorite was removed while viewing Favorites, show Recents.
-            if hadFavorites, !hasFavorites {
-                updateSelectedStickerPack(.recents)
-            }
-        case .recents:
-            break
-        case .pack(let selectedPack):
-            if !stickerPacks.contains(selectedPack), let firstPack = stickerPacks.first {
-                updateSelectedStickerPack(.pack(firstPack))
-            }
+        // If the carousel of pages no longer contains whatever the user was
+        // looking at, fall back to the default page.
+        if !orderedPages.contains(selectedStickerPackPage), let defaultPage {
+            updateSelectedStickerPack(defaultPage)
         }
 
         resetStickerPages()
@@ -679,7 +681,25 @@ private class StickerPickerPageView: UIView {
         reloadStickers()
     }
 
+    @objc
+    private func recentStickersDidChange() {
+        reloadStickers()
+    }
+
     private func recentsButtonWasTapped() {
+        if !shouldShowRecents {
+            ToastController(
+                text: OWSLocalizedString(
+                    "STICKER_KEYBOARD_NO_RECENTS_TOAST",
+                    comment: "Toast shown when user tries to tap Recents in sticker keyboard but has none",
+                ),
+            ).presentToastView(
+                from: .bottom,
+                of: self,
+                inset: stickerPageContentInset.bottom + safeAreaInsets.bottom + 16,
+            )
+            return
+        }
         updateSelectedStickerPack(.recents)
     }
 
@@ -766,12 +786,27 @@ private class StickerPickerPageView: UIView {
         return scrollView
     }()
 
-    private var orderedPages: [StickerPickerPage] {
-        var favorites: [StickerPickerPage] = []
-        if BuildFlags.stickerFavorites, self.hasFavorites {
-            favorites.append(.favorites)
+    private var defaultPage: StickerPickerPage? {
+        if shouldShowRecents { return .recents }
+        if hasFavorites { return .favorites }
+        return stickerPacks.first.map { .pack($0) }
+    }
+
+    private var shouldShowRecents: Bool {
+        // Only show recents page if we have recents.
+        // The exception is if we're in the image editor where
+        // "Featured" stickers are shown always.
+        switch storyStickerConfiguration {
+        case .hide: return hasRecents
+        case .showWithDelegate: return true
         }
-        return favorites + [.recents] + stickerPacks.map { .pack($0) }
+    }
+
+    private var orderedPages: [StickerPickerPage] {
+        var pages: [StickerPickerPage] = []
+        if hasFavorites { pages.append(.favorites) }
+        if shouldShowRecents { pages.append(.recents) }
+        return pages + stickerPacks.map { .pack($0) }
     }
 
     private var nextPageStickerPack: StickerPickerPage {
@@ -929,6 +964,8 @@ private class StickerPickerPageView: UIView {
         currentPageCollectionView.showSelectedStickerPickerPage(stickerPickerPage: selectedStickerPackPage)
         previousPageCollectionView.showSelectedStickerPickerPage(stickerPickerPage: previousPageStickerPack)
         nextPageCollectionView.showSelectedStickerPickerPage(stickerPickerPage: nextPageStickerPack)
+
+        stickerPagingScrollView.isScrollEnabled = orderedPages.count > 1
 
         pendingPageChangeUpdates = nil
 
