@@ -103,8 +103,6 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
             scrollEdgeInteraction.scrollView = tableView
             scrollEdgeInteraction.edge = .top
             chatFolderPickerView.addInteraction(scrollEdgeInteraction)
-        } else {
-            chatFolderPickerView.backgroundColor = .Signal.background
         }
 
         // Search

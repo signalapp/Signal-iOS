@@ -44,11 +44,19 @@ final class ChatListFolderPickerView: UIView {
     init() {
         super.init(frame: .zero)
 
-        containerView.backgroundColor = .Signal.secondaryGroupedBackground
-        containerView.layer.shadowColor = UIColor.black.cgColor
-        containerView.layer.shadowOpacity = 0.08
-        containerView.layer.shadowRadius = 8
-        containerView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        if #available(iOS 26, *) {
+            let glassEffectView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
+            glassEffectView.cornerConfiguration = .capsule()
+            glassEffectView.clipsToBounds = true
+            containerView.addSubview(glassEffectView)
+            glassEffectView.autoPinEdgesToSuperviewEdges()
+        } else {
+            containerView.backgroundColor = .Signal.secondaryGroupedBackground
+            containerView.layer.shadowColor = UIColor.black.cgColor
+            containerView.layer.shadowOpacity = 0.08
+            containerView.layer.shadowRadius = 8
+            containerView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        }
         addSubview(containerView)
 
         insetsLayoutMarginsFromSafeArea = false
@@ -101,7 +109,7 @@ final class ChatListFolderPickerView: UIView {
 
         // If the tabs all fit, make them equal, otherwise self-size and scroll.
         let tabWidths = stackView.arrangedSubviews.map(\.intrinsicContentSize.width)
-        let availableWidth = scrollView.bounds.width - stackView.layoutMargins.totalWidth
+        let availableWidth = containerView.bounds.width - stackView.layoutMargins.totalWidth
         let distribution: UIStackView.Distribution
         if (tabWidths.max() ?? 0) * CGFloat(tabWidths.count) <= availableWidth {
             distribution = .fillEqually
@@ -187,7 +195,7 @@ final class ChatListFolderPickerView: UIView {
             configuration.baseForegroundColor = .Signal.label
             configuration.cornerStyle = .capsule
             configuration.background.backgroundColor = isSelected ? .Signal.secondaryFill : .clear
-            configuration.contentInsets = NSDirectionalEdgeInsets(hMargin: 16, vMargin: 10)
+            configuration.contentInsets = NSDirectionalEdgeInsets(hMargin: 16, vMargin: 6)
             button.configuration = configuration
             button.accessibilityTraits = isSelected ? [.button, .selected] : .button
         }
