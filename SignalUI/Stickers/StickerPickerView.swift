@@ -429,7 +429,7 @@ private class StickerPacksToolbar: UIView {
             button.configuration?.cornerStyle = .fixed
         }
         button.tintColor = .Signal.label
-        button.configuration?.image = UIImage(named: "plus") // 24 dp
+        button.configuration?.image = UIImage(named: "sticker-pack-plus") // 24 dp
         button.configuration?.contentInsets = .init(margin: 8) // makes 40 dp button
         button.setContentHuggingHigh()
         button.setCompressionResistanceHigh()
