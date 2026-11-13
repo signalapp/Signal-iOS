@@ -96,6 +96,7 @@ public enum BuildFlags {
 
     public static let stickerReply = true
     public static let stickerFavorites = true
+    public static let stickerReorder = build <= .beta
 
     public static let chatFolders = build <= .internal
 
