@@ -19,21 +19,21 @@ class StorySlideAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         let containerView = transitionContext.containerView
 
-        guard
-            let fromVC = transitionContext.viewController(forKey: .from) as? StoryPageViewController,
-            let toVC = transitionContext.viewController(forKey: .to)
-        else {
+        guard let fromVC = transitionContext.viewController(forKey: .from) as? StoryPageViewController else {
             owsFailDebug("Missing vcs")
             transitionContext.completeTransition(false)
             return
         }
 
-        containerView.addSubview(toVC.view)
+        let toView = transitionContext.view(forKey: .to)
+        if let toView {
+            containerView.addSubview(toView)
+        }
         containerView.addSubview(fromVC.view)
 
         let completion = {
             if transitionContext.transitionWasCancelled {
-                toVC.view.removeFromSuperview()
+                toView?.removeFromSuperview()
             } else {
                 fromVC.view.removeFromSuperview()
             }

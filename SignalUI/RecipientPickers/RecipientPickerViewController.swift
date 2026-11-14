@@ -1354,7 +1354,7 @@ extension RecipientPickerViewController {
                 PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(phoneNumber),
             ),
         )
-        actionSheet.addAction(OWSActionSheets.okayAction)
+        actionSheet.addAction(OWSActionSheets.okAction)
         presentActionSheet(actionSheet)
     }
 }

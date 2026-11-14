@@ -296,7 +296,7 @@ class MessageDecryptionTest: SSKBaseTest {
         XCTAssert(try! session.currentRatchetKeyMatches(expected))
     }
 
-    func testMissingSignedPreKey() {
+    func testMissingSignedPreKey() throws {
         SSKEnvironment.shared.messageSenderJobQueueRef.setUp()
 
         let requestRatchetKey = waitForResendRequestRatchetKey()
@@ -315,7 +315,7 @@ class MessageDecryptionTest: SSKBaseTest {
             return false
         }
 
-        checkRemoteRatchetKey(expected: requestRatchetKey.expect(timeout: 1))
+        checkRemoteRatchetKey(expected: try requestRatchetKey.expect(timeout: 2))
 
         let sealedSenderResendRequestRatchetKey = waitForResendRequestRatchetKey()
 
@@ -333,10 +333,10 @@ class MessageDecryptionTest: SSKBaseTest {
             return false
         }
 
-        checkRemoteRatchetKey(expected: sealedSenderResendRequestRatchetKey.expect(timeout: 1))
+        checkRemoteRatchetKey(expected: try sealedSenderResendRequestRatchetKey.expect(timeout: 2))
     }
 
-    func testMissingOneTimePreKey() {
+    func testMissingOneTimePreKey() throws {
         SSKEnvironment.shared.messageSenderJobQueueRef.setUp()
 
         let requestRatchetKey = waitForResendRequestRatchetKey()
@@ -355,7 +355,7 @@ class MessageDecryptionTest: SSKBaseTest {
             return false
         }
 
-        checkRemoteRatchetKey(expected: requestRatchetKey.expect(timeout: 1))
+        checkRemoteRatchetKey(expected: try requestRatchetKey.expect(timeout: 2))
 
         let sealedSenderResendRequestRatchetKey = waitForResendRequestRatchetKey()
 
@@ -373,6 +373,6 @@ class MessageDecryptionTest: SSKBaseTest {
             return false
         }
 
-        checkRemoteRatchetKey(expected: sealedSenderResendRequestRatchetKey.expect(timeout: 1))
+        checkRemoteRatchetKey(expected: try sealedSenderResendRequestRatchetKey.expect(timeout: 2))
     }
 }

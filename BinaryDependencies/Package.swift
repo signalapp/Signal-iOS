@@ -12,8 +12,8 @@ let ringRTCFfi: Target = if let path = Context.environment["SIGNAL_RINGRTC_FFI_X
 } else {
     .binaryTarget(
         name: "LibRingRTCFfi",
-        url: "https://build-artifacts.signal.org/libraries/ringrtc-ios-build-v2.74.0.xcframework.zip",
-        checksum: "789d702a2e0ce00da851c118e40d80bc73e4b3c7b43c6846be2210c6f6b81104",
+        url: "https://build-artifacts.signal.org/libraries/ringrtc-ios-build-v2.75.0.xcframework.zip",
+        checksum: "937d04db640cb86ffbfdfe8b92ada32d22469c2b5f451ab071ff8dd32518ed19",
     )
 }
 
@@ -27,8 +27,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "LibSignalFfi",
-            url: "https://build-artifacts.signal.org/libraries/libsignal-client-ios-build-v0.106.1.xcframework.zip",
-            checksum: "60baf6a3a8ee4cab82339a5e4ed4676e2119c6dc8002018f8063d6a96c195a77",
+            url: "https://build-artifacts.signal.org/libraries/libsignal-client-ios-build-v0.107.0.xcframework.zip",
+            checksum: "c21686be0c5444a3e297ca8d1338428b951060319ab0b5adb647681650785712",
         ),
         ringRTCFfi,
     ],

@@ -220,7 +220,7 @@ class CVComponentBase: NSObject, CVNode {
         componentDelegate: CVComponentDelegate,
         componentView: CVComponentView,
     ) {
-        owsAssertDebug(cellView.layoutMargins == .zero)
+        owsAssertDebug(cellView.directionalLayoutMargins == .zero)
 
         rootComponent.configureForRendering(
             componentView: componentView,

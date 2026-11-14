@@ -83,6 +83,30 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
         firstConversationCueView.autoPinEdge(toSuperviewEdge: .leading, withInset: 10, relation: .greaterThanOrEqual)
         firstConversationCueView.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
 
+        // Chat folders
+        let chatFolderPickerView = viewState.chatFolderPickerView
+        chatFolderPickerView.isHidden = true
+        chatFolderPickerView.didSelectFolder = { [weak self] chatFolderId in
+            self?.selectChatFolder(chatFolderId: chatFolderId)
+        }
+        view.addSubview(chatFolderPickerView)
+        chatFolderPickerView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            chatFolderPickerView.leadingAnchor.constraint(equalTo: tableView.leadingAnchor),
+            chatFolderPickerView.trailingAnchor.constraint(equalTo: tableView.trailingAnchor),
+            // The picker sits within the top safe area
+            chatFolderPickerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            // The height of the safe area gets updated in viewDidLayoutSubviews
+        ])
+        if #available(iOS 26, *) {
+            let scrollEdgeInteraction = UIScrollEdgeElementContainerInteraction()
+            scrollEdgeInteraction.scrollView = tableView
+            scrollEdgeInteraction.edge = .top
+            chatFolderPickerView.addInteraction(scrollEdgeInteraction)
+        } else {
+            chatFolderPickerView.backgroundColor = .Signal.background
+        }
+
         // Search
         navigationItem.searchController = viewState.searchController
         viewState.searchController.searchResultsUpdater = self
@@ -291,6 +315,12 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+
+        let chatFolderPickerView = viewState.chatFolderPickerView
+        let chatFolderPickerHeight = chatFolderPickerView.isHidden ? 0 : chatFolderPickerView.frame.height
+        if additionalSafeAreaInsets.top != chatFolderPickerHeight {
+            additionalSafeAreaInsets.top = chatFolderPickerHeight
+        }
 
         let bottomInset = if let getStartedBanner, getStartedBanner.isViewLoaded, getStartedBanner.view.alpha > 0 {
             getStartedBanner.opaqueHeight
@@ -914,6 +944,29 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
             emptyChatListView.isHidden = true
             firstConversationCueView.isHidden = true
         }
+
+        let isChatFolderPickerHidden = !renderState.viewInfo.hasChatFolderPicker
+        if viewState.chatFolderPickerView.isHidden != isChatFolderPickerHidden {
+            viewState.chatFolderPickerView.isHidden = isChatFolderPickerHidden
+            view.setNeedsLayout()
+        }
+    }
+
+    // MARK: Chat folders
+
+    func selectChatFolder(chatFolderId: UUID) {
+        let folder = renderState.viewInfo.chatFolders.first { $0.chatFolderId == chatFolderId }
+        let selectedChatFolderId: UUID? = switch folder?.folderType {
+        case .all, nil:
+            nil
+        case .custom:
+            chatFolderId
+        }
+        guard selectedChatFolderId != viewState.selectedChatFolderId else {
+            return
+        }
+        viewState.selectedChatFolderId = selectedChatFolderId
+        loadCoordinator.loadIfNecessary()
     }
 
     // MARK: -
@@ -1126,9 +1179,9 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
         stack.spacing = 10
         stack.layoutMargins = UIEdgeInsets(
             top: OWSTableViewController2.cellVInnerMargin,
-            left: OWSTableViewController2.cellOuterInset(in: view),
+            leading: OWSTableViewController2.cellHInnerMargin,
             bottom: OWSTableViewController2.cellVInnerMargin,
-            right: OWSTableViewController2.cellOuterInset(in: view),
+            trailing: OWSTableViewController2.cellHInnerMargin,
         )
         stack.isLayoutMarginsRelativeArrangement = true
         paymentsBannerView.addSubview(stack)

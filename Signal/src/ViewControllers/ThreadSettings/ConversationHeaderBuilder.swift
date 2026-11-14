@@ -397,8 +397,7 @@ struct ConversationHeaderBuilder {
 
         let spacerWidth: CGFloat = 8
         let totalSpacerWidth = CGFloat(buttons.count - 1) * spacerWidth
-        let maxAvailableButtonWidth = delegate.tableViewController.view.width
-            - (delegate.tableViewController.cellOuterInsets.totalWidth + totalSpacerWidth)
+        let maxAvailableButtonWidth = delegate.tableViewController.tableViewContentWidth - totalSpacerWidth
         let minButtonWidth = maxAvailableButtonWidth / 4
 
         var buttonWidth = max(maxIconButtonWidth, minButtonWidth)

@@ -375,6 +375,8 @@ public class GRDBSchemaMigrator {
         case removeLocalFileBackupLastEnumeratedAttachmentId
         case addLocalKeyAndSizeToInstalledSticker
         case addFavoriteStickerTable
+        case addChatFolderTables
+        case addSortOrderToStickerPack
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -509,7 +511,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 166
+    public static let grdbSchemaVersionLatest: UInt = 168
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5774,6 +5776,77 @@ public class GRDBSchemaMigrator {
                 on: FavoriteStickerRecord.databaseTableName,
                 columns: ["unfavoritedAt"],
             )
+            return .success(())
+        }
+
+        migrator.registerMigration(.addChatFolderTables) { tx in
+            try tx.database.create(table: "ChatFolder") { table in
+                table.autoIncrementedPrimaryKey("id").notNull()
+                // Cross-platform stable UUID
+                table.column("chatFolderId", .blob).notNull().unique()
+                // 1 = all, 2 = custom (everything else)
+                table.column("folderType", .integer).notNull()
+                table.column("name", .text).notNull()
+                table.column("position", .integer).notNull()
+                table.column("showOnlyUnread", .boolean).notNull()
+                table.column("showMutedChats", .boolean).notNull()
+                table.column("includeAllIndividualChats", .boolean).notNull()
+                table.column("includeAllGroupChats", .boolean).notNull()
+                table.column("deletedAtTimestampMs", .integer).notNull().defaults(to: 0)
+            }
+
+            // Enforce only one ALL folder
+            try tx.database.create(
+                index: "index_ChatFolder_on_folderType_all",
+                on: "ChatFolder",
+                columns: ["folderType"],
+                options: [.unique],
+                condition: Column("folderType") == 1,
+            )
+
+            try tx.database.create(table: "ChatFolderChat") { table in
+                table.column("id", .integer).primaryKey().notNull()
+                table.column("chatFolderRowId", .integer).notNull()
+                    .references("ChatFolder", column: "id", onDelete: .cascade)
+
+                // 0 = included, 1 = excluded.
+                table.column("membershipType", .integer).notNull()
+
+                table.column("recipientRowId", .integer)
+                    .references("model_SignalRecipient", column: "id", onDelete: .cascade)
+                table.column("groupRowId", .integer)
+                    .references("GroupRecord", column: "rowId", onDelete: .cascade)
+
+                // Exactly one must be NOT NULL.
+                table.check(sql: #"("recipientRowId" IS NOT NULL) + ("groupRowId" IS NOT NULL) IS 1"#)
+            }
+
+            try tx.database.create(
+                index: "index_ChatFolderChat_on_chatFolderRowId",
+                on: "ChatFolderChat",
+                columns: ["chatFolderRowId"],
+            )
+            try tx.database.create(
+                index: "index_ChatFolderChat_on_recipientRowId_and_chatFolderRowId",
+                on: "ChatFolderChat",
+                columns: ["recipientRowId", "chatFolderRowId"],
+                options: [.unique],
+                condition: Column("recipientRowId") != nil,
+            )
+            try tx.database.create(
+                index: "index_ChatFolderChat_on_groupRowId_and_chatFolderRowId",
+                on: "ChatFolderChat",
+                columns: ["groupRowId", "chatFolderRowId"],
+                options: [.unique],
+                condition: Column("groupRowId") != nil,
+            )
+            return .success(())
+        }
+
+        migrator.registerMigration(.addSortOrderToStickerPack) { tx in
+            try tx.database.alter(table: "model_StickerPack") {
+                $0.add(column: "sortOrder", .integer).notNull().defaults(to: 0)
+            }
             return .success(())
         }
 

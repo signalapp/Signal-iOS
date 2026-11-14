@@ -328,7 +328,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 CurrencyFormatter.format(money: maximumAmount),
             ),
         )
-        actionSheetController.addAction(OWSActionSheets.okayAction)
+        actionSheetController.addAction(OWSActionSheets.okAction)
 
         presentActionSheet(actionSheetController)
     }
@@ -672,7 +672,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         )
 
         actionSheet.addAction(.init(
-            title: CommonStrings.okayButton,
+            title: CommonStrings.okButton,
             style: .cancel,
             handler: nil,
         ))

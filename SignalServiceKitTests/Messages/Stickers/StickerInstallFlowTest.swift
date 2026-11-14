@@ -103,6 +103,52 @@ final class StickerInstallFlowTest {
         ))
     }
 
+    @Test
+    func installStickerRepairsRecordWithMissingFile() async throws {
+        let plaintext = sampleStickerPlaintext()
+        let info = randomStickerInfo()
+
+        #expect(await stickerManager.installSticker(
+            stickerInfo: info,
+            stickerData: plaintext,
+            contentType: MimeType.imagePng.rawValue,
+            emojiString: nil,
+        ))
+        let originalRecord = try #require(db.read { tx in
+            stickerManager.fetchInstalledSticker(stickerInfo: info, transaction: tx)
+        })
+        let originalFileUrl = try #require(stickerManager.stickerDataUrl(
+            forInstalledSticker: originalRecord,
+            verifyExists: true,
+        ))
+
+        // Simulate the file being moved out from under the installed sticker.
+        try FileManager.default.removeItem(at: originalFileUrl)
+        #expect(!db.read { tx in stickerManager.isStickerInstalled(stickerInfo: info, transaction: tx) })
+
+        // Repair.
+        #expect(await stickerManager.installSticker(
+            stickerInfo: info,
+            stickerData: plaintext,
+            contentType: MimeType.imagePng.rawValue,
+            emojiString: nil,
+        ))
+
+        let repairedRecord = try #require(db.read { tx in
+            stickerManager.fetchInstalledSticker(stickerInfo: info, transaction: tx)
+        })
+        #expect(repairedRecord.localKey != originalRecord.localKey)
+        #expect(db.read { tx in stickerManager.isStickerInstalled(stickerInfo: info, transaction: tx) })
+        let count = try db.read { tx in
+            try InstalledStickerRecord.fetchCount(tx.database)
+        }
+        #expect(count == 1)
+
+        // The file on disk must decrypt with the key stored in the repaired record.
+        let metadata = try #require(stickerManager.installedStickerMetadata(installedSticker: repairedRecord))
+        #expect(try metadata.readStickerData() == plaintext)
+    }
+
     // MARK: - Helpers
 
     private func sampleStickerPlaintext() -> Data {

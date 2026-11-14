@@ -143,9 +143,9 @@ class AccountSettingsViewController: OWSTableViewController2 {
                     }
                 }(),
                 textColor: .Signal.accent,
-                actionBlock: { [unowned self] in
+                actionBlock: {
                     if deregisteredState.isPrimary {
-                        RegistrationUtils.showReRegistrationPrompt(fromViewController: self, deregisteredState: deregisteredState)
+                        RegistrationUtils.showReRegistration(deregisteredState: deregisteredState)
                     } else {
                         RegistrationUtils.showReLinking(deregisteredState: deregisteredState)
                     }

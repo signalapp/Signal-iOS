@@ -95,7 +95,11 @@ public enum BuildFlags {
     public static let phoneNumberlessRegistration = build <= .dev
 
     public static let stickerReply = true
-    public static let stickerFavorites = build <= .internal
+    public static let stickerFavorites = true
+
+    public static let chatFolders = build <= .internal
+
+    public static let deleteForMeToast = build <= .internal
 }
 
 // MARK: -

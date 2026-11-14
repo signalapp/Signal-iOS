@@ -254,7 +254,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
                         localRelativeFilePathThumbnail: nil,
                         // Waveforms will be deleted as they're migrated into `audioWaveformSamples`.
                         localRelativeFilePathAudioWaveform: nil,
-                        localRelativeFilePathVideoStillFrame: attachment.streamInfo?.cachedVideoStillFrameRelativeFilePath,
+                        localRelativeFilePathVideoStillFrame: attachment.streamInfo?.videoStillFrameRelativeFilePath,
                         timestamp: dateProvider().ows_millisecondsSince1970,
                     ),
                     tx: tx,

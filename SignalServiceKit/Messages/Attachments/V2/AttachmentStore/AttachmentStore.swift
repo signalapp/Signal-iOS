@@ -913,9 +913,9 @@ public struct AttachmentStore {
         tx: DBWriteTransaction,
     ) {
         if var streamInfo = attachment.streamInfo {
-            streamInfo.cachedMediaSizePixels = mediaPixelSize
-            streamInfo.cachedVideoDuration = videoDuration
-            streamInfo.cachedVideoStillFrameRelativeFilePath = videoStillFrameRelativeFilePath
+            streamInfo.mediaSizePixels = mediaPixelSize
+            streamInfo.videoDuration = videoDuration
+            streamInfo.videoStillFrameRelativeFilePath = videoStillFrameRelativeFilePath
             attachment.streamInfo = streamInfo
         }
 

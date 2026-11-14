@@ -390,13 +390,25 @@ public class ThreadFinder {
 
     // MARK: -
 
+    struct InboxThread: Decodable, FetchableRecord {
+        let id: Int64
+        let uniqueId: String
+        let recordType: UInt
+        let mutedUntilTimestamp: Int64
+    }
+
     public func visibleInboxThreadUniqueIds(
-        filteredBy inboxFilter: InboxFilter? = nil,
+        filteredBy inboxFilter: InboxFilter = .unfiltered,
+        chatFolder: ChatFolder? = nil,
         requiredVisibleThreadIds: Set<String> = [],
         transaction: DBReadTransaction,
     ) -> [String] {
-        let inboxFilterClause: String = switch inboxFilter {
-        case .unread:
+        let chatFolderShowsOnlyUnread = chatFolder?.folderType == .custom && chatFolder?.showOnlyUnread == true
+
+        let unreadClause: String = switch inboxFilter {
+        case
+            .unread,
+            .unfiltered where chatFolderShowsOnlyUnread:
             """
             AND (
                 \(threadColumn: .isMarkedUnread) = 1
@@ -410,25 +422,50 @@ public class ThreadFinder {
                 \(requiredVisibleThreadsClause(forThreadIds: requiredVisibleThreadIds))
             )
             """
-        case .unfiltered, nil:
+        case .unfiltered:
             ""
         }
 
-        let sql = """
-        SELECT \(threadColumn: .uniqueId)
+        let fromClause = """
         FROM \(TSThread.databaseTableName)
         WHERE \(threadColumn: .shouldThreadBeVisible) = 1
         AND \(threadColumn: .isArchived) = 0
-        \(inboxFilterClause)
+        \(unreadClause)
         ORDER BY
             CASE WHEN \(threadColumn: .lastDraftInteractionRowId) > \(threadColumn: .lastInteractionRowId)
                 THEN \(threadColumn: .lastDraftInteractionRowId) ELSE \(threadColumn: .lastInteractionRowId)
             END DESC,
             \(threadColumn: .lastDraftUpdateTimestamp) DESC
         """
-        return failIfThrows {
-            return try String.fetchAll(transaction.database, sql: sql)
+
+        guard let chatFolder, chatFolder.folderType == .custom else {
+            return failIfThrows {
+                return try String.fetchAll(
+                    transaction.database,
+                    sql: "SELECT \(threadColumn: .uniqueId) \(fromClause)",
+                )
+            }
         }
+
+        let sql = """
+        SELECT
+            \(threadColumn: .id),
+            \(threadColumn: .uniqueId),
+            \(threadColumn: .recordType),
+            \(threadColumn: .mutedUntilTimestamp)
+        \(fromClause)
+        """
+
+        let nowMs = Date.ows_millisecondTimestamp()
+        let cursor = FailIfThrowsRecordCursor {
+            try InboxThread.fetchCursor(transaction.database, sql: sql)
+        }
+
+        var threadUniqueIds = [String]()
+        for thread in cursor where chatFolder.contains(thread, nowMs: nowMs) {
+            threadUniqueIds.append(thread.uniqueId)
+        }
+        return threadUniqueIds
     }
 
     public func visibleArchivedThreadUniqueIds(

@@ -165,7 +165,7 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
                 "OUTGOING_DEVICE_TRANSFER_COMPLETE_BODY",
                 comment: "Body of prompt notifying device transfer completed.",
             ),
-            primaryButton: .dismissing(title: CommonStrings.okayButton),
+            primaryButton: .dismissing(title: CommonStrings.okButton),
         )
         await presentingViewController.awaitablePresent(sheet, animated: true)
     }
@@ -201,7 +201,7 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
             hero: .image(UIImage(resource: .checkCircle)),
             title: title,
             body: body,
-            primaryButton: .init(title: CommonStrings.okayButton, action: { _ in
+            primaryButton: .init(title: CommonStrings.okButton, action: { _ in
                 presentingViewController.dismiss(animated: false)
             }),
         )
@@ -428,7 +428,7 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
             hero: .image(UIImage(resource: .checkCircle)),
             title: title,
             body: body,
-            primaryButton: .init(title: CommonStrings.okayButton, action: { _ in
+            primaryButton: .init(title: CommonStrings.okButton, action: { _ in
                 presentingViewController.dismiss(animated: true)
             }),
         )

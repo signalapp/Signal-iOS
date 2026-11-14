@@ -119,7 +119,7 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             containerView.addSubview(toVC.view)
             containerView.addSubview(context.pageViewController.view)
 
-            storyViewContainer.layer.cornerRadius = UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad ? 18 : 0
+            storyViewContainer.layer.cornerRadius = 18
             storyViewContainer.frame = presentedFrame
             context.storyView.frame = context.storyView.convert(presentedFrame, from: containerView)
             if let storyView = context.storyView as? TextAttachmentThumbnailView {
@@ -258,9 +258,7 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                 storyView.renderSize = self.context.isPresenting
                     ? endFrame.size : TextAttachmentThumbnailView.defaultRenderSize
             }
-            self.storyViewContainer.layer.cornerRadius = self.context.isPresenting
-                ? UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad ? 18 : 0
-                : 12
+            self.storyViewContainer.layer.cornerRadius = self.context.isPresenting ? 18 : 12
             self.storyViewContainer.frame = endFrame
             self.context.storyView.frame = self.storyViewContainer.bounds.centerCropping(fullSize: storyViewEndSize)
             self.context.storyView.layoutIfNeeded()

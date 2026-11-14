@@ -25,6 +25,7 @@ class DebugUITableViewController: OWSTableViewController2 {
             itemForSubsection(DebugUISessionState(), viewController: viewController, thread: thread),
             itemForSubsection(DebugUIDiskUsage(), viewController: viewController, thread: thread),
             itemForSubsection(DebugUIReachability(), viewController: viewController, thread: thread),
+            itemForSubsection(DebugUIRegistration(), viewController: viewController, thread: thread),
         ]
         viewController.setContents(OWSTableContents(
             title: "Debug UI",

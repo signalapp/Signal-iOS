@@ -20,10 +20,6 @@ public enum OWSRequestFactory {
 
     // MARK: - Other
 
-    static func currencyConversionRequest() -> TSRequest {
-        return TSRequest(url: URL(string: "v1/payments/conversions")!, method: "GET", parameters: [:])
-    }
-
     static func getRemoteConfigRequest(eTag: String?) -> TSRequest {
         var request = TSRequest(url: URL(string: "v2/config/")!, method: "GET", parameters: [:])
         if let eTag {

@@ -189,7 +189,7 @@ public class LocationPicker: UIViewController {
                 // show error and remove annotation
                 let alert = ActionSheetController(title: nil, message: error.userErrorDescription)
                 alert.addAction(ActionSheetAction(
-                    title: CommonStrings.okayButton,
+                    title: CommonStrings.okButton,
                     style: .cancel,
                     handler: { _ in },
                 ))

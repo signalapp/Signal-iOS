@@ -442,7 +442,7 @@ extension ReferencedAttachment {
         // Prefer the pixel size we inferred from the downloaded attachment, if
         // available. Otherwise, use the pixel size from wherever we got this
         // attachment, if available.
-        if let pixelSize = attachment.streamInfo?.cachedMediaSizePixels {
+        if let pixelSize = attachment.streamInfo?.mediaSizePixels {
             proto.width = UInt32(pixelSize.width)
             proto.height = UInt32(pixelSize.height)
         } else if let pixelSize = reference.sourceMediaSizePixels {

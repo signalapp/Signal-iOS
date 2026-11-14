@@ -1394,12 +1394,19 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         reinitializeLoadedViewModels(debounceInterval: Constants.searchDebounceInterval, animated: true)
     }
 
-    private func reinitializeLoadedViewModels(debounceInterval: TimeInterval, animated: Bool) {
+    private func reinitializeLoadedViewModels(
+        debounceInterval: TimeInterval,
+        animated: Bool,
+        shouldReloadRows: Bool = false,
+    ) {
         self.reinitializeLoadedViewModelsTask?.cancel()
         self.reinitializeLoadedViewModelsTask = Task {
             do {
                 try await Task.sleep(nanoseconds: debounceInterval.clampedNanoseconds)
-                try await self._reinitializeLoadedViewModels(animated: true)
+                try await self._reinitializeLoadedViewModels(animated: animated)
+                if shouldReloadRows {
+                    self.reloadAllRows()
+                }
             } catch {
                 // A new reinitialize call was started, so bail out.
             }
@@ -1795,6 +1802,10 @@ extension CallsListViewController: UITableViewDelegate {
         switch Section(rawValue: indexPath.section) {
         case .createCallLink:
             createCallLink()
+            // "Create Call Link" is presented modally so we need to deselect the row.
+            DispatchQueue.main.async {
+                self.tableView.deselectRow(at: indexPath, animated: true)
+            }
         case .existingCalls, .none:
             guard let viewModel = viewModelWithSneakyTransaction(at: indexPath) else {
                 tableView.deselectRow(at: indexPath, animated: true)
@@ -2057,7 +2068,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
 
     private func presentSomeCallLinkDeletionError() {
         let actionSheet = ActionSheetController(message: Strings.deleteMultipleError)
-        actionSheet.addAction(OWSActionSheets.okayAction)
+        actionSheet.addAction(OWSActionSheets.okAction)
         self.presentActionSheet(actionSheet)
     }
 
@@ -2289,8 +2300,7 @@ extension CallsListViewController: DatabaseChangeDelegate {
     func databaseChangesDidUpdateExternally() {
         logger.info("Database changed externally, loading calls anew and reloading all rows.")
 
-        reinitializeLoadedViewModels(debounceInterval: 0, animated: false)
-        reloadAllRows()
+        reinitializeLoadedViewModels(debounceInterval: 0, animated: false, shouldReloadRows: true)
     }
 
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {

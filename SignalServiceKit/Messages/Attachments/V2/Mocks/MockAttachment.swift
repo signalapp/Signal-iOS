@@ -23,9 +23,9 @@ extension Attachment.StreamInfo {
             encryptionKey: encryptionKey.combinedKey,
             encryptedByteCount: encryptedByteCount,
             unencryptedByteCount: unencryptedByteCount,
-            cachedMediaSizePixels: nil,
-            cachedVideoDuration: nil,
-            cachedVideoStillFrameRelativeFilePath: nil,
+            mediaSizePixels: nil,
+            videoDuration: nil,
+            videoStillFrameRelativeFilePath: nil,
             ciphertextDigest: ciphertextDigest,
             localRelativeFilePath: localRelativeFilePath,
         )

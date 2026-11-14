@@ -44,28 +44,60 @@ public enum LinkValidator {
     }
 
     public static func firstLinkPreviewURL(in entireMessage: MessageBody) -> URL? {
+        var result: URL?
+        enumerateLinkPreviewURLs(in: entireMessage) { url, _, stop in
+            result = url
+            stop = true
+        }
+        return result
+    }
+
+    /// Whether `urlString` is verbatim a link preview URL in `messageBody`.
+    public static func containsLinkPreviewURL(
+        _ urlString: String,
+        messageBody: MessageBody,
+    ) -> Bool {
+        var result = false
+        enumerateLinkPreviewURLs(in: messageBody) { _, matchedText, stop in
+            if matchedText == urlString {
+                result = true
+                stop = true
+            }
+        }
+        return result
+    }
+
+    private static func enumerateLinkPreviewURLs(
+        in entireMessage: MessageBody,
+        block: (_ url: URL, _ matchedText: String, _ stop: inout Bool) -> Void,
+    ) {
         // Don't include link previews for oversize text messages.
         guard entireMessage.text.utf8.dropFirst(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes).isEmpty else {
-            return nil
+            return
         }
 
         guard canParseURLs(in: entireMessage.text) else {
-            return nil
+            return
         }
 
         guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
             owsFailDebug("Could not create NSDataDetector")
-            return nil
+            return
         }
 
-        var result: URL?
         detector.enumerateMatches(
             in: entireMessage.text,
             range: entireMessage.text.entireRange,
         ) { match, _, stop in
-            guard let match else { return }
-            guard let parsedUrl = match.url else { return }
-            guard let matchedRange = Range(match.range, in: entireMessage.text) else { return }
+            guard
+                let match,
+                let parsedUrl = match.url,
+                let matchedRange = Range(match.range, in: entireMessage.text)
+            else {
+                return
+            }
+
+            // No previews for spoilered URLs
             for style in entireMessage.ranges.collapsedStyles {
                 if
                     style.value.style.contains(style: .spoiler),
@@ -78,18 +110,20 @@ public enum LinkValidator {
                     break
                 }
             }
-            guard !parsedUrl.absoluteString.isEmpty else { return }
+
+            let matchedText = String(entireMessage.text[matchedRange])
             guard
                 LinkPreviewHelper.isPermittedLinkPreviewUrl(
                     parsedUrl,
-                    parsedFrom: String(entireMessage.text[matchedRange]),
+                    parsedFrom: matchedText,
                 )
             else {
                 return
             }
-            result = parsedUrl
-            stop.pointee = true
+
+            var shouldStop = false
+            block(parsedUrl, matchedText, &shouldStop)
+            stop.pointee = ObjCBool(shouldStop)
         }
-        return result
     }
 }

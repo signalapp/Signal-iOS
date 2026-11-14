@@ -9,7 +9,7 @@ import SignalUI
 
 // MARK: - RegistrationSignalLoginFullDetailsState
 
-public struct RegistrationSignalLoginFullDetailsState: Equatable {
+struct RegistrationSignalLoginFullDetailsState {
     let aci: Aci
     let aep: SignalServiceKit.AccountEntropyPool
 }

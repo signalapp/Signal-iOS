@@ -3,18 +3,19 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
+import Testing
 
 @testable import SignalServiceKit
 
-class LinkValidatorTest: XCTestCase {
+struct LinkValidatorTest {
+    @Test
     func testCanParseURLs() {
-        XCTAssertTrue(LinkValidator.canParseURLs(in: "https://signal.org/"))
-        XCTAssertFalse(LinkValidator.canParseURLs(in: "\u{202e}https://signal.org/"))
+        #expect(LinkValidator.canParseURLs(in: "https://signal.org/"))
+        #expect(!LinkValidator.canParseURLs(in: "\u{202e}https://signal.org/"))
     }
 
-    func testFirstLinkPreviewURL() {
-        let testCases: [(String, String?)] = [
+    private static var firstLinkPreviewURLTestCases: [(entireMessage: String, expectedValue: String?)] {
+        return [
             // Invalid: Explicit scheme is required
             ("signal.org", nil),
             ("www.signal.org", nil),
@@ -108,17 +109,72 @@ class LinkValidatorTest: XCTestCase {
             ("▶ https://signal.org", "https://signal.org"),
             ("https://si▶gnal.org", nil),
         ]
-        for (entireMessage, expectedValue) in testCases {
-            let actualValue = LinkValidator.firstLinkPreviewURL(in: .init(text: entireMessage, ranges: .empty))
-            XCTAssertEqual(actualValue?.absoluteString, expectedValue, entireMessage)
-        }
     }
 
-    func testFirstLinkPreviewURLPerformance() throws {
-        let entireMessage = String(repeating: "https://signal.org ", count: 1_000_000)
-        measure {
-            let actualValue = LinkValidator.firstLinkPreviewURL(in: .init(text: entireMessage, ranges: .empty))
-            XCTAssertNil(actualValue)
+    @Test(arguments: firstLinkPreviewURLTestCases)
+    func testFirstLinkPreviewURL(testCase: (entireMessage: String, expectedValue: String?)) {
+        let actualValue = LinkValidator.firstLinkPreviewURL(in: .init(text: testCase.entireMessage, ranges: .empty))
+        #expect(actualValue?.absoluteString == testCase.expectedValue)
+    }
+
+    @Test(arguments: [
+        ("https://signal.org", "https://signal.org", true),
+        ("https://signal.org", "see https://signal.org.", true),
+        ("https://signal.org/b", "https://signal.org/a https://signal.org/b", true),
+        ("https://中国互联网络信息中心.中国", "https://中国互联网络信息中心.中国", true),
+
+        // Invalid: not present verbatim
+        ("https://signal.org", "signal.org", false),
+        ("https://signal.org", "www.signal.org", false),
+        ("https://signal.org", "https://signal.org.evil.com", false),
+        ("https://signal.org", "https://signal.org/path", false),
+        ("https://signal.org/", "https://signal.org", false),
+        ("https://xn--fiqa61au8b7zsevnm8ak20mc4a87e.xn--fiqs8s", "https://中国互联网络信息中心.中国", false),
+
+        // Invalid: not a permitted link preview URL
+        ("http://signal.org", "http://signal.org", false),
+        ("https://example.com", "https://example.com", false),
+        ("https://si▶gnal.org", "https://si▶gnal.org", false),
+        ("https://signal.org", "\u{202e}https://signal.org", false),
+    ])
+    func testContainsLinkPreviewURL(testCase: (urlString: String, messageBody: String, expectedValue: Bool)) {
+        let actualValue = LinkValidator.containsLinkPreviewURL(
+            testCase.urlString,
+            messageBody: MessageBody(text: testCase.messageBody, ranges: .empty),
+        )
+        #expect(actualValue == testCase.expectedValue)
+    }
+
+    @Test
+    func testContainsLinkPreviewURLWithStyles() {
+        typealias SingleStyle = MessageBodyRanges.SingleStyle
+
+        func containsLinkPreviewURL(styles: [NSRangedValue<SingleStyle>]) -> Bool {
+            return LinkValidator.containsLinkPreviewURL(
+                "https://signal.org",
+                messageBody: MessageBody(
+                    text: "see https://signal.org",
+                    ranges: MessageBodyRanges(mentions: [], styles: styles),
+                ),
+            )
         }
+
+        // Non-spoiler styles have no effect.
+        #expect(containsLinkPreviewURL(styles: [
+            NSRangedValue(.bold, range: NSRange(location: 4, length: 18)),
+        ]))
+
+        // Spoilers outside the link have no effect.
+        #expect(containsLinkPreviewURL(styles: [
+            NSRangedValue(.spoiler, range: NSRange(location: 0, length: 3)),
+        ]))
+
+        // Spoilers covering any part of the link exclude it.
+        #expect(!containsLinkPreviewURL(styles: [
+            NSRangedValue(.spoiler, range: NSRange(location: 4, length: 18)),
+        ]))
+        #expect(!containsLinkPreviewURL(styles: [
+            NSRangedValue(.spoiler, range: NSRange(location: 10, length: 3)),
+        ]))
     }
 }

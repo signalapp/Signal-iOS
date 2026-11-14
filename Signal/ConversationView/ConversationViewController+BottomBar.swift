@@ -52,8 +52,6 @@ extension ConversationViewController {
     }
 
     func ensureBottomViewType() {
-        AssertIsOnMainThread()
-
         guard viewState.selectionAnimationState == .idle else {
             return
         }
@@ -128,8 +126,6 @@ extension ConversationViewController {
     }
 
     private func updateBottomBar() {
-        AssertIsOnMainThread()
-
         guard hasViewWillAppearEverBegun else {
             return
         }
@@ -191,11 +187,11 @@ extension ConversationViewController {
         case .notRegistered:
             let notRegisteredView = BlockingErrorBottomPanelView(
                 text: notRegisteredErrorText(),
-                onTap: { [unowned self] in
+                onTap: {
                     let tsAccountManager = DependenciesBridge.shared.tsAccountManager
                     let registrationState = tsAccountManager.registrationStateWithMaybeSneakyTransaction
                     let deregisteredState = registrationState.deregisteredState.owsFailUnwrap("must be deregistered")
-                    RegistrationUtils.showReRegistrationPrompt(fromViewController: self, deregisteredState: deregisteredState)
+                    RegistrationUtils.showReRegistration(deregisteredState: deregisteredState)
                 },
             )
             requestView = notRegisteredView
@@ -253,6 +249,13 @@ extension ConversationViewController {
                 let conversationBottomBar = bottomView as? ConversationBottomBar,
                 conversationBottomBar.shouldAttachToKeyboardLayoutGuide
             {
+                // Make `bottomView` attach to the bottom of the screen when no on-screen keyboard is visible.
+                // It is then bottomView's responsibility to avoid bottom safe area inset as necessary.
+                // We do this to allow ConversationInputToolbar to sit lower than otherwise would be possible
+                // on devices with top and bottom safe area insets.
+                if #available(iOS 17, *), let keyboardLayoutGuide = keyboardLayoutGuide as? UIKeyboardLayoutGuide {
+                    keyboardLayoutGuide.usesBottomSafeArea = false
+                }
                 NSLayoutConstraint.activate([
                     bottomView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
                 ])
@@ -333,8 +336,6 @@ extension ConversationViewController {
     }
 
     func loadInputToolbarIfNeeded() {
-        AssertIsOnMainThread()
-
         guard hasViewWillAppearEverBegun else { return }
 
         guard inputToolbar == nil else { return }
@@ -371,8 +372,6 @@ extension ConversationViewController {
     }
 
     func reloadDraft() {
-        AssertIsOnMainThread()
-
         guard
             let messageDraft = (SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 self.thread.currentDraft(transaction: transaction)
@@ -380,7 +379,7 @@ extension ConversationViewController {
         else {
             return
         }
-        guard let inputToolbar = self.inputToolbar else {
+        guard let inputToolbar else {
             return
         }
         inputToolbar.setMessageBody(messageDraft, animated: false)
@@ -389,22 +388,16 @@ extension ConversationViewController {
     // MARK: - Message Request
 
     func showMessageRequestDialogIfRequiredAsync() {
-        AssertIsOnMainThread()
-
         DispatchQueue.main.async { [weak self] in
             self?.showMessageRequestDialogIfRequired()
         }
     }
 
     func showMessageRequestDialogIfRequired() {
-        AssertIsOnMainThread()
-
         ensureBottomViewType()
     }
 
     func popKeyBoard() {
-        AssertIsOnMainThread()
-
         guard hasViewWillAppearEverBegun else {
             owsFailDebug("InputToolbar not yet ready.")
             return
@@ -417,8 +410,6 @@ extension ConversationViewController {
     }
 
     func dismissKeyboard() {
-        AssertIsOnMainThread()
-
         guard hasViewWillAppearEverBegun else {
             owsFailDebug("InputToolbar not yet ready.")
             return
@@ -437,8 +428,6 @@ extension ConversationViewController {
     }
 
     private func dismissRequestView() {
-        AssertIsOnMainThread()
-
         guard let requestView else {
             return
         }

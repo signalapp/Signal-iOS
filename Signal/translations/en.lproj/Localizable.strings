@@ -10,6 +10,9 @@
 /* Label for forward button in media control panel */
 "ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "Forward";
 
+/* AX hint letting a user know this button sends a sticker */
+"ACCESSIBILITY_HINT_STICKER" = "Sends this sticker";
+
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "Attachment";
 
@@ -418,6 +421,9 @@
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
 
+/* Attachment error message for video attachments that are too long to send. Embeds {{ the maximum duration, e.g. '15 minutes' }}. */
+"ATTACHMENT_ERROR_VIDEO_TOO_LONG_FORMAT" = "This video is too long to send. Trim it to %1$@ or less.";
+
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Choose Media to Send";
 
@@ -508,8 +514,14 @@
 /* Accessibility label for the 'high/standard quality' dialog. */
 "ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "Media quality";
 
+/* Accessibility label for the button that mutes a video being sent. */
+"ATTACHMENT_TOOL_BUTTON_MUTE_ACCESSIBILITY_LABEL" = "Mute video";
+
 /* Accessibility label for the 'pen' dialog. */
 "ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "Draw or annotate media";
+
+/* Accessibility label for the button that unmutes a video being sent. */
+"ATTACHMENT_TOOL_BUTTON_UNMUTE_ACCESSIBILITY_LABEL" = "Unmute video";
 
 /* Accessibility label for the 'view one' dialog. */
 "ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "View once";
@@ -1498,9 +1510,6 @@
 /* Label for the 'not now' button. */
 "BUTTON_NOT_NOW" = "Not Now";
 
-/* Label for the 'okay' button. */
-"BUTTON_OKAY" = "Okay";
-
 /* Label for the 'previous' button. */
 "BUTTON_PREVIOUS" = "Previous";
 
@@ -2061,6 +2070,57 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
+
+/* Name of the default chat folder, which shows every chat. */
+"CHAT_FOLDERS_ALL_CHATS" = "All Chats";
+
+/* Action that deletes a chat folder. */
+"CHAT_FOLDERS_DELETE_FOLDER" = "Delete Folder";
+
+/* Title of the confirmation shown before deleting a chat folder. */
+"CHAT_FOLDERS_DELETE_FOLDER_CONFIRMATION_TITLE" = "Delete this chat folder?";
+
+/* Button in chat folder settings to add a suggested chat folder. */
+"CHAT_FOLDERS_SETTINGS_ADD_SUGGESTED_FOLDER" = "Add";
+
+/* Button in chat folder settings to create a new chat folder. */
+"CHAT_FOLDERS_SETTINGS_CREATE_FOLDER" = "Create a Folder";
+
+/* Description at the top of the chat folders settings screen. */
+"CHAT_FOLDERS_SETTINGS_DESCRIPTION" = "Organize your chats into folders and quickly switch between them on your chat list.";
+
+/* Toast shown after adding a suggested chat folder. Embeds {{ folder name }}. */
+"CHAT_FOLDERS_SETTINGS_FOLDER_ADDED_TOAST_FORMAT" = "%@ folder added";
+
+/* Header for the list of chat folders in chat folder settings. */
+"CHAT_FOLDERS_SETTINGS_FOLDERS_HEADER" = "Folders";
+
+/* Header for the list of suggested chat folders in chat folder settings. */
+"CHAT_FOLDERS_SETTINGS_SUGGESTED_HEADER" = "Suggested Folders";
+
+/* Title for the chat folders settings screen. */
+"CHAT_FOLDERS_SETTINGS_TITLE" = "Chat Folders";
+
+/* Describes the suggested chat folder that shows group chats. */
+"CHAT_FOLDERS_SUGGESTED_GROUPS_DESCRIPTION" = "Only messages from group chats";
+
+/* Name of the suggested chat folder that shows group chats. */
+"CHAT_FOLDERS_SUGGESTED_GROUPS_NAME" = "Groups";
+
+/* Describes the suggested chat folder that shows 1:1 chats. */
+"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_DESCRIPTION" = "Only messages from direct chats";
+
+/* Name of the suggested chat folder that shows 1:1 chats. */
+"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_NAME" = "1:1 Chats";
+
+/* Describes the suggested chat folder that shows unread chats. */
+"CHAT_FOLDERS_SUGGESTED_UNREAD_DESCRIPTION" = "Unread messages from all chats";
+
+/* Name of the suggested chat folder that shows unread chats. */
+"CHAT_FOLDERS_SUGGESTED_UNREAD_NAME" = "Unread";
+
+/* Name shown for a chat folder whose name is empty. */
+"CHAT_FOLDERS_UNNAMED_FOLDER" = "Unnamed Folder";
 
 /* Message shown in an action sheet when the user tries to cancel a backup. */
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "Canceling your backup will not delete your backup. You can resume your backup at any time from Backup Settings.";
@@ -3133,6 +3193,12 @@
 /* Text indicating the message was remotely deleted by an admin. Embeds {{admin display name}} */
 "DELETED_BY_ADMIN" = "Admin %@ deleted this message";
 
+/* Title for a button in a toast shown after the user deletes messages for themselves only. */
+"DELETED_FOR_ME_TOAST_DELETE_FOR_EVERYONE_BUTTON_TITLE" = "Delete for Everyone";
+
+/* Text for a toast shown after the user deletes messages for themselves only. */
+"DELETED_FOR_ME_TOAST_TEXT" = "Deleted for me.";
+
 /* Text indicating the message was remotely deleted by its author. Embeds {{ author name }} */
 "DELETED_THIS_MESSAGE" = "%@ deleted this message";
 
@@ -3141,12 +3207,6 @@
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "You have been logged out of Signal on this device.";
-
-/* Button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_BUTTON" = "Re-register";
-
-/* Title for prompt that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "Re-register this phone number?";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "This device is no longer registered. This is likely because you registered your phone number with Signal on a different device.";
@@ -5060,7 +5120,7 @@
 "HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY" = "Backup Subscription Not Found";
 
 /* Title for the 'donate' action in the context menu of the settings button on home view tabs. */
-"HOME_VIEW_TITLE_DONATE" = "Donate to Signal";
+"HOME_VIEW_TITLE_DONATE" = "Donate";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Failed to Backup";
@@ -6750,6 +6810,12 @@
 
 /* Title of the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TITLE" = "Take privacy with you.\nBe yourself in every message.";
+
+/* Description for the screen asking the user to enter the 6-digit code from their authenticator app during registration. */
+"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_BODY" = "To continue, enter the 6-digit code from your authenticator app.";
+
+/* Accessibility label for the field where the user enters the code from their authenticator app */
+"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_FIELD_LABEL" = "Authenticator app code";
 
 /* Subtitle for action to verify with an authenticator as a 2fa method. */
 "ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_BODY" = "Enter a one-time code generated by your authenticator app.";
@@ -9223,6 +9289,9 @@
 /* Title for the 'chats' link in settings. */
 "SETTINGS_CHATS" = "Chats";
 
+/* Footer for the chat folders row in chats settings. */
+"SETTINGS_CHATS_CHAT_FOLDERS_FOOTER" = "Create folders for different sets of chats and quickly switch between them.";
+
 /* Title for a button in Chats settings that starts exporting the user's chat history. */
 "SETTINGS_CHATS_EXPORT_BUTTON" = "Export Chats";
 
@@ -10363,6 +10432,9 @@
 /* Label for button to remove sticker from favorites */
 "STICKER_BUTTON_REMOVE_FAVORITES" = "Remove From Favorites";
 
+/* Title for a button to remove a sticker from recents */
+"STICKER_BUTTON_REMOVE_FROM_RECENTS" = "Remove from Recents";
+
 /* Title for a button to view a sticker pack */
 "STICKER_BUTTON_VIEW_PACK" = "View Pack";
 
@@ -10381,8 +10453,20 @@
 /* Button to confirm a user wants to remove a sticker */
 "STICKER_CONFIRM_REMOVE_BUTTON" = "Remove";
 
+/* Label for the button to clear all sticker recents */
+"STICKER_KEYBOARD_BUTTON_CLEAR_RECENTS" = "Clear Recents";
+
+/* Accessibility label for the button in the sticker keyboard that opens the screen for managing sticker packs. */
+"STICKER_KEYBOARD_MANAGE_BUTTON_ACCESSIBILITY_LABEL" = "Manage stickers";
+
 /* Toast shown when user tries to tap Favorites in sticker keyboard but has none */
 "STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "Press and hold a sticker to add to Favorites";
+
+/* Text displayed in the sticker keyboard when no sticker packs are installed. */
+"STICKER_KEYBOARD_NO_PACKS" = "No sticker packs.\nAdd stickers to send to your friends.";
+
+/* Button in the sticker keyboard, shown when no sticker packs are installed, that opens the sticker pack manager. */
+"STICKER_KEYBOARD_NO_PACKS_ADD_BUTTON" = "Add Stickers";
 
 /* Section header for favorites in the sticker keyboard */
 "STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "Favorites";
@@ -10392,6 +10476,12 @@
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Sticker Message";
+
+/* Button to confirm a user wants to clear recent stickers */
+"STICKER_PACK_CLEAR_RECENTS_BUTTON" = "Clear";
+
+/* Message for a sheet asking the user to confirm they want to clear recently used stickers */
+"STICKER_PACK_CONFIRM_CLEAR_RECENTS_MESSAGE" = "Clear recently used stickers?";
 
 /* Button to confirm a user wants to remove a sticker pack */
 "STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "Remove";
@@ -10421,10 +10511,13 @@
 "STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Send in Signal";
 
 /* Message for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
-"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "You can’t send it or add it to Favorites again without a link or sticker message.";
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "You can't send it or add it to Favorites again unless you have the pack installed, a link, or a sticker message";
 
 /* Title for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
 "STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "Remove From Favorites?";
+
+/* Title for a button to remove a sticker pack */
+"STICKER_REMOVE_PACK_BUTTON" = "Remove";
 
 /* Text shown in a toast confirming a sticker was removed from favorites */
 "STICKER_REMOVED_FROM_FAVORITES_TOAST" = "Sticker removed from Favorites";
@@ -10438,11 +10531,26 @@
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Add Stickers";
 
+/* Button used to deselect all selected sticker packs in selection mode */
+"STICKERS_MANAGE_DESELECT_ALL" = "Deselect All";
+
+/* Enables selection mode for sticker pack */
+"STICKERS_MANAGE_EDIT" = "Edit";
+
+/* Label for a button to uninstall all selected sticker packs */
+"STICKERS_MANAGE_REMOVE" = "Remove";
+
 /* Placeholder text for the search bar in the sticker pack management. */
 "STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "Search stickers";
 
 /* Label for a view explaining that no search results were found. Embeds {{ the search term }}. */
 "STICKERS_MANAGE_SEARCH_NO_RESULTS" = "No results found for '%1$@'";
+
+/* Button used to select all sticker packs in selection mode */
+"STICKERS_MANAGE_SELECT_ALL" = "Select All";
+
+/* Title for the selection mode of sticker packs. */
+"STICKERS_MANAGE_SELECT_ITEMS" = "Select Items";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal Artist Series";
@@ -10461,6 +10569,9 @@
 
 /* The title for a context menu item that uninstalls a sticker pack. */
 "STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "Remove";
+
+/* The title for a context menu item that selects a sticker pack for selection mode. */
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SELECT" = "Select";
 
 /* The title for a context menu item that sends the sticker pack link to someone else. */
 "STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "Send";

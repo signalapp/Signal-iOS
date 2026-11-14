@@ -573,6 +573,10 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
     public func decrementReplyCount(_ tx: DBWriteTransaction) {
         anyUpdate(transaction: tx) { record in
+            guard record.replyCount > 0 else {
+                return
+            }
+
             record.replyCount = max(0, record.replyCount - 1)
         }
     }

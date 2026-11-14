@@ -290,22 +290,13 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
 
 // MARK: - PushRegistrationManager
 
-extension Registration {
-    public enum RequestPushTokensResult {
-        case success(RegistrationRequestFactory.ApnRegistrationId)
-        case pushUnsupported(description: String)
-        case timeout
-        case genericError(Error)
-    }
-}
-
 public protocol _RegistrationCoordinator_PushRegistrationManagerShim {
 
     func needsNotificationAuthorization() async -> Bool
 
     func registerUserNotificationSettings() async
 
-    func requestPushToken() async -> Registration.RequestPushTokensResult
+    func requestPushToken() async throws -> RegistrationRequestFactory.ApnRegistrationId?
 
     func receivePreAuthChallengeToken() async -> String
 
@@ -325,16 +316,11 @@ public class _RegistrationCoordinator_PushRegistrationManagerWrapper: _Registrat
         await manager.registerUserNotificationSettings()
     }
 
-    public func requestPushToken() async -> Registration.RequestPushTokensResult {
+    public func requestPushToken() async throws -> RegistrationRequestFactory.ApnRegistrationId? {
         do {
-            let result = try await manager.requestPushTokens(forceRotation: false, timeOutEventually: true)
-            return .success(result)
-        } catch PushRegistrationError.pushNotSupported(let description) {
-            return .pushUnsupported(description: description)
-        } catch PushRegistrationError.timeout {
-            return .timeout
-        } catch {
-            return .genericError(error)
+            return try await manager.requestPushTokens(forceRotation: false, timeOutEventually: true)
+        } catch PushRegistrationError.pushNotSupported {
+            return nil
         }
     }
 

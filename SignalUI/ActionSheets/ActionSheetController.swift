@@ -487,13 +487,6 @@ extension ActionSheetAction {
         )
     }
 
-    public static var okay: ActionSheetAction {
-        ActionSheetAction(
-            title: CommonStrings.okayButton,
-            style: .default,
-        )
-    }
-
     public static var cancel: ActionSheetAction {
         ActionSheetAction(
             title: CommonStrings.cancelButton,

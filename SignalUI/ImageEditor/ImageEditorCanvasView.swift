@@ -1120,6 +1120,7 @@ class ImageEditorCanvasView: UIView, ImageEditorModelObserver {
             // Regular sticker. Fetch its image
             let metadata = db.read { tx in
                 stickerManager.installedStickerMetadata(stickerInfo: stickerInfo, transaction: tx)
+                    ?? stickerManager.favoriteStickerMetadata(stickerInfo: stickerInfo, transaction: tx)
             }
 
             guard

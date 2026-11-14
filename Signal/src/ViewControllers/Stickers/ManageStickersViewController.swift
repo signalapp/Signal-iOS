@@ -76,12 +76,12 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
 
     override var navbarBackgroundColorOverride: UIColor? { cellBackgroundColor }
 
+    override var tableViewStyle: UITableView.Style { .grouped }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.title = OWSLocalizedString("STICKERS_MANAGE_VIEW_TITLE", comment: "Title for the 'manage stickers' view.")
-        navigationItem.titleView = filterPicker
-        navigationItem.rightBarButtonItem = .cancelButton(dismissingFrom: self)
+        setNavigationToolbar(animated: false)
 
         NotificationCenter.default.addObserver(
             self,
@@ -90,17 +90,54 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
             object: nil,
         )
 
-        searchController.searchResultsUpdater = self
-        navigationItem.searchController = searchController
-        navigationItem.hidesSearchBarWhenScrolling = false
-
         backgroundStyle = .none
         tableView.backgroundColor = cellBackgroundColor
-        defaultSeparatorInsetLeading = hInnerMargin + iconSize + iconSpacing
+        defaultSeparatorInsetLeading = Self.cellHInnerMargin + iconSize + iconSpacing
+        defaultSeparatorInsetTrailing = Self.cellHInnerMargin
 
-        updateState()
+        updateState(animated: false)
 
         stickerManager.downloadPendingStickerPacks()
+    }
+
+    func setNavigationToolbar(animated: Bool) {
+        switch currentUIMode {
+        case .normal:
+            switch currentFilterMode {
+            case .all:
+                navigationItem.leftBarButtonItem = nil
+            case .installed:
+                navigationItem.leftBarButtonItem = .button(title: OWSLocalizedString("STICKERS_MANAGE_EDIT", comment: "Enables selection mode for sticker pack")) { [weak self] in
+                    self?.setUIMode(uiMode: .selection, animated: true)
+                }
+            }
+
+            tableView.allowsSelectionDuringEditing = true
+            tableView.allowsMultipleSelectionDuringEditing = false
+            navigationItem.title = OWSLocalizedString("STICKERS_MANAGE_VIEW_TITLE", comment: "Title for the 'manage stickers' view.")
+            navigationItem.titleView = filterPicker
+            navigationItem.rightBarButtonItem = .cancelButton(dismissingFrom: self)
+            self.navigationController?.setToolbarHidden(true, animated: animated)
+            setToolbarItems(nil, animated: animated)
+
+            searchController.searchResultsUpdater = self
+            navigationItem.searchController = searchController
+            if (lastSearchForSelection != nil) {
+                searchController.searchBar.text = lastSearchForSelection
+                lastSearchForSelection = nil
+            }
+            navigationItem.hidesSearchBarWhenScrolling = false
+        case .selection:
+            tableView.allowsSelectionDuringEditing = true
+            tableView.allowsMultipleSelectionDuringEditing = true
+            navigationItem.titleView = nil
+            navigationItem.leftBarButtonItem = .closeButton { [weak self] in self?.setUIMode(uiMode: .normal, animated: true) }
+            navigationItem.rightBarButtonItem = nil
+            self.navigationController?.setToolbarHidden(false, animated: animated)
+
+            lastSearchForSelection = searchController.searchBar.text?.stripped ?? ""
+            navigationItem.searchController = nil
+        }
     }
 
     private var pendingModalVC: ModalActivityIndicatorViewController?
@@ -131,13 +168,100 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
             notifyBlock: { [weak self] in
                 guard let self else { return }
                 if self.needsStateUpdate {
-                    self.updateState()
+                    self.updateState(animated: true)
                 } else if self.needsTableUpdate {
-                    self.buildTable()
+                    self.buildTable(animated: true)
                 }
             },
         )
     }()
+
+    // MARK: - Selection mode
+
+    enum UIMode: Int {
+        case normal
+        case selection
+    }
+
+    private var currentUIMode = UIMode.normal
+
+    // Keeping a record of the last search made so that during selection (which disallows searching), we still see filtered results
+    private var lastSearchForSelection: String? = nil
+
+    private var selectedPacks = [StickerPackInfo]()
+
+    private func setUIMode(uiMode: UIMode, animated: Bool) {
+        currentUIMode = uiMode
+        setNavigationToolbar(animated: animated)
+        tableView.setEditing(false, animated: animated)
+        buildTable(shouldReload: false, animated: animated)
+    }
+
+    private lazy var selectAllButton = UIBarButtonItem.button(
+        title: OWSLocalizedString("STICKERS_MANAGE_SELECT_ALL", comment: "Button used to select all sticker packs in selection mode"),
+    ) { [weak self] in
+        self?.selectAll()
+    }
+
+    private lazy var deselectAllButton = UIBarButtonItem.button(
+        title: OWSLocalizedString("STICKERS_MANAGE_DESELECT_ALL", comment: "Button used to deselect all selected sticker packs in selection mode"),
+    ) { [weak self] in
+        self?.deselectAll()
+    }
+
+    private lazy var removeButton = UIBarButtonItem.button(
+        title: OWSLocalizedString("STICKERS_MANAGE_REMOVE", comment: "Label for a button to uninstall all selected sticker packs"),
+    ) { [weak self] in
+        guard let self else { return }
+        self.didTapUninstall(packs: self.selectedPacks)
+    }
+
+    private func updateSelectionToolbar(animated: Bool) {
+        let count = selectedPacks.count
+
+        if count == 0 {
+            navigationItem.title = OWSLocalizedString("STICKERS_MANAGE_SELECT_ITEMS", comment: "Title for the selection mode of sticker packs.")
+            removeButton.isEnabled = false
+            setToolbarItems([selectAllButton, .flexibleSpace(), removeButton], animated: animated)
+        } else {
+            navigationItem.title = String.localizedStringWithFormat(OWSLocalizedString("STICKER_PACK_TOOLBAR_CAPTION_%d", tableName: "PluralAware", comment: "Label for the toolbar used in the multi-select mode. The number of selected items (1 or more) is passed."), count)
+            removeButton.isEnabled = true
+            setToolbarItems([deselectAllButton, .flexibleSpace(), removeButton], animated: animated)
+        }
+    }
+
+    private func tryToSelect(dataSource: StickerPackDataSource) {
+        guard let info = dataSource.info else {
+            return
+        }
+
+        let isCellSelected = selectedPacks.contains(where: { $0.packId == info.packId })
+        if isCellSelected {
+            selectedPacks.removeAll(where: { $0.packId == info.packId })
+        } else {
+            selectedPacks.append(info)
+        }
+    }
+
+    private func selectAll() {
+        let scrollPosition = tableView.contentOffset
+        for section in 0..<tableView.numberOfSections {
+            for index in 0..<tableView.numberOfRows(inSection: section) {
+                tableView.selectRow(at: IndexPath(item: index, section: section), animated: false, scrollPosition: .none)
+            }
+        }
+        tableView.setContentOffset(scrollPosition, animated: false)
+        selectedPacks = selectableStickerPackSources.compactMap { $0.info }
+        updateSelectionToolbar(animated: true)
+    }
+
+    private func deselectAll() {
+        tableView.indexPathsForSelectedRows?.forEach { indexPath in
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
+        selectedPacks = []
+        updateSelectionToolbar(animated: true)
+    }
 
     // MARK: - Tab picker
 
@@ -166,6 +290,7 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
     }()
 
     private func filterChanged() {
+        setNavigationToolbar(animated: true)
         needsTableUpdate = true
     }
 
@@ -192,7 +317,7 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
     }()
 
     private var searchText: String {
-        searchController.searchBar.text?.stripped ?? ""
+        lastSearchForSelection ?? searchController.searchBar.text?.stripped ?? ""
     }
 
     private var isSearching: Bool {
@@ -205,8 +330,10 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
     private var defaultStickerPackSources = [StickerPackDataSource]()
     // Includes known and installed sticker pack sources
     private var nonDefaultStickerPackSources = [StickerPackDataSource]()
+    // Sticker packs shown in selection mode (accounts for the search filter)
+    private var selectableStickerPackSources = [StickerPackDataSource]()
 
-    private func updateState() {
+    private func updateState(animated: Bool) {
         // If we're presenting a modal because the user tapped install, dismiss it.
         pendingModalVC?.dismiss()
         pendingModalVC = nil
@@ -280,7 +407,10 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
         }
 
         self.installedStickerPackSources = installedStickerPacks.sorted {
-            $0.dateCreated > $1.dateCreated
+            if $0.sortOrder != $1.sortOrder {
+                return $0.sortOrder < $1.sortOrder
+            }
+            return $0.dateCreated > $1.dateCreated
         }.map {
             installedSource($0.info)
         }
@@ -296,41 +426,38 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
         }
 
         needsStateUpdate = false
-        buildTable()
+        buildTable(shouldReload: true, animated: animated)
     }
 
-    private func buildTable(shouldReload: Bool = true) {
+    private func buildTable(shouldReload: Bool = true, animated: Bool) {
         let contents = OWSTableContents()
         let hasResults: Bool
         let searchText = self.searchText
+        selectedPacks = []
 
         switch currentFilterMode {
         case .installed:
             let filteredInstalledStickerPackSources = installedStickerPackSources.filter { searchText.isEmpty || $0.title?.filterForDisplay.localizedStandardContains(searchText) == true
             }
             hasResults = !filteredInstalledStickerPackSources.isEmpty
-            let installedSection = OWSTableSection()
-            for dataSource in filteredInstalledStickerPackSources {
-                installedSection.add(OWSTableItem(
-                    customCellBlock: { [weak self] in
-                        guard let self else {
-                            return UITableViewCell()
-                        }
-                        return self.buildTableCell(installedStickerPack: dataSource, showDownloaded: false)
-                    },
-                    actionBlock: { [weak self] in
-                        guard let packInfo = dataSource.info else {
-                            owsFailDebug("Source missing info.")
-                            return
-                        }
-                        self?.show(packInfo: packInfo)
-                    },
-                    contextMenuActionProvider: contextMenuActionProvider(pack: dataSource),
-                ))
-            }
-            contents.add(installedSection)
 
+            switch currentUIMode {
+            case .normal:
+                tableView.setEditing(true, animated: animated)
+                selectionBehavior = .actionWithAutoDeselect
+
+                contents.add(getInstalledSection(stickerPackSources: filteredInstalledStickerPackSources, forSelection: false))
+            case .selection:
+                tableView.setEditing(true, animated: animated)
+                selectionBehavior = .toggleSelectionWithAction
+                selectableStickerPackSources = filteredInstalledStickerPackSources
+                updateSelectionToolbar(animated: animated)
+
+                contents.add(getInstalledSection(stickerPackSources: filteredInstalledStickerPackSources, forSelection: true))
+            }
         case .all:
+            tableView.setEditing(false, animated: animated)
+            selectionBehavior = .actionWithAutoDeselect
             let itemForAvailablePack = { [self] (dataSource: StickerPackDataSource) -> OWSTableItem in
                 OWSTableItem(
                     customCellBlock: { [weak self] in
@@ -376,8 +503,8 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
                     titleLabel.setCompressionResistanceVerticalHigh()
                     let container = UIView()
                     container.addSubview(titleLabel)
-                    titleLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: 0)
-                    titleLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 0)
+                    titleLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: Self.cellHInnerMargin)
+                    titleLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: Self.cellHInnerMargin)
                     titleLabel.autoPinEdge(toSuperviewEdge: .top, withInset: (defaultSpacingBetweenSections ?? 0) + 12)
                     titleLabel.autoPinEdge(toSuperviewEdge: .bottom, withInset: 10)
                     return container
@@ -416,8 +543,8 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
 
                             cell.contentView.addSubview(contentRow)
 
-                            contentRow.autoPinEdge(toSuperviewEdge: .leading, withInset: 8)
-                            contentRow.autoPinEdge(toSuperviewEdge: .trailing, withInset: 8)
+                            contentRow.autoPinEdge(toSuperviewEdge: .leading, withInset: Self.cellHInnerMargin)
+                            contentRow.autoPinEdge(toSuperviewEdge: .trailing, withInset: Self.cellHInnerMargin)
                             contentRow.autoPinEdge(toSuperviewEdge: .top, withInset: Self.cellVInnerMargin)
                             contentRow.autoPinEdge(toSuperviewEdge: .bottom, withInset: Self.cellVInnerMargin)
 
@@ -478,9 +605,9 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
                     introStack.isLayoutMarginsRelativeArrangement = true
                     introStack.directionalLayoutMargins = NSDirectionalEdgeInsets(
                         top: (defaultSpacingBetweenSections ?? 0),
-                        leading: 0,
+                        leading: Self.cellHInnerMargin,
                         bottom: 10,
-                        trailing: 0,
+                        trailing: Self.cellHInnerMargin,
                     )
 
                     return introStack
@@ -513,9 +640,42 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
         } else {
             nil
         }
+        if currentUIMode == .normal {
+            navigationItem.leftBarButtonItem?.isEnabled = hasResults
+        }
 
         setContents(contents, shouldReload: shouldReload)
         needsTableUpdate = false
+    }
+
+    private func getInstalledSection(stickerPackSources: [StickerPackDataSource], forSelection: Bool) -> OWSTableSection {
+        let installedSection = OWSTableSection()
+        installedSection.customHeaderHeight = 1
+        for (row, dataSource) in stickerPackSources.enumerated() {
+            installedSection.add(OWSTableItem(
+                customCellBlock: { [weak self] in
+                    guard let self else {
+                        return UITableViewCell()
+                    }
+                    return self.buildTableCell(installedStickerPack: dataSource, showDownloaded: false)
+                },
+                actionBlock: { [weak self] in
+                    guard let packInfo = dataSource.info else {
+                        owsFailDebug("Source missing info.")
+                        return
+                    }
+                    if (forSelection) {
+                        self?.tryToSelect(dataSource: dataSource)
+                        self?.updateSelectionToolbar(animated: true)
+                    } else {
+                        self?.show(packInfo: packInfo)
+                    }
+                },
+                contextMenuActionProvider: forSelection ? nil : contextMenuActionProvider(pack: dataSource, indexPath: IndexPath(row: row, section: 0)),
+            ))
+        }
+
+        return installedSection
     }
 
     private func buildTableCell(installedStickerPack dataSource: StickerPackDataSource, showDownloaded: Bool) -> UITableViewCell {
@@ -566,7 +726,6 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
         return view
     }
 
-    private let hInnerMargin: CGFloat = 4
     private let iconSize: CGFloat = 56
     private let iconSpacing: CGFloat = 12
     private func buildTableCell(
@@ -654,8 +813,9 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
         stack.spacing = iconSpacing
 
         cell.contentView.addSubview(stack)
-        stack.autoPinEdge(toSuperviewEdge: .leading, withInset: hInnerMargin)
-        stack.autoPinEdge(toSuperviewEdge: .trailing, withInset: hInnerMargin)
+        cell.tintColor = .Signal.accent
+        stack.autoPinEdge(toSuperviewEdge: .leading, withInset: Self.cellHInnerMargin)
+        stack.autoPinEdge(toSuperviewEdge: .trailing, withInset: Self.cellHInnerMargin)
         stack.autoPinEdge(toSuperviewEdge: .top, withInset: Self.cellVInnerMargin)
         stack.autoPinEdge(toSuperviewEdge: .bottom, withInset: Self.cellVInnerMargin)
 
@@ -706,7 +866,12 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
 
         let button = UIButton(
             configuration: .smallSecondary(title: OWSLocalizedString("STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS_BUTTON", comment: "Button to redirect back to the manage sticker 'all' section")),
-            primaryAction: UIAction { [weak self] _ in self?.setFilterMode(mode: .all) },
+            primaryAction: UIAction { [weak self] _ in
+                if (self?.currentUIMode != .normal) {
+                    self?.setUIMode(uiMode: .normal, animated: true)
+                }
+                self?.setFilterMode(mode: .all)
+            },
         )
 
         let stack = UIStackView(arrangedSubviews: [label, button])
@@ -740,9 +905,44 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
         return container
     }
 
+    // MARK: Reordering
+
+    func tableView(
+        _ tableView: UITableView,
+        canMoveRowAt indexPath: IndexPath,
+    ) -> Bool {
+        return currentUIMode == .normal && currentFilterMode == .installed && searchText.isEmpty
+    }
+
+    func tableView(
+        _ tableView: UITableView,
+        moveRowAt sourceIndexPath: IndexPath,
+        to destinationIndexPath: IndexPath,
+    ) {
+        guard sourceIndexPath != destinationIndexPath else { return }
+        let removedAt = installedStickerPackSources.remove(at: sourceIndexPath.row)
+        installedStickerPackSources.insert(removedAt, at: destinationIndexPath.row)
+        buildTable(shouldReload: false, animated: false)
+        reorder()
+    }
+
+    func tableView(
+        _ tableView: UITableView,
+        editingStyleForRowAt indexPath: IndexPath,
+    ) -> UITableViewCell.EditingStyle {
+        .none
+    }
+
+    func tableView(
+        _ tableView: UITableView,
+        shouldIndentWhileEditingRowAt indexPath: IndexPath,
+    ) -> Bool {
+        false
+    }
+
     // MARK: Context menu
 
-    func contextMenuActionProvider(pack: StickerPackDataSource) -> UIContextMenuActionProvider {
+    func contextMenuActionProvider(pack: StickerPackDataSource, indexPath: IndexPath? = nil) -> UIContextMenuActionProvider {
         return { [weak self] _ in
             guard
                 let self,
@@ -751,16 +951,25 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
                 return nil
             }
 
+            let selectionAction: [UIAction] = if let path = indexPath {
+                [self.selectAction(pack: pack, indexPath: path)]
+            } else {
+                []
+            }
+
             let additionalAction = if (stickerPack.isInstalled == true) {
                 [self.removeAction(pack: pack)]
             } else {
                 [self.addAction(pack: pack)]
             }
 
-            return UIMenu(children: [
-                self.sendAction(pack: pack),
-                self.copyAction(pack: pack),
-            ] + additionalAction)
+            return UIMenu(
+                children:
+                selectionAction + [
+                    self.sendAction(pack: pack),
+                    self.copyAction(pack: pack),
+                ] + additionalAction,
+            )
         }
     }
 
@@ -816,6 +1025,19 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
         }
     }
 
+    private func selectAction(pack: StickerPackDataSource, indexPath: IndexPath) -> UIAction {
+        UIAction(
+            title: OWSLocalizedString(
+                "STICKERS_MANAGE_VIEW_CONTEXT_MENU_SELECT",
+                comment: "The title for a context menu item that selects a sticker pack for selection mode.",
+            ),
+            image: UIImage(named: "check-circle"),
+        ) { [weak self] _ in
+            guard let self, let stickerPack = pack.getStickerPack() else { return }
+            self.select(stickerPack: stickerPack, indexPath: indexPath)
+        }
+    }
+
     // MARK: Events
 
     private func show(packInfo: StickerPackInfo) {
@@ -851,6 +1073,13 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
         self.sendMessageFlow = sendMessageFlow
     }
 
+    private func reorder() {
+        let packs = installedStickerPackSources.compactMap { $0.info }
+        db.write { transaction in
+            self.stickerManager.reorder(packInfos: packs, transaction: transaction)
+        }
+    }
+
     private func install(stickerPack: StickerPackRecord) {
         AssertIsOnMainThread()
 
@@ -876,7 +1105,7 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
             if self != nil, SSKEnvironment.shared.reachabilityManagerRef.isReachable {
                 owsFailDebug("Expected to hear back from StickerManager about a newly installed sticker pack")
             }
-            self?.updateState()
+            self?.updateState(animated: true)
         }
     }
 
@@ -889,9 +1118,13 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
     }
 
     private func didTapUninstall(pack: StickerPackInfo) {
+        didTapUninstall(packs: [pack])
+    }
+
+    private func didTapUninstall(packs: [StickerPackInfo]) {
         let confirmUninstallSheet = ActionSheetController(
-            title: OWSLocalizedString("STICKER_PACK_CONFIRM_REMOVE_TITLE", comment: "Title for a sheet asking the user to confirm they want to remove a sticker pack"),
-            message: OWSLocalizedString("STICKER_PACK_CONFIRM_REMOVE_MESSAGE", comment: "Message for a sheet asking the user to confirm they want to remove a sticker pack"),
+            title: String.localizedStringWithFormat(OWSLocalizedString("STICKER_PACK_REMOVE_TITLE_%d", tableName: "PluralAware", comment: "Confirmation title when removing a sticker pack. Embeds the number of packs to be removed"), packs.count),
+            message: String.localizedStringWithFormat(OWSLocalizedString("STICKER_PACK_REMOVE_MESSAGE_%d", tableName: "PluralAware", comment: "Confirmation message when removing a sticker pack"), packs.count),
         )
 
         confirmUninstallSheet.addAction(
@@ -902,7 +1135,7 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
                 ),
                 style: .destructive,
                 handler: { [weak self] _ in
-                    self?.didConfirmUninstall(pack: pack)
+                    self?.didConfirmUninstall(packs: packs)
                 },
             ),
         )
@@ -910,29 +1143,45 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
         presentActionSheet(confirmUninstallSheet)
     }
 
-    private func didConfirmUninstall(pack: StickerPackInfo) {
-        let stickerPackInfo = pack
+    private func didConfirmUninstall(packs: [StickerPackInfo]) {
+        let stickerPackInfos = packs
         ModalActivityIndicatorViewController.present(
             fromViewController: self,
             canCancel: false,
             presentationDelay: 0,
             backgroundBlock: { [db, stickerManager] modal in
                 db.write { transaction in
-                    stickerManager.uninstallStickerPack(
-                        stickerPackInfo: stickerPackInfo,
+                    stickerManager.uninstallStickerPacks(
+                        stickerPackInfos: stickerPackInfos,
                         wasLocallyInitiated: true,
                         transaction: transaction,
                     )
                 }
                 DispatchQueue.main.async {
                     modal.dismiss()
+                    self.selectedPacks = []
+                    self.presentToast(
+                        text: String.localizedStringWithFormat(OWSLocalizedString("STICKER_PACK_REMOVE_TOAST_%d", tableName: "PluralAware", comment: "Toast for when a pack has been removed."), stickerPackInfos.count),
+                        image: .minusCircle,
+                    )
                 }
             },
         )
     }
 
+    private func select(stickerPack: StickerPackRecord, indexPath: IndexPath) {
+        setUIMode(uiMode: .selection, animated: true)
+        tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+        selectedPacks = [stickerPack.info]
+        updateSelectionToolbar(animated: true)
+    }
+
     private func showAllPacks(revealingIndices: [IndexPath]) {
         isShowingAllPacks = true
+
+        if needsStateUpdate || needsTableUpdate {
+            return
+        }
 
         if let firstIndex = revealingIndices.first {
             tableView.beginUpdates()
@@ -943,10 +1192,10 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
             // Insert the new rows.
             tableView.insertRows(at: revealingIndices, with: .top)
 
-            buildTable(shouldReload: false)
+            buildTable(shouldReload: false, animated: true)
             tableView.endUpdates()
         } else {
-            buildTable()
+            buildTable(shouldReload: true, animated: true)
         }
     }
 

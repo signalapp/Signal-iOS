@@ -53,7 +53,7 @@ class RegistrationQuickRestoreQRCodeViewController: BaseQuickRestoreQRCodeViewCo
                     ),
                     title: title,
                     body: body,
-                    primaryButton: .init(title: CommonStrings.okayButton, action: { [weak self] _ in
+                    primaryButton: .init(title: CommonStrings.okButton, action: { [weak self] _ in
                         self?.reset()
                         self?.presentedViewController?.dismiss(animated: true)
                     }),

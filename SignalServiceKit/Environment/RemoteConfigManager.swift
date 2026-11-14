@@ -314,9 +314,6 @@ public class RemoteConfig {
     // MARK: -
 
     public var enableScreenshotBlocking: Bool {
-        if DebugFlags.internalSettings {
-            return true
-        }
         return isEnabled(.enableScreenshotBlocking, defaultValue: true)
     }
 

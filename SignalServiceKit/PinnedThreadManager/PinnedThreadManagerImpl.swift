@@ -6,7 +6,9 @@
 import Foundation
 import LibSignalClient
 
-public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
+extension PinnedThreadManagerImpl: RecipientMergeApplier {}
+
+public class PinnedThreadManagerImpl: PinnedThreadManager {
 
     private let db: any DB
     private let pinnedThreadStore: PinnedThreadStore
@@ -54,17 +56,8 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
     ) -> PinnedThreadId? {
         return _fetchPinnedThreadId(
             forThread: thread,
-            fetchOrCreateRecipient: {
-                if let aci = $0.contactAddress.serviceId as? Aci {
-                    return recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
-                }
-                if let phoneNumber = E164($0.contactAddress.phoneNumber) {
-                    return recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx)
-                }
-                if let pni = $0.contactAddress.serviceId as? Pni {
-                    return recipientFetcher.fetchOrCreate(serviceId: pni, tx: tx)
-                }
-                return nil
+            fetchOrCreateRecipient: { thread in
+                recipientFetcher.fetchOrCreate(contactThread: thread, tx: tx)
             },
         )
     }
@@ -303,24 +296,24 @@ public class PinnedThreadManagerImpl: PinnedThreadManager, PinnedThreadMerger {
         }
     }
 
-    func mergeRecipientId(
-        _ recipientId: SignalRecipient.RowId,
-        into targetRecipientId: SignalRecipient.RowId,
-        updateStorageService: Bool,
+    func mergeRecipient(
+        _ recipient: SignalRecipient,
+        into targetRecipient: inout SignalRecipient,
+        shouldUpdateStorageService updateStorageService: Bool,
         tx: DBWriteTransaction,
     ) {
-        let pinnedThread = pinnedThreadStore.fetchPinnedThreadRecord(forThreadId: .recipientId(recipientId), tx: tx)
+        let pinnedThread = pinnedThreadStore.fetchPinnedThreadRecord(forThreadId: .recipientId(recipient.id), tx: tx)
         guard var pinnedThread else {
             // The recipient we're deleting isn't pinned; there's nothing to change.
             return
         }
-        let targetPinnedThread = pinnedThreadStore.fetchPinnedThreadRecord(forThreadId: .recipientId(targetRecipientId), tx: tx)
+        let targetPinnedThread = pinnedThreadStore.fetchPinnedThreadRecord(forThreadId: .recipientId(targetRecipient.id), tx: tx)
         if targetPinnedThread != nil {
             // The one we're merging into is already pinned; delete the redundant pin.
             _unpinThread(pinnedThread, tx: tx)
         } else {
             // The one we're merging into needs to be pinned; pin it now.
-            let threadId = PinnedThreadId.recipientId(targetRecipientId)
+            let threadId = PinnedThreadId.recipientId(targetRecipient.id)
             Logger.info("Moving pin with order \(pinnedThread.id) to \(threadId)")
             pinnedThread.threadId = threadId
             failIfThrows { try pinnedThread.update(tx.database) }

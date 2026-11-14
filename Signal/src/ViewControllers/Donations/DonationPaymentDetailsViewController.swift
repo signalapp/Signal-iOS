@@ -432,9 +432,9 @@ class DonationPaymentDetailsViewController: OWSTableViewController2, UITextViewD
 
     private func canPlaceholderFitInAvailableWidth(placeholder: String, headerWidth: CGFloat) -> Bool {
         let placeholderTextWidth = NSAttributedString(string: placeholder, attributes: [.font: FormFieldView.textFieldFont]).size().width
-        let insets = self.cellOuterInsets.totalWidth + Self.cellHInnerMargin * 2
+        let insets = Self.cellHInnerMargin * 2
         let totalWidth = placeholderTextWidth + insets + headerWidth + FormFieldView.titleSpacing
-        return totalWidth <= self.view.width
+        return totalWidth <= tableViewContentWidth
     }
 
     // MARK: - Card form

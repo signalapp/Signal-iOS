@@ -3513,7 +3513,7 @@
 			repositoryURL = "https://github.com/signalapp/libsignal";
 			requirement = {
 				kind = exactVersion;
-				version = 0.106.1;
+				version = 0.107.0;
 			};
 		};
 		631CB51B307EDA1300EA5851 /* XCRemoteSwiftPackageReference "swift-log" */ = {
@@ -3529,7 +3529,7 @@
 			repositoryURL = "https://github.com/apple/swift-protobuf";
 			requirement = {
 				kind = exactVersion;
-				version = 1.38.1;
+				version = 1.39.0;
 			};
 		};
 		631CB52B307EDB0000EA5851 /* XCRemoteSwiftPackageReference "cocoalumberjack" */ = {
@@ -3633,7 +3633,7 @@
 			repositoryURL = "https://github.com/signalapp/ringrtc";
 			requirement = {
 				kind = exactVersion;
-				version = 2.74.0;
+				version = 2.75.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

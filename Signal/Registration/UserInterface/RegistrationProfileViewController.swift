@@ -399,7 +399,7 @@ extension RegistrationProfileViewController: UITextViewDelegate {
             self.present(SFSafariViewController(url: URL.Support.profilesAndMessageRequests), animated: true)
         })
 
-        actionSheet.addAction(.init(title: CommonStrings.okayButton, style: .cancel))
+        actionSheet.addAction(.init(title: CommonStrings.okButton, style: .cancel))
 
         presentActionSheet(actionSheet)
     }

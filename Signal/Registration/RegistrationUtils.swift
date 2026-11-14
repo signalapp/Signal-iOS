@@ -13,30 +13,6 @@ enum RegistrationUtils {
         return !UIDevice.current.isIPad
     }
 
-    static func showReRegistrationPrompt(fromViewController viewController: UIViewController, deregisteredState: DeregisteredState) {
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        owsPrecondition(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true)
-
-        let actionSheet = ActionSheetController(
-            title: NSLocalizedString(
-                "DEREGISTRATION_REREGISTER_PROMPT_TITLE",
-                comment: "Title for prompt that lets users re-register using the same phone number.",
-            ),
-        )
-        actionSheet.addAction(ActionSheetAction(
-            title: NSLocalizedString(
-                "DEREGISTRATION_REREGISTER_BUTTON",
-                comment: "Button that lets users re-register using the same phone number.",
-            ),
-            style: .default,
-            handler: { _ in
-                showReRegistration(deregisteredState: deregisteredState)
-            },
-        ))
-        actionSheet.addAction(OWSActionSheets.cancelAction)
-        viewController.presentActionSheet(actionSheet)
-    }
-
     @MainActor
     static func showReLinking(deregisteredState: DeregisteredState) {
         Logger.info("showReLinking")

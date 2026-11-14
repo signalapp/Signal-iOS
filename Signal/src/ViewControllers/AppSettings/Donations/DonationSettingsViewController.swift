@@ -529,7 +529,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             }
 
             actionSheet.addAction(.init(
-                title: CommonStrings.okayButton,
+                title: CommonStrings.okButton,
                 style: .cancel,
                 handler: nil,
             ))

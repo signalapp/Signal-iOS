@@ -222,7 +222,7 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
 
     private let navBarDefaultPackImage = UIImageView(image: .official)
 
-    private let stickerCollectionView = StickerPackCollectionView(placeholderColor: .ows_blackAlpha60, shouldShowSectionHeaders: false)
+    private let stickerCollectionView = StickerPackCollectionView(placeholderColor: .ows_blackAlpha60, shouldShowSectionHeaders: false, allowContextMenus: false)
 
     private func updateCollectionViewContentInset() {
         stickerCollectionView.layoutIfNeeded()
@@ -565,6 +565,22 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
 
     func stickerPreviewHasOverlay() -> Bool {
         return true
+    }
+
+    func viewStickerPack(_ stickerPackInfo: SignalServiceKit.StickerPackInfo) {
+        // StickerPackViewController doesn't use sticker context menus.
+    }
+
+    func scrollToFavoritedSticker(_ stickerInfo: StickerInfo) {
+        // StickerPackViewController doesn't use sticker context menus.
+    }
+
+    func sendSticker(_ stickerMetadata: any StickerMetadata) {
+        // StickerPackViewController doesn't use sticker context menus.
+    }
+
+    func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo) {
+        // StickerPackViewController doesn't use sticker context menus.
     }
 
     // MARK: - SendMessageDelegate

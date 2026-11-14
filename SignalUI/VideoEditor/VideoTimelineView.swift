@@ -106,7 +106,7 @@ class VideoTimelineView: UIView {
 
         backgroundColor = .ows_gray65
 
-        clipsToBounds = true
+        // Don't clip this view; the time bubble is drawn above it.
         trimFrameView.clipsToBounds = true
         if #available(iOS 26, *) {
             let cornerConfig = UICornerConfiguration.uniformCorners(radius: .fixed(Constants.cornerRadius))
@@ -552,7 +552,7 @@ class VideoTimelineView: UIView {
             timeBubbleView.translatesAutoresizingMaskIntoConstraints = false
             addSubview(timeBubbleView)
             NSLayoutConstraint.activate([
-                timeBubbleView.bottomAnchor.constraint(equalTo: topAnchor, constant: -24),
+                timeBubbleView.bottomAnchor.constraint(equalTo: topAnchor, constant: -12),
             ])
         }
 

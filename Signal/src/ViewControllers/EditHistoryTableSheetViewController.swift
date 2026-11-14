@@ -11,7 +11,9 @@ protocol MessageEditHistoryViewDelegate: AnyObject {
     func editHistoryMessageWasDeleted()
 }
 
-class EditHistoryTableSheetViewController: OWSTableSheetViewController {
+class EditHistoryTableSheetViewController: OWSTableSheetViewController, CVComponentDelegate, DatabaseChangeDelegate,
+    LongTextViewDelegate
+{
 
     enum Constants {
         static let cellSpacing: CGFloat = 12.0
@@ -64,7 +66,25 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         }
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        // Calculate current width for message history conversation snippets and reload table view
+        // if that width doesn't match the width that was used during previous render cycle.
+        let newWidth = conversationSnippetViewWidth()
+        if newWidth != currentConversationSnippetViewWidth {
+            currentConversationSnippetViewWidth = newWidth
+            updateTableContents()
+        }
+    }
+
     // MARK: - Table Update
+
+    private lazy var currentConversationSnippetViewWidth = conversationSnippetViewWidth()
+
+    private func conversationSnippetViewWidth() -> CGFloat {
+        tableViewController.tableViewContentWidth
+    }
 
     private func loadEditHistory() {
         let messageStillExists = database.read { tx in
@@ -119,12 +139,12 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
         let contents = OWSTableContents()
 
-        guard let parentItems = parentRenderItems else {
+        guard let parentRenderItems else {
             return contents
         }
 
         let topSection = OWSTableSection()
-        topSection.add(createMessageListTableItem(items: parentItems))
+        topSection.add(createMessageListTableItem(items: parentRenderItems))
         contents.add(topSection)
 
         let header = OWSLocalizedString(
@@ -205,12 +225,11 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         tx: DBReadTransaction,
     ) -> [CVRenderItem] {
         var results = [CVRenderItem]()
-        let cellInsets = tableViewController.cellOuterInsets
-        let viewWidth = tableViewController.view.frame.inset(by: cellInsets).width
+        let width = currentConversationSnippetViewWidth
         let conversationStyle = ConversationStyle(
             type: .messageDetails,
             thread: thread,
-            viewWidth: viewWidth,
+            viewWidth: width,
             hasWallpaper: false,
             shouldDimWallpaperInDarkMode: false,
             chatColor: DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
@@ -260,11 +279,9 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         }
         return results
     }
-}
 
-// MARK: - DatabaseChangeDelegate
+    // MARK: - DatabaseChangeDelegate
 
-extension EditHistoryTableSheetViewController: DatabaseChangeDelegate {
     func databaseChangesDidUpdate(databaseChanges: SignalServiceKit.DatabaseChanges) {
         guard databaseChanges.didUpdate(interaction: self.message) else {
             return
@@ -280,11 +297,8 @@ extension EditHistoryTableSheetViewController: DatabaseChangeDelegate {
     func databaseChangesDidReset() {
         updateTableContents()
     }
-}
 
-// MARK: - CVComponentDelegate
-
-extension EditHistoryTableSheetViewController: CVComponentDelegate {
+    // MARK: - CVComponentDelegate
 
     func enqueueReload() {}
 
@@ -499,10 +513,13 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
     func didTapContactName(thread: TSContactThread) {}
 
     func didTapUnknownThreadWarningGroup() {}
+
     func didTapUnknownThreadWarningContact() {}
+
     func didTapDeliveryIssueWarning(_ message: TSErrorMessage) {}
 
     func didTapActivatePayments() {}
+
     func didTapSendPayment() {}
 
     func didTapThreadMergeLearnMore(phoneNumber: String) {}
@@ -524,9 +541,9 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
     func didTapSafetyTips() {}
 
     func didTapReleaseNotesAnnouncementAction(action: RemoteAnnouncementModel.Manifest.Action) {}
-}
 
-extension EditHistoryTableSheetViewController: LongTextViewDelegate {
+    // MARK: - LongTextViewDelegate
+
     func longTextViewMessageWasDeleted(_ longTextViewController: LongTextViewController) {
         self.dismiss(animated: true)
     }

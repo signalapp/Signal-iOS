@@ -31,7 +31,11 @@ class StoryItemMediaView: UIView, VideoPlayerDelegate {
     private var gradientProtectionViewHeightConstraint: NSLayoutConstraint?
 
     private var contextButton: UIButton!
-    private var bottomContentVStack: UIStackView!
+    private lazy var bottomContentVStack = UIStackView(arrangedSubviews: [captionLabel, authorRow])
+
+    // For superview to align bottom row of content (contact avatar and name etc).
+    let bottomContentLayoutGuide = UILayoutGuide()
+
     init(
         item: StoryItem,
         contextButton: UIButton,
@@ -44,48 +48,33 @@ class StoryItemMediaView: UIView, VideoPlayerDelegate {
 
         super.init(frame: .zero)
 
+        translatesAutoresizingMaskIntoConstraints = false
+
         // Will use these margins to position avatar, contact name and timestamp at the bottom.
-        directionalLayoutMargins.leading = OWSTableViewController2.defaultHOuterMargin
-        directionalLayoutMargins.trailing = OWSTableViewController2.defaultHOuterMargin
-        if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
-            // iPhone with notch or iPad (views/replies rendered below media, media is in a card)
-            directionalLayoutMargins.bottom = OWSTableViewController2.defaultHOuterMargin + 22
-        } else {
-            // iPhone with home button (views/replies rendered on top of media, media is fullscreen)
-            directionalLayoutMargins.bottom = 80
-        }
+        addLayoutGuide(bottomContentLayoutGuide)
 
-        autoPin(toAspectRatio: 9 / 16)
-
-        updateMediaView()
-
-        if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
-            layer.cornerRadius = if #available(iOS 26, *) { 40 } else { 18 }
-            clipsToBounds = true
-        }
-
-        addSubview(gradientProtectionView)
         gradientProtectionView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(gradientProtectionView)
 
-        bottomContentVStack = UIStackView(arrangedSubviews: [
-            captionLabel,
-            authorRow,
-        ])
         bottomContentVStack.axis = .vertical
         bottomContentVStack.spacing = 24
-        addSubview(bottomContentVStack)
         bottomContentVStack.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(bottomContentVStack)
 
         NSLayoutConstraint.activate([
+            widthAnchor.constraint(equalTo: heightAnchor, multiplier: 9 / 16),
+
             gradientProtectionView.leadingAnchor.constraint(equalTo: leadingAnchor),
             gradientProtectionView.trailingAnchor.constraint(equalTo: trailingAnchor),
             gradientProtectionView.bottomAnchor.constraint(equalTo: bottomAnchor),
 
-            bottomContentVStack.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
-            bottomContentVStack.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
-            bottomContentVStack.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
+            bottomContentVStack.topAnchor.constraint(equalTo: bottomContentLayoutGuide.topAnchor),
+            bottomContentVStack.leadingAnchor.constraint(equalTo: bottomContentLayoutGuide.leadingAnchor),
+            bottomContentVStack.trailingAnchor.constraint(equalTo: bottomContentLayoutGuide.trailingAnchor),
+            bottomContentVStack.bottomAnchor.constraint(equalTo: bottomContentLayoutGuide.bottomAnchor),
         ])
 
+        updateMediaView()
         updateCaption()
         updateAuthorRow(newContextButton: contextButton)
     }
@@ -840,18 +829,25 @@ class StoryItemMediaView: UIView, VideoPlayerDelegate {
         gradientProtectionViewHeightConstraint?.isActive = false
 
         if hasCaption {
-            gradientProtectionViewHeightConstraint = gradientProtectionView.autoMatch(.height, to: .height, of: self, withMultiplier: 0.4)
+            gradientProtectionViewHeightConstraint = gradientProtectionView.heightAnchor.constraint(
+                equalTo: heightAnchor,
+                multiplier: 0.4,
+            )
             gradientProtectionView.colors = [
                 .clear,
                 .black.withAlphaComponent(0.8),
             ]
         } else {
-            gradientProtectionViewHeightConstraint = gradientProtectionView.autoMatch(.height, to: .height, of: self, withMultiplier: 0.2)
+            gradientProtectionViewHeightConstraint = gradientProtectionView.heightAnchor.constraint(
+                equalTo: heightAnchor,
+                multiplier: 0.2,
+            )
             gradientProtectionView.colors = [
                 .clear,
                 .black.withAlphaComponent(0.6),
             ]
         }
+        gradientProtectionViewHeightConstraint?.isActive = true
     }
 
     override func layoutSubviews() {

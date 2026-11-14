@@ -190,7 +190,7 @@ extension OWSActionSheets {
             )
         })
 
-        actionSheet.addAction(.okay)
+        actionSheet.addAction(.ok)
         showActionSheet(actionSheet, fromViewController: fromViewController)
     }
 }

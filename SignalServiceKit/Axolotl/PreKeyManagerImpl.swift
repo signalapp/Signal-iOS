@@ -124,17 +124,18 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     public func checkPreKeysIfNecessary() async throws {
-        try await checkPreKeys(shouldThrottle: true)
+        try await taskQueue.runWithThrowingTask {
+            try await _checkPreKeysIfNecessary()
+        }
     }
 
-    fileprivate func checkPreKeys(shouldThrottle: Bool) async throws {
+    private func _checkPreKeysIfNecessary() async throws {
         guard CurrentAppContext().isMainAppAndActive else {
             throw OWSGenericError("must be the main app")
         }
 
         let shouldCheckOneTimePreKeys = {
             if
-                shouldThrottle,
                 let lastOneTimePreKeyCheckTimestamp = lastOneTimePreKeyCheckTimestamp.get(),
                 fabs(lastOneTimePreKeyCheckTimestamp.timeIntervalSinceNow) < Constants.oneTimePreKeyCheckFrequencySeconds
             {
@@ -146,7 +147,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         // If we can throttle this check, and if we're changing our number, assume
         // that the change number will refresh our pre keys. (This check is
         // optional, so it's fine to skip it.)
-        let shouldSkipPniPreKeyCheck = shouldThrottle && changeNumberState.update(block: { $0.isChangingNumber })
+        let shouldSkipPniPreKeyCheck = changeNumberState.update(block: { $0.isChangingNumber })
         if shouldSkipPniPreKeyCheck {
             logger.warn("Skipping PNI pre key check due to change number.")
         }
@@ -166,18 +167,16 @@ public class PreKeyManagerImpl: PreKeyManager {
             targets.insert(target: .oneTimePreKey)
             targets.insert(target: .oneTimePqPreKey)
         }
-        try await taskQueue.runWithThrowingTask {
-            try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
+        try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
+        try Task.checkCancellation()
+        try await taskManager.refresh(identity: .aci, targets: targets, auth: .implicit())
+        if shouldCheckPniPreKeys, try tsAccountManager.registeredStateWithMaybeSneakyTransaction().localIdentifiers.hasPhoneNumber {
             try Task.checkCancellation()
-            try await taskManager.refresh(identity: .aci, targets: targets, auth: .implicit())
-            if shouldCheckPniPreKeys, try tsAccountManager.registeredStateWithMaybeSneakyTransaction().localIdentifiers.hasPhoneNumber {
-                try Task.checkCancellation()
-                try await self.waitUntilNotChangingNumberIfNeeded(targets: targets)
-                try await taskManager.refresh(identity: .pni, targets: targets, auth: .implicit())
-            }
-            if shouldCheckOneTimePreKeys, shouldCheckPniPreKeys {
-                self.refreshOneTimePreKeysCheckDidSucceed()
-            }
+            try await self.waitUntilNotChangingNumberIfNeeded(targets: targets)
+            try await taskManager.refresh(identity: .pni, targets: targets, auth: .implicit())
+        }
+        if shouldCheckOneTimePreKeys, shouldCheckPniPreKeys {
+            self.refreshOneTimePreKeysCheckDidSucceed()
         }
     }
 
@@ -201,7 +200,9 @@ public class PreKeyManagerImpl: PreKeyManager {
 
     public func rotateSignedPreKeysIfNeeded() async throws {
         logger.info("Rotating signed prekeys if needed")
-        try await _checkPreKeys(shouldCheckOneTimePreKeys: false, shouldCheckPniPreKeys: true)
+        try await taskQueue.runWithThrowingTask {
+            try await _checkPreKeys(shouldCheckOneTimePreKeys: false, shouldCheckPniPreKeys: true)
+        }
     }
 
     /// Refresh one-time pre-keys for the given identity, and optionally refresh
@@ -274,15 +275,3 @@ public class PreKeyManagerImpl: PreKeyManager {
         )
     }
 }
-
-// MARK: - Debug UI
-
-#if TESTABLE_BUILD
-
-public extension PreKeyManagerImpl {
-    func checkPreKeysImmediately() async throws {
-        try await checkPreKeys(shouldThrottle: false)
-    }
-}
-
-#endif

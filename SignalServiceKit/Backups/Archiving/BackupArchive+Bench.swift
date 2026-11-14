@@ -320,6 +320,8 @@ extension BackupArchive {
 
             case ChatFolder
 
+            case FavoriteStickerList
+
             init?(frame: BackupProto_Frame) {
                 switch frame.item {
                 case .account:
@@ -334,6 +336,8 @@ extension BackupArchive {
                     self = .NotificationProfile
                 case .chatFolder:
                     self = .ChatFolder
+                case .favoriteStickerList:
+                    self = .FavoriteStickerList
                 case nil:
                     return nil
                 case .recipient(let recipient):

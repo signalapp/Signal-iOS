@@ -15,7 +15,11 @@ protocol VideoEditorModelObserver: AnyObject {
 // Should be @MainActor.
 class VideoEditorModel: NSObject {
 
-    let srcVideoPath: String
+    let normalizedVideo: NormalizedVideo
+
+    var srcVideoPath: String {
+        return normalizedVideo.dataSource.fileUrl.path
+    }
 
     let untrimmedDuration: CMTime
 
@@ -32,6 +36,10 @@ class VideoEditorModel: NSObject {
     private(set) var trimmedEndSeconds: TimeInterval = 0
 
     let naturalSize: CGSize
+
+    let hasAudio: Bool
+
+    private(set) var isMuted = false
 
     let displaySize: CGSize
 
@@ -53,14 +61,10 @@ class VideoEditorModel: NSObject {
     //
     // * They are invalid.
     // * We can't determine their size / aspect-ratio.
-    init?(_ attachment: PreviewableAttachment) throws {
-        guard attachment.rawValue.isVideo, !attachment.rawValue.isLoopingVideo else {
-            return nil
-        }
-        let mediaUrl = attachment.rawValue.dataSource.fileUrl
-        self.srcVideoPath = mediaUrl.path
+    init(normalizedVideo: NormalizedVideo) throws {
+        self.normalizedVideo = normalizedVideo
 
-        let asset = AVURLAsset(url: mediaUrl)
+        let asset = normalizedVideo.sourceAsset
 
         let duration: CMTime = asset.duration
         guard duration.seconds > 0 else {
@@ -93,11 +97,18 @@ class VideoEditorModel: NSObject {
 
         self.untrimmedDuration = duration
         self.naturalSize = naturalSize
+        self.hasAudio = !asset.tracks(withMediaType: .audio).isEmpty
         self.displaySize = displaySize
         self.trimmedStartSeconds = 0
         self.trimmedEndSeconds = duration.seconds
 
         super.init()
+    }
+
+    func setIsMuted(_ isMuted: Bool) {
+        self.isMuted = isMuted
+
+        fireModelDidChange()
     }
 
     func trimToStartSeconds(_ value: TimeInterval) {
@@ -144,49 +155,48 @@ class VideoEditorModel: NSObject {
         }
     }
 
-    // MARK: - Rendering
+    // MARK: - Editing
 
-    var needsRender: Bool { isTrimmed }
+    var isEdited: Bool { isTrimmed || isMuted }
 
+    /// The source video with all edits applied.
     @MainActor
-    func render() async throws -> URL {
-        owsPrecondition(self.needsRender)
+    func editedAsset() async throws -> AVAsset {
+        let source = self.normalizedVideo.sourceAsset
 
-        let startTime = MonotonicDate()
-
-        let asset = AVURLAsset(url: URL(fileURLWithPath: self.srcVideoPath))
-        let exportUrl = OWSFileSystem.temporaryFileUrl(
-            fileExtension: "mp4",
-            isAvailableWhileDeviceLocked: false,
+        // Preserve the original timescale.
+        let timescale = self.untrimmedDuration.timescale
+        let timeRange = CMTimeRange(
+            start: CMTime(seconds: self.trimmedStartSeconds, preferredTimescale: timescale),
+            duration: CMTime(seconds: self.trimmedDurationSeconds, preferredTimescale: timescale),
         )
 
-        guard let session = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
-            throw OWSAssertionError("couldn't create export session")
+        let composition = AVMutableComposition()
+        let videoTracks = try await source.loadTracks(withMediaType: .video)
+        let audioTracks: [AVAssetTrack]
+        if isMuted {
+            audioTracks = []
+        } else {
+            audioTracks = try await source.loadTracks(withMediaType: .audio)
         }
-
-        // This will ensure that the MP4 moov atom (movie atom)
-        // is located at the beginning of the file. That may help
-        // recipients validate incoming videos.
-        session.shouldOptimizeForNetworkUse = true
-        // Preserve the original timescale.
-        let cmStart: CMTime = CMTime(seconds: self.trimmedStartSeconds, preferredTimescale: self.untrimmedDuration.timescale)
-        let cmDuration: CMTime = CMTime(seconds: self.trimmedDurationSeconds, preferredTimescale: self.untrimmedDuration.timescale)
-        let cmRange: CMTimeRange = CMTimeRange(start: cmStart, duration: cmDuration)
-        session.timeRange = cmRange
-
-        try await session.exportAsync(to: exportUrl, as: .mp4)
-
-        let endTime = MonotonicDate()
-        let formattedDuration = OWSOperation.formattedNs((endTime - startTime).nanoseconds)
-        Logger.info("trimmed video in \(formattedDuration)s")
-
-        switch session.status {
-        case .completed:
-            return exportUrl
-        case .cancelled:
-            throw CancellationError()
-        default:
-            throw session.error ?? OWSAssertionError("status \(session.status)")
+        let sourceTracks = videoTracks + audioTracks
+        for sourceTrack in sourceTracks {
+            guard
+                let track = composition.addMutableTrack(
+                    withMediaType: sourceTrack.mediaType,
+                    preferredTrackID: kCMPersistentTrackID_Invalid,
+                )
+            else {
+                throw OWSAssertionError("couldn't add composition track")
+            }
+            try track.insertTimeRange(timeRange, of: sourceTrack, at: .zero)
+            let (transform, naturalTimeScale) = try await sourceTrack.load(
+                .preferredTransform,
+                .naturalTimeScale,
+            )
+            track.preferredTransform = transform
+            track.naturalTimeScale = naturalTimeScale
         }
+        return composition
     }
 }

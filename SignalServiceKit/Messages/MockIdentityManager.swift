@@ -8,6 +8,8 @@
 import Foundation
 public import LibSignalClient
 
+extension MockIdentityManager: RecipientMergeApplier {}
+
 open class MockIdentityManager: OWSIdentityManager {
     private let recipientIdFinder: RecipientIdFinder
     public var generatedKeyPairs = [ECKeyPair]()
@@ -42,7 +44,12 @@ open class MockIdentityManager: OWSIdentityManager {
         sessionSwitchoverMessages.append((recipient, phoneNumber))
     }
 
-    open func mergeRecipient(_ recipient: SignalRecipient, into targetRecipient: SignalRecipient, tx: DBWriteTransaction) {
+    open func mergeRecipient(
+        _ recipient: SignalRecipient,
+        into targetRecipient: inout SignalRecipient,
+        shouldUpdateStorageService: Bool,
+        tx: DBWriteTransaction,
+    ) {
         guard let fromValue = recipientIdentities[recipient.uniqueId] else {
             return
         }

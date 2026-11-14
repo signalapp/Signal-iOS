@@ -10,6 +10,9 @@
 /* Label for forward button in media control panel */
 "ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "फ़ॉरवर्ड करें";
 
+/* AX hint letting a user know this button sends a sticker */
+"ACCESSIBILITY_HINT_STICKER" = "Sends this sticker";
+
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "अटैचमेंट";
 
@@ -418,6 +421,9 @@
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "अटैचमेंट खाली है।";
 
+/* Attachment error message for video attachments that are too long to send. Embeds {{ the maximum duration, e.g. '15 minutes' }}. */
+"ATTACHMENT_ERROR_VIDEO_TOO_LONG_FORMAT" = "This video is too long to send. Trim it to %1$@ or less.";
+
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "भेजने के लिए मीडिया चुनें";
 
@@ -508,8 +514,14 @@
 /* Accessibility label for the 'high/standard quality' dialog. */
 "ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "मीडिया की क्वालिटी";
 
+/* Accessibility label for the button that mutes a video being sent. */
+"ATTACHMENT_TOOL_BUTTON_MUTE_ACCESSIBILITY_LABEL" = "Mute video";
+
 /* Accessibility label for the 'pen' dialog. */
 "ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "मीडिया पर ड्रॉ करें या एनोटेशन जोड़ें";
+
+/* Accessibility label for the button that unmutes a video being sent. */
+"ATTACHMENT_TOOL_BUTTON_UNMUTE_ACCESSIBILITY_LABEL" = "Unmute video";
 
 /* Accessibility label for the 'view one' dialog. */
 "ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "व्यू वन्स";
@@ -1498,9 +1510,6 @@
 /* Label for the 'not now' button. */
 "BUTTON_NOT_NOW" = "अभी नहीं";
 
-/* Label for the 'okay' button. */
-"BUTTON_OKAY" = "ठीक है";
-
 /* Label for the 'previous' button. */
 "BUTTON_PREVIOUS" = "पिछले पर जाएं";
 
@@ -2061,6 +2070,57 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "यह अपने-आप वॉलपेपर के रंग जैसा हो जाता है";
+
+/* Name of the default chat folder, which shows every chat. */
+"CHAT_FOLDERS_ALL_CHATS" = "All Chats";
+
+/* Action that deletes a chat folder. */
+"CHAT_FOLDERS_DELETE_FOLDER" = "Delete Folder";
+
+/* Title of the confirmation shown before deleting a chat folder. */
+"CHAT_FOLDERS_DELETE_FOLDER_CONFIRMATION_TITLE" = "Delete this chat folder?";
+
+/* Button in chat folder settings to add a suggested chat folder. */
+"CHAT_FOLDERS_SETTINGS_ADD_SUGGESTED_FOLDER" = "Add";
+
+/* Button in chat folder settings to create a new chat folder. */
+"CHAT_FOLDERS_SETTINGS_CREATE_FOLDER" = "Create a Folder";
+
+/* Description at the top of the chat folders settings screen. */
+"CHAT_FOLDERS_SETTINGS_DESCRIPTION" = "Organize your chats into folders and quickly switch between them on your chat list.";
+
+/* Toast shown after adding a suggested chat folder. Embeds {{ folder name }}. */
+"CHAT_FOLDERS_SETTINGS_FOLDER_ADDED_TOAST_FORMAT" = "%1$@ folder added";
+
+/* Header for the list of chat folders in chat folder settings. */
+"CHAT_FOLDERS_SETTINGS_FOLDERS_HEADER" = "Folders";
+
+/* Header for the list of suggested chat folders in chat folder settings. */
+"CHAT_FOLDERS_SETTINGS_SUGGESTED_HEADER" = "Suggested Folders";
+
+/* Title for the chat folders settings screen. */
+"CHAT_FOLDERS_SETTINGS_TITLE" = "Chat Folders";
+
+/* Describes the suggested chat folder that shows group chats. */
+"CHAT_FOLDERS_SUGGESTED_GROUPS_DESCRIPTION" = "Only messages from group chats";
+
+/* Name of the suggested chat folder that shows group chats. */
+"CHAT_FOLDERS_SUGGESTED_GROUPS_NAME" = "Groups";
+
+/* Describes the suggested chat folder that shows 1:1 chats. */
+"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_DESCRIPTION" = "Only messages from direct chats";
+
+/* Name of the suggested chat folder that shows 1:1 chats. */
+"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_NAME" = "1:1 Chats";
+
+/* Describes the suggested chat folder that shows unread chats. */
+"CHAT_FOLDERS_SUGGESTED_UNREAD_DESCRIPTION" = "Unread messages from all chats";
+
+/* Name of the suggested chat folder that shows unread chats. */
+"CHAT_FOLDERS_SUGGESTED_UNREAD_NAME" = "Unread";
+
+/* Name shown for a chat folder whose name is empty. */
+"CHAT_FOLDERS_UNNAMED_FOLDER" = "Unnamed Folder";
 
 /* Message shown in an action sheet when the user tries to cancel a backup. */
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "बैकअप कैंसिल करने पर आपका बैकअप डिलीट नहीं होगा। बैकअप सेटिंग में जाकर किसी भी समय अपना बैकअप फिर से शुरू किया जा सकता है।";
@@ -3113,13 +3173,13 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ को आपके कॉन्टैक्ट से डिलीट करके हटा दिया गया है।";
 
 /* Message for a sheet confirming that the user, as a group admin, wants to delete messages for everyone. */
-"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_ADMIN_MESSAGE" = "Group members will see that you deleted these messages.";
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_ADMIN_MESSAGE" = "ग्रुप के सदस्यों को पता चल जाएगा कि आपने ये मैसेज डिलीट किए हैं।";
 
 /* Message for a sheet confirming that the user wants to delete their message for everyone. */
-"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_MESSAGE" = "This message will be deleted for everyone in the chat. They will be able to see that you deleted a message.";
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_MESSAGE" = "यह मैसेज चैट में मौजूद सभी लोगों के लिए डिलीट हो जाएगा। उन्हें पता चल जाएगा कि आपने मैसेज डिलीट किया है।";
 
 /* Title for a sheet confirming that the user wants to delete messages for everyone. */
-"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_TITLE" = "Delete for Everyone?";
+"DELETE_FOR_EVERYONE_CONFIRMATION_SHEET_TITLE" = "सभी के लिए डिलीट करना है?";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
 "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "डिलीट करें";
@@ -3133,6 +3193,12 @@
 /* Text indicating the message was remotely deleted by an admin. Embeds {{admin display name}} */
 "DELETED_BY_ADMIN" = "ऐडमिन %1$@ ने यह मैसेज डिलीट कर दिया है";
 
+/* Title for a button in a toast shown after the user deletes messages for themselves only. */
+"DELETED_FOR_ME_TOAST_DELETE_FOR_EVERYONE_BUTTON_TITLE" = "Delete for Everyone";
+
+/* Text for a toast shown after the user deletes messages for themselves only. */
+"DELETED_FOR_ME_TOAST_TEXT" = "Deleted for me.";
+
 /* Text indicating the message was remotely deleted by its author. Embeds {{ author name }} */
 "DELETED_THIS_MESSAGE" = "%1$@ ने यह मैसेज डिलीट कर दिया है";
 
@@ -3141,12 +3207,6 @@
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "आपको इस डिवाइस पर Signal से लॉग आउट कर दिया गया है।";
-
-/* Button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_BUTTON" = "फिर से रजिस्टर करें";
-
-/* Title for prompt that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "क्या आपको यह फ़ोन नंबर फिर से रजिस्टर करना है?";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "यह डिवाइस अब रजिस्टर नहीं है। इसकी वजह यह हो सकती है कि आपने अपना फ़ोन नंबर किसी दूसरे डिवाइस पर Signal के साथ रजिस्टर किया हो।";
@@ -5060,7 +5120,7 @@
 "HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY" = "बैकअप सब्सक्रिप्शन नहीं मिल सका";
 
 /* Title for the 'donate' action in the context menu of the settings button on home view tabs. */
-"HOME_VIEW_TITLE_DONATE" = "Donate to Signal";
+"HOME_VIEW_TITLE_DONATE" = "Donate";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "बैकअप नहीं लिया जा सका";
@@ -5783,7 +5843,7 @@
 "MEMBER_LABEL_AX_PREFIX" = "मेंबर लेबल: ";
 
 /* Accessibility label for the button that clears the member label text and emoji. */
-"MEMBER_LABEL_CLEAR_BUTTON_ACCESSIBILITY_LABEL" = "Clear label";
+"MEMBER_LABEL_CLEAR_BUTTON_ACCESSIBILITY_LABEL" = "लेबल मिटाएं";
 
 /* Button label on action sheet when attempting to change the group attributes access to 'administrator' and then continue */
 "MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "अनुमति बदलें";
@@ -5798,7 +5858,7 @@
 "MEMBER_LABEL_EDIT" = "अपना लेबल एडिट करें";
 
 /* Accessibility label for the button that chooses an emoji for a member label. */
-"MEMBER_LABEL_EMOJI_BUTTON_ACCESSIBILITY_LABEL" = "Choose emoji";
+"MEMBER_LABEL_EMOJI_BUTTON_ACCESSIBILITY_LABEL" = "इमोजी चुनें";
 
 /* Error indicating member label could not save. */
 "MEMBER_LABEL_FAIL_TO_SAVE" = "मेंबर लेबल सेव नहीं हो पाया";
@@ -6750,6 +6810,12 @@
 
 /* Title of the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TITLE" = "प्राइवेसी रहे हमेशा आपके साथ।\nबिना किसी फ़िक्र के अपने अंदाज़ में भेजें हर मैसेज।";
+
+/* Description for the screen asking the user to enter the 6-digit code from their authenticator app during registration. */
+"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_BODY" = "To continue, enter the 6-digit code from your authenticator app.";
+
+/* Accessibility label for the field where the user enters the code from their authenticator app */
+"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_FIELD_LABEL" = "Authenticator app code";
 
 /* Subtitle for action to verify with an authenticator as a 2fa method. */
 "ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_BODY" = "अपने ऑथेंटिकेटर ऐप से जनरेट किया गया वन-टाइम कोड डालें।";
@@ -8792,55 +8858,55 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal खोलें";
 
 /* Title for a button in a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_BLOCKED_TOAST_OPTIONS_BUTTON_TITLE" = "Options";
+"SCREENSHOT_BLOCKING_BLOCKED_TOAST_OPTIONS_BUTTON_TITLE" = "विकल्प";
 
 /* Text for a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_BLOCKED_TOAST_TEXT" = "Screenshot prevented by “Block Siri AI” setting";
+"SCREENSHOT_BLOCKING_BLOCKED_TOAST_TEXT" = "'Siri AI को ब्लॉक करें' वाली सेटिंग की वजह से स्क्रीनशॉट नहीं लिया जा सकता";
 
 /* Title for a button in a sheet shown to confirm disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_ALLOW_BUTTON_TITLE" = "Allow Siri AI";
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_ALLOW_BUTTON_TITLE" = "Siri AI को अनुमति दें";
 
 /* Message for a sheet shown to confirm disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_MESSAGE" = "If allowed, Siri AI can automatically scan Signal content and use it for features that may not be private.";
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_MESSAGE" = "अनुमति देने पर Siri AI अपने-आप Signal का कंटेंट स्कैन कर सकता है और इसका इस्तेमाल ऐसे फ़ीचर के लिए कर सकता है जहां आपकी प्राइवेसी शायद सुरक्षित न रहे।";
 
 /* Title for a sheet shown to confirm disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_TITLE" = "Allow Siri AI?";
+"SCREENSHOT_BLOCKING_DISABLE_CONFIRM_SHEET_TITLE" = "Siri AI को अनुमति देनी है?";
 
 /* Text for a toast shown after disabling screenshot blocking for ten minutes. */
-"SCREENSHOT_BLOCKING_DISABLED_TEN_MINUTES_TOAST_TEXT" = "“Block Siri AI” turned off for 10 minutes";
+"SCREENSHOT_BLOCKING_DISABLED_TEN_MINUTES_TOAST_TEXT" = "'Siri AI को ब्लॉक करें' वाली सेटिंग 10 मिनट के लिए बंद है";
 
 /* Text for a toast shown after disabling screenshot blocking. */
-"SCREENSHOT_BLOCKING_DISABLED_TOAST_TEXT" = "“Block Siri AI” turned off";
+"SCREENSHOT_BLOCKING_DISABLED_TOAST_TEXT" = "'Siri AI को ब्लॉक करें' वाली सेटिंग बंद है";
 
 /* Title for a button that disables screenshot blocking, in a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_BUTTON_TITLE" = "Turn Off “Block Siri AI”";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_BUTTON_TITLE" = "'Siri AI को ब्लॉक करें' वाली सेटिंग बंद करें";
 
 /* Title for a button that temporarily disables screenshot blocking, in a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_TEN_MINUTES_BUTTON_TITLE" = "Turn Off for 10 Minutes";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_DISABLE_TEN_MINUTES_BUTTON_TITLE" = "10 मिनट के लिए बंद करें";
 
 /* Message for a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_MESSAGE" = "This prevents Siri AI from automatically scanning Signal content. It also blocks you from taking screenshots in the app and App Switcher.";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_MESSAGE" = "यह Siri AI को Signal का कंटेंट अपने-आप स्कैन करने से रोकता है। यह आपको ऐप और 'ऐप स्विचर' में स्क्रीनशॉट लेने से भी रोकता है।";
 
 /* Title for a sheet shown from a toast shown when a screenshot is blocked. */
-"SCREENSHOT_BLOCKING_OPTIONS_SHEET_TITLE" = "Block Siri AI is On";
+"SCREENSHOT_BLOCKING_OPTIONS_SHEET_TITLE" = "'Siri AI को ब्लॉक करें' वाली सेटिंग चालू करें";
 
 /* Option disabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_OPTION" = "Off";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_OPTION" = "बंद करें";
 
 /* Option temporarily disabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_TEN_MINUTES_OPTION" = "Off for 10 Minutes";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_DISABLED_TEN_MINUTES_OPTION" = "10 मिनट के लिए बंद";
 
 /* Option enabling screenshot blocking, in the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_ENABLED_OPTION" = "On";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_ENABLED_OPTION" = "चालू करें";
 
 /* Title for the menu of the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_TITLE" = "Block Siri AI";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_MENU_TITLE" = "Siri AI को ब्लॉक करें";
 
 /* Label for the screenshot blocking item of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_ITEM_TITLE" = "Block Siri AI";
+"SCREENSHOT_BLOCKING_SETTINGS_ITEM_TITLE" = "Siri AI को ब्लॉक करें";
 
 /* Footer for the screenshot blocking section of the privacy settings. */
-"SCREENSHOT_BLOCKING_SETTINGS_SECTION_FOOTER" = "Prevent Siri AI from scanning Signal content. This will also block you from taking screenshots in the app and App Switcher.";
+"SCREENSHOT_BLOCKING_SETTINGS_SECTION_FOOTER" = "Siri AI को Signal कंटेंट स्कैन करने से रोकें। यह आपको ऐप और 'ऐप स्विचर' में स्क्रीनशॉट लेने से भी रोकेगा।";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "नाम, यूज़रनेम या नंबर";
@@ -9223,6 +9289,9 @@
 /* Title for the 'chats' link in settings. */
 "SETTINGS_CHATS" = "चैट";
 
+/* Footer for the chat folders row in chats settings. */
+"SETTINGS_CHATS_CHAT_FOLDERS_FOOTER" = "Create folders for different sets of chats and quickly switch between them.";
+
 /* Title for a button in Chats settings that starts exporting the user's chat history. */
 "SETTINGS_CHATS_EXPORT_BUTTON" = "चैट एक्सपोर्ट करें";
 
@@ -9263,10 +9332,10 @@
 "SETTINGS_CHATS_EXPORT_PROGRESS_TITLE" = "चैट एक्सपोर्ट हो रही है…";
 
 /* Footer below the switch in Chats settings that chooses between contact photos from the phone's address book and Signal profile photos. */
-"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_FOOTER" = "Prefer contact photos from your address book if available.";
+"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_FOOTER" = "उपलब्ध होने पर अपनी ऐड्रेस बुक वाली कॉन्टैक्ट फ़ोटो ही इस्तेमाल करें।";
 
 /* Label for the switch in Chats settings that, when on, shows contact photos from the phone's address book instead of Signal profile photos. */
-"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_LABEL" = "Prefer Address Book Photos";
+"SETTINGS_CHATS_PREFER_ADDRESS_BOOK_PHOTOS_LABEL" = "ऐड्रेस बुक वाली फ़ोटो ही इस्तेमाल करें";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "पुरानी चैट हटाएं";
@@ -10151,13 +10220,13 @@
 "SETTINGS_SCREEN_SECURITY" = "ऐप स्विचर में स्क्रीन छिपाएं";
 
 /* Message for a sheet shown when tapping the disabled screen security switch in privacy settings. */
-"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_MESSAGE" = "To protect your privacy, your screen is always hidden in the App Switcher when Block Siri AI is on. Turning off Block Siri AI will unlock this setting.";
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_MESSAGE" = "आपकी प्राइवेसी सुरक्षित रखने के लिए, 'Siri AI को ब्लॉक करें' वाली सेटिंग चालू रहने पर आपकी स्क्रीन हमेशा 'ऐप स्विचर' में छिपी रहती है। इस सेटिंग को अनलॉक करने के लिए 'Siri AI को ब्लॉक करें' वाली सेटिंग बंद करें।";
 
 /* Title for a sheet shown when tapping the disabled screen security switch in privacy settings. */
-"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_TITLE" = "Block Siri AI is On";
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_TITLE" = "'Siri AI को ब्लॉक करें' वाली सेटिंग चालू करें";
 
 /* Title for a button in a sheet shown when tapping the disabled screen security switch in privacy settings. */
-"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_VIEW_SETTING_BUTTON_TITLE" = "View Setting";
+"SETTINGS_SCREEN_SECURITY_LOCKED_SHEET_VIEW_SETTING_BUTTON_TITLE" = "सेटिंग देखें";
 
 /* Footer for table section */
 "SETTINGS_SECTION_FOOTER_CALLING" = "iOS फ़ोन ऐप में 'हाल ही के' सूची में कॉल दिखाएं।";
@@ -10355,13 +10424,16 @@
 "SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "स्पीकर चालू है";
 
 /* Text shown in a toast confirming a sticker was added to favorites */
-"STICKER_ADDED_TO_FAVORITES_TOAST" = "Sticker added to Favorites";
+"STICKER_ADDED_TO_FAVORITES_TOAST" = "स्टिकर को 'पसंदीदा' में जोड़ा गया";
 
 /* Label for button to add sticker to favorites */
-"STICKER_BUTTON_ADD_FAVORITES" = "Add to Favorites";
+"STICKER_BUTTON_ADD_FAVORITES" = "'पसंदीदा' में जोड़ें";
 
 /* Label for button to remove sticker from favorites */
-"STICKER_BUTTON_REMOVE_FAVORITES" = "Remove From Favorites";
+"STICKER_BUTTON_REMOVE_FAVORITES" = "'पसंदीदा' से हटाएं";
+
+/* Title for a button to remove a sticker from recents */
+"STICKER_BUTTON_REMOVE_FROM_RECENTS" = "Remove from Recents";
 
 /* Title for a button to view a sticker pack */
 "STICKER_BUTTON_VIEW_PACK" = "पैक देखें";
@@ -10379,19 +10451,37 @@
 "STICKER_CATEGORY_RECENTS_NAME" = "हाल के";
 
 /* Button to confirm a user wants to remove a sticker */
-"STICKER_CONFIRM_REMOVE_BUTTON" = "Remove";
+"STICKER_CONFIRM_REMOVE_BUTTON" = "हटाएं";
+
+/* Label for the button to clear all sticker recents */
+"STICKER_KEYBOARD_BUTTON_CLEAR_RECENTS" = "Clear Recents";
+
+/* Accessibility label for the button in the sticker keyboard that opens the screen for managing sticker packs. */
+"STICKER_KEYBOARD_MANAGE_BUTTON_ACCESSIBILITY_LABEL" = "Manage stickers";
 
 /* Toast shown when user tries to tap Favorites in sticker keyboard but has none */
-"STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "Press and hold a sticker to add to Favorites";
+"STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "किसी स्टिकर को 'पसंदीदा' में जोड़ने के लिए उसे दबाकर रखें";
+
+/* Text displayed in the sticker keyboard when no sticker packs are installed. */
+"STICKER_KEYBOARD_NO_PACKS" = "No sticker packs.\nAdd stickers to send to your friends.";
+
+/* Button in the sticker keyboard, shown when no sticker packs are installed, that opens the sticker pack manager. */
+"STICKER_KEYBOARD_NO_PACKS_ADD_BUTTON" = "Add Stickers";
 
 /* Section header for favorites in the sticker keyboard */
-"STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "Favorites";
+"STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "पसंदीदा";
 
 /* Section header for recents in the sticker keyboard */
-"STICKER_KEYBOARD_SECTION_HEADER_LABEL_RECENTS" = "Recently Used";
+"STICKER_KEYBOARD_SECTION_HEADER_LABEL_RECENTS" = "हाल ही में इस्तेमाल किया";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "स्टिकर वाले मैसेज";
+
+/* Button to confirm a user wants to clear recent stickers */
+"STICKER_PACK_CLEAR_RECENTS_BUTTON" = "Clear";
+
+/* Message for a sheet asking the user to confirm they want to clear recently used stickers */
+"STICKER_PACK_CONFIRM_CLEAR_RECENTS_MESSAGE" = "Clear recently used stickers?";
 
 /* Button to confirm a user wants to remove a sticker pack */
 "STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "हटाएं";
@@ -10421,13 +10511,16 @@
 "STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Signal में भेजें";
 
 /* Message for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
-"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "You can’t send it or add it to Favorites again without a link or sticker message.";
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "You can't send it or add it to Favorites again unless you have the pack installed, a link, or a sticker message";
 
 /* Title for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
-"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "Remove From Favorites?";
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "'पसंदीदा' से हटाना है?";
+
+/* Title for a button to remove a sticker pack */
+"STICKER_REMOVE_PACK_BUTTON" = "Remove";
 
 /* Text shown in a toast confirming a sticker was removed from favorites */
-"STICKER_REMOVED_FROM_FAVORITES_TOAST" = "Sticker removed from Favorites";
+"STICKER_REMOVED_FROM_FAVORITES_TOAST" = "स्टिकर को 'पसंदीदा' से हटाया गया";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
 "STICKER_UNAVAILABLE_MESSAGE_LABEL" = "स्टिकर उपलब्ध नहीं है";
@@ -10438,11 +10531,26 @@
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "स्टिकर जोड़ें";
 
+/* Button used to deselect all selected sticker packs in selection mode */
+"STICKERS_MANAGE_DESELECT_ALL" = "Deselect All";
+
+/* Enables selection mode for sticker pack */
+"STICKERS_MANAGE_EDIT" = "Edit";
+
+/* Label for a button to uninstall all selected sticker packs */
+"STICKERS_MANAGE_REMOVE" = "Remove";
+
 /* Placeholder text for the search bar in the sticker pack management. */
-"STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "Search stickers";
+"STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "स्टिकर खोजें";
 
 /* Label for a view explaining that no search results were found. Embeds {{ the search term }}. */
-"STICKERS_MANAGE_SEARCH_NO_RESULTS" = "No results found for '%1$@'";
+"STICKERS_MANAGE_SEARCH_NO_RESULTS" = "'%1$@' के लिए कोई परिणाम नहीं मिला";
+
+/* Button used to select all sticker packs in selection mode */
+"STICKERS_MANAGE_SELECT_ALL" = "Select All";
+
+/* Title for the selection mode of sticker packs. */
+"STICKERS_MANAGE_SELECT_ITEMS" = "Select Items";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal की आर्टिस्ट सीरीज़";
@@ -10454,16 +10562,19 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "आपसे शेयर किए गए";
 
 /* The title for a context menu item that installs a sticker pack. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_ADD" = "Add";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_ADD" = "जोड़ें";
 
 /* The title for a context menu item that copies the sticker pack link. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_COPY" = "Copy Link";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_COPY" = "लिंक कॉपी करें";
 
 /* The title for a context menu item that uninstalls a sticker pack. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "Remove";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "हटाएं";
+
+/* The title for a context menu item that selects a sticker pack for selection mode. */
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SELECT" = "Select";
 
 /* The title for a context menu item that sends the sticker pack link to someone else. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "Send";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "भेजें";
 
 /* Label indicating that one or more known sticker packs failed to load. */
 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "कुछ स्टिकर पैक लोड नहीं हो पाए";

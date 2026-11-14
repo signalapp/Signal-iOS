@@ -15,6 +15,13 @@ protocol ConversationInputToolbarDelegate: AnyObject {
 
     func presentManageStickersView()
 
+    func didTapStickerPack(_ stickerPackInfo: StickerPackInfo)
+
+    func openStickerKeyboard(
+        page: StickerPickerPage?,
+        bouncing stickerInfo: StickerInfo?,
+    )
+
     func updateToolbarHeight()
 
     func isBlockedConversation() -> Bool
@@ -192,6 +199,11 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         }
     }
 
+    override func safeAreaInsetsDidChange() {
+        super.safeAreaInsetsDidChange()
+        updateContentViewLayoutMargins()
+    }
+
     func update(conversationStyle: ConversationStyle) {
         self.conversationStyle = conversationStyle
         if #available(iOS 26, *), let sendButton = trailingEdgeControl as? UIButton {
@@ -202,6 +214,8 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
     private enum LayoutMetrics {
         static let initialToolbarHeight: CGFloat = 56
         static let initialTextBoxHeight: CGFloat = 40
+
+        static let legacyButtonWidth: CGFloat = 40
 
         static let minTextViewHeight: CGFloat = 35
         static let maxTextViewHeight: CGFloat = 98
@@ -252,7 +266,6 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
             buttonImage: UIImage,
             primaryAction: UIAction?,
             accessibilityLabel: String?,
-            accessibilityIdentifier: String?,
         ) -> UIButton {
             let button = UIButton(
                 configuration: .plain(),
@@ -261,50 +274,38 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
             button.configuration?.image = buttonImage
             button.configuration?.baseForegroundColor = Style.buttonTintColor
             button.accessibilityLabel = accessibilityLabel
-            button.accessibilityIdentifier = accessibilityIdentifier
             button.isPointerInteractionEnabled = true
             button.translatesAutoresizingMaskIntoConstraints = false
-            button.addConstraints([
+            NSLayoutConstraint.activate([
                 button.widthAnchor.constraint(equalToConstant: LayoutMetrics.initialTextBoxHeight),
                 button.heightAnchor.constraint(equalToConstant: LayoutMetrics.initialTextBoxHeight),
             ])
             return button
         }
 
-        static func stickerButton(
-            primaryAction: UIAction,
-            accessibilityIdentifier: String?,
-        ) -> UIButton {
-            return compactButton(
+        static func stickerButton(primaryAction: UIAction) -> UIButton {
+            compactButton(
                 buttonImage: UIImage(imageLiteralResourceName: "sticker"),
                 primaryAction: primaryAction,
                 accessibilityLabel: OWSLocalizedString(
                     "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL",
                     comment: "accessibility label for the button which shows the sticker picker",
                 ),
-                accessibilityIdentifier: accessibilityIdentifier,
             )
         }
 
-        static func keyboardButton(
-            primaryAction: UIAction,
-            accessibilityIdentifier: String?,
-        ) -> UIButton {
-            return compactButton(
+        static func keyboardButton(primaryAction: UIAction) -> UIButton {
+            compactButton(
                 buttonImage: UIImage(imageLiteralResourceName: "keyboard"),
                 primaryAction: primaryAction,
                 accessibilityLabel: OWSLocalizedString(
                     "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL",
                     comment: "accessibility label for the button which shows the regular keyboard instead of sticker picker",
                 ),
-                accessibilityIdentifier: accessibilityIdentifier,
             )
         }
 
-        static func cameraButton(
-            primaryAction: UIAction?,
-            accessibilityIdentifier: String?,
-        ) -> UIButton {
+        static func cameraButton(primaryAction: UIAction?) -> UIButton {
             let button = compactButton(
                 buttonImage: Theme.iconImage(.buttonCamera),
                 primaryAction: primaryAction,
@@ -312,7 +313,6 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
                     "CAMERA_BUTTON_LABEL",
                     comment: "Accessibility label for camera button.",
                 ),
-                accessibilityIdentifier: accessibilityIdentifier,
             )
             button.accessibilityHint = OWSLocalizedString(
                 "CAMERA_BUTTON_HINT",
@@ -321,10 +321,7 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
             return button
         }
 
-        static func voiceNoteButton(
-            primaryAction: UIAction?,
-            accessibilityIdentifier: String?,
-        ) -> UIButton {
+        static func voiceNoteButton(primaryAction: UIAction?) -> UIButton {
             let button = compactButton(
                 buttonImage: Theme.iconImage(.buttonMicrophone),
                 primaryAction: primaryAction,
@@ -332,7 +329,6 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
                     "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL",
                     comment: "accessibility label for the button which records voice memos",
                 ),
-                accessibilityIdentifier: accessibilityIdentifier,
             )
             button.accessibilityHint = OWSLocalizedString(
                 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT",
@@ -342,11 +338,7 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         }
 
         @available(iOS 26.0, *)
-        static func sendButton(
-            primaryAction: UIAction?,
-            accessibilityIdentifier: String?,
-        ) -> UIButton {
-
+        static func sendButton(primaryAction: UIAction?) -> UIButton {
             let buttonSize = LayoutMetrics.initialTextBoxHeight
 
             let button = UIButton(
@@ -358,10 +350,9 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
             button.configuration?.baseForegroundColor = .white
             button.configuration?.cornerStyle = .capsule
             button.accessibilityLabel = MessageStrings.sendButton
-            button.accessibilityIdentifier = accessibilityIdentifier
             button.isPointerInteractionEnabled = true
             button.translatesAutoresizingMaskIntoConstraints = false
-            button.addConstraints([
+            NSLayoutConstraint.activate([
                 button.widthAnchor.constraint(equalToConstant: buttonSize),
                 button.heightAnchor.constraint(equalToConstant: buttonSize),
             ])
@@ -369,11 +360,7 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         }
 
         @available(iOS 26.0, *)
-        static func addAttachmentButton(
-            primaryAction: UIAction?,
-            accessibilityIdentifier: String?,
-        ) -> UIButton {
-
+        static func addAttachmentButton(primaryAction: UIAction?) -> UIButton {
             let buttonSize = LayoutMetrics.initialTextBoxHeight
 
             let button = AttachmentButton(
@@ -392,10 +379,9 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
                 "ATTACHMENT_HINT",
                 comment: "Accessibility hint describing what you can do with the attachment button",
             )
-            button.accessibilityIdentifier = accessibilityIdentifier
             button.isPointerInteractionEnabled = true
             button.translatesAutoresizingMaskIntoConstraints = false
-            button.addConstraints([
+            NSLayoutConstraint.activate([
                 button.widthAnchor.constraint(equalToConstant: buttonSize),
                 button.heightAnchor.constraint(equalToConstant: buttonSize),
             ])
@@ -403,11 +389,7 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         }
 
         @available(iOS 26.0, *)
-        static func deleteVoiceMemoDraftButton(
-            primaryAction: UIAction?,
-            accessibilityIdentifier: String?,
-        ) -> UIButton {
-
+        static func deleteVoiceMemoDraftButton(primaryAction: UIAction?) -> UIButton {
             let buttonSize = LayoutMetrics.initialTextBoxHeight
 
             let button = UIButton(
@@ -418,10 +400,9 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
             button.configuration?.image = UIImage(imageLiteralResourceName: "trash-fill")
             button.configuration?.baseForegroundColor = .white
             button.configuration?.cornerStyle = .capsule
-            button.accessibilityIdentifier = accessibilityIdentifier
             button.isPointerInteractionEnabled = true
             button.translatesAutoresizingMaskIntoConstraints = false
-            button.addConstraints([
+            NSLayoutConstraint.activate([
                 button.widthAnchor.constraint(equalToConstant: buttonSize),
                 button.heightAnchor.constraint(equalToConstant: buttonSize),
             ])
@@ -438,7 +419,6 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         inputTextView.semanticContentAttribute = .forceLeftToRight
         inputTextView.setContentHuggingVerticalHigh()
         inputTextView.setCompressionResistanceLow()
-        inputTextView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "inputTextView")
         return inputTextView
     }()
 
@@ -448,7 +428,6 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
                 primaryAction: UIAction { [weak self] _ in
                     self?.addOrCancelButtonPressed()
                 },
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "attachmentButton"),
             )
         }
 
@@ -461,7 +440,6 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
             "ATTACHMENT_HINT",
             comment: "Accessibility hint describing what you can do with the attachment button",
         )
-        button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "attachmentButton")
         button.addAction(
             UIAction { [weak self] _ in self?.addOrCancelButtonPressed() },
             for: .primaryActionTriggered,
@@ -473,28 +451,22 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         primaryAction: UIAction { [weak self] _ in
             self?.stickerButtonPressed()
         },
-        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "stickerButton"),
     )
 
     private lazy var keyboardButton = Buttons.keyboardButton(
         primaryAction: UIAction { [weak self] _ in
             self?.keyboardButtonPressed()
         },
-        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "keyboardButton"),
     )
 
     private lazy var cameraButton = Buttons.cameraButton(
         primaryAction: UIAction { [weak self] _ in
             self?.cameraButtonPressed()
         },
-        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "cameraButton"),
     )
 
     private lazy var voiceNoteButton: UIButton = {
-        let button = Buttons.voiceNoteButton(
-            primaryAction: nil,
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "voiceNoteButton"),
-        )
+        let button = Buttons.voiceNoteButton(primaryAction: nil)
         let longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleVoiceMemoLongPress(gesture:)))
         longPressGestureRecognizer.minimumPressDuration = 0
         button.addGestureRecognizer(longPressGestureRecognizer)
@@ -507,7 +479,6 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
                 primaryAction: UIAction { [weak self] _ in
                     self?.sendButtonPressed()
                 },
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "sendButton"),
             )
             button.tintColor = conversationStyle.bubbleChatColorOutgoing.asChatUIElementTintColor()
             return button
@@ -532,7 +503,6 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         let view = UIView.container()
         view.clipsToBounds = true
         view.directionalLayoutMargins = .init(top: 6, leading: 6, bottom: 0, trailing: 6)
-        view.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "linkPreviewWrapper")
         return view
     }()
 
@@ -540,7 +510,6 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         let view = UIView.container()
         view.isHidden = true
         view.semanticContentAttribute = .forceLeftToRight
-        view.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "voiceMemoContentView")
         return view
     }()
 
@@ -641,10 +610,6 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         }
 
         // Set up content view.
-        contentView.directionalLayoutMargins = NSDirectionalEdgeInsets(
-            hMargin: OWSTableViewController2.defaultHOuterMargin - 16,
-            vMargin: iOS26Layout ? 0.5 * (LayoutMetrics.initialToolbarHeight - LayoutMetrics.initialTextBoxHeight) : 0,
-        )
         contentViewSuperview.addSubview(contentView)
         contentView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -653,6 +618,102 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
             contentView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
+        contentView.insetsLayoutMarginsFromSafeArea = false
+        updateContentViewLayoutMargins()
+    }
+
+    private func updateContentViewLayoutMargins() {
+        let vMargin = 0.5 * (LayoutMetrics.initialToolbarHeight - LayoutMetrics.initialTextBoxHeight)
+
+        guard iOS26Layout else {
+            // On legacy (15-18) iOS vesions buttons on both ends of the bar have decent margins
+            // on all sides (easier to tap). Making margins smaller than system default
+            // would make button glyphs appear nicely aligned to system layout margins.
+            // This margin would only be used if layout doesn't have non-zero
+            // horizontal safe area insets because there's no need to inset UI further inwards
+            // if there's empty space on the sides.
+            let horizontalMargin: CGFloat = OWSTableViewController2.defaultHOuterMargin - 4
+            contentView.directionalLayoutMargins = NSDirectionalEdgeInsets(
+                top: vMargin,
+                leading: safeAreaInsets.leading > 0 ? 0 : horizontalMargin,
+                bottom: safeAreaInsets.bottom + vMargin,
+                trailing: safeAreaInsets.trailing > 0 ? 0 : horizontalMargin,
+            )
+            return
+        }
+
+        // This is the leading, trailing and bottom margin for non-home button devices running iOS 26+
+        // when keyboard is not visible. The idea is to make glass panels concentric with screen corners.
+        //
+        // Note that amount if this margin is smaller than typical bottom safe area inset (34 dp).
+        // By setting `usesBottomSafeArea` to `false` on keyboard layout guide we can make distance
+        // to the bottom of the screen smaller than UIKit provided bottom safe area inset.
+        // At the same time make sure we're not increasing the bottom padding from what UIKit has provided.
+        let concentricCornersMargin: CGFloat = min(28, safeAreaInsets.bottom)
+
+        // Use fixed horizonal margins for iOS 26+ layouts when bottom safea area inset is zero, which is when:
+        // * keyboard is up.
+        // * device is a home button iPhone.
+        let standardHorizonalMargin: CGFloat = OWSTableViewController2.defaultHOuterMargin - 4
+
+        var layoutMargins = NSDirectionalEdgeInsets()
+        layoutMargins.top = vMargin
+        if safeAreaInsets.bottom == 0 {
+            // Two possible scenarios:
+            // 1. Device with a home button and no on-screen keyboard.
+            // 2. Any device with on-screen keyboard up.
+            // In both cases we need to center `contentView` vertically by making
+            // bottom margin same size as top margin.
+            layoutMargins.bottom = vMargin
+        } else if safeAreaInsets.bottom > 40 {
+            // Now it is possible that there is a tabbar occupying the bottom of the screen
+            // (plus/max devices in landscape). There's no easy way to detect that for sure,
+            // so we check the height of the bottom inset: if it is larger than a default 34 dp
+            // (eg 64 dp on 18 Pro Max iOS 27 in landscape) we assume there's something in there.
+            // Whenever that happens we need to clear that bottom area and leave the same vertical
+            // gap we would leave above the on-screen keyboard.
+            // Use 40 dp as a cutoff for empty bottom safe area instead vs non-empty.
+            layoutMargins.bottom = safeAreaInsets.bottom + vMargin
+        } else {
+            layoutMargins.bottom = concentricCornersMargin
+        }
+
+        // For leading and trailing non-zero safe area insets there are two possible scenarios:
+        // 1. Modern phone in landscape in horizontally compact environment.
+        // 2. Plus/max devices (and iPads) in horizontally regular environment, using split view.
+        //
+        // For 1. leading and trailing safe area margins would be identical and we can omit
+        // extra padding from the contentView, giving leading/trailing margins a value of 0.
+        //
+        // For 2. however, there would be UI in the safe area and an extra padding is required.
+        //
+        // Assume that larger leading safe area margins mean split view layout.
+        // Use 84 as cutoff amount based on 62dp trailing safe area on 18 Pro Max in landscape
+        // and 84dp trailing safe area inset on iPhone Duo.
+        let splitViewDetectionCutoff: CGFloat = 84
+
+        if safeAreaInsets.leading > splitViewDetectionCutoff {
+            // TODO: make sure this aligns well with chat message bubbles.
+            layoutMargins.leading = standardHorizonalMargin
+        } else if safeAreaInsets.leading > 0 {
+            // TODO: explore extending leading edge futher outwards.
+            layoutMargins.leading = 0
+        } else if safeAreaInsets.bottom > 0 {
+            layoutMargins.leading = concentricCornersMargin
+        } else {
+            layoutMargins.leading = standardHorizonalMargin
+        }
+
+        // Trailing doesn't need the cutoff check because it doesn't get large.
+        if safeAreaInsets.trailing > 0 {
+            // TODO: explore extending leading edge futher outwards.
+            layoutMargins.trailing = 0
+        } else if safeAreaInsets.bottom > 0 {
+            layoutMargins.trailing = concentricCornersMargin
+        } else {
+            layoutMargins.trailing = standardHorizonalMargin
+        }
+        contentView.directionalLayoutMargins = layoutMargins
     }
 
     private func createContentsWithMessageDraft(
@@ -688,7 +749,7 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         inputTextViewContainer.addSubview(inputTextView)
         inputTextView.translatesAutoresizingMaskIntoConstraints = false
         textViewHeightConstraint = inputTextView.heightAnchor.constraint(equalToConstant: LayoutMetrics.minTextViewHeight)
-        inputTextViewContainer.addConstraints([
+        NSLayoutConstraint.activate([
             // This defines height of `inputTextView` which is always set to content size. calculated in `updateHeightWithTextView()`
             textViewHeightConstraint,
             // This sets minimum height on visual text view box. This height can exceed height of an empty inputTextView.
@@ -759,20 +820,16 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
             messageContentView.addSubview(messageComponentsView)
         }
 
-        let vMargin = 0.5 * (LayoutMetrics.initialToolbarHeight - LayoutMetrics.initialTextBoxHeight)
-        let hMargin: CGFloat = iOS26Layout ? 12 : 0 // iOS 26 needs space between leading/trailing buttons and text view background.
-        messageContentView.directionalLayoutMargins = .init(hMargin: hMargin, vMargin: vMargin)
         messageContentView.semanticContentAttribute = .forceLeftToRight
         backgroundView.semanticContentAttribute = .forceLeftToRight
-
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
         messageComponentsView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            // Background view is inset from the edges of the central part of the `contentView` - `messageContentView`
-            backgroundView.topAnchor.constraint(equalTo: messageContentView.layoutMarginsGuide.topAnchor),
-            backgroundView.leadingAnchor.constraint(equalTo: messageContentView.layoutMarginsGuide.leadingAnchor),
-            backgroundView.trailingAnchor.constraint(equalTo: messageContentView.layoutMarginsGuide.trailingAnchor),
-            backgroundView.bottomAnchor.constraint(equalTo: messageContentView.layoutMarginsGuide.bottomAnchor),
+            // Background view has the same frame as the central part of the `contentView` - `messageContentView`.
+            backgroundView.topAnchor.constraint(equalTo: messageContentView.topAnchor),
+            backgroundView.leadingAnchor.constraint(equalTo: messageContentView.leadingAnchor),
+            backgroundView.trailingAnchor.constraint(equalTo: messageContentView.trailingAnchor),
+            backgroundView.bottomAnchor.constraint(equalTo: messageContentView.bottomAnchor),
 
             // Message components stack is constrained to background view's edges.
             messageComponentsView.topAnchor.constraint(equalTo: backgroundView.topAnchor),
@@ -834,33 +891,36 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         trailingEdgeControl.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(trailingEdgeControl)
 
-        let outerHMargin: CGFloat = iOS26Layout ? 16 : 0
         NSLayoutConstraint.activate([
             // + Attachment button: pinned to the bottom left corner.
-            leadingEdgeControl.leadingAnchor.constraint(
-                equalTo: contentView.layoutMarginsGuide.leadingAnchor,
-                constant: outerHMargin,
-            ),
+            leadingEdgeControl.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
             leadingEdgeControl.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
 
-            // Message components view: pinned to attachment button on the left, Camera button on the right,
-            // taking entire superview's height.
-            messageContentView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            messageContentView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            // Message components view determines height of the `contentView` by being pinned
+            // to both top and bottom anchors.
+            // Horizonal constraints are dynamic and are updated based on user input.
+            messageContentView.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
+            messageContentView.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
 
             // Camera | Voice Message | Send: pinned to the bottom right corner.
-            trailingEdgeControl.trailingAnchor.constraint(
-                equalTo: contentView.layoutMarginsGuide.trailingAnchor,
-                constant: -outerHMargin,
-            ),
+            trailingEdgeControl.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
             trailingEdgeControl.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
         ])
 
         updateMessageContentViewLeadingEdgeConstraint(isLeadingEdgeControlHidden: false)
         if iOS26Layout {
+            // Camera, Stickers and Voice Note button are all shown in-line in central glass panel.
+            // If there's nothing to send the Send button is hidden and central panel goes all
+            // the way to the trailing edge of `contentView`. `setSendButtonHidden(usingAnimator:)`
+            // updates constraints.
             setSendButtonHidden(true, usingAnimator: nil)
         } else {
-            messageContentView.trailingAnchor.constraint(equalTo: trailingEdgeControl.leadingAnchor).isActive = true
+            // `trailingEdgeControl` shows Camera and Voice Note or Send button.
+            // The control is always there so we need fixed spacing here.
+            NSLayoutConstraint.activate([messageContentView.trailingAnchor.constraint(
+                equalTo: trailingEdgeControl.leadingAnchor,
+                constant: -8,
+            )])
         }
 
         // 4. Finish.
@@ -1100,38 +1160,49 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
     private var messageContentViewLeadingEdgeConstraint: NSLayoutConstraint?
     private func updateMessageContentViewLeadingEdgeConstraint(isLeadingEdgeControlHidden: Bool) {
         if let messageContentViewLeadingEdgeConstraint {
-            removeConstraint(messageContentViewLeadingEdgeConstraint)
+            NSLayoutConstraint.deactivate([messageContentViewLeadingEdgeConstraint])
         }
         let constraint: NSLayoutConstraint
         if isLeadingEdgeControlHidden {
             constraint = messageContentView.leadingAnchor.constraint(
                 equalTo: contentView.layoutMarginsGuide.leadingAnchor,
-                constant: iOS26Layout ? 4 : 16,
             )
         } else {
-            constraint = messageContentView.leadingAnchor.constraint(equalTo: leadingEdgeControl.trailingAnchor)
+            // Spacing is smaller on legacy iOS versions because `+` button (leadingEdgeControl)
+            // has built-in padding on all sides, whereas on iOS 26+ buttons are glass and
+            // have zero padding around glass panel.
+            let spacing: CGFloat = iOS26Layout ? 12 : 8
+            constraint = messageContentView.leadingAnchor.constraint(
+                equalTo: leadingEdgeControl.trailingAnchor,
+                constant: spacing,
+            )
         }
-        addConstraint(constraint)
+        NSLayoutConstraint.activate([constraint])
         messageContentViewLeadingEdgeConstraint = constraint
     }
 
     private var messageContentViewTrailingEdgeConstraint: NSLayoutConstraint?
     private func updateMessageContentViewTrailingEdgeConstraint(isTrailingEdgeControlHidden: Bool) {
+        // On iOS 15-18 `trailingEdgeControl` is always visible - no need to update constraints.
         guard iOS26Layout else { return }
 
         if let messageContentViewTrailingEdgeConstraint {
-            removeConstraint(messageContentViewTrailingEdgeConstraint)
+            NSLayoutConstraint.deactivate([messageContentViewTrailingEdgeConstraint])
         }
         let constraint: NSLayoutConstraint
         if isTrailingEdgeControlHidden {
+            // No Send button - central panel goes all the way to contentView's trailing edge.
             constraint = messageContentView.trailingAnchor.constraint(
                 equalTo: contentView.layoutMarginsGuide.trailingAnchor,
-                constant: -4,
             )
         } else {
-            constraint = messageContentView.trailingAnchor.constraint(equalTo: trailingEdgeControl.leadingAnchor)
+            // 12 dp spacing between Send button and glass panel in the middle.
+            constraint = messageContentView.trailingAnchor.constraint(
+                equalTo: trailingEdgeControl.leadingAnchor,
+                constant: -12,
+            )
         }
-        addConstraint(constraint)
+        NSLayoutConstraint.activate([constraint])
         messageContentViewTrailingEdgeConstraint = constraint
     }
 
@@ -1169,7 +1240,7 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         if controlState == .deleteVoiceMemoDraft, voiceMemoDeleteButton.superview == nil {
             contentView.addSubview(voiceMemoDeleteButton)
             voiceMemoDeleteButton.translatesAutoresizingMaskIntoConstraints = false
-            contentView.addConstraints([
+            NSLayoutConstraint.activate([
                 voiceMemoDeleteButton.topAnchor.constraint(equalTo: leadingEdgeControl.topAnchor),
                 voiceMemoDeleteButton.leadingAnchor.constraint(equalTo: leadingEdgeControl.leadingAnchor),
                 voiceMemoDeleteButton.trailingAnchor.constraint(equalTo: leadingEdgeControl.trailingAnchor),
@@ -1252,16 +1323,15 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
             }
         }
 
-        static let sendButtonHMargin: CGFloat = 4
-        static let cameraButtonHMargin: CGFloat = 8
-
         lazy var sendButton: UIButton = {
             let button = UIButton(type: .system)
             button.accessibilityLabel = MessageStrings.sendButton
             button.isPointerInteractionEnabled = true
-            button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "sendButton")
             button.setImage(UIImage(imageLiteralResourceName: "send-blue-28"), for: .normal)
-            button.bounds.size = CGSize(width: 48, height: LayoutMetrics.initialToolbarHeight)
+            button.bounds.size = CGSize(
+                width: LayoutMetrics.legacyButtonWidth,
+                height: LayoutMetrics.initialTextBoxHeight,
+            )
             return button
         }()
 
@@ -1277,9 +1347,11 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
                 "CAMERA_BUTTON_HINT",
                 comment: "Accessibility hint describing what you can do with the camera button",
             )
-            button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "cameraButton")
             button.setImage(Theme.iconImage(.buttonCamera), for: .normal)
-            button.bounds.size = CGSize(width: 40, height: LayoutMetrics.initialToolbarHeight)
+            button.bounds.size = CGSize(
+                width: LayoutMetrics.legacyButtonWidth,
+                height: LayoutMetrics.initialTextBoxHeight,
+            )
             return button
         }()
 
@@ -1295,9 +1367,11 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
                 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT",
                 comment: "accessibility hint for the button which records voice memos",
             )
-            button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "voiceMemoButton")
             button.setImage(Theme.iconImage(.buttonMicrophone), for: .normal)
-            button.bounds.size = CGSize(width: 40, height: LayoutMetrics.initialToolbarHeight)
+            button.bounds.size = CGSize(
+                width: LayoutMetrics.legacyButtonWidth,
+                height: LayoutMetrics.initialToolbarHeight,
+            )
             return button
         }()
 
@@ -1329,14 +1403,14 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
             super.layoutSubviews()
 
             sendButton.center = CGPoint(
-                x: bounds.maxX - Self.sendButtonHMargin - 0.5 * sendButton.bounds.width,
+                x: bounds.maxX - 0.5 * sendButton.bounds.width,
                 y: bounds.midY,
             )
 
             switch state {
             case .default:
                 cameraButton.center = CGPoint(
-                    x: bounds.minX + Self.cameraButtonHMargin + 0.5 * cameraButton.bounds.width,
+                    x: bounds.minX + 0.5 * cameraButton.bounds.width,
                     y: bounds.midY,
                 )
                 voiceMemoButton.center = sendButton.center
@@ -1375,11 +1449,13 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         override var intrinsicContentSize: CGSize {
             let width: CGFloat = {
                 switch state {
-                case .default: return cameraButton.width + voiceMemoButton.width + 2 * Self.cameraButtonHMargin
-                case .sendButton, .disabledSendButton, .hiddenSendButton: return sendButton.width + 2 * Self.sendButtonHMargin
+                case .default:
+                    cameraButton.width + voiceMemoButton.width
+                case .sendButton, .disabledSendButton, .hiddenSendButton:
+                    sendButton.width
                 }
             }()
-            return CGSize(width: width, height: LayoutMetrics.initialToolbarHeight)
+            return CGSize(width: width, height: LayoutMetrics.initialTextBoxHeight)
         }
     }
 
@@ -1423,11 +1499,10 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
             iconImageView.autoCenterInSuperview()
             updateImageTransform()
 
-            // Button is larger but the same visually to allow easier taps.
             translatesAutoresizingMaskIntoConstraints = false
-            addConstraints([
-                widthAnchor.constraint(equalToConstant: LayoutMetrics.initialToolbarHeight),
-                heightAnchor.constraint(equalToConstant: LayoutMetrics.initialToolbarHeight),
+            NSLayoutConstraint.activate([
+                widthAnchor.constraint(equalToConstant: LayoutMetrics.legacyButtonWidth),
+                heightAnchor.constraint(equalToConstant: LayoutMetrics.initialTextBoxHeight),
             ])
         }
 
@@ -1815,7 +1890,6 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         let view = UIView.container()
         view.clipsToBounds = true
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "editMessageWrapper")
         return view
     }()
 
@@ -1928,7 +2002,6 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         view.clipsToBounds = true
         view.directionalLayoutMargins = .init(top: 6, leading: 6, bottom: 0, trailing: 6)
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "quotedReplyWrapper")
         return view
     }()
 
@@ -1951,7 +2024,6 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         quotedMessagePreview.delegate = self
         quotedMessagePreview.setContentHuggingHorizontalLow()
         quotedMessagePreview.setCompressionResistanceHorizontalLow()
-        quotedMessagePreview.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "quotedMessagePreview")
         quotedReplyWrapper.addSubview(quotedMessagePreview)
         quotedMessagePreview.translatesAutoresizingMaskIntoConstraints = false
 
@@ -2063,7 +2135,7 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
             owsFailDebug("linkPreviewView == nil")
             return
         }
-        removeConstraints(linkPreviewConstraints)
+        NSLayoutConstraint.deactivate(linkPreviewConstraints)
 
         // To hide link preview I constrain both top and bottom edges of the linkPreviewWrapper
         // to top edge of linkPreviewView, effectively making linkPreviewWrapper a zero height view.
@@ -2080,7 +2152,7 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
                 linkPreviewView.bottomAnchor.constraint(equalTo: linkPreviewWrapper.layoutMarginsGuide.bottomAnchor),
             ]
         }
-        addConstraints(linkPreviewConstraints)
+        NSLayoutConstraint.activate(linkPreviewConstraints)
     }
 
     var linkPreviewDraft: OWSLinkPreviewDraft? {
@@ -2313,7 +2385,7 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
 
         stickerPanel.addSubview(stickerListViewWrapper)
         stickerListViewWrapper.translatesAutoresizingMaskIntoConstraints = false
-        stickerPanel.addConstraints([
+        NSLayoutConstraint.activate([
             stickerListViewWrapper.topAnchor.constraint(
                 equalTo: stickerPanel.topAnchor,
             ),
@@ -2381,6 +2453,7 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         stickersListView.items = currentSuggestedStickers.map { stickerMetadata in
             StickerHorizontalListViewItemSticker(
                 stickerInfo: stickerMetadata.stickerInfo,
+                accessibilityLabel: stickerMetadata.localizedAccessibilityLabel,
                 didSelectBlock: { [weak self] in
                     self?.didSelectSuggestedSticker(stickerMetadata)
                 },
@@ -2536,7 +2609,6 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         label.textColor = Style.primaryTextColor
         label.font = .monospacedDigitSystemFont(ofSize: UIFont.dynamicTypeBodyClamped.pointSize, weight: .semibold)
         label.setContentHuggingHigh()
-        label.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "recordingLabel")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -2584,7 +2656,7 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         circleView.addSubview(micIcon)
         circleView.translatesAutoresizingMaskIntoConstraints = false
         micIcon.translatesAutoresizingMaskIntoConstraints = false
-        circleView.addConstraints([
+        NSLayoutConstraint.activate([
             micIcon.widthAnchor.constraint(equalToConstant: micIconSize),
             micIcon.heightAnchor.constraint(equalToConstant: micIconSize),
 
@@ -2606,18 +2678,13 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
     private lazy var voiceMemoDeleteButton: UIButton = {
         guard #unavailable(iOS 26.0) else {
             return Buttons.deleteVoiceMemoDraftButton(
-                primaryAction: UIAction { [weak self] _ in
-                    self?.deleteVoiceMemoDraft()
-                },
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "stickerButton"),
+                primaryAction: UIAction { [weak self] _ in self?.deleteVoiceMemoDraft() },
             )
         }
 
         let button = UIButton(
             configuration: .plain(),
-            primaryAction: UIAction { [weak self] _ in
-                self?.deleteVoiceMemoDraft()
-            },
+            primaryAction: UIAction { [weak self] _ in self?.deleteVoiceMemoDraft() },
         )
         button.configuration?.image = UIImage(imageLiteralResourceName: "trash-fill")
         button.configuration?.baseForegroundColor = .Signal.red
@@ -2656,7 +2723,7 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
 
         // Constraints for the content inside of text input box.
         redMicIconImageView.translatesAutoresizingMaskIntoConstraints = false
-        voiceMemoContentView.addConstraints([
+        NSLayoutConstraint.activate([
             redMicIconImageView.leadingAnchor.constraint(equalTo: voiceMemoContentView.leadingAnchor, constant: 12),
             redMicIconImageView.centerYAnchor.constraint(equalTo: voiceMemoContentView.centerYAnchor),
 
@@ -2676,7 +2743,7 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         }
         addSubview(voiceMemoLockView)
         addSubview(voiceMemoRedRecordingCircle)
-        addConstraints([
+        NSLayoutConstraint.activate([
             voiceMemoRedRecordingCircle.centerXAnchor.constraint(equalTo: redCircleCenterXAnchor),
             voiceMemoRedRecordingCircle.centerYAnchor.constraint(equalTo: voiceMemoContentView.centerYAnchor),
 
@@ -2750,7 +2817,7 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         )
         voiceMemoContentView.addSubview(draftView)
         draftView.translatesAutoresizingMaskIntoConstraints = false
-        voiceMemoContentView.addConstraints([
+        NSLayoutConstraint.activate([
             draftView.topAnchor.constraint(equalTo: voiceMemoContentView.topAnchor),
             draftView.leadingAnchor.constraint(equalTo: voiceMemoContentView.leadingAnchor),
             draftView.trailingAnchor.constraint(equalTo: voiceMemoContentView.trailingAnchor),
@@ -2826,10 +2893,9 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         cancelButton.configuration?.contentInsets = .init(margin: 8)
         cancelButton.configuration?.title = CommonStrings.cancelButton
         cancelButton.configuration?.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
-        cancelButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "cancelButton")
         voiceMemoContentView.addSubview(cancelButton)
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
-        voiceMemoContentView.addConstraints([
+        NSLayoutConstraint.activate([
             cancelButton.centerYAnchor.constraint(equalTo: voiceMemoContentView.centerYAnchor),
             cancelButton.trailingAnchor.constraint(equalTo: voiceMemoContentView.trailingAnchor, constant: -16),
         ])
@@ -3293,19 +3359,8 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
     }
 
     private func stickerButtonPressed() {
-        let db = DependenciesBridge.shared.db
-        let stickerManager = DependenciesBridge.shared.stickerManager
-
         ImpactHapticFeedback.impactOccurred(style: .light)
 
-        var hasInstalledStickerPacks: Bool = false
-        db.read { transaction in
-            hasInstalledStickerPacks = !stickerManager.installedStickerPacks(transaction: transaction).isEmpty
-        }
-        guard hasInstalledStickerPacks else {
-            inputToolbarDelegate?.presentManageStickersView()
-            return
-        }
         toggleKeyboardType(.sticker, animated: true)
     }
 
@@ -3383,6 +3438,23 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
     func stickerKeyboardDidRequestPresentManageStickersView(_ stickerKeyboard: StickerKeyboard) {
         AssertIsOnMainThread()
         inputToolbarDelegate?.presentManageStickersView()
+    }
+
+    func viewStickerPack(_ stickerPackInfo: StickerPackInfo) {
+        inputToolbarDelegate?.didTapStickerPack(stickerPackInfo)
+    }
+
+    func scrollToFavoritedSticker(_ stickerInfo: StickerInfo) {
+        inputToolbarDelegate?.openStickerKeyboard(page: .favorites, bouncing: stickerInfo)
+    }
+
+    func sendSticker(_ stickerMetadata: any StickerMetadata) {
+        inputToolbarDelegate?.sendSticker(stickerMetadata)
+    }
+
+    func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo) {
+        let messageBody = MessageBody(text: stickerPackInfo.shareUrl(), ranges: .empty)
+        setMessageBody(messageBody, animated: true)
     }
 
     // MARK: - AttachmentKeyboardDelegate

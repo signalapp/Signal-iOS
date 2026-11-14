@@ -205,10 +205,6 @@ class ForwardMessageViewController: OWSNavigationController {
         super.viewWillAppear(animated)
 
         ensureBottomFooterVisibility()
-
-        DispatchQueue.main.async {
-            self.pickerVC.updateTableMargins()
-        }
     }
 
     private func ensureBottomFooterVisibility() {

@@ -960,7 +960,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         let permissionErrorView = PermissionErrorView(
             thread: self.thread,
             contactManager: SSKEnvironment.shared.contactManagerRef,
-            okayButtonAction: UIAction { [weak self] _ in self?.dismissImmediately() },
+            okButtonAction: UIAction { [weak self] _ in self?.dismissImmediately() },
         )
         view.addSubview(permissionErrorView)
         permissionErrorView.autoPinWidthToSuperview(withMargin: 16)
@@ -1361,8 +1361,8 @@ extension IndividualCallViewController: CallServiceStateObserver {
 }
 
 private class PermissionErrorView: UIView {
-    private lazy var okayButton: UIButton = {
-        let button = UIButton(configuration: .largePrimary(title: CommonStrings.okayButton), primaryAction: nil)
+    private lazy var okButton: UIButton = {
+        let button = UIButton(configuration: .largePrimary(title: CommonStrings.okButton), primaryAction: nil)
         button.configuration?.baseBackgroundColor = .Signal.primaryFill
         button.configuration?.contentInsets.leading = 34
         button.configuration?.contentInsets.trailing = 34
@@ -1414,7 +1414,7 @@ private class PermissionErrorView: UIView {
     init(
         thread: TSContactThread,
         contactManager: ContactManager,
-        okayButtonAction: UIAction,
+        okButtonAction: UIAction,
     ) {
         self.thread = thread
         self.contactManager = contactManager
@@ -1428,22 +1428,22 @@ private class PermissionErrorView: UIView {
 
         self.addSubview(needPermissionLabel)
 
-        okayButton.addAction(okayButtonAction, for: .primaryActionTriggered)
-        self.addSubview(okayButton)
+        okButton.addAction(okButtonAction, for: .primaryActionTriggered)
+        self.addSubview(okButton)
 
         contactAvatarView.translatesAutoresizingMaskIntoConstraints = false
         needPermissionLabel.translatesAutoresizingMaskIntoConstraints = false
-        okayButton.translatesAutoresizingMaskIntoConstraints = false
+        okButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             contactAvatarView.topAnchor.constraint(equalTo: self.topAnchor),
             contactAvatarView.bottomAnchor.constraint(equalTo: needPermissionLabel.topAnchor, constant: -20),
-            needPermissionLabel.bottomAnchor.constraint(equalTo: okayButton.topAnchor, constant: -20),
-            okayButton.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            needPermissionLabel.bottomAnchor.constraint(equalTo: okButton.topAnchor, constant: -20),
+            okButton.bottomAnchor.constraint(equalTo: self.bottomAnchor),
             needPermissionLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             needPermissionLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor),
         ])
         contactAvatarView.autoHCenterInSuperview()
-        okayButton.autoHCenterInSuperview()
+        okButton.autoHCenterInSuperview()
     }
 
     required init(coder: NSCoder) {

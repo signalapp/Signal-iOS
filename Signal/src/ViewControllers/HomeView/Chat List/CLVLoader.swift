@@ -77,6 +77,7 @@ class CLVLoader {
             ).map(\.uniqueId)
             visibleThreadUniqueIds = threadFinder.visibleInboxThreadUniqueIds(
                 filteredBy: viewInfo.inboxFilter,
+                chatFolder: viewInfo.selectedChatFolder,
                 requiredVisibleThreadIds: viewInfo.requiredVisibleThreadIds,
                 transaction: transaction,
             )

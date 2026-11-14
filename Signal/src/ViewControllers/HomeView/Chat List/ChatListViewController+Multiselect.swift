@@ -35,6 +35,7 @@ extension ChatListViewController {
         }
         searchBar.isUserInteractionEnabled = false
         searchBar.alpha = 0.5
+        viewState.chatFolderPickerView.isEnabled = false
         viewState.multiSelectState.setIsActive(true, tableView: tableView, cancelCurrentEditAction: cancelCurrentEditAction)
         showToolbar()
         loadCoordinator.loadIfNecessary(shouldForceLoad: true)
@@ -52,6 +53,7 @@ extension ChatListViewController {
         }
         searchBar.isUserInteractionEnabled = true
         searchBar.alpha = 1
+        viewState.chatFolderPickerView.isEnabled = true
         viewState.multiSelectState.setIsActive(false, tableView: tableView)
         title = viewState.multiSelectState.title
         hideToolbar()

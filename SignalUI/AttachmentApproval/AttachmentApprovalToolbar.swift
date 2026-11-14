@@ -17,6 +17,8 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
         var canToggleViewOnce = true
         var canChangeMediaQuality = true
         var canSaveMedia = false
+        var canToggleMute = false
+        var isMuted = false
         var proceedButtonIcon: ProceedButtonIcon = .send
 
         enum ProceedButtonIcon: String {
@@ -327,11 +329,15 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
             enabled: configuration.isMediaHighQualityEnabled,
             using: animator,
         )
+        mediaToolbar.setIsMuted(configuration.isMuted, using: animator)
         let availableButtons: MediaToolbar.AvailableButtons = {
             guard let currentAttachmentItem else {
                 return []
             }
             var buttons: MediaToolbar.AvailableButtons = []
+            if configuration.canToggleMute {
+                buttons.insert(.mute)
+            }
             if configuration.canSaveMedia {
                 buttons.insert(.save)
             }
@@ -541,6 +547,10 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
         mediaToolbar.saveMediaButton
     }
 
+    var buttonMute: UIButton {
+        mediaToolbar.muteButton
+    }
+
     var buttonAddMedia: UIButton {
         let mediaQualityButton = mediaToolbar.addMediaButton
         mediaQualityButton.accessibilityLabel = OWSLocalizedString(
@@ -561,8 +571,9 @@ private class MediaToolbar: UIView {
         static let mediaQuality = AvailableButtons(rawValue: 1 << 2)
         static let save = AvailableButtons(rawValue: 1 << 3)
         static let addMedia = AvailableButtons(rawValue: 1 << 4)
+        static let mute = AvailableButtons(rawValue: 1 << 5)
 
-        static let all: AvailableButtons = [.pen, .crop, .mediaQuality, .save, .addMedia]
+        static let all: AvailableButtons = [.pen, .crop, .mediaQuality, .save, .addMedia, .mute]
     }
 
     func set(availableButtons: AvailableButtons, using animator: UIViewPropertyAnimator? = nil) {
@@ -571,6 +582,7 @@ private class MediaToolbar: UIView {
         mediaQualityButton.setIsHidden(!availableButtons.contains(.mediaQuality), using: animator)
         saveMediaButton.setIsHidden(!availableButtons.contains(.save), using: animator)
         addMediaButton.setIsHidden(!availableButtons.contains(.addMedia), using: animator)
+        muteButton.setIsHidden(!availableButtons.contains(.mute), using: animator)
     }
 
     override init(frame: CGRect) {
@@ -579,6 +591,7 @@ private class MediaToolbar: UIView {
         directionalLayoutMargins = .init(hMargin: 0, vMargin: 8)
 
         let stackView = UIStackView(arrangedSubviews: [
+            muteButton,
             cropToolButton,
             penToolButton,
             mediaQualityButton,
@@ -665,12 +678,17 @@ private class MediaToolbar: UIView {
     lazy var addMediaButton = UIButton(configuration: Self.buttonConfiguration(
         image: UIImage(imageLiteralResourceName: "album-plus"),
     ))
+    lazy var muteButton = UIButton(configuration: Self.buttonConfiguration(
+        image: MediaToolbar.iconUnmuted,
+    ))
 
     private static let iconMediaQualityHigh = UIImage(imageLiteralResourceName: "hd")
     private static let iconMediaQualityStandard = UIImage(imageLiteralResourceName: "hd-slash")
 
     fileprivate func setIsMediaQualityHigh(enabled: Bool, using animator: UIViewPropertyAnimator? = nil) {
         let image = enabled ? MediaToolbar.iconMediaQualityHigh : MediaToolbar.iconMediaQualityStandard
+        // Matches the titles in the quality selection menu.
+        mediaQualityButton.accessibilityValue = (enabled ? ImageQuality.high : ImageQuality.standard).localizedString
 
         guard let animator else {
             mediaQualityButton.configuration?.image = image
@@ -679,6 +697,31 @@ private class MediaToolbar: UIView {
 
         animator.addAnimations {
             self.mediaQualityButton.configuration?.image = image
+        }
+    }
+
+    private static let iconMuted = UIImage(imageLiteralResourceName: "speaker-slash")
+    private static let iconUnmuted = UIImage(imageLiteralResourceName: "speaker")
+
+    fileprivate func setIsMuted(_ isMuted: Bool, using animator: UIViewPropertyAnimator? = nil) {
+        let image = isMuted ? MediaToolbar.iconMuted : MediaToolbar.iconUnmuted
+        muteButton.accessibilityLabel = isMuted
+            ? OWSLocalizedString(
+                "ATTACHMENT_TOOL_BUTTON_UNMUTE_ACCESSIBILITY_LABEL",
+                comment: "Accessibility label for the button that unmutes a video being sent.",
+            )
+            : OWSLocalizedString(
+                "ATTACHMENT_TOOL_BUTTON_MUTE_ACCESSIBILITY_LABEL",
+                comment: "Accessibility label for the button that mutes a video being sent.",
+            )
+
+        guard let animator else {
+            muteButton.configuration?.image = image
+            return
+        }
+
+        animator.addAnimations {
+            self.muteButton.configuration?.image = image
         }
     }
 }

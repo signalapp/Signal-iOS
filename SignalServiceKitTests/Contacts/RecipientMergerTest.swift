@@ -5,11 +5,14 @@
 
 import LibSignalClient
 import SignalRingRTC
+import Testing
 import XCTest
 
 @testable import SignalServiceKit
 
 private class MockStorageServiceManager: StorageServiceManager {
+    var chatFolderIds = Set<UUID>()
+
     func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiers) {}
     func registerForCron(_ cron: Cron) {}
     func currentManifestVersion(tx: DBReadTransaction) -> UInt64 { 0 }
@@ -20,6 +23,7 @@ private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingInsertions(forGroupMasterKeys groupMasterKeys: [GroupMasterKey]) {}
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) {}
     func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey]) {}
+    func recordPendingUpdates(chatFolderIds: some Collection<UUID>) { self.chatFolderIds.formUnion(chatFolderIds) }
     func recordPendingUpdates(favoriteStickerIds: [FavoriteStickerId]) {}
     func recordPendingLocalAccountUpdates() {}
     func backupPendingChanges(authedAccount: AuthedAccount) {}
@@ -31,6 +35,8 @@ private class MockStorageServiceManager: StorageServiceManager {
 }
 
 private class TestDependencies {
+    let chatFolderManager: ChatFolderManager
+    let chatFolderStore = ChatFolderStore()
     let identityManager: MockIdentityManager
     let mockDB = InMemoryDB()
     let recipientMerger: RecipientMerger
@@ -38,12 +44,12 @@ private class TestDependencies {
     let recipientFetcher: RecipientFetcher
     let recipientIdFinder: RecipientIdFinder
     let sessionStore: SignalServiceKit.SessionStore
+    let storageServiceManager = MockStorageServiceManager()
     let threadStore: MockThreadStore
     let threadMerger: ThreadMerger
 
     init(observers: [RecipientMergeObserver] = []) {
         let searchableNameIndexer = MockSearchableNameIndexer()
-        let storageServiceManager = MockStorageServiceManager()
         recipientFetcher = RecipientFetcher(
             recipientDatabaseTable: recipientDatabaseTable,
             searchableNameIndexer: searchableNameIndexer,
@@ -57,20 +63,32 @@ private class TestDependencies {
         threadMerger = ThreadMerger.forUnitTests(
             threadStore: threadStore,
         )
+        chatFolderManager = ChatFolderManager(
+            chatFolderStore: chatFolderStore,
+            dateProvider: Date.provider,
+            recipientDatabaseTable: recipientDatabaseTable,
+            recipientFetcher: recipientFetcher,
+            storageServiceManager: storageServiceManager,
+            threadStore: threadStore,
+        )
         recipientMerger = RecipientMergerImpl(
+            appliers: [
+                SessionStoreRecipientMergeApplier(sessionStore: sessionStore, localIdentity: .aci),
+                identityManager,
+                chatFolderManager,
+            ],
+            chatFolderManager: chatFolderManager,
             identityManager: identityManager,
             observers: RecipientMergerImpl.Observers(
                 preThreadMerger: [],
                 threadMerger: threadMerger,
                 postThreadMerger: observers,
             ),
-            pinnedThreadMerger: MockPinnedThreadMerger(),
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             searchableNameIndexer: searchableNameIndexer,
             sessionStore: sessionStore,
             storageServiceManager: storageServiceManager,
-            storyRecipientStore: StoryRecipientStore(),
         )
     }
 }
@@ -487,62 +505,130 @@ class RecipientMergerTest: XCTestCase {
         XCTAssertEqual(d.identityManager.sessionSwitchoverMessages.count, 0)
     }
 
-    func testPniSignatureMergeStatus() throws {
+    func testChatFolderKeepsAChatWhoseRecipientMerges() throws {
         let aci = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
         let phoneNumber = E164("+16505550101")!
         let pni = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
 
-        let pniBlockedAt = BlockedTimestamp(clamping: 1000)
-        let aciBlockedAt = BlockedTimestamp(clamping: 2000)
+        let d = TestDependencies()
 
-        struct TestCase {
-            let pniStatus: SignalRecipient.Status
-            let aciStatus: SignalRecipient.Status
-            let expectedStatus: SignalRecipient.Status
-            let expectedBlockedAt: BlockedTimestamp
+        // Message a new contact by phone number, so we learn their PNI.
+        let thread = d.mockDB.write { tx in
+            _ = try! SignalRecipient.insertRecord(phoneNumber: phoneNumber, pni: pni, tx: tx)
+            let thread = TSContactThread(contactAddress: SignalServiceAddress(
+                serviceId: pni,
+                phoneNumber: phoneNumber.stringValue,
+                cache: SignalServiceAddressCache(),
+            ))
+            d.threadStore.insertThread(thread)
+            return thread
         }
 
-        let testCases: [TestCase] = [
-            TestCase(pniStatus: .unspecified, aciStatus: .unspecified, expectedStatus: .unspecified, expectedBlockedAt: .unspecified),
-            TestCase(pniStatus: .unspecified, aciStatus: .whitelisted, expectedStatus: .whitelisted, expectedBlockedAt: .unspecified),
-            TestCase(pniStatus: .unspecified, aciStatus: .blocked, expectedStatus: .blocked, expectedBlockedAt: aciBlockedAt),
-            TestCase(pniStatus: .whitelisted, aciStatus: .unspecified, expectedStatus: .whitelisted, expectedBlockedAt: .unspecified),
-            TestCase(pniStatus: .whitelisted, aciStatus: .whitelisted, expectedStatus: .whitelisted, expectedBlockedAt: .unspecified),
-            TestCase(pniStatus: .whitelisted, aciStatus: .blocked, expectedStatus: .blocked, expectedBlockedAt: aciBlockedAt),
-            TestCase(pniStatus: .blocked, aciStatus: .unspecified, expectedStatus: .blocked, expectedBlockedAt: pniBlockedAt),
-            TestCase(pniStatus: .blocked, aciStatus: .whitelisted, expectedStatus: .blocked, expectedBlockedAt: pniBlockedAt),
-            TestCase(pniStatus: .blocked, aciStatus: .blocked, expectedStatus: .blocked, expectedBlockedAt: aciBlockedAt),
-        ]
-
-        for testCase in testCases {
-            let d = TestDependencies()
-            d.mockDB.write { tx in
-                _ = try! SignalRecipient.insertRecord(
-                    aci: aci,
-                    status: testCase.aciStatus,
-                    blockedAt: testCase.aciStatus == .blocked ? aciBlockedAt : .unspecified,
-                    tx: tx,
-                )
-                _ = try! SignalRecipient.insertRecord(
-                    phoneNumber: phoneNumber,
-                    pni: pni,
-                    status: testCase.pniStatus,
-                    blockedAt: testCase.pniStatus == .blocked ? pniBlockedAt : .unspecified,
-                    tx: tx,
-                )
-            }
-
-            d.mockDB.write { tx in
-                d.recipientMerger.applyMergeFromPniSignature(localIdentifiers: .forUnitTests, aci: aci, pni: pni, tx: tx)
-            }
-
-            let mergedRecipient = d.mockDB.read { tx in
-                d.recipientDatabaseTable.fetchRecipient(serviceId: pni, transaction: tx)
-            }
-            XCTAssertEqual(mergedRecipient?.aci, aci, "\(testCase)")
-            XCTAssertEqual(mergedRecipient?.status, testCase.expectedStatus, "\(testCase)")
-            XCTAssertEqual(mergedRecipient?.blockedAt, testCase.expectedBlockedAt, "\(testCase)")
+        // Add their chat to a folder.
+        let folder = d.mockDB.write { tx in
+            let folder = d.chatFolderStore.insertCustomFolderRecord(
+                chatFolderId: UUID(),
+                name: "Work",
+                position: 1,
+                showOnlyUnread: false,
+                showMutedChats: true,
+                includeAllIndividualChats: false,
+                includeAllGroupChats: false,
+                deletedAtTimestampMs: 0,
+                tx: tx,
+            )
+            d.chatFolderManager.setMembership(.included, thread: thread, folderRowId: folder.id, tx: tx)
+            return folder
         }
+
+        // They accept the message request and reply, so we learn their ACI.
+        // Their message creates a recipient for the ACI, and its PNI signature
+        // merges the two recipients.
+        let aciRecipient = d.mockDB.write { tx in
+            let aciRecipient = try! SignalRecipient.insertRecord(aci: aci, tx: tx)
+            d.recipientMerger.applyMergeFromPniSignature(localIdentifiers: .forUnitTests, aci: aci, pni: pni, tx: tx)
+            return aciRecipient
+        }
+
+        // The folder's membership moved to the merged recipient, and still
+        // shows the same chat.
+        let memberships = d.mockDB.read { d.chatFolderStore.fetchMemberships(folderRowId: folder.id, tx: $0) }
+        XCTAssertEqual(memberships.map(\.chat), [.contact(recipientRowId: aciRecipient.id)])
+        let fetched = try XCTUnwrap(d.mockDB.read { d.chatFolderManager.fetch(chatFolderId: folder.chatFolderId, tx: $0) })
+        XCTAssertEqual(fetched.includedThreadRowIds, [thread.sqliteRowId!])
+        XCTAssertEqual(d.storageServiceManager.chatFolderIds, [folder.chatFolderId])
+    }
+
+    func testChatFolderIsUpdatedWhenAMemberLearnsItsAci() {
+        let d = TestDependencies()
+        let folder = insertChatFolders(d, memberPhoneNumber: phone1, memberPni: pni1)
+
+        d.mockDB.write { tx in
+            _ = d.recipientMerger.applyMergeFromContactDiscovery(localIdentifiers: .forUnitTests, phoneNumber: phone1, pni: pni1, aci: aci1, tx: tx)
+        }
+
+        XCTAssertEqual(d.storageServiceManager.chatFolderIds, [folder.chatFolderId])
+    }
+
+    func testChatFolderIsNotUpdatedWhenAMemberKeepsItsIdentifiers() {
+        let d = TestDependencies()
+        insertChatFolders(d, memberAci: aci1, memberPhoneNumber: phone1, memberPni: pni1)
+
+        d.mockDB.write { tx in
+            _ = d.recipientMerger.applyMergeFromContactDiscovery(localIdentifiers: .forUnitTests, phoneNumber: phone1, pni: pni1, aci: aci1, tx: tx)
+        }
+
+        XCTAssertEqual(d.storageServiceManager.chatFolderIds, [])
+    }
+
+    func testChatFolderIsUpdatedWhenAMemberLosesAStalePni() {
+        let d = TestDependencies()
+        let folder = insertChatFolders(d, memberPhoneNumber: phone2, memberPni: pni1)
+
+        // The PNI now belongs to another phone number.
+        d.mockDB.write { tx in
+            _ = d.recipientMerger.applyMergeFromContactDiscovery(localIdentifiers: .forUnitTests, phoneNumber: phone1, pni: pni1, aci: nil, tx: tx)
+        }
+
+        let member = d.mockDB.read { d.recipientDatabaseTable.fetchRecipient(phoneNumber: phone2.stringValue, transaction: $0) }
+        XCTAssertNil(member?.pni)
+        XCTAssertEqual(d.storageServiceManager.chatFolderIds, [folder.chatFolderId])
+    }
+
+    private let aci1 = Aci.constantForTesting("00000000-0000-4000-8000-0000000000a1")
+    private let pni1 = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
+    private let phone1 = E164("+16505550101")!
+    private let phone2 = E164("+16505550102")!
+
+    /// Inserts a folder with a member, and another folder without it.
+    @discardableResult
+    private func insertChatFolders(
+        _ d: TestDependencies,
+        memberAci: Aci? = nil,
+        memberPhoneNumber: E164?,
+        memberPni: Pni?,
+    ) -> ChatFolderRecord {
+        return d.mockDB.write { tx in
+            let member = try! SignalRecipient.insertRecord(aci: memberAci, phoneNumber: memberPhoneNumber, pni: memberPni, tx: tx)
+            let folder = insertChatFolder(d, name: "Meow", position: 1, tx: tx)
+            _ = insertChatFolder(d, name: "Purr", position: 2, tx: tx)
+            d.chatFolderStore.setMembership(.included, chat: .contact(recipientRowId: member.id), folderRowId: folder.id, tx: tx)
+            return folder
+        }
+    }
+
+    private func insertChatFolder(_ d: TestDependencies, name: String, position: UInt32, tx: DBWriteTransaction) -> ChatFolderRecord {
+        return d.chatFolderStore.insertCustomFolderRecord(
+            chatFolderId: UUID(),
+            name: name,
+            position: position,
+            showOnlyUnread: false,
+            showMutedChats: true,
+            includeAllIndividualChats: false,
+            includeAllGroupChats: false,
+            deletedAtTimestampMs: 0,
+            tx: tx,
+        )
     }
 
     func testStorageServiceMerges() throws {
@@ -693,5 +779,55 @@ class RecipientMergerTest: XCTestCase {
             }
             XCTAssert(recipientTable.isEmpty)
         }
+    }
+}
+
+struct RecipientStatusMergeApplierTest {
+    struct TestCase {
+        let sourceStatus: SignalRecipient.Status
+        let targetStatus: SignalRecipient.Status
+        let expectedStatus: SignalRecipient.Status
+        let expectedBlockedAt: BlockedTimestamp
+    }
+
+    @Test(arguments: [
+        TestCase(sourceStatus: .unspecified, targetStatus: .unspecified, expectedStatus: .unspecified, expectedBlockedAt: .unspecified),
+        TestCase(sourceStatus: .unspecified, targetStatus: .whitelisted, expectedStatus: .whitelisted, expectedBlockedAt: .unspecified),
+        TestCase(sourceStatus: .unspecified, targetStatus: .blocked, expectedStatus: .blocked, expectedBlockedAt: BlockedTimestamp(clamping: 2000)),
+        TestCase(sourceStatus: .whitelisted, targetStatus: .unspecified, expectedStatus: .whitelisted, expectedBlockedAt: .unspecified),
+        TestCase(sourceStatus: .whitelisted, targetStatus: .whitelisted, expectedStatus: .whitelisted, expectedBlockedAt: .unspecified),
+        TestCase(sourceStatus: .whitelisted, targetStatus: .blocked, expectedStatus: .blocked, expectedBlockedAt: BlockedTimestamp(clamping: 2000)),
+        TestCase(sourceStatus: .blocked, targetStatus: .unspecified, expectedStatus: .blocked, expectedBlockedAt: BlockedTimestamp(clamping: 1000)),
+        TestCase(sourceStatus: .blocked, targetStatus: .whitelisted, expectedStatus: .blocked, expectedBlockedAt: BlockedTimestamp(clamping: 1000)),
+        TestCase(sourceStatus: .blocked, targetStatus: .blocked, expectedStatus: .blocked, expectedBlockedAt: BlockedTimestamp(clamping: 2000)),
+    ])
+    func testRecipientStatusMerge(testCase: TestCase) throws {
+        let db = InMemoryDB()
+        let sourceRecipient = try db.write { tx in
+            return try SignalRecipient.insertRecord(
+                status: testCase.sourceStatus,
+                blockedAt: testCase.sourceStatus == .blocked ? BlockedTimestamp(clamping: 1000) : .unspecified,
+                tx: tx,
+            )
+        }
+        var targetRecipient = try db.write { tx in
+            return try SignalRecipient.insertRecord(
+                status: testCase.targetStatus,
+                blockedAt: testCase.targetStatus == .blocked ? BlockedTimestamp(clamping: 2000) : .unspecified,
+                tx: tx,
+            )
+        }
+
+        db.write { tx in
+            RecipientStatusMergeApplier().mergeRecipient(
+                sourceRecipient,
+                into: &targetRecipient,
+                shouldUpdateStorageService: false,
+                tx: tx,
+            )
+        }
+
+        #expect(targetRecipient.status == testCase.expectedStatus)
+        #expect(targetRecipient.blockedAt == testCase.expectedBlockedAt)
     }
 }

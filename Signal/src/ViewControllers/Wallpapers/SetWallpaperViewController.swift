@@ -8,8 +8,10 @@ import SignalServiceKit
 import SignalUI
 import UniformTypeIdentifiers
 
-class SetWallpaperViewController: OWSTableViewController2 {
-    private lazy var collectionView = WallpaperCollectionView(container: self, shouldDimInDarkMode: shouldDimInDarkMode) { [weak self] wallpaper in
+class SetWallpaperViewController: OWSTableViewController2, UIImagePickerControllerDelegate, UINavigationControllerDelegate,
+    PreviewWallpaperDelegate
+{
+    private lazy var collectionView = WallpaperCollectionView(shouldDimInDarkMode: shouldDimInDarkMode) { [weak self] wallpaper in
         guard let self else { return }
         let vc = PreviewWallpaperViewController(
             mode: .preset(selectedWallpaper: wallpaper),
@@ -46,29 +48,20 @@ class SetWallpaperViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    private var previousReferenceSize: CGSize = .zero
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-
-        let referenceSize = view.bounds.size - CGSize(width: view.safeAreaInsets.totalWidth, height: 0)
-        guard referenceSize != previousReferenceSize else { return }
-        previousReferenceSize = referenceSize
-        updateCollectionViewSize(reference: referenceSize)
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateCollectionViewSizeIfNecessary()
     }
 
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
+    private var currentReferenceWidth: CGFloat = 0
 
-        coordinator.animate { _ in
-            self.updateCollectionViewSize(reference: size - CGSize(width: self.view.safeAreaInsets.totalWidth, height: 0))
-        } completion: { _ in
+    private func updateCollectionViewSizeIfNecessary() {
+        let referenceWidth = tableViewContentWidth
+        guard referenceWidth != currentReferenceWidth else { return }
 
-        }
-    }
-
-    func updateCollectionViewSize(reference: CGSize) {
-        collectionView.updateLayout(reference: reference)
+        collectionView.updateLayout(referenceWidth: referenceWidth)
         tableView.reloadRows(at: [IndexPath(row: 0, section: 1)], with: .none)
+        currentReferenceWidth = referenceWidth
     }
 
     private func updateTableContents() {
@@ -114,9 +107,9 @@ class SetWallpaperViewController: OWSTableViewController2 {
 
         self.contents = contents
     }
-}
 
-extension SetWallpaperViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    // MARK: - UIImagePickerControllerDelegate
+
     func imagePickerController(
         _ picker: UIImagePickerController,
         didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any],
@@ -139,9 +132,9 @@ extension SetWallpaperViewController: UIImagePickerControllerDelegate, UINavigat
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
     }
-}
 
-extension SetWallpaperViewController: PreviewWallpaperDelegate {
+    // MARK: - PreviewWallpaperDelegate
+
     func previewWallpaperDidCancel(_ vc: PreviewWallpaperViewController) {
         vc.dismiss(animated: true)
     }
@@ -152,19 +145,16 @@ extension SetWallpaperViewController: PreviewWallpaperDelegate {
     }
 }
 
-private class WallpaperCollectionView: UICollectionView {
+private class WallpaperCollectionView: UICollectionView, UICollectionViewDataSource, UICollectionViewDelegate {
     private let shouldDimInDarkMode: Bool
     private let flowLayout = UICollectionViewFlowLayout()
     private let selectionHandler: (Wallpaper) -> Void
     private lazy var heightConstraint = autoSetDimension(.height, toSize: 0)
-    private weak var container: OWSTableViewController2!
 
     init(
-        container: OWSTableViewController2,
         shouldDimInDarkMode: Bool,
         selectionHandler: @escaping (Wallpaper) -> Void,
     ) {
-        self.container = container
         self.shouldDimInDarkMode = shouldDimInDarkMode
         self.selectionHandler = selectionHandler
 
@@ -182,15 +172,12 @@ private class WallpaperCollectionView: UICollectionView {
         register(WallpaperCell.self, forCellWithReuseIdentifier: WallpaperCell.reuseIdentifier)
     }
 
-    func updateLayout(reference: CGSize) {
-        AssertIsOnMainThread()
-
+    func updateLayout(referenceWidth: CGFloat) {
         let numberOfColumns: CGFloat = 3
         let numberOfRows = CGFloat(Wallpaper.defaultWallpapers.count) / numberOfColumns
 
-        let availableWidth = reference.width -
-            ((OWSTableViewController2.cellHInnerMargin * 2) + container.cellOuterInsets.totalWidth + 8 + safeAreaInsets.totalWidth)
-
+        let availableWidth = referenceWidth -
+            (OWSTableViewController2.cellHInnerMargin * 2 + flowLayout.minimumInteritemSpacing * (numberOfColumns - 1))
         let itemWidth = availableWidth / numberOfColumns
         let itemHeight = itemWidth / CurrentAppContext().frame.size.aspectRatio
 
@@ -203,9 +190,7 @@ private class WallpaperCollectionView: UICollectionView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-}
 
-extension WallpaperCollectionView: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         Wallpaper.defaultWallpapers.count
     }

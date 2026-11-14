@@ -69,7 +69,7 @@ class DeviceTransferStatusViewController: HostingController<TransferWrapperView>
                     comment: "Subtitle for bottom sheet shown when device transfer completes on the receiving device.",
                 ),
                 primaryButton: .init(
-                    title: CommonStrings.okayButton,
+                    title: CommonStrings.okButton,
                 ) { _ in
                     Task {
                         SSKEnvironment.shared.notificationPresenterRef.notifyUserToRelaunchAfterTransfer {

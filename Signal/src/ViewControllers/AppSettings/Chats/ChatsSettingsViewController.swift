@@ -28,6 +28,24 @@ class ChatsSettingsViewController: OWSTableViewController2 {
     private func updateTableContents() {
         let contents = OWSTableContents()
 
+        if BuildFlags.chatFolders {
+            let chatFoldersSection = OWSTableSection()
+            chatFoldersSection.footerTitle = OWSLocalizedString(
+                "SETTINGS_CHATS_CHAT_FOLDERS_FOOTER",
+                comment: "Footer for the chat folders row in chats settings.",
+            )
+            chatFoldersSection.add(.disclosureItem(
+                withText: OWSLocalizedString(
+                    "CHAT_FOLDERS_SETTINGS_TITLE",
+                    comment: "Title for the chat folders settings screen.",
+                ),
+                actionBlock: { [weak self] in
+                    self?.navigationController?.pushViewController(ChatFoldersSettingsViewController(), animated: true)
+                },
+            ))
+            contents.add(chatFoldersSection)
+        }
+
         let linkPreviewSection = OWSTableSection()
         linkPreviewSection.footerTitle = OWSLocalizedString(
             "SETTINGS_LINK_PREVIEWS_FOOTER",

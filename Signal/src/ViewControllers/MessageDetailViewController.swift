@@ -170,10 +170,15 @@ class MessageDetailViewController: OWSTableViewController2 {
         refreshContent()
     }
 
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        coordinator.animate(alongsideTransition: nil) { [weak self] _ in
-            self?.refreshContent()
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        // Calculate current width for conversation snippet view and reload table view
+        // if that width doesn't match the width that was used during previous render cycle.
+        let newWidth = conversationSnippetViewWidth()
+        if newWidth != currentConversationSnippetViewWidth {
+            currentConversationSnippetViewWidth = newWidth
+            refreshContent()
         }
     }
 
@@ -209,6 +214,12 @@ class MessageDetailViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
+    private lazy var currentConversationSnippetViewWidth = conversationSnippetViewWidth()
+
+    private func conversationSnippetViewWidth() -> CGFloat {
+        tableViewContentWidth - Self.cellHInnerMargin * 2 // conversation snippet is inset within table view cell
+    }
+
     private func buildRenderItem(
         message interaction: TSMessage,
         spoilerState: SpoilerRenderState,
@@ -224,10 +235,11 @@ class MessageDetailViewController: OWSTableViewController2 {
             return nil
         }
 
+        let width = currentConversationSnippetViewWidth
         let conversationStyle = ConversationStyle(
             type: .messageDetails,
             thread: thread,
-            viewWidth: view.width - (cellOuterInsets.totalWidth + (Self.cellHInnerMargin * 2)),
+            viewWidth: width,
             hasWallpaper: false,
             shouldDimWallpaperInDarkMode: false,
             chatColor: DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
@@ -258,21 +270,23 @@ class MessageDetailViewController: OWSTableViewController2 {
         messageStack.axis = .vertical
 
         cellView.reset()
-
         cellView.configure(renderItem: renderItem, componentDelegate: self)
         cellView.isCellVisible = true
-        cellView.autoSetDimension(.height, toSize: renderItem.cellSize.height)
+        cellView.translatesAutoresizingMaskIntoConstraints = false
 
         let cellContainer = UIView()
-        cellContainer.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
-
+        cellContainer.directionalLayoutMargins = .init(top: 0, leading: 0, bottom: 20, trailing: 0)
         cellContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCell)))
-
         cellContainer.addSubview(cellView)
-        cellView.autoPinHeightToSuperviewMargins()
 
-        cellView.autoPinEdge(toSuperviewEdge: .leading)
-        cellView.autoPinEdge(toSuperviewEdge: .trailing)
+        NSLayoutConstraint.activate([
+            cellView.heightAnchor.constraint(equalToConstant: renderItem.cellSize.height),
+
+            cellView.topAnchor.constraint(equalTo: cellContainer.layoutMarginsGuide.topAnchor),
+            cellView.bottomAnchor.constraint(equalTo: cellContainer.layoutMarginsGuide.bottomAnchor),
+            cellView.leadingAnchor.constraint(equalTo: cellContainer.leadingAnchor),
+            cellView.trailingAnchor.constraint(equalTo: cellContainer.trailingAnchor),
+        ])
 
         messageStack.addArrangedSubview(cellContainer)
 
@@ -918,8 +932,6 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
     }
 
     private func refreshContent() {
-        AssertIsOnMainThread()
-
         guard !wasDeleted else {
             // Item was deleted in the tile view gallery.
             // Don't bother re-rendering, it will fail and we'll soon be dismissed.

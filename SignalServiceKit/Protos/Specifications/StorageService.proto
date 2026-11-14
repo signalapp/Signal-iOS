@@ -54,6 +54,7 @@ message ManifestRecord {
       ACCOUNT = 4;
       STORY_DISTRIBUTION_LIST = 5;
       CALL_LINK = 7;
+      CHAT_FOLDER = 8;
       FAVORITE_STICKER_PACK = 11;
     }
 
@@ -78,6 +79,7 @@ message StorageRecord {
     AccountRecord account = 4;
     StoryDistributionListRecord storyDistributionList = 5;
     CallLinkRecord callLink = 7;
+    ChatFolderRecord chatFolder = 8;
     FavoriteStickerRecord sticker = 11;
   }
 }
@@ -341,4 +343,39 @@ message FavoriteStickerRecord { // Can come from uninstalled packs so we must st
   uint64 deletedAtTimestamp = 5; // Timestamp in milliseconds. When present and
                                  // non-zero - `packKey`, and `favoritedAtTimestamp` should
                                  // be unset
+}
+
+message Recipient {
+  message Contact {
+    string serviceId = 1;
+    string e164 = 2;
+    bytes serviceIdBinary = 3; // service ID binary (i.e. 16 byte UUID for ACI, 1 byte prefix + 16 byte UUID for PNI)
+  }
+
+  oneof identifier {
+    Contact contact = 1;
+    bytes legacyGroupId = 2;
+    bytes groupMasterKey = 3;
+  }
+}
+
+message ChatFolderRecord {
+  // Represents the default "All chats" folder record vs all other custom folders
+  enum FolderType {
+    UNKNOWN = 0;
+    ALL = 1;
+    CUSTOM = 2;
+  }
+
+  bytes id = 1;
+  string name = 2;
+  uint32 position = 3;                // Position order of folder, low-to-high from start-to-end
+  bool showOnlyUnread = 4;
+  bool showMutedChats = 5;
+  bool includeAllIndividualChats = 6; // Folder includes all 1:1 chats, unless excluded
+  bool includeAllGroupChats = 7;      // Folder includes all group chats, unless excluded
+  FolderType folderType = 8;
+  repeated Recipient includedRecipients = 9;
+  repeated Recipient excludedRecipients = 10;
+  uint64 deletedAtTimestampMs = 11;   // When non-zero, `position` should be set to 4294967295 (2^32-1) and `includedRecipients` should be empty
 }

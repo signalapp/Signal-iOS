@@ -419,15 +419,6 @@ extension ConversationViewController {
             return false
         }
 
-        let imageQuality = approvedAttachments.imageQuality
-        let imageQualityLevel = ImageQualityLevel.resolvedValue(
-            imageQuality: imageQuality,
-            standardQualityLevel: attachmentLimits.standardQualityLevel,
-        )
-        let sendableAttachments = try await approvedAttachments.attachments.mapAsync {
-            return try await SendableAttachment.forPreviewableAttachment($0, imageQualityLevel: imageQualityLevel)
-        }
-
         if self.isBlockedConversation() {
             let isBlocked = await self.showUnblockConversationUI()
             if isBlocked {
@@ -447,6 +438,23 @@ extension ConversationViewController {
             // They're still untrusted, so stop trying to send.
             return false
         }
+
+        let imageQualityLevel = ImageQualityLevel.resolvedValue(
+            imageQuality: approvedAttachments.imageQuality,
+            standardQualityLevel: attachmentLimits.standardQualityLevel,
+        )
+        let sendableAttachments = try await ModalActivityIndicatorViewController
+            .presentAndPropagateResult(
+                from: viewController,
+                title: CommonStrings.preparingModal,
+            ) {
+                try await approvedAttachments.attachments.mapAsync {
+                    try await SendableAttachment.forPreviewableAttachment(
+                        $0,
+                        imageQualityLevel: imageQualityLevel,
+                    )
+                }
+            }
 
         let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
 
@@ -844,17 +852,24 @@ extension ConversationViewController {
 
         let attachmentLimits = OutgoingAttachmentLimits.currentLimits()
 
-        // Although we want to be able to send higher quality attachments through
-        // the document picker, it's more important that we ensure the sent format
-        // is one all clients can accept (e.g., *not* QuickTime .mov).
-        if SignalAttachment.videoUTISet.contains(contentTypeIdentifier) {
-            self.showApprovalDialogAfterProcessingVideo(dataSource: dataSource, attachmentLimits: attachmentLimits)
-            return
-        }
-
         let attachment: PreviewableAttachment
         do {
-            attachment = try PreviewableAttachment.buildAttachment(dataSource: dataSource, dataUTI: contentTypeIdentifier, attachmentLimits: attachmentLimits)
+            // Although we want to be able to send higher quality attachments through
+            // the document picker, it's more important that we ensure the sent format
+            // is one all clients can accept (e.g., *not* QuickTime .mov).
+            if SignalAttachment.videoUTISet.contains(contentTypeIdentifier) {
+                attachment = try PreviewableAttachment.normalizedVideoAttachment(
+                    dataSource: dataSource,
+                    dataUTI: contentTypeIdentifier,
+                    mustTranscode: true,
+                )
+            } else {
+                attachment = try PreviewableAttachment.buildAttachment(
+                    dataSource: dataSource,
+                    dataUTI: contentTypeIdentifier,
+                    attachmentLimits: attachmentLimits,
+                )
+            }
         } catch {
             DispatchQueue.main.async {
                 self.showErrorAlert(attachmentError: error as? SignalAttachmentError)
@@ -863,29 +878,6 @@ extension ConversationViewController {
         }
 
         showApprovalDialog(forAttachments: [attachment], attachmentLimits: attachmentLimits)
-    }
-
-    private func showApprovalDialogAfterProcessingVideo(dataSource: DataSourcePath, attachmentLimits: OutgoingAttachmentLimits) {
-        AssertIsOnMainThread()
-
-        ModalActivityIndicatorViewController.present(
-            fromViewController: self,
-            title: CommonStrings.preparingModal,
-            canCancel: true,
-            asyncBlock: { modalActivityIndicator in
-                do {
-                    let attachment = try await PreviewableAttachment.compressVideoAsMp4(dataSource: dataSource, attachmentLimits: attachmentLimits)
-                    modalActivityIndicator.dismissIfNotCanceled(completionIfNotCanceled: {
-                        self.showApprovalDialog(forAttachments: [attachment], attachmentLimits: attachmentLimits)
-                    })
-                } catch {
-                    owsFailDebug("Error: \(error).")
-                    modalActivityIndicator.dismissIfNotCanceled(completionIfNotCanceled: {
-                        self.showErrorAlert(attachmentError: error as? SignalAttachmentError)
-                    })
-                }
-            },
-        )
     }
 
     // MARK: - SendMediaNavDelegate
@@ -900,21 +892,15 @@ extension ConversationViewController {
         didApproveAttachments approvedAttachments: ApprovedAttachments,
         messageBody: MessageBody?,
     ) {
-        ModalActivityIndicatorViewController.present(
-            fromViewController: sendMediaNavigationController,
-            title: CommonStrings.preparingModal,
-            asyncBlock: { modal in
-                await self.sendAttachments(
-                    approvedAttachments,
-                    messageBody: messageBody,
-                    from: sendMediaNavigationController,
-                    attachmentLimits: sendMediaNavigationController.attachmentLimits,
-                )
-                modal.dismiss(completion: {
-                    self.dismiss(animated: true)
-                })
-            },
-        )
+        Task {
+            await self.sendAttachments(
+                approvedAttachments,
+                messageBody: messageBody,
+                from: sendMediaNavigationController,
+                attachmentLimits: sendMediaNavigationController.attachmentLimits,
+            )
+            self.dismiss(animated: true)
+        }
     }
 
     /// Attempts to send attachments. Handles prompting to unblock or un-verify safety numbers, as well as showing failure states.

@@ -8,35 +8,35 @@ import SignalServiceKit
 import SignalUI
 
 class CreateCallLinkViewController: InteractiveSheetViewController {
-    private lazy var _navigationController = OWSNavigationController()
+    private let _navigationController = OWSNavigationController()
     private let _callLinkViewController: CallLinkViewController
 
-    override var interactiveScrollViews: [UIScrollView] { [self._callLinkViewController.tableView] }
+    override var interactiveScrollViews: [UIScrollView] { [_callLinkViewController.tableView] }
 
     override var sheetBackgroundColor: UIColor { OWSTableViewController2.tableBackgroundColor }
 
     // MARK: -
 
     init(callLink: CallLink, adminPasskey: Data, callLinkState: SignalServiceKit.CallLinkState) {
-        self._callLinkViewController = CallLinkViewController.forJustCreated(
+        _callLinkViewController = CallLinkViewController.forJustCreated(
             callLink: callLink,
             adminPasskey: adminPasskey,
             callLinkState: callLinkState,
         )
         super.init()
-        self.allowsExpansion = false
+        allowsExpansion = false
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self._navigationController.viewControllers = [self._callLinkViewController]
-        self.addChild(self._navigationController)
-        self._navigationController.didMove(toParent: self)
-        self.contentView.addSubview(self._navigationController.view)
-        self._navigationController.view.autoPinEdgesToSuperviewEdges()
+        _navigationController.viewControllers = [_callLinkViewController]
+        addChild(_navigationController)
+        _navigationController.didMove(toParent: self)
+        contentView.addSubview(_navigationController.view)
+        _navigationController.view.autoPinEdgesToSuperviewEdges()
 
-        self._callLinkViewController.navigationItem.rightBarButtonItem = .doneButton(
+        _callLinkViewController.navigationItem.rightBarButtonItem = .doneButton(
             action: { [unowned self] in
                 self._callLinkViewController.persistIfNeeded()
                 self.dismiss(animated: true)
@@ -47,19 +47,28 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
     override func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
 
-        self.view.layoutIfNeeded()
+        // Setting up appearance must be done just before view becomes visible,
+        // otherwise UINavigationBar doesn't resolve the background color correctly.
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = sheetBackgroundColor
+        _navigationController.navigationBar.standardAppearance = appearance
+        _navigationController.navigationBar.compactAppearance = appearance
+        _navigationController.navigationBar.scrollEdgeAppearance = appearance
+
+        view.layoutIfNeeded()
         // InteractiveSheetViewController doesn't work with adjustedContentInset.
-        self._callLinkViewController.tableView.contentInsetAdjustmentBehavior = .never
-        self._callLinkViewController.tableView.contentInset = UIEdgeInsets(
+        _callLinkViewController.tableView.contentInsetAdjustmentBehavior = .never
+        _callLinkViewController.tableView.contentInset = UIEdgeInsets(
             top: self._navigationController.navigationBar.bounds.size.height,
             left: 0,
             bottom: self.view.safeAreaInsets.bottom,
             right: 0,
         )
 
-        self.minimizedHeight = (
-            self._callLinkViewController.tableView.contentSize.height
-                + self._callLinkViewController.tableView.contentInset.totalHeight
+        minimizedHeight = (
+            _callLinkViewController.tableView.contentSize.height
+                + _callLinkViewController.tableView.contentInset.totalHeight
                 + InteractiveSheetViewController.Constants.handleHeight,
         )
     }

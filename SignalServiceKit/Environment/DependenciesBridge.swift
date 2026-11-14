@@ -94,6 +94,8 @@ public class DependenciesBridge {
     public let changePhoneNumberPniManager: ChangePhoneNumberPniManager
     public let chatColorSettingStore: ChatColorSettingStore
     public let chatConnectionManager: ChatConnectionManager
+    public let chatFolderManager: ChatFolderManager
+    public let chatFolderStore: ChatFolderStore
     public let clockSkewManager: ClockSkewManager
     public let contactShareManager: ContactShareManager
     public let cron: Cron
@@ -158,7 +160,6 @@ public class DependenciesBridge {
     public let pinnedMessageManager: PinnedMessageManager
     public let pinnedMessageExpirationJob: PinnedMessageExpirationJob
     public let pinnedThreadManager: PinnedThreadManager
-    let pinnedThreadMerger: any PinnedThreadMerger
     let pinnedThreadStore: PinnedThreadStore
     public let plaintextTakeoutManager: PlaintextTakeoutManager
     public let pollMessageManager: PollMessageManager
@@ -251,6 +252,8 @@ public class DependenciesBridge {
         changePhoneNumberPniManager: ChangePhoneNumberPniManager,
         chatColorSettingStore: ChatColorSettingStore,
         chatConnectionManager: ChatConnectionManager,
+        chatFolderManager: ChatFolderManager,
+        chatFolderStore: ChatFolderStore,
         clockSkewManager: ClockSkewManager,
         contactShareManager: ContactShareManager,
         cron: Cron,
@@ -314,7 +317,7 @@ public class DependenciesBridge {
         phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher,
         pinnedMessageManager: PinnedMessageManager,
         pinnedMessageExpirationJob: PinnedMessageExpirationJob,
-        pinnedThreadManager: any PinnedThreadManager & PinnedThreadMerger,
+        pinnedThreadManager: any PinnedThreadManager,
         pinnedThreadStore: PinnedThreadStore,
         plaintextTakeoutManager: PlaintextTakeoutManager,
         pollMessageManager: PollMessageManager,
@@ -406,6 +409,8 @@ public class DependenciesBridge {
         self.changePhoneNumberPniManager = changePhoneNumberPniManager
         self.chatColorSettingStore = chatColorSettingStore
         self.chatConnectionManager = chatConnectionManager
+        self.chatFolderManager = chatFolderManager
+        self.chatFolderStore = chatFolderStore
         self.clockSkewManager = clockSkewManager
         self.contactShareManager = contactShareManager
         self.cron = cron
@@ -470,7 +475,6 @@ public class DependenciesBridge {
         self.pinnedMessageManager = pinnedMessageManager
         self.pinnedMessageExpirationJob = pinnedMessageExpirationJob
         self.pinnedThreadManager = pinnedThreadManager
-        self.pinnedThreadMerger = pinnedThreadManager
         self.pinnedThreadStore = pinnedThreadStore
         self.plaintextTakeoutManager = plaintextTakeoutManager
         self.pollMessageManager = pollMessageManager

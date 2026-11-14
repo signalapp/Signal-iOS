@@ -216,7 +216,7 @@ public class BadgeIssueSheetState {
         case .dontAsk:
             return ActionButton(
                 action: .dismiss,
-                text: CommonStrings.okayButton,
+                text: CommonStrings.okButton,
                 hasNotNow: false,
             )
         case .askToDonate(let donationAllowedToken):

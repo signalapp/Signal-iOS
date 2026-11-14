@@ -1,15 +1,27 @@
 #!/usr/bin/env python3
 
+import argparse
+import functools
 import json
+import os
 import re
 import subprocess
 from pathlib import Path
+from lint.util import get_changed_paths
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_PATH = REPO_ROOT / "Signal/Settings.bundle/Acknowledgements.plist"
 THIRD_PARTY_PATH = REPO_ROOT / "ThirdParty"
 WORKSPACE_PATH = REPO_ROOT / "Signal.xcworkspace"
 PACKAGE_RESOLVED_PATH = WORKSPACE_PATH / "xcshareddata/swiftpm/Package.resolved"
+
+# Only run if any of these paths have changed
+INPUT_PATHS = (
+    "Signal.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+    "Signal/Settings.bundle/Acknowledgements.plist",
+    "Scripts/generate_acknowledgements.py",
+    "ThirdParty/",
+)
 
 LICENSE_FILE_PATTERN = re.compile(r"^(LICEN[CS]E|COPYING)(\.(md|txt))?$", re.IGNORECASE)
 
@@ -29,6 +41,10 @@ HEADER_SPECIFIER = {
     "Title": "Acknowledgements",
     "FooterText": "This application makes use of the following third party libraries:",
 }
+
+
+def has_changed_inputs(changed_paths):
+    return any(path.startswith(INPUT_PATHS) for path in changed_paths)
 
 
 def get_acknowledgements_paths(source_packages_path, workspace_state):
@@ -72,6 +88,21 @@ def get_third_party_specifiers():
     return specifiers
 
 
+# Git hooks export variables like GIT_INDEX_FILE that point SwiftPM's own git
+# commands at this repository, which breaks package checkouts. Like git does
+# for submodules, keep the ones carrying `git -c` configuration.
+@functools.cache
+def get_package_environment():
+    local_env_vars = subprocess.run(
+        ["git", "rev-parse", "--local-env-vars"],
+        capture_output=True,
+        encoding="utf8",
+        check=True,
+    ).stdout.split()
+    removed = set(local_env_vars) - {"GIT_CONFIG_PARAMETERS", "GIT_CONFIG_COUNT"}
+    return {k: v for k, v in os.environ.items() if k not in removed}
+
+
 def get_source_packages_path():
     output = subprocess.run(
         [
@@ -84,6 +115,7 @@ def get_source_packages_path():
             "-json",
             "-disableAutomaticPackageResolution",
         ],
+        env=get_package_environment(),
         capture_output=True,
         encoding="utf8",
         check=True,
@@ -161,6 +193,7 @@ def get_swift_package_license_text(checkout_path):
 def get_swift_package_name(checkout_path):
     output = subprocess.run(
         ["swift", "package", "dump-package", "--package-path", checkout_path],
+        env=get_package_environment(),
         capture_output=True,
         encoding="utf8",
         check=True,
@@ -224,7 +257,7 @@ def group_by_license(specifiers):
     return grouped_specifiers
 
 
-def main():
+def generate():
     source_packages_path = get_source_packages_path()
     workspace_state = get_workspace_state(source_packages_path)
     with open(PACKAGE_RESOLVED_PATH, "r", encoding="utf8") as file:
@@ -249,6 +282,22 @@ def main():
         encoding="utf8",
         check=True,
     )
+
+
+def main():
+    parser = argparse.ArgumentParser(description="regenerate Acknowledgements.plist")
+    parser.add_argument(
+        "--ref",
+        metavar="commit-sha",
+        help="only regenerate if an input has changed since this commit",
+    )
+    ns = parser.parse_args()
+
+    if ns.ref is not None and not has_changed_inputs(get_changed_paths(ns.ref)):
+        print(f"Acknowledgements inputs are unchanged since {ns.ref}.")
+        return
+
+    generate()
 
 
 if __name__ == "__main__":

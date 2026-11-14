@@ -121,13 +121,13 @@ public class Attachment {
         public let unencryptedByteCount: UInt32
 
         /// A cached pixel size for this attachment, if it is visual media.
-        public var cachedMediaSizePixels: CGSize?
+        public var mediaSizePixels: CGSize?
 
         /// A cached duration for this attachment, if it is video.
-        public var cachedVideoDuration: TimeInterval?
+        public var videoDuration: TimeInterval?
         /// A file path to a cached image file encrypted with this attachment's
         /// `encryptionKey`, if it is video.
-        public var cachedVideoStillFrameRelativeFilePath: String?
+        public var videoStillFrameRelativeFilePath: String?
 
         /// File digest info.
         ///
@@ -148,9 +148,9 @@ public class Attachment {
                 encryptionKey: pendingAttachment.encryptionKey,
                 encryptedByteCount: pendingAttachment.encryptedByteCount,
                 unencryptedByteCount: pendingAttachment.unencryptedByteCount,
-                cachedMediaSizePixels: pendingAttachment.mediaPixelSize,
-                cachedVideoDuration: pendingAttachment.videoDuration,
-                cachedVideoStillFrameRelativeFilePath: pendingAttachment.videoStillFrameRelativeFilePath,
+                mediaSizePixels: pendingAttachment.mediaPixelSize,
+                videoDuration: pendingAttachment.videoDuration,
+                videoStillFrameRelativeFilePath: pendingAttachment.videoStillFrameRelativeFilePath,
                 ciphertextDigest: pendingAttachment.ciphertextDigest,
                 localRelativeFilePath: pendingAttachment.localRelativeFilePath,
             )
@@ -161,9 +161,9 @@ public class Attachment {
             encryptionKey: Data,
             encryptedByteCount: UInt32,
             unencryptedByteCount: UInt32,
-            cachedMediaSizePixels: CGSize?,
-            cachedVideoDuration: TimeInterval?,
-            cachedVideoStillFrameRelativeFilePath: String?,
+            mediaSizePixels: CGSize?,
+            videoDuration: TimeInterval?,
+            videoStillFrameRelativeFilePath: String?,
             ciphertextDigest: Data,
             localRelativeFilePath: String,
         ) {
@@ -171,9 +171,9 @@ public class Attachment {
             self.mediaName = Attachment.mediaName(plaintextHash: plaintextHash, encryptionKey: encryptionKey)
             self.encryptedByteCount = encryptedByteCount
             self.unencryptedByteCount = unencryptedByteCount
-            self.cachedMediaSizePixels = cachedMediaSizePixels
-            self.cachedVideoDuration = cachedVideoDuration
-            self.cachedVideoStillFrameRelativeFilePath = cachedVideoStillFrameRelativeFilePath
+            self.mediaSizePixels = mediaSizePixels
+            self.videoDuration = videoDuration
+            self.videoStillFrameRelativeFilePath = videoStillFrameRelativeFilePath
             self.ciphertextDigest = ciphertextDigest
             self.localRelativeFilePath = localRelativeFilePath
         }
@@ -373,18 +373,18 @@ public class Attachment {
                 encryptionKey: self.encryptionKey,
                 encryptedByteCount: encryptedByteCount,
                 unencryptedByteCount: unencryptedByteCount,
-                cachedMediaSizePixels: {
+                mediaSizePixels: {
                     if
-                        let width = record.cachedMediaWidthPixels.map({ Int($0) }),
-                        let height = record.cachedMediaHeightPixels.map({ Int($0) })
+                        let width = record.mediaWidthPixels.map({ Int($0) }),
+                        let height = record.mediaHeightPixels.map({ Int($0) })
                     {
                         return CGSize(width: width, height: height)
                     } else {
                         return nil
                     }
                 }(),
-                cachedVideoDuration: record.cachedVideoDurationSeconds,
-                cachedVideoStillFrameRelativeFilePath: record.videoStillFrameRelativeFilePath,
+                videoDuration: record.videoDurationSeconds,
+                videoStillFrameRelativeFilePath: record.videoStillFrameRelativeFilePath,
                 ciphertextDigest: ciphertextDigest,
                 localRelativeFilePath: localRelativeFilePath,
             )

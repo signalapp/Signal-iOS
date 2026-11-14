@@ -18,6 +18,7 @@ public final class StickerPackRecord: SDSCodableModel, Decodable, Equatable, NSC
     public let items: [StickerPackItem]
     public let dateCreated: Date
     public private(set) var isInstalled: Bool
+    public private(set) var sortOrder: Int64
 
     public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
@@ -30,6 +31,7 @@ public final class StickerPackRecord: SDSCodableModel, Decodable, Equatable, NSC
         case isInstalled
         case items
         case title
+        case sortOrder
     }
 
     public init(from decoder: any Decoder) throws {
@@ -46,6 +48,7 @@ public final class StickerPackRecord: SDSCodableModel, Decodable, Equatable, NSC
         self.items = try LegacySDSSerializer().deserializeLegacyArchivedArray(itemsData, ofClass: StickerPackItem.self)
         self.dateCreated = Date(timeIntervalSince1970: try container.decode(TimeInterval.self, forKey: .dateCreated))
         self.isInstalled = try container.decode(Bool.self, forKey: .isInstalled)
+        self.sortOrder = try container.decode(Int64.self, forKey: .sortOrder)
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -60,6 +63,7 @@ public final class StickerPackRecord: SDSCodableModel, Decodable, Equatable, NSC
         try container.encode(LegacySDSSerializer().serializeAsLegacySDSData(self.items as [NSSecureCoding] as NSArray), forKey: .items)
         try container.encode(self.dateCreated.timeIntervalSince1970, forKey: .dateCreated)
         try container.encode(self.isInstalled, forKey: .isInstalled)
+        try container.encode(self.sortOrder, forKey: .sortOrder)
     }
 
     public static func ==(lhs: StickerPackRecord, rhs: StickerPackRecord) -> Bool {
@@ -70,6 +74,7 @@ public final class StickerPackRecord: SDSCodableModel, Decodable, Equatable, NSC
         guard lhs.isInstalled == rhs.isInstalled else { return false }
         guard lhs.items == rhs.items else { return false }
         guard lhs.title == rhs.title else { return false }
+        guard lhs.sortOrder == rhs.sortOrder else { return false }
         return true
     }
 
@@ -93,6 +98,7 @@ public final class StickerPackRecord: SDSCodableModel, Decodable, Equatable, NSC
             items: items,
             dateCreated: Date(),
             isInstalled: false,
+            sortOrder: 0,
         )
     }
 
@@ -106,6 +112,7 @@ public final class StickerPackRecord: SDSCodableModel, Decodable, Equatable, NSC
         items: [StickerPackItem],
         dateCreated: Date,
         isInstalled: Bool,
+        sortOrder: Int64,
     ) {
         self.id = id
         self.uniqueId = uniqueId
@@ -116,6 +123,7 @@ public final class StickerPackRecord: SDSCodableModel, Decodable, Equatable, NSC
         self.items = items
         self.dateCreated = dateCreated
         self.isInstalled = isInstalled
+        self.sortOrder = sortOrder
     }
 
     public func copy(with zone: NSZone? = nil) -> Any {
@@ -129,6 +137,7 @@ public final class StickerPackRecord: SDSCodableModel, Decodable, Equatable, NSC
             items: self.items,
             dateCreated: self.dateCreated,
             isInstalled: self.isInstalled,
+            sortOrder: self.sortOrder,
         )
     }
 
@@ -160,8 +169,30 @@ public final class StickerPackRecord: SDSCodableModel, Decodable, Equatable, NSC
         anyUpdate(transaction: tx, block: { $0.isInstalled = isInstalled })
     }
 
+    func updateWith(sortOrder: Int64, tx: DBWriteTransaction) {
+        anyUpdate(transaction: tx, block: {
+            $0.sortOrder = sortOrder
+        })
+    }
+
+    func updateWith(isInstalled: Bool, sortOrder: Int64, tx: DBWriteTransaction) {
+        anyUpdate(transaction: tx, block: {
+            $0.isInstalled = isInstalled
+            $0.sortOrder = sortOrder
+        })
+    }
+
     func item(forStickerId stickerId: UInt32) -> StickerPackItem? {
         if cover.stickerId == stickerId { return cover }
         return items.first { $0.stickerId == stickerId }
+    }
+
+    static func maxInstalledSortOrder(tx: DBReadTransaction) -> Int64? {
+        return failIfThrows {
+            try StickerPackRecord
+                .filter(Column(CodingKeys.isInstalled) == true)
+                .select(max(Column(CodingKeys.sortOrder)), as: Int64.self)
+                .fetchOne(tx.database)
+        }
     }
 }

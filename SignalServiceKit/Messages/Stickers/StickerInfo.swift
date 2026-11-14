@@ -9,7 +9,7 @@ import Foundation
 public final class StickerInfo: NSObject, NSSecureCoding {
 
     public let packId: Data
-    let packKey: Data
+    public let packKey: Data
     public let stickerId: UInt32
 
     init(packId: Data, packKey: Data, stickerId: UInt32) {

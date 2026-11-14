@@ -132,7 +132,7 @@ class AvatarSettingsViewController: OWSTableViewController2, UIImagePickerContro
     private let avatarImageView = AvatarImageView()
 
     private var avatarImageViewSize: CGFloat {
-        min(160, CGFloat(view.width * 0.4).rounded(.up))
+        min(160, CGFloat(tableViewContentWidth * 0.4).rounded(.up))
     }
 
     private var avatarImageViewSizeConstraint: NSLayoutConstraint?
@@ -224,7 +224,7 @@ class AvatarSettingsViewController: OWSTableViewController2, UIImagePickerContro
     }
 
     private func configureAvatarsCell(_ cell: UITableViewCell) {
-        let rowWidth = max(0, view.width - (view.safeAreaInsets.totalWidth + cellOuterInsets.totalWidth + Self.cellHInnerMargin * 2))
+        let rowWidth = tableViewContentWidth - Self.cellHInnerMargin * 2
         let avatarSpacing: CGFloat = 16
         let minAvatarSize: CGFloat = min(66, (rowWidth - (avatarSpacing * 3)) / 4)
         let avatarsPerRow = max(1, Int(floor(rowWidth + avatarSpacing) / (minAvatarSize + avatarSpacing)))
@@ -322,12 +322,13 @@ class AvatarSettingsViewController: OWSTableViewController2, UIImagePickerContro
         updateHeaderViewLayout()
     }
 
-    private var previousSizeReference: CGFloat?
+    private var currentReferenceWidth: CGFloat?
 
     private func updateHeaderViewLayout(forceUpdate: Bool = false) {
+        let referenceWidth = tableViewContentWidth
         // Update button layout only when the view size changes.
-        guard view.width != previousSizeReference || forceUpdate else { return }
-        previousSizeReference = view.width
+        guard referenceWidth != currentReferenceWidth || forceUpdate else { return }
+        currentReferenceWidth = referenceWidth
 
         avatarImageViewSizeConstraint?.constant = avatarImageViewSize
 
@@ -410,7 +411,7 @@ class AvatarSettingsViewController: OWSTableViewController2, UIImagePickerContro
 
         let spacerWidth: CGFloat = 8
         let totalSpacerWidth = CGFloat(headerButtons.count - 1) * spacerWidth
-        let maxAvailableButtonWidth = view.width - (cellOuterInsets.totalWidth + totalSpacerWidth)
+        let maxAvailableButtonWidth = tableViewContentWidth - totalSpacerWidth
         let minButtonWidth = maxAvailableButtonWidth / 4
 
         var buttonWidth = max(maxIconButtonWidth, minButtonWidth)

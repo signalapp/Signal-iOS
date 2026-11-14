@@ -839,7 +839,7 @@ class BackupSettingsViewController:
                     comment: "Message shown in an action sheet when the user disables Backups, explaining that their media is downloading first.",
                 ),
             )
-            downloadsActionSheet.addAction(.okay)
+            downloadsActionSheet.addAction(.ok)
             await OWSActionSheets.showAndAwaitActionSheet(downloadsActionSheet, fromViewController: self)
         }
 
@@ -1008,7 +1008,7 @@ class BackupSettingsViewController:
                     comment: "Message for an action sheet explaining that you must be registered to make a Backup.",
                 ),
             )
-            actionSheet.addAction(.okay)
+            actionSheet.addAction(.ok)
 
         case BackupExportJobError.needsWifi:
             actionSheet = ActionSheetController(
@@ -1042,7 +1042,7 @@ class BackupSettingsViewController:
                     comment: "Message for an action sheet explaining that performing a backup failed because the backup file is too large to upload.",
                 ),
             )
-            actionSheet.addAction(.okay)
+            actionSheet.addAction(.ok)
 
         case _ where error.isNetworkFailureOrTimeout || error.is5xxServiceResponse:
             actionSheet = ActionSheetController(
@@ -1051,7 +1051,7 @@ class BackupSettingsViewController:
                     comment: "Message for an action sheet explaining that performing a backup failed with a network error.",
                 ),
             )
-            actionSheet.addAction(.okay)
+            actionSheet.addAction(.ok)
 
         default:
             actionSheet = ActionSheetController(
@@ -1064,7 +1064,7 @@ class BackupSettingsViewController:
                 emailFilter: .backupExportFailed,
                 fromViewController: self,
             ))
-            actionSheet.addAction(.okay)
+            actionSheet.addAction(.ok)
         }
 
         presentActionSheet(actionSheet)

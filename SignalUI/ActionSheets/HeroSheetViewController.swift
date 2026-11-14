@@ -835,7 +835,7 @@ open class HeroSheetViewController: StackSheetViewController {
         hero: .animation(named: "linking-device-light", height: 192),
         title: LocalizationNotNeeded("Scan QR Code"),
         body: LocalizationNotNeeded("Use this device to scan the QR code displayed on the device you want to link"),
-        primaryButton: .dismissing(title: CommonStrings.okayButton),
+        primaryButton: .dismissing(title: CommonStrings.okButton),
     ))
 }
 

@@ -44,6 +44,20 @@ public struct RecipientFetcher {
         return result
     }
 
+    func fetchOrCreate(contactThread: TSContactThread, tx: DBWriteTransaction) -> SignalRecipient? {
+        let serviceId = contactThread.contactUUID.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
+        if let aci = serviceId as? Aci {
+            return fetchOrCreate(serviceId: aci, tx: tx)
+        }
+        if let phoneNumber = E164(contactThread.contactPhoneNumber) {
+            return fetchOrCreate(phoneNumber: phoneNumber, tx: tx)
+        }
+        if let pni = serviceId as? Pni {
+            return fetchOrCreate(serviceId: pni, tx: tx)
+        }
+        return nil
+    }
+
     public func fetchOrCreate(address: SignalServiceAddress, tx: DBWriteTransaction) -> SignalRecipient? {
         if let serviceId = address.serviceId {
             return fetchOrCreate(serviceId: serviceId, tx: tx)

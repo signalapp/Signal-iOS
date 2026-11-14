@@ -152,6 +152,7 @@ public class StickerManager {
             block: { [weak self] _ in
                 guard let self else { return }
                 downloadPendingStickerPacks()
+                scheduleDownloadPendingFavoritedStickers()
             },
         )
     }
@@ -227,6 +228,12 @@ public class StickerManager {
     public func installedStickerPacks(transaction: DBReadTransaction) -> [StickerPackRecord] {
         return allStickerPacks(transaction: transaction).filter {
             $0.isInstalled
+        }.sorted {
+            if $0.sortOrder != $1.sortOrder {
+                $0.sortOrder < $1.sortOrder
+            } else {
+                $0.dateCreated > $1.dateCreated
+            }
         }
     }
 
@@ -239,40 +246,54 @@ public class StickerManager {
         wasLocallyInitiated: Bool,
         transaction: DBWriteTransaction,
     ) {
-        guard let stickerPack = fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction) else {
-            Logger.info("Skipping uninstall; not saved or installed.")
-            return
-        }
+        uninstallStickerPacks(stickerPackInfos: [stickerPackInfo], wasLocallyInitiated: wasLocallyInitiated, transaction: transaction)
+    }
 
-        let isDefaultStickerPack = DefaultStickerPack.isDefaultStickerPack(packId: stickerPackInfo.packId)
-        let shouldRemove = !isDefaultStickerPack
-
-        if shouldRemove {
-            uninstallSticker(stickerInfo: stickerPack.coverInfo, transaction: transaction)
-
-            for stickerInfo in stickerPack.stickerInfos() {
-                if stickerInfo == stickerPack.coverInfo {
-                    // Don't uninstall the cover for saved packs.
-                    continue
-                }
-                uninstallSticker(stickerInfo: stickerInfo, transaction: transaction)
+    public func uninstallStickerPacks(
+        stickerPackInfos: [StickerPackInfo],
+        wasLocallyInitiated: Bool,
+        transaction: DBWriteTransaction,
+    ) {
+        let packs: [StickerPackInfo] = stickerPackInfos.compactMap { stickerPackInfo in
+            guard let stickerPack = fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction) else {
+                Logger.info("Skipping uninstall; not saved or installed.")
+                return nil
             }
 
-            stickerPack.anyRemove(transaction: transaction)
-        } else {
-            stickerPack.updateWith(isInstalled: false, tx: transaction)
+            let isDefaultStickerPack = DefaultStickerPack.isDefaultStickerPack(packId: stickerPackInfo.packId)
+            let shouldRemove = !isDefaultStickerPack
+
+            if shouldRemove {
+                uninstallSticker(stickerInfo: stickerPack.coverInfo, transaction: transaction)
+
+                for stickerInfo in stickerPack.stickerInfos() {
+                    if stickerInfo == stickerPack.coverInfo {
+                        // Don't uninstall the cover for saved packs.
+                        continue
+                    }
+                    uninstallSticker(stickerInfo: stickerInfo, transaction: transaction)
+                }
+
+                stickerPack.anyRemove(transaction: transaction)
+            } else {
+                stickerPack.updateWith(isInstalled: false, tx: transaction)
+            }
+
+            return stickerPackInfo
         }
 
-        if wasLocallyInitiated {
-            enqueueStickerSyncMessage(
-                operationType: .remove,
-                packs: [stickerPackInfo],
-                transaction: transaction,
-            )
-        }
+        if !packs.isEmpty {
+            if wasLocallyInitiated {
+                enqueueStickerSyncMessage(
+                    operationType: .remove,
+                    packs: packs,
+                    transaction: transaction,
+                )
+            }
 
-        transaction.addSyncCompletion {
-            self.packsDidChangeEvent.requestNotify()
+            transaction.addSyncCompletion {
+                self.packsDidChangeEvent.requestNotify()
+            }
         }
     }
 
@@ -309,6 +330,28 @@ public class StickerManager {
                     transaction: tx,
                 )
             }
+        }
+    }
+
+    public func reorder(
+        packInfos: [StickerPackInfo],
+        transaction: DBWriteTransaction,
+    ) {
+        let packs: [StickerPackRecord] = packInfos.compactMap { info in
+            guard let stickerPack = fetchStickerPack(stickerPackInfo: info, transaction: transaction) else {
+                Logger.info("Can't find pack, skipping reordering for this pack.")
+                return nil
+            }
+            return stickerPack
+        }
+
+        for (index, pack) in packs.enumerated() {
+            pack.updateWith(sortOrder: Int64(index), tx: transaction)
+        }
+
+        transaction.addSyncCompletion {
+            // We only need to notify the sticker keyboard
+            self.stickersDidChangeEvent.requestNotify()
         }
     }
 
@@ -385,7 +428,9 @@ public class StickerManager {
             return .value(())
         }
 
-        stickerPack.updateWith(isInstalled: true, tx: transaction)
+        // Put new packs at the end
+        let sortOrder = StickerPackRecord.maxInstalledSortOrder(tx: transaction).map { $0 + 1 } ?? 0
+        stickerPack.updateWith(isInstalled: true, sortOrder: sortOrder, tx: transaction)
 
         let promise = installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
 
@@ -621,8 +666,12 @@ public class StickerManager {
     }
 
     public func isStickerInstalled(stickerInfo: StickerInfo, transaction: DBReadTransaction) -> Bool {
-        let uniqueId = StickerManager.uniqueId(for: stickerInfo)
-        return InstalledStickerRecord.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil
+        let installedSticker = fetchInstalledSticker(stickerInfo: stickerInfo, transaction: transaction)
+        guard let installedSticker else {
+            return false
+        }
+
+        return stickerDataUrl(forInstalledSticker: installedSticker, verifyExists: true) != nil
     }
 
     typealias CleanupCompletion = () -> Void
@@ -706,12 +755,25 @@ public class StickerManager {
         emojiString: String?,
     ) async -> Bool {
         return await installStickerOperationQueue.runWithoutTaskCancellationHandler(forKey: stickerInfo.asKey()) {
-            let alreadyInstalled = db.read { tx in
-                fetchInstalledSticker(stickerInfo: stickerInfo, transaction: tx) != nil
+            let oldInstalledSticker = db.read { tx in
+                fetchInstalledSticker(stickerInfo: stickerInfo, transaction: tx)
             }
 
-            guard !alreadyInstalled else {
+            if
+                let oldInstalledSticker,
+                stickerDataUrl(forInstalledSticker: oldInstalledSticker, verifyExists: true) != nil
+            {
+                // Already installed, stored in DB and on-disk.
                 return false
+            }
+
+            if let oldInstalledSticker {
+                // If we have an old sticker record, but no file on-disk, remove the record
+                // to make sure we always match the local key between the file on disk and DB.
+                Logger.warn("Replacing installed sticker record with missing file.")
+                await db.awaitableWrite { tx in
+                    oldInstalledSticker.anyRemove(transaction: tx)
+                }
             }
 
             let stickerLocalKey: AttachmentKey
@@ -724,6 +786,7 @@ public class StickerManager {
                     isFavorites: false,
                 )
             } catch {
+                Logger.warn("Failed to write sticker to disk: \(error)")
                 return false
             }
 
@@ -935,7 +998,14 @@ public class StickerManager {
         NotificationCenter.default.postOnMainThread(name: Self.recentStickersDidChange, object: nil)
     }
 
-    private func removeFromRecentStickers(
+    public func removeAllRecentStickers(
+        transaction: DBWriteTransaction,
+    ) {
+        store.removeValue(forKey: Self.kRecentStickersKey, transaction: transaction)
+        NotificationCenter.default.postOnMainThread(name: Self.recentStickersDidChange, object: nil)
+    }
+
+    public func removeFromRecentStickers(
         _ stickerInfo: StickerInfo,
         transaction: DBWriteTransaction,
     ) {
@@ -1304,6 +1374,23 @@ public class StickerManager {
         }
     }
 
+    public func addFavoritesStickerPlaceholder(
+        stickerInfo: StickerInfo,
+        favoritedAtTimestamp: UInt64,
+        existingRecord: FavoriteStickerRecord?,
+        tx: DBWriteTransaction,
+    ) {
+        stickerFavoriteStore.addStickerToFavorites(
+            stickerInfo: stickerInfo,
+            contentType: existingRecord?.contentType ?? nil,
+            emojiString: existingRecord?.emojiString ?? nil,
+            localKey: existingRecord?.localKey ?? nil,
+            plaintextLength: existingRecord?.plaintextLength ?? nil,
+            favoritedAtTimestamp: favoritedAtTimestamp,
+            tx: tx,
+        )
+    }
+
     /// Adds a placeholder database entry to the favorites stickers table.
     public func mergeFavoriteStickerFromStorageServiceAndCheckNeedsUpdate(
         packID: Data,
@@ -1334,13 +1421,10 @@ public class StickerManager {
 
             let stickerInfo = StickerInfo(packId: packID, packKey: packKey, stickerId: storageServiceRecord.stickerID)
 
-            stickerFavoriteStore.addStickerToFavorites(
+            addFavoritesStickerPlaceholder(
                 stickerInfo: stickerInfo,
-                contentType: existingRecord?.contentType ?? nil,
-                emojiString: existingRecord?.emojiString ?? nil,
-                localKey: existingRecord?.localKey ?? nil,
-                plaintextLength: existingRecord?.plaintextLength ?? nil,
                 favoritedAtTimestamp: storageServiceRecord.favoritedAtTimestamp,
+                existingRecord: existingRecord,
                 tx: tx,
             )
 
@@ -1554,6 +1638,13 @@ public class StickerManager {
             let stickerInfo = StickerInfo(packId: $0.packId, packKey: packKey, stickerId: $0.stickerId)
             return stickerInfo
         }
+    }
+
+    func enumerateAllStickerFavorites(
+        tx: DBReadTransaction,
+        block: (FavoriteStickerRecord) throws(CancellationError) -> Bool,
+    ) throws(CancellationError) {
+        try stickerFavoriteStore.enumerateAllStickerFavorites(tx: tx, block: block)
     }
 
     // MARK: - StickerPack Download Task Queue

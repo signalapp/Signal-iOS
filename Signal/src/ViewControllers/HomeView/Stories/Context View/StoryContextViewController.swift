@@ -225,8 +225,12 @@ class StoryContextViewController: OWSViewController, DatabaseChangeDelegate,
         return button
     }()
 
+    // MARK: UIViewController
+
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        layout = layoutForCurrentViewState()
 
         view.layer.masksToBounds = true
 
@@ -246,78 +250,88 @@ class StoryContextViewController: OWSViewController, DatabaseChangeDelegate,
         leftTapGestureRecognizer.require(toFail: pauseGestureRecognizer)
         rightTapGestureRecognizer.require(toFail: pauseGestureRecognizer)
 
+        mediaViewContainer.clipsToBounds = true
+        mediaViewContainer.translatesAutoresizingMaskIntoConstraints = false
+        mediaViewContainer.directionalLayoutMargins = .init(margin: OWSTableViewController2.defaultHOuterMargin)
         view.addSubview(mediaViewContainer)
-        view.addSubview(onboardingOverlay)
 
+        // Variable top margin used in `phone` layout.
+        // Constrain to the top of the view now and update offset with the height of top safe area later.
+        // Can't constrain to the safe area layout guide because safe area insets changes during interactive dismiss.
+        mediaViewContainerTopEdgeConstraintPhoneLayout = mediaViewContainer.topAnchor.constraint(equalTo: view.topAnchor)
+
+        // Onboarding screen has the same frame media viewer has.
+        view.addSubview(onboardingOverlay)
         onboardingOverlay.autoPinEdges(toEdgesOf: mediaViewContainer)
 
+        // "Reply" is always stretched horizontally along the bottom of the media view.
+        repliesAndViewsButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(repliesAndViewsButton)
-        repliesAndViewsButton.autoPinEdge(.leading, to: .leading, of: mediaViewContainer)
-        repliesAndViewsButton.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer)
+        NSLayoutConstraint.activate([
+            repliesAndViewsButton.leadingAnchor.constraint(equalTo: mediaViewContainer.leadingAnchor),
+            repliesAndViewsButton.trailingAnchor.constraint(equalTo: mediaViewContainer.trailingAnchor),
+        ])
 
+        // "Sending" occupies same spot where "Replies" button is. They're not visiable at the same time.
         sendingIndicatorStackView.axis = .horizontal
         sendingIndicatorStackView.spacing = 13
         sendingIndicatorStackView.alignment = .center
+        sendingIndicatorStackView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(sendingIndicatorStackView)
-        sendingIndicatorStackView.autoPinEdges(toEdgesOf: repliesAndViewsButton)
+        NSLayoutConstraint.activate([
+            sendingIndicatorStackView.topAnchor.constraint(equalTo: repliesAndViewsButton.topAnchor),
+            sendingIndicatorStackView.leadingAnchor.constraint(equalTo: repliesAndViewsButton.leadingAnchor),
+            sendingIndicatorStackView.trailingAnchor.constraint(equalTo: repliesAndViewsButton.trailingAnchor),
+            sendingIndicatorStackView.bottomAnchor.constraint(equalTo: repliesAndViewsButton.bottomAnchor),
+        ])
 
+        // Playback progress view: 2 dp tall
         playbackProgressView.isUserInteractionEnabled = false
+        playbackProgressView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(playbackProgressView)
+        NSLayoutConstraint.activate([
+            playbackProgressView.heightAnchor.constraint(equalToConstant: 2),
+        ])
 
-        let progressViewSideMargin: CGFloat
-        if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
-            let cornerRadius: CGFloat = if #available(iOS 26, *) { 40 } else { 18 }
-            // iPhone with notch or iPad (views/replies rendered below media, media is in a card)
-            mediaViewContainer.layer.cornerRadius = cornerRadius
-            mediaViewContainer.clipsToBounds = true
-
-            onboardingOverlay.layer.cornerRadius = cornerRadius
-            onboardingOverlay.clipsToBounds = true
-
-            progressViewSideMargin = OWSTableViewController2.defaultHOuterMargin + 4
-            // Equal margins on the sides and the bottom.
-            playbackProgressView.autoPinEdge(.bottom, to: .bottom, of: mediaViewContainer, withOffset: -progressViewSideMargin)
-            repliesAndViewsButton.autoPinEdge(.top, to: .bottom, of: mediaViewContainer)
-        } else {
-            progressViewSideMargin = OWSTableViewController2.defaultHOuterMargin
-
-            // iPhone with home button (views/replies rendered on top of media, media is fullscreen)
-            repliesAndViewsButton.autoPinEdge(.bottom, to: .bottom, of: mediaViewContainer)
-            playbackProgressView.autoPinEdge(.bottom, to: .top, of: repliesAndViewsButton)
-            mediaViewContainer.autoPinEdge(toSuperviewSafeArea: .bottom)
-        }
-        playbackProgressView.autoSetDimension(.height, toSize: 2)
-        playbackProgressView.autoPinEdge(.leading, to: .leading, of: mediaViewContainer, withOffset: progressViewSideMargin)
-        playbackProgressView.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer, withOffset: -progressViewSideMargin)
-
-        applyConstraints()
-
+        // Spinner is centered in the media view.
         let spinner = UIActivityIndicatorView(style: .medium)
+        spinner.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(spinner)
-        spinner.autoCenterInSuperview()
+        NSLayoutConstraint.activate([
+            spinner.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            spinner.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
+        ])
         spinner.startAnimating()
 
-        closeButton.isPointerInteractionEnabled = true
-        view.addSubview(closeButton)
+        // Close button - top right corner.
         closeButton.translatesAutoresizingMaskIntoConstraints = false
-        if #available(iOS 26, *) {
-            // Button has a round glass background and needs padding around it.
-            let margin = OWSTableViewController2.defaultHOuterMargin
+        view.addSubview(closeButton)
+        if isUsingLiquidGlassUI {
             NSLayoutConstraint.activate([
-                closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: margin),
-                closeButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -margin),
+                closeButton.topAnchor.constraint(
+                    equalTo: mediaViewContainerInnerLayoutGuide.topAnchor,
+                ),
+                closeButton.trailingAnchor.constraint(
+                    equalTo: mediaViewContainerInnerLayoutGuide.trailingAnchor,
+                ),
             ])
         } else {
-            // Margins are baked into the button itself. The button has no background and can be placed flush along the edges.
             closeButton.configuration?.contentInsets = .init(margin: 16)
             closeButton.setShadow()
+            closeButton.isPointerInteractionEnabled = true
 
+            // Margins are baked into the button itself. The button has no background
+            // and can be placed flush along the edges.
             NSLayoutConstraint.activate([
                 closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
                 closeButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             ])
         }
 
+        updateInterfaceForCurrentViewState()
+        isInitialUISetupComplete = true
+
+        // UI setup complete - load content.
         loadStoryItems { [weak self] storyItems in
             // If there are no stories for this context, dismiss.
             guard !storyItems.isEmpty else {
@@ -353,6 +367,23 @@ class StoryContextViewController: OWSViewController, DatabaseChangeDelegate,
     func pageControllerDidAppear() {
         onboardingOverlay.showIfNeeded()
         viewHasAppeared = true
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate { _ in
+            self.layout = self.layoutForCurrentViewState()
+        }
+    }
+
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+
+        if let mediaViewContainerTopEdgeConstraintPhoneLayout {
+            mediaViewContainerTopEdgeConstraintPhoneLayout.constant = view.safeAreaInsets.top
+        }
+
+        updateMediaViewContainerCornerRounding()
     }
 
     private static let maxItemsToRender = 100
@@ -474,9 +505,28 @@ class StoryContextViewController: OWSViewController, DatabaseChangeDelegate,
                     spoilerState: spoilerState,
                     delegate: self,
                 )
-                self.currentItemMediaView = itemView
+                itemView.translatesAutoresizingMaskIntoConstraints = false
                 mediaViewContainer.addSubview(itemView)
-                itemView.autoPinEdgesToSuperviewEdges()
+                NSLayoutConstraint.activate([
+                    itemView.topAnchor.constraint(equalTo: mediaViewContainer.topAnchor),
+                    itemView.leadingAnchor.constraint(equalTo: mediaViewContainer.leadingAnchor),
+                    itemView.trailingAnchor.constraint(equalTo: mediaViewContainer.trailingAnchor),
+                    itemView.bottomAnchor.constraint(equalTo: mediaViewContainer.bottomAnchor),
+
+                    // Position bottom row of info in the media view relative to progress bar.
+                    itemView.bottomContentLayoutGuide.leadingAnchor.constraint(
+                        equalTo: playbackProgressView.leadingAnchor,
+                    ),
+                    itemView.bottomContentLayoutGuide.trailingAnchor.constraint(
+                        equalTo: playbackProgressView.trailingAnchor,
+                    ),
+                    itemView.bottomContentLayoutGuide.bottomAnchor.constraint(
+                        equalTo: playbackProgressView.topAnchor,
+                        constant: -16,
+                    ),
+                ])
+
+                self.currentItemMediaView = itemView
             }
 
             currentItemMediaView!.updateItem(
@@ -763,79 +813,283 @@ class StoryContextViewController: OWSViewController, DatabaseChangeDelegate,
         }
     }
 
-    private lazy var iPhoneConstraints = [
-        mediaViewContainer.autoPinEdge(toSuperviewSafeArea: .top),
-        mediaViewContainer.autoPinEdge(toSuperviewSafeArea: .leading),
-        mediaViewContainer.autoPinEdge(toSuperviewSafeArea: .trailing),
-    ]
+    // MARK: Layout
 
-    private lazy var iPadConstraints: [NSLayoutConstraint] = {
-        var constraints = mediaViewContainer.autoCenterInSuperview()
+    private enum Layout {
+        case pad // Any device having `regular` width and height.
+        case padNarrow // iPad device when height is `regular` and width is `compact`.
+        case tallPhone // Modern phones with a 9:19.5 screen.
+        case phone // Older phones with a 9:16 screen, iPhone Duo's outer screen.
 
-        // Prefer to be as big as possible.
-        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
-            constraints.append(contentsOf: [
-                mediaViewContainer.autoMatch(.height, to: .height, of: view),
-                mediaViewContainer.autoMatch(.width, to: .width, of: view),
-            ])
-        }
-
-        let maxWidthConstraint = mediaViewContainer.autoMatch(
-            .width,
-            to: .width,
-            of: view,
-            withOffset: 0,
-            relation: .lessThanOrEqual,
-        )
-        constraints.append(maxWidthConstraint)
-
-        return constraints
-    }()
-
-    private lazy var iPadLandscapeConstraints = [
-        mediaViewContainer.autoMatch(
-            .height,
-            to: .height,
-            of: view,
-            withMultiplier: 0.75,
-            relation: .lessThanOrEqual,
-        ),
-    ]
-    private lazy var iPadPortraitConstraints = [
-        mediaViewContainer.autoMatch(
-            .height,
-            to: .height,
-            of: view,
-            withMultiplier: 0.65,
-            relation: .lessThanOrEqual,
-        ),
-    ]
-
-    private func applyConstraints() {
-        NSLayoutConstraint.deactivate(iPhoneConstraints)
-        NSLayoutConstraint.deactivate(iPadConstraints)
-        NSLayoutConstraint.deactivate(iPadPortraitConstraints)
-        NSLayoutConstraint.deactivate(iPadLandscapeConstraints)
-
-        if UIDevice.current.isIPad {
-            NSLayoutConstraint.activate(iPadConstraints)
-            if UIDevice.current.orientation.isLandscape {
-                NSLayoutConstraint.activate(iPadLandscapeConstraints)
-            } else {
-                NSLayoutConstraint.activate(iPadPortraitConstraints)
-            }
-        } else {
-            NSLayoutConstraint.activate(iPhoneConstraints)
+        var requiresPadLayoutGuide: Bool {
+            self == .pad || self == .padNarrow
         }
     }
 
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        coordinator.animate { _ in
-            self.applyConstraints()
-        } completion: { _ in
-            self.applyConstraints()
+    private var isInitialUISetupComplete = false
+
+    private let isUsingLiquidGlassUI: Bool = if #available(iOS 26, *) { true } else { false }
+
+    private func layoutForCurrentViewState() -> Layout {
+        guard view.bounds.isEmpty == false else { return .tallPhone }
+        let viewAspectRatio = view.bounds.size.aspectRatio
+
+        if
+            (traitCollection.horizontalSizeClass == .regular && traitCollection.verticalSizeClass == .regular) ||
+            (traitCollection.userInterfaceIdiom == .pad)
+        {
+            return viewAspectRatio > 9 / 16 ? .pad : .padNarrow
         }
+
+        // Up until iPhone X aspect ratio was 9:16. Modern iPhones are 9:19.5.
+        if viewAspectRatio > 9 / 18 {
+            return .phone
+        }
+        return .tallPhone
+    }
+
+    private var layout: Layout = .tallPhone {
+        didSet {
+            guard oldValue != layout else { return }
+            if isInitialUISetupComplete {
+                updateInterfaceForCurrentViewState()
+            }
+        }
+    }
+
+    private func updateInterfaceForCurrentViewState() {
+        // Update constraints.
+        if let layoutSpecificConstraints {
+            NSLayoutConstraint.deactivate(layoutSpecificConstraints)
+        }
+
+        if layout.requiresPadLayoutGuide {
+            installPadLayoutContentLayoutGuideIfNeeded()
+        }
+
+        let layoutSpecificConstraints: [NSLayoutConstraint] = switch layout {
+        case .pad, .padNarrow: constraintsForPadLayout(isNarrowLayout: layout == .padNarrow)
+        case .tallPhone: constraintsForTallPhoneLayout()
+        case .phone: constraintsForPhoneLayout()
+        }
+        NSLayoutConstraint.activate(layoutSpecificConstraints)
+        self.layoutSpecificConstraints = layoutSpecificConstraints
+
+        updateMediaViewContainerCornerRounding()
+    }
+
+    private func updateMediaViewContainerCornerRounding() {
+        // Rounded corners if preview view isn't full-screen.
+        // Corner radius is larger on iOS 26+.
+        if #available(iOS 26, *) {
+            let cornerRadius: CGFloat = 40
+            let cornerConfig: UICornerConfiguration
+            if layout == .phone {
+                // On iPhone Duo's outer screen only right edge gets rounded corners.
+                if view.safeAreaInsets.right > 0 {
+                    cornerConfig = .uniformRightRadius(.fixed(cornerRadius))
+                } else {
+                    cornerConfig = .uniformCorners(radius: 0)
+                }
+            } else {
+                cornerConfig = .uniformCorners(radius: .fixed(cornerRadius))
+            }
+            mediaViewContainer.cornerConfiguration = cornerConfig
+            onboardingOverlay.cornerConfiguration = cornerConfig
+        } else {
+            let cornerRadius: CGFloat = view.safeAreaInsets.totalSize != .zero ? 18 : 0
+            mediaViewContainer.layer.cornerRadius = cornerRadius
+            onboardingOverlay.layer.cornerRadius = cornerRadius
+        }
+    }
+
+    private var layoutSpecificConstraints: [NSLayoutConstraint]?
+
+    // Controls vertical position of `mediaViewContainer` in `phone` layout.
+    private var mediaViewContainerTopEdgeConstraintPhoneLayout: NSLayoutConstraint?
+
+    // Constrained to safe area's top, leading and trailing edges, and view's bottom edge.
+    // Purpose of this layout guide is to do "aspect fit" layout within an irregular area of the root view.
+    private var padLayoutContentLayoutGuide: UILayoutGuide?
+
+    private func installPadLayoutContentLayoutGuideIfNeeded() {
+        guard padLayoutContentLayoutGuide == nil else { return }
+
+        let layoutGuide = UILayoutGuide()
+        view.addLayoutGuide(layoutGuide)
+        NSLayoutConstraint.activate([
+            layoutGuide.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            layoutGuide.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            layoutGuide.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            layoutGuide.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+
+        padLayoutContentLayoutGuide = layoutGuide
+    }
+
+    private var mediaViewContainerInnerLayoutGuide: UILayoutGuide {
+        if #available(iOS 26, *) {
+            mediaViewContainer.layoutGuide(for: .margins(cornerAdaptation: .horizontal))
+        } else {
+            mediaViewContainer.layoutMarginsGuide
+        }
+    }
+
+    // Media card is fixed at 9:16 aspect ratio and is constrained using "aspect fit" rule
+    // in the area defined by view's safe area on top, leading and trailing edges and view itself
+    // on the bottom edge.
+    // For top edge we use safe area to clear space for the status bar on iPad in fullscreen.
+    // For horizontal constraints we use safe area to allow proper positioning on unfolded iPhone Duo.
+    // There's always some bottom safe area inset but it's always empty so we ignore it.
+    private func constraintsForPadLayout(isNarrowLayout: Bool) -> [NSLayoutConstraint] {
+        guard let padLayoutContentLayoutGuide else {
+            owsFailBeta("padLayoutContentLayoutGuide not installed")
+            return []
+        }
+
+        var constraints = [NSLayoutConstraint]()
+
+        // Fix content view at 9:16 aspect ratio.
+        constraints.append(mediaViewContainer.heightAnchor.constraint(
+            equalTo: mediaViewContainer.widthAnchor,
+            multiplier: 16 / 9,
+        ))
+
+        // Center within our custom area.
+        constraints += [
+            mediaViewContainer.centerXAnchor.constraint(
+                equalTo: padLayoutContentLayoutGuide.centerXAnchor,
+            ),
+            mediaViewContainer.centerYAnchor.constraint(
+                equalTo: padLayoutContentLayoutGuide.centerYAnchor,
+            ),
+            mediaViewContainer.topAnchor.constraint(
+                greaterThanOrEqualTo: padLayoutContentLayoutGuide.topAnchor,
+            ),
+            mediaViewContainer.leadingAnchor.constraint(
+                greaterThanOrEqualTo: padLayoutContentLayoutGuide.leadingAnchor,
+            ),
+        ]
+
+        // Stretch mediaViewContainer as much as possible.
+        let sizingConstraints = [
+            mediaViewContainer.widthAnchor.constraint(equalTo: padLayoutContentLayoutGuide.widthAnchor),
+            mediaViewContainer.heightAnchor.constraint(equalTo: padLayoutContentLayoutGuide.heightAnchor),
+        ]
+        sizingConstraints.forEach { $0.priority = .defaultHigh }
+        constraints += sizingConstraints
+
+        // Bottom controls.
+        // For "narrow" layout "Reply" button goes under the media card,
+        // similar to modern iPhone layout.
+        constraints += [
+            playbackProgressView.leadingAnchor.constraint(
+                equalTo: mediaViewContainerInnerLayoutGuide.leadingAnchor,
+            ),
+            playbackProgressView.trailingAnchor.constraint(
+                equalTo: mediaViewContainerInnerLayoutGuide.trailingAnchor,
+            ),
+        ]
+        if isNarrowLayout {
+            constraints += [
+                // Top of the "Reply" button is attached to the bottom of the media card.
+                repliesAndViewsButton.topAnchor.constraint(
+                    equalTo: mediaViewContainer.bottomAnchor,
+                ),
+
+                // Progress bar is within the media card, at the bottom.
+                playbackProgressView.bottomAnchor.constraint(
+                    equalTo: mediaViewContainerInnerLayoutGuide.bottomAnchor,
+                ),
+            ]
+        }
+        // Regular full-screen iPad layouts look more like legacy iPhones
+        // where "Reply" and progress bar are inside of the media card.
+        else {
+            constraints += [
+                // "Reply" at the very bottom.
+                repliesAndViewsButton.bottomAnchor.constraint(equalTo: mediaViewContainer.bottomAnchor),
+
+                // Playback progress view is stacked on top of "Reply"
+                playbackProgressView.bottomAnchor.constraint(equalTo: repliesAndViewsButton.topAnchor),
+            ]
+        }
+
+        return constraints
+    }
+
+    // Media card is fixed at 6:19 aspect ratio, pinned to the top, leading and trailing safe area's edges.
+    private func constraintsForTallPhoneLayout() -> [NSLayoutConstraint] {
+        var constraints = [NSLayoutConstraint]()
+
+        // Constraint for position of the top edge of the content view - created earlier.
+        if let mediaViewContainerTopEdgeConstraintPhoneLayout {
+            constraints.append(mediaViewContainerTopEdgeConstraintPhoneLayout)
+        }
+
+        // Content view is full-width. Constrain horizonally to safe area to avoid Duo's sidebar.
+        constraints += [
+            mediaViewContainer.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            mediaViewContainer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+        ]
+
+        // Fix content view at 9:16 aspect ratio.
+        // Note that there's no constraint on the bottom edge of the `contentView`
+        // because this type of layout is only used on iPhones with 9:19 and taller screen aspect ratios.
+        constraints.append(mediaViewContainer.heightAnchor.constraint(
+            equalTo: mediaViewContainer.widthAnchor,
+            multiplier: 16 / 9,
+        ))
+
+        // Bottom controls.
+        constraints += [
+            // Top of the "Reply" button is attached to the bottom of the media card.
+            repliesAndViewsButton.topAnchor.constraint(equalTo: mediaViewContainer.bottomAnchor),
+
+            // Progress bar is within the media card, at the bottom.
+            playbackProgressView.bottomAnchor.constraint(
+                equalTo: mediaViewContainerInnerLayoutGuide.bottomAnchor,
+            ),
+            playbackProgressView.leadingAnchor.constraint(
+                equalTo: mediaViewContainerInnerLayoutGuide.leadingAnchor,
+            ),
+            playbackProgressView.trailingAnchor.constraint(
+                equalTo: mediaViewContainerInnerLayoutGuide.trailingAnchor,
+            ),
+        ]
+
+        return constraints
+    }
+
+    // Media card is constrained to view's edges vertically and view's safe area horizontally.
+    // Horizontal alignment to safe area is required for iPhone Duo's outer screen.
+    private func constraintsForPhoneLayout() -> [NSLayoutConstraint] {
+        var constraints = [NSLayoutConstraint]()
+
+        // Full-screen media view.
+        constraints += [
+            mediaViewContainer.topAnchor.constraint(equalTo: view.topAnchor),
+            mediaViewContainer.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            mediaViewContainer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            mediaViewContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ]
+
+        // Bottom controls.
+        constraints += [
+            // "Reply" at the very bottom.
+            repliesAndViewsButton.bottomAnchor.constraint(equalTo: mediaViewContainer.bottomAnchor),
+
+            // Playback progress view is stacked on top of "Reply"
+            playbackProgressView.bottomAnchor.constraint(equalTo: repliesAndViewsButton.topAnchor),
+            playbackProgressView.leadingAnchor.constraint(
+                equalTo: mediaViewContainerInnerLayoutGuide.leadingAnchor,
+            ),
+            playbackProgressView.trailingAnchor.constraint(
+                equalTo: mediaViewContainerInnerLayoutGuide.trailingAnchor,
+            ),
+        ]
+
+        return constraints
     }
 
     private var isPinchZooming = false

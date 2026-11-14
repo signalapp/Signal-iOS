@@ -13,13 +13,21 @@ protocol StickerKeyboardDelegate: AnyObject {
     func stickerKeyboardDidRequestPresentManageStickersView(_ stickerKeyboard: StickerKeyboard)
 
     func stickerKeyboard(_: StickerKeyboard, didSelect stickerMetadata: any StickerMetadata)
+
+    func viewStickerPack(_ stickerPackInfo: StickerPackInfo)
+
+    func scrollToFavoritedSticker(_ stickerInfo: StickerInfo)
+
+    func sendSticker(_ stickerMetadata: any StickerMetadata)
+
+    func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo)
 }
 
 class StickerKeyboard: CustomKeyboard, StickerPickerViewDelegate {
 
     weak var delegate: StickerKeyboardDelegate?
 
-    private lazy var stickerPickerView = StickerPickerView(delegate: self)
+    private lazy var stickerPickerView = StickerPickerView(delegate: self, allowContextMenus: true)
 
     init(delegate: StickerKeyboardDelegate?) {
         self.delegate = delegate
@@ -77,5 +85,21 @@ class StickerKeyboard: CustomKeyboard, StickerPickerViewDelegate {
 
     func select(page: StickerPickerPage, bouncingSticker: StickerInfo? = nil) {
         stickerPickerView.select(page: page, bouncingSticker: bouncingSticker)
+    }
+
+    func viewStickerPack(_ stickerPackInfo: StickerPackInfo) {
+        delegate?.viewStickerPack(stickerPackInfo)
+    }
+
+    func scrollToFavoritedSticker(_ stickerInfo: StickerInfo) {
+        delegate?.scrollToFavoritedSticker(stickerInfo)
+    }
+
+    func sendSticker(_ stickerMetadata: any StickerMetadata) {
+        delegate?.sendSticker(stickerMetadata)
+    }
+
+    func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo) {
+        delegate?.queueStickerPackForSending(stickerPackInfo)
     }
 }

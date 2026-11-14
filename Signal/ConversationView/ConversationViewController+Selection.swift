@@ -321,7 +321,7 @@ extension ConversationViewController {
                 guard let self else { return }
                 let thread = self.thread
 
-                await db.awaitableWrite { tx in
+                let deletedForMeMessages = await db.awaitableWrite { tx in
                     self.deleteSelectedItemsForMe(
                         selectionItems: selectionItems,
                         thread: thread,
@@ -331,6 +331,11 @@ extension ConversationViewController {
 
                 modalActivityIndicator.dismiss {
                     self.uiMode = .normal
+                    TSInteraction.presentDeletedForMeToast(
+                        deletedForMeMessages: deletedForMeMessages,
+                        thread: thread,
+                        fromViewController: self,
+                    )
                 }
             }
         }
@@ -405,7 +410,7 @@ extension ConversationViewController {
         selectionItems: [CVSelectionItem],
         thread: TSThread,
         tx: DBWriteTransaction,
-    ) {
+    ) -> [DeletedForMeMessage]? {
         let interactionDeleteManager = DependenciesBridge.shared.interactionDeleteManager
 
         let interactionsToDelete = selectionItems.compactMap { item in
@@ -415,6 +420,12 @@ extension ConversationViewController {
             )
         }
 
+        let deletedForMeMessages = TSInteraction.buildDeletedForMeMessages(
+            interactions: interactionsToDelete,
+            thread: thread,
+            tx: tx,
+        )
+
         interactionDeleteManager.delete(
             interactions: interactionsToDelete,
             sideEffects: .custom(
@@ -422,6 +433,8 @@ extension ConversationViewController {
             ),
             tx: tx,
         )
+
+        return deletedForMeMessages
     }
 
     private func deleteSelectedItemsForEveryone(

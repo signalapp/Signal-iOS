@@ -110,6 +110,8 @@ public protocol AttachmentContentValidator {
     /// Note the content type may be `invalid`; we can still create an Attachment from these.
     /// Errors are thrown if data reading/parsing/decryption fails.
     ///
+    /// - Parameter fileUrl: This method assumes the fileUrl passed in is temporary,
+    /// and may move it to a new location.
     /// - Parameter plaintextLength: If provided, the decrypted file will be truncated
     /// after this length. If nil, it is assumed the encrypted file has no custom padding (anything besides PKCS7)
     /// and will not be truncated after decrypting.

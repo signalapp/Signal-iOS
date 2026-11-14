@@ -176,7 +176,7 @@ class VideoPlaybackControlView: UIView {
         switch mediaItem.referencedAttachment.attachment.contentType {
         case .video:
             if
-                let videoDuration = mediaItem.referencedAttachment.asReferencedStream?.attachmentStream.cachedVideoDuration,
+                let videoDuration = mediaItem.referencedAttachment.asReferencedStream?.attachmentStream.videoDuration,
                 videoDuration > 30
             {
                 showRewindAndFastForward = true

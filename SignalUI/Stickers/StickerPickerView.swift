@@ -8,12 +8,21 @@ public import SignalServiceKit
 public protocol StickerPickerViewDelegate: StickerPickerDelegate {
 
     func presentManageStickersView(for: StickerPickerView)
+
+    func viewStickerPack(_ stickerPackInfo: StickerPackInfo)
+
+    func scrollToFavoritedSticker(_ stickerInfo: StickerInfo)
+
+    func sendSticker(_ stickerMetadata: any StickerMetadata)
+
+    func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo)
 }
 
 public class StickerPickerView: UIView {
 
     weak var delegate: StickerPickerViewDelegate?
     private let storyStickerConfigation: StoryStickerConfiguration
+    private let allowContextMenus: Bool
 
     var stickerPackCollectionViewPages: [UICollectionView] {
         stickerPageView.stickerPackCollectionViews
@@ -22,9 +31,11 @@ public class StickerPickerView: UIView {
     public init(
         delegate: StickerPickerViewDelegate,
         storyStickerConfiguration: StoryStickerConfiguration = .hide,
+        allowContextMenus: Bool,
     ) {
         self.delegate = delegate
         self.storyStickerConfigation = storyStickerConfiguration
+        self.allowContextMenus = allowContextMenus
 
         super.init(frame: .zero)
 
@@ -80,7 +91,49 @@ public class StickerPickerView: UIView {
     private lazy var stickerPageView = StickerPickerPageView(
         delegate: self,
         storyStickerConfiguration: storyStickerConfigation,
+        allowContextMenus: allowContextMenus,
     )
+
+    private lazy var noStickerPacksView: UIView = {
+        let textLabel = UILabel.explanationTextLabel(text: OWSLocalizedString(
+            "STICKER_KEYBOARD_NO_PACKS",
+            comment: "Text displayed in the sticker keyboard when no sticker packs are installed.",
+        ))
+        textLabel.font = .dynamicTypeSubheadline
+
+        var addButtonConfig = UIButton.Configuration.smallSecondary(
+            title: OWSLocalizedString(
+                "STICKER_KEYBOARD_NO_PACKS_ADD_BUTTON",
+                comment: "Button in the sticker keyboard, shown when no sticker packs are installed, that opens the sticker pack manager.",
+            ),
+        )
+        addButtonConfig.background.backgroundColor = .Signal.tertiaryBackground
+
+        let addButton = UIButton(
+            configuration: addButtonConfig,
+            primaryAction: UIAction { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.presentManageStickersView(for: self)
+            },
+        )
+
+        let vStack = UIStackView(arrangedSubviews: [textLabel, addButton])
+        vStack.axis = .vertical
+        vStack.alignment = .center
+        vStack.spacing = 16
+        vStack.translatesAutoresizingMaskIntoConstraints = false
+
+        let view = UIView()
+        view.directionalLayoutMargins = .init(margin: 20)
+        view.addSubview(vStack)
+        NSLayoutConstraint.activate([
+            vStack.topAnchor.constraint(greaterThanOrEqualTo: view.layoutMarginsGuide.topAnchor),
+            vStack.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.centerYAnchor),
+            vStack.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            vStack.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+        ])
+        return view
+    }()
 
     override public func layoutMarginsDidChange() {
         super.layoutMarginsDidChange()
@@ -107,7 +160,7 @@ public class StickerPickerView: UIView {
 
     // Update bottom inset separately - it depends on size and position of the toolbar.
     private func updateStickerPageViewBottomContentInset() {
-        guard toolbar.frame.height > 0 else { return }
+        guard !toolbar.isHidden, toolbar.frame.height > 0 else { return }
         let bottomInset = safeAreaLayoutGuide.layoutFrame.maxY - toolbar.frame.minY
         stickerPageView.stickerPageContentInset.bottom = bottomInset
     }
@@ -131,6 +184,40 @@ extension StickerPickerView: StickerPickerPageViewDelegate {
 
     public func didSelectSticker(_ stickerMetadata: any StickerMetadata) {
         delegate?.didSelectSticker(stickerMetadata)
+    }
+
+    public func viewStickerPack(_ stickerPackInfo: StickerPackInfo) {
+        delegate?.viewStickerPack(stickerPackInfo)
+    }
+
+    public func scrollToFavoritedSticker(_ stickerInfo: StickerInfo) {
+        delegate?.scrollToFavoritedSticker(stickerInfo)
+    }
+
+    public func sendSticker(_ stickerMetadata: any StickerMetadata) {
+        delegate?.sendSticker(stickerMetadata)
+    }
+
+    public func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo) {
+        delegate?.queueStickerPackForSending(stickerPackInfo)
+    }
+
+    func setHasInstalledStickerPacks(_ hasInstalledStickerPacks: Bool) {
+        if hasInstalledStickerPacks {
+            toolbar.isHidden = false
+            noStickerPacksView.removeFromSuperview()
+            setNeedsLayout()
+        } else {
+            toolbar.isHidden = true
+            addSubview(noStickerPacksView)
+            noStickerPacksView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                noStickerPacksView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+                noStickerPacksView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+                noStickerPacksView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
+                noStickerPacksView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+            ])
+        }
     }
 }
 
@@ -351,6 +438,10 @@ private class StickerPacksToolbar: UIView {
         button.setContentHuggingHigh()
         button.setCompressionResistanceHigh()
         button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "manageButton")
+        button.accessibilityLabel = OWSLocalizedString(
+            "STICKER_KEYBOARD_MANAGE_BUTTON_ACCESSIBILITY_LABEL",
+            comment: "Accessibility label for the button in the sticker keyboard that opens the screen for managing sticker packs.",
+        )
         return button
     }()
 
@@ -366,6 +457,16 @@ private protocol StickerPickerPageViewDelegate: StickerPickerDelegate {
     func setItems(_ items: [StickerHorizontalListViewItem])
 
     func updateSelections(scrollToSelectedItem: Bool)
+
+    func viewStickerPack(_ stickerPackInfo: StickerPackInfo)
+
+    func scrollToFavoritedSticker(_ stickerInfo: StickerInfo)
+
+    func sendSticker(_ stickerMetadata: any StickerMetadata)
+
+    func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo)
+
+    func setHasInstalledStickerPacks(_ hasInstalledStickerPacks: Bool)
 }
 
 public enum StickerPickerPage: Equatable {
@@ -385,6 +486,8 @@ private class StickerPickerPageView: UIView {
 
     private var pendingBounce: (page: StickerPickerPage, stickerInfo: StickerInfo)?
 
+    private let allowContextMenus: Bool
+
     private var selectedStickerPackPage: StickerPickerPage {
         didSet {
             selectedPackChanged(oldSelectedPack: oldValue)
@@ -394,9 +497,11 @@ private class StickerPickerPageView: UIView {
     init(
         delegate: StickerPickerPageViewDelegate,
         storyStickerConfiguration: StoryStickerConfiguration = .hide,
+        allowContextMenus: Bool,
     ) {
         self.delegate = delegate
         self.storyStickerConfiguration = storyStickerConfiguration
+        self.allowContextMenus = allowContextMenus
 
         // By default, show the "recent" stickers.
         selectedStickerPackPage = .recents
@@ -485,12 +590,17 @@ private class StickerPickerPageView: UIView {
         let hadFavorites = hasFavorites
 
         db.read { transaction in
-            self.stickerPacks = stickerManager.installedStickerPacks(transaction: transaction).sorted {
-                $0.dateCreated > $1.dateCreated
-            }
+            self.stickerPacks = stickerManager.installedStickerPacks(transaction: transaction)
             if BuildFlags.stickerFavorites {
                 self.hasFavorites = stickerManager.stickerFavoriteCount(tx: transaction) > 0
             }
+        }
+
+        // If there are no installed packs, hide the page view and notify the delegate to show replacement UI.
+        isHidden = stickerPacks.isEmpty
+        delegate?.setHasInstalledStickerPacks(!stickerPacks.isEmpty)
+        guard !stickerPacks.isEmpty else {
+            return
         }
 
         // These go (via delegate) as source data to the toolbar.
@@ -519,6 +629,10 @@ private class StickerPickerPageView: UIView {
         items += stickerPacks.map { stickerPack in
             StickerHorizontalListViewItemSticker(
                 stickerInfo: stickerPack.coverInfo,
+                accessibilityLabel: stickerPack.title?.nilIfEmpty ?? OWSLocalizedString(
+                    "STICKERS_PACK_DEFAULT_TITLE",
+                    comment: "Default title for sticker packs.",
+                ),
                 didSelectBlock: { [weak self] in
                     self?.updateSelectedStickerPack(.pack(stickerPack))
                 },
@@ -636,9 +750,9 @@ private class StickerPickerPageView: UIView {
     /// 1 - Current Page
     /// 2 - Next Page
     lazy var stickerPackCollectionViews: [StickerPackCollectionView] = [
-        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration, shouldShowSectionHeaders: true),
-        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration, shouldShowSectionHeaders: true),
-        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration, shouldShowSectionHeaders: true),
+        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration, shouldShowSectionHeaders: true, allowContextMenus: allowContextMenus),
+        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration, shouldShowSectionHeaders: true, allowContextMenus: allowContextMenus),
+        StickerPackCollectionView(storyStickerConfiguration: storyStickerConfiguration, shouldShowSectionHeaders: true, allowContextMenus: allowContextMenus),
     ]
     private var stickerPackCollectionViewConstraints = [NSLayoutConstraint]()
 
@@ -816,6 +930,12 @@ private class StickerPickerPageView: UIView {
         if !isScrollingChange { applyPendingPageChangeUpdates() }
 
         updatePageConstraints()
+
+        // When we scroll to a new sticker page, focus voiceover on the first section header.
+        let header = currentPageCollectionView
+            .visibleSupplementaryViews(ofKind: UICollectionView.elementKindSectionHeader)
+            .first
+        UIAccessibility.post(notification: .layoutChanged, argument: header)
     }
 
     private func resetStickerPages() {
@@ -946,5 +1066,21 @@ extension StickerPickerPageView: StickerPackCollectionViewDelegate {
 
     func stickerPreviewHasOverlay() -> Bool {
         return true
+    }
+
+    public func viewStickerPack(_ stickerPackInfo: StickerPackInfo) {
+        delegate?.viewStickerPack(stickerPackInfo)
+    }
+
+    public func scrollToFavoritedSticker(_ stickerInfo: StickerInfo) {
+        delegate?.scrollToFavoritedSticker(stickerInfo)
+    }
+
+    public func sendSticker(_ stickerMetadata: any StickerMetadata) {
+        delegate?.sendSticker(stickerMetadata)
+    }
+
+    public func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo) {
+        delegate?.queueStickerPackForSending(stickerPackInfo)
     }
 }
