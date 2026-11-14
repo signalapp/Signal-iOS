@@ -6,19 +6,36 @@
 import CoreImage
 import Foundation
 import SDWebImageWebPCoder
-public import UIKit
+import UIKit
 
-public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
+public protocol AttachmentThumbnailService {
+
+    func thumbnailImage(
+        for attachmentStream: AttachmentStream,
+        quality: AttachmentThumbnailQuality,
+    ) async -> UIImage?
+
+    func thumbnailImageSync(
+        for attachmentStream: AttachmentStream,
+        quality: AttachmentThumbnailQuality,
+    ) -> UIImage?
+
+    func backupThumbnailData(image: UIImage) throws -> Data
+}
+
+// MARK: -
+
+class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
 
     private let remoteConfigProvider: RemoteConfigProvider
 
-    public init(remoteConfigProvider: RemoteConfigProvider) {
+    init(remoteConfigProvider: RemoteConfigProvider) {
         self.remoteConfigProvider = remoteConfigProvider
     }
 
     private let taskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
-    public func thumbnailImage(
+    func thumbnailImage(
         for attachmentStream: AttachmentStream,
         quality: AttachmentThumbnailQuality,
     ) async -> UIImage? {
@@ -35,7 +52,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
         }
     }
 
-    public func thumbnailImageSync(
+    func thumbnailImageSync(
         for attachmentStream: AttachmentStream,
         quality: AttachmentThumbnailQuality,
     ) -> UIImage? {
@@ -71,7 +88,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
         return thumbnailImage
     }
 
-    public func backupThumbnailData(image: UIImage) throws -> Data {
+    func backupThumbnailData(image: UIImage) throws -> Data {
         let maxFileSize: UInt32 = remoteConfigProvider.currentConfig().backupMaxThumbnailFileSize
 
         // libwebp uses `maxFileSize` as a best effort guide, so start with 95% this value to
