@@ -321,7 +321,7 @@ extension ConversationViewController {
     func inputTextViewSendMessagePressed() {
         AssertIsOnMainThread()
 
-        sendButtonPressed()
+        sendButtonPressed(withInvisibleInk: false)
     }
 
     func textViewDidChange(_ textView: UITextView) {

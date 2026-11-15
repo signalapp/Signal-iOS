@@ -9082,6 +9082,9 @@
 /* Label for the button to send a sticker message */
 "SEND_STICKER_BUTTON_TITLE" = "Send Sticker";
 
+/* Menu action for sending a message with its entire text hidden until the recipient reveals it. */
+"SEND_WITH_INVISIBLE_INK_ACTION" = "Send with Invisible Ink";
+
 /* String describing high quality sent media */
 "SENT_MEDIA_QUALITY_HIGH" = "High";
 

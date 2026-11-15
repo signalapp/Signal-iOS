@@ -9,7 +9,7 @@ import SignalUI
 
 protocol ConversationInputToolbarDelegate: AnyObject {
 
-    func sendButtonPressed()
+    func sendButtonPressed(withInvisibleInk: Bool)
 
     func sendSticker(_ sticker: any StickerMetadata)
 
@@ -498,6 +498,27 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         view.voiceMemoButton.addGestureRecognizer(longPressGestureRecognizer)
         return view
     }()
+
+    private static var sendWithInvisibleInkTitle: String {
+        OWSLocalizedString(
+            "SEND_WITH_INVISIBLE_INK_ACTION",
+            value: "Send with Invisible Ink",
+            comment: "Menu action for sending a message with its entire text hidden until the recipient reveals it.",
+        )
+    }
+
+    private lazy var invisibleInkMenu = UIMenu(children: [
+        UIAction(title: Self.sendWithInvisibleInkTitle) { [weak self] _ in
+            _ = self?.sendWithInvisibleInk()
+        },
+    ])
+
+    private lazy var invisibleInkAccessibilityAction = UIAccessibilityCustomAction(
+        name: Self.sendWithInvisibleInkTitle,
+        actionHandler: { [weak self] _ in
+            self?.sendWithInvisibleInk() ?? false
+        },
+    )
 
     private lazy var linkPreviewWrapper: UIView = {
         let view = UIView.container()
@@ -1134,6 +1155,8 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
             }
         }
 
+        updateSendButtonMenu()
+
         //
         // 6. Commit animations.
         //
@@ -1646,6 +1669,24 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
         }
 
         return true
+    }
+
+    private var canSendWithInvisibleInk: Bool {
+        guard !isEditingMessage, !isShowingVoiceMemoUI, hasMessageText else { return false }
+        return messageBodyForSending?.canSendWithInvisibleInk == true
+    }
+
+    private func updateSendButtonMenu() {
+        guard let sendButton = (trailingEdgeControl as? RightEdgeControlsView)?.sendButton ?? (trailingEdgeControl as? UIButton) else {
+            return
+        }
+
+        let hasInvisibleInkAction = canSendWithInvisibleInk
+        guard (sendButton.menu != nil) != hasInvisibleInkAction else { return }
+
+        // The menu appears on long press, keeping a tap as the primary send action.
+        sendButton.menu = hasInvisibleInkAction ? invisibleInkMenu : nil
+        sendButton.accessibilityCustomActions = hasInvisibleInkAction ? [invisibleInkAccessibilityAction] : nil
     }
 
     var hasUnsavedDraft: Bool {
@@ -3355,7 +3396,13 @@ class ConversationInputToolbar: UIView, AttachmentKeyboardDelegate, Conversation
             return
         }
 
-        inputToolbarDelegate.sendButtonPressed()
+        inputToolbarDelegate.sendButtonPressed(withInvisibleInk: false)
+    }
+
+    private func sendWithInvisibleInk() -> Bool {
+        guard canSendWithInvisibleInk, let inputToolbarDelegate else { return false }
+        inputToolbarDelegate.sendButtonPressed(withInvisibleInk: true)
+        return true
     }
 
     private func stickerButtonPressed() {

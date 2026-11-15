@@ -318,6 +318,29 @@ public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         )
     }
 
+    var hasRoomForFullBodySpoiler: Bool {
+        // Leave room for the full-body spoiler within the receiver's range limit.
+        let nonSpoilerStyleCount = CollapsedStyle.flatten(collapsedStyles).filter { $0.value != .spoiler }.count
+        return orderedMentions.count + nonSpoilerStyleCount < Self.maxRangesPerMessage
+    }
+
+    func replacingSpoilers(with fullBodyRange: NSRange) -> Self {
+        // The collapsed ranges reflect any trimming performed on the body. Use
+        // the original styles only to identify segments of the same style.
+        var preservedStyles = [SingleStyle: [StyleId: NSRange]]()
+        for collapsedStyle in collapsedStyles {
+            for (style, original) in collapsedStyle.value.originals where style != .spoiler {
+                let previousRange = preservedStyles[style]?[original.id]
+                preservedStyles[style, default: [:]][original.id] = previousRange?.union(collapsedStyle.range) ?? collapsedStyle.range
+            }
+        }
+        var styles = preservedStyles.flatMap { style, ranges in
+            ranges.values.map { NSRangedValue(style, range: $0) }
+        }
+        styles.append(NSRangedValue(.spoiler, range: fullBodyRange))
+        return Self(mentions: originalMentions, styles: styles)
+    }
+
     public func copy(with zone: NSZone? = nil) -> Any {
         return self
     }

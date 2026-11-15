@@ -36,6 +36,23 @@ public final class MessageBody: NSObject, NSSecureCoding {
         text.isEmpty
     }
 
+    public var canSendWithInvisibleInk: Bool {
+        // Oversize messages become attachments and wire ranges cover only the inline prefix.
+        guard !isEmpty, text.utf8.dropFirst(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes).isEmpty else {
+            return false
+        }
+        return ranges.hasRoomForFullBodySpoiler
+    }
+
+    public func applyingFullBodySpoiler() -> Self? {
+        guard canSendWithInvisibleInk else { return nil }
+
+        return Self(
+            text: text,
+            ranges: ranges.replacingSpoilers(with: NSRange(location: 0, length: text.utf16.count)),
+        )
+    }
+
     public init(text: String, ranges: MessageBodyRanges) {
         self.text = text
         self.ranges = ranges
@@ -88,9 +105,16 @@ public final class MessageBody: NSObject, NSSecureCoding {
 
         let filteredTextRange = (originalText as NSString).range(of: filteredText)
         if filteredTextRange.location == NSNotFound {
-            // NOTE that we only handle leading/trailing characters being stripped; if
-            // characters in the middle of the string are modified, that will mess up
-            // all the ranges, and we (currently) throw them all away.
+            // A full-body spoiler remains meaningful when sanitizing the text
+            // changes its offsets. Partial ranges cannot be remapped here.
+            let originalBodyRange = NSRange(location: 0, length: originalText.utf16.count)
+            if ranges.collapsedStyles.first?.value.originals[.spoiler]?.mergedRange == originalBodyRange {
+                let spoilerRange = NSRange(location: 0, length: filteredText.utf16.count)
+                return Self(
+                    text: filteredText,
+                    ranges: .init(mentions: [], styles: [.init(.spoiler, range: spoilerRange)]),
+                )
+            }
             return Self(text: filteredText, ranges: .empty)
         }
 

@@ -28,7 +28,7 @@ extension ConversationViewController {
 
     func viewForSuggestedStickersPanel() -> UIView { view }
 
-    func sendButtonPressed() {
+    func sendButtonPressed(withInvisibleInk: Bool) {
         AssertIsOnMainThread()
 
         guard hasViewWillAppearEverBegun else {
@@ -50,7 +50,18 @@ extension ConversationViewController {
             return
         }
 
-        tryToSendTextMessage(messageBody, updateKeyboardState: true)
+        if withInvisibleInk {
+            guard !inputToolbar.isEditingMessage, let hiddenBody = messageBody.applyingFullBodySpoiler() else {
+                return
+            }
+            tryToSendTextMessage(
+                hiddenBody,
+                updateKeyboardState: true,
+                invisibleInkDraft: InvisibleInkDraft(body: messageBody, quotedReply: inputToolbar.quotedReplyDraft),
+            )
+        } else {
+            tryToSendTextMessage(messageBody, updateKeyboardState: true)
+        }
     }
 
     func messageWasSent() {
@@ -75,15 +86,12 @@ extension ConversationViewController {
         SSKEnvironment.shared.typingIndicatorsRef.didSendOutgoingMessage(inThread: thread)
     }
 
-    private func tryToSendTextMessage(_ messageBody: MessageBody, updateKeyboardState: Bool) {
-        tryToSendTextMessage(
-            messageBody,
-            updateKeyboardState: updateKeyboardState,
-            untrustedThreshold: Date().addingTimeInterval(-OWSIdentityManagerImpl.Constants.defaultUntrustedInterval),
-        )
-    }
-
-    private func tryToSendTextMessage(_ messageBody: MessageBody, updateKeyboardState: Bool, untrustedThreshold: Date) {
+    private func tryToSendTextMessage(
+        _ messageBody: MessageBody,
+        updateKeyboardState: Bool,
+        invisibleInkDraft: InvisibleInkDraft? = nil,
+        untrustedThreshold: Date = Date().addingTimeInterval(-OWSIdentityManagerImpl.Constants.defaultUntrustedInterval),
+    ) {
         AssertIsOnMainThread()
 
         guard hasViewWillAppearEverBegun else {
@@ -93,11 +101,26 @@ extension ConversationViewController {
         guard let inputToolbar else {
             return
         }
+        if let invisibleInkDraft {
+            // A confirmation may outlive the draft it was shown for.
+            guard
+                !inputToolbar.isEditingMessage,
+                inputToolbar.messageBodyForSending == invisibleInkDraft.body,
+                inputToolbar.quotedReplyDraft == invisibleInkDraft.quotedReply
+            else {
+                return
+            }
+        }
 
         guard !isBlockedConversation() else {
             showUnblockConversationUI { [weak self] isBlocked in
                 if !isBlocked {
-                    self?.tryToSendTextMessage(messageBody, updateKeyboardState: false, untrustedThreshold: untrustedThreshold)
+                    self?.tryToSendTextMessage(
+                        messageBody,
+                        updateKeyboardState: false,
+                        invisibleInkDraft: invisibleInkDraft,
+                        untrustedThreshold: untrustedThreshold,
+                    )
                 }
             }
             return
@@ -110,7 +133,12 @@ extension ConversationViewController {
         ) { [weak self] didConfirmIdentity in
             guard let self else { return }
             if didConfirmIdentity {
-                self.tryToSendTextMessage(messageBody, updateKeyboardState: false, untrustedThreshold: newUntrustedThreshold)
+                self.tryToSendTextMessage(
+                    messageBody,
+                    updateKeyboardState: false,
+                    invisibleInkDraft: invisibleInkDraft,
+                    untrustedThreshold: newUntrustedThreshold,
+                )
             }
         }
         if didShowSNAlert {
@@ -157,8 +185,8 @@ extension ConversationViewController {
             ThreadUtil.enqueueMessage(
                 body: messageBody,
                 thread: self.thread,
-                quotedReplyDraft: inputToolbar.quotedReplyDraft,
-                linkPreviewDraft: inputToolbar.linkPreviewDraft,
+                quotedReplyDraft: invisibleInkDraft == nil ? inputToolbar.quotedReplyDraft : invisibleInkDraft?.quotedReply,
+                linkPreviewDraft: invisibleInkDraft == nil ? inputToolbar.linkPreviewDraft : nil,
                 persistenceCompletionHandler: {
                     AssertIsOnMainThread()
                     self.loadCoordinator.enqueueReload()
@@ -195,6 +223,11 @@ extension ConversationViewController {
         }
 
         NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
+    }
+
+    private struct InvisibleInkDraft {
+        let body: MessageBody
+        let quotedReply: DraftQuotedReplyModel?
     }
 
     func sendSticker(_ stickerMetadata: any StickerMetadata) {

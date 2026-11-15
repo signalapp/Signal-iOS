@@ -15,6 +15,113 @@ final class MessageBodyTests: XCTestCase {
     typealias SingleStyle = MessageBodyRanges.SingleStyle
     typealias CollapsedStyle = MessageBodyRanges.CollapsedStyle
 
+    func testInvisibleInkReplacesPartialSpoilersWithOneFullUTF16Range() throws {
+        let mention = NSRangedValue(acis[0], range: NSRange(location: 8, length: 1))
+        let body = MessageBody(
+            text: "👩‍💻 x \(MessageBody.mentionPlaceholder).",
+            ranges: .init(mentions: [mention], styles: [
+                .init(.spoiler, range: NSRange(location: 0, length: 5)),
+                .init(.bold, range: NSRange(location: 5, length: 4)),
+                .init(.spoiler, range: NSRange(location: 8, length: 1)),
+            ]),
+        )
+
+        let inkBody = try XCTUnwrap(body.applyingFullBodySpoiler())
+        let wireRanges = inkBody.ranges.toProtoBodyRanges(bodyLength: 10)
+        let receivedRanges = MessageBodyRanges(protos: wireRanges)
+
+        XCTAssertEqual(inkBody.text, body.text)
+        XCTAssertEqual(receivedRanges.orderedMentions, [mention])
+        XCTAssertEqual(CollapsedStyle.flatten(receivedRanges.collapsedStyles), [
+            .init(.spoiler, range: NSRange(location: 0, length: 10)),
+            .init(.bold, range: NSRange(location: 5, length: 4)),
+        ])
+        XCTAssertEqual(wireRanges.filter { $0.style == .spoiler }.count, 1)
+        XCTAssertEqual(body.ranges.toProtoBodyRanges().filter { $0.style == .spoiler }.count, 2)
+    }
+
+    func testInvisibleInkKeepsFormattingPositionsAfterWhitespaceIsTrimmed() throws {
+        let body = MessageBody(
+            text: "  Secret ",
+            ranges: .init(mentions: [], styles: [
+                .init(.bold, range: NSRange(location: 2, length: 3)),
+                .init(.bold, range: NSRange(location: 5, length: 3)),
+            ]),
+        ).filterStringForDisplay()
+
+        let inkBody = try XCTUnwrap(body.applyingFullBodySpoiler())
+
+        XCTAssertEqual(inkBody.text, "Secret")
+        XCTAssertEqual(CollapsedStyle.flatten(inkBody.ranges.collapsedStyles), [
+            .init(.spoiler, range: NSRange(location: 0, length: 6)),
+            .init(.bold, range: NSRange(location: 0, length: 3)),
+            .init(.bold, range: NSRange(location: 3, length: 3)),
+        ])
+    }
+
+    func testInvisibleInkRequiresNonemptyInlineText() {
+        let inlineText = String(repeating: "é", count: 1024)
+        let inlineBody = MessageBody(text: inlineText, ranges: .empty)
+        let oversizeBody = MessageBody(text: inlineText + "x", ranges: .empty)
+
+        XCTAssertNotNil(inlineBody.applyingFullBodySpoiler())
+        XCTAssertNil(oversizeBody.applyingFullBodySpoiler())
+        XCTAssertNil(MessageBody.empty.applyingFullBodySpoiler())
+    }
+
+    func testInvisibleInkRequiresRoomForOneSpoilerInWireRanges() throws {
+        let text = String(repeating: "x", count: 500)
+        let styles = (0..<250).map { index in
+            NSRangedValue(SingleStyle.bold, range: NSRange(location: index * 2, length: 1))
+        }
+        let fullBody = MessageBody(text: text, ranges: .init(mentions: [], styles: styles))
+        let bodyWithRoom = MessageBody(text: text, ranges: .init(mentions: [], styles: Array(styles.dropLast())))
+
+        XCTAssertNil(fullBody.applyingFullBodySpoiler())
+        let inkBody = try XCTUnwrap(bodyWithRoom.applyingFullBodySpoiler())
+        XCTAssertEqual(inkBody.ranges.toProtoBodyRanges().count, 250)
+        XCTAssertEqual(inkBody.ranges.toProtoBodyRanges().filter { $0.style == .spoiler }.count, 1)
+    }
+
+    func testInvisibleInkStaysHiddenWhenDisplayBalancesBidiControls() {
+        let body = MessageBody(
+            text: "hello \u{2066}world",
+            ranges: .init(mentions: [], styles: [
+                .init(.spoiler, range: NSRange(location: 0, length: 12)),
+                .init(.bold, range: NSRange(location: 0, length: 5)),
+            ]),
+        )
+
+        let filteredBody = body.filterStringForDisplay()
+
+        XCTAssertEqual(filteredBody.text, "hello \u{2066}world\u{2069}")
+        XCTAssertEqual(CollapsedStyle.flatten(filteredBody.ranges.collapsedStyles), [
+            .init(.spoiler, range: NSRange(location: 0, length: 13)),
+        ])
+    }
+
+    func testInvisibleInkStaysHiddenWhenDisplayReplacesAnExtremeCombiningCluster() {
+        let text = "A" + String(repeating: "\u{0301}", count: 20) + "💌"
+        let fullySpoileredBody = MessageBody(
+            text: text,
+            ranges: .init(mentions: [], styles: [.init(.spoiler, range: NSRange(location: 0, length: 23))]),
+        )
+        let partiallySpoileredBody = MessageBody(
+            text: text,
+            ranges: .init(mentions: [], styles: [.init(.spoiler, range: NSRange(location: 21, length: 2))]),
+        )
+
+        let filteredFull = fullySpoileredBody.filterStringForDisplay()
+        let filteredPartial = partiallySpoileredBody.filterStringForDisplay()
+
+        XCTAssertEqual(filteredFull.text, "\u{FFFD}💌")
+        XCTAssertEqual(filteredPartial.text, filteredFull.text)
+        XCTAssertEqual(CollapsedStyle.flatten(filteredFull.ranges.collapsedStyles), [
+            .init(.spoiler, range: NSRange(location: 0, length: 3)),
+        ])
+        XCTAssertFalse(filteredPartial.ranges.hasRanges)
+    }
+
     // MARK: - Hydration
 
     let acis = (0...5).map { _ in Aci.randomForTesting() }
