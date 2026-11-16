@@ -325,6 +325,9 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
                 owsFailDebug("Failed to observe story view state: \(error))")
             },
             onChange: { [weak self] changedModels in
+                guard let self else {
+                    return
+                }
                 guard hasEmitted else {
                     hasEmitted = true
                     return
@@ -339,14 +342,14 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
                 }
                 do {
                     try SSKEnvironment.shared.databaseStorageRef.write {
-                        try self?.setOnboardingStoryViewedOnThisDevice(
+                        try self.setOnboardingStoryViewedOnThisDevice(
                             atTimestamp: viewedTimestamp,
                             shouldUpdateStorageService: true,
                             transaction: $0,
                         )
                     }
-                    self?.cleanUpOnboardingStoryIfNeeded()
-                    self?.stopObservingOnboardingStoryEvents()
+                    self.cleanUpOnboardingStoryIfNeeded()
+                    self.stopObservingOnboardingStoryEvents()
                 } catch {
                     return
                 }
@@ -440,7 +443,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
             return status
         }
 
-        DispatchQueue.main.async {
+        await MainActor.run {
             self.beginObservingOnboardingStoryEventsIfNeeded(downloadStatus: status)
         }
         return status
