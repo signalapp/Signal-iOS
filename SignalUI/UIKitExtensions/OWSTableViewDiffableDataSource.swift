@@ -15,6 +15,17 @@ public class OWSTableViewDiffableDataSource<
     ItemIdentifier,
 > {
 
+    // MARK: Edit rows
+
+    public var canEditRow: ((_ indexPath: IndexPath) -> Bool)?
+
+    override public func tableView(
+        _ tableView: UITableView,
+        canEditRowAt indexPath: IndexPath,
+    ) -> Bool {
+        canEditRow?(indexPath) ?? super.tableView(tableView, canEditRowAt: indexPath)
+    }
+
     // MARK: Move rows
 
     public var canMoveRow: ((_ indexPath: IndexPath) -> Bool)?

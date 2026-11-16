@@ -48,7 +48,7 @@ class ChatFolderEditorViewController:
     private let chatFolderManager = DependenciesBridge.shared.chatFolderManager
     private let threadStore = DependenciesBridge.shared.threadStore
 
-    private let chatFolderId: UUID
+    private let chatFolderId: UUID?
     private let originalDraft: ChatFolderDraft
     private var draft: ChatFolderDraft
 
@@ -57,10 +57,10 @@ class ChatFolderEditorViewController:
     private var isIncludedExpanded = false
     private var isExcludedExpanded = false
 
-    init(folder: ChatFolder) {
-        var draft = folder.draft
+    init(folder: ChatFolder? = nil) {
+        var draft = folder?.draft ?? ChatFolderDraft()
         draft.name = Self.normalizedName(draft.name)
-        self.chatFolderId = folder.chatFolderId
+        self.chatFolderId = folder?.chatFolderId
         self.originalDraft = draft
         self.draft = draft
 
@@ -95,10 +95,15 @@ class ChatFolderEditorViewController:
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = OWSLocalizedString(
-            "CHAT_FOLDERS_EDIT_FOLDER_TITLE",
-            comment: "Title for the screen that edits an existing chat folder.",
-        )
+        title = chatFolderId == nil
+            ? OWSLocalizedString(
+                "CHAT_FOLDERS_CREATE_FOLDER_TITLE",
+                comment: "Title for the screen that creates a new chat folder.",
+            )
+            : OWSLocalizedString(
+                "CHAT_FOLDERS_EDIT_FOLDER_TITLE",
+                comment: "Title for the screen that edits an existing chat folder.",
+            )
 
         navigationItem.leftBarButtonItem = .cancelButton(
             dismissingFrom: self,
@@ -119,6 +124,15 @@ class ChatFolderEditorViewController:
         loadChats()
         applySnapshot(animated: false)
         updateNavigationBar()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        let isFirstAppearance = !achievedLifecycleStates.contains(.appeared)
+        super.viewDidAppear(animated)
+
+        if chatFolderId == nil, isFirstAppearance {
+            nameTextField.becomeFirstResponder()
+        }
     }
 
     override var isModalInPresentation: Bool {
@@ -150,6 +164,14 @@ class ChatFolderEditorViewController:
             self?.cell(for: row, in: tableView, at: indexPath) ?? UITableViewCell()
         }
         dataSource.defaultRowAnimation = .fade
+        dataSource.canEditRow = { [weak dataSource] indexPath in
+            switch dataSource?.itemIdentifier(for: indexPath) {
+            case .chatType, .chat:
+                true
+            case .name, .addChats, .showAll, .onlyUnread, .includeMuted, .delete, nil:
+                false
+            }
+        }
         return dataSource
     }()
 
@@ -243,10 +265,7 @@ class ChatFolderEditorViewController:
             }
         case .delete:
             return OWSTableItem.buildCell(
-                itemName: OWSLocalizedString(
-                    "CHAT_FOLDERS_DELETE_FOLDER",
-                    comment: "Action that deletes a chat folder.",
-                ),
+                itemName: ChatFolderStrings.deleteFolder,
                 textColor: .Signal.red,
             )
         }
@@ -361,10 +380,13 @@ class ChatFolderEditorViewController:
         snapshot.appendItems([.addChats(.excluded)], toSection: .excludedChats)
         snapshot.appendItems(chatRows(.excluded), toSection: .excludedChats)
 
-        snapshot.appendSections([.onlyUnread, .includeMuted, .delete])
+        snapshot.appendSections([.onlyUnread, .includeMuted])
         snapshot.appendItems([.onlyUnread], toSection: .onlyUnread)
         snapshot.appendItems([.includeMuted], toSection: .includeMuted)
-        snapshot.appendItems([.delete], toSection: .delete)
+        if chatFolderId != nil {
+            snapshot.appendSections([.delete])
+            snapshot.appendItems([.delete], toSection: .delete)
+        }
 
         dataSource.apply(snapshot, animatingDifferences: animated)
     }
@@ -395,15 +417,9 @@ class ChatFolderEditorViewController:
                 comment: "Header for the name field when creating or editing a chat folder.",
             )
         case .includedChats:
-            title = OWSLocalizedString(
-                "CHAT_FOLDERS_INCLUDED_CHATS_HEADER",
-                comment: "Header for the list of chats included in a chat folder, and the title of the screen that chooses them.",
-            )
+            title = ChatFolderStrings.includedChats
         case .excludedChats:
-            title = OWSLocalizedString(
-                "CHAT_FOLDERS_EXCLUDED_CHATS_HEADER",
-                comment: "Header for the list of chats excluded from a chat folder, and the title of the screen that chooses them.",
-            )
+            title = ChatFolderStrings.excludedChats
         case .onlyUnread:
             title = OWSLocalizedString(
                 "CHAT_FOLDERS_MORE_OPTIONS_HEADER",
@@ -441,11 +457,8 @@ class ChatFolderEditorViewController:
 
     func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
         switch dataSource.itemIdentifier(for: indexPath) {
-        case .name, .showAll, .delete:
+        case .name, .showAll, .delete, .addChats:
             return true
-        case .addChats:
-            // [Chat Folders] TODO: Show chat picker
-            return false
         case .chatType, .chat, .onlyUnread, .includeMuted, nil:
             return false
         }
@@ -468,15 +481,82 @@ class ChatFolderEditorViewController:
             applySnapshot(animated: true)
         case .delete:
             didTapDelete()
-        case .addChats:
-            // [Chat Folders] TODO: Show chat picker
-            break
+        case .addChats(let membership):
+            showChatPicker(membership: membership)
         case .chatType, .chat, .onlyUnread, .includeMuted, nil:
             break
         }
     }
 
+    func tableView(
+        _ tableView: UITableView,
+        trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath,
+    ) -> UISwipeActionsConfiguration? {
+        let row = dataSource.itemIdentifier(for: indexPath)
+        switch row {
+        case .chatType, .chat:
+            break
+        case .name, .addChats, .showAll, .onlyUnread, .includeMuted, .delete, nil:
+            return nil
+        }
+
+        let deleteAction = ContextualActionBuilder.makeContextualAction(
+            style: .destructive,
+            color: .Signal.red,
+            image: .trashFill,
+            title: CommonStrings.deleteButton,
+        ) { [weak self] completion in
+            self?.removeRow(row)
+            completion(true)
+        }
+        return UISwipeActionsConfiguration(actions: [deleteAction])
+    }
+
     // MARK: - Actions
+
+    private func removeRow(_ row: Row?) {
+        switch row {
+        case .chatType(.individual):
+            draft.includeAllIndividualChats = false
+        case .chatType(.group):
+            draft.includeAllGroupChats = false
+        case .chat(.included, let threadRowId):
+            draft.includedThreadRowIds.remove(threadRowId)
+            includedChats.removeAll { $0.threadRowId == threadRowId }
+        case .chat(.excluded, let threadRowId):
+            draft.excludedThreadRowIds.remove(threadRowId)
+            excludedChats.removeAll { $0.threadRowId == threadRowId }
+        case .name, .addChats, .showAll, .onlyUnread, .includeMuted, .delete, nil:
+            return
+        }
+        applySnapshot(animated: true)
+        updateNavigationBar()
+    }
+
+    private func showChatPicker(membership: ChatFolder.MembershipType) {
+        let selection = ChatFolderChatPickerViewController.Selection(
+            threadRowIds: membership == .included ? draft.includedThreadRowIds : draft.excludedThreadRowIds,
+            includeAllIndividualChats: draft.includeAllIndividualChats,
+            includeAllGroupChats: draft.includeAllGroupChats,
+        )
+        let picker = ChatFolderChatPickerViewController(membership: membership, selection: selection, didSave: { [weak self] selection in
+            guard let self else { return }
+            switch membership {
+            case .included:
+                self.draft.includedThreadRowIds = selection.threadRowIds
+                self.draft.excludedThreadRowIds.subtract(selection.threadRowIds)
+                self.draft.includeAllIndividualChats = selection.includeAllIndividualChats
+                self.draft.includeAllGroupChats = selection.includeAllGroupChats
+            case .excluded:
+                self.draft.excludedThreadRowIds = selection.threadRowIds
+                self.draft.includedThreadRowIds.subtract(selection.threadRowIds)
+            }
+            self.loadChats()
+            self.applySnapshot(animated: true)
+            self.updateNavigationBar()
+        })
+        navigationController?.pushViewController(picker, animated: true)
+    }
 
     private func didTapDone() {
         guard canSave else {
@@ -484,11 +564,15 @@ class ChatFolderEditorViewController:
         }
 
         db.write { tx in
-            chatFolderManager.update(
-                chatFolderId: chatFolderId,
-                draft: draft,
-                tx: tx,
-            )
+            if let chatFolderId {
+                chatFolderManager.update(
+                    chatFolderId: chatFolderId,
+                    draft: draft,
+                    tx: tx,
+                )
+            } else {
+                _ = chatFolderManager.save(draft, tx: tx)
+            }
         }
         dismiss(animated: true)
     }
@@ -500,6 +584,7 @@ class ChatFolderEditorViewController:
     }
 
     private func deleteFolder() {
+        guard let chatFolderId else { return }
         db.write { tx in
             chatFolderManager.delete(chatFolderId: chatFolderId, tx: tx)
         }

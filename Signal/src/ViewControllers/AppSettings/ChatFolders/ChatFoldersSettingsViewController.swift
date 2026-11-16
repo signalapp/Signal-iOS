@@ -65,10 +65,7 @@ final class ChatFoldersSettingsViewController:
         super.viewDidLoad()
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
-        title = OWSLocalizedString(
-            "CHAT_FOLDERS_SETTINGS_TITLE",
-            comment: "Title for the chat folders settings screen.",
-        )
+        title = ChatFolderStrings.settingsTitle
 
         view.backgroundColor = .Signal.groupedBackground
         view.addSubview(tableView)
@@ -287,11 +284,20 @@ final class ChatFoldersSettingsViewController:
 
     // MARK: - Editing
 
-    private func showEditor(chatFolderId: UUID) {
-        let folder = db.read(block: { tx in
-            chatFolderManager.fetch(chatFolderId: chatFolderId, tx: tx)
-        })
-        guard let folder else { return }
+    private func showEditor(chatFolderId: UUID?) {
+        let folder: ChatFolder?
+        if let chatFolderId {
+            guard
+                let existingFolder = db.read(block: { tx in
+                    chatFolderManager.fetch(chatFolderId: chatFolderId, tx: tx)
+                })
+            else {
+                return
+            }
+            folder = existingFolder
+        } else {
+            folder = nil
+        }
         let editor = ChatFolderEditorViewController(folder: folder)
         presentFormSheet(OWSNavigationController(rootViewController: editor), animated: true)
     }
@@ -373,8 +379,7 @@ final class ChatFoldersSettingsViewController:
         case .folder(let chatFolderId):
             return folderRowsById[chatFolderId]?.isAllChats == false
         case .createFolder:
-            // [Chat Folders] TODO: Allow creating new folders
-            return false
+            return true
         case .suggestedFolder, nil:
             return false
         }
@@ -394,8 +399,7 @@ final class ChatFoldersSettingsViewController:
         case .folder(let chatFolderId):
             showEditor(chatFolderId: chatFolderId)
         case .createFolder:
-            // [Chat Folders] TODO: Allow creating new folders
-            break
+            showEditor(chatFolderId: nil)
         case .suggestedFolder, nil:
             break
         }
@@ -466,19 +470,13 @@ final class ChatFoldersSettingsViewController:
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
             UIMenu(children: [
                 UIAction(
-                    title: OWSLocalizedString(
-                        "CHAT_FOLDERS_EDIT_FOLDER",
-                        comment: "Action that edits a chat folder.",
-                    ),
+                    title: ChatFolderStrings.editFolder,
                     image: Theme.iconImage(.contextMenuEdit),
                 ) { _ in
                     self?.showEditor(chatFolderId: chatFolderId)
                 },
                 UIAction(
-                    title: OWSLocalizedString(
-                        "CHAT_FOLDERS_DELETE_FOLDER",
-                        comment: "Action that deletes a chat folder.",
-                    ),
+                    title: ChatFolderStrings.deleteFolder,
                     image: Theme.iconImage(.contextMenuDelete),
                     attributes: .destructive,
                 ) { _ in

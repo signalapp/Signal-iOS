@@ -35,10 +35,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
                 comment: "Footer for the chat folders row in chats settings.",
             )
             chatFoldersSection.add(.disclosureItem(
-                withText: OWSLocalizedString(
-                    "CHAT_FOLDERS_SETTINGS_TITLE",
-                    comment: "Title for the chat folders settings screen.",
-                ),
+                withText: ChatFolderStrings.settingsTitle,
                 actionBlock: { [weak self] in
                     self?.navigationController?.pushViewController(ChatFoldersSettingsViewController(), animated: true)
                 },

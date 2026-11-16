@@ -2110,6 +2110,12 @@
 /* A type of chat a chat folder can include: every 1:1 chat. */
 "CHAT_FOLDERS_CHAT_TYPE_INDIVIDUAL" = "1:1 Chats";
 
+/* Header for the chat types that can be included in a chat folder. */
+"CHAT_FOLDERS_CHAT_TYPES_HEADER" = "Chat Types";
+
+/* Title for the screen that creates a new chat folder. */
+"CHAT_FOLDERS_CREATE_FOLDER_TITLE" = "Create a Folder";
+
 /* Action that deletes a chat folder. */
 "CHAT_FOLDERS_DELETE_FOLDER" = "Delete Folder";
 

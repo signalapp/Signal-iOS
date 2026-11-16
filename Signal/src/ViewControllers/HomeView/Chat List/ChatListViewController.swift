@@ -1015,10 +1015,7 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
             title: folder.folderType == .all ? OWSLocalizedString(
                 "CHAT_FOLDERS_FOLDER_SETTINGS",
                 comment: "All Chats context menu action to open chat folder settings.",
-            ) : OWSLocalizedString(
-                "CHAT_FOLDERS_EDIT_FOLDER",
-                comment: "Action that edits a chat folder.",
-            ),
+            ) : ChatFolderStrings.editFolder,
             image: folder.folderType == .all ? UIImage(resource: .folder) : UIImage(resource: .edit),
         ) { [weak self] _ in
             self?.presentChatFolderSettings(chatFolderId: chatFolderId)

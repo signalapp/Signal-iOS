@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-enum ChatFolderChatType {
+enum ChatFolderChatType: CaseIterable {
     case individual
     case group
 
