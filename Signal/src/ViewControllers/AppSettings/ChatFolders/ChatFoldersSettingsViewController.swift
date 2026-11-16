@@ -85,8 +85,6 @@ final class ChatFoldersSettingsViewController:
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
         tableView.delegate = self
         tableView.preservesSuperviewLayoutMargins = true
-        tableView.isEditing = true
-        tableView.allowsSelectionDuringEditing = true
         tableView.rowHeight = UITableView.automaticDimension
         tableView.backgroundColor = .Signal.groupedBackground
         tableView.register(ChatFolderTableViewCell.self)
@@ -114,7 +112,12 @@ final class ChatFoldersSettingsViewController:
                     owsFailDebug("Missing folder for row!")
                     return UITableViewCell()
                 }
-                cell.configure(symbol: folderRow.symbol, title: folderRow.name, subtitle: folderRow.subtitle)
+                cell.configure(
+                    symbol: folderRow.symbol,
+                    title: folderRow.name,
+                    subtitle: folderRow.subtitle,
+                    isReorderable: true,
+                )
             case .suggestedFolder(let suggestedFolder):
                 cell.configure(
                     symbol: suggestedFolder.symbol,
@@ -402,7 +405,30 @@ final class ChatFoldersSettingsViewController:
         _ tableView: UITableView,
         editingStyleForRowAt indexPath: IndexPath,
     ) -> UITableViewCell.EditingStyle {
+        if
+            case .folder(let chatFolderId) = dataSource.itemIdentifier(for: indexPath),
+            folderRowsById[chatFolderId]?.isAllChats == false
+        {
+            return .delete
+        }
         return .none
+    }
+
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard
+            case .folder(let chatFolderId) = dataSource.itemIdentifier(for: indexPath),
+            folderRowsById[chatFolderId]?.isAllChats == false
+        else {
+            return nil
+        }
+        let deleteAction = UIContextualAction(
+            style: .destructive,
+            title: CommonStrings.deleteButton,
+        ) { [weak self] _, _, completion in
+            completion(false)
+            self?.confirmDeleteFolder(chatFolderId: chatFolderId)
+        }
+        return UISwipeActionsConfiguration(actions: [deleteAction])
     }
 
     func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
