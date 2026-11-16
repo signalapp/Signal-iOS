@@ -360,6 +360,20 @@ class MessageLoader {
             batch.insertOlder(uniqueIds: older.interactions.map(\.uniqueId), didReachOldest: older.reachedEnd)
             let newer = _fetchDisplayUnits(.newer(than: rowId), count: count - older.unitCount)
             batch.insertNewer(uniqueIds: newer.interactions.map(\.uniqueId), didReachNewest: newer.reachedEnd)
+
+            // If we didn't consume our budget fetching newer units (e.g., we're
+            // near the newest message), use that remaining budget for more
+            // older units.
+            let remainingCount = count - older.unitCount - newer.unitCount
+            if
+                remainingCount > 0,
+                !older.reachedEnd,
+                let oldestRowId = older.interactions.first?.sqliteRowId
+            {
+                let moreOlder = _fetchDisplayUnits(.older(than: oldestRowId), count: remainingCount)
+                batch.insertOlder(uniqueIds: moreOlder.interactions.map(\.uniqueId), didReachOldest: moreOlder.reachedEnd)
+            }
+
             return batch
         }
 

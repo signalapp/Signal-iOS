@@ -594,6 +594,42 @@ class MessageLoaderTest: XCTestCase {
         XCTAssertEqual(messageLoader.loadedInteractions, [])
     }
 
+    func test_loadInitialMessagePage_aroundNewestFocus_fillsWindowWithOlder() throws {
+        let threadUniqueId = UUID().uuidString
+        let initialMessages = createInteractions(200, threadUniqueId: threadUniqueId)
+        setInteractions(initialMessages)
+
+        let newestLoader = MessageLoader(cursorFactory: cursorFactory, interactionFetchers: [interactionFetcher])
+        let focusLoader = MessageLoader(cursorFactory: cursorFactory, interactionFetchers: [interactionFetcher])
+        try mockDB.read { tx in
+            try newestLoader.loadInitialMessagePage(
+                focusMessageId: nil,
+                reusableInteractions: [:],
+                deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
+                tx: tx,
+            )
+            try focusLoader.loadInitialMessagePage(
+                focusMessageId: initialMessages.last!.uniqueId,
+                reusableInteractions: [:],
+                deletedInteractionIds: [],
+                preprocessingContext: preprocessingContext(threadUniqueId: threadUniqueId),
+                tx: tx,
+            )
+        }
+
+        // With no newer messages, the unused newer budget goes to older
+        // messages, so the window matches a "newest" load. The focus message
+        // isn't counted against the budget, so it's one larger.
+        XCTAssertTrue(focusLoader.canLoadOlder)
+        XCTAssertFalse(focusLoader.canLoadNewer)
+        XCTAssertEqual(focusLoader.loadedInteractions.last?.uniqueId, initialMessages.last?.uniqueId)
+        XCTAssertEqual(
+            focusLoader.loadedInteractions.count,
+            newestLoader.loadedInteractions.count + 1,
+        )
+    }
+
     func test_loadAroundEdge() throws {
         // Create more messages than are part of the first batch.
         let threadUniqueId = UUID().uuidString
