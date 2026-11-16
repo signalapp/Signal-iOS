@@ -62,7 +62,7 @@ public final class DeletedCallRecordExpirationJob: ExpirationJob<DeletedCallReco
 
     /// Removes the ``CallLinkRecord`` if there are no more references.
     private func deleteCallLinkIfNeeded(conversationId: CallRecord.ConversationID, tx: DBWriteTransaction) {
-        let callLinkRowId: Int64
+        let callLinkRowId: CallLinkRecord.RowId
         switch conversationId {
         case .thread:
             return

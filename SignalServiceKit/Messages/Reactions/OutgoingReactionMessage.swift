@@ -234,7 +234,7 @@ private final class OWSReaction: NSObject, NSSecureCoding {
     static var supportsSecureCoding: Bool { true }
 
     func encode(with coder: NSCoder) {
-        coder.encode(NSNumber(value: id), forKey: CodingKeys.id.rawValue)
+        coder.encode(NSNumber(value: id.rawValue), forKey: CodingKeys.id.rawValue)
         coder.encode(emoji, forKey: CodingKeys.emoji.rawValue)
         coder.encode(NSNumber(value: sentAtTimestamp), forKey: CodingKeys.sentAtTimestamp.rawValue)
     }
@@ -244,7 +244,7 @@ private final class OWSReaction: NSObject, NSSecureCoding {
             owsFailDebug("Missing id")
             return nil
         }
-        self.id = id
+        self.id = ReactionRecord.RowId(rawValue: id)
 
         guard let emoji = coder.decodeObject(of: NSString.self, forKey: CodingKeys.emoji.rawValue) as String? else {
             owsFailDebug("Missing emoji")

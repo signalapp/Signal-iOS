@@ -165,7 +165,7 @@ public class PollStore {
     public func updatePollWithVotes(
         interactionId: Int64,
         optionsVoted: [OWSPoll.OptionIndex],
-        voteAuthorId: Int64,
+        voteAuthorId: SignalRecipient.RowId,
         voteCount: UInt32,
         transaction: DBWriteTransaction,
     ) throws -> Bool {
@@ -276,7 +276,7 @@ public class PollStore {
 
     private func highestVoteCount(
         pollId: Int64,
-        voteAuthorId: Int64,
+        voteAuthorId: SignalRecipient.RowId,
         includePending: Bool,
         transaction: DBReadTransaction,
     ) throws -> Int32 {
@@ -308,7 +308,7 @@ public class PollStore {
     // This excludes unvotes, and pending votes.
     private func votesForPoll(
         pollId: Int64,
-        voteAuthorId: Int64,
+        voteAuthorId: SignalRecipient.RowId,
         voteCount: Int32,
         transaction: DBReadTransaction,
     ) throws -> Set<OptionId> {
@@ -347,7 +347,7 @@ public class PollStore {
     }
 
     private func deleteAllVotes(
-        for voteAuthorId: Int64,
+        for voteAuthorId: SignalRecipient.RowId,
         pollId: Int64,
         minRequiredVoteCount: Int32,
         transaction: DBWriteTransaction,
@@ -368,7 +368,7 @@ public class PollStore {
 
     public func applyPendingVote(
         interactionId: Int64,
-        localRecipientId: Int64,
+        localRecipientId: SignalRecipient.RowId,
         optionIndex: OWSPoll.OptionIndex,
         isUnvote: Bool,
         transaction: DBWriteTransaction,
@@ -426,7 +426,7 @@ public class PollStore {
 
     public func optionIndexVotesIncludingPending(
         interactionId: Int64,
-        voteAuthorId: Int64,
+        voteAuthorId: SignalRecipient.RowId,
         voteCount: Int32?,
         transaction: DBReadTransaction,
     ) throws -> [Int32] {
@@ -477,7 +477,7 @@ public class PollStore {
     public func revertVoteCount(
         voteCount: Int32,
         interactionId: Int64,
-        voteAuthorId: Int64,
+        voteAuthorId: SignalRecipient.RowId,
         transaction: DBWriteTransaction,
     ) throws {
         guard

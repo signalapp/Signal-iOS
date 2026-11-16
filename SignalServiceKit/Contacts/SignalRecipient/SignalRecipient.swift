@@ -41,7 +41,7 @@ public struct SignalRecipient: FetchableRecord, PersistableRecord, Codable {
         case blocked = 2
     }
 
-    public typealias RowId = Int64
+    public typealias RowId = RowIdType<SignalRecipient>
     public let id: RowId
 
     public let uniqueId: String

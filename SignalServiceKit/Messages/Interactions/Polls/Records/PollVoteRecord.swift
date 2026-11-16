@@ -46,7 +46,7 @@ public struct PollVoteRecord: Codable, FetchableRecord, MutablePersistableRecord
 
     public var id: Int64?
     public let optionId: Int64
-    public let voteAuthorId: Int64
+    public let voteAuthorId: SignalRecipient.RowId
     public let voteCount: Int32
     public var voteState: VoteState
 
@@ -56,7 +56,7 @@ public struct PollVoteRecord: Codable, FetchableRecord, MutablePersistableRecord
 
     public init(
         optionId: Int64,
-        voteAuthorId: Int64,
+        voteAuthorId: SignalRecipient.RowId,
         voteCount: Int32,
         voteState: VoteState,
     ) {

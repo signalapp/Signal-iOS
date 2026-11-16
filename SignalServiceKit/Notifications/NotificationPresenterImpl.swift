@@ -80,7 +80,7 @@ public struct AppNotificationUserInfo {
         }
         self.isMissedCall = userInfo[UserInfoKey.isMissedCall] as? Bool
         self.messageId = userInfo[UserInfoKey.messageId] as? String
-        self.reactionId = userInfo[UserInfoKey.reactionId] as? ReactionRecord.RowId
+        self.reactionId = (userInfo[UserInfoKey.reactionId] as? Int64).map { ReactionRecord.RowId(rawValue: $0) }
         self.reactionUniqueId = userInfo[UserInfoKey.reactionUniqueId] as? String
         self.roomId = (userInfo[UserInfoKey.roomId] as? String).flatMap {
             let result = Data(base64Encoded: $0)
@@ -126,7 +126,7 @@ public struct AppNotificationUserInfo {
             result[UserInfoKey.messageId] = messageId
         }
         if let reactionId {
-            result[UserInfoKey.reactionId] = reactionId
+            result[UserInfoKey.reactionId] = reactionId.rawValue
         }
         if let reactionUniqueId {
             result[UserInfoKey.reactionUniqueId] = reactionUniqueId

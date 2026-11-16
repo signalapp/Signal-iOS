@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import GRDB
 
 public struct DatabaseChanges {
     public typealias UniqueId = String
@@ -36,6 +37,13 @@ public struct DatabaseChanges {
             tableNames.isEmpty &&
             tableRowIds.isEmpty &&
             lastError == nil
+    }
+
+    public func rowIds<T: GRDB.TableRecord>(forTable table: T.Type) -> Set<RowIdType<T>>? {
+        guard let rowIds = tableRowIds[table.databaseTableName] else {
+            return nil
+        }
+        return Set(rowIds.map { RowIdType(rawValue: $0) })
     }
 
     public func didUpdate(tableName: String) -> Bool {

@@ -35,7 +35,7 @@ public struct GroupRecord: Codable, FetchableRecord, PersistableRecord {
         case blocked = 2
     }
 
-    public typealias RowId = Int64
+    public typealias RowId = RowIdType<GroupRecord>
     public typealias ThreadId = TSThread.RowId
 
     let rowId: RowId

@@ -7,7 +7,7 @@ import SignalRingRTC
 
 extension BackupArchive {
     struct CallLinkRecordId: Hashable {
-        let rowId: Int64
+        let rowId: CallLinkRecord.RowId
 
         init(_ callLinkRecord: CallLinkRecord) {
             self.rowId = callLinkRecord.id

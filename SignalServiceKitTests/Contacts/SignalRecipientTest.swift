@@ -671,7 +671,7 @@ final class SignalRecipient2Test: XCTestCase {
             let signalRecipients = try! SignalRecipient.fetchAll(tx.database)
             XCTAssertEqual(signalRecipients.count, 2)
 
-            XCTAssertEqual(signalRecipients[0].id, 18)
+            XCTAssertEqual(signalRecipients[0].id.rawValue, 18)
             XCTAssertEqual(signalRecipients[0].uniqueId, "00000000-0000-4000-8000-00000000000A")
             XCTAssertEqual(signalRecipients[0].deviceIds, [1, 2, 5, 4, 6].map { DeviceId(validating: $0)! })
             XCTAssertEqual(signalRecipients[0].phoneNumber?.stringValue, "+16505550100")
@@ -679,7 +679,7 @@ final class SignalRecipient2Test: XCTestCase {
             XCTAssertEqual(signalRecipients[0].aciString, "00000000-0000-4000-8000-000000000000")
             XCTAssertEqual(signalRecipients[0].unregisteredAtTimestamp, nil)
 
-            XCTAssertEqual(signalRecipients[1].id, 21)
+            XCTAssertEqual(signalRecipients[1].id.rawValue, 21)
             XCTAssertEqual(signalRecipients[1].uniqueId, "00000000-0000-4000-8000-00000000000B")
             XCTAssertEqual(signalRecipients[1].deviceIds, [])
             XCTAssertEqual(signalRecipients[1].phoneNumber?.stringValue, "+16505550101")
@@ -708,7 +708,7 @@ final class SignalRecipient2Test: XCTestCase {
             let signalRecipients = try! SignalRecipient.fetchAll(tx.database)
             XCTAssertEqual(signalRecipients.count, 1)
 
-            XCTAssertEqual(signalRecipients[0].id, 1)
+            XCTAssertEqual(signalRecipients[0].id.rawValue, 1)
             XCTAssertEqual(signalRecipients[0].uniqueId, "00000000-0000-4000-8000-000000000000")
             XCTAssertEqual(signalRecipients[0].deviceIds, [])
             XCTAssertEqual(signalRecipients[0].pni, Pni.constantForTesting("PNI:10000000-2000-4000-8000-300000000004"))

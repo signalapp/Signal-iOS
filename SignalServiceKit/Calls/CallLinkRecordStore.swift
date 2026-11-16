@@ -10,7 +10,7 @@ public import SignalRingRTC
 public struct CallLinkRecordStore {
     public init() {}
 
-    public func fetch(rowId: Int64, tx: DBReadTransaction) -> CallLinkRecord? {
+    public func fetch(rowId: CallLinkRecord.RowId, tx: DBReadTransaction) -> CallLinkRecord? {
         let db = tx.database
         return failIfThrows {
             return try CallLinkRecord.fetchOne(db, key: rowId)

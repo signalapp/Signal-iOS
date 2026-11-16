@@ -7,8 +7,8 @@ import Foundation
 import GRDB
 
 public protocol NicknameRecordStore {
-    func fetch(recipientRowID: Int64, tx: DBReadTransaction) -> NicknameRecord?
-    func nicknameExists(recipientRowID: Int64, tx: DBReadTransaction) -> Bool
+    func fetch(recipientRowID: SignalRecipient.RowId, tx: DBReadTransaction) -> NicknameRecord?
+    func nicknameExists(recipientRowID: SignalRecipient.RowId, tx: DBReadTransaction) -> Bool
     func enumerateAll(tx: DBReadTransaction, block: (NicknameRecord) -> Void)
     func insert(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction)
     func update(_ nicknameRecord: NicknameRecord, tx: DBWriteTransaction)
@@ -21,7 +21,7 @@ public class NicknameRecordStoreImpl: NicknameRecordStore {
     // MARK: Read
 
     public func fetch(
-        recipientRowID: Int64,
+        recipientRowID: SignalRecipient.RowId,
         tx: DBReadTransaction,
     ) -> NicknameRecord? {
         do {
@@ -36,7 +36,7 @@ public class NicknameRecordStoreImpl: NicknameRecordStore {
     }
 
     public func nicknameExists(
-        recipientRowID: Int64,
+        recipientRowID: SignalRecipient.RowId,
         tx: DBReadTransaction,
     ) -> Bool {
         do {

@@ -24,7 +24,7 @@ final class CallLinkViewController: OWSTableViewController2, DatabaseChangeDeleg
     /// The ROWID of the corresponding ``CallLinkRecord``. If `nil`, `rootKey`
     /// refers to a just-created call link that hasn't been persisted (it'll be
     /// persisted once it's shared).
-    private var callLinkRowId: Int64?
+    private var callLinkRowId: CallLinkRecord.RowId?
 
     /// The latest known state for the call link. This usually matches what's on
     /// disk, but it might not be saved to disk yet for just-created call links.
@@ -79,7 +79,7 @@ final class CallLinkViewController: OWSTableViewController2, DatabaseChangeDeleg
         callLink: CallLink,
         adminInfo: (adminPasskey: Data, adminManager: CallLinkAdminManager)?,
         canShowDeleteButton: Bool,
-        callLinkRowId: Int64?,
+        callLinkRowId: CallLinkRecord.RowId?,
         callLinkState: CallLinkState?,
         callRecords: [CallRecord],
     ) {
@@ -257,7 +257,7 @@ final class CallLinkViewController: OWSTableViewController2, DatabaseChangeDeleg
         callLinkAdminManager?.didUpdateCallLinkState = nil
     }
 
-    private func createCallLinkRecord() -> Int64 {
+    private func createCallLinkRecord() -> CallLinkRecord.RowId {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
         let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
@@ -337,7 +337,7 @@ final class CallLinkViewController: OWSTableViewController2, DatabaseChangeDeleg
 
     // MARK: - DatabaseChangeDelegate
 
-    private func loadStateAndReloadViewIfNeeded(callLinkRowId: Int64) {
+    private func loadStateAndReloadViewIfNeeded(callLinkRowId: CallLinkRecord.RowId) {
         let didChangeVisibleProperty: Bool
         let oldState = self.callLinkState
         let newState = self.db.read { tx in callLinkStore.fetch(rowId: callLinkRowId, tx: tx)?.state }
@@ -356,7 +356,7 @@ final class CallLinkViewController: OWSTableViewController2, DatabaseChangeDeleg
         guard let callLinkRowId else {
             return
         }
-        guard databaseChanges.tableRowIds[CallLinkRecord.databaseTableName]?.contains(callLinkRowId) == true else {
+        guard databaseChanges.rowIds(forTable: CallLinkRecord.self)?.contains(callLinkRowId) == true else {
             return
         }
         loadStateAndReloadViewIfNeeded(callLinkRowId: callLinkRowId)

@@ -994,7 +994,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     /// thread, direction, missed status, and call type.
     private static func callViewModel(
         forCallRecords callRecords: [CallRecord],
-        upcomingCallLinkRowId: Int64?,
+        upcomingCallLinkRowId: CallLinkRecord.RowId?,
         deps: Dependencies,
         tx: DBReadTransaction,
     ) -> CallViewModel {
@@ -1016,7 +1016,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         )
 
         let callLinkRecord = { () -> CallLinkRecord? in
-            let callLinkRowId: Int64
+            let callLinkRowId: CallLinkRecord.RowId
             if let upcomingCallLinkRowId {
                 callLinkRowId = upcomingCallLinkRowId
             } else if case .callLink(let callLinkRowId2) = callRecords.first!.conversationId {
@@ -1433,7 +1433,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
         enum Reference: Hashable {
             case callRecords(oldestId: CallRecord.ID)
-            case callLink(rowId: Int64)
+            case callLink(rowId: CallLinkRecord.RowId)
         }
 
         enum Direction {
@@ -2097,7 +2097,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
         }
     }
 
-    private func isAdmin(forCallLinkRowId callLinkRowId: Int64?) -> Bool {
+    private func isAdmin(forCallLinkRowId callLinkRowId: CallLinkRecord.RowId?) -> Bool {
         return deps.databaseStorage.read { tx in
             guard let callLinkRowId else {
                 return false
@@ -2151,7 +2151,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
         try await deleteCallLinks(callLinksToDelete: callLinksToDelete)
     }
 
-    private nonisolated func deleteCallRecords(forCallLinkRowId callLinkRowId: Int64, tx: DBWriteTransaction) {
+    private nonisolated func deleteCallRecords(forCallLinkRowId callLinkRowId: CallLinkRecord.RowId, tx: DBWriteTransaction) {
         let callRecords = deps.callRecordStore.fetchExisting(conversationId: .callLink(callLinkRowId: callLinkRowId), limit: nil, tx: tx)
         deps.callRecordDeleteManager.deleteCallRecords(callRecords, sendSyncMessageOnDelete: true, tx: tx)
     }
@@ -2304,7 +2304,7 @@ extension CallsListViewController: DatabaseChangeDelegate {
     }
 
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        guard let rowIds = databaseChanges.tableRowIds[CallLinkRecord.databaseTableName] else {
+        guard let rowIds = databaseChanges.rowIds(forTable: CallLinkRecord.self) else {
             return
         }
         reloadUpcomingCallLinks()

@@ -8,7 +8,7 @@ import Foundation
 #if TESTABLE_BUILD
 
 public class MockNicknameManager: NicknameManager {
-    private var mockNicknames: [Int64: NicknameRecord] = [:]
+    private var mockNicknames: [SignalRecipient.RowId: NicknameRecord] = [:]
 
     public func fetchNickname(for recipient: SignalRecipient, tx: DBReadTransaction) -> NicknameRecord? {
         return mockNicknames[recipient.id]
@@ -27,7 +27,7 @@ public class MockNicknameManager: NicknameManager {
     }
 
     public func deleteNickname(
-        recipientRowID: Int64,
+        recipientRowID: SignalRecipient.RowId,
         updateStorageServiceFor recipientUniqueId: RecipientUniqueId?,
         tx: DBWriteTransaction,
     ) {

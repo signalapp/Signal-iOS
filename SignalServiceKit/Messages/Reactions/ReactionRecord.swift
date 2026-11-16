@@ -9,7 +9,7 @@ public import GRDB
 public struct ReactionRecord: Codable, FetchableRecord, PersistableRecord {
     public static let databaseTableName: String = "Reaction"
 
-    public typealias RowId = Int64
+    public typealias RowId = RowIdType<ReactionRecord>
     public typealias ThreadId = TSThread.RowId
     public typealias InteractionId = Int64
     public typealias RecipientId = SignalRecipient.RowId

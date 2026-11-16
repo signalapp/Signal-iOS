@@ -74,7 +74,7 @@ public struct RecipientDatabaseTable {
         return fetchRecipient(address: incomingMessage.authorAddress, tx: tx)
     }
 
-    public func fetchRecipient(rowId: Int64, tx: DBReadTransaction) -> SignalRecipient? {
+    public func fetchRecipient(rowId: SignalRecipient.RowId, tx: DBReadTransaction) -> SignalRecipient? {
         return failIfThrows {
             return try SignalRecipient.fetchOne(tx.database, key: rowId)
         }

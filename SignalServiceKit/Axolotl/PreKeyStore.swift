@@ -71,7 +71,7 @@ struct PreKeyStore {
         let delay = PreKeyManagerImpl.Constants.maxUnacknowledgedSessionAge + gracePeriod
         let replacedAt = Column(PreKeyRecord.CodingKeys.replacedAt.rawValue)
         failIfThrows {
-            var rowIds = [Int64]()
+            var rowIds = [PreKeyRecord.RowId]()
             let query = PreKeyRecord.filter(replacedAt < Int64(now - delay) || replacedAt > Int64(now + delay))
             let cursor = try query.fetchCursor(tx.database)
             while let preKey = try cursor.next() {

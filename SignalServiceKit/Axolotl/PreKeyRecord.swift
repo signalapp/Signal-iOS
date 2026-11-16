@@ -9,7 +9,9 @@ import GRDB
 struct PreKeyRecord: Codable, FetchableRecord, PersistableRecord {
     static let databaseTableName: String = "PreKey"
 
-    let rowId: Int64
+    typealias RowId = RowIdType<PreKeyRecord>
+
+    let rowId: RowId
 
     // The combination of these three fields must be UNIQUE -- keyIds must not
     // be reused within a namespace for a particular identity.

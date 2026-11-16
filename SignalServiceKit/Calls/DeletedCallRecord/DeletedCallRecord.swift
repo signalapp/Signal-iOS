@@ -73,7 +73,7 @@ public final class DeletedCallRecord: Codable, PersistableRecord, FetchableRecor
         if let threadRowId = try container.decodeIfPresent(Int64.self, forKey: .threadRowId) {
             self.conversationId = .thread(threadRowId: threadRowId)
         } else {
-            self.conversationId = .callLink(callLinkRowId: try container.decode(Int64.self, forKey: .callLinkRowId))
+            self.conversationId = .callLink(callLinkRowId: try container.decode(CallLinkRecord.RowId.self, forKey: .callLinkRowId))
         }
         self.deletedAtTimestamp = UInt64(bitPattern: try container.decode(Int64.self, forKey: .deletedAtTimestamp))
     }

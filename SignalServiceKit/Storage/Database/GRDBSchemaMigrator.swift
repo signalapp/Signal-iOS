@@ -7260,7 +7260,7 @@ public class GRDBSchemaMigrator {
         case V2
     }
 
-    private static func fetchOrCreateRecipient(_ version: RecipientVersion, aciString: String, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
+    private static func fetchOrCreateRecipient(_ version: RecipientVersion, aciString: String, tx: DBWriteTransaction) throws -> Int64 {
         let db = tx.database
         let existingRecipientId = try Int64.fetchOne(db, sql: "SELECT id FROM model_SignalRecipient WHERE recipientUUID IS ?", arguments: [aciString])
         if let existingRecipientId {
@@ -7269,7 +7269,7 @@ public class GRDBSchemaMigrator {
         return try createRecipient(version, aciString: aciString, phoneNumber: nil, pniString: nil, tx: tx)
     }
 
-    private static func fetchOrCreateRecipient(_ version: RecipientVersion, phoneNumber: String, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
+    private static func fetchOrCreateRecipient(_ version: RecipientVersion, phoneNumber: String, tx: DBWriteTransaction) throws -> Int64 {
         let db = tx.database
         let existingRecipientId = try Int64.fetchOne(db, sql: "SELECT id FROM model_SignalRecipient WHERE recipientPhoneNumber IS ?", arguments: [phoneNumber])
         if let existingRecipientId {
@@ -7278,7 +7278,7 @@ public class GRDBSchemaMigrator {
         return try createRecipient(version, aciString: nil, phoneNumber: phoneNumber, pniString: nil, tx: tx)
     }
 
-    private static func fetchOrCreateRecipient(_ version: RecipientVersion, pniString: String, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
+    private static func fetchOrCreateRecipient(_ version: RecipientVersion, pniString: String, tx: DBWriteTransaction) throws -> Int64 {
         let db = tx.database
         let existingRecipientId = try Int64.fetchOne(db, sql: "SELECT id FROM model_SignalRecipient WHERE pni IS ?", arguments: [pniString])
         if let existingRecipientId {
@@ -7287,11 +7287,11 @@ public class GRDBSchemaMigrator {
         return try createRecipient(version, aciString: nil, phoneNumber: nil, pniString: pniString, tx: tx)
     }
 
-    private static func fetchOrCreateRecipient(_ version: RecipientVersion, address: FrozenSignalServiceAddress, tx: DBWriteTransaction) throws -> SignalRecipient.RowId? {
+    private static func fetchOrCreateRecipient(_ version: RecipientVersion, address: FrozenSignalServiceAddress, tx: DBWriteTransaction) throws -> Int64? {
         return try fetchOrCreateRecipient(.V2, serviceId: address.serviceId, phoneNumber: address.phoneNumber, tx: tx)
     }
 
-    private static func fetchOrCreateRecipient(_ version: RecipientVersion, serviceId: ServiceId?, phoneNumber: String?, tx: DBWriteTransaction) throws -> SignalRecipient.RowId? {
+    private static func fetchOrCreateRecipient(_ version: RecipientVersion, serviceId: ServiceId?, phoneNumber: String?, tx: DBWriteTransaction) throws -> Int64? {
         if let aci = serviceId as? Aci {
             let aciString = aci.serviceIdUppercaseString
             return try fetchOrCreateRecipient(version, aciString: aciString, tx: tx)
@@ -7306,7 +7306,7 @@ public class GRDBSchemaMigrator {
         return nil
     }
 
-    private static func createRecipient(_ version: RecipientVersion, aciString: String?, phoneNumber: String?, pniString: String?, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
+    private static func createRecipient(_ version: RecipientVersion, aciString: String?, phoneNumber: String?, pniString: String?, tx: DBWriteTransaction) throws -> Int64 {
         let emptyDevices: Data
         switch version {
         case .V1:
@@ -7329,11 +7329,11 @@ public class GRDBSchemaMigrator {
         return tx.database.lastInsertedRowID
     }
 
-    private static func fetchRecipientAciString(recipientId: SignalRecipient.RowId, tx: DBWriteTransaction) throws -> String? {
+    private static func fetchRecipientAciString(recipientId: Int64, tx: DBWriteTransaction) throws -> String? {
         return try String.fetchOne(tx.database, sql: "SELECT recipientUUID FROM model_SignalRecipient WHERE id = ?", arguments: [recipientId])
     }
 
-    private static func fetchRecipientUniqueId(recipientId: SignalRecipient.RowId, tx: DBWriteTransaction) throws -> String? {
+    private static func fetchRecipientUniqueId(recipientId: Int64, tx: DBWriteTransaction) throws -> String? {
         return try String.fetchOne(tx.database, sql: "SELECT uniqueId FROM model_SignalRecipient WHERE id = ?", arguments: [recipientId])
     }
 
@@ -7385,16 +7385,16 @@ public class GRDBSchemaMigrator {
         }
     }
 
-    private static func fetchOrCreateGroup(groupId: GroupIdForMigrationV1, tx: DBWriteTransaction) throws -> GroupRecord.RowId {
+    private static func fetchOrCreateGroup(groupId: GroupIdForMigrationV1, tx: DBWriteTransaction) throws -> Int64 {
         let db = tx.database
-        let rowId = try GroupRecord.RowId.fetchOne(db, sql: "SELECT rowId FROM GroupRecord WHERE groupId = ?", arguments: [groupId.rawValue])
+        let rowId = try Int64.fetchOne(db, sql: "SELECT rowId FROM GroupRecord WHERE groupId = ?", arguments: [groupId.rawValue])
         if let rowId {
             return rowId
         }
         return try createGroup(groupId: groupId, tx: tx)
     }
 
-    private static func createGroup(groupId: GroupIdForMigrationV1, tx: DBWriteTransaction) throws -> GroupRecord.RowId {
+    private static func createGroup(groupId: GroupIdForMigrationV1, tx: DBWriteTransaction) throws -> Int64 {
         try tx.database.execute(
             sql: "INSERT INTO GroupRecord (groupId) VALUES (?)",
             arguments: [groupId.rawValue],
@@ -8263,7 +8263,7 @@ public class GRDBSchemaMigrator {
         let serviceIdCollection = "kOWSProfileManager_UserUUIDWhitelistCollection"
         let phoneNumberCollection = "kOWSProfileManager_UserWhitelistCollection"
 
-        var recipientIds = Set<SignalRecipient.RowId>()
+        var recipientIds = Set<Int64>()
 
         let serviceIdStrings = try String.fetchAll(
             tx.database,

@@ -152,7 +152,7 @@ class RecipientMergerTest: XCTestCase {
                         pni: nil,
                         tx: transaction,
                     )
-                    XCTAssertEqual(recipient.id, initialRecipient.rowId, "\(testCase)")
+                    XCTAssertEqual(recipient.id.rawValue, initialRecipient.rowId, "\(testCase)")
                 }
 
                 switch (testCase.trustLevel, testCase.mergeRequest.aci, testCase.mergeRequest.phoneNumber) {
@@ -175,7 +175,7 @@ class RecipientMergerTest: XCTestCase {
                 }
 
                 for finalRecipient in testCase.finalState.reversed() {
-                    let signalRecipient = recipientTable.removeValue(forKey: finalRecipient.rowId)
+                    let signalRecipient = recipientTable.removeValue(forKey: .constantForTesting(finalRecipient.rowId))
                     XCTAssertEqual(signalRecipient?.aci, finalRecipient.aci, "\(idx)")
                     XCTAssertEqual(signalRecipient?.phoneNumber?.stringValue, finalRecipient.phoneNumber?.stringValue, "\(idx)")
                 }
@@ -359,7 +359,7 @@ class RecipientMergerTest: XCTestCase {
 
             // Make sure all the recipients have been updated properly.
             for (idx, finalState) in testCase.finalState.enumerated() {
-                let recipient = try XCTUnwrap(recipientTable.removeValue(forKey: Int64(idx + 1)))
+                let recipient = try XCTUnwrap(recipientTable.removeValue(forKey: .constantForTesting(Int64(idx + 1))))
                 XCTAssertEqual(recipient.phoneNumber?.stringValue, finalState?.phoneNumber?.stringValue)
                 XCTAssertEqual(recipient.pni, finalState?.pni)
                 XCTAssertEqual(recipient.aci, finalState?.aci)
@@ -769,7 +769,7 @@ class RecipientMergerTest: XCTestCase {
 
             // Make sure all the recipients have been updated properly.
             for (idx, finalState) in testCase.finalState.enumerated() {
-                let recipient = try XCTUnwrap(recipientTable.removeValue(forKey: Int64(idx + 1)))
+                let recipient = try XCTUnwrap(recipientTable.removeValue(forKey: .constantForTesting(Int64(idx + 1))))
                 XCTAssertEqual(recipient.phoneNumber?.stringValue, finalState.phoneNumber?.stringValue)
                 XCTAssertEqual(recipient.pni, finalState.pni)
                 XCTAssertEqual(recipient.aci, finalState.aci)
