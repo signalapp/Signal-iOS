@@ -13,6 +13,13 @@ enum ChatFolderStrings {
         )
     }
 
+    static var createFolder: String {
+        OWSLocalizedString(
+            "CHAT_FOLDERS_SETTINGS_CREATE_FOLDER",
+            comment: "Action in chat folder settings and the chat context menu to create a new chat folder.",
+        )
+    }
+
     static var editFolder: String {
         OWSLocalizedString(
             "CHAT_FOLDERS_EDIT_FOLDER",

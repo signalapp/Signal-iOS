@@ -2101,6 +2101,12 @@
 /* Button to choose chats to include in a chat folder. */
 "CHAT_FOLDERS_ADD_CHATS" = "Add Chats";
 
+/* Chat context menu action that opens the folder selection submenu. */
+"CHAT_FOLDERS_ADD_TO_FOLDER" = "Add to Folder";
+
+/* Toast shown after adding a chat to a folder. Embeds {{ folder name }}. */
+"CHAT_FOLDERS_ADDED_TO_FOLDER_TOAST_FORMAT" = "Added to “%@”";
+
 /* Name of the default chat folder, which shows every chat. */
 "CHAT_FOLDERS_ALL_CHATS" = "All Chats";
 
@@ -2112,6 +2118,9 @@
 
 /* Header for the chat types that can be included in a chat folder. */
 "CHAT_FOLDERS_CHAT_TYPES_HEADER" = "Chat Types";
+
+/* Header of the chat context submenu for choosing a folder. */
+"CHAT_FOLDERS_CHOOSE_FOLDER" = "Choose Folder";
 
 /* Title for the screen that creates a new chat folder. */
 "CHAT_FOLDERS_CREATE_FOLDER_TITLE" = "Create a Folder";
@@ -2173,7 +2182,7 @@
 /* Button in chat folder settings to add a suggested chat folder. */
 "CHAT_FOLDERS_SETTINGS_ADD_SUGGESTED_FOLDER" = "Add";
 
-/* Button in chat folder settings to create a new chat folder. */
+/* Action in chat folder settings and the chat context menu to create a new chat folder. */
 "CHAT_FOLDERS_SETTINGS_CREATE_FOLDER" = "Create a Folder";
 
 /* Description at the top of the chat folders settings screen. */

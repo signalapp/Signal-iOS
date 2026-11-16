@@ -51,6 +51,7 @@ class ChatFolderEditorViewController:
     private let chatFolderId: UUID?
     private let originalDraft: ChatFolderDraft
     private var draft: ChatFolderDraft
+    private var onCreate: ((String) -> Void)?
 
     private var includedChats: [Chat] = []
     private var excludedChats: [Chat] = []
@@ -63,6 +64,17 @@ class ChatFolderEditorViewController:
         self.chatFolderId = folder?.chatFolderId
         self.originalDraft = draft
         self.draft = draft
+
+        super.init()
+    }
+
+    init(newDraft: ChatFolderDraft, onCreate: @escaping (String) -> Void) {
+        var draft = newDraft
+        draft.name = Self.normalizedName(draft.name)
+        self.chatFolderId = nil
+        self.originalDraft = draft
+        self.draft = draft
+        self.onCreate = onCreate
 
         super.init()
     }
@@ -574,7 +586,10 @@ class ChatFolderEditorViewController:
                 _ = chatFolderManager.save(draft, tx: tx)
             }
         }
-        dismiss(animated: true)
+        let folderName = draft.name
+        dismiss(animated: true) { [onCreate] in
+            onCreate?(folderName)
+        }
     }
 
     private func didTapDelete() {

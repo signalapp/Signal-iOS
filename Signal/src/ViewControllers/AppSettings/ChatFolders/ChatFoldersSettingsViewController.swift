@@ -99,10 +99,7 @@ final class ChatFoldersSettingsViewController:
             case .createFolder:
                 cell.configure(
                     symbol: .plus,
-                    title: OWSLocalizedString(
-                        "CHAT_FOLDERS_SETTINGS_CREATE_FOLDER",
-                        comment: "Button in chat folder settings to create a new chat folder.",
-                    ),
+                    title: ChatFolderStrings.createFolder,
                 )
             case .folder(let chatFolderId):
                 guard let folderRow = folderRowsById[chatFolderId] else {
