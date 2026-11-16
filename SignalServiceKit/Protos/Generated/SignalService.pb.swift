@@ -4522,13 +4522,48 @@ nonisolated struct SignalServiceProtos_GroupContextV2: Sendable {
   /// Clears the value of `groupChange`. Subsequent reads from it will return its default value.
   mutating func clearGroupChange() {self._groupChange = nil}
 
+  var deleteData: SignalServiceProtos_GroupContextV2.DeleteData {
+    get {_deleteData ?? SignalServiceProtos_GroupContextV2.DeleteData()}
+    set {_deleteData = newValue}
+  }
+  /// Returns true if `deleteData` has been explicitly set.
+  var hasDeleteData: Bool {self._deleteData != nil}
+  /// Clears the value of `deleteData`. Subsequent reads from it will return its default value.
+  mutating func clearDeleteData() {self._deleteData = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  nonisolated struct DeleteData: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// ACIs that are removed via groupChange and should delete data
+    var memberAcis: [Data] = []
+
+    /// If change includes a terminate action, should delete data
+    var terminate: Bool {
+      get {_terminate ?? false}
+      set {_terminate = newValue}
+    }
+    /// Returns true if `terminate` has been explicitly set.
+    var hasTerminate: Bool {self._terminate != nil}
+    /// Clears the value of `terminate`. Subsequent reads from it will return its default value.
+    mutating func clearTerminate() {self._terminate = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _terminate: Bool? = nil
+  }
 
   init() {}
 
   fileprivate var _masterKey: Data? = nil
   fileprivate var _revision: UInt32? = nil
   fileprivate var _groupChange: Data? = nil
+  fileprivate var _deleteData: SignalServiceProtos_GroupContextV2.DeleteData? = nil
 }
 
 nonisolated struct SignalServiceProtos_ContactDetails: Sendable {
@@ -9624,7 +9659,7 @@ nonisolated extension SignalServiceProtos_AttachmentPointer.Flags: SwiftProtobuf
 
 nonisolated extension SignalServiceProtos_GroupContextV2: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupContextV2"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}masterKey\0\u{1}revision\0\u{1}groupChange\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}masterKey\0\u{1}revision\0\u{1}groupChange\0\u{1}deleteData\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9635,6 +9670,7 @@ nonisolated extension SignalServiceProtos_GroupContextV2: SwiftProtobuf.Message,
       case 1: try { try decoder.decodeSingularBytesField(value: &self._masterKey) }()
       case 2: try { try decoder.decodeSingularUInt32Field(value: &self._revision) }()
       case 3: try { try decoder.decodeSingularBytesField(value: &self._groupChange) }()
+      case 4: try { try decoder.decodeSingularMessageField(value: &self._deleteData) }()
       default: break
       }
     }
@@ -9654,6 +9690,9 @@ nonisolated extension SignalServiceProtos_GroupContextV2: SwiftProtobuf.Message,
     try { if let v = self._groupChange {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
     } }()
+    try { if let v = self._deleteData {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -9661,6 +9700,46 @@ nonisolated extension SignalServiceProtos_GroupContextV2: SwiftProtobuf.Message,
     if lhs._masterKey != rhs._masterKey {return false}
     if lhs._revision != rhs._revision {return false}
     if lhs._groupChange != rhs._groupChange {return false}
+    if lhs._deleteData != rhs._deleteData {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension SignalServiceProtos_GroupContextV2.DeleteData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_GroupContextV2.protoMessageName + ".DeleteData"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}memberAcis\0\u{1}terminate\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedBytesField(value: &self.memberAcis) }()
+      case 2: try { try decoder.decodeSingularBoolField(value: &self._terminate) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.memberAcis.isEmpty {
+      try visitor.visitRepeatedBytesField(value: self.memberAcis, fieldNumber: 1)
+    }
+    try { if let v = self._terminate {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_GroupContextV2.DeleteData, rhs: SignalServiceProtos_GroupContextV2.DeleteData) -> Bool {
+    if lhs.memberAcis != rhs.memberAcis {return false}
+    if lhs._terminate != rhs._terminate {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -918,9 +918,17 @@ message AttachmentPointer {
 }
 
 message GroupContextV2 {
+  message DeleteData {
+    // ACIs that are removed via groupChange and should delete data
+    repeated bytes memberAcis = 1;
+    // If change includes a terminate action, should delete data
+    optional bool terminate = 2;
+  }
+
   optional bytes masterKey = 1;
   optional uint32 revision = 2;
   optional bytes groupChange = 3;
+  optional DeleteData deleteData = 4;
 }
 
 message ContactDetails {
