@@ -36,8 +36,13 @@ public protocol ThreadDeletionManager {
 
     func removeIntents(threadUniqueId: String)
 
-    /// Removes the thread's text and voice message drafts.
-    func removeDrafts(thread: TSThread, tx: DBWriteTransaction)
+    /// Removes the thread's stories, drafts, notifications and Siri intents.
+    func removeAssociatedContent(
+        thread: TSThread,
+        keepingNotificationForMessageId: String?,
+        localIdentifiers: LocalIdentifiers,
+        tx: DBWriteTransaction,
+    )
 }
 
 public enum DeleteForMeSyncMessagePolicy {
@@ -55,6 +60,7 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
     private let deleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMessageManager
     private let intentsManager: Shims.IntentsManager
     private let interactionDeleteManager: InteractionDeleteManager
+    private let notificationPresenter: any NotificationPresenter
     private let pinnedThreadManager: any PinnedThreadManager
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let storyManager: Shims.StoryManager
@@ -69,6 +75,7 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
         deleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMessageManager,
         intentsManager: Shims.IntentsManager,
         interactionDeleteManager: InteractionDeleteManager,
+        notificationPresenter: any NotificationPresenter,
         pinnedThreadManager: any PinnedThreadManager,
         recipientDatabaseTable: RecipientDatabaseTable,
         storyManager: Shims.StoryManager,
@@ -80,6 +87,7 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
         self.deleteForMeOutgoingSyncMessageManager = deleteForMeOutgoingSyncMessageManager
         self.intentsManager = intentsManager
         self.interactionDeleteManager = interactionDeleteManager
+        self.notificationPresenter = notificationPresenter
         self.pinnedThreadManager = pinnedThreadManager
         self.recipientDatabaseTable = recipientDatabaseTable
         self.storyManager = storyManager
@@ -165,10 +173,32 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
         intentsManager.deleteAllIntents(withGroupIdentifier: threadUniqueId)
     }
 
-    func removeDrafts(thread: TSThread, tx: DBWriteTransaction) {
+    func removeAssociatedContent(
+        thread: TSThread,
+        keepingNotificationForMessageId: String?,
+        localIdentifiers: LocalIdentifiers,
+        tx: DBWriteTransaction,
+    ) {
+        if
+            let contactThread = thread as? TSContactThread,
+            let contactAci = recipientDatabaseTable.fetchServiceId(contactThread: contactThread, tx: tx)
+                .flatMap({ $0 as? Aci }),
+            !localIdentifiers.contains(serviceId: contactAci)
+        {
+            storyManager.deleteAllStories(contactAci: contactAci, tx: tx)
+        } else if let groupThread = thread as? TSGroupThread {
+            storyManager.deleteAllStories(groupId: groupThread.groupId, tx: tx)
+        }
+
         thread.clearDraft(transaction: tx)
         threadReplyInfoStore.remove(for: thread.uniqueId, tx: tx)
         VoiceMessageInterruptedDraftStore.clearDraft(for: thread, transaction: tx)
+
+        notificationPresenter.cancelNotifications(
+            threadId: thread.uniqueId,
+            exceptMessageId: keepingNotificationForMessageId,
+        )
+        removeIntents(threadUniqueId: thread.uniqueId)
     }
 
     private func deleteThread(
@@ -188,27 +218,21 @@ final class ThreadDeletionManagerImpl: ThreadDeletionManager {
 
         pinnedThreadManager.unpinThread(thread, updateStorageService: updateStorageService, tx: tx)
 
+        removeAssociatedContent(
+            thread: thread,
+            keepingNotificationForMessageId: nil,
+            localIdentifiers: localIdentifiers,
+            tx: tx,
+        )
+
         if shouldHardDeleteThread(thread, localIdentifiers: localIdentifiers) {
             threadRemover.remove(thread, tx: tx)
         } else {
-            removeDrafts(thread: thread, tx: tx)
             thread.anyUpdate(transaction: tx) { thread in
                 thread.shouldThreadBeVisible = false
             }
         }
 
-        if
-            let contactThread = thread as? TSContactThread,
-            let contactAci = recipientDatabaseTable.fetchServiceId(contactThread: contactThread, tx: tx)
-                .flatMap({ $0 as? Aci }),
-            !localIdentifiers.contains(serviceId: contactAci)
-        {
-            storyManager.deleteAllStories(contactAci: contactAci, tx: tx)
-        } else if let groupThread = thread as? TSGroupThread {
-            storyManager.deleteAllStories(groupId: groupThread.groupId, tx: tx)
-        }
-
-        removeIntents(threadUniqueId: thread.uniqueId)
         unreadReminderManager.reconcile(thread: thread, tx: tx)
     }
 
@@ -329,7 +353,7 @@ open class MockThreadDeletionManager: ThreadDeletionManager {
     open func deleteThreads(_ threads: [TSThread], sendDeleteForMeSyncMessage: Bool, updateStorageService: Bool, localIdentifiers: LocalIdentifiers, tx: DBWriteTransaction) {}
     open func removeAllInteractions(thread: TSThread, deleteForMeSyncMessagePolicy: DeleteForMeSyncMessagePolicy?, tx: DBWriteTransaction) {}
     open func removeIntents(threadUniqueId: String) {}
-    open func removeDrafts(thread: TSThread, tx: DBWriteTransaction) {}
+    open func removeAssociatedContent(thread: TSThread, keepingNotificationForMessageId: String?, localIdentifiers: LocalIdentifiers, tx: DBWriteTransaction) {}
 }
 
 #endif

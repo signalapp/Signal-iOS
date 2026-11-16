@@ -358,7 +358,7 @@ public class UserNotificationPresenter {
 
     // MARK: - Cancellation
 
-    func cancelNotifications(threadId: String, exceptMessageId: String? = nil) async {
+    func cancelNotifications(threadId: String, exceptMessageId: String?) async {
         await cancel(cancellation: .threadId(threadId, exceptMessageId: exceptMessageId))
     }
 

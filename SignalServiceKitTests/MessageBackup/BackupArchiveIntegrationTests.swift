@@ -460,8 +460,7 @@ private enum CrashyMocks {
         func clearAllNotifications() { failTest(Self.self) }
         func clearNotificationsForAppActivate() { failTest(Self.self) }
         func clearDeliveredNewLinkedDevicesNotifications() { failTest(Self.self) }
-        func cancelNotifications(threadId: String) { failTest(Self.self) }
-        func cancelNotifications(threadId: String, exceptMessageId: String) { failTest(Self.self) }
+        func cancelNotifications(threadId: String, exceptMessageId: String?) { failTest(Self.self) }
         func cancelNotifications(messageIds: [String]) { failTest(Self.self) }
         func cancelNotifications(reactionId: ReactionRecord.RowId, tx: DBReadTransaction) { failTest(Self.self) }
         func cancelNotificationsForMissedCalls(threadUniqueId: String) { failTest(Self.self) }

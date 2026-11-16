@@ -30,8 +30,6 @@ final class GroupDataDeletionManagerTests: SSKBaseTest {
         )
         groupDataDeletionManager = GroupDataDeletionManagerImpl(
             bulkDeleteInteractionJobQueue: bulkDeleteInteractionJobQueue,
-            notificationPresenter: NoopNotificationPresenterImpl(),
-            storyManager: ThreadDeletionManagerImpl.Wrappers.StoryManager(),
             threadDeletionManager: DependenciesBridge.shared.threadDeletionManager,
         )
     }
@@ -83,6 +81,7 @@ final class GroupDataDeletionManagerTests: SSKBaseTest {
             self.groupDataDeletionManager.deleteGroupData(
                 groupThread: groupThread,
                 preservedInteraction: preservedMessage,
+                localIdentifiers: .forUnitTests,
                 tx: tx,
             )
             let laterMessage = self.insertInfoMessage(in: groupThread, tx: tx)
@@ -118,6 +117,7 @@ final class GroupDataDeletionManagerTests: SSKBaseTest {
             groupDataDeletionManager.deleteGroupData(
                 groupThread: groupThread,
                 preservedInteraction: preservedMessage,
+                localIdentifiers: .forUnitTests,
                 tx: tx,
             )
             return groupThread

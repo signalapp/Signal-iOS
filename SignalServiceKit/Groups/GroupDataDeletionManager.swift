@@ -10,31 +10,27 @@ public protocol GroupDataDeletionManager {
     func deleteGroupData(
         groupThread: TSGroupThread,
         preservedInteraction: TSInteraction,
+        localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction,
     )
 }
 
 final class GroupDataDeletionManagerImpl: GroupDataDeletionManager {
     private let bulkDeleteInteractionJobQueue: BulkDeleteInteractionJobQueue
-    private let notificationPresenter: any NotificationPresenter
-    private let storyManager: ThreadDeletionManagerImpl.Shims.StoryManager
     private let threadDeletionManager: any ThreadDeletionManager
 
     init(
         bulkDeleteInteractionJobQueue: BulkDeleteInteractionJobQueue,
-        notificationPresenter: any NotificationPresenter,
-        storyManager: ThreadDeletionManagerImpl.Shims.StoryManager,
         threadDeletionManager: any ThreadDeletionManager,
     ) {
         self.bulkDeleteInteractionJobQueue = bulkDeleteInteractionJobQueue
-        self.notificationPresenter = notificationPresenter
-        self.storyManager = storyManager
         self.threadDeletionManager = threadDeletionManager
     }
 
     func deleteGroupData(
         groupThread: TSGroupThread,
         preservedInteraction: TSInteraction,
+        localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction,
     ) {
         guard
@@ -54,14 +50,11 @@ final class GroupDataDeletionManagerImpl: GroupDataDeletionManager {
             tx: tx,
         )
 
-        storyManager.deleteAllStories(groupId: groupThread.groupId, tx: tx)
-
-        threadDeletionManager.removeDrafts(thread: groupThread, tx: tx)
-
-        notificationPresenter.cancelNotifications(
-            threadId: groupThread.uniqueId,
-            exceptMessageId: preservedInteraction.uniqueId,
+        threadDeletionManager.removeAssociatedContent(
+            thread: groupThread,
+            keepingNotificationForMessageId: preservedInteraction.uniqueId,
+            localIdentifiers: localIdentifiers,
+            tx: tx,
         )
-        threadDeletionManager.removeIntents(threadUniqueId: groupThread.uniqueId)
     }
 }

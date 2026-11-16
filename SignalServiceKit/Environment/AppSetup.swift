@@ -1030,6 +1030,7 @@ extension AppSetup.GlobalsContinuation {
             deleteForMeOutgoingSyncMessageManager: deleteForMeOutgoingSyncMessageManager,
             intentsManager: ThreadDeletionManagerImpl.Wrappers.IntentsManager(),
             interactionDeleteManager: interactionDeleteManager,
+            notificationPresenter: notificationPresenter,
             pinnedThreadManager: pinnedThreadManager,
             recipientDatabaseTable: recipientDatabaseTable,
             storyManager: ThreadDeletionManagerImpl.Wrappers.StoryManager(),
@@ -1049,8 +1050,6 @@ extension AppSetup.GlobalsContinuation {
         )
         let groupDataDeletionManager = GroupDataDeletionManagerImpl(
             bulkDeleteInteractionJobQueue: bulkDeleteInteractionJobQueue,
-            notificationPresenter: notificationPresenter,
-            storyManager: ThreadDeletionManagerImpl.Wrappers.StoryManager(),
             threadDeletionManager: threadDeletionManager,
         )
         let deleteForMeIncomingSyncMessageManager = DeleteForMeIncomingSyncMessageManagerImpl(

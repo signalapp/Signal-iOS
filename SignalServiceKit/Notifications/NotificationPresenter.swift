@@ -97,9 +97,7 @@ public protocol NotificationPresenter {
     func clearNotificationsForAppActivate()
     func clearDeliveredNewLinkedDevicesNotifications()
 
-    func cancelNotifications(threadId: String)
-
-    func cancelNotifications(threadId: String, exceptMessageId: String)
+    func cancelNotifications(threadId: String, exceptMessageId: String?)
 
     func cancelNotifications(messageIds: [String])
 
@@ -108,6 +106,12 @@ public protocol NotificationPresenter {
     func cancelNotificationsForMissedCalls(threadUniqueId: String)
 
     func cancelNotifications(for storyMessage: StoryMessage)
+}
+
+extension NotificationPresenter {
+    public func cancelNotifications(threadId: String) {
+        cancelNotifications(threadId: threadId, exceptMessageId: nil)
+    }
 }
 
 @objc
