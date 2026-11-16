@@ -719,6 +719,7 @@ class MessageLoader {
         var currentRun = [TSInteraction]()
         var currentRunType: CollapseSetInteraction.MessagesType?
         var pastUnreadIndicator = false
+        // Always show a date header on the first interaction.
         var shouldShowDateOnNextViewItem = true
         var previousDaysBeforeToday: Int?
 
@@ -763,13 +764,11 @@ class MessageLoader {
                 toSecondDate: todayDate,
             )
 
-            if let previousDaysBeforeToday {
-                if daysBeforeToday != previousDaysBeforeToday {
-                    shouldShowDateOnNextViewItem = true
-                }
-            } else {
-                // Only show for the first item if the date is not today
-                shouldShowDateOnNextViewItem = daysBeforeToday != 0
+            if
+                let previousDaysBeforeToday,
+                daysBeforeToday != previousDaysBeforeToday
+            {
+                shouldShowDateOnNextViewItem = true
             }
 
             if
