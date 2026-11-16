@@ -40,6 +40,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let backupStickerPackDownloadStore: BackupStickerPackDownloadStore
     private let callLinkRecipientArchiver: BackupArchiveCallLinkRecipientArchiver
     private let chatArchiver: BackupArchiveChatArchiver
+    private let chatFolderArchiver: BackupArchiveChatFolderArchiver
     private let chatItemArchiver: BackupArchiveChatItemArchiver
     private let contactRecipientArchiver: BackupArchiveContactRecipientArchiver
     private let databaseChangeObserver: DatabaseChangeObserver
@@ -84,6 +85,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         backupStickerPackDownloadStore: BackupStickerPackDownloadStore,
         callLinkRecipientArchiver: BackupArchiveCallLinkRecipientArchiver,
         chatArchiver: BackupArchiveChatArchiver,
+        chatFolderArchiver: BackupArchiveChatFolderArchiver,
         chatItemArchiver: BackupArchiveChatItemArchiver,
         contactRecipientArchiver: BackupArchiveContactRecipientArchiver,
         databaseChangeObserver: DatabaseChangeObserver,
@@ -124,6 +126,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.backupStickerPackDownloadStore = backupStickerPackDownloadStore
         self.callLinkRecipientArchiver = callLinkRecipientArchiver
         self.chatArchiver = chatArchiver
+        self.chatFolderArchiver = chatFolderArchiver
         self.chatItemArchiver = chatItemArchiver
         self.contactRecipientArchiver = contactRecipientArchiver
         self.databaseChangeObserver = databaseChangeObserver
@@ -801,6 +804,20 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 throw BackupError()
             }
 
+            let chatFolderArchiveResult = try chatFolderArchiver.archiveChatFolders(
+                stream: stream,
+                context: recipientArchivingContext,
+            )
+            switch chatFolderArchiveResult {
+            case .success:
+                break
+            case .partialSuccess(let partialFailures):
+                errors.append(contentsOf: partialFailures)
+            case .completeFailure(let error):
+                errors.append(error)
+                throw BackupError()
+            }
+
             try stream.closeFileStream()
 
             logger.info("Finished exporting backup")
@@ -1091,6 +1108,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             struct Contexts {
                 let accountData: BackupArchive.AccountDataRestoringContext
                 let chat: BackupArchive.ChatRestoringContext
+                let chatFolder: BackupArchiveChatFolderArchiver.RestoringContext
                 var chatItem: BackupArchive.ChatItemRestoringContext
                 let customChatColor: BackupArchive.CustomChatColorRestoringContext
                 let recipient: BackupArchive.RecipientRestoringContext
@@ -1132,6 +1150,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                         isPrimaryDevice: isPrimaryDevice,
                         tx: tx,
                     )
+                    chatFolder = BackupArchiveChatFolderArchiver.RestoringContext(recipientContext: recipient)
                     chat = BackupArchive.ChatRestoringContext(
                         customChatColorContext: customChatColor,
                         recipientContext: recipient,
@@ -1359,10 +1378,15 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                             // Notification profiles are unsupported on iOS and
                             // we do not even round trip them per spec.
                             break
-                        case .chatFolder:
-                            // Chat folders are unsupported on iOS and
-                            // we do not even round trip them per spec.
-                            break
+                        case .chatFolder(let proto):
+                            switch chatFolderArchiver.restore(proto, context: contexts.chatFolder) {
+                            case .success:
+                                break
+                            case .unrecognizedEnum(let error):
+                                frameErrors.append(error)
+                            case .partialRestore(let errors), .failure(let errors):
+                                frameErrors.append(contentsOf: errors)
+                            }
                         case .favoriteStickerList(let backupProtoFavoriteStickerList):
                             let favoriteStickerResult = favoriteStickerArchiver.restore(
                                 backupProtoFavoriteStickerList,

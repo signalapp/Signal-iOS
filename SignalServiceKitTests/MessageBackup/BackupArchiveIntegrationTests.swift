@@ -69,7 +69,6 @@ class BackupArchiveIntegrationTests: XCTestCase {
         // Not relevant for iOS
         "android_account_data",
         // Not implemented yet
-        "chat_folder",
         "chat_item_standard_message_standard_attachments_incremental_mac",
         "notification_profile",
         // These include group updates that include fields that iOS doesn't

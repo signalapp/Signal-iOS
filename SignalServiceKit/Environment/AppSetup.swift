@@ -1667,6 +1667,10 @@ extension AppSetup.GlobalsContinuation {
                 pinnedThreadManager: pinnedThreadManager,
                 threadStore: backupThreadStore,
             ),
+            chatFolderArchiver: BackupArchiveChatFolderArchiver(
+                chatFolderStore: chatFolderStore,
+                groupStore: GroupStore(),
+            ),
             chatItemArchiver: BackupArchiveChatItemArchiver(
                 archivedPaymentStore: archivedPaymentStore,
                 attachmentsArchiver: backupAttachmentsArchiver,

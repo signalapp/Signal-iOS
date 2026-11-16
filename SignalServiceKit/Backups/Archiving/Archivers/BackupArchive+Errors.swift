@@ -813,6 +813,13 @@ extension BackupArchive {
 
                 /// A sticker favorite had invalid pack info
                 case invalidFavoriteStickerPackInfo
+
+                /// A chat folder ID was not a 16-byte UUID.
+                case invalidChatFolderId
+                /// A folder ID or the All Chats folder appeared more than once.
+                case duplicateChatFolder
+                /// A folder member was not a contact, Note to Self, or stored group.
+                case invalidChatFolderRecipient(RecipientId)
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -973,7 +980,10 @@ extension BackupArchive {
                     .invalidNumberOfPinnedMessages,
                     .sentTimestampOverflowedLocalType,
                     .adminDeleteAuthorNotContact,
-                    .invalidFavoriteStickerPackInfo:
+                    .invalidFavoriteStickerPackInfo,
+                    .invalidChatFolderId,
+                    .duplicateChatFolder,
+                    .invalidChatFolderRecipient:
                     return typeLogString
                 }
             case .referencedChatThreadNotFound, .referencedGroupThreadNotFound, .failedToCreateAttachment:
@@ -1090,7 +1100,10 @@ extension BackupArchive {
                     .invalidNumberOfPinnedMessages,
                     .sentTimestampOverflowedLocalType,
                     .adminDeleteAuthorNotContact,
-                    .invalidFavoriteStickerPackInfo:
+                    .invalidFavoriteStickerPackInfo,
+                    .invalidChatFolderId,
+                    .duplicateChatFolder,
+                    .invalidChatFolderRecipient:
                     return .error
                 case .quotedMessageEmptyContent:
                     // It was historically possible to end up with a quote that
