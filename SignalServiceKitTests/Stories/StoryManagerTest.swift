@@ -100,7 +100,7 @@ class StoryManagerTest: SSKBaseTest {
             SSKEnvironment.shared.blockingManagerRef.addBlockedRecipient(
                 &recipient,
                 blockedAt: .now(),
-                blockMode: .localUser,
+                blockMode: .storageService,
                 tx: $0,
             )
 
