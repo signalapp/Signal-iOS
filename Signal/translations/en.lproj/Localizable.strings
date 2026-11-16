@@ -2137,6 +2137,9 @@
 /* Placeholder for the name field when creating or editing a chat folder. */
 "CHAT_FOLDERS_FOLDER_NAME_PLACEHOLDER" = "Folder Name";
 
+/* All Chats context menu action to open chat folder settings. */
+"CHAT_FOLDERS_FOLDER_SETTINGS" = "Folder Settings";
+
 /* Chat folder setting that shows muted chats in the folder. */
 "CHAT_FOLDERS_INCLUDE_MUTED" = "Include Muted Chats";
 
@@ -2146,8 +2149,14 @@
 /* Header for the list of chats included in a chat folder, and the title of the screen that chooses them. */
 "CHAT_FOLDERS_INCLUDED_CHATS_HEADER" = "Included Chats";
 
+/* Chat folder context menu action to mark every chat in the folder as read. */
+"CHAT_FOLDERS_MARK_ALL_READ" = "Mark All Read";
+
 /* Header for additional chat folder settings. */
 "CHAT_FOLDERS_MORE_OPTIONS_HEADER" = "More Options";
+
+/* Chat folder context menu action to mute every chat in the folder. */
+"CHAT_FOLDERS_MUTE_ALL" = "Mute All";
 
 /* Chat folder setting that hides chats without unread messages. */
 "CHAT_FOLDERS_ONLY_UNREAD" = "Only Show Unread Chats";
@@ -2193,6 +2202,9 @@
 
 /* Name of the suggested chat folder that shows unread chats. */
 "CHAT_FOLDERS_SUGGESTED_UNREAD_NAME" = "Unread";
+
+/* Chat folder context menu action to unmute every chat in the folder. */
+"CHAT_FOLDERS_UNMUTE_ALL" = "Unmute All";
 
 /* Name shown for a chat folder whose name is empty. */
 "CHAT_FOLDERS_UNNAMED_FOLDER" = "Unnamed Folder";

@@ -26,6 +26,7 @@ struct ChatListFolderPickerState: Equatable {
 final class ChatListFolderPickerView: UIView {
 
     var didSelectFolder: ((UUID) -> Void)?
+    var menuElementsForFolder: ((UUID) -> [UIMenuElement])?
 
     var isEnabled = true {
         didSet {
@@ -186,6 +187,11 @@ final class ChatListFolderPickerView: UIView {
                 self?.didSelectFolder?(tab.chatFolderId)
             },
         )
+        button.menu = UIMenu(children: [
+            UIDeferredMenuElement.uncached { [weak self] completion in
+                completion(self?.menuElementsForFolder?(tab.chatFolderId) ?? [])
+            },
+        ])
         button.configurationUpdateHandler = { [weak self] button in
             let isSelected = self?.selectedChatFolderId == tab.chatFolderId
             var configuration = button.configuration ?? .plain()
