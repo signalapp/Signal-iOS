@@ -565,6 +565,21 @@
 /* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "Voice Message Not Available";
 
+/* Accessibility label for screen where user confirms their TOTP code from their authenticator app. */
+"AUTHENTICATOR_APP_CODE_FIELD_LABEL" = "Authenticator app code";
+
+/* Instructions for screen where user confirms their TOTP code from their authenticator app. */
+"AUTHENTICATOR_APP_CODE_FOOTER" = "Enter the 6-digit code from your authenticator app.";
+
+/* Message for the error sheet shown when the TOTP code is wrong. */
+"AUTHENTICATOR_APP_CODE_INCORRECT_MESSAGE" = "Check that you entered the current code for your Signal account and try again.";
+
+/* Title of the error sheet shown when the TOTP code is wrong. */
+"AUTHENTICATOR_APP_CODE_INCORRECT_TITLE" = "Incorrect Code";
+
+/* Title for screen where user confirms their TOTP code from their authenticator app. */
+"AUTHENTICATOR_APP_CODE_TITLE" = "Enter Your Code";
+
 /* Explains why the user should name an authenticator app for two-factor authentication. */
 "AUTHENTICATOR_APP_NAME_FOOTER" = "Choose a unique name for this authenticator app to help you identify it later.";
 
