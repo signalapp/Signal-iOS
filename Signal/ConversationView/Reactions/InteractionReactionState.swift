@@ -18,11 +18,13 @@ final class InteractionReactionState: Equatable {
     let localUserEmojiVariant: String?
 
     init?(interaction: TSInteraction, tx: DBReadTransaction) {
-        // No reactions on non-message interactions
-        guard let message = interaction as? TSMessage else {
+        // No reactions on non-message or uninserted interactions.
+        guard
+            let message = interaction as? TSMessage,
+            let messageId = message.sqliteRowId
+        else {
             return nil
         }
-        let messageId = message.sqliteRowId.owsFailUnwrap("must exist")
 
         let recipientStore = DependenciesBridge.shared.recipientDatabaseTable
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
