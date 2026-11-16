@@ -1057,6 +1057,12 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleKeyboardNotification(_:)),
+            name: UIResponder.keyboardDidChangeFrameNotification,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleKeyboardNotification(_:)),
             name: UIResponder.keyboardWillHideNotification,
             object: nil,
         )
@@ -1099,7 +1105,7 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
             // Floating
             keyboardHeight = 0
         } else {
-            keyboardHeight = keyboardFrame.height
+            keyboardHeight = viewFrame.maxY - keyboardFrame.minY
         }
 
         if
