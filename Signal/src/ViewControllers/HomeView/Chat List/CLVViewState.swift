@@ -148,12 +148,28 @@ class CLVViewState {
         tableDataSource.configure(viewState: self)
     }
 
+    private var viewInfo = CLVViewInfo.empty
+    private var unreadCountsByChatFolder = [UUID: UInt]()
+
     func updateViewInfo(_ viewInfo: CLVViewInfo) {
+        self.viewInfo = viewInfo
         inboxFilter = viewInfo.inboxFilter
-        chatFolderPickerView.configure(state: ChatListFolderPickerState(viewInfo: viewInfo))
+        configureChatFolderPicker()
         settingsButtonCreator.updateState(
             hasInboxChats: viewInfo.inboxCount > 0,
         )
+    }
+
+    func updateUnreadCountsByChatFolder(_ unreadCountsByChatFolder: [UUID: UInt]) {
+        self.unreadCountsByChatFolder = unreadCountsByChatFolder
+        configureChatFolderPicker()
+    }
+
+    private func configureChatFolderPicker() {
+        chatFolderPickerView.configure(state: ChatListFolderPickerState(
+            viewInfo: viewInfo,
+            unreadCountsByChatFolder: unreadCountsByChatFolder,
+        ))
     }
 }
 

@@ -162,6 +162,10 @@ extension ChatListViewController {
         SUIEnvironment.shared.contactsViewHelperRef.addObserver(self)
 
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
+
+        if viewState.chatListMode == .inbox {
+            AppEnvironment.shared.badgeManager.addObserver(self)
+        }
     }
 
     // MARK: -
@@ -383,5 +387,13 @@ extension ChatListViewController: ContactsViewHelperObserver {
         if !firstConversationCueView.isHidden {
             updateFirstConversationLabel()
         }
+    }
+}
+
+// MARK: - BadgeObserver
+
+extension ChatListViewController: BadgeObserver {
+    func didUpdateBadgeCount(_ badgeManager: BadgeManager, badgeCount: BadgeCount) {
+        viewState.updateUnreadCountsByChatFolder(badgeCount.unreadCountsByChatFolder)
     }
 }

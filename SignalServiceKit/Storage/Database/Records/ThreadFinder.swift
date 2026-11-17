@@ -395,6 +395,23 @@ public class ThreadFinder {
         let uniqueId: String
         let recordType: UInt
         let mutedUntilTimestamp: Int64
+
+        static var selectedColumns: String {
+            """
+            \(threadColumn: .id),
+            \(threadColumn: .uniqueId),
+            \(threadColumn: .recordType),
+            \(threadColumn: .mutedUntilTimestamp)
+            """
+        }
+    }
+
+    private static var visibleInboxThreadFromClause: String {
+        """
+        FROM \(TSThread.databaseTableName)
+        WHERE \(threadColumn: .shouldThreadBeVisible) = 1
+        AND \(threadColumn: .isArchived) = 0
+        """
     }
 
     public func visibleInboxThreadUniqueIds(
@@ -409,27 +426,13 @@ public class ThreadFinder {
         case
             .unread,
             .unfiltered where chatFolderShowsOnlyUnread:
-            """
-            AND (
-                \(threadColumn: .isMarkedUnread) = 1
-                OR EXISTS (
-                    SELECT 1
-                    FROM \(InteractionRecord.databaseTableName)
-                    \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
-                    WHERE \(interactionColumn: .threadUniqueId) = \(threadColumnFullyQualified: .uniqueId)
-                    AND \(InteractionFinder.sqlClauseForUnreadInteractionCounts())
-                )
-                \(requiredVisibleThreadsClause(forThreadIds: requiredVisibleThreadIds))
-            )
-            """
+            unreadThreadsClause(requiredVisibleThreadIds: requiredVisibleThreadIds)
         case .unfiltered:
             ""
         }
 
         let fromClause = """
-        FROM \(TSThread.databaseTableName)
-        WHERE \(threadColumn: .shouldThreadBeVisible) = 1
-        AND \(threadColumn: .isArchived) = 0
+        \(Self.visibleInboxThreadFromClause)
         \(unreadClause)
         ORDER BY
             CASE WHEN \(threadColumn: .lastDraftInteractionRowId) > \(threadColumn: .lastInteractionRowId)
@@ -448,11 +451,7 @@ public class ThreadFinder {
         }
 
         let sql = """
-        SELECT
-            \(threadColumn: .id),
-            \(threadColumn: .uniqueId),
-            \(threadColumn: .recordType),
-            \(threadColumn: .mutedUntilTimestamp)
+        SELECT \(InboxThread.selectedColumns)
         \(fromClause)
         """
 
@@ -466,6 +465,55 @@ public class ThreadFinder {
             threadUniqueIds.append(thread.uniqueId)
         }
         return threadUniqueIds
+    }
+
+    private func unreadThreadsClause(requiredVisibleThreadIds: Set<String> = []) -> String {
+        """
+        AND (
+            \(threadColumn: .isMarkedUnread) = 1
+            OR EXISTS (
+                SELECT 1
+                FROM \(InteractionRecord.databaseTableName)
+                \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
+                WHERE \(interactionColumn: .threadUniqueId) = \(threadColumnFullyQualified: .uniqueId)
+                AND \(InteractionFinder.sqlClauseForUnreadInteractionCounts())
+            )
+            \(requiredVisibleThreadsClause(forThreadIds: requiredVisibleThreadIds))
+        )
+        """
+    }
+
+    struct UnreadInboxThread: FetchableRecord {
+        let inboxThread: InboxThread
+        /// The number of unread messages, which may be 0 for a chat that's only marked unread.
+        let unreadMessageCount: UInt
+
+        init(row: Row) {
+            self.inboxThread = InboxThread(row: row)
+            self.unreadMessageCount = row["unreadMessageCount"]
+        }
+    }
+
+    func unreadInboxThreads(tx: DBReadTransaction) -> [UnreadInboxThread] {
+        let unreadMessageCountColumn = """
+        (
+            SELECT COUNT(*)
+            FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
+            WHERE \(interactionColumn: .threadUniqueId) = \(threadColumnFullyQualified: .uniqueId)
+            AND \(InteractionFinder.sqlClauseForUnreadInteractionCounts())
+        )
+        """
+        let sql = """
+        SELECT
+            \(InboxThread.selectedColumns),
+            \(unreadMessageCountColumn) AS unreadMessageCount
+        \(Self.visibleInboxThreadFromClause)
+        \(unreadThreadsClause())
+        """
+        return failIfThrows {
+            try UnreadInboxThread.fetchAll(tx.database, sql: sql)
+        }
     }
 
     public func visibleArchivedThreadUniqueIds(

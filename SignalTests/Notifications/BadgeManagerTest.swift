@@ -78,7 +78,7 @@ private extension BadgeManager {
         fetchIntBadgeValue: @escaping () -> UInt,
     ) {
         self.init(
-            fetchBadgeCountBlock: { BadgeCount(unreadChatCount: fetchIntBadgeValue(), unreadCallsCount: 0) },
+            fetchBadgeCountBlock: { BadgeCount(unreadChatCount: fetchIntBadgeValue(), unreadCallsCount: 0, unreadCountsByChatFolder: [:]) },
         )
     }
 

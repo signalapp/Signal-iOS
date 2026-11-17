@@ -172,103 +172,6 @@ public class InteractionFinder: NSObject {
         return result
     }
 
-    public class func unreadCountInAllThreads(transaction tx: DBReadTransaction) -> UInt {
-        let notificationPreferencesManager = DependenciesBridge.shared.notificationPreferencesManager
-
-        var unreadCounts = [TSThread.UniqueId: Int64]()
-
-        let threadMarkedUnreadQuery = """
-        SELECT \(threadColumn: .uniqueId)
-        FROM \(TSThread.databaseTableName)
-        WHERE \(threadColumn: .isMarkedUnread) = 1
-        AND \(threadColumn: .shouldThreadBeVisible) = 1
-        """
-        let markedUnreadThreadUniqueIds = failIfThrows {
-            return try String.fetchAll(tx.database, sql: threadMarkedUnreadQuery)
-        }
-        for threadUniqueId in markedUnreadThreadUniqueIds {
-            unreadCounts[threadUniqueId] = 1
-        }
-
-        // Fetch the number of unread messages per thread, without resolving the
-        // threadUniqueId indirection (that happens in the next step). Due to the
-        // shape of the UnreadMessages index (where threadUniqueId is at the
-        // beginning), SQLite is able to fulfill this query without allocating a
-        // temporary table to store the results.
-        let threadUnreadCountQuery = """
-        SELECT \(interactionColumn: .threadUniqueId) threadUniqueId, COUNT(*) unreadCount
-        FROM \(InteractionRecord.databaseTableName)
-        \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
-        WHERE \(sqlClauseForUnreadInteractionCounts())
-        GROUP BY threadUniqueId
-        """
-        let threadUnreadCounts = failIfThrows {
-            return try Row.fetchAll(tx.database, sql: threadUnreadCountQuery)
-        }
-        for row in threadUnreadCounts {
-            let threadUniqueId: String = row["threadUniqueId"]
-            let unreadCount: Int64 = row["unreadCount"]
-            // Takes precedence over "isMarkedUnread".
-            unreadCounts[threadUniqueId] = unreadCount
-        }
-
-        var threadQuery = """
-        SELECT 1 FROM \(TSThread.databaseTableName)
-        WHERE \(threadColumn: .uniqueId) = ?
-        AND \(threadColumn: .isArchived) = 0
-        """
-        if !notificationPreferencesManager.includeMutedThreadsInBadgeCount(tx: tx) {
-            threadQuery += " \(sqlClauseForIgnoringInteractionsWithMutedThread())"
-        }
-        var result: Int64 = 0
-        for (threadUniqueId, unreadCount) in unreadCounts {
-            let shouldCountThread = failIfThrows {
-                // The `?? false` is necessary because no row is returned when the thread
-                // doesn't match the criteria.
-                return try Bool.fetchOne(tx.database, sql: threadQuery, arguments: [threadUniqueId]) ?? false
-            }
-            if shouldCountThread {
-                result += unreadCount
-            }
-        }
-        return UInt(result)
-    }
-
-    public class func unreadThreadCountInAllThreads(transaction: DBReadTransaction) -> UInt {
-        failIfThrows {
-            let includeMutedThreads = DependenciesBridge.shared.notificationPreferencesManager
-                .includeMutedThreadsInBadgeCount(tx: transaction)
-
-            var unreadThreadQuery = """
-            SELECT COUNT(*)
-            FROM \(TSThread.databaseTableName)
-            WHERE \(threadColumn: .isArchived) = 0
-            AND \(threadColumn: .shouldThreadBeVisible) = 1
-            """
-
-            if !includeMutedThreads {
-                unreadThreadQuery += " \(sqlClauseForIgnoringInteractionsWithMutedThread()) "
-            }
-
-            unreadThreadQuery += """
-             AND (
-                \(threadColumn: .isMarkedUnread) = 1
-                OR EXISTS (
-                    SELECT 1
-                    FROM \(InteractionRecord.databaseTableName) AS interaction
-                    \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
-                    WHERE interaction.\(interactionColumn: .threadUniqueId) = \(threadColumnFullyQualified: .uniqueId)
-                    AND \(sqlClauseForUnreadInteractionCounts())
-                )
-            )
-            """
-
-            let unreadThreadCount = try UInt.fetchOne(transaction.database, sql: unreadThreadQuery)
-
-            return unreadThreadCount.owsFailUnwrap("SELECT COUNT(*) should always return a value")
-        }
-    }
-
     // MARK: -
 
     public class func nextExpiringInteraction(
@@ -1441,15 +1344,6 @@ extension InteractionFinder {
             )
             OR
             \(interactionColumn: .recordType) IS \(SDSRecordType.releaseNotesMessage.rawValue)
-        )
-        """
-    }
-
-    private static func sqlClauseForIgnoringInteractionsWithMutedThread() -> String {
-        return """
-        AND (
-            \(threadColumn: .mutedUntilTimestamp) <= strftime('%s','now') * 1000
-            OR \(threadColumn: .mutedUntilTimestamp) = 0
         )
         """
     }

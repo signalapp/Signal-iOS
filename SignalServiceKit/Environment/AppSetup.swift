@@ -913,11 +913,6 @@ extension AppSetup.GlobalsContinuation {
             threadStore: threadStore,
         )
 
-        let badgeCountFetcher = BadgeCountFetcher(
-            notificationPreferencesManager: notificationPreferencesManager,
-            callRecordMissedCallManager: callRecordMissedCallManager,
-        )
-
         let deleteForMeOutgoingSyncMessageManager = DeleteForMeOutgoingSyncMessageManagerImpl(
             recipientDatabaseTable: recipientDatabaseTable,
             syncMessageSender: DeleteForMeOutgoingSyncMessageManagerImpl.Wrappers.SyncMessageSender(messageSenderJobQueue),
@@ -1072,6 +1067,11 @@ extension AppSetup.GlobalsContinuation {
             recipientFetcher: recipientFetcher,
             storageServiceManager: storageServiceManager,
             threadStore: threadStore,
+        )
+        let badgeCountFetcher = BadgeCountFetcher(
+            chatFolderManager: chatFolderManager,
+            notificationPreferencesManager: notificationPreferencesManager,
+            callRecordMissedCallManager: callRecordMissedCallManager,
         )
 
         let pinnedMessageExpirationJob = PinnedMessageExpirationJob(
