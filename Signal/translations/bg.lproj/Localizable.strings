@@ -11,7 +11,7 @@
 "ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "Препращане";
 
 /* AX hint letting a user know this button sends a sticker */
-"ACCESSIBILITY_HINT_STICKER" = "Sends this sticker";
+"ACCESSIBILITY_HINT_STICKER" = "Изпраща се този стикер";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "Прикачен файл";
@@ -422,7 +422,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Прикаченият файл е празен.";
 
 /* Attachment error message for video attachments that are too long to send. Embeds {{ the maximum duration, e.g. '15 minutes' }}. */
-"ATTACHMENT_ERROR_VIDEO_TOO_LONG_FORMAT" = "This video is too long to send. Trim it to %1$@ or less.";
+"ATTACHMENT_ERROR_VIDEO_TOO_LONG_FORMAT" = "Това видео е твърде дълго за изпращане. Скъсете го до %1$@ или по-малко.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Изберете мултимедийни файлове, които да изпратите";
@@ -515,13 +515,13 @@
 "ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "Качество на мултимедията";
 
 /* Accessibility label for the button that mutes a video being sent. */
-"ATTACHMENT_TOOL_BUTTON_MUTE_ACCESSIBILITY_LABEL" = "Mute video";
+"ATTACHMENT_TOOL_BUTTON_MUTE_ACCESSIBILITY_LABEL" = "Заглушаване на видеото";
 
 /* Accessibility label for the 'pen' dialog. */
 "ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "Рисуване или анотиране на мултимедийни файлове";
 
 /* Accessibility label for the button that unmutes a video being sent. */
-"ATTACHMENT_TOOL_BUTTON_UNMUTE_ACCESSIBILITY_LABEL" = "Unmute video";
+"ATTACHMENT_TOOL_BUTTON_UNMUTE_ACCESSIBILITY_LABEL" = "Включване на звука на видеото";
 
 /* Accessibility label for the 'view one' dialog. */
 "ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "Еднократно гледане";
@@ -2072,55 +2072,55 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Автоматично избира подходящ цвят спрямо фона";
 
 /* Name of the default chat folder, which shows every chat. */
-"CHAT_FOLDERS_ALL_CHATS" = "All Chats";
+"CHAT_FOLDERS_ALL_CHATS" = "Всички чатове";
 
 /* Action that deletes a chat folder. */
-"CHAT_FOLDERS_DELETE_FOLDER" = "Delete Folder";
+"CHAT_FOLDERS_DELETE_FOLDER" = "Изтриване на папка";
 
 /* Title of the confirmation shown before deleting a chat folder. */
-"CHAT_FOLDERS_DELETE_FOLDER_CONFIRMATION_TITLE" = "Delete this chat folder?";
+"CHAT_FOLDERS_DELETE_FOLDER_CONFIRMATION_TITLE" = "Изтриване на тази папка за чат?";
 
 /* Button in chat folder settings to add a suggested chat folder. */
-"CHAT_FOLDERS_SETTINGS_ADD_SUGGESTED_FOLDER" = "Add";
+"CHAT_FOLDERS_SETTINGS_ADD_SUGGESTED_FOLDER" = "Добавяне";
 
 /* Button in chat folder settings to create a new chat folder. */
-"CHAT_FOLDERS_SETTINGS_CREATE_FOLDER" = "Create a Folder";
+"CHAT_FOLDERS_SETTINGS_CREATE_FOLDER" = "Създаване на папка";
 
 /* Description at the top of the chat folders settings screen. */
-"CHAT_FOLDERS_SETTINGS_DESCRIPTION" = "Organize your chats into folders and quickly switch between them on your chat list.";
+"CHAT_FOLDERS_SETTINGS_DESCRIPTION" = "Организирайте чатовете си в папки и бързо превключвайте между тях в списъка с чатове.";
 
 /* Toast shown after adding a suggested chat folder. Embeds {{ folder name }}. */
-"CHAT_FOLDERS_SETTINGS_FOLDER_ADDED_TOAST_FORMAT" = "%1$@ folder added";
+"CHAT_FOLDERS_SETTINGS_FOLDER_ADDED_TOAST_FORMAT" = "Папката „%1$@“ е добавена";
 
 /* Header for the list of chat folders in chat folder settings. */
-"CHAT_FOLDERS_SETTINGS_FOLDERS_HEADER" = "Folders";
+"CHAT_FOLDERS_SETTINGS_FOLDERS_HEADER" = "Папки";
 
 /* Header for the list of suggested chat folders in chat folder settings. */
-"CHAT_FOLDERS_SETTINGS_SUGGESTED_HEADER" = "Suggested Folders";
+"CHAT_FOLDERS_SETTINGS_SUGGESTED_HEADER" = "Предложени папки";
 
 /* Title for the chat folders settings screen. */
-"CHAT_FOLDERS_SETTINGS_TITLE" = "Chat Folders";
+"CHAT_FOLDERS_SETTINGS_TITLE" = "Папки за чат";
 
 /* Describes the suggested chat folder that shows group chats. */
-"CHAT_FOLDERS_SUGGESTED_GROUPS_DESCRIPTION" = "Only messages from group chats";
+"CHAT_FOLDERS_SUGGESTED_GROUPS_DESCRIPTION" = "Само съобщения от групови чатове";
 
 /* Name of the suggested chat folder that shows group chats. */
-"CHAT_FOLDERS_SUGGESTED_GROUPS_NAME" = "Groups";
+"CHAT_FOLDERS_SUGGESTED_GROUPS_NAME" = "Групи";
 
 /* Describes the suggested chat folder that shows 1:1 chats. */
-"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_DESCRIPTION" = "Only messages from direct chats";
+"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_DESCRIPTION" = "Само съобщения от директни чатове";
 
 /* Name of the suggested chat folder that shows 1:1 chats. */
-"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_NAME" = "1:1 Chats";
+"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_NAME" = "Чатове 1:1";
 
 /* Describes the suggested chat folder that shows unread chats. */
-"CHAT_FOLDERS_SUGGESTED_UNREAD_DESCRIPTION" = "Unread messages from all chats";
+"CHAT_FOLDERS_SUGGESTED_UNREAD_DESCRIPTION" = "Непрочетени съобщения от всички чатове";
 
 /* Name of the suggested chat folder that shows unread chats. */
-"CHAT_FOLDERS_SUGGESTED_UNREAD_NAME" = "Unread";
+"CHAT_FOLDERS_SUGGESTED_UNREAD_NAME" = "Непрочетени";
 
 /* Name shown for a chat folder whose name is empty. */
-"CHAT_FOLDERS_UNNAMED_FOLDER" = "Unnamed Folder";
+"CHAT_FOLDERS_UNNAMED_FOLDER" = "Папка без име";
 
 /* Message shown in an action sheet when the user tries to cancel a backup. */
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "Отмяната на архивирането няма да изтрие резервното копие. Можете да възстановите своето резервно копие по всяко време в „Настройки за архивиране“.";
@@ -3194,10 +3194,10 @@
 "DELETED_BY_ADMIN" = "Администраторът %1$@ изтри това съобщение";
 
 /* Title for a button in a toast shown after the user deletes messages for themselves only. */
-"DELETED_FOR_ME_TOAST_DELETE_FOR_EVERYONE_BUTTON_TITLE" = "Delete for Everyone";
+"DELETED_FOR_ME_TOAST_DELETE_FOR_EVERYONE_BUTTON_TITLE" = "Изтриване за всички";
 
 /* Text for a toast shown after the user deletes messages for themselves only. */
-"DELETED_FOR_ME_TOAST_TEXT" = "Deleted for me.";
+"DELETED_FOR_ME_TOAST_TEXT" = "Изтрито за мен.";
 
 /* Text indicating the message was remotely deleted by its author. Embeds {{ author name }} */
 "DELETED_THIS_MESSAGE" = "%1$@ изтри това съобщение";
@@ -5120,7 +5120,7 @@
 "HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY" = "Не е открит абонамент за архивиране";
 
 /* Title for the 'donate' action in the context menu of the settings button on home view tabs. */
-"HOME_VIEW_TITLE_DONATE" = "Donate";
+"HOME_VIEW_TITLE_DONATE" = "Дарете";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Неуспешно архивиране";
@@ -6812,10 +6812,10 @@
 "ONBOARDING_SPLASH_TITLE" = "Носете поверителността със себе си.\nБъдете себе си във всяко съобщение.";
 
 /* Description for the screen asking the user to enter the 6-digit code from their authenticator app during registration. */
-"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_BODY" = "To continue, enter the 6-digit code from your authenticator app.";
+"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_BODY" = "За да продължите, въведете 6-цифрения код от вашето приложение за автентикация.";
 
 /* Accessibility label for the field where the user enters the code from their authenticator app */
-"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_FIELD_LABEL" = "Authenticator app code";
+"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_FIELD_LABEL" = "Код от приложение за автентикация";
 
 /* Subtitle for action to verify with an authenticator as a 2fa method. */
 "ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_BODY" = "Въведете еднократен код, генериран от вашето приложение за автентикация.";
@@ -9290,7 +9290,7 @@
 "SETTINGS_CHATS" = "Чатове";
 
 /* Footer for the chat folders row in chats settings. */
-"SETTINGS_CHATS_CHAT_FOLDERS_FOOTER" = "Create folders for different sets of chats and quickly switch between them.";
+"SETTINGS_CHATS_CHAT_FOLDERS_FOOTER" = "Създавайте папки за различни групи чатове и бързо преминавайте от един чат в друг.";
 
 /* Title for a button in Chats settings that starts exporting the user's chat history. */
 "SETTINGS_CHATS_EXPORT_BUTTON" = "Експорт на чатове";
@@ -10433,7 +10433,7 @@
 "STICKER_BUTTON_REMOVE_FAVORITES" = "Премахване от „Любими“";
 
 /* Title for a button to remove a sticker from recents */
-"STICKER_BUTTON_REMOVE_FROM_RECENTS" = "Remove from Recents";
+"STICKER_BUTTON_REMOVE_FROM_RECENTS" = "Премахване от „Скорошни“";
 
 /* Title for a button to view a sticker pack */
 "STICKER_BUTTON_VIEW_PACK" = "Преглед на пакета";
@@ -10454,19 +10454,19 @@
 "STICKER_CONFIRM_REMOVE_BUTTON" = "Премахване";
 
 /* Label for the button to clear all sticker recents */
-"STICKER_KEYBOARD_BUTTON_CLEAR_RECENTS" = "Clear Recents";
+"STICKER_KEYBOARD_BUTTON_CLEAR_RECENTS" = "Изчистване на скорошните";
 
 /* Accessibility label for the button in the sticker keyboard that opens the screen for managing sticker packs. */
-"STICKER_KEYBOARD_MANAGE_BUTTON_ACCESSIBILITY_LABEL" = "Manage stickers";
+"STICKER_KEYBOARD_MANAGE_BUTTON_ACCESSIBILITY_LABEL" = "Управление на стикерите";
 
 /* Toast shown when user tries to tap Favorites in sticker keyboard but has none */
 "STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "Натиснете и задръжте някой стикер, за да го добавите в „Любими“";
 
 /* Text displayed in the sticker keyboard when no sticker packs are installed. */
-"STICKER_KEYBOARD_NO_PACKS" = "No sticker packs.\nAdd stickers to send to your friends.";
+"STICKER_KEYBOARD_NO_PACKS" = "Няма пакети със стикери.\nДобавете стикери, за да ги изпращате на приятели.";
 
 /* Button in the sticker keyboard, shown when no sticker packs are installed, that opens the sticker pack manager. */
-"STICKER_KEYBOARD_NO_PACKS_ADD_BUTTON" = "Add Stickers";
+"STICKER_KEYBOARD_NO_PACKS_ADD_BUTTON" = "Добавяне на стикери";
 
 /* Section header for favorites in the sticker keyboard */
 "STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "Любими";
@@ -10478,10 +10478,10 @@
 "STICKER_MESSAGE_PREVIEW" = "Съобщение със стикер";
 
 /* Button to confirm a user wants to clear recent stickers */
-"STICKER_PACK_CLEAR_RECENTS_BUTTON" = "Clear";
+"STICKER_PACK_CLEAR_RECENTS_BUTTON" = "Изчистване";
 
 /* Message for a sheet asking the user to confirm they want to clear recently used stickers */
-"STICKER_PACK_CONFIRM_CLEAR_RECENTS_MESSAGE" = "Clear recently used stickers?";
+"STICKER_PACK_CONFIRM_CLEAR_RECENTS_MESSAGE" = "Изчистване на стикерите, използвани наскоро?";
 
 /* Button to confirm a user wants to remove a sticker pack */
 "STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "Премахване";
@@ -10511,13 +10511,13 @@
 "STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Изпращане в Signal";
 
 /* Message for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
-"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "You can't send it or add it to Favorites again unless you have the pack installed, a link, or a sticker message";
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "Не можете да го изпратите или да го добавите в „Любими“ отново, освен ако пакетът не е инсталиран, имате линк или съобщение със стикер";
 
 /* Title for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
 "STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "Премахване от „Любими“?";
 
 /* Title for a button to remove a sticker pack */
-"STICKER_REMOVE_PACK_BUTTON" = "Remove";
+"STICKER_REMOVE_PACK_BUTTON" = "Премахване";
 
 /* Text shown in a toast confirming a sticker was removed from favorites */
 "STICKER_REMOVED_FROM_FAVORITES_TOAST" = "Стикерът е премахнат от „Любими“";
@@ -10532,13 +10532,13 @@
 "STICKERS_INSTALL_BUTTON" = "Добавяне на стикери";
 
 /* Button used to deselect all selected sticker packs in selection mode */
-"STICKERS_MANAGE_DESELECT_ALL" = "Deselect All";
+"STICKERS_MANAGE_DESELECT_ALL" = "Премахване на всичко избрано";
 
 /* Enables selection mode for sticker pack */
-"STICKERS_MANAGE_EDIT" = "Edit";
+"STICKERS_MANAGE_EDIT" = "Редактиране";
 
 /* Label for a button to uninstall all selected sticker packs */
-"STICKERS_MANAGE_REMOVE" = "Remove";
+"STICKERS_MANAGE_REMOVE" = "Премахване";
 
 /* Placeholder text for the search bar in the sticker pack management. */
 "STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "Търсене на стикери";
@@ -10547,10 +10547,10 @@
 "STICKERS_MANAGE_SEARCH_NO_RESULTS" = "Не са открити резултати за „%1$@“";
 
 /* Button used to select all sticker packs in selection mode */
-"STICKERS_MANAGE_SELECT_ALL" = "Select All";
+"STICKERS_MANAGE_SELECT_ALL" = "Изберете всичко";
 
 /* Title for the selection mode of sticker packs. */
-"STICKERS_MANAGE_SELECT_ITEMS" = "Select Items";
+"STICKERS_MANAGE_SELECT_ITEMS" = "Избиране на елементи";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal Artist серии";
@@ -10571,7 +10571,7 @@
 "STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "Премахване";
 
 /* The title for a context menu item that selects a sticker pack for selection mode. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SELECT" = "Select";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SELECT" = "Избиране";
 
 /* The title for a context menu item that sends the sticker pack link to someone else. */
 "STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "Изпращане";

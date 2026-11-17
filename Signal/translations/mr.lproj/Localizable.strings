@@ -11,7 +11,7 @@
 "ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "फॉर्वर्ड करा";
 
 /* AX hint letting a user know this button sends a sticker */
-"ACCESSIBILITY_HINT_STICKER" = "Sends this sticker";
+"ACCESSIBILITY_HINT_STICKER" = "हा स्टिकर पाठवतो";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "संलग्न";
@@ -422,7 +422,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "संलग्न रिकामे आहे.";
 
 /* Attachment error message for video attachments that are too long to send. Embeds {{ the maximum duration, e.g. '15 minutes' }}. */
-"ATTACHMENT_ERROR_VIDEO_TOO_LONG_FORMAT" = "This video is too long to send. Trim it to %1$@ or less.";
+"ATTACHMENT_ERROR_VIDEO_TOO_LONG_FORMAT" = "हा व्हिडिओ अति मोठा असल्याने पाठवता येणार नाही. तो %1$@ किंवा त्यापेक्षा छोटा करा.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "पाठविण्यासाठी मिडिया निवडा";
@@ -515,13 +515,13 @@
 "ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "मिडिया दर्जा";
 
 /* Accessibility label for the button that mutes a video being sent. */
-"ATTACHMENT_TOOL_BUTTON_MUTE_ACCESSIBILITY_LABEL" = "Mute video";
+"ATTACHMENT_TOOL_BUTTON_MUTE_ACCESSIBILITY_LABEL" = "व्हिडिओ म्युट करा";
 
 /* Accessibility label for the 'pen' dialog. */
 "ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "मीडिया काढा किंवा रेखाटा";
 
 /* Accessibility label for the button that unmutes a video being sent. */
-"ATTACHMENT_TOOL_BUTTON_UNMUTE_ACCESSIBILITY_LABEL" = "Unmute video";
+"ATTACHMENT_TOOL_BUTTON_UNMUTE_ACCESSIBILITY_LABEL" = "व्हिडिओ अनम्युट करा";
 
 /* Accessibility label for the 'view one' dialog. */
 "ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "एकदा पाहा";
@@ -2072,55 +2072,55 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "वॉलपेपरसोबत स्वयंचलितपणे रंग जुळवते";
 
 /* Name of the default chat folder, which shows every chat. */
-"CHAT_FOLDERS_ALL_CHATS" = "All Chats";
+"CHAT_FOLDERS_ALL_CHATS" = "सर्व चॅट्स";
 
 /* Action that deletes a chat folder. */
-"CHAT_FOLDERS_DELETE_FOLDER" = "Delete Folder";
+"CHAT_FOLDERS_DELETE_FOLDER" = "फोल्डर हटवा";
 
 /* Title of the confirmation shown before deleting a chat folder. */
-"CHAT_FOLDERS_DELETE_FOLDER_CONFIRMATION_TITLE" = "Delete this chat folder?";
+"CHAT_FOLDERS_DELETE_FOLDER_CONFIRMATION_TITLE" = "हा चॅट फोल्डर हटवायचा आहे?";
 
 /* Button in chat folder settings to add a suggested chat folder. */
-"CHAT_FOLDERS_SETTINGS_ADD_SUGGESTED_FOLDER" = "Add";
+"CHAT_FOLDERS_SETTINGS_ADD_SUGGESTED_FOLDER" = "जोडा";
 
 /* Button in chat folder settings to create a new chat folder. */
-"CHAT_FOLDERS_SETTINGS_CREATE_FOLDER" = "Create a Folder";
+"CHAT_FOLDERS_SETTINGS_CREATE_FOLDER" = "एक फोल्डर तयार करा";
 
 /* Description at the top of the chat folders settings screen. */
-"CHAT_FOLDERS_SETTINGS_DESCRIPTION" = "Organize your chats into folders and quickly switch between them on your chat list.";
+"CHAT_FOLDERS_SETTINGS_DESCRIPTION" = "आपले चॅट्स फोल्डरमध्ये व्यवस्थित लावा आणि त्यांच्यादरम्यान आपल्या चॅट यादी वर पटकन स्विच करा.";
 
 /* Toast shown after adding a suggested chat folder. Embeds {{ folder name }}. */
-"CHAT_FOLDERS_SETTINGS_FOLDER_ADDED_TOAST_FORMAT" = "%1$@ folder added";
+"CHAT_FOLDERS_SETTINGS_FOLDER_ADDED_TOAST_FORMAT" = "%1$@ फोल्डर जोडला";
 
 /* Header for the list of chat folders in chat folder settings. */
-"CHAT_FOLDERS_SETTINGS_FOLDERS_HEADER" = "Folders";
+"CHAT_FOLDERS_SETTINGS_FOLDERS_HEADER" = "फोल्डर्स";
 
 /* Header for the list of suggested chat folders in chat folder settings. */
-"CHAT_FOLDERS_SETTINGS_SUGGESTED_HEADER" = "Suggested Folders";
+"CHAT_FOLDERS_SETTINGS_SUGGESTED_HEADER" = "सुचवलेले फोल्डर";
 
 /* Title for the chat folders settings screen. */
-"CHAT_FOLDERS_SETTINGS_TITLE" = "Chat Folders";
+"CHAT_FOLDERS_SETTINGS_TITLE" = "चॅट फोल्डर्स";
 
 /* Describes the suggested chat folder that shows group chats. */
-"CHAT_FOLDERS_SUGGESTED_GROUPS_DESCRIPTION" = "Only messages from group chats";
+"CHAT_FOLDERS_SUGGESTED_GROUPS_DESCRIPTION" = "फक्त सामूहिक चॅट्स मधील संदेश";
 
 /* Name of the suggested chat folder that shows group chats. */
-"CHAT_FOLDERS_SUGGESTED_GROUPS_NAME" = "Groups";
+"CHAT_FOLDERS_SUGGESTED_GROUPS_NAME" = "गट";
 
 /* Describes the suggested chat folder that shows 1:1 chats. */
-"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_DESCRIPTION" = "Only messages from direct chats";
+"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_DESCRIPTION" = "फक्त थेट चॅट्स मधील संदेश";
 
 /* Name of the suggested chat folder that shows 1:1 chats. */
-"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_NAME" = "1:1 Chats";
+"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_NAME" = "1:1 चॅट्स";
 
 /* Describes the suggested chat folder that shows unread chats. */
-"CHAT_FOLDERS_SUGGESTED_UNREAD_DESCRIPTION" = "Unread messages from all chats";
+"CHAT_FOLDERS_SUGGESTED_UNREAD_DESCRIPTION" = "सर्व चॅट्स मधून न वाचलेले संदेश";
 
 /* Name of the suggested chat folder that shows unread chats. */
-"CHAT_FOLDERS_SUGGESTED_UNREAD_NAME" = "Unread";
+"CHAT_FOLDERS_SUGGESTED_UNREAD_NAME" = "वाचले नाही";
 
 /* Name shown for a chat folder whose name is empty. */
-"CHAT_FOLDERS_UNNAMED_FOLDER" = "Unnamed Folder";
+"CHAT_FOLDERS_UNNAMED_FOLDER" = "निनावी फोल्डर";
 
 /* Message shown in an action sheet when the user tries to cancel a backup. */
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "तुमचा बॅकअप रद्द केल्याने तुमचा बॅकअप हटवला जाणार नाही. तुम्ही बॅकअप सेटिंग्जमधून कधीही तुमचा बॅकअप पुन्हा सुरु करू शकता.";
@@ -3194,10 +3194,10 @@
 "DELETED_BY_ADMIN" = "ॲडमिन %1$@ यांनी हा संदेश हटवला";
 
 /* Title for a button in a toast shown after the user deletes messages for themselves only. */
-"DELETED_FOR_ME_TOAST_DELETE_FOR_EVERYONE_BUTTON_TITLE" = "Delete for Everyone";
+"DELETED_FOR_ME_TOAST_DELETE_FOR_EVERYONE_BUTTON_TITLE" = "सर्वांसाठी हटवा";
 
 /* Text for a toast shown after the user deletes messages for themselves only. */
-"DELETED_FOR_ME_TOAST_TEXT" = "Deleted for me.";
+"DELETED_FOR_ME_TOAST_TEXT" = "माझ्यासाठी हटवले.";
 
 /* Text indicating the message was remotely deleted by its author. Embeds {{ author name }} */
 "DELETED_THIS_MESSAGE" = "%1$@ यांनी हा संदेश हटवला";
@@ -5120,7 +5120,7 @@
 "HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY" = "बॅकअप सदस्यत्व सापडले नाही";
 
 /* Title for the 'donate' action in the context menu of the settings button on home view tabs. */
-"HOME_VIEW_TITLE_DONATE" = "Donate";
+"HOME_VIEW_TITLE_DONATE" = "देणगी द्या";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "बॅकअप घेता आला नाही";
@@ -6812,10 +6812,10 @@
 "ONBOARDING_SPLASH_TITLE" = "गोपनीयता आपल्या सोबत न्या.\nप्रत्येक संदेशामध्ये आपण स्वतः रहा.";
 
 /* Description for the screen asking the user to enter the 6-digit code from their authenticator app during registration. */
-"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_BODY" = "To continue, enter the 6-digit code from your authenticator app.";
+"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_BODY" = "पुढे जाण्यासाठी, तुमच्या ऑथेंटिकेटर ॲपमधील 6 अंकी कोड प्रविष्ट करा.";
 
 /* Accessibility label for the field where the user enters the code from their authenticator app */
-"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_FIELD_LABEL" = "Authenticator app code";
+"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_FIELD_LABEL" = "ऑथेंटिकेटर ॲप कोड";
 
 /* Subtitle for action to verify with an authenticator as a 2fa method. */
 "ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_BODY" = "तुमच्या ऑथेंटिकेटर ॲपने तयार केलेला एक वेळचा कोड प्रविष्ट करा.";
@@ -9290,7 +9290,7 @@
 "SETTINGS_CHATS" = "चॅट्स";
 
 /* Footer for the chat folders row in chats settings. */
-"SETTINGS_CHATS_CHAT_FOLDERS_FOOTER" = "Create folders for different sets of chats and quickly switch between them.";
+"SETTINGS_CHATS_CHAT_FOLDERS_FOOTER" = "चॅट्सच्या विविध संचांकरिता फोल्डर सेट करा आणि लगेच त्यांच्यात अदलाबदल करा.";
 
 /* Title for a button in Chats settings that starts exporting the user's chat history. */
 "SETTINGS_CHATS_EXPORT_BUTTON" = "चॅट्स एक्सपोर्ट करा";
@@ -10433,7 +10433,7 @@
 "STICKER_BUTTON_REMOVE_FAVORITES" = "आवडीमधून हटवून टाका";
 
 /* Title for a button to remove a sticker from recents */
-"STICKER_BUTTON_REMOVE_FROM_RECENTS" = "Remove from Recents";
+"STICKER_BUTTON_REMOVE_FROM_RECENTS" = "अलीकडील मधून हटवून टाका";
 
 /* Title for a button to view a sticker pack */
 "STICKER_BUTTON_VIEW_PACK" = "पॅक पाहा";
@@ -10454,19 +10454,19 @@
 "STICKER_CONFIRM_REMOVE_BUTTON" = "काढून टाका";
 
 /* Label for the button to clear all sticker recents */
-"STICKER_KEYBOARD_BUTTON_CLEAR_RECENTS" = "Clear Recents";
+"STICKER_KEYBOARD_BUTTON_CLEAR_RECENTS" = "अलीकडचे साफ करा";
 
 /* Accessibility label for the button in the sticker keyboard that opens the screen for managing sticker packs. */
-"STICKER_KEYBOARD_MANAGE_BUTTON_ACCESSIBILITY_LABEL" = "Manage stickers";
+"STICKER_KEYBOARD_MANAGE_BUTTON_ACCESSIBILITY_LABEL" = "स्टिकर्स व्यवस्थापित करा";
 
 /* Toast shown when user tries to tap Favorites in sticker keyboard but has none */
 "STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "आवडीमध्ये समाविष्ट करण्यासाठी स्टिकर दाबून धरा";
 
 /* Text displayed in the sticker keyboard when no sticker packs are installed. */
-"STICKER_KEYBOARD_NO_PACKS" = "No sticker packs.\nAdd stickers to send to your friends.";
+"STICKER_KEYBOARD_NO_PACKS" = "कोणतेही स्टिकर पॅक नाहीत.\nतुमच्या मित्रांना पाठवण्यासाठी स्टिकर समाविष्ट करा.";
 
 /* Button in the sticker keyboard, shown when no sticker packs are installed, that opens the sticker pack manager. */
-"STICKER_KEYBOARD_NO_PACKS_ADD_BUTTON" = "Add Stickers";
+"STICKER_KEYBOARD_NO_PACKS_ADD_BUTTON" = "स्टिकर समाविष्ट करा";
 
 /* Section header for favorites in the sticker keyboard */
 "STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "आवडीचे";
@@ -10478,10 +10478,10 @@
 "STICKER_MESSAGE_PREVIEW" = "स्टिकर संदेश";
 
 /* Button to confirm a user wants to clear recent stickers */
-"STICKER_PACK_CLEAR_RECENTS_BUTTON" = "Clear";
+"STICKER_PACK_CLEAR_RECENTS_BUTTON" = "साफ करा";
 
 /* Message for a sheet asking the user to confirm they want to clear recently used stickers */
-"STICKER_PACK_CONFIRM_CLEAR_RECENTS_MESSAGE" = "Clear recently used stickers?";
+"STICKER_PACK_CONFIRM_CLEAR_RECENTS_MESSAGE" = "अलीकडले वापरलेले स्टिकर्स काढून टाकायचे का?";
 
 /* Button to confirm a user wants to remove a sticker pack */
 "STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "काढून टाका";
@@ -10511,13 +10511,13 @@
 "STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Signal मध्ये पाठवा";
 
 /* Message for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
-"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "You can't send it or add it to Favorites again unless you have the pack installed, a link, or a sticker message";
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "तुम्ही पॅक इन्स्टॉल केलेला नसेल, तुमच्याकडे लिंक नसेल, किंवा स्टिकर संदेश नसेल, तर तुम्हाला हे पुन्हा पाठवता येणार नाही किंवा आवडीमध्ये समाविष्ट करता येणार नाही";
 
 /* Title for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
 "STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "आवडीमधून हटवून टाकायचा का?";
 
 /* Title for a button to remove a sticker pack */
-"STICKER_REMOVE_PACK_BUTTON" = "Remove";
+"STICKER_REMOVE_PACK_BUTTON" = "काढून टाका";
 
 /* Text shown in a toast confirming a sticker was removed from favorites */
 "STICKER_REMOVED_FROM_FAVORITES_TOAST" = "स्टिकर आवडीमधून काढून टाकला";
@@ -10532,13 +10532,13 @@
 "STICKERS_INSTALL_BUTTON" = "स्टिकर समाविष्ट करा";
 
 /* Button used to deselect all selected sticker packs in selection mode */
-"STICKERS_MANAGE_DESELECT_ALL" = "Deselect All";
+"STICKERS_MANAGE_DESELECT_ALL" = "सर्व निवडी रद्द करा";
 
 /* Enables selection mode for sticker pack */
-"STICKERS_MANAGE_EDIT" = "Edit";
+"STICKERS_MANAGE_EDIT" = "संपादन";
 
 /* Label for a button to uninstall all selected sticker packs */
-"STICKERS_MANAGE_REMOVE" = "Remove";
+"STICKERS_MANAGE_REMOVE" = "काढून टाका";
 
 /* Placeholder text for the search bar in the sticker pack management. */
 "STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "स्टिकर शोधा";
@@ -10547,10 +10547,10 @@
 "STICKERS_MANAGE_SEARCH_NO_RESULTS" = "'%1$@' करिता कुठलेही परिणाम नाहीत";
 
 /* Button used to select all sticker packs in selection mode */
-"STICKERS_MANAGE_SELECT_ALL" = "Select All";
+"STICKERS_MANAGE_SELECT_ALL" = "सर्व निवडा";
 
 /* Title for the selection mode of sticker packs. */
-"STICKERS_MANAGE_SELECT_ITEMS" = "Select Items";
+"STICKERS_MANAGE_SELECT_ITEMS" = "बाबी निवडा";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal कलाकार सिरीझ";
@@ -10571,7 +10571,7 @@
 "STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "काढून टाका";
 
 /* The title for a context menu item that selects a sticker pack for selection mode. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SELECT" = "Select";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SELECT" = "निवडा";
 
 /* The title for a context menu item that sends the sticker pack link to someone else. */
 "STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "पाठवा";

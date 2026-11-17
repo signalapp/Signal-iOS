@@ -302,7 +302,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d Chats</string>
+			<string>%1$d cuộc trò chuyện</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
@@ -316,7 +316,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d loại cuộc trò chuyện</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
@@ -330,7 +330,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d cuộc trò chuyện được loại trừ</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
@@ -1447,7 +1447,7 @@ Hãy thử lại sau %1$d giờ.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Thao tác này sẽ xóa các gói nhãn dán. Bạn không thể thêm lại các gói nhãn dán nếu không có đường dẫn hoặc tin nhắn chứa nhãn dán.</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
@@ -1461,7 +1461,7 @@ Hãy thử lại sau %1$d giờ.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Xóa %1$d gói nhãn dán?</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
@@ -1475,7 +1475,7 @@ Hãy thử lại sau %1$d giờ.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Sticker packs removed</string>
+			<string>Đã xóa các gói nhãn dán</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -1503,7 +1503,7 @@ Hãy thử lại sau %1$d giờ.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d Selected</string>
+			<string>%1$d Đã chọn</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

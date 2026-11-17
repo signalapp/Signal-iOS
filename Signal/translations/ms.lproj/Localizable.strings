@@ -11,7 +11,7 @@
 "ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "Hantar";
 
 /* AX hint letting a user know this button sends a sticker */
-"ACCESSIBILITY_HINT_STICKER" = "Sends this sticker";
+"ACCESSIBILITY_HINT_STICKER" = "Hantar pelekat ini";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "Lampiran";
@@ -422,7 +422,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Lampiran kosong";
 
 /* Attachment error message for video attachments that are too long to send. Embeds {{ the maximum duration, e.g. '15 minutes' }}. */
-"ATTACHMENT_ERROR_VIDEO_TOO_LONG_FORMAT" = "This video is too long to send. Trim it to %1$@ or less.";
+"ATTACHMENT_ERROR_VIDEO_TOO_LONG_FORMAT" = "Video ini terlalu panjang untuk dihantar. Pangkas supaya tempohnya %1$@ atau kurang.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Pilih Media untuk Dihantar";
@@ -515,13 +515,13 @@
 "ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "Kualiti media";
 
 /* Accessibility label for the button that mutes a video being sent. */
-"ATTACHMENT_TOOL_BUTTON_MUTE_ACCESSIBILITY_LABEL" = "Mute video";
+"ATTACHMENT_TOOL_BUTTON_MUTE_ACCESSIBILITY_LABEL" = "Redamkan video";
 
 /* Accessibility label for the 'pen' dialog. */
 "ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "Lukis atau anotasi media";
 
 /* Accessibility label for the button that unmutes a video being sent. */
-"ATTACHMENT_TOOL_BUTTON_UNMUTE_ACCESSIBILITY_LABEL" = "Unmute video";
+"ATTACHMENT_TOOL_BUTTON_UNMUTE_ACCESSIBILITY_LABEL" = "Nyahredam video";
 
 /* Accessibility label for the 'view one' dialog. */
 "ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "Lihat sekali";
@@ -2072,55 +2072,55 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Padankan warna dengan kertas dinding secara automatik";
 
 /* Name of the default chat folder, which shows every chat. */
-"CHAT_FOLDERS_ALL_CHATS" = "All Chats";
+"CHAT_FOLDERS_ALL_CHATS" = "Semua sembang";
 
 /* Action that deletes a chat folder. */
-"CHAT_FOLDERS_DELETE_FOLDER" = "Delete Folder";
+"CHAT_FOLDERS_DELETE_FOLDER" = "Padam folder";
 
 /* Title of the confirmation shown before deleting a chat folder. */
-"CHAT_FOLDERS_DELETE_FOLDER_CONFIRMATION_TITLE" = "Delete this chat folder?";
+"CHAT_FOLDERS_DELETE_FOLDER_CONFIRMATION_TITLE" = "Padamkan folder sembang ini?";
 
 /* Button in chat folder settings to add a suggested chat folder. */
-"CHAT_FOLDERS_SETTINGS_ADD_SUGGESTED_FOLDER" = "Add";
+"CHAT_FOLDERS_SETTINGS_ADD_SUGGESTED_FOLDER" = "Tambah";
 
 /* Button in chat folder settings to create a new chat folder. */
-"CHAT_FOLDERS_SETTINGS_CREATE_FOLDER" = "Create a Folder";
+"CHAT_FOLDERS_SETTINGS_CREATE_FOLDER" = "Cipta folder";
 
 /* Description at the top of the chat folders settings screen. */
-"CHAT_FOLDERS_SETTINGS_DESCRIPTION" = "Organize your chats into folders and quickly switch between them on your chat list.";
+"CHAT_FOLDERS_SETTINGS_DESCRIPTION" = "Susun sembang anda ke dalam folder dan tukar antara sembang tersebut dengan cepat pada senarai sembang anda.";
 
 /* Toast shown after adding a suggested chat folder. Embeds {{ folder name }}. */
-"CHAT_FOLDERS_SETTINGS_FOLDER_ADDED_TOAST_FORMAT" = "%1$@ folder added";
+"CHAT_FOLDERS_SETTINGS_FOLDER_ADDED_TOAST_FORMAT" = "Folder %1$@ ditambah";
 
 /* Header for the list of chat folders in chat folder settings. */
-"CHAT_FOLDERS_SETTINGS_FOLDERS_HEADER" = "Folders";
+"CHAT_FOLDERS_SETTINGS_FOLDERS_HEADER" = "Folder";
 
 /* Header for the list of suggested chat folders in chat folder settings. */
-"CHAT_FOLDERS_SETTINGS_SUGGESTED_HEADER" = "Suggested Folders";
+"CHAT_FOLDERS_SETTINGS_SUGGESTED_HEADER" = "Folder yang dicadangkan";
 
 /* Title for the chat folders settings screen. */
-"CHAT_FOLDERS_SETTINGS_TITLE" = "Chat Folders";
+"CHAT_FOLDERS_SETTINGS_TITLE" = "Folder sembang";
 
 /* Describes the suggested chat folder that shows group chats. */
-"CHAT_FOLDERS_SUGGESTED_GROUPS_DESCRIPTION" = "Only messages from group chats";
+"CHAT_FOLDERS_SUGGESTED_GROUPS_DESCRIPTION" = "Hanya mesej daripada sembang kumpulan";
 
 /* Name of the suggested chat folder that shows group chats. */
-"CHAT_FOLDERS_SUGGESTED_GROUPS_NAME" = "Groups";
+"CHAT_FOLDERS_SUGGESTED_GROUPS_NAME" = "Kumpulan";
 
 /* Describes the suggested chat folder that shows 1:1 chats. */
-"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_DESCRIPTION" = "Only messages from direct chats";
+"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_DESCRIPTION" = "Hanya mesej daripada sembang langsung";
 
 /* Name of the suggested chat folder that shows 1:1 chats. */
-"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_NAME" = "1:1 Chats";
+"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_NAME" = "Sembang 1:1";
 
 /* Describes the suggested chat folder that shows unread chats. */
-"CHAT_FOLDERS_SUGGESTED_UNREAD_DESCRIPTION" = "Unread messages from all chats";
+"CHAT_FOLDERS_SUGGESTED_UNREAD_DESCRIPTION" = "Mesej yang belum dibaca daripada semua sembang";
 
 /* Name of the suggested chat folder that shows unread chats. */
-"CHAT_FOLDERS_SUGGESTED_UNREAD_NAME" = "Unread";
+"CHAT_FOLDERS_SUGGESTED_UNREAD_NAME" = "Belum dibaca";
 
 /* Name shown for a chat folder whose name is empty. */
-"CHAT_FOLDERS_UNNAMED_FOLDER" = "Unnamed Folder";
+"CHAT_FOLDERS_UNNAMED_FOLDER" = "Folder Tidak Dinamakan";
 
 /* Message shown in an action sheet when the user tries to cancel a backup. */
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "Membatalkan sandaran anda tidak akan memadamkan sandaran anda. Anda boleh menyambung semula sandaran anda pada bila-bila masa melalui Tetapan Sandaran.";
@@ -3194,10 +3194,10 @@
 "DELETED_BY_ADMIN" = "Pentadbir %1$@ memadam mesej ini";
 
 /* Title for a button in a toast shown after the user deletes messages for themselves only. */
-"DELETED_FOR_ME_TOAST_DELETE_FOR_EVERYONE_BUTTON_TITLE" = "Delete for Everyone";
+"DELETED_FOR_ME_TOAST_DELETE_FOR_EVERYONE_BUTTON_TITLE" = "Padam untuk Semua Orang";
 
 /* Text for a toast shown after the user deletes messages for themselves only. */
-"DELETED_FOR_ME_TOAST_TEXT" = "Deleted for me.";
+"DELETED_FOR_ME_TOAST_TEXT" = "Dipadamkan untuk saya.";
 
 /* Text indicating the message was remotely deleted by its author. Embeds {{ author name }} */
 "DELETED_THIS_MESSAGE" = "%1$@ memadam mesej ini";
@@ -5120,7 +5120,7 @@
 "HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY" = "Langganan Sandaran Tidak Ditemui";
 
 /* Title for the 'donate' action in the context menu of the settings button on home view tabs. */
-"HOME_VIEW_TITLE_DONATE" = "Donate";
+"HOME_VIEW_TITLE_DONATE" = "Derma";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "Gagal membuat sandaran";
@@ -6812,10 +6812,10 @@
 "ONBOARDING_SPLASH_TITLE" = "Bawa privasi bersama anda.\nMenjadi diri sendiri dalam setiap mesej.";
 
 /* Description for the screen asking the user to enter the 6-digit code from their authenticator app during registration. */
-"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_BODY" = "To continue, enter the 6-digit code from your authenticator app.";
+"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_BODY" = "Untuk meneruskan, masukkan kod 6 digit daripada aplikasi pengesah anda.";
 
 /* Accessibility label for the field where the user enters the code from their authenticator app */
-"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_FIELD_LABEL" = "Authenticator app code";
+"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_FIELD_LABEL" = "Kod aplikasi pengesah";
 
 /* Subtitle for action to verify with an authenticator as a 2fa method. */
 "ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_BODY" = "Masukkan kod sekali guna yang dijana oleh aplikasi pengesah anda.";
@@ -9290,7 +9290,7 @@
 "SETTINGS_CHATS" = "Sembang";
 
 /* Footer for the chat folders row in chats settings. */
-"SETTINGS_CHATS_CHAT_FOLDERS_FOOTER" = "Create folders for different sets of chats and quickly switch between them.";
+"SETTINGS_CHATS_CHAT_FOLDERS_FOOTER" = "Cipta folder untuk kumpulan sembang yang berbeza dan beralih antara folder dengan pantas.";
 
 /* Title for a button in Chats settings that starts exporting the user's chat history. */
 "SETTINGS_CHATS_EXPORT_BUTTON" = "Eksport Sembang";
@@ -10433,7 +10433,7 @@
 "STICKER_BUTTON_REMOVE_FAVORITES" = "Alih keluar daripada Kegemaran";
 
 /* Title for a button to remove a sticker from recents */
-"STICKER_BUTTON_REMOVE_FROM_RECENTS" = "Remove from Recents";
+"STICKER_BUTTON_REMOVE_FROM_RECENTS" = "Alih Keluar daripada Terkini";
 
 /* Title for a button to view a sticker pack */
 "STICKER_BUTTON_VIEW_PACK" = "Lihat Pek";
@@ -10454,19 +10454,19 @@
 "STICKER_CONFIRM_REMOVE_BUTTON" = "Alih keluar";
 
 /* Label for the button to clear all sticker recents */
-"STICKER_KEYBOARD_BUTTON_CLEAR_RECENTS" = "Clear Recents";
+"STICKER_KEYBOARD_BUTTON_CLEAR_RECENTS" = "Kosongkan yang terkini";
 
 /* Accessibility label for the button in the sticker keyboard that opens the screen for managing sticker packs. */
-"STICKER_KEYBOARD_MANAGE_BUTTON_ACCESSIBILITY_LABEL" = "Manage stickers";
+"STICKER_KEYBOARD_MANAGE_BUTTON_ACCESSIBILITY_LABEL" = "Urus pelekat";
 
 /* Toast shown when user tries to tap Favorites in sticker keyboard but has none */
 "STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "Tekan dan tahan pelekat untuk menambahnya kepada Kegemaran";
 
 /* Text displayed in the sticker keyboard when no sticker packs are installed. */
-"STICKER_KEYBOARD_NO_PACKS" = "No sticker packs.\nAdd stickers to send to your friends.";
+"STICKER_KEYBOARD_NO_PACKS" = "Tiada pek pelekat.\nTambah pelekat untuk dihantar kepada rakan anda.";
 
 /* Button in the sticker keyboard, shown when no sticker packs are installed, that opens the sticker pack manager. */
-"STICKER_KEYBOARD_NO_PACKS_ADD_BUTTON" = "Add Stickers";
+"STICKER_KEYBOARD_NO_PACKS_ADD_BUTTON" = "Tambah Pelekat";
 
 /* Section header for favorites in the sticker keyboard */
 "STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "Kegemaran";
@@ -10478,10 +10478,10 @@
 "STICKER_MESSAGE_PREVIEW" = "Mesej Pelekat";
 
 /* Button to confirm a user wants to clear recent stickers */
-"STICKER_PACK_CLEAR_RECENTS_BUTTON" = "Clear";
+"STICKER_PACK_CLEAR_RECENTS_BUTTON" = "Kosongkan";
 
 /* Message for a sheet asking the user to confirm they want to clear recently used stickers */
-"STICKER_PACK_CONFIRM_CLEAR_RECENTS_MESSAGE" = "Clear recently used stickers?";
+"STICKER_PACK_CONFIRM_CLEAR_RECENTS_MESSAGE" = "Kosongkan pelekat yang baru-baru ini digunakan?";
 
 /* Button to confirm a user wants to remove a sticker pack */
 "STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "Alih keluar";
@@ -10511,13 +10511,13 @@
 "STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Hantar dalam Signal";
 
 /* Message for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
-"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "You can't send it or add it to Favorites again unless you have the pack installed, a link, or a sticker message";
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "Anda tidak boleh menghantarnya atau menambahnya pada Kegemaran sekali lagi melainkan anda memasang pek tersebut, mempunyai pautan atau mesej pelekat";
 
 /* Title for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
 "STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "Alih keluar daripada Kegemaran?";
 
 /* Title for a button to remove a sticker pack */
-"STICKER_REMOVE_PACK_BUTTON" = "Remove";
+"STICKER_REMOVE_PACK_BUTTON" = "Alih keluar";
 
 /* Text shown in a toast confirming a sticker was removed from favorites */
 "STICKER_REMOVED_FROM_FAVORITES_TOAST" = "Pelekat dialih keluar daripada Kegemaran";
@@ -10532,13 +10532,13 @@
 "STICKERS_INSTALL_BUTTON" = "Tambah Pelekat";
 
 /* Button used to deselect all selected sticker packs in selection mode */
-"STICKERS_MANAGE_DESELECT_ALL" = "Deselect All";
+"STICKERS_MANAGE_DESELECT_ALL" = "Nyahpilih semua";
 
 /* Enables selection mode for sticker pack */
 "STICKERS_MANAGE_EDIT" = "Edit";
 
 /* Label for a button to uninstall all selected sticker packs */
-"STICKERS_MANAGE_REMOVE" = "Remove";
+"STICKERS_MANAGE_REMOVE" = "Alih keluar";
 
 /* Placeholder text for the search bar in the sticker pack management. */
 "STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "Cari pelekat";
@@ -10547,10 +10547,10 @@
 "STICKERS_MANAGE_SEARCH_NO_RESULTS" = "Tiada keputusan dijumpai untuk '%1$@'";
 
 /* Button used to select all sticker packs in selection mode */
-"STICKERS_MANAGE_SELECT_ALL" = "Select All";
+"STICKERS_MANAGE_SELECT_ALL" = "Pilih Semua";
 
 /* Title for the selection mode of sticker packs. */
-"STICKERS_MANAGE_SELECT_ITEMS" = "Select Items";
+"STICKERS_MANAGE_SELECT_ITEMS" = "Pilih Item";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Siri Artis Signal";
@@ -10571,7 +10571,7 @@
 "STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "Alih keluar";
 
 /* The title for a context menu item that selects a sticker pack for selection mode. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SELECT" = "Select";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SELECT" = "Pilih";
 
 /* The title for a context menu item that sends the sticker pack link to someone else. */
 "STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "Hantar";

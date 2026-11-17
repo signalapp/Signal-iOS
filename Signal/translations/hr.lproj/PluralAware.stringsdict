@@ -428,13 +428,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat</string>
+			<string>%1$d razgovor</string>
 			<key>few</key>
-			<string>%1$d Chats</string>
+			<string>%1$d razgovora</string>
 			<key>many</key>
-			<string>%1$d Chats</string>
+			<string>%1$d razgovora</string>
 			<key>other</key>
-			<string>%1$d Chats</string>
+			<string>%1$d razgovora</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
@@ -448,13 +448,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Type</string>
+			<string>%1$d vrsta razgovora</string>
 			<key>few</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d vrste razgovora</string>
 			<key>many</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d vrsta razgovora</string>
 			<key>other</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d vrsta razgovora</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
@@ -468,13 +468,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Excluded</string>
+			<string>isključeni razgovori: %1$d</string>
 			<key>few</key>
-			<string>%1$d Chats Excluded</string>
+			<string>isključeni razgovori: %1$d</string>
 			<key>many</key>
-			<string>%1$d Chats Excluded</string>
+			<string>isključeni razgovori: %1$d</string>
 			<key>other</key>
-			<string>%1$d Chats Excluded</string>
+			<string>isključeni razgovori: %1$d</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
@@ -2071,13 +2071,13 @@ Pokušajte ponovno za %1$d sati.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This will remove the sticker pack. You can&apos;t add it again without a link or sticker message.</string>
+			<string>Ovime ćete ukloniti ovaj paket naljepnica. Nećete ga moći ponovno dodati bez poveznice ili poruke s naljepnicom.</string>
 			<key>few</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Ovime ćete ukloniti ove pakete naljepnica. Nećete ih moći ponovno dodati bez poveznice ili poruke s naljepnicom.</string>
 			<key>many</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Ovime ćete ukloniti ove pakete naljepnica. Nećete ih moći ponovno dodati bez poveznice ili poruke s naljepnicom.</string>
 			<key>other</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Ovime ćete ukloniti ove pakete naljepnica. Nećete ih moći ponovno dodati bez poveznice ili poruke s naljepnicom.</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
@@ -2091,13 +2091,13 @@ Pokušajte ponovno za %1$d sati.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Remove sticker pack?</string>
+			<string>Želite li ukloniti %1$d paket naljepnica?</string>
 			<key>few</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Želite li ukloniti %1$d paketa naljepnica?</string>
 			<key>many</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Želite li ukloniti %1$d paketa naljepnica?</string>
 			<key>other</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Želite li ukloniti %1$d paketa naljepnica?</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
@@ -2111,13 +2111,13 @@ Pokušajte ponovno za %1$d sati.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sticker pack removed</string>
+			<string>Paket naljepnica je uklonjen</string>
 			<key>few</key>
-			<string>Sticker packs removed</string>
+			<string>Paketi naljepnica su uklonjeni</string>
 			<key>many</key>
-			<string>Sticker packs removed</string>
+			<string>Paketi naljepnica su uklonjeni</string>
 			<key>other</key>
-			<string>Sticker packs removed</string>
+			<string>Paketi naljepnica su uklonjeni</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -2151,13 +2151,13 @@ Pokušajte ponovno za %1$d sati.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Selected</string>
+			<string>%1$d odabrana</string>
 			<key>few</key>
-			<string>%1$d Selected</string>
+			<string>%1$d odabrane</string>
 			<key>many</key>
-			<string>%1$d Selected</string>
+			<string>%1$d odabranih</string>
 			<key>other</key>
-			<string>%1$d Selected</string>
+			<string>%1$d odabranih</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

@@ -302,7 +302,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d Chats</string>
+			<string>%1$d 个聊天</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
@@ -316,7 +316,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d 个聊天类型</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
@@ -330,7 +330,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d Chats Excluded</string>
+			<string>已排除 %1$d 个聊天</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
@@ -1447,7 +1447,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>此操作将移除这些贴纸包。除非有链接或包含贴纸的消息，否则您无法重新添加这些贴纸包。</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
@@ -1461,7 +1461,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>要移除 %1$d 个贴纸包？</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
@@ -1475,7 +1475,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Sticker packs removed</string>
+			<string>贴纸包已移除</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -1503,7 +1503,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d Selected</string>
+			<string>已选 %1$d 条</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

@@ -1,3 +1,3 @@
-• Your top stickers now have a place to remain stuck. Add any sticker to your list of favorites so it’s easy to stick with the ones you love.
+• আপনার পছন্দের স্টিকারগুলো এবার থেকে সংরক্ষিত থাকবে। এখন আপনি যেকোনো স্টিকার আপনার পছন্দের তালিকায় যোগ করতে পারেন, যাতে সেগুলো সহজে খুঁজে পাওয়া যায়।
 
-• The media editor also supports removing the audio track from a video before you send it. If the pastoral slow-panorama footage from your vacation to Scotland was partially ruined by the sound of wandering sheep, with just one tap your movie can become the silence of the lambs.
+• ভিডিও পাঠানোর আগে মিডিয়া এডিটর থেকেই অডিও সরিয়ে ফেলা যাবে। ধরুন, স্কটল্যান্ড ভ্রমণের মনোরম দৃশ্যের ভিডিওতে ভেড়ার ডাক বিরক্তির কারণ হয়ে দাঁড়িয়েছে। এক ট্যাপেই অডিও সরিয়ে ভিডিওটি পাঠান সম্পূর্ণ শব্দহীন করে।

@@ -11,7 +11,7 @@
 "ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "転送";
 
 /* AX hint letting a user know this button sends a sticker */
-"ACCESSIBILITY_HINT_STICKER" = "Sends this sticker";
+"ACCESSIBILITY_HINT_STICKER" = "このステッカーを送信";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "添付ファイル";
@@ -422,7 +422,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "添付ファイルの中身が空です。";
 
 /* Attachment error message for video attachments that are too long to send. Embeds {{ the maximum duration, e.g. '15 minutes' }}. */
-"ATTACHMENT_ERROR_VIDEO_TOO_LONG_FORMAT" = "This video is too long to send. Trim it to %1$@ or less.";
+"ATTACHMENT_ERROR_VIDEO_TOO_LONG_FORMAT" = "動画が長すぎて送信できません。%1$@以下にトリミングしてください。";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "送信するメディアを選択します";
@@ -515,13 +515,13 @@
 "ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "メディアの画質";
 
 /* Accessibility label for the button that mutes a video being sent. */
-"ATTACHMENT_TOOL_BUTTON_MUTE_ACCESSIBILITY_LABEL" = "Mute video";
+"ATTACHMENT_TOOL_BUTTON_MUTE_ACCESSIBILITY_LABEL" = "動画をミュート";
 
 /* Accessibility label for the 'pen' dialog. */
 "ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "メディアに書き込む";
 
 /* Accessibility label for the button that unmutes a video being sent. */
-"ATTACHMENT_TOOL_BUTTON_UNMUTE_ACCESSIBILITY_LABEL" = "Unmute video";
+"ATTACHMENT_TOOL_BUTTON_UNMUTE_ACCESSIBILITY_LABEL" = "動画のミュートを解除";
 
 /* Accessibility label for the 'view one' dialog. */
 "ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "一度きりの表示";
@@ -2072,55 +2072,55 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "自動で色を壁紙に合わせます";
 
 /* Name of the default chat folder, which shows every chat. */
-"CHAT_FOLDERS_ALL_CHATS" = "All Chats";
+"CHAT_FOLDERS_ALL_CHATS" = "すべてのチャット";
 
 /* Action that deletes a chat folder. */
-"CHAT_FOLDERS_DELETE_FOLDER" = "Delete Folder";
+"CHAT_FOLDERS_DELETE_FOLDER" = "フォルダを消去";
 
 /* Title of the confirmation shown before deleting a chat folder. */
-"CHAT_FOLDERS_DELETE_FOLDER_CONFIRMATION_TITLE" = "Delete this chat folder?";
+"CHAT_FOLDERS_DELETE_FOLDER_CONFIRMATION_TITLE" = "このチャットフォルダを消去しますか？";
 
 /* Button in chat folder settings to add a suggested chat folder. */
-"CHAT_FOLDERS_SETTINGS_ADD_SUGGESTED_FOLDER" = "Add";
+"CHAT_FOLDERS_SETTINGS_ADD_SUGGESTED_FOLDER" = "追加";
 
 /* Button in chat folder settings to create a new chat folder. */
-"CHAT_FOLDERS_SETTINGS_CREATE_FOLDER" = "Create a Folder";
+"CHAT_FOLDERS_SETTINGS_CREATE_FOLDER" = "フォルダを作成";
 
 /* Description at the top of the chat folders settings screen. */
-"CHAT_FOLDERS_SETTINGS_DESCRIPTION" = "Organize your chats into folders and quickly switch between them on your chat list.";
+"CHAT_FOLDERS_SETTINGS_DESCRIPTION" = "チャットをフォルダに整理し、チャットリストですばやく切り替えることができます。";
 
 /* Toast shown after adding a suggested chat folder. Embeds {{ folder name }}. */
-"CHAT_FOLDERS_SETTINGS_FOLDER_ADDED_TOAST_FORMAT" = "%1$@ folder added";
+"CHAT_FOLDERS_SETTINGS_FOLDER_ADDED_TOAST_FORMAT" = "「%1$@」のフォルダが追加されました";
 
 /* Header for the list of chat folders in chat folder settings. */
-"CHAT_FOLDERS_SETTINGS_FOLDERS_HEADER" = "Folders";
+"CHAT_FOLDERS_SETTINGS_FOLDERS_HEADER" = "フォルダ";
 
 /* Header for the list of suggested chat folders in chat folder settings. */
-"CHAT_FOLDERS_SETTINGS_SUGGESTED_HEADER" = "Suggested Folders";
+"CHAT_FOLDERS_SETTINGS_SUGGESTED_HEADER" = "おすすめのフォルダ";
 
 /* Title for the chat folders settings screen. */
-"CHAT_FOLDERS_SETTINGS_TITLE" = "Chat Folders";
+"CHAT_FOLDERS_SETTINGS_TITLE" = "チャットフォルダ";
 
 /* Describes the suggested chat folder that shows group chats. */
-"CHAT_FOLDERS_SUGGESTED_GROUPS_DESCRIPTION" = "Only messages from group chats";
+"CHAT_FOLDERS_SUGGESTED_GROUPS_DESCRIPTION" = "グループチャットのメッセージのみ";
 
 /* Name of the suggested chat folder that shows group chats. */
-"CHAT_FOLDERS_SUGGESTED_GROUPS_NAME" = "Groups";
+"CHAT_FOLDERS_SUGGESTED_GROUPS_NAME" = "グループ";
 
 /* Describes the suggested chat folder that shows 1:1 chats. */
-"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_DESCRIPTION" = "Only messages from direct chats";
+"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_DESCRIPTION" = "1対1のチャットのメッセージのみ";
 
 /* Name of the suggested chat folder that shows 1:1 chats. */
-"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_NAME" = "1:1 Chats";
+"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_NAME" = "1対1のチャット";
 
 /* Describes the suggested chat folder that shows unread chats. */
-"CHAT_FOLDERS_SUGGESTED_UNREAD_DESCRIPTION" = "Unread messages from all chats";
+"CHAT_FOLDERS_SUGGESTED_UNREAD_DESCRIPTION" = "すべてのチャットの未読メッセージ";
 
 /* Name of the suggested chat folder that shows unread chats. */
-"CHAT_FOLDERS_SUGGESTED_UNREAD_NAME" = "Unread";
+"CHAT_FOLDERS_SUGGESTED_UNREAD_NAME" = "未読にする";
 
 /* Name shown for a chat folder whose name is empty. */
-"CHAT_FOLDERS_UNNAMED_FOLDER" = "Unnamed Folder";
+"CHAT_FOLDERS_UNNAMED_FOLDER" = "名前のないフォルダ";
 
 /* Message shown in an action sheet when the user tries to cancel a backup. */
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "キャンセルしても、バックアップは消去されません。バックアップの設定からいつでも再開できます。";
@@ -3194,10 +3194,10 @@
 "DELETED_BY_ADMIN" = "管理者の%1$@がこのメッセージを消去しました";
 
 /* Title for a button in a toast shown after the user deletes messages for themselves only. */
-"DELETED_FOR_ME_TOAST_DELETE_FOR_EVERYONE_BUTTON_TITLE" = "Delete for Everyone";
+"DELETED_FOR_ME_TOAST_DELETE_FOR_EVERYONE_BUTTON_TITLE" = "全員に対して消去";
 
 /* Text for a toast shown after the user deletes messages for themselves only. */
-"DELETED_FOR_ME_TOAST_TEXT" = "Deleted for me.";
+"DELETED_FOR_ME_TOAST_TEXT" = "自分の分だけ消去しました。";
 
 /* Text indicating the message was remotely deleted by its author. Embeds {{ author name }} */
 "DELETED_THIS_MESSAGE" = "%1$@がこのメッセージを消去しました";
@@ -5120,7 +5120,7 @@
 "HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY" = "バックアップサブスクリプションが見つかりません";
 
 /* Title for the 'donate' action in the context menu of the settings button on home view tabs. */
-"HOME_VIEW_TITLE_DONATE" = "Donate";
+"HOME_VIEW_TITLE_DONATE" = "寄付";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "バックアップできませんでした";
@@ -6812,10 +6812,10 @@
 "ONBOARDING_SPLASH_TITLE" = "あなたにプライバシーを。\nすべてのメッセージで自分らしく。";
 
 /* Description for the screen asking the user to enter the 6-digit code from their authenticator app during registration. */
-"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_BODY" = "To continue, enter the 6-digit code from your authenticator app.";
+"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_BODY" = "続けるには、認証アプリに表示された6桁のコードを入力してください。";
 
 /* Accessibility label for the field where the user enters the code from their authenticator app */
-"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_FIELD_LABEL" = "Authenticator app code";
+"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_FIELD_LABEL" = "認証アプリのコード";
 
 /* Subtitle for action to verify with an authenticator as a 2fa method. */
 "ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_BODY" = "認証アプリに生成されたワンタイムコードを入力してください。";
@@ -9290,7 +9290,7 @@
 "SETTINGS_CHATS" = "チャット";
 
 /* Footer for the chat folders row in chats settings. */
-"SETTINGS_CHATS_CHAT_FOLDERS_FOOTER" = "Create folders for different sets of chats and quickly switch between them.";
+"SETTINGS_CHATS_CHAT_FOLDERS_FOOTER" = "各チャットごとにフォルダを作成して素早く切り替えられます。";
 
 /* Title for a button in Chats settings that starts exporting the user's chat history. */
 "SETTINGS_CHATS_EXPORT_BUTTON" = "チャットをエクスポート";
@@ -10433,7 +10433,7 @@
 "STICKER_BUTTON_REMOVE_FAVORITES" = "お気に入りから削除";
 
 /* Title for a button to remove a sticker from recents */
-"STICKER_BUTTON_REMOVE_FROM_RECENTS" = "Remove from Recents";
+"STICKER_BUTTON_REMOVE_FROM_RECENTS" = "最近使用したものから削除";
 
 /* Title for a button to view a sticker pack */
 "STICKER_BUTTON_VIEW_PACK" = "パック内容を表示する";
@@ -10454,19 +10454,19 @@
 "STICKER_CONFIRM_REMOVE_BUTTON" = "削除";
 
 /* Label for the button to clear all sticker recents */
-"STICKER_KEYBOARD_BUTTON_CLEAR_RECENTS" = "Clear Recents";
+"STICKER_KEYBOARD_BUTTON_CLEAR_RECENTS" = "最近の履歴を消去";
 
 /* Accessibility label for the button in the sticker keyboard that opens the screen for managing sticker packs. */
-"STICKER_KEYBOARD_MANAGE_BUTTON_ACCESSIBILITY_LABEL" = "Manage stickers";
+"STICKER_KEYBOARD_MANAGE_BUTTON_ACCESSIBILITY_LABEL" = "ステッカーの管理";
 
 /* Toast shown when user tries to tap Favorites in sticker keyboard but has none */
 "STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "ステッカーを長押しするとお気に入りに追加されます";
 
 /* Text displayed in the sticker keyboard when no sticker packs are installed. */
-"STICKER_KEYBOARD_NO_PACKS" = "No sticker packs.\nAdd stickers to send to your friends.";
+"STICKER_KEYBOARD_NO_PACKS" = "ステッカーパックがありません。\n友達に送るステッカーを追加しましょう。";
 
 /* Button in the sticker keyboard, shown when no sticker packs are installed, that opens the sticker pack manager. */
-"STICKER_KEYBOARD_NO_PACKS_ADD_BUTTON" = "Add Stickers";
+"STICKER_KEYBOARD_NO_PACKS_ADD_BUTTON" = "ステッカーを追加";
 
 /* Section header for favorites in the sticker keyboard */
 "STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "お気に入り";
@@ -10478,10 +10478,10 @@
 "STICKER_MESSAGE_PREVIEW" = "ステッカーメッセージ";
 
 /* Button to confirm a user wants to clear recent stickers */
-"STICKER_PACK_CLEAR_RECENTS_BUTTON" = "Clear";
+"STICKER_PACK_CLEAR_RECENTS_BUTTON" = "消去";
 
 /* Message for a sheet asking the user to confirm they want to clear recently used stickers */
-"STICKER_PACK_CONFIRM_CLEAR_RECENTS_MESSAGE" = "Clear recently used stickers?";
+"STICKER_PACK_CONFIRM_CLEAR_RECENTS_MESSAGE" = "最近使用したステッカーをクリアしますか？";
 
 /* Button to confirm a user wants to remove a sticker pack */
 "STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "削除";
@@ -10511,13 +10511,13 @@
 "STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Signalで送信";
 
 /* Message for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
-"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "You can't send it or add it to Favorites again unless you have the pack installed, a link, or a sticker message";
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "パックをインストールしているか、リンクまたはステッカーメッセージがないと、送信したり再度お気に入りに追加したりすることはできません";
 
 /* Title for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
 "STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "お気に入りから削除しますか？";
 
 /* Title for a button to remove a sticker pack */
-"STICKER_REMOVE_PACK_BUTTON" = "Remove";
+"STICKER_REMOVE_PACK_BUTTON" = "削除";
 
 /* Text shown in a toast confirming a sticker was removed from favorites */
 "STICKER_REMOVED_FROM_FAVORITES_TOAST" = "お気に入りからステッカーを削除しました";
@@ -10532,13 +10532,13 @@
 "STICKERS_INSTALL_BUTTON" = "ステッカーを追加";
 
 /* Button used to deselect all selected sticker packs in selection mode */
-"STICKERS_MANAGE_DESELECT_ALL" = "Deselect All";
+"STICKERS_MANAGE_DESELECT_ALL" = "選択をすべて解除";
 
 /* Enables selection mode for sticker pack */
-"STICKERS_MANAGE_EDIT" = "Edit";
+"STICKERS_MANAGE_EDIT" = "編集";
 
 /* Label for a button to uninstall all selected sticker packs */
-"STICKERS_MANAGE_REMOVE" = "Remove";
+"STICKERS_MANAGE_REMOVE" = "削除";
 
 /* Placeholder text for the search bar in the sticker pack management. */
 "STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "ステッカーを検索";
@@ -10547,10 +10547,10 @@
 "STICKERS_MANAGE_SEARCH_NO_RESULTS" = "「%1$@」の検索結果はありません";
 
 /* Button used to select all sticker packs in selection mode */
-"STICKERS_MANAGE_SELECT_ALL" = "Select All";
+"STICKERS_MANAGE_SELECT_ALL" = "すべて選択";
 
 /* Title for the selection mode of sticker packs. */
-"STICKERS_MANAGE_SELECT_ITEMS" = "Select Items";
+"STICKERS_MANAGE_SELECT_ITEMS" = "パックを選択";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signalアーティストシリーズ";
@@ -10571,7 +10571,7 @@
 "STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "削除";
 
 /* The title for a context menu item that selects a sticker pack for selection mode. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SELECT" = "Select";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SELECT" = "選択";
 
 /* The title for a context menu item that sends the sticker pack link to someone else. */
 "STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "送信";

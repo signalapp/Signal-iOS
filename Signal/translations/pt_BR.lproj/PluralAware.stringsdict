@@ -344,9 +344,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat</string>
+			<string>%1$d conversa</string>
 			<key>other</key>
-			<string>%1$d Chats</string>
+			<string>%1$d conversas</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
@@ -360,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Type</string>
+			<string>%1$d tipo de conversa</string>
 			<key>other</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d tipos de conversa</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Excluded</string>
+			<string>%1$d conversa apagada</string>
 			<key>other</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d conversas apagadas</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
@@ -1655,9 +1655,9 @@ Tente novamente em %1$d horas.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This will remove the sticker pack. You can&apos;t add it again without a link or sticker message.</string>
+			<string>Isso removerá o pacote de figurinhas. Você não poderá adicioná-lo novamente sem um link ou uma mensagem com uma figurinha.</string>
 			<key>other</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Isso removerá os pacotes de figurinhas. Você não poderá adicioná-los novamente sem um link ou uma mensagem com uma figurinha.</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
@@ -1671,9 +1671,9 @@ Tente novamente em %1$d horas.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Remove sticker pack?</string>
+			<string>Remover %1$d pacote de figurinhas?</string>
 			<key>other</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Remover %1$d pacotes de figurinhas?</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
@@ -1687,9 +1687,9 @@ Tente novamente em %1$d horas.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sticker pack removed</string>
+			<string>Pacote de figurinhas removido</string>
 			<key>other</key>
-			<string>Sticker packs removed</string>
+			<string>Pacotes de figurinhas removidos</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -1719,9 +1719,9 @@ Tente novamente em %1$d horas.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Selected</string>
+			<string>%1$d selecionado</string>
 			<key>other</key>
-			<string>%1$d Selected</string>
+			<string>%1$d selecionados</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

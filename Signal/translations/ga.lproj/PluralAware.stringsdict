@@ -470,15 +470,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat</string>
+			<string>%1$d chomhrá</string>
 			<key>two</key>
-			<string>%1$d Chats</string>
+			<string>%1$d chomhrá</string>
 			<key>few</key>
-			<string>%1$d Chats</string>
+			<string>%1$d chomhrá</string>
 			<key>many</key>
-			<string>%1$d Chats</string>
+			<string>%1$d gcomhrá</string>
 			<key>other</key>
-			<string>%1$d Chats</string>
+			<string>%1$d comhrá</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
@@ -492,15 +492,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Type</string>
+			<string>%1$d chineál comhrá</string>
 			<key>two</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d chineál comhráite</string>
 			<key>few</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d chineál comhráite</string>
 			<key>many</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d gcineál comhráite</string>
 			<key>other</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d cineál comhráite</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
@@ -514,15 +514,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Excluded</string>
+			<string>%1$d chomhrá as an áireamh</string>
 			<key>two</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d chomhrá as an áireamh</string>
 			<key>few</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d chomhrá as an áireamh</string>
 			<key>many</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d gcomhrá as an áireamh</string>
 			<key>other</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d comhrá as an áireamh</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
@@ -2279,15 +2279,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This will remove the sticker pack. You can&apos;t add it again without a link or sticker message.</string>
+			<string>Bainfear an beart greamán leis sin. Ní bheidh tú in ann é a chur leis arís gan nasc nó teachtaireacht ghreamáin.</string>
 			<key>two</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Bainfear an dá bheart greamán leis sin. Ní bheidh tú in ann iad a chur leis arís gan nasc nó teachtaireacht ghreamáin.</string>
 			<key>few</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Bainfear na bearta greamán leis sin. Ní bheidh tú in ann iad a chur leis arís gan nasc nó teachtaireacht ghreamáin.</string>
 			<key>many</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Bainfear na bearta greamán leis sin. Ní bheidh tú in ann iad a chur leis arís gan nasc nó teachtaireacht ghreamáin.</string>
 			<key>other</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Bainfear na bearta greamán leis sin. Ní bheidh tú in ann iad a chur leis arís gan nasc nó teachtaireacht ghreamáin.</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
@@ -2301,15 +2301,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Remove sticker pack?</string>
+			<string>Bain an beart greamán?</string>
 			<key>two</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Bain %1$d bheart greamán?</string>
 			<key>few</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Bain %1$d bheart greamán?</string>
 			<key>many</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Bain %1$d mbeart greamán?</string>
 			<key>other</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Bain %1$d beart greamán?</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
@@ -2323,15 +2323,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sticker pack removed</string>
+			<string>Beart greamán bainte</string>
 			<key>two</key>
-			<string>Sticker packs removed</string>
+			<string>Bearta greamán bainte</string>
 			<key>few</key>
-			<string>Sticker packs removed</string>
+			<string>Bearta greamán bainte</string>
 			<key>many</key>
-			<string>Sticker packs removed</string>
+			<string>Bearta greamán bainte</string>
 			<key>other</key>
-			<string>Sticker packs removed</string>
+			<string>Bearta greamán bainte</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -2367,15 +2367,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Selected</string>
+			<string>%1$d roghnaithe</string>
 			<key>two</key>
-			<string>%1$d Selected</string>
+			<string>%1$d roghnaithe</string>
 			<key>few</key>
-			<string>%1$d Selected</string>
+			<string>%1$d roghnaithe</string>
 			<key>many</key>
-			<string>%1$d Selected</string>
+			<string>%1$d roghnaithe</string>
 			<key>other</key>
-			<string>%1$d Selected</string>
+			<string>%1$d roghnaithe</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
