@@ -755,7 +755,7 @@ extension AppSetup.GlobalsContinuation {
             validator: attachmentContentValidator,
         )
 
-        let quotedReplyManager = QuotedReplyManagerImpl(
+        let quotedReplyManager = QuotedReplyManager(
             attachmentStore: attachmentStore,
             attachmentValidator: attachmentContentValidator,
             db: db,

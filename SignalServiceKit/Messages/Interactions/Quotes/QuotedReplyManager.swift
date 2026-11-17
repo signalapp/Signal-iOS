@@ -13,47 +13,7 @@ public struct ValidatedQuotedReply {
 
 // MARK: -
 
-public protocol QuotedReplyManager {
-
-    func validateAndBuildQuotedReply(
-        from quoteProto: SSKProtoDataMessageQuote,
-        threadUniqueId: String,
-        tx: DBReadTransaction,
-    ) throws -> ValidatedQuotedReply
-
-    func buildDraftQuotedReply(
-        originalMessage: TSMessage,
-        loadNormalizedImage: (CGImageSource, CGFloat) -> CGImage?,
-        tx: DBReadTransaction,
-    ) -> DraftQuotedReplyModel?
-
-    func buildDraftQuotedReplyForEditing(
-        quotedReplyMessage: TSMessage,
-        quotedReply: TSQuotedMessage,
-        originalMessage: TSMessage?,
-        loadNormalizedImage: (CGImageSource, CGFloat) -> CGImage?,
-        tx: DBReadTransaction,
-    ) -> DraftQuotedReplyModel
-
-    func prepareDraftForSending(
-        _ draft: DraftQuotedReplyModel,
-    ) async throws -> DraftQuotedReplyModel.ForSending
-
-    func prepareQuotedReplyForSending(
-        draft: DraftQuotedReplyModel.ForSending,
-        tx: DBReadTransaction,
-    ) -> ValidatedQuotedReply
-
-    func buildProtoForSending(
-        _ quote: TSQuotedMessage,
-        outgoingMessage: TSOutgoingMessage,
-        tx: DBReadTransaction,
-    ) throws -> SSKProtoDataMessageQuote
-}
-
-// MARK: -
-
-class QuotedReplyManagerImpl: QuotedReplyManager {
+public struct QuotedReplyManager {
 
     private let attachmentStore: AttachmentStore
     private let attachmentValidator: AttachmentContentValidator
@@ -72,7 +32,7 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
         self.tsAccountManager = tsAccountManager
     }
 
-    func validateAndBuildQuotedReply(
+    public func validateAndBuildQuotedReply(
         from quoteProto: SSKProtoDataMessageQuote,
         threadUniqueId: String,
         tx: DBReadTransaction,
@@ -394,7 +354,7 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
 
     // MARK: - Creating draft
 
-    func buildDraftQuotedReply(
+    public func buildDraftQuotedReply(
         originalMessage: TSMessage,
         loadNormalizedImage: (CGImageSource, CGFloat) -> CGImage?,
         tx: DBReadTransaction,
@@ -584,7 +544,7 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
         return createTextDraftReplyOrNil()
     }
 
-    func buildDraftQuotedReplyForEditing(
+    public func buildDraftQuotedReplyForEditing(
         quotedReplyMessage: TSMessage,
         quotedReply: TSQuotedMessage,
         originalMessage: TSMessage?,
@@ -662,7 +622,7 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
         }
     }
 
-    func prepareDraftForSending(
+    public func prepareDraftForSending(
         _ draft: DraftQuotedReplyModel,
     ) async throws -> DraftQuotedReplyModel.ForSending {
         switch draft.content {
@@ -762,7 +722,7 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
         )
     }
 
-    func prepareQuotedReplyForSending(
+    public func prepareQuotedReplyForSending(
         draft: DraftQuotedReplyModel.ForSending,
         tx: DBReadTransaction,
     ) -> ValidatedQuotedReply {
@@ -855,7 +815,7 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
 
     // MARK: - Outgoing proto
 
-    func buildProtoForSending(
+    public func buildProtoForSending(
         _ quote: TSQuotedMessage,
         outgoingMessage: TSOutgoingMessage,
         tx: DBReadTransaction,
