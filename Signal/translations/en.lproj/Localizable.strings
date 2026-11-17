@@ -586,6 +586,36 @@
 /* Title for the screen where the user names an authenticator app for two-factor authentication. */
 "AUTHENTICATOR_APP_NAME_TITLE" = "Choose a Name";
 
+/* Description for step 2 of authenticator app setup */
+"AUTHENTICATOR_APP_SETUP_COPY_KEY_DESCRIPTION" = "Or you can copy this key to manually set it up.";
+
+/* Body for the screen that explains how to setup an authenticator app. */
+"AUTHENTICATOR_APP_SETUP_DESCRIPTION" = "Follow these steps to set up your authenticator app.";
+
+/* Button in step 2 of setup that opens authenticator app */
+"AUTHENTICATOR_APP_SETUP_OPEN_BUTTON" = "Open";
+
+/* Shown when the user taps to open the authenticator, but no installed app can handle it. */
+"AUTHENTICATOR_APP_SETUP_OPEN_FAILED" = "No authenticator app was found. Install one, or copy the setup key into your authenticator app instead.";
+
+/* Instructions for step 1 of authenticator setup. Embeds {{AUTHENTICATOR_APP_SETUP_STEP_1_LINK}}, which links to a list of authenticator apps. */
+"AUTHENTICATOR_APP_SETUP_STEP_1_BODY_FORMAT" = "Install a trusted %@ on your device.";
+
+/* Linked text in step 1 of authenticator setup, embedded in AUTHENTICATOR_APP_SETUP_STEP_1_BODY_FORMAT. */
+"AUTHENTICATOR_APP_SETUP_STEP_1_LINK" = "authenticator app";
+
+/* Instructions for step 2 of authenticator app setup. */
+"AUTHENTICATOR_APP_SETUP_STEP_2_BODY" = "Open your authenticator app by tapping the button below to add your Signal account.";
+
+/* Instructions for step 3 of authenticator app setup. */
+"AUTHENTICATOR_APP_SETUP_STEP_3_BODY" = "Copy the 6 digit code generated in the authenticator app and return here to continue.";
+
+/* Title for each step of authenticator app setup. Embeds {{step number}}. */
+"AUTHENTICATOR_APP_SETUP_STEP_TITLE_FORMAT" = "Step %@";
+
+/* Title for the screen that explains how to setup an authenticator app. */
+"AUTHENTICATOR_APP_SETUP_TITLE" = "Authenticator App";
+
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
 
