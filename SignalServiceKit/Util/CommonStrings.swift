@@ -293,6 +293,10 @@ public enum CommonStrings {
         OWSLocalizedString("UNKNOWN_USER", comment: "Label indicating an unknown user.")
     }
 
+    public static var unknownValue: String {
+        OWSLocalizedString("UNKNOWN_VALUE", comment: "Indicates an unknown or unrecognizable value.")
+    }
+
     public static var you: String {
         OWSLocalizedString("YOU", comment: "Second person pronoun to represent the local user.")
     }

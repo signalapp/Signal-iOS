@@ -3,12 +3,30 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
 class AccountSettingsViewController: OWSTableViewController2 {
 
+    private enum MfaLoadState {
+        case loading
+        case loaded([ConfirmedMfaKey])
+        case failed
+    }
+
+    private var mfaState: MfaLoadState = .loading
+    private var loadTask: Task<Void, Never>?
     private let context: ViewControllerContext
+
+    private var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
+    private var serviceProvider: any ServiceProvider { DependenciesBridge.shared.chatConnectionManager }
+
+    private static let twoFactorDateAddedFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.setLocalizedDateFormatFromTemplate("MMddyyyy")
+        return formatter
+    }()
 
     override init() {
         // TODO[ViewContextPiping]
@@ -32,20 +50,28 @@ class AccountSettingsViewController: OWSTableViewController2 {
 
         updateTableContents()
         tableView.layoutIfNeeded()
+
+        let tsRegistrationState = tsAccountManager.registrationStateWithMaybeSneakyTransaction
+        if
+            let registeredState = try? tsRegistrationState.registeredState(),
+            registeredState.isPrimary,
+            !registeredState.localIdentifiers.hasPhoneNumber
+        {
+            loadMfaState()
+        }
     }
 
     func updateTableContents() {
         let contents = OWSTableContents()
 
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let tsRegistrationState = tsAccountManager.registrationStateWithMaybeSneakyTransaction
-
         if
             let registeredState = try? tsRegistrationState.registeredState(),
             registeredState.isPrimary,
             !registeredState.localIdentifiers.hasPhoneNumber
         {
             contents.add(signalLoginSection(registeredState: registeredState))
+            contents.add(twoFactorAuthSection())
         }
 
         // Show the change pin and reglock sections
@@ -330,6 +356,200 @@ class AccountSettingsViewController: OWSTableViewController2 {
         return cell
     }
 
+    private func twoFactorAuthSection() -> OWSTableSection {
+        let section = OWSTableSection()
+        section.headerTitle = OWSLocalizedString(
+            "SETTINGS_TWO_FACTOR_METHODS_TITLE",
+            comment: "Title for the 'Two-Factor Authentication' section of the account settings.",
+        )
+        section.footerAttributedTitle = NSAttributedString.composed(of: [
+            OWSLocalizedString(
+                "SETTINGS_TWO_FACTOR_METHODS_FOOTER",
+                comment: "Footer for the 'Two-Factor Authentication' section of the account settings.",
+            ),
+            " ",
+            // TODO[#less]: Link to a two-factor authentication support article once there is one.
+            CommonStrings.learnMore.styled(with: .link(URL.Support.generic)),
+        ])
+        .styled(with: Self.defaultFooterTextStyle)
+
+        section.add(OWSTableItem(customCellBlock: { [weak self] in
+            guard let self else { return UITableViewCell() }
+            return self.twoFactorSetUpCell()
+        }))
+
+        switch mfaState {
+        case .loading, .failed: // TODO[#less]: Add error screen for failed load
+            break
+        case .loaded(let methods):
+            for method in methods {
+                section.add(OWSTableItem(customCellBlock: { [weak self] in
+                    guard let self else { return UITableViewCell() }
+                    guard let cell = self.twoFactorMethodCell(method) else {
+                        Logger.error("Unable to build MFA cell")
+                        return UITableViewCell()
+                    }
+                    return cell
+                }))
+            }
+        }
+
+        return section
+    }
+
+    private func loadMfaState() {
+        loadTask?.cancel()
+        loadTask = Task { [weak self] in
+            guard let self else { return }
+            let newState: MfaLoadState
+            do {
+                let methods = try await self.serviceProvider.withAuthService(.accounts) {
+                    try await $0.listMfaKeys(svrKey: self.getAccountEntropyPool().getMasterKey().asSvrKey)
+                }
+                newState = .loaded(methods)
+            } catch {
+                newState = .failed
+            }
+            if !Task.isCancelled {
+                self.mfaState = newState
+                self.updateTableContents()
+            }
+        }
+    }
+
+    private func twoFactorSetUpCell() -> UITableViewCell {
+        let title = OWSLocalizedString(
+            "SETTINGS_TWO_FACTOR_METHODS_SET_UP",
+            comment: "Row Label for the 'Two-Factor Authentication' section that adds a new two-factor authentication method.",
+        )
+        let cell = OWSTableItem.buildImageCell(
+            image: .plus,
+            tintColor: .Signal.label,
+            itemName: title,
+        )
+        cell.selectionStyle = .none
+
+        // The whole row opens the menu of methods to set up.
+        let menuButton = UIButton(type: .custom)
+        menuButton.menu = UIMenu(children: [
+            UIAction(
+                title: OWSLocalizedString(
+                    "SETTINGS_TWO_FACTOR_METHODS_AUTHENTICATOR_APP",
+                    comment: "Menu option to set up an authenticator app for two-factor authentication.",
+                ),
+                subtitle: OWSLocalizedString(
+                    "SETTINGS_TWO_FACTOR_METHODS_AUTHENTICATOR_APP_SUBTITLE",
+                    comment: "Subtitle for the menu option to set up an authenticator app for two-factor authentication.",
+                ),
+                image: .devicePhone,
+            ) { [weak self] _ in
+                self?.didSelectSetUpAuthenticatorApp()
+            },
+            UIAction(
+                title: OWSLocalizedString(
+                    "SETTINGS_TWO_FACTOR_METHODS_WEBAUTHN",
+                    comment: "Menu option to set up webauthn for two-factor authentication.",
+                ),
+                subtitle: OWSLocalizedString(
+                    "SETTINGS_TWO_FACTOR_METHODS_WEBAUTHN_SUBTITLE",
+                    comment: "Subtitle for the menu option to set up webauthn for two-factor authentication.",
+                ),
+                image: .key,
+            ) { [weak self] _ in
+                self?.didSelectSetUpWebAuthn()
+            },
+        ])
+        menuButton.showsMenuAsPrimaryAction = true
+        menuButton.accessibilityLabel = title
+        cell.contentView.addSubview(menuButton)
+        menuButton.autoPinEdgesToSuperviewEdges()
+
+        return cell
+    }
+
+    private func twoFactorMethodCell(_ method: ConfirmedMfaKey) -> UITableViewCell? {
+        let icon: UIImage
+        let kindLabel: String
+        switch method.kind {
+        case .totp:
+            icon = .devicePhone
+            kindLabel = OWSLocalizedString(
+                "SETTINGS_TWO_FACTOR_METHODS_KIND_AUTHENTICATOR_APP",
+                comment: "Describes a two-factor authentication method that is an authenticator app.",
+            )
+        case .webAuthn:
+            icon = .key
+            kindLabel = OWSLocalizedString(
+                "SETTINGS_TWO_FACTOR_METHODS_KIND_WEBAUTHN",
+                comment: "Describes a webauthn two-factor authentication method.",
+            )
+        case .unknown:
+            return nil
+        }
+        var addedLabel: String?
+        if let createDate = method.metadata?.createdAt {
+            addedLabel = String.nonPluralLocalizedStringWithFormat(
+                OWSLocalizedString(
+                    "SETTINGS_TWO_FACTOR_METHODS_ADDED_FORMAT",
+                    comment: "Shows when a two-factor authentication method was added. Embeds {{date}}.",
+                ),
+                Self.twoFactorDateAddedFormatter.string(from: createDate),
+            )
+        }
+        let subtitle = addedLabel.map {
+            String.nonPluralLocalizedStringWithFormat(
+                OWSLocalizedString(
+                    "JOINED_WITH_DOT",
+                    comment: "Two strings, joined by a dot. Embeds {first} and {second}, which are on opposite sides of the dot",
+                ),
+                arguments: [kindLabel, $0],
+            )
+        } ?? kindLabel
+
+        let moreButton = UIButton(type: .system)
+        moreButton.setImage(.more, for: .normal)
+        moreButton.tintColor = .Signal.label
+        moreButton.accessibilityLabel = OWSLocalizedString(
+            "SETTINGS_TWO_FACTOR_METHODS_MORE_OPTIONS",
+            comment: "Accessibility label for the button for renaming a two-factor authentication method.",
+        )
+        moreButton.menu = UIMenu(children: [
+            UIAction(
+                title: OWSLocalizedString(
+                    "SETTINGS_TWO_FACTOR_METHODS_RENAME",
+                    comment: "Menu option to rename a two-factor authentication method.",
+                ),
+                image: .edit,
+            ) { [weak self] _ in
+                guard let self else { return }
+                self.showRenameTwoFactorMethod(accountEntropyPool: self.getAccountEntropyPool(), method: method)
+            },
+            UIAction(
+                title: OWSLocalizedString(
+                    "SETTINGS_TWO_FACTOR_METHODS_REMOVE",
+                    comment: "Menu option to remove a two-factor authentication method.",
+                ),
+                image: .minusCircle,
+                attributes: .destructive,
+            ) { [weak self] _ in
+                self?.showRemoveTwoFactorMethod(method)
+            },
+        ])
+        moreButton.showsMenuAsPrimaryAction = true
+        moreButton.setContentHuggingHigh()
+        moreButton.setCompressionResistanceHigh()
+
+        let cell = OWSTableItem.buildImageCell(
+            image: icon,
+            tintColor: .Signal.label,
+            itemName: method.metadata?.name ?? CommonStrings.unknownValue,
+            subtitle: subtitle,
+            accessoryContentView: moreButton,
+        )
+        cell.selectionStyle = .none
+        return cell
+    }
+
     private func linkedDeviceCardCell() -> UITableViewCell {
         let cell = OWSTableItem.newCell()
         cell.selectionStyle = .none
@@ -493,6 +713,102 @@ class AccountSettingsViewController: OWSTableViewController2 {
         let navController = RegistrationNavigationController.withCoordinator(coordinator)
         let window: UIWindow = CurrentAppContext().mainWindow!
         window.rootViewController = navController
+    }
+
+    // MARK: - Two-Factor Authentication
+
+    private func didSelectSetUpAuthenticatorApp() {
+        // TODO: Start authenticator app setup.
+    }
+
+    private func didSelectSetUpWebAuthn() {
+        // TODO: Start webAuthn setup.
+    }
+
+    private func showRenameTwoFactorMethod(
+        accountEntropyPool: SignalServiceKit.AccountEntropyPool,
+        method: ConfirmedMfaKey,
+    ) {
+        let alert = UIAlertController(
+            title: OWSLocalizedString(
+                "SETTINGS_TWO_FACTOR_METHODS_RENAME_TITLE",
+                comment: "Title for the alert to rename a two-factor authentication method.",
+            ),
+            message: nil,
+            preferredStyle: .alert,
+        )
+        alert.addTextField { textField in
+            textField.text = method.metadata?.name
+            textField.placeholder = OWSLocalizedString(
+                "SETTINGS_TWO_FACTOR_METHODS_NAME_PLACEHOLDER",
+                comment: "Placeholder for the field where the user names a two-factor authentication method.",
+            )
+            textField.autocapitalizationType = .words
+            textField.clearButtonMode = .whileEditing
+        }
+        alert.addAction(UIAlertAction(title: CommonStrings.cancelButton, style: .cancel))
+        alert.addAction(UIAlertAction(title: CommonStrings.saveButton, style: .default) { [weak self, weak alert] _ in
+            guard let self else { return }
+            let name = alert?.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            guard !name.isEmpty, name != method.metadata?.name else { return }
+            Task {
+                do {
+                    try await self.serviceProvider.withAuthService(.accounts) {
+                        try await $0.setMfaKeyMetadata(
+                            for: method.id,
+                            metadata: MfaMetadata(
+                                name: name,
+                                createdAt: method.metadata?.createdAt ?? Date(),
+                            ),
+                            svrKey: accountEntropyPool.getMasterKey().asSvrKey,
+                        )
+                    }
+                    self.loadMfaState()
+                } catch {
+                    // TODO[#less]: Report the error to the user
+                    Logger.error("Failed to rename MFA method: \(error)")
+                }
+            }
+        })
+        present(alert, animated: true)
+    }
+
+    private func showRemoveTwoFactorMethod(_ method: ConfirmedMfaKey) {
+        let actionSheet = ActionSheetController(
+            title: String.nonPluralLocalizedStringWithFormat(
+                OWSLocalizedString(
+                    "SETTINGS_TWO_FACTOR_METHODS_REMOVE_CONFIRMATION_TITLE_FORMAT",
+                    comment: "Title for the sheet confirming removal of a two-factor authentication method. Embeds {{the method's name}}.",
+                ),
+                method.metadata?.name ?? CommonStrings.unknownValue,
+            ),
+            message: OWSLocalizedString(
+                "SETTINGS_TWO_FACTOR_METHODS_REMOVE_CONFIRMATION_MESSAGE",
+                comment: "Message for the sheet confirming removal of a two-factor authentication method.",
+            ),
+        )
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "SETTINGS_TWO_FACTOR_METHODS_REMOVE",
+                comment: "Menu option to remove a two-factor authentication method.",
+            ),
+            style: .destructive,
+        ) { [weak self] _ in
+            Task { [weak self] in
+                guard let self else { return }
+                do {
+                    try await serviceProvider.withAuthService(.accounts) {
+                        try await $0.removeMfaKey(id: method.id)
+                    }
+                    self.loadMfaState()
+                } catch {
+                    Logger.error("Failed to remove MFA method: \(error)")
+                    // TODO[#less]: Report the error to the user
+                }
+            }
+        })
+        actionSheet.addAction(.cancel)
+        presentActionSheet(actionSheet)
     }
 
     // MARK: - PINs

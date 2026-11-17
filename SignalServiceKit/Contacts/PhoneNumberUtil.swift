@@ -230,10 +230,7 @@ public class PhoneNumberUtil: NSObject {
 
     /// Convert country code to country name.
     public static func countryName(fromCountryCode countryCode: String) -> String {
-        lazy var unknownValue = OWSLocalizedString(
-            "UNKNOWN_VALUE",
-            comment: "Indicates an unknown or unrecognizable value.",
-        )
+        lazy var unknownValue = CommonStrings.unknownValue
 
         if countryCode.isEmpty {
             return unknownValue
