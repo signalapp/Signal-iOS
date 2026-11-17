@@ -7,10 +7,10 @@ import GRDB
 
 struct QueuedBackupStickerPackDownload: Codable, FetchableRecord, MutablePersistableRecord {
 
-    typealias IDType = Int64
+    typealias RowId = RowIdType<QueuedBackupStickerPackDownload>
 
     /// Sqlite row id
-    private(set) var id: IDType?
+    private(set) var id: RowId?
 
     let packId: Data
     let packKey: Data
@@ -22,7 +22,7 @@ struct QueuedBackupStickerPackDownload: Codable, FetchableRecord, MutablePersist
     // MARK: MutablePersistableRecord
 
     mutating func didInsert(with rowID: Int64, for column: String?) {
-        self.id = rowID
+        self.id = RowId(rawValue: rowID)
     }
 
     enum CodingKeys: CodingKey {

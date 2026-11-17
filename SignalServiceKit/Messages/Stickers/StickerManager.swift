@@ -1657,7 +1657,7 @@ public class StickerManager {
 
     private struct StickerPackDownloadTaskRecord: TaskRecord {
         struct ID: Hashable {
-            let rowId: QueuedBackupStickerPackDownload.IDType
+            let rowId: QueuedBackupStickerPackDownload.RowId
             let packId: Data
             let packKey: Data
         }
