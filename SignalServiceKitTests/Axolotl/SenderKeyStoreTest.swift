@@ -72,7 +72,7 @@ struct SenderKeyStoreTest {
             )
             #expect(throws: ConstraintError.self) {
                 try store.upsertSentToRecord(
-                    senderKeyId: senderKey.id + 1,
+                    senderKeyId: .constantForTesting(senderKey.id.rawValue + 1),
                     recipientId: otherRecipient.id,
                     deviceId: .primary,
                     registrationId: 123,

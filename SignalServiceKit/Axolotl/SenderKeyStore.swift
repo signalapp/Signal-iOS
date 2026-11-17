@@ -10,7 +10,7 @@ import LibSignalClient
 /// A Sender Key, either for ourselves or somebody else.
 public struct SenderKeyRecord: Codable, FetchableRecord, PersistableRecord {
     public static let databaseTableName: String = "SenderKey"
-    typealias RowId = Int64
+    typealias RowId = RowIdType<SenderKeyRecord>
 
     let id: RowId
     let ownerRecipientId: SignalRecipient.RowId

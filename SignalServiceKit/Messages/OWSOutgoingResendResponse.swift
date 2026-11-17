@@ -12,7 +12,7 @@ final class OWSOutgoingResendResponse: TransientOutgoingMessage {
 
     required init?(coder: NSCoder) {
         self.derivedContentHint = (coder.decodeObject(of: NSNumber.self, forKey: "derivedContentHint")?.intValue).flatMap(SealedSenderContentHint.init(rawValue:)) ?? .default
-        self.senderKeyId = coder.containsValue(forKey: "senderKeyId") ? coder.decodeInt64(forKey: "senderKeyId") : nil
+        self.senderKeyId = coder.containsValue(forKey: "senderKeyId") ? SenderKeyRecord.RowId(rawValue: coder.decodeInt64(forKey: "senderKeyId")) : nil
         self.originalGroupId = coder.decodeObject(of: NSData.self, forKey: "originalGroupId") as Data?
         self.originalMessagePlaintext = coder.decodeObject(of: NSData.self, forKey: "originalMessagePlaintext") as Data?
         self.originalThreadId = coder.decodeObject(of: NSString.self, forKey: "originalThreadId") as String?
@@ -23,7 +23,7 @@ final class OWSOutgoingResendResponse: TransientOutgoingMessage {
         super.encode(with: coder)
         coder.encode(NSNumber(value: self.derivedContentHint.rawValue), forKey: "derivedContentHint")
         if let senderKeyId {
-            coder.encode(senderKeyId, forKey: "senderKeyId")
+            coder.encode(senderKeyId.rawValue, forKey: "senderKeyId")
         }
         if let originalGroupId {
             coder.encode(originalGroupId, forKey: "originalGroupId")
