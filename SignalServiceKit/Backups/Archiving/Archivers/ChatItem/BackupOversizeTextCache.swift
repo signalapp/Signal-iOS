@@ -32,13 +32,13 @@ struct BackupOversizeTextCache: Codable, FetchableRecord, MutablePersistableReco
     /// the Swift model object and at the SQLite level.
     static let maxTextLengthBytes = OWSMediaUtils.kMaxOversizeTextMessageReceiveSizeBytes
 
-    typealias IDType = Int64
+    typealias RowId = RowIdType<BackupOversizeTextCache>
 
-    private(set) var id: IDType?
+    private(set) var id: RowId?
     let attachmentRowId: Attachment.IDType
     let text: String
 
-    fileprivate init(id: IDType?, attachmentRowId: Attachment.IDType, text: String) {
+    fileprivate init(id: RowId?, attachmentRowId: Attachment.IDType, text: String) {
         self.id = id
         self.attachmentRowId = attachmentRowId
         self.text = text
@@ -51,7 +51,7 @@ struct BackupOversizeTextCache: Codable, FetchableRecord, MutablePersistableReco
     // MARK: MutablePersistableRecord
 
     mutating func didInsert(with rowID: Int64, for column: String?) {
-        self.id = rowID
+        self.id = RowId(rawValue: rowID)
     }
 
     // MARK: Codable
@@ -385,7 +385,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
     }
 
     @discardableResult
-    private func insert(attachmentId: Attachment.IDType, text: String, tx: DBWriteTransaction) -> BackupOversizeTextCache.IDType {
+    private func insert(attachmentId: Attachment.IDType, text: String, tx: DBWriteTransaction) -> BackupOversizeTextCache.RowId {
         var text = text
         if text.lengthOfBytes(using: .utf8) > BackupOversizeTextCache.maxTextLengthBytes {
             logger.error("Oversized backup text too long! Truncating...")
@@ -440,9 +440,9 @@ class BackupArchiveInlinedOversizeTextArchiver {
         if records.isEmpty {
             return true
         }
-        var attachmentIds = [BackupOversizeTextCache.IDType: Attachment.IDType]()
-        var messageBodies = [BackupOversizeTextCache.IDType: MessageBody]()
-        var attachmentKeys = [BackupOversizeTextCache.IDType: AttachmentKey]()
+        var attachmentIds = [BackupOversizeTextCache.RowId: Attachment.IDType]()
+        var messageBodies = [BackupOversizeTextCache.RowId: MessageBody]()
+        var attachmentKeys = [BackupOversizeTextCache.RowId: AttachmentKey]()
 
         db.read { tx in
             for record in records {
@@ -470,13 +470,13 @@ class BackupArchiveInlinedOversizeTextArchiver {
             )
 
             try await db.awaitableWrite { tx in
-                var maxRecordId: BackupOversizeTextCache.IDType = 0
+                var maxRecordId: Int64 = 0
                 defer {
                     // Mark progress by writing the max record id.
                     kvStore.writeValue(maxRecordId, forKey: Self.lastRestoredRowIdKey, tx: tx)
                 }
                 for (recordId, validatedMessageBody) in pendingAttachments {
-                    maxRecordId = max(maxRecordId, recordId)
+                    maxRecordId = max(maxRecordId, recordId.rawValue)
                     guard let pendingAttachment = validatedMessageBody.oversizeText else {
                         owsFailDebug("Got oversize text thats fits a normal message?")
                         continue
@@ -505,7 +505,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
             owsFailDebug("Unable to process batch \(error.grdbErrorForLogging)")
             // Skip this batch; the backup already committed and theres no going back,
             // so all we can do is drop this long text to avoid bricking the app entirely.
-            let maxRecordId: BackupOversizeTextCache.IDType = records.lazy.compactMap(\.id).max() ?? 0
+            let maxRecordId: Int64 = records.lazy.compactMap(\.id).max()?.rawValue ?? 0
             await db.awaitableWrite { tx in
                 kvStore.writeValue(maxRecordId, forKey: Self.lastRestoredRowIdKey, tx: tx)
             }
