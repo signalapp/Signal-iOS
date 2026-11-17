@@ -215,7 +215,7 @@ public class AttachmentBackfillManager {
     /// Process the given `AttachmentBackfillInboundRequestRecord`, by uploading
     /// its body attachments and enqueuing a response sync message.
     func processInboundRequest(
-        requestRecordId: AttachmentBackfillInboundRequestRecord.IDType,
+        requestRecordId: AttachmentBackfillInboundRequestRecord.RowId,
         localIdentifiers: LocalIdentifiers,
     ) -> Task<Void, Error> {
         return taskQueue.enqueue { [self] in
@@ -706,7 +706,7 @@ extension MessageSenderJobQueue: AttachmentBackfillManager.AttachmentBackfillSyn
 // MARK: -
 
 private extension PrefixedLogger {
-    func suffixed(inboundRequestRecordId: AttachmentBackfillInboundRequestRecord.IDType) -> PrefixedLogger {
+    func suffixed(inboundRequestRecordId: AttachmentBackfillInboundRequestRecord.RowId) -> PrefixedLogger {
         return suffixed(with: "[ID:\(inboundRequestRecordId)]")
     }
 }

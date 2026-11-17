@@ -8,7 +8,7 @@ import GRDB
 // MARK: - AttachmentBackfillInboundRequestRecord
 
 struct AttachmentBackfillInboundRequestRecord: Codable, FetchableRecord, PersistableRecord {
-    typealias IDType = Int64
+    typealias RowId = RowIdType<AttachmentBackfillInboundRequestRecord>
 
     static let databaseTableName: String = "AttachmentBackfillInboundRequest"
 
@@ -21,7 +21,7 @@ struct AttachmentBackfillInboundRequestRecord: Codable, FetchableRecord, Persist
         }
     }
 
-    let id: IDType
+    let id: RowId
     let interactionId: Int64
 
     static func fetchAllAscending(tx: DBReadTransaction) -> [AttachmentBackfillInboundRequestRecord] {
