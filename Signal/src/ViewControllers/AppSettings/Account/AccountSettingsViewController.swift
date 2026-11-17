@@ -21,6 +21,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
 
     private var tsAccountManager: TSAccountManager { DependenciesBridge.shared.tsAccountManager }
     private var serviceProvider: any ServiceProvider { DependenciesBridge.shared.chatConnectionManager }
+    private let dateProvider = { Date() }
 
     private static let twoFactorDateAddedFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -443,7 +444,14 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 ),
                 image: .devicePhone,
             ) { [weak self] _ in
-                self?.didSelectSetUpAuthenticatorApp()
+                Task {
+                    do {
+                        try await self?.didSelectSetUpAuthenticatorApp()
+                    } catch {
+                        // TODO[#less]: Surface this error to the user
+                        Logger.error("Error setting up authenticator app: \(error)")
+                    }
+                }
             },
             UIAction(
                 title: OWSLocalizedString(
@@ -717,8 +725,68 @@ class AccountSettingsViewController: OWSTableViewController2 {
 
     // MARK: - Two-Factor Authentication
 
-    private func didSelectSetUpAuthenticatorApp() {
-        // TODO: Start authenticator app setup.
+    private func didSelectSetUpAuthenticatorApp() async throws {
+        let totp = try await TOTP.generatePendingKey(
+            accountEntropyPool: getAccountEntropyPool(),
+            dateProvider: dateProvider,
+            serviceProvider: serviceProvider,
+        )
+        let navigationController = OWSNavigationController()
+        navigationController.viewControllers = [AuthenticatorAppNameViewController(
+            onContinue: { [weak self, weak navigationController] name in
+                guard let self, let navigationController else { return }
+                self.showAuthenticatorAppSetup(
+                    name: name,
+                    totp: totp,
+                    in: navigationController,
+                )
+            },
+            onCancel: { [weak navigationController] in
+                navigationController?.dismiss(animated: true)
+            },
+        )]
+        presentFormSheet(navigationController, animated: true)
+    }
+
+    private func showAuthenticatorAppSetup(
+        name: String,
+        totp: TOTP,
+        in navigationController: UINavigationController,
+    ) {
+        let provisioningURL: URL
+        do {
+            provisioningURL = try totp.authUrl()
+        } catch {
+            return
+                // TODO[#less]: Print an error
+        }
+
+        let setupViewController = AuthenticatorAppSetupViewController(
+            setupKey: totp.encodedKey,
+            provisioningURL: provisioningURL,
+            onContinue: { [weak self, weak navigationController] in
+                guard let self, let navigationController else { return }
+                let codeViewController = AuthenticatorAppCodeViewController(
+                    digitCount: totp.digitCount,
+                    validateCode: {
+                        try await totp.confirmKey(name: name, code: Int($0))
+                    },
+                    onVerified: { [weak self] method in
+                        self?.didFinishAuthenticatorAppSetup(method: method)
+                    },
+                )
+                navigationController.pushViewController(codeViewController, animated: true)
+            },
+        )
+        navigationController.pushViewController(setupViewController, animated: true)
+    }
+
+    private func didFinishAuthenticatorAppSetup(method: ConfirmedMfaKey) {
+        // TODO[#less]: Push the 'set name controller' instead of dismissing
+        navigationController?.dismiss(animated: true)
+        Task {
+            loadMfaState()
+        }
     }
 
     private func didSelectSetUpWebAuthn() {

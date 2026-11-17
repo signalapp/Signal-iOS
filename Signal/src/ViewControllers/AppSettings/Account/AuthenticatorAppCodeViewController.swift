@@ -12,12 +12,12 @@ import SignalUI
 class AuthenticatorAppCodeViewController: OWSTableViewController2 {
 
     private let digitCount: Int32
-    private let validateCode: (Int32) async -> ConfirmedMfaKey?
+    private let validateCode: (Int32) async throws -> ConfirmedMfaKey?
     private let onVerified: (ConfirmedMfaKey) -> Void
 
     init(
         digitCount: Int32,
-        validateCode: @escaping (Int32) async -> ConfirmedMfaKey?,
+        validateCode: @escaping (Int32) async throws -> ConfirmedMfaKey?,
         onVerified: @escaping (ConfirmedMfaKey) -> Void,
     ) {
         self.digitCount = digitCount
@@ -117,7 +117,7 @@ class AuthenticatorAppCodeViewController: OWSTableViewController2 {
             guard
                 code.count == digitCount,
                 let intValue = Int32(code),
-                let method = await validateCode(intValue)
+                let method = try? await validateCode(intValue) // TODO[#less]: catch this error to show a better error to the user
             else {
                 codeTextField.text = ""
                 updateContinueButton()
