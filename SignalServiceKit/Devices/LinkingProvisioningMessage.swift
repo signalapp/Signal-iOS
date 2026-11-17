@@ -67,7 +67,7 @@ public struct LinkingProvisioningMessage {
         self.provisioningVersion = provisioningVersion
     }
 
-    public init(_ proto: ProvisioningProtos_ProvisionMessage) throws {
+    public init(_ proto: Signalservice_ProvisionMessage) throws {
         self.aciIdentityKeyPair = try IdentityKeyPair(
             publicKey: PublicKey(proto.aciIdentityKeyPublic),
             privateKey: PrivateKey(proto.aciIdentityKeyPrivate),
@@ -129,7 +129,7 @@ public struct LinkingProvisioningMessage {
     }
 
     public func buildEncryptedMessageBody(theirPublicKey: PublicKey) throws -> Data {
-        var message = ProvisioningProtos_ProvisionMessage()
+        var message = Signalservice_ProvisionMessage()
         message.aciIdentityKeyPublic = aciIdentityKeyPair.publicKey.serialize()
         message.aciIdentityKeyPrivate = aciIdentityKeyPair.privateKey.serialize()
         message.provisioningCode = provisioningCode
@@ -168,7 +168,7 @@ public struct LinkingProvisioningMessage {
             throw OWSAssertionError("Failed to encrypt provision message")
         }
 
-        var envelope = ProvisioningProtos_ProvisionEnvelope()
+        var envelope = Signalservice_ProvisionEnvelope()
         envelope.publicKey = ourKeyPair.publicKey.serialize()
         envelope.body = encryptedProvisionMessage
         return try envelope.serializedData()

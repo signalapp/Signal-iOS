@@ -354,8 +354,8 @@ class ProvisioningController: NSObject {
         navigationController: UINavigationController,
     ) async -> LinkingProvisioningMessage? {
         do {
-            let messageData = try await provisioningSocketManager.waitForMessageData(ProvisioningProtos_ProvisionEnvelope.self)
-            return try LinkingProvisioningMessage(ProvisioningProtos_ProvisionMessage(serializedBytes: messageData))
+            let messageData = try await provisioningSocketManager.waitForMessageData(Signalservice_ProvisionEnvelope.self)
+            return try LinkingProvisioningMessage(Signalservice_ProvisionMessage(serializedBytes: messageData))
         } catch let error {
             Logger.warn("couldn't decrypt/decode provisioning envelope: \(error)")
             let alert = ActionSheetController(

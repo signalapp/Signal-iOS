@@ -15,7 +15,7 @@ protocol ProvisioningEnvelope: SwiftProtobuf.Message {
     var publicKey: Data { get }
 }
 
-extension ProvisioningProtos_ProvisionEnvelope: ProvisioningEnvelope {}
+extension Signalservice_ProvisionEnvelope: ProvisioningEnvelope {}
 extension RegistrationProtos_RegistrationProvisionEnvelope: ProvisioningEnvelope {}
 
 // MARK: - ProvisioningSocketManager
