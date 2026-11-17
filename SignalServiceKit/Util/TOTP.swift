@@ -30,8 +30,9 @@ public struct TOTP {
             }
             if let value {
                 self = value
+            } else {
+                return nil
             }
-            return nil
         }
     }
 
