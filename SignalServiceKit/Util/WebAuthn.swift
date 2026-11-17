@@ -91,8 +91,101 @@ public class WebAuthn {
     }
 
     @MainActor
-    private class RegistrationControllerWrapper: NSObject, ASAuthorizationControllerDelegate {
+    public static func authenticate(parameters: WebAuthnAuthenticationParameters) async throws -> String {
+        let identifier = Constants.credentialDomain
 
+        // Biometric auth based passkey
+        let platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: identifier)
+        let platformRequest = platformProvider.createCredentialAssertionRequest(challenge: parameters.challenge)
+        platformRequest.allowedCredentials = parameters.allowedCredentialIds.map {
+            return ASAuthorizationPlatformPublicKeyCredentialDescriptor(credentialID: $0)
+        }
+
+        // Security key based passkey
+        let keyProvider = ASAuthorizationSecurityKeyPublicKeyCredentialProvider(relyingPartyIdentifier: identifier)
+        let keyRequest = keyProvider.createCredentialAssertionRequest(challenge: parameters.challenge)
+        keyRequest.allowedCredentials = parameters.allowedCredentialIds.map {
+            ASAuthorizationSecurityKeyPublicKeyCredentialDescriptor(
+                credentialID: $0,
+                transports: ASAuthorizationSecurityKeyPublicKeyCredentialDescriptor.Transport.allSupported,
+            )
+        }
+
+        let controller = ASAuthorizationController(authorizationRequests: [platformRequest, keyRequest])
+        return try await AssertionControllerWrapper(controller: controller).performRequests()
+    }
+
+    // MARK: - Delegate Wrappers
+
+    @MainActor
+    private class AssertionControllerWrapper: NSObject, ASAuthorizationControllerDelegate {
+
+        private var continuation: CheckedContinuation<String, Error>?
+        private let controller: ASAuthorizationController
+
+        init(controller: ASAuthorizationController) {
+            self.controller = controller
+        }
+
+        func performRequests() async throws -> String {
+            controller.delegate = self
+            return try await withCheckedThrowingContinuation { [weak self] continuation in
+                guard let self else { return }
+                self.continuation = continuation
+                controller.performRequests()
+            }
+        }
+
+        func authorizationController(
+            controller: ASAuthorizationController,
+            didCompleteWithAuthorization authorization: ASAuthorization,
+        ) {
+            guard let authorization = authorization.credential as? ASAuthorizationPublicKeyCredentialAssertion else {
+                continuation.take()?.resume(throwing: ASAuthorizationError(.failed))
+                return
+            }
+
+            // Build up a response following this: https://www.w3.org/TR/webauthn/#dom-publickeycredential-tojson
+            var response: [String: Any] = [
+                "clientDataJSON": authorization.rawClientDataJSON.asBase64Url,
+                "authenticatorData": authorization.rawAuthenticatorData.asBase64Url,
+                "signature": authorization.signature.asBase64Url,
+            ]
+
+            if
+                let userID = authorization.userID,
+                !userID.isEmpty
+            {
+                response["userHandle"] = userID.asBase64Url
+            }
+
+            let json: [String: Any] = [
+                "id": authorization.credentialID.asBase64Url,
+                "rawId": authorization.credentialID.asBase64Url,
+                "type": "public-key",
+                "response": response,
+                "clientExtensionResults": [:],
+            ]
+
+            do {
+                let data = try JSONSerialization.data(withJSONObject: json)
+                if let string = String(data: data, encoding: .utf8) {
+                    continuation.take()?.resume(returning: string)
+                } else {
+                    continuation.take()?.resume(throwing: OWSAssertionError("Invalid data"))
+                }
+            } catch {
+                continuation.take()?.resume(throwing: error)
+            }
+        }
+
+        func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+            continuation.take()?.resume(throwing: error)
+        }
+    }
+
+    @MainActor
+    private class RegistrationControllerWrapper: NSObject, ASAuthorizationControllerDelegate {
         private var continuation: CheckedContinuation<PasskeyRegistration, Error>?
         private let controller: ASAuthorizationController
 
@@ -101,7 +194,7 @@ public class WebAuthn {
         }
 
         func performRequests() async throws -> PasskeyRegistration {
-            self.controller.delegate = self
+            controller.delegate = self
             return try await withCheckedThrowingContinuation { [weak self] continuation in
                 guard let self else { return }
                 self.continuation = continuation
@@ -121,18 +214,18 @@ public class WebAuthn {
             case let reg as ASAuthorizationSecurityKeyPublicKeyCredentialRegistration:
                 registration = reg
             default:
-                continuation?.resume(throwing: OWSAssertionError("unexpectedCredentialType"))
+                continuation.take()?.resume(throwing: OWSAssertionError("unexpectedCredentialType"))
                 return
             }
 
             // Return the registration data needed by libsignal
             if let attestation = registration.rawAttestationObject {
-                continuation?.resume(returning: PasskeyRegistration(
+                continuation.take()?.resume(returning: PasskeyRegistration(
                     attestationObject: attestation,
                     clientDataJSON: registration.rawClientDataJSON,
                 ))
             } else {
-                continuation?.resume(throwing: OWSAssertionError("missingAttestation"))
+                continuation.take()?.resume(throwing: OWSAssertionError("missingAttestation"))
             }
         }
 
@@ -140,7 +233,7 @@ public class WebAuthn {
             controller: ASAuthorizationController,
             didCompleteWithError error: any Error,
         ) {
-            continuation?.resume(throwing: error)
+            continuation.take()?.resume(throwing: error)
         }
     }
 }

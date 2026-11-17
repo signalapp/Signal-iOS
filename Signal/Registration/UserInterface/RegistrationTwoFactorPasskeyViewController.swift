@@ -115,8 +115,17 @@ class RegistrationTwoFactorPasskeyViewController: OWSViewController {
         // Continue & Cancel Buttons
         let continueButton = UIButton(
             configuration: .largePrimary(title: CommonStrings.continueButton),
-            primaryAction: UIAction { _ in
-                // TODO: [#less] Present the system UI for WebAuthn.
+            primaryAction: UIAction { [weak self] _ in
+                Task { [weak self] in
+                    guard let self else { return }
+                    do {
+                        let response = try await WebAuthn.authenticate(parameters: self.state.authenticationParameters)
+                        self.state.submitResponse(response)
+                        self.goToNextStep()
+                    } catch {
+                        // TODO[#less]: Present user error
+                    }
+                }
             },
         )
         let cancelButton = UIButton(
