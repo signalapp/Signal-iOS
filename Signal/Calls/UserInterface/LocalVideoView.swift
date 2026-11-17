@@ -6,6 +6,7 @@
 import AVFoundation
 import SignalRingRTC
 import SignalServiceKit
+import SignalUI
 public import WebRTC
 
 class LocalVideoView: UIView {
@@ -53,9 +54,12 @@ class LocalVideoView: UIView {
             localVideoCapturePreview.frame = bounds
         }
 
-        // iPad supports rotating this view controller directly,
-        // so we don't need to do anything here.
-        guard !UIDevice.current.isIPad else { return }
+        // iPad and the inner display of iPhone Duo rotate this view
+        // controller directly, so we don't need to do anything here.
+        guard !ignoresSupportedInterfaceOrientations else {
+            localVideoCapturePreview.transform = .identity
+            return
+        }
 
         // We lock this view to portrait only on phones, but the
         // local video capture will rotate with the device's

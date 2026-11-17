@@ -286,7 +286,7 @@ public class PinReminderViewController: OWSViewController {
         super.viewDidAppear(animated)
 
         // For now, the design only allows for portrait layout on non-iPads
-        if !UIDevice.current.isIPad, view.window?.windowScene?.interfaceOrientation != .portrait {
+        if !view.ignoresSupportedInterfaceOrientations, view.window?.windowScene?.interfaceOrientation != .portrait {
             UIDevice.current.ows_setOrientation(.portrait)
         }
     }

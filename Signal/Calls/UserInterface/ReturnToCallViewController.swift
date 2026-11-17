@@ -32,7 +32,7 @@ public class ReturnToCallViewController: UIViewController {
         guard let window = CurrentAppContext().mainWindow else { return nineBySixteen }
 
         let isFullScreen = window.bounds.size == window.screen.bounds.size
-        if UIDevice.current.isIPad, isFullScreen {
+        if window.ignoresSupportedInterfaceOrientations, isFullScreen {
             if window.bounds.size.width > window.bounds.size.height {
                 return fourByThree
             } else {
