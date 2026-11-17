@@ -8584,6 +8584,9 @@
 /* Button to initiate a purchase on the 'Signal Login' screen. The replacement is a localized cost (e.g., $2.99). */
 "REGISTRATION_SIGNAL_LOGIN_PAY" = "Pay %1$@";
 
+/* Title for the password entry saved to the password manager */
+"REGISTRATION_SIGNAL_LOGIN_SAVED_LOGIN_TITLE" = "Signal";
+
 /* Text for a bullet point describing that an existing Signal Login can be used to log in and restore an account. */
 "REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_RESTORE" = "Login and restore your account";
 
