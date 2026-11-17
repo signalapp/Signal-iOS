@@ -313,7 +313,13 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 let vc = RegistrationSignalLoginDetailsViewController(
                     state: state,
                     goToNextStep: {
-                        // TODO[#less]: Push into full login details
+                        let viewController = RegistrationSignalLoginFullDetailsViewController(
+                            state: RegistrationSignalLoginFullDetailsState(
+                                aci: state.aci,
+                                aep: state.aep,
+                            ),
+                        )
+                        self.present(UINavigationController(rootViewController: viewController), animated: true)
                     },
                 )
                 self.navigationController?.pushViewController(vc, animated: true)
