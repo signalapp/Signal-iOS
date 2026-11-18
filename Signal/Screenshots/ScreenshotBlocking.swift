@@ -14,6 +14,12 @@ enum ScreenshotBlocking {
     /// built in content redaction when `isSecureTextEntry = true`, and tricking
     /// it into applying that redaction to the given view's layer.
     static func setBlocksScreenshots(_ blocksScreenshots: Bool, of view: UIView) {
+#if DEBUG
+        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
+            return
+        }
+#endif
+
         let textField = UITextField()
 
         guard
