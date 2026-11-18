@@ -258,6 +258,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
             localDeviceId: localDeviceId,
             spamReportingMetadata: spamReportingMetadata,
             updatedLastVerifiedGroupNameHash: updatedLastVerifiedGroupNameHash,
+            dataDeletionRequest: nil,
             transaction: transaction,
         )
         // The prior method always updates the revision because we've confirmed it's newer.
@@ -860,6 +861,7 @@ public extension GroupV2UpdatesImpl {
             localDeviceId: localDeviceId,
             spamReportingMetadata: spamReportingMetadata,
             updatedLastVerifiedGroupNameHash: nil, // Nothing to update.
+            dataDeletionRequest: nil,
             transaction: transaction,
         )
 

@@ -4810,6 +4810,9 @@
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "You were removed from the group.";
 
+/* Message indicating that the local user was removed from the group by another user, who also deleted the group's messages from the local user's device. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_REMOVED_WITH_DATA_DELETION_BY_REMOTE_USER_FORMAT" = "%@ removed you and deleted the group messages on your device.";
+
 /* Message indicating that the local user's request to join the group was approved. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
 
@@ -5037,6 +5040,12 @@
 
 /* Error indicating a send failure due to the group being terminated. */
 "GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+
+/* Message indicating that the group was terminated by the local user, who also deleted the group's messages. */
+"GROUP_TERMINATED_WITH_DATA_DELETION_BY_LOCAL_USER" = "You ended the group and deleted the group messages";
+
+/* Message indicating that the group was terminated by a remote user, who also deleted the group's messages from the local user's device. Embeds {{ user who terminated the group }}. */
+"GROUP_TERMINATED_WITH_DATA_DELETION_BY_OTHER_USER" = "%@ ended the group and deleted the group messages on your device";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Group updated.";

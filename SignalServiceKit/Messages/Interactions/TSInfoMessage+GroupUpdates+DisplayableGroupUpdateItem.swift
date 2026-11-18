@@ -195,6 +195,11 @@ public enum DisplayableGroupUpdateItem {
     case groupTerminatedByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress)
     case groupTerminatedByUnknownUser
 
+    case localUserRemovedWithDataDeletion(removerName: String, removerAddress: SignalServiceAddress)
+
+    case groupTerminatedWithDataDeletionByLocalUser
+    case groupTerminatedWithDataDeletionByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress)
+
     // MARK: -
 
     /// Localized text representing this update.
@@ -1179,6 +1184,27 @@ public enum DisplayableGroupUpdateItem {
                 "GROUP_TERMINATED_BY_UNKNOWN_USER",
                 comment: "Message indicating that the group was terminated by an unknown user.",
             ).attributed
+        case let .localUserRemovedWithDataDeletion(removerName, removerAddress):
+            return NSAttributedString.make(
+                fromFormat: OWSLocalizedString(
+                    "GROUP_LOCAL_USER_REMOVED_WITH_DATA_DELETION_BY_REMOTE_USER_FORMAT",
+                    comment: "Message indicating that the local user was removed from the group by another user, who also deleted the group's messages from the local user's device. Embeds {{remote user name}}.",
+                ),
+                groupUpdateFormatArgs: [.name(removerName, removerAddress)],
+            )
+        case .groupTerminatedWithDataDeletionByLocalUser:
+            return OWSLocalizedString(
+                "GROUP_TERMINATED_WITH_DATA_DELETION_BY_LOCAL_USER",
+                comment: "Message indicating that the group was terminated by the local user, who also deleted the group's messages.",
+            ).attributed
+        case let .groupTerminatedWithDataDeletionByOtherUser(updaterName, updaterAddress):
+            return NSAttributedString.make(
+                fromFormat: OWSLocalizedString(
+                    "GROUP_TERMINATED_WITH_DATA_DELETION_BY_OTHER_USER",
+                    comment: "Message indicating that the group was terminated by a remote user, who also deleted the group's messages from the local user's device. Embeds {{ user who terminated the group }}.",
+                ),
+                groupUpdateFormatArgs: [.name(updaterName, updaterAddress)],
+            )
         }
     }
 }

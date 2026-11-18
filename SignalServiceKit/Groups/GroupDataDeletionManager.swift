@@ -3,6 +3,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+public import LibSignalClient
+
+/// A request, sent alongside a group change, for members to delete their group data.
+public enum GroupDataDeletionRequest: Equatable {
+    /// The removed members should delete their group data.
+    case membersRemoved(Set<Aci>)
+    /// Every member should delete their group data because the group ended.
+    case groupTerminated
+}
+
 /// A manager that can delete group data.
 public protocol GroupDataDeletionManager {
     /// Deletes the group's content on this device from before `preservedInteraction`.

@@ -825,12 +825,6 @@ extension AppSetup.GlobalsContinuation {
             recipientDatabaseTable: recipientDatabaseTable,
         )
 
-        let groupUpdateInfoMessageInserter = GroupUpdateInfoMessageInserterImpl(
-            dateProvider: dateProvider,
-            groupUpdateItemBuilder: groupUpdateItemBuilder,
-            notificationPresenter: notificationPresenter,
-        )
-
         let groupMemberStore = GroupMemberStoreImpl()
         let threadReplyInfoStore = ThreadReplyInfoStore()
 
@@ -1046,6 +1040,13 @@ extension AppSetup.GlobalsContinuation {
         let groupDataDeletionManager = GroupDataDeletionManagerImpl(
             bulkDeleteInteractionJobQueue: bulkDeleteInteractionJobQueue,
             threadDeletionManager: threadDeletionManager,
+        )
+        let groupUpdateInfoMessageInserter = GroupUpdateInfoMessageInserterImpl(
+            dateProvider: dateProvider,
+            groupDataDeletionManager: groupDataDeletionManager,
+            groupUpdateItemBuilder: groupUpdateItemBuilder,
+            isGroupDataDeletionEnabled: BuildFlags.groupDataDeletionReceive,
+            notificationPresenter: notificationPresenter,
         )
         let deleteForMeIncomingSyncMessageManager = DeleteForMeIncomingSyncMessageManagerImpl(
             addressableMessageFinder: deleteForMeAddressableMessageFinder,

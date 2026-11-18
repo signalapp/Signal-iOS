@@ -874,7 +874,9 @@ class MessageLoader {
                         case
                             .groupTerminatedByLocalUser,
                             .groupTerminatedByOtherUser,
-                            .groupTerminatedByUnknownUser:
+                            .groupTerminatedByUnknownUser,
+                            .groupTerminatedWithDataDeletionByLocalUser,
+                            .groupTerminatedWithDataDeletionByOtherUser:
                             return nil
                         case
                             .disappearingMessagesEnabledByLocalUser,

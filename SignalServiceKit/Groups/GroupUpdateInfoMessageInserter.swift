@@ -27,22 +27,29 @@ public protocol GroupUpdateInfoMessageInserter {
         newDisappearingMessageToken: DisappearingMessageToken,
         newlyLearnedPniToAciAssociations: [Pni: Aci],
         groupUpdateSource: GroupUpdateSource,
+        dataDeletionRequest: GroupDataDeletionRequest?,
         transaction: DBWriteTransaction,
     )
 }
 
 class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
     private let dateProvider: DateProvider
+    private let groupDataDeletionManager: any GroupDataDeletionManager
     private let groupUpdateItemBuilder: GroupUpdateItemBuilder
+    private let isGroupDataDeletionEnabled: Bool
     private let notificationPresenter: any NotificationPresenter
 
     init(
         dateProvider: @escaping DateProvider,
+        groupDataDeletionManager: any GroupDataDeletionManager,
         groupUpdateItemBuilder: GroupUpdateItemBuilder,
+        isGroupDataDeletionEnabled: Bool,
         notificationPresenter: any NotificationPresenter,
     ) {
         self.dateProvider = dateProvider
+        self.groupDataDeletionManager = groupDataDeletionManager
         self.groupUpdateItemBuilder = groupUpdateItemBuilder
+        self.isGroupDataDeletionEnabled = isGroupDataDeletionEnabled
         self.notificationPresenter = notificationPresenter
     }
 
@@ -65,6 +72,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
             newDisappearingMessageToken: disappearingMessageToken,
             newlyLearnedPniToAciAssociations: [:],
             groupUpdateSource: groupUpdateSource,
+            dataDeletionRequest: nil,
             transaction: tx,
         )
     }
@@ -79,6 +87,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
         newDisappearingMessageToken: DisappearingMessageToken,
         newlyLearnedPniToAciAssociations: [Pni: Aci],
         groupUpdateSource: GroupUpdateSource,
+        dataDeletionRequest: GroupDataDeletionRequest?,
         transaction tx: DBWriteTransaction,
     ) {
         _insertGroupUpdateInfoMessage(
@@ -91,6 +100,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
             newDisappearingMessageToken: newDisappearingMessageToken,
             newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
             groupUpdateSource: groupUpdateSource,
+            dataDeletionRequest: dataDeletionRequest,
             transaction: tx,
         )
     }
@@ -105,9 +115,10 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
         newDisappearingMessageToken: DisappearingMessageToken,
         newlyLearnedPniToAciAssociations: [Pni: Aci],
         groupUpdateSource: GroupUpdateSource,
+        dataDeletionRequest: GroupDataDeletionRequest?,
         transaction tx: DBWriteTransaction,
     ) {
-        let updateItemsForNewMessage: [TSInfoMessage.PersistableGroupUpdateItem]
+        var updateItemsForNewMessage: [TSInfoMessage.PersistableGroupUpdateItem]
 
         if
             let oldGroupModel,
@@ -138,6 +149,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
                         newDisappearingMessageToken: newDisappearingMessageToken,
                         localIdentifiers: localIdentifiers,
                         groupUpdateSource: groupUpdateSource,
+                        dataDeletionRequest: dataDeletionRequest,
                         tx: tx,
                     )
                 } else {
@@ -196,6 +208,17 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
         /// update that somehow doesn't produce a diff, we'll get back a list
         /// with a single "generic group update" item in it.
         owsPrecondition(!updateItemsForNewMessage.isEmpty)
+
+        /// If this is a data deletion request, reset updateItemsForNewMessage to only contain that one item.
+        /// The others should not be shown to the user because we are deleting the group content anyway.
+        let dataDeletionItem = updateItemsForNewMessage.first(where: \.isLocalDataDeletion)
+        if
+            let dataDeletionItem,
+            isGroupDataDeletionEnabled
+        {
+            updateItemsForNewMessage = [dataDeletionItem]
+        }
+
         let timestamp = dateProvider().ows_millisecondsSince1970
         let insertedMessages: [(
             updateItem: TSInfoMessage.PersistableGroupUpdateItem,
@@ -209,6 +232,19 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
             )
             message.anyInsert(transaction: tx)
             return (item, message)
+        }
+
+        if
+            isGroupDataDeletionEnabled,
+            dataDeletionItem != nil,
+            let dataDeletionMessage = insertedMessages.first?.message
+        {
+            groupDataDeletionManager.deleteGroupData(
+                groupThread: groupThread,
+                preservedInteraction: dataDeletionMessage,
+                localIdentifiers: localIdentifiers,
+                tx: tx,
+            )
         }
 
         let wasLocalUserRequestingMember = oldGroupModel?.groupMembership.isLocalUserRequestingMember ?? false
@@ -267,7 +303,9 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
                 case
                     .groupTerminatedByLocalUser,
                     .groupTerminatedByOtherUser,
-                    .groupTerminatedByUnknownUser:
+                    .groupTerminatedByUnknownUser,
+                    .groupTerminatedWithDataDeletionByLocalUser,
+                    .groupTerminatedWithDataDeletionByOtherUser:
                     return message
                 default:
                     return nil

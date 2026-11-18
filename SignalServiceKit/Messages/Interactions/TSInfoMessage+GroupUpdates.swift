@@ -232,6 +232,7 @@ public extension TSInfoMessage {
                 newDisappearingMessageToken: newGroupModel.dmToken,
                 localIdentifiers: localIdentifiers,
                 groupUpdateSource: source,
+                dataDeletionRequest: nil,
                 tx: tx,
             )
         }

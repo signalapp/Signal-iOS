@@ -388,6 +388,11 @@ extension TSInfoMessage {
             case groupTerminatedByLocalUser
             case groupTerminatedByOtherUser
             case groupTerminatedByUnknownUser
+            case localUserRemovedWithDataDeletion
+            case otherUserRemovedWithDataDeletionByLocalUser
+            case otherUserRemovedWithDataDeletion
+            case groupTerminatedWithDataDeletionByLocalUser
+            case groupTerminatedWithDataDeletionByOtherUser
         }
 
         /// Represents a sequence of "request to join" and "canceled request to
@@ -600,6 +605,13 @@ extension TSInfoMessage {
         case groupTerminatedByLocalUser
         case groupTerminatedByOtherUser(updaterAci: AciUuid)
         case groupTerminatedByUnknownUser
+
+        case localUserRemovedWithDataDeletion(removerAci: AciUuid)
+        case otherUserRemovedWithDataDeletionByLocalUser(userAci: AciUuid)
+        case otherUserRemovedWithDataDeletion(removerAci: AciUuid, userAci: AciUuid)
+
+        case groupTerminatedWithDataDeletionByLocalUser
+        case groupTerminatedWithDataDeletionByOtherUser(updaterAci: AciUuid)
     }
 }
 
@@ -648,7 +660,10 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
             .inviteLinkApprovalDisabledByOtherUser(let updaterAci),
             .inviteLinkApprovalEnabledByOtherUser(let updaterAci),
             .memberLabelsAccessChangedByOtherUser(let updaterAci, _),
-            .groupTerminatedByOtherUser(let updaterAci):
+            .groupTerminatedByOtherUser(let updaterAci),
+            .localUserRemovedWithDataDeletion(let updaterAci),
+            .otherUserRemovedWithDataDeletion(let updaterAci, _),
+            .groupTerminatedWithDataDeletionByOtherUser(let updaterAci):
             return updaterAci
         case
             .sequenceOfInviteLinkRequestAndCancels,
@@ -748,8 +763,165 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
             .memberLabelsAccessChangedByLocalUser,
             .memberLabelsAccessChangedByUnknownUser,
             .groupTerminatedByLocalUser,
-            .groupTerminatedByUnknownUser:
+            .groupTerminatedByUnknownUser,
+            .otherUserRemovedWithDataDeletionByLocalUser,
+            .groupTerminatedWithDataDeletionByLocalUser:
             return nil
+        }
+    }
+
+    /// Whether this event asks this device to delete the group's earlier content.
+    var isLocalDataDeletion: Bool {
+        switch self {
+        case
+            .localUserRemovedWithDataDeletion,
+            .groupTerminatedWithDataDeletionByLocalUser,
+            .groupTerminatedWithDataDeletionByOtherUser:
+            return true
+        case
+            .genericUpdateByOtherUser,
+            .createdByOtherUser,
+            .nameChangedByOtherUser,
+            .nameRemovedByOtherUser,
+            .avatarChangedByOtherUser,
+            .avatarRemovedByOtherUser,
+            .descriptionChangedByOtherUser,
+            .descriptionRemovedByOtherUser,
+            .membersAccessChangedByOtherUser,
+            .attributesAccessChangedByOtherUser,
+            .announcementOnlyEnabledByOtherUser,
+            .announcementOnlyDisabledByOtherUser,
+            .localUserWasGrantedAdministratorByOtherUser,
+            .otherUserWasGrantedAdministratorByLocalUser,
+            .otherUserWasGrantedAdministratorByOtherUser,
+            .otherUserWasGrantedAdministratorByUnknownUser,
+            .localUserWasRevokedAdministratorByOtherUser,
+            .otherUserWasRevokedAdministratorByOtherUser,
+            .localUserRemoved,
+            .otherUserRemoved,
+            .localUserWasInvitedByOtherUser,
+            .unnamedUsersWereInvitedByOtherUser,
+            .localUserAcceptedInviteFromInviter,
+            .otherUserAcceptedInviteFromInviter,
+            .localUserAddedByOtherUser,
+            .otherUserAddedByOtherUser,
+            .localUserDeclinedInviteFromInviter,
+            .otherUserDeclinedInviteFromInviter,
+            .unnamedUserDeclinedInviteFromInviter,
+            .unnamedUserInvitesWereRevokedByOtherUser,
+            .otherUserRequestApproved,
+            .otherUserRequestRejectedByOtherUser,
+            .disappearingMessagesEnabledByOtherUser,
+            .disappearingMessagesDisabledByOtherUser,
+            .inviteLinkResetByOtherUser,
+            .inviteLinkEnabledWithoutApprovalByOtherUser,
+            .inviteLinkEnabledWithApprovalByOtherUser,
+            .inviteLinkDisabledByOtherUser,
+            .inviteLinkApprovalDisabledByOtherUser,
+            .inviteLinkApprovalEnabledByOtherUser,
+            .memberLabelsAccessChangedByOtherUser,
+            .groupTerminatedByOtherUser,
+            .otherUserRemovedWithDataDeletion,
+            .sequenceOfInviteLinkRequestAndCancels,
+            .invitedPniPromotedToFullMemberAci,
+            .genericUpdateByLocalUser,
+            .genericUpdateByUnknownUser,
+            .createdByLocalUser,
+            .createdByUnknownUser,
+            .inviteFriendsToNewlyCreatedGroup,
+            .wasMigrated,
+            .localUserInvitedAfterMigration,
+            .otherUsersInvitedAfterMigration,
+            .otherUsersDroppedAfterMigration,
+            .nameChangedByLocalUser,
+            .nameChangedByUnknownUser,
+            .nameRemovedByLocalUser,
+            .nameRemovedByUnknownUser,
+            .avatarChangedByLocalUser,
+            .avatarChangedByUnknownUser,
+            .avatarRemovedByLocalUser,
+            .avatarRemovedByUnknownUser,
+            .descriptionChangedByLocalUser,
+            .descriptionChangedByUnknownUser,
+            .descriptionRemovedByLocalUser,
+            .descriptionRemovedByUnknownUser,
+            .membersAccessChangedByLocalUser,
+            .membersAccessChangedByUnknownUser,
+            .attributesAccessChangedByLocalUser,
+            .attributesAccessChangedByUnknownUser,
+            .announcementOnlyEnabledByLocalUser,
+            .announcementOnlyEnabledByUnknownUser,
+            .announcementOnlyDisabledByLocalUser,
+            .announcementOnlyDisabledByUnknownUser,
+            .localUserWasGrantedAdministratorByLocalUser,
+            .localUserWasGrantedAdministratorByUnknownUser,
+            .localUserWasRevokedAdministratorByLocalUser,
+            .localUserWasRevokedAdministratorByUnknownUser,
+            .otherUserWasRevokedAdministratorByLocalUser,
+            .otherUserWasRevokedAdministratorByUnknownUser,
+            .localUserLeft,
+            .localUserRemovedByUnknownUser,
+            .otherUserLeft,
+            .otherUserRemovedByLocalUser,
+            .otherUserRemovedByUnknownUser,
+            .localUserWasInvitedByLocalUser,
+            .localUserWasInvitedByUnknownUser,
+            .otherUserWasInvitedByLocalUser,
+            .unnamedUsersWereInvitedByLocalUser,
+            .unnamedUsersWereInvitedByUnknownUser,
+            .localUserAcceptedInviteFromUnknownUser,
+            .otherUserAcceptedInviteFromLocalUser,
+            .otherUserAcceptedInviteFromUnknownUser,
+            .localUserJoined,
+            .otherUserJoined,
+            .localUserAddedByLocalUser,
+            .localUserAddedByUnknownUser,
+            .otherUserAddedByLocalUser,
+            .otherUserAddedByUnknownUser,
+            .localUserDeclinedInviteFromUnknownUser,
+            .otherUserDeclinedInviteFromLocalUser,
+            .otherUserDeclinedInviteFromUnknownUser,
+            .unnamedUserDeclinedInviteFromUnknownUser,
+            .localUserInviteRevoked,
+            .localUserInviteRevokedByUnknownUser,
+            .otherUserInviteRevokedByLocalUser,
+            .unnamedUserInvitesWereRevokedByLocalUser,
+            .unnamedUserInvitesWereRevokedByUnknownUser,
+            .localUserRequestedToJoin,
+            .otherUserRequestedToJoin,
+            .localUserRequestApproved,
+            .localUserRequestApprovedByUnknownUser,
+            .otherUserRequestApprovedByLocalUser,
+            .otherUserRequestApprovedByUnknownUser,
+            .localUserRequestCanceledByLocalUser,
+            .localUserRequestRejectedByUnknownUser,
+            .otherUserRequestRejectedByLocalUser,
+            .otherUserRequestRejectedByUnknownUser,
+            .otherUserRequestCanceledByOtherUser,
+            .disappearingMessagesEnabledByLocalUser,
+            .disappearingMessagesEnabledByUnknownUser,
+            .disappearingMessagesDisabledByLocalUser,
+            .disappearingMessagesDisabledByUnknownUser,
+            .inviteLinkResetByLocalUser,
+            .inviteLinkResetByUnknownUser,
+            .inviteLinkEnabledWithoutApprovalByLocalUser,
+            .inviteLinkEnabledWithoutApprovalByUnknownUser,
+            .inviteLinkEnabledWithApprovalByLocalUser,
+            .inviteLinkEnabledWithApprovalByUnknownUser,
+            .inviteLinkDisabledByLocalUser,
+            .inviteLinkDisabledByUnknownUser,
+            .inviteLinkApprovalEnabledByLocalUser,
+            .inviteLinkApprovalEnabledByUnknownUser,
+            .localUserJoinedViaInviteLink,
+            .inviteLinkApprovalDisabledByUnknownUser,
+            .otherUserJoinedViaInviteLink,
+            .inviteLinkApprovalDisabledByLocalUser,
+            .memberLabelsAccessChangedByLocalUser,
+            .memberLabelsAccessChangedByUnknownUser,
+            .groupTerminatedByLocalUser,
+            .groupTerminatedByUnknownUser,
+            .otherUserRemovedWithDataDeletionByLocalUser:
+            return false
         }
     }
 }

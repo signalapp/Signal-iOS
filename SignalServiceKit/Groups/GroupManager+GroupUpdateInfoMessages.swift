@@ -45,6 +45,7 @@ extension GroupManager {
         groupUpdateSource: GroupUpdateSource,
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
+        dataDeletionRequest: GroupDataDeletionRequest?,
         transaction: DBWriteTransaction,
     ) {
         DependenciesBridge.shared.groupUpdateInfoMessageInserter.insertGroupUpdateInfoMessage(
@@ -57,6 +58,7 @@ extension GroupManager {
             newDisappearingMessageToken: newDisappearingMessageToken,
             newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
             groupUpdateSource: groupUpdateSource,
+            dataDeletionRequest: dataDeletionRequest,
             transaction: transaction,
         )
     }

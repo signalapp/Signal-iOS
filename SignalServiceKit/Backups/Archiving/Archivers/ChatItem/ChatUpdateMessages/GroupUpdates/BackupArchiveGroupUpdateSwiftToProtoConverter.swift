@@ -1311,6 +1311,49 @@ final class BackupArchiveGroupUpdateSwiftToProtoConverter {
                 setFields: { _ in },
                 asUpdate: { .groupTerminateChangeUpdate($0) },
             )
+        case .localUserRemovedWithDataDeletion(let removerAci):
+            setUpdate(
+                BackupProto_GroupMemberRemovedUpdate(),
+                setFields: {
+                    $0.removedAci = localAciData
+                    $0.removerAci = aciData(removerAci)
+                },
+                asUpdate: { .groupMemberRemovedUpdate($0) },
+            )
+        case .otherUserRemovedWithDataDeletionByLocalUser(let userAci):
+            setUpdate(
+                BackupProto_GroupMemberRemovedUpdate(),
+                setFields: {
+                    $0.removedAci = aciData(userAci)
+                    $0.removerAci = localAciData
+                },
+                asUpdate: { .groupMemberRemovedUpdate($0) },
+            )
+        case .otherUserRemovedWithDataDeletion(let removerAci, let userAci):
+            setUpdate(
+                BackupProto_GroupMemberRemovedUpdate(),
+                setFields: {
+                    $0.removedAci = aciData(userAci)
+                    $0.removerAci = aciData(removerAci)
+                },
+                asUpdate: { .groupMemberRemovedUpdate($0) },
+            )
+        case .groupTerminatedWithDataDeletionByLocalUser:
+            setUpdate(
+                BackupProto_GroupTerminateChangeUpdate(),
+                setFields: {
+                    $0.updaterAci = localAciData
+                },
+                asUpdate: { .groupTerminateChangeUpdate($0) },
+            )
+        case .groupTerminatedWithDataDeletionByOtherUser(let updaterAci):
+            setUpdate(
+                BackupProto_GroupTerminateChangeUpdate(),
+                setFields: {
+                    $0.updaterAci = aciData(updaterAci)
+                },
+                asUpdate: { .groupTerminateChangeUpdate($0) },
+            )
         }
 
         return .success(update)

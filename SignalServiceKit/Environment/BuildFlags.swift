@@ -101,6 +101,8 @@ public enum BuildFlags {
     public static let chatFolders = true
 
     public static let deleteForMeToast = build <= .internal
+
+    public static let groupDataDeletionReceive = build <= .dev
 }
 
 // MARK: -

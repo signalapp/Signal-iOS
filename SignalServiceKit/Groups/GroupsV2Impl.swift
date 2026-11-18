@@ -1904,6 +1904,7 @@ public class GroupsV2Impl: GroupsV2 {
                     groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
                     localIdentifiers: localIdentifiers,
                     spamReportingMetadata: .createdByLocalAction,
+                    dataDeletionRequest: nil,
                     transaction: transaction,
                 )
             } else {
@@ -2068,6 +2069,7 @@ public class GroupsV2Impl: GroupsV2 {
                 groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
                 localIdentifiers: localIdentifiers,
                 spamReportingMetadata: .createdByLocalAction,
+                dataDeletionRequest: nil,
                 transaction: transaction,
             )
         }
@@ -2185,6 +2187,7 @@ public class GroupsV2Impl: GroupsV2 {
                     groupUpdateSource: .unknown,
                     localIdentifiers: localIdentifiers,
                     spamReportingMetadata: .createdByLocalAction,
+                    dataDeletionRequest: nil,
                     transaction: transaction,
                 )
             }
