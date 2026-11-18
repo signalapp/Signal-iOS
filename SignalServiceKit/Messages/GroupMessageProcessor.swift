@@ -12,6 +12,13 @@ private struct IncomingGroupsV2MessageJobInfo {
     let plaintextData: Data
     let groupContext: SSKProtoGroupContextV2
     let groupContextInfo: GroupV2ContextInfo
+
+    var sourceAci: Aci? {
+        return Aci.parseFrom(
+            serviceIdBinary: envelope.sourceServiceIDBinary,
+            serviceIdString: envelope.sourceServiceID,
+        )
+    }
 }
 
 // MARK: -
@@ -234,12 +241,7 @@ class SpecificGroupMessageProcessor {
         hasGroupBeenUpdated: Bool,
         tx: DBReadTransaction,
     ) -> GroupMessageProcessorManager.DiscardMode {
-        guard
-            let sourceAci = Aci.parseFrom(
-                serviceIdBinary: jobInfo.envelope.sourceServiceIDBinary,
-                serviceIdString: jobInfo.envelope.sourceServiceID,
-            )
-        else {
+        guard let sourceAci = jobInfo.sourceAci else {
             owsFailDebug("Invalid source address.")
             return .discard
         }
@@ -454,6 +456,17 @@ class SpecificGroupMessageProcessor {
             return false
         }
 
+        let receivedDataDeletionRequest: ReceivedGroupDataDeletionRequest? = {
+            guard
+                BuildFlags.groupDataDeletionReceive,
+                let deleteData = jobInfo.groupContext.deleteData,
+                let senderAci = jobInfo.sourceAci
+            else {
+                return nil
+            }
+            return ReceivedGroupDataDeletionRequest(deleteData: deleteData, senderAci: senderAci)
+        }()
+
         do {
             let spamReportingMetadata: GroupUpdateSpamReportingMetadata = {
                 guard let serverGuid = ValidatedIncomingEnvelope.parseServerGuid(fromEnvelope: jobInfo.envelope) else {
@@ -465,6 +478,7 @@ class SpecificGroupMessageProcessor {
                 spamReportingMetadata: spamReportingMetadata,
                 changeActionsProto: changeActionsProto,
                 groupSecretParams: secretParams,
+                receivedDataDeletionRequest: receivedDataDeletionRequest,
             )
         } catch {
             if let retryableError = RetryableError(error) {

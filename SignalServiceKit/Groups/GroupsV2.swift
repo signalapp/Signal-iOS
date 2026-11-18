@@ -86,6 +86,7 @@ public protocol GroupsV2 {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSecretParams: GroupSecretParams,
+        receivedDataDeletionRequest: ReceivedGroupDataDeletionRequest?,
     ) async throws
 
     func uploadGroupAvatar(avatarData: Data, groupSecretParams: GroupSecretParams) async throws -> String
@@ -206,6 +207,7 @@ public protocol GroupV2Updates {
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         downloadedAvatars: GroupAvatarStateMap,
+        receivedDataDeletionRequest: ReceivedGroupDataDeletionRequest?,
         transaction: DBWriteTransaction,
     ) throws -> TSGroupThread
 
@@ -470,6 +472,7 @@ public class MockGroupsV2: GroupsV2 {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSecretParams: GroupSecretParams,
+        receivedDataDeletionRequest: ReceivedGroupDataDeletionRequest?,
     ) async throws {
         owsFail("Not implemented.")
     }
@@ -595,6 +598,7 @@ public class MockGroupV2Updates: GroupV2Updates {
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         downloadedAvatars: GroupAvatarStateMap,
+        receivedDataDeletionRequest: ReceivedGroupDataDeletionRequest?,
         transaction: DBWriteTransaction,
     ) throws -> TSGroupThread {
         owsFail("Not implemented.")

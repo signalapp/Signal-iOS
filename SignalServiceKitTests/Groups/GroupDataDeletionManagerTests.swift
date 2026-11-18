@@ -345,3 +345,147 @@ final class GroupDataDeletionManagerTests: SSKBaseTest {
         }
     }
 }
+
+// MARK: -
+
+final class GroupDataDeletionRequestTests: SSKBaseTest {
+    private static let adminAci = Aci.constantForTesting("00000000-0000-4000-8000-00000000000A")
+    private static let memberAci = Aci.constantForTesting("00000000-0000-4000-8000-00000000000B")
+    private static let otherAci = Aci.constantForTesting("00000000-0000-4000-8000-00000000000C")
+
+    private var groupMembership: GroupMembership {
+        var builder = GroupMembership.Builder()
+        builder.addFullMember(Self.adminAci, role: .administrator)
+        builder.addFullMember(Self.memberAci, role: .normal)
+        builder.addFullMember(Self.otherAci, role: .normal)
+        return builder.build()
+    }
+
+    private func makeDeleteData(memberAcis: [Aci] = [], terminate: Bool = false) -> SSKProtoGroupContextV2DeleteData {
+        let deleteData = SSKProtoGroupContextV2DeleteData.builder()
+        deleteData.setMemberAcis(memberAcis.map(\.serviceIdBinary))
+        deleteData.setTerminate(terminate)
+        return deleteData.buildInfallibly()
+    }
+
+    private func makeRequest(
+        memberAcis: [Aci] = [],
+        terminate: Bool = false,
+        senderAci: Aci = GroupDataDeletionRequestTests.adminAci,
+        changeAuthorAci: Aci? = GroupDataDeletionRequestTests.adminAci,
+        removedAcis: Set<Aci> = [],
+        terminatesGroup: Bool = false,
+    ) -> GroupDataDeletionRequest? {
+        return GroupDataDeletionRequest(
+            received: ReceivedGroupDataDeletionRequest(
+                deleteData: makeDeleteData(memberAcis: memberAcis, terminate: terminate),
+                senderAci: senderAci,
+            ),
+            changeAuthorAci: changeAuthorAci,
+            oldGroupMembership: groupMembership,
+            removedAcis: removedAcis,
+            terminatesGroup: terminatesGroup,
+        )
+    }
+
+    func testAcceptsRemovedMembers() {
+        XCTAssertEqual(
+            makeRequest(memberAcis: [Self.memberAci], removedAcis: [Self.memberAci, Self.otherAci]),
+            .membersRemoved([Self.memberAci]),
+        )
+    }
+
+    func testAcceptsTermination() {
+        XCTAssertEqual(makeRequest(terminate: true, terminatesGroup: true), .groupTerminated)
+    }
+
+    func testRejectsSenderWhoIsNotTheAuthor() {
+        XCTAssertNil(makeRequest(memberAcis: [Self.memberAci], senderAci: Self.otherAci, removedAcis: [Self.memberAci]))
+    }
+
+    func testRejectsChangeWithoutAciAuthor() {
+        XCTAssertNil(makeRequest(memberAcis: [Self.memberAci], changeAuthorAci: nil, removedAcis: [Self.memberAci]))
+    }
+
+    func testRejectsAuthorWhoIsNotAnAdmin() {
+        XCTAssertNil(makeRequest(
+            memberAcis: [Self.memberAci],
+            senderAci: Self.otherAci,
+            changeAuthorAci: Self.otherAci,
+            removedAcis: [Self.memberAci],
+        ))
+    }
+
+    func testRejectsMemberTheChangeDoesNotRemove() {
+        XCTAssertNil(makeRequest(memberAcis: [Self.memberAci, Self.otherAci], removedAcis: [Self.memberAci]))
+    }
+
+    func testRejectsTerminationWithoutTerminateAction() {
+        XCTAssertNil(makeRequest(terminate: true, terminatesGroup: false))
+    }
+
+    func testRejectsEmptyRequest() {
+        XCTAssertNil(makeRequest(removedAcis: [Self.memberAci]))
+    }
+
+    func testAppliedRemovalCarriesValidatedRequest() throws {
+        let changedGroupModel = try applyAdminChange(deleteData: makeDeleteData(memberAcis: [Self.memberAci])) { changeActions, groupV2Params in
+            var deleteMember = GroupsProtoGroupChangeActionsDeleteMemberAction.builder()
+            deleteMember.setDeletedUserID(try groupV2Params.userId(for: Self.memberAci))
+            changeActions.addDeleteMembers(deleteMember.buildInfallibly())
+        }
+
+        XCTAssertEqual(changedGroupModel.dataDeletionRequest, .membersRemoved([Self.memberAci]))
+    }
+
+    func testAppliedTerminationCarriesValidatedRequest() throws {
+        let changedGroupModel = try applyAdminChange(deleteData: makeDeleteData(terminate: true)) { changeActions, _ in
+            changeActions.setTerminateGroup(GroupsProtoGroupChangeActionsTerminateGroupAction.builder().buildInfallibly())
+        }
+
+        XCTAssertEqual(changedGroupModel.dataDeletionRequest, .groupTerminated)
+    }
+
+    private func applyAdminChange(
+        deleteData: SSKProtoGroupContextV2DeleteData,
+        addActions: (inout GroupsProtoGroupChangeActionsBuilder, GroupV2Params) throws -> Void,
+    ) throws -> ChangedGroupModel {
+        return try write { tx -> ChangedGroupModel in
+            (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
+                localIdentifiers: .forUnitTests,
+                tx: tx,
+            )
+            let groupThread = try GroupManager.createGroupForTests(
+                members: [LocalIdentifiers.forUnitTests.aciAddress],
+                transaction: tx,
+            )
+
+            var membershipBuilder = GroupMembership.Builder()
+            membershipBuilder.addFullMember(LocalIdentifiers.forUnitTests.aci, role: .normal)
+            membershipBuilder.addFullMember(Self.adminAci, role: .administrator)
+            membershipBuilder.addFullMember(Self.memberAci, role: .normal)
+            var modelBuilder = (groupThread.groupModel as! TSGroupModelV2).asBuilder
+            modelBuilder.groupMembership = membershipBuilder.build()
+            let oldGroupModel = try modelBuilder.buildAsV2()
+            groupThread.update(with: oldGroupModel, transaction: tx)
+
+            let groupV2Params = try oldGroupModel.groupV2Params()
+            var changeActions = GroupsProtoGroupChangeActions.builder()
+            changeActions.setSourceUserID(try groupV2Params.userId(for: Self.adminAci))
+            changeActions.setRevision(oldGroupModel.revision + 1)
+            try addActions(&changeActions, groupV2Params)
+
+            return try GroupsV2IncomingChanges.applyChangesToGroupModel(
+                groupThread: groupThread,
+                localIdentifiers: .forUnitTests,
+                changeActionsProto: changeActions.buildInfallibly(),
+                downloadedAvatars: GroupAvatarStateMap(),
+                options: [],
+                receivedDataDeletionRequest: ReceivedGroupDataDeletionRequest(
+                    deleteData: deleteData,
+                    senderAci: Self.adminAci,
+                ),
+            )
+        }
+    }
+}

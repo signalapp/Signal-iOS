@@ -21,6 +21,9 @@ public struct ChangedGroupModel {
     /// Whether we should update the last verified name hash because the local user changed it.
     public let shouldUpdateLastVerifiedGroupNameHash: Bool
 
+    /// A validated request to delete group data that accompanied this change.
+    public let dataDeletionRequest: GroupDataDeletionRequest?
+
     public init(
         oldGroupModel: TSGroupModelV2,
         newGroupModel: TSGroupModelV2,
@@ -29,6 +32,7 @@ public struct ChangedGroupModel {
         profileKeys: [Aci: Data],
         newlyLearnedPniToAciAssociations: [Pni: Aci],
         shouldUpdateLastVerifiedGroupNameHash: Bool,
+        dataDeletionRequest: GroupDataDeletionRequest?,
     ) {
         self.oldGroupModel = oldGroupModel
         self.newGroupModel = newGroupModel
@@ -37,6 +41,7 @@ public struct ChangedGroupModel {
         self.profileKeys = profileKeys
         self.newlyLearnedPniToAciAssociations = newlyLearnedPniToAciAssociations
         self.shouldUpdateLastVerifiedGroupNameHash = shouldUpdateLastVerifiedGroupNameHash
+        self.dataDeletionRequest = dataDeletionRequest
     }
 }
 
@@ -66,6 +71,7 @@ public class GroupsV2IncomingChanges {
         changeActionsProto: GroupsProtoGroupChangeActions,
         downloadedAvatars: GroupAvatarStateMap,
         options: TSGroupModelOptions,
+        receivedDataDeletionRequest: ReceivedGroupDataDeletionRequest?,
     ) throws -> ChangedGroupModel {
         guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Invalid group model.")
@@ -199,6 +205,7 @@ public class GroupsV2IncomingChanges {
             profileKeys[aci] = profileKey
         }
 
+        var removedAcis = Set<Aci>()
         for action in changeActionsProto.deleteMembers {
             guard let userId = action.deletedUserID else {
                 throw OWSAssertionError("Missing userID.")
@@ -218,6 +225,7 @@ public class GroupsV2IncomingChanges {
             groupMembershipBuilder.removeInvalidInvite(userId: userId)
             groupMembershipBuilder.remove(aci)
             groupMembershipBuilder.setMemberLabel(label: nil, aci: aci)
+            removedAcis.insert(aci)
         }
 
         for action in changeActionsProto.modifyMemberRoles {
@@ -686,6 +694,16 @@ public class GroupsV2IncomingChanges {
 
         let newGroupModel = try builder.buildAsV2()
 
+        let dataDeletionRequest = receivedDataDeletionRequest.flatMap {
+            GroupDataDeletionRequest(
+                received: $0,
+                changeAuthorAci: changeAuthor as? Aci,
+                oldGroupMembership: oldGroupMembership,
+                removedAcis: removedAcis,
+                terminatesGroup: changeActionsProto.terminateGroup != nil,
+            )
+        }
+
         return ChangedGroupModel(
             oldGroupModel: oldGroupModel,
             newGroupModel: newGroupModel,
@@ -694,6 +712,7 @@ public class GroupsV2IncomingChanges {
             profileKeys: profileKeys,
             newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
             shouldUpdateLastVerifiedGroupNameHash: shouldUpdateLastVerifiedGroupNameHash,
+            dataDeletionRequest: dataDeletionRequest,
         )
     }
 }
