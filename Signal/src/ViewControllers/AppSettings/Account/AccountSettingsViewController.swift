@@ -796,21 +796,28 @@ class AccountSettingsViewController: OWSTableViewController2 {
     }
 
     private func didSelectSetUpWebAuthn() {
-        let webAuthn = WebAuthn(
-            accountEntropyPool: getAccountEntropyPool(),
-            dateProvider: dateProvider,
-            serviceProvider: serviceProvider,
+        navigationController?.pushViewController(
+            PasskeyEducationViewController { [weak self] in
+                guard let self else { return }
+                let webAuthn = WebAuthn(
+                    accountEntropyPool: getAccountEntropyPool(),
+                    dateProvider: dateProvider,
+                    serviceProvider: serviceProvider,
+                )
+                Task { [weak self] in
+                    guard let self else { return }
+                    do {
+                        let method = try await webAuthn.setup()
+                        loadMfaState()
+                        showRenameTwoFactorMethod(accountEntropyPool: getAccountEntropyPool(), method: method)
+                    } catch {
+                        Logger.error("Failed! \(error)")
+                        // TODO[#less]: Display the error to the user.
+                    }
+                }
+            },
+            animated: true,
         )
-        Task {
-            do {
-                let method = try await webAuthn.setup()
-                loadMfaState()
-                showRenameTwoFactorMethod(accountEntropyPool: getAccountEntropyPool(), method: method)
-            } catch {
-                Logger.error("Failed! \(error)")
-                // TODO[#less]: Display the error to the user.
-            }
-        }
     }
 
     private func showRenameTwoFactorMethod(

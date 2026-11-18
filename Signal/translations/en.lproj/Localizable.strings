@@ -7165,6 +7165,27 @@
 /* Title for sheet shown when tapping oversized text that has expired and is unavailable for download */
 "OVERSIZE_TEXT_UNAVAILABLE_SHEET_TITLE" = "Complete Message Not Available";
 
+/* Description introducing passkeys. Followed by a 'Learn more' link. */
+"PASSKEY_EDUCATION_BODY" = "With passkeys you can easily add a secure second form of authentication to your account. Passkeys can use your device’s biometrics or a compatible FIDO2 security key.";
+
+/* Bullet point explaining that passkeys can be added or removed. */
+"PASSKEY_EDUCATION_BULLET_MANAGE" = "Add or remove passkeys at anytime.";
+
+/* Bullet point explaining that a passkey can be given a name. */
+"PASSKEY_EDUCATION_BULLET_NAME" = "Give your passkey a friendly name to identify it";
+
+/* Bullet point explaining where a passkey is stored. */
+"PASSKEY_EDUCATION_BULLET_STORAGE" = "Use your device’s biometrics or a FIDO2 security key to store your passkey";
+
+/* Link at the end of the view introducing passkeys. */
+"PASSKEY_EDUCATION_LEARN_MORE" = "Learn more";
+
+/* Button on a view introducing passkeys that starts setting up a passkey. */
+"PASSKEY_EDUCATION_SET_UP_BUTTON" = "Set Up Passkey";
+
+/* Title for a view introducing passkeys. */
+"PASSKEY_EDUCATION_TITLE" = "Passkeys";
+
 /* The name of the Signal app, used as the title for an entry in a user's password manager for their Signal Recovery Key. Should be localized with the same value as the app's name in the iOS App Store. */
 "PASSWORD_MANAGER_SIGNAL_APP_NAME" = "Signal Private Messenger";
 
