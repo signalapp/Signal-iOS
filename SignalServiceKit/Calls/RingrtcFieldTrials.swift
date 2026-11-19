@@ -14,6 +14,10 @@ public enum RingrtcFieldTrials {
             result["WebRTC-Network-UseNWPathMonitor"] = "Enabled"
         }
 
+        if let smartFlushing = remoteConfig.ringrtcSmartFlushing?.nilIfEmpty, smartFlushing != "false" {
+            result["WebRTC-Audio-NetEqSmartFlushing"] = smartFlushing
+        }
+
         return result
     }
 }

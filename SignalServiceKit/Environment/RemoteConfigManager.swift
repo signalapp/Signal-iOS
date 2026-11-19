@@ -445,6 +445,11 @@ public class RemoteConfig {
         return !isEnabled(.ringrtcNwPathMonitorTrialKillSwitch, defaultValue: false)
     }
 
+    /// Value for the WebRTC field trial "WebRTC-Audio-NetEqSmartFlushing".
+    public var ringrtcSmartFlushing: String? {
+        return value(.ringrtcSmartFlushing)
+    }
+
     public var ringrtcVp9Enabled: Bool {
         return isEnabled(.ringrtcVp9Enabled, defaultValue: false)
     }
@@ -824,6 +829,7 @@ private enum ValueFlag: String, FlagType {
     case reactiveProfileKeyAttemptInterval = "ios.reactiveProfileKeyAttemptInterval"
     case replaceableInteractionExpiration = "ios.replaceableInteractionExpiration"
     case ringrtcDredDuration = "ios.ringrtcDredDuration"
+    case ringrtcSmartFlushing = "ios.ringrtcSmartFlushing"
     case ringrtcSvcMaxBitrateBps = "ios.ringrtcSvcMaxBitrateBps"
     case ringrtcSvcMode = "ios.ringrtcSvcMode"
     case ringrtcSvcModeForScreenshare = "ios.ringrtcSvcModeForScreenshare"
@@ -876,6 +882,7 @@ private enum ValueFlag: String, FlagType {
         case .reactiveProfileKeyAttemptInterval: true
         case .replaceableInteractionExpiration: false
         case .ringrtcDredDuration: true
+        case .ringrtcSmartFlushing: false
         case .ringrtcSvcMaxBitrateBps: true
         case .ringrtcSvcMode: true
         case .ringrtcSvcModeForScreenshare: true
