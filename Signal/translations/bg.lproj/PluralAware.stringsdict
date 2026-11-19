@@ -344,9 +344,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat</string>
+			<string>%1$d чат</string>
 			<key>other</key>
-			<string>%1$d Chats</string>
+			<string>%1$d чата</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
@@ -360,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Type</string>
+			<string>%1$d вид чат</string>
 			<key>other</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d вида чатове</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Excluded</string>
+			<string>%1$d изключен чат</string>
 			<key>other</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d изключени чата</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
@@ -1655,9 +1655,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This will remove the sticker pack. You can&apos;t add it again without a link or sticker message.</string>
+			<string>Това ще премахне пакета със стикери. Не можете да го добавите отново без линк или съобщение със стикер.</string>
 			<key>other</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Това ще премахне пакетите със стикери. Не можете да ги добавите отново без линк или съобщение със стикер.</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
@@ -1671,9 +1671,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Remove sticker pack?</string>
+			<string>Премахване на %1$d пакет със стикери?</string>
 			<key>other</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Премахване на %1$d пакета със стикери?</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
@@ -1687,9 +1687,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sticker pack removed</string>
+			<string>Пакетът със стикери е премахнат</string>
 			<key>other</key>
-			<string>Sticker packs removed</string>
+			<string>Пакетите със стикери са премахнати</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -1719,9 +1719,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Selected</string>
+			<string>%1$d избран</string>
 			<key>other</key>
-			<string>%1$d Selected</string>
+			<string>%1$d избрани</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

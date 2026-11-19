@@ -428,13 +428,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat</string>
+			<string>%1$d čet</string>
 			<key>few</key>
-			<string>%1$d Chats</string>
+			<string>%1$d čety</string>
 			<key>many</key>
-			<string>%1$d Chats</string>
+			<string>%1$d četu</string>
 			<key>other</key>
-			<string>%1$d Chats</string>
+			<string>%1$d četov</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
@@ -448,13 +448,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Type</string>
+			<string>%1$d typ četu</string>
 			<key>few</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d typy četu</string>
 			<key>many</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d typu četu</string>
 			<key>other</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d typov četu</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
@@ -468,13 +468,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Excluded</string>
+			<string>%1$d vylúčený čet</string>
 			<key>few</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d vylúčené čety</string>
 			<key>many</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d vylúčeného četu</string>
 			<key>other</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d vylúčených četov</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
@@ -2071,13 +2071,13 @@ Skúste to znova o %1$d hodín.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This will remove the sticker pack. You can&apos;t add it again without a link or sticker message.</string>
+			<string>Týmto sa odstráni balíček nálepiek. Bez odkazu alebo správy s nálepkou ho už nebudete môcť znova pridať.</string>
 			<key>few</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Týmto sa odstránia tieto balíčky nálepiek. Bez odkazu alebo správy s nálepkou ich už nebudete môcť znova pridať.</string>
 			<key>many</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Týmto sa odstránia tieto balíčky nálepiek. Bez odkazu alebo správy s nálepkou ich už nebudete môcť znova pridať.</string>
 			<key>other</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Týmto sa odstránia tieto balíčky nálepiek. Bez odkazu alebo správy s nálepkou ich už nebudete môcť znova pridať.</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
@@ -2091,13 +2091,13 @@ Skúste to znova o %1$d hodín.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Remove sticker pack?</string>
+			<string>Odstrániť %1$d balíček nálepiek?</string>
 			<key>few</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Odstrániť %1$d balíčky nálepiek?</string>
 			<key>many</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Odstrániť %1$d balíčka nálepiek?</string>
 			<key>other</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Odstrániť %1$d balíčkov nálepiek?</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
@@ -2111,13 +2111,13 @@ Skúste to znova o %1$d hodín.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sticker pack removed</string>
+			<string>Balíček nálepiek bol odstránený</string>
 			<key>few</key>
-			<string>Sticker packs removed</string>
+			<string>Balíčky nálepiek boli odstránené</string>
 			<key>many</key>
-			<string>Sticker packs removed</string>
+			<string>Balíčky nálepiek boli odstránené</string>
 			<key>other</key>
-			<string>Sticker packs removed</string>
+			<string>Balíčky nálepiek boli odstránené</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -2151,13 +2151,13 @@ Skúste to znova o %1$d hodín.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Selected</string>
+			<string>%1$d vybraná</string>
 			<key>few</key>
-			<string>%1$d Selected</string>
+			<string>%1$d vybrané</string>
 			<key>many</key>
-			<string>%1$d Selected</string>
+			<string>%1$d vybranej</string>
 			<key>other</key>
-			<string>%1$d Selected</string>
+			<string>%1$d vybraných</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

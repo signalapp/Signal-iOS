@@ -428,13 +428,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat</string>
+			<string>%1$d чат</string>
 			<key>few</key>
-			<string>%1$d Chats</string>
+			<string>%1$d чати</string>
 			<key>many</key>
-			<string>%1$d Chats</string>
+			<string>%1$d чатів</string>
 			<key>other</key>
-			<string>%1$d Chats</string>
+			<string>%1$d чату</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
@@ -448,13 +448,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Type</string>
+			<string>%1$d тип чатів</string>
 			<key>few</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d типи чатів</string>
 			<key>many</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d типів чатів</string>
 			<key>other</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d типу чатів</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
@@ -468,13 +468,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Excluded</string>
+			<string>%1$d чат не включено</string>
 			<key>few</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d чати не включено</string>
 			<key>many</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d чатів не включено</string>
 			<key>other</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d чату не включено</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
@@ -2071,13 +2071,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This will remove the sticker pack. You can&apos;t add it again without a link or sticker message.</string>
+			<string>Набір стікерів буде вилучено. Додати його повторно можна тільки через посилання або повідомлення з таким стікером.</string>
 			<key>few</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Набори стікерів буде вилучено. Додати їх повторно можна тільки через посилання або повідомлення з такими стікерами.</string>
 			<key>many</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Набори стікерів буде вилучено. Додати їх повторно можна тільки через посилання або повідомлення з такими стікерами.</string>
 			<key>other</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Набори стікерів буде вилучено. Додати їх повторно можна тільки через посилання або повідомлення з такими стікерами.</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
@@ -2091,13 +2091,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Remove sticker pack?</string>
+			<string>Вилучити %1$d набір стікерів?</string>
 			<key>few</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Вилучити %1$d набори стікерів?</string>
 			<key>many</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Вилучити %1$d наборів стікерів?</string>
 			<key>other</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Вилучити %1$d набору стікерів?</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
@@ -2111,13 +2111,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sticker pack removed</string>
+			<string>Набір стікерів вилучено</string>
 			<key>few</key>
-			<string>Sticker packs removed</string>
+			<string>Набори стікерів вилучено</string>
 			<key>many</key>
-			<string>Sticker packs removed</string>
+			<string>Набори стікерів вилучено</string>
 			<key>other</key>
-			<string>Sticker packs removed</string>
+			<string>Набори стікерів вилучено</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -2151,13 +2151,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Selected</string>
+			<string>Вибрано %1$d</string>
 			<key>few</key>
-			<string>%1$d Selected</string>
+			<string>Вибрано %1$d</string>
 			<key>many</key>
-			<string>%1$d Selected</string>
+			<string>Вибрано %1$d</string>
 			<key>other</key>
-			<string>%1$d Selected</string>
+			<string>Вибрано %1$d</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

@@ -344,9 +344,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat</string>
+			<string>%1$d چیٹس</string>
 			<key>other</key>
-			<string>%1$d Chats</string>
+			<string>%1$d چیٹس</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
@@ -360,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Type</string>
+			<string>%1$d چیٹ کی قسم</string>
 			<key>other</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d چیٹ کی اقسام</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Excluded</string>
+			<string>%1$d چیٹ کو نکال دیا گیا</string>
 			<key>other</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d چیٹس کو نکال دیا گیا</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
@@ -1655,9 +1655,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This will remove the sticker pack. You can&apos;t add it again without a link or sticker message.</string>
+			<string>اس سے اسٹیکر پیک ہٹا دیا جائے گا۔ آپ لنک یا اسٹیکر میسج کے بغیر اسے دوبارہ شامل نہیں کر سکتے۔</string>
 			<key>other</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>اس سے اسٹیکر پیکس ہٹا دیے جائیں گے۔ آپ لنک یا اسٹیکر میسج کے بغیر انہیں دوبارہ شامل نہیں کر سکتے۔</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
@@ -1671,9 +1671,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Remove sticker pack?</string>
+			<string>%1$d اسٹیکر پیک ہٹا دیں؟</string>
 			<key>other</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>%1$d اسٹیکر پیکس ہٹا دیں؟</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
@@ -1687,9 +1687,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sticker pack removed</string>
+			<string>اسٹیکر پیک ہٹا دیا گیا</string>
 			<key>other</key>
-			<string>Sticker packs removed</string>
+			<string>اسٹیکر پیکس ہٹا دیے گئے</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -1719,9 +1719,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Selected</string>
+			<string>%1$d منتخب کیا گیا</string>
 			<key>other</key>
-			<string>%1$d Selected</string>
+			<string>%1$d منتخب کیے گئے</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

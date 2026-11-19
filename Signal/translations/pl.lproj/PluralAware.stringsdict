@@ -428,13 +428,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat</string>
+			<string>%1$d czat</string>
 			<key>few</key>
-			<string>%1$d Chats</string>
+			<string>%1$d czaty</string>
 			<key>many</key>
-			<string>%1$d Chats</string>
+			<string>%1$d czatów</string>
 			<key>other</key>
-			<string>%1$d Chats</string>
+			<string>%1$d czata</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
@@ -448,13 +448,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Type</string>
+			<string>%1$d rodzaj czatów</string>
 			<key>few</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d rodzaje czatów</string>
 			<key>many</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d rodzajów czatów</string>
 			<key>other</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d rodzaju czatów</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
@@ -468,13 +468,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Excluded</string>
+			<string>%1$d wykluczony czat</string>
 			<key>few</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d wykluczone czaty</string>
 			<key>many</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d wykluczonych czatów</string>
 			<key>other</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d wykluczonego czatu</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
@@ -2071,13 +2071,13 @@ Spróbuj ponownie za %1$d godziny.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This will remove the sticker pack. You can&apos;t add it again without a link or sticker message.</string>
+			<string>Spowoduje to usunięcie pakietu naklejek. Aby dodać go ponownie, potrzebny będzie link lub wiadomość z naklejką</string>
 			<key>few</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Spowoduje to usunięcie tych pakietów naklejek. Aby dodać je ponownie, potrzebny będzie link lub wiadomość z naklejką.</string>
 			<key>many</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Spowoduje to usunięcie tych pakietów naklejek. Aby dodać je ponownie, potrzebny będzie link lub wiadomość z naklejką.</string>
 			<key>other</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Spowoduje to usunięcie tych pakietów naklejek. Aby dodać je ponownie, potrzebny będzie link lub wiadomość z naklejką.</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
@@ -2091,13 +2091,13 @@ Spróbuj ponownie za %1$d godziny.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Remove sticker pack?</string>
+			<string>Usunąć %1$d pakiet naklejek?</string>
 			<key>few</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Usunąć %1$d pakiety naklejek?</string>
 			<key>many</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Usunąć %1$d pakietów naklejek?</string>
 			<key>other</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Usunąć %1$d pakietów naklejek?</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
@@ -2111,13 +2111,13 @@ Spróbuj ponownie za %1$d godziny.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sticker pack removed</string>
+			<string>Usunięto pakiet naklejek</string>
 			<key>few</key>
-			<string>Sticker packs removed</string>
+			<string>Usunięto pakiety naklejek</string>
 			<key>many</key>
-			<string>Sticker packs removed</string>
+			<string>Usunięto pakiety naklejek</string>
 			<key>other</key>
-			<string>Sticker packs removed</string>
+			<string>Usunięto pakiety naklejek</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -2151,13 +2151,13 @@ Spróbuj ponownie za %1$d godziny.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Selected</string>
+			<string>Zaznaczono %1$d</string>
 			<key>few</key>
-			<string>%1$d Selected</string>
+			<string>Zaznaczono %1$d</string>
 			<key>many</key>
-			<string>%1$d Selected</string>
+			<string>Zaznaczono %1$d</string>
 			<key>other</key>
-			<string>%1$d Selected</string>
+			<string>Zaznaczono %1$d</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

@@ -428,13 +428,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat</string>
+			<string>%1$d pokalbis</string>
 			<key>few</key>
-			<string>%1$d Chats</string>
+			<string>%1$d pokalbiai</string>
 			<key>many</key>
-			<string>%1$d Chats</string>
+			<string>%1$d pokalbio</string>
 			<key>other</key>
-			<string>%1$d Chats</string>
+			<string>%1$d pokalbių</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
@@ -448,13 +448,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Type</string>
+			<string>%1$d pokalbio tipas</string>
 			<key>few</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d pokalbio tipai</string>
 			<key>many</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d pokalbio tipo</string>
 			<key>other</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d pokalbio tipų</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
@@ -468,13 +468,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Excluded</string>
+			<string>%1$d pokalbis neįtrauktas</string>
 			<key>few</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d pokalbiai neįtraukti</string>
 			<key>many</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d pokalbio neįtraukta</string>
 			<key>other</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d pokalbių neįtraukta</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
@@ -2071,13 +2071,13 @@ Bandykite vėl po %1$d val.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This will remove the sticker pack. You can&apos;t add it again without a link or sticker message.</string>
+			<string>Tai pašalins lipdukų paketą. Norint pridėti iš naujo, reikės nuorodos arba lipduko žinutės.</string>
 			<key>few</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Tai pašalins šiuos lipdukų paketus. Norint pridėti iš naujo, reikės nuorodos arba lipduko žinutės.</string>
 			<key>many</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Tai pašalins šiuos lipdukų paketus. Norint pridėti iš naujo, reikės nuorodos arba lipduko žinutės.</string>
 			<key>other</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Tai pašalins šiuos lipdukų paketus. Norint pridėti iš naujo, reikės nuorodos arba lipduko žinutės.</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
@@ -2091,13 +2091,13 @@ Bandykite vėl po %1$d val.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Remove sticker pack?</string>
+			<string>Pašalinti %1$d lipdukų paketą?</string>
 			<key>few</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Pašalinti %1$d lipdukų paketus?</string>
 			<key>many</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Pašalinti %1$d lipdukų paketo?</string>
 			<key>other</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Pašalinti %1$d lipdukų paketų?</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
@@ -2111,13 +2111,13 @@ Bandykite vėl po %1$d val.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sticker pack removed</string>
+			<string>Lipdukų paketas pašalintas</string>
 			<key>few</key>
-			<string>Sticker packs removed</string>
+			<string>Lipdukų paketai pašalinti</string>
 			<key>many</key>
-			<string>Sticker packs removed</string>
+			<string>Lipdukų paketai pašalinti</string>
 			<key>other</key>
-			<string>Sticker packs removed</string>
+			<string>Lipdukų paketai pašalinti</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -2151,13 +2151,13 @@ Bandykite vėl po %1$d val.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Selected</string>
+			<string>Pažymėta: %1$d</string>
 			<key>few</key>
-			<string>%1$d Selected</string>
+			<string>Pažymėta: %1$d</string>
 			<key>many</key>
-			<string>%1$d Selected</string>
+			<string>Pažymėta: %1$d</string>
 			<key>other</key>
-			<string>%1$d Selected</string>
+			<string>Pažymėta: %1$d</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
