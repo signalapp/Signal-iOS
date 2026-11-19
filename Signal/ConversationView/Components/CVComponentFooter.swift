@@ -732,6 +732,12 @@ class CVComponentFooter: CVComponentBase, CVComponent {
         )
     }
 
+    private static let measurementKey_baselineOffset = "CVComponentFooter.measurementKey_baselineOffset"
+
+    static func baselineOffset(measurementBuilder: CVCellMeasurement.Builder) -> CGFloat? {
+        measurementBuilder.getValue(key: measurementKey_baselineOffset)
+    }
+
     private static let measurementKey_outerStack = "CVComponentFooter.measurementKey_outerStack"
     private static let measurementKey_innerStack = "CVComponentFooter.measurementKey_innerStack"
 
@@ -809,6 +815,11 @@ class CVComponentFooter: CVComponentBase, CVComponent {
             subviewInfos: outerSubviewInfos,
             maxWidth: maxWidth,
         )
+        // The timestamp is centered in the inner stack, which is bottom-aligned in the outer stack.
+        let baselineOffset = (innerStackMeasurement.measuredSize.height - timestampLabelSize.height) * 0.5
+            - timestampLabelConfig.font.descender
+        measurementBuilder.setValue(key: Self.measurementKey_baselineOffset, value: baselineOffset)
+
         return outerStackMeasurement.measuredSize
     }
 
