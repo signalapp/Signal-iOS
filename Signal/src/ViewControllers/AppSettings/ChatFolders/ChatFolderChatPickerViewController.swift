@@ -211,16 +211,19 @@ class ChatFolderChatPickerViewController: OWSTableViewController2, NewMembersBar
         chats = db.read { tx in
             var chats: [Chat] = []
 
-            ThreadFinder().enumerateVisibleThreads(
-                isArchived: false,
-                transaction: tx,
-            ) { thread in
-                Chat(
-                    thread: thread,
-                    contactManager: contactManager,
-                    nameSortConfig: nameSortConfig,
-                    tx: tx,
-                ).flatMap { chats.append($0) }
+            // Archived chats can be added to folders, but sort after non-archived ones.
+            for isArchived in [false, true] {
+                ThreadFinder().enumerateVisibleThreads(
+                    isArchived: isArchived,
+                    transaction: tx,
+                ) { thread in
+                    Chat(
+                        thread: thread,
+                        contactManager: contactManager,
+                        nameSortConfig: nameSortConfig,
+                        tx: tx,
+                    ).flatMap { chats.append($0) }
+                }
             }
 
             return chats
