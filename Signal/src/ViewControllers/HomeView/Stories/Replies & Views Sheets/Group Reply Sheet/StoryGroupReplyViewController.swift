@@ -106,6 +106,12 @@ class StoryGroupReplyViewController: OWSViewController, ContextMenuInteractionDe
         super.viewDidLoad()
 
         view.preservesSuperviewLayoutMargins = true
+        if #available(iOS 26, *) {
+            // Semi-transparent because it's overlaid over glass.
+            view.backgroundColor = .Signal.background.withAlphaComponent(0.7)
+        } else {
+            view.backgroundColor = .Signal.background
+        }
 
         tableView.delegate = self
         tableView.dataSource = self

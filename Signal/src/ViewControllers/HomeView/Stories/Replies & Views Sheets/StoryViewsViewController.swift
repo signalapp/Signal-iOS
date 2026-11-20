@@ -59,6 +59,13 @@ class StoryViewsViewController: OWSViewController, DatabaseChangeDelegate, UIAda
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        if #available(iOS 26, *) {
+            // Semi-transparent because it's overlaid over glass.
+            view.backgroundColor = .Signal.background.withAlphaComponent(0.7)
+        } else {
+            view.backgroundColor = .Signal.background
+        }
+
         tableView.dataSource = self
         tableView.delegate = self
         tableView.backgroundColor = .clear

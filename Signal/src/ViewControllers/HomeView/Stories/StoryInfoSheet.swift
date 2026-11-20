@@ -45,7 +45,13 @@ class StoryInfoSheet: OWSTableViewController2, DatabaseChangeDelegate, UIAdaptiv
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        backgroundStyle = .clear
+        if #available(iOS 26, *) {
+            backgroundStyle = .clear
+            // Semi-transparent because it's overlaid over glass.
+            view.backgroundColor = .Signal.background.withAlphaComponent(0.7)
+        } else {
+            view.backgroundColor = .Signal.background
+        }
 
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
