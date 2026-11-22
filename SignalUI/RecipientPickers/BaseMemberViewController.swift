@@ -217,7 +217,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
             return zip(members, displayNames).map { member, displayName in
                 return NewMember(
                     recipient: member.0,
-                    address: member.1,
+                    avatarDataSource: .address(member.1),
                     shortName: displayName.resolvedValue(useShortNameIfAvailable: true),
                 )
             }

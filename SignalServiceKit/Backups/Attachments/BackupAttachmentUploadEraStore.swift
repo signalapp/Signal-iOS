@@ -14,16 +14,16 @@ public struct BackupAttachmentUploadEraStore {
         static let currentUploadEra = "currentUploadEra"
     }
 
-    private let kvStore: KeyValueStore
+    private let kvStore: NewKeyValueStore
 
     public init() {
-        self.kvStore = KeyValueStore(collection: "BackupUploadEraStore")
+        self.kvStore = NewKeyValueStore(collection: "BackupUploadEraStore")
     }
 
     /// The current upload era for Backup Attachments. Attachments not matching
     /// this upload era may need to be reuploaded.
     public func currentUploadEra(tx: DBReadTransaction) -> String {
-        if let persisted = kvStore.getString(StoreKeys.currentUploadEra, transaction: tx) {
+        if let persisted = kvStore.fetchValue(String.self, forKey: StoreKeys.currentUploadEra, tx: tx) {
             return persisted
         }
 
@@ -33,10 +33,10 @@ public struct BackupAttachmentUploadEraStore {
     /// Rotate the current upload era. This implicitly "marks" attachments from
     /// prior eras as potentially needing to be reuploaded.
     public func rotateUploadEra(tx: DBWriteTransaction) {
-        kvStore.setString(
+        kvStore.writeValue(
             Randomness.generateRandomBytes(32).base64EncodedString(),
-            key: StoreKeys.currentUploadEra,
-            transaction: tx,
+            forKey: StoreKeys.currentUploadEra,
+            tx: tx,
         )
     }
 }

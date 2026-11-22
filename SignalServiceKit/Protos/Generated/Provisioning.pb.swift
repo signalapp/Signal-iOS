@@ -9,7 +9,7 @@
 //   https://github.com/apple/swift-protobuf/
 
 //
-// Copyright 2014 Signal Messenger, LLC
+// Copyright 2020 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 
 #if canImport(FoundationEssentials)
@@ -29,7 +29,44 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated struct ProvisioningProtos_ProvisionEnvelope: Sendable {
+public nonisolated enum Signalservice_ProvisioningVersion: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case initial = 0
+  case tabletSupport = 1
+  public static let current = tabletSupport
+
+  public init() {
+    self = .initial
+  }
+
+}
+
+/// An opaque address sent by the server when clients first open a provisioning
+/// WebSocket
+public nonisolated struct Signalservice_ProvisioningAddress: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// The opaque provisioning address for the active provisioning WebSocket
+  /// session; clients should not attempt to interpret or modify the contents
+  /// of the address string
+  public var address: String {
+    get {_address ?? String()}
+    set {_address = newValue}
+  }
+  /// Returns true if `address` has been explicitly set.
+  public var hasAddress: Bool {self._address != nil}
+  /// Clears the value of `address`. Subsequent reads from it will return its default value.
+  public mutating func clearAddress() {self._address = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _address: String? = nil
+}
+
+public nonisolated struct Signalservice_ProvisionEnvelope: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -61,7 +98,7 @@ public nonisolated struct ProvisioningProtos_ProvisionEnvelope: Sendable {
   fileprivate var _body: Data? = nil
 }
 
-public nonisolated struct ProvisioningProtos_ProvisionMessage: Sendable {
+public nonisolated struct Signalservice_ProvisionMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -175,7 +212,7 @@ public nonisolated struct ProvisioningProtos_ProvisionMessage: Sendable {
   /// Clears the value of `accountEntropyPool`. Subsequent reads from it will return its default value.
   public mutating func clearAccountEntropyPool() {self._accountEntropyPool = nil}
 
-  /// 32 bytes
+  /// 32-bytes
   public var mediaRootBackupKey: Data {
     get {_mediaRootBackupKey ?? Data()}
     set {_mediaRootBackupKey = newValue}
@@ -239,9 +276,47 @@ public nonisolated struct ProvisioningProtos_ProvisionMessage: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate nonisolated let _protobuf_package = "ProvisioningProtos"
+fileprivate nonisolated let _protobuf_package = "signalservice"
 
-nonisolated extension ProvisioningProtos_ProvisionEnvelope: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Signalservice_ProvisioningVersion: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0INITIAL\0\u{9}TABLET_SUPPORT\0\u{1}CURRENT\0")
+}
+
+nonisolated extension Signalservice_ProvisioningAddress: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ProvisioningAddress"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}address\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self._address) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._address {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Signalservice_ProvisioningAddress, rhs: Signalservice_ProvisioningAddress) -> Bool {
+    if lhs._address != rhs._address {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Signalservice_ProvisionEnvelope: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ProvisionEnvelope"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}publicKey\0\u{1}body\0")
 
@@ -272,7 +347,7 @@ nonisolated extension ProvisioningProtos_ProvisionEnvelope: SwiftProtobuf.Messag
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: ProvisioningProtos_ProvisionEnvelope, rhs: ProvisioningProtos_ProvisionEnvelope) -> Bool {
+  public static func ==(lhs: Signalservice_ProvisionEnvelope, rhs: Signalservice_ProvisionEnvelope) -> Bool {
     if lhs._publicKey != rhs._publicKey {return false}
     if lhs._body != rhs._body {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -280,7 +355,7 @@ nonisolated extension ProvisioningProtos_ProvisionEnvelope: SwiftProtobuf.Messag
   }
 }
 
-nonisolated extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Signalservice_ProvisionMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ProvisionMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}aciIdentityKeyPublic\0\u{1}aciIdentityKeyPrivate\0\u{1}number\0\u{1}provisioningCode\0\u{1}userAgent\0\u{1}profileKey\0\u{1}readReceipts\0\u{2}\u{2}provisioningVersion\0\u{2}\u{2}pniIdentityKeyPublic\0\u{1}pniIdentityKeyPrivate\0\u{2}\u{2}ephemeralBackupKey\0\u{1}accountEntropyPool\0\u{1}mediaRootBackupKey\0\u{1}aciBinary\0\u{1}pniBinary\0\u{1}authCredentialSalt\0\u{c}\u{8}\u{1}\u{c}\u{a}\u{1}\u{c}\u{d}\u{1}")
 
@@ -367,7 +442,7 @@ nonisolated extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: ProvisioningProtos_ProvisionMessage, rhs: ProvisioningProtos_ProvisionMessage) -> Bool {
+  public static func ==(lhs: Signalservice_ProvisionMessage, rhs: Signalservice_ProvisionMessage) -> Bool {
     if lhs._aciIdentityKeyPublic != rhs._aciIdentityKeyPublic {return false}
     if lhs._aciIdentityKeyPrivate != rhs._aciIdentityKeyPrivate {return false}
     if lhs._pniIdentityKeyPublic != rhs._pniIdentityKeyPublic {return false}

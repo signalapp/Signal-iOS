@@ -560,6 +560,99 @@ struct ThreadFinderChatFolderTests {
         )
     }
 
+    private func badgeCounts(
+        _ folders: [ChatFolder],
+        badgeCountType: BadgeCountType,
+        includeMutedThreads: Bool = false,
+    ) -> (unreadChatCount: UInt, unreadCountsByChatFolder: [UUID: UInt]) {
+        return db.read { tx in
+            BadgeCountFetcher.unreadCounts(
+                unreadThreads: threadFinder.unreadInboxThreads(tx: tx),
+                badgeCountType: badgeCountType,
+                includeMutedThreads: includeMutedThreads,
+                chatFolders: folders,
+                nowMs: Date.ows_millisecondTimestamp(),
+            )
+        }
+    }
+
+    @Test
+    func testBadgeCounts() throws {
+        let messages = try insert(contactThread(), lastInteractionRowId: 6, isMarkedUnread: true)
+        try insertIncomingMessage(in: messages, read: false)
+        try insertIncomingMessage(in: messages, read: false)
+        let markedUnread = try insert(contactThread(), lastInteractionRowId: 5, isMarkedUnread: true)
+        let muted = try insert(contactThread(), lastInteractionRowId: 4, isMarkedUnread: true, mutedUntilTimestamp: TSThread.alwaysMutedTimestamp)
+        let archived = try insert(contactThread(), lastInteractionRowId: 3, isArchived: true, isMarkedUnread: true)
+        let archivedWithMessages = try insert(contactThread(), lastInteractionRowId: 8, isArchived: true)
+        try insertIncomingMessage(in: archivedWithMessages, read: false)
+        let read = try insert(contactThread(), lastInteractionRowId: 2)
+        try insertIncomingMessage(in: read, read: true)
+        let group = try insertGroupThread(lastInteractionRowId: 1)
+        try insertIncomingMessage(in: group, read: false)
+
+        let hidden = try insert(contactThread(), lastInteractionRowId: 7)
+        try insertIncomingMessage(in: hidden, read: false)
+        let hiddenMarkedUnread = try insert(contactThread(), lastInteractionRowId: 9, isMarkedUnread: true)
+        try db.write { tx in
+            try tx.database.execute(
+                sql: "UPDATE model_TSThread SET shouldThreadBeVisible = 0 WHERE uniqueId IN (?, ?)",
+                arguments: [hidden.uniqueId, hiddenMarkedUnread.uniqueId],
+            )
+        }
+
+        let all = chatFolder(folderType: .all)
+        let custom = chatFolder(
+            showMutedChats: false,
+            includeAllIndividualChats: true,
+            included: [archived, group],
+            excluded: [markedUnread],
+        )
+        let overlap = chatFolder(included: [messages, muted])
+        let empty = chatFolder(included: [read])
+        let folders = [all, custom, overlap, empty]
+
+        let unreadMessageCounts = db.read { tx in
+            Dictionary(uniqueKeysWithValues: threadFinder.unreadInboxThreads(tx: tx).map {
+                ($0.inboxThread.uniqueId, $0.unreadMessageCount)
+            })
+        }
+        #expect(unreadMessageCounts == [messages.uniqueId: 2, markedUnread.uniqueId: 0, muted.uniqueId: 0, group.uniqueId: 1])
+
+        // The app badge skips muted chats unless the setting includes them.
+        // Chat folders always count the muted chats they show.
+        let counts = badgeCounts(folders, badgeCountType: .unreadMessages)
+        #expect(counts.unreadChatCount == 4)
+        #expect(badgeCounts(folders, badgeCountType: .unreadMessages, includeMutedThreads: true).unreadChatCount == 5)
+        #expect(counts.unreadCountsByChatFolder[all.chatFolderId, default: 0] == 5)
+        #expect(counts.unreadCountsByChatFolder[custom.chatFolderId, default: 0] == 3)
+        #expect(counts.unreadCountsByChatFolder[overlap.chatFolderId, default: 0] == 3)
+        #expect(counts.unreadCountsByChatFolder[empty.chatFolderId, default: 0] == 0)
+
+        // Counting chats, each unread chat contributes one regardless of its message count.
+        let chatCounts = badgeCounts(folders, badgeCountType: .unreadChats)
+        #expect(chatCounts.unreadChatCount == 3)
+        #expect(badgeCounts(folders, badgeCountType: .unreadChats, includeMutedThreads: true).unreadChatCount == 4)
+        #expect(chatCounts.unreadCountsByChatFolder[all.chatFolderId, default: 0] == 4)
+        #expect(chatCounts.unreadCountsByChatFolder[custom.chatFolderId, default: 0] == 2)
+        #expect(chatCounts.unreadCountsByChatFolder[overlap.chatFolderId, default: 0] == 2)
+        #expect(chatCounts.unreadCountsByChatFolder[empty.chatFolderId, default: 0] == 0)
+
+        // Marking messages read and archiving a chat updates every overlapping folder.
+        try db.write { tx in
+            try tx.database.execute(sql: "UPDATE model_TSInteraction SET read = 1")
+            try tx.database.execute(
+                sql: "UPDATE model_TSThread SET isArchived = 1 WHERE uniqueId = ?",
+                arguments: [muted.uniqueId],
+            )
+        }
+        let updatedCounts = badgeCounts(folders, badgeCountType: .unreadMessages)
+        #expect(updatedCounts.unreadChatCount == 2)
+        #expect(updatedCounts.unreadCountsByChatFolder[all.chatFolderId, default: 0] == 2)
+        #expect(updatedCounts.unreadCountsByChatFolder[custom.chatFolderId, default: 0] == 1)
+        #expect(updatedCounts.unreadCountsByChatFolder[overlap.chatFolderId, default: 0] == 1)
+    }
+
     @Test
     func testAllChatsFolderIgnoresFolderSettings() throws {
         let contact = try insert(contactThread(), lastInteractionRowId: 4)

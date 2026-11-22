@@ -531,8 +531,8 @@ extension PollMessageManager {
 
         var partialErrors = [BackupArchive.RestoreFrameError]()
 
-        var votesByAuthorId: [Int64: [OWSPoll.OptionIndex]] = [:]
-        var voteCountByAuthorId: [Int64: Int32] = [:]
+        var votesByAuthorId: [SignalRecipient.RowId: [OWSPoll.OptionIndex]] = [:]
+        var voteCountByAuthorId: [SignalRecipient.RowId: Int32] = [:]
 
         for (index, optionData) in pollBackupData.options.enumerated() {
             for vote in optionData.votes {

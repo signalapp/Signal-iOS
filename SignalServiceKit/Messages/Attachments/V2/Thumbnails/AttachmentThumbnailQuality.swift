@@ -49,7 +49,7 @@ extension AttachmentThumbnailQuality {
 
     // This size is large enough to render full screen.
     private static func thumbnailDimensionPointsLarge() -> CGFloat {
-        let screenSizePoints = UIScreen.main.bounds.size
+        let screenSizePoints = (CurrentAppContext().mainWindow?.windowScene?.screen ?? UIScreen.main).bounds.size
         return screenSizePoints.largerAxis
     }
 

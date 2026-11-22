@@ -56,6 +56,8 @@ class ChatFolderTableViewCell: UITableViewCell, ReusableTableViewCell {
 
     private var trailingView: UIView?
 
+    private var isReorderable = false
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
@@ -90,6 +92,7 @@ class ChatFolderTableViewCell: UITableViewCell, ReusableTableViewCell {
         title: String,
         subtitle: String? = nil,
         trailingView: UIView? = nil,
+        isReorderable: Bool = false,
     ) {
         iconLabel.attributedText = symbol.attributedString(staticFontSize: Self.iconSize)
         titleLabel.text = title
@@ -103,6 +106,15 @@ class ChatFolderTableViewCell: UITableViewCell, ReusableTableViewCell {
             trailingView.setCompressionResistanceHorizontalHigh()
             stackView.addArrangedSubview(trailingView)
         }
+
+        self.isReorderable = isReorderable
+        showsReorderControl = isReorderable
+    }
+
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        // UIKit counts a canceled swipe action as ending editing and hides the reorder handle.
+        showsReorderControl = isReorderable
     }
 
     override func layoutSubviews() {

@@ -58,7 +58,7 @@ class DeviceTransferStatusViewController: HostingController<TransferWrapperView>
         }
 
         coordinator.onSuccess = { [weak self] in
-            let sheet = HeroSheetViewController(
+            let sheet = TransferCompleteSheetViewController(
                 hero: .image(UIImage(named: "transfer_complete")!),
                 title: OWSLocalizedString(
                     "TRANSFER_COMPLETE_SHEET_TITLE",
@@ -80,8 +80,14 @@ class DeviceTransferStatusViewController: HostingController<TransferWrapperView>
                     self?.dismiss(animated: true)
                 },
             )
+            Logger.info("Presenting transfer complete sheet")
             self?.present(sheet, animated: true)
         }
+    }
+
+    private final class TransferCompleteSheetViewController: HeroSheetViewController {
+        override var canBeDismissed: Bool { false }
+        override var prefersGrabberVisible: Bool { false }
     }
 
     @MainActor

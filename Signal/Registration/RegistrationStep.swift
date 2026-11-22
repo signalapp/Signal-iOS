@@ -37,6 +37,15 @@ public enum RegistrationStep: CustomStringConvertible {
     /// Prompt the user to enter ACI/AEP for registration
     case promptForLogin(RegistrationSignalLoginState)
 
+    /// Prompt the user to choose TOTP or WebAuthn.
+    case promptForMfa(RegistrationMfaState)
+
+    /// Prompt the user to enter a TOTP code.
+    case promptForTotp(RegistrationTotpState)
+
+    /// Prompt the user to perform a WebAuthn ceremony.
+    case promptForWebAuthn(RegistrationWebAuthnState)
+
     /// For the first time we enter the pin. This can be
     /// for first account setup, creating a pin, or if
     /// re-registering and needing to confirm the pin.
@@ -137,6 +146,9 @@ public enum RegistrationStep: CustomStringConvertible {
         case .verificationCodeEntry: return "verificationCodeEntry"
         case .deviceTransfer: return "deviceTransfer"
         case .promptForLogin: return "promptForLogin"
+        case .promptForMfa: return "promptForMfa"
+        case .promptForTotp: return "promptForTotp"
+        case .promptForWebAuthn: return "promptForWebAuthn"
         case .pinEntry(let pinState): return "pinEntry(\(pinState.operation.logSafeString))"
         case .pinAttemptsExhaustedWithoutReglock: return "pinAttemptsExhaustedWithoutReglock"
         case .captchaChallenge: return "captchaChallenge"

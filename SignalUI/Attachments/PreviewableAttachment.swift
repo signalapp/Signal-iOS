@@ -30,6 +30,7 @@ public struct PreviewableAttachment {
         case image(NormalizedImage)
         case animatedImage
         case normalizedVideo(NormalizedVideo)
+        case finalizedVideo(NormalizedVideo.FinalizedVideo)
         case other
     }
 
@@ -49,7 +50,7 @@ public struct PreviewableAttachment {
         switch attachmentType {
         case .normalizedVideo(let normalizedVideo):
             return normalizedVideo
-        case .image, .animatedImage, .other:
+        case .image, .animatedImage, .finalizedVideo, .other:
             return nil
         }
     }
@@ -127,10 +128,21 @@ public struct PreviewableAttachment {
         finalizedVideo: NormalizedVideo.FinalizedVideo,
         attachmentLimits: OutgoingAttachmentLimits,
     ) throws -> Self {
-        return try finalizedVideoAttachment(
-            dataSource: finalizedVideo.dataSource,
-            dataUTI: finalizedVideo.dataUTI,
-            attachmentLimits: attachmentLimits,
+        let dataSource = finalizedVideo.dataSource
+        let dataUTI = finalizedVideo.dataUTI
+
+        try OWSMediaUtils.validateVideoExtension(ofPath: dataSource.fileUrl.path)
+        try OWSMediaUtils.validateVideoAsset(atPath: dataSource.fileUrl.path)
+        try validateNewAttachment(
+            dataSource: dataSource,
+            dataUTI: dataUTI,
+            validUTISet: SignalAttachment.videoUTISet,
+            maxFileSize: attachmentLimits.maxPlaintextVideoBytes,
+        )
+
+        return Self(
+            rawValue: SignalAttachment(dataSource: dataSource, dataUTI: dataUTI),
+            attachmentType: .finalizedVideo(finalizedVideo),
         )
     }
 
@@ -138,16 +150,16 @@ public struct PreviewableAttachment {
     public static func finalizedVideoAttachment(
         dataSource: DataSourcePath,
         dataUTI: String,
+        isFastStartMp4: Bool,
         attachmentLimits: OutgoingAttachmentLimits,
     ) throws -> Self {
-        try OWSMediaUtils.validateVideoExtension(ofPath: dataSource.fileUrl.path)
-        try OWSMediaUtils.validateVideoAsset(atPath: dataSource.fileUrl.path)
-
-        return try newAttachment(
-            dataSource: dataSource,
-            dataUTI: dataUTI,
-            validUTISet: SignalAttachment.videoUTISet,
-            maxFileSize: attachmentLimits.maxPlaintextVideoBytes,
+        return try finalizedVideoAttachment(
+            finalizedVideo: NormalizedVideo.FinalizedVideo(
+                dataSource: dataSource,
+                dataUTI: dataUTI,
+                isFastStartMp4: isFastStartMp4,
+            ),
+            attachmentLimits: attachmentLimits,
         )
     }
 
@@ -156,12 +168,12 @@ public struct PreviewableAttachment {
     public static func normalizedVideoAttachment(
         dataSource: DataSourcePath,
         dataUTI: String,
-        mustTranscode: Bool,
+        source: NormalizedVideo.Source,
     ) throws(SignalAttachmentError) -> Self {
         let normalizedVideo = try NormalizedVideo.forDataSource(
             dataSource,
             dataUTI: dataUTI,
-            mustTranscode: mustTranscode,
+            source: source,
         )
         return Self(
             rawValue: SignalAttachment(dataSource: dataSource, dataUTI: dataUTI),
@@ -259,6 +271,7 @@ public struct PreviewableAttachment {
             return try finalizedVideoAttachment(
                 dataSource: dataSource,
                 dataUTI: dataUTI,
+                isFastStartMp4: false,
                 attachmentLimits: attachmentLimits,
             )
         }
@@ -282,9 +295,26 @@ public struct PreviewableAttachment {
         validUTISet: Set<String>?,
         maxFileSize: UInt64,
     ) throws(SignalAttachmentError) -> Self {
-        assert(!dataUTI.isEmpty)
+        try validateNewAttachment(
+            dataSource: dataSource,
+            dataUTI: dataUTI,
+            validUTISet: validUTISet,
+            maxFileSize: maxFileSize,
+        )
 
-        let attachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
+        return Self(
+            rawValue: SignalAttachment(dataSource: dataSource, dataUTI: dataUTI),
+            attachmentType: .other,
+        )
+    }
+
+    private static func validateNewAttachment(
+        dataSource: DataSourcePath,
+        dataUTI: String,
+        validUTISet: Set<String>?,
+        maxFileSize: UInt64,
+    ) throws(SignalAttachmentError) {
+        assert(!dataUTI.isEmpty)
 
         if let validUTISet {
             guard validUTISet.contains(dataUTI) else {
@@ -301,8 +331,5 @@ public struct PreviewableAttachment {
         guard fileSize <= maxFileSize else {
             throw .fileSizeTooLarge
         }
-
-        // Attachment is valid
-        return Self(rawValue: attachment, attachmentType: .other)
     }
 }

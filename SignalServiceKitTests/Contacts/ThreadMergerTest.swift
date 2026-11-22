@@ -17,6 +17,7 @@ final class ThreadMergerTest: XCTestCase {
     private var disappearingMessagesConfigurationManager: ThreadMerger_MockDisappearingMessagesConfigurationManager!
     private var disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore!
     private var interactionStore: MockInteractionStore!
+    private var recipientFetcher: RecipientFetcher!
     private var threadStore: MockThreadStore!
     private var threadRemover: ThreadRemover!
     private var threadReplyInfoStore: ThreadReplyInfoStore!
@@ -48,6 +49,10 @@ final class ThreadMergerTest: XCTestCase {
         )
         chatColorSettingStore = ChatColorSettingStore(
             wallpaperStore: wallpaperStore,
+        )
+        recipientFetcher = RecipientFetcher(
+            recipientDatabaseTable: RecipientDatabaseTable(),
+            searchableNameIndexer: MockSearchableNameIndexer(),
         )
         threadRemover = ThreadRemoverImpl(
             chatColorSettingStore: chatColorSettingStore,
@@ -228,6 +233,34 @@ final class ThreadMergerTest: XCTestCase {
         db.read { tx in
             XCTAssertEqual(threadReplyInfoStore.fetch(for: serviceIdThread.uniqueId, tx: tx)?.timestamp, 3)
             XCTAssertNil(threadReplyInfoStore.fetch(for: phoneNumberThread.uniqueId, tx: tx))
+        }
+    }
+
+    func testMergeReactions() throws {
+        threadStore.insertThreads([serviceIdThread, phoneNumberThread])
+        let messageId1: Int64 = 1
+        try db.write { tx in
+            try serviceIdThread.insert(tx.database)
+            try phoneNumberThread.insert(tx.database)
+            try tx.database.execute(
+                sql: "INSERT INTO model_TSInteraction (id, recordType, uniqueId, uniqueThreadId, timestamp, receivedAtTimestamp) VALUES (?, ?, ?, ?, ?, ?)",
+                arguments: [messageId1, SDSRecordType.incomingMessage.rawValue, UUID().uuidString, phoneNumberThread.uniqueId, 1234, 2345],
+            )
+            let anyRecipient = try SignalRecipient.insertRecord(tx: tx)
+            _ = ReactionRecord.insertRecord(
+                messageId: messageId1,
+                reactorId: anyRecipient.id,
+                threadId: phoneNumberThread.sqliteRowId.owsFailUnwrap("must exist"),
+                emoji: "A",
+                timestamp: 1234,
+                isRead: nil,
+                tx: tx,
+            )
+        }
+        performDefaultMerge()
+        db.read { tx in
+            let reactions = ReactionFinder(messageId: messageId1).allReactions(tx: tx)
+            XCTAssertEqual(reactions.map(\.threadId), [serviceIdThread.sqliteRowId.owsFailUnwrap("must exist")])
         }
     }
 

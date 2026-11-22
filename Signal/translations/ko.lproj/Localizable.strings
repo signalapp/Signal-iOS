@@ -11,7 +11,10 @@
 "ACCESSIBILITY_FORWARD_BUTTON_LABEL" = "전달";
 
 /* AX hint letting a user know this button sends a sticker */
-"ACCESSIBILITY_HINT_STICKER" = "Sends this sticker";
+"ACCESSIBILITY_HINT_STICKER" = "스티커 전송하기";
+
+/* Accessibility label for a custom featured sticker of an analog clock. */
+"ACCESSIBILITY_LABEL_ANALOG_CLOCK_STICKER" = "Analog Clock Sticker";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "첨부 파일";
@@ -24,6 +27,9 @@
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
 "ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "%1$@ 연락처";
+
+/* Accessibility label for a custom featured sticker of a digital clock. */
+"ACCESSIBILITY_LABEL_DIGITAL_CLOCK_STICKER" = "Digital Clock Sticker";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "미디어";
@@ -422,7 +428,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "첨부 파일이 비어 있습니다.";
 
 /* Attachment error message for video attachments that are too long to send. Embeds {{ the maximum duration, e.g. '15 minutes' }}. */
-"ATTACHMENT_ERROR_VIDEO_TOO_LONG_FORMAT" = "This video is too long to send. Trim it to %1$@ or less.";
+"ATTACHMENT_ERROR_VIDEO_TOO_LONG_FORMAT" = "동영상이 너무 길어 보낼 수 없습니다. %1$@ 이하로 잘라주세요.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "보낼 미디어를 선택하세요";
@@ -515,13 +521,13 @@
 "ATTACHMENT_TOOL_BUTTON_MEDIA_QUALITY_ACCESSIBILITY_LABEL" = "미디어 품질";
 
 /* Accessibility label for the button that mutes a video being sent. */
-"ATTACHMENT_TOOL_BUTTON_MUTE_ACCESSIBILITY_LABEL" = "Mute video";
+"ATTACHMENT_TOOL_BUTTON_MUTE_ACCESSIBILITY_LABEL" = "동영상 음소거";
 
 /* Accessibility label for the 'pen' dialog. */
 "ATTACHMENT_TOOL_BUTTON_PEN_ACCESSIBILITY_LABEL" = "미디어에 그리기 또는 주석 달기";
 
 /* Accessibility label for the button that unmutes a video being sent. */
-"ATTACHMENT_TOOL_BUTTON_UNMUTE_ACCESSIBILITY_LABEL" = "Unmute video";
+"ATTACHMENT_TOOL_BUTTON_UNMUTE_ACCESSIBILITY_LABEL" = "동영상 음소거 해제";
 
 /* Accessibility label for the 'view one' dialog. */
 "ATTACHMENT_TOOL_BUTTON_VIEW_ONE_ACCESSIBILITY_LABEL" = "한 번만 보기";
@@ -558,6 +564,57 @@
 
 /* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "음성 메시지를 사용할 수 없음";
+
+/* Accessibility label for screen where user confirms their TOTP code from their authenticator app. */
+"AUTHENTICATOR_APP_CODE_FIELD_LABEL" = "Authenticator app code";
+
+/* Instructions for screen where user confirms their TOTP code from their authenticator app. */
+"AUTHENTICATOR_APP_CODE_FOOTER" = "Enter the 6-digit code from your authenticator app.";
+
+/* Message for the error sheet shown when the TOTP code is wrong. */
+"AUTHENTICATOR_APP_CODE_INCORRECT_MESSAGE" = "Check that you entered the current code for your Signal account and try again.";
+
+/* Title of the error sheet shown when the TOTP code is wrong. */
+"AUTHENTICATOR_APP_CODE_INCORRECT_TITLE" = "Incorrect Code";
+
+/* Title for screen where user confirms their TOTP code from their authenticator app. */
+"AUTHENTICATOR_APP_CODE_TITLE" = "Enter Your Code";
+
+/* Explains why the user should name an authenticator app for two-factor authentication. */
+"AUTHENTICATOR_APP_NAME_FOOTER" = "Choose a unique name for this authenticator app to help you identify it later.";
+
+/* Title for the screen where the user names an authenticator app for two-factor authentication. */
+"AUTHENTICATOR_APP_NAME_TITLE" = "Choose a Name";
+
+/* Description for step 2 of authenticator app setup */
+"AUTHENTICATOR_APP_SETUP_COPY_KEY_DESCRIPTION" = "Or you can copy this key to manually set it up.";
+
+/* Body for the screen that explains how to setup an authenticator app. */
+"AUTHENTICATOR_APP_SETUP_DESCRIPTION" = "Follow these steps to set up your authenticator app.";
+
+/* Button in step 2 of setup that opens authenticator app */
+"AUTHENTICATOR_APP_SETUP_OPEN_BUTTON" = "Open";
+
+/* Shown when the user taps to open the authenticator, but no installed app can handle it. */
+"AUTHENTICATOR_APP_SETUP_OPEN_FAILED" = "No authenticator app was found. Install one, or copy the setup key into your authenticator app instead.";
+
+/* Instructions for step 1 of authenticator setup. Embeds {{AUTHENTICATOR_APP_SETUP_STEP_1_LINK}}, which links to a list of authenticator apps. */
+"AUTHENTICATOR_APP_SETUP_STEP_1_BODY_FORMAT" = "Install a trusted %1$@ on your device.";
+
+/* Linked text in step 1 of authenticator setup, embedded in AUTHENTICATOR_APP_SETUP_STEP_1_BODY_FORMAT. */
+"AUTHENTICATOR_APP_SETUP_STEP_1_LINK" = "authenticator app";
+
+/* Instructions for step 2 of authenticator app setup. */
+"AUTHENTICATOR_APP_SETUP_STEP_2_BODY" = "Open your authenticator app by tapping the button below to add your Signal account.";
+
+/* Instructions for step 3 of authenticator app setup. */
+"AUTHENTICATOR_APP_SETUP_STEP_3_BODY" = "Copy the 6 digit code generated in the authenticator app and return here to continue.";
+
+/* Title for each step of authenticator app setup. Embeds {{step number}}. */
+"AUTHENTICATOR_APP_SETUP_STEP_TITLE_FORMAT" = "Step %1$@";
+
+/* Title for the screen that explains how to setup an authenticator app. */
+"AUTHENTICATOR_APP_SETUP_TITLE" = "Authenticator App";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "색상 선택";
@@ -2071,56 +2128,134 @@
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "배경화면에 맞게 색상이 자동으로 적용됩니다.";
 
+/* Button to choose chats to include in a chat folder. */
+"CHAT_FOLDERS_ADD_CHATS" = "Add Chats";
+
+/* Chat context menu action that opens the folder selection submenu. */
+"CHAT_FOLDERS_ADD_TO_FOLDER" = "Add to Folder";
+
+/* Toast shown after adding a chat to a folder. Embeds {{ folder name }}. */
+"CHAT_FOLDERS_ADDED_TO_FOLDER_TOAST_FORMAT" = "Added to “%1$@”";
+
 /* Name of the default chat folder, which shows every chat. */
-"CHAT_FOLDERS_ALL_CHATS" = "All Chats";
+"CHAT_FOLDERS_ALL_CHATS" = "모든 대화";
+
+/* A type of chat a chat folder can include: every group chat. */
+"CHAT_FOLDERS_CHAT_TYPE_GROUPS" = "Groups";
+
+/* A type of chat a chat folder can include: every 1:1 chat. */
+"CHAT_FOLDERS_CHAT_TYPE_INDIVIDUAL" = "1:1 Chats";
+
+/* Header for the chat types that can be included in a chat folder. */
+"CHAT_FOLDERS_CHAT_TYPES_HEADER" = "Chat Types";
+
+/* Header of the chat context submenu for choosing a folder. */
+"CHAT_FOLDERS_CHOOSE_FOLDER" = "Choose Folder";
+
+/* Title for the screen that creates a new chat folder. */
+"CHAT_FOLDERS_CREATE_FOLDER_TITLE" = "Create a Folder";
 
 /* Action that deletes a chat folder. */
-"CHAT_FOLDERS_DELETE_FOLDER" = "Delete Folder";
+"CHAT_FOLDERS_DELETE_FOLDER" = "폴더 삭제";
 
 /* Title of the confirmation shown before deleting a chat folder. */
-"CHAT_FOLDERS_DELETE_FOLDER_CONFIRMATION_TITLE" = "Delete this chat folder?";
+"CHAT_FOLDERS_DELETE_FOLDER_CONFIRMATION_TITLE" = "이 대화 폴더를 삭제할까요?";
+
+/* Action that edits a chat folder. */
+"CHAT_FOLDERS_EDIT_FOLDER" = "Edit Folder";
+
+/* Title for the screen that edits an existing chat folder. */
+"CHAT_FOLDERS_EDIT_FOLDER_TITLE" = "Edit Folder";
+
+/* Button to choose chats to exclude from a chat folder. */
+"CHAT_FOLDERS_EXCLUDE_CHATS" = "Exclude Chats";
+
+/* Footer for the list of chats excluded from a chat folder. */
+"CHAT_FOLDERS_EXCLUDED_CHATS_FOOTER" = "Add chats to exclude from this folder.";
+
+/* Header for the list of chats excluded from a chat folder, and the title of the screen that chooses them. */
+"CHAT_FOLDERS_EXCLUDED_CHATS_HEADER" = "Exceptions";
+
+/* Header for the name field when creating or editing a chat folder. */
+"CHAT_FOLDERS_FOLDER_NAME_HEADER" = "Folder Name";
+
+/* Placeholder for the name field when creating or editing a chat folder. */
+"CHAT_FOLDERS_FOLDER_NAME_PLACEHOLDER" = "Folder Name";
+
+/* All Chats context menu action to open chat folder settings. */
+"CHAT_FOLDERS_FOLDER_SETTINGS" = "Folder Settings";
+
+/* Chat folder setting that shows muted chats in the folder. */
+"CHAT_FOLDERS_INCLUDE_MUTED" = "Include Muted Chats";
+
+/* Footer for the list of chats included in a chat folder. */
+"CHAT_FOLDERS_INCLUDED_CHATS_FOOTER" = "Add chats or types of chats to include in this folder.";
+
+/* Header for the list of chats included in a chat folder, and the title of the screen that chooses them. */
+"CHAT_FOLDERS_INCLUDED_CHATS_HEADER" = "Included Chats";
+
+/* Chat folder context menu action to mark every chat in the folder as read. */
+"CHAT_FOLDERS_MARK_ALL_READ" = "Mark All Read";
+
+/* Header for additional chat folder settings. */
+"CHAT_FOLDERS_MORE_OPTIONS_HEADER" = "More Options";
+
+/* Chat folder context menu action to mute every chat in the folder. */
+"CHAT_FOLDERS_MUTE_ALL" = "Mute All";
+
+/* Chat folder setting that hides chats without unread messages. */
+"CHAT_FOLDERS_ONLY_UNREAD" = "Only Show Unread Chats";
+
+/* Footer for the chat folder setting that hides chats without unread messages. */
+"CHAT_FOLDERS_ONLY_UNREAD_FOOTER" = "Only chats with unread messages will be shown in this folder.";
 
 /* Button in chat folder settings to add a suggested chat folder. */
-"CHAT_FOLDERS_SETTINGS_ADD_SUGGESTED_FOLDER" = "Add";
+"CHAT_FOLDERS_SETTINGS_ADD_SUGGESTED_FOLDER" = "추가";
 
-/* Button in chat folder settings to create a new chat folder. */
-"CHAT_FOLDERS_SETTINGS_CREATE_FOLDER" = "Create a Folder";
+/* Action in chat folder settings and the chat context menu to create a new chat folder. */
+"CHAT_FOLDERS_SETTINGS_CREATE_FOLDER" = "폴더 만들기";
 
 /* Description at the top of the chat folders settings screen. */
-"CHAT_FOLDERS_SETTINGS_DESCRIPTION" = "Organize your chats into folders and quickly switch between them on your chat list.";
+"CHAT_FOLDERS_SETTINGS_DESCRIPTION" = "대화를 폴더별로 분류하여, 목록에서 원하는 대화를 간편하게 선택하고 전환할 수 있습니다.";
 
 /* Toast shown after adding a suggested chat folder. Embeds {{ folder name }}. */
-"CHAT_FOLDERS_SETTINGS_FOLDER_ADDED_TOAST_FORMAT" = "%1$@ folder added";
+"CHAT_FOLDERS_SETTINGS_FOLDER_ADDED_TOAST_FORMAT" = "%1$@ 폴더를 추가했습니다";
 
 /* Header for the list of chat folders in chat folder settings. */
-"CHAT_FOLDERS_SETTINGS_FOLDERS_HEADER" = "Folders";
+"CHAT_FOLDERS_SETTINGS_FOLDERS_HEADER" = "폴더";
 
 /* Header for the list of suggested chat folders in chat folder settings. */
-"CHAT_FOLDERS_SETTINGS_SUGGESTED_HEADER" = "Suggested Folders";
+"CHAT_FOLDERS_SETTINGS_SUGGESTED_HEADER" = "추천 폴더";
 
 /* Title for the chat folders settings screen. */
-"CHAT_FOLDERS_SETTINGS_TITLE" = "Chat Folders";
+"CHAT_FOLDERS_SETTINGS_TITLE" = "대화 폴더";
 
 /* Describes the suggested chat folder that shows group chats. */
-"CHAT_FOLDERS_SUGGESTED_GROUPS_DESCRIPTION" = "Only messages from group chats";
+"CHAT_FOLDERS_SUGGESTED_GROUPS_DESCRIPTION" = "그룹 대화의 메시지만";
 
 /* Name of the suggested chat folder that shows group chats. */
-"CHAT_FOLDERS_SUGGESTED_GROUPS_NAME" = "Groups";
+"CHAT_FOLDERS_SUGGESTED_GROUPS_NAME" = "그룹";
 
 /* Describes the suggested chat folder that shows 1:1 chats. */
-"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_DESCRIPTION" = "Only messages from direct chats";
+"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_DESCRIPTION" = "다이렉트 메시지만";
 
 /* Name of the suggested chat folder that shows 1:1 chats. */
-"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_NAME" = "1:1 Chats";
+"CHAT_FOLDERS_SUGGESTED_INDIVIDUAL_CHATS_NAME" = "1:1 대화";
 
 /* Describes the suggested chat folder that shows unread chats. */
-"CHAT_FOLDERS_SUGGESTED_UNREAD_DESCRIPTION" = "Unread messages from all chats";
+"CHAT_FOLDERS_SUGGESTED_UNREAD_DESCRIPTION" = "모든 대화의 읽지 않은 메시지";
 
 /* Name of the suggested chat folder that shows unread chats. */
-"CHAT_FOLDERS_SUGGESTED_UNREAD_NAME" = "Unread";
+"CHAT_FOLDERS_SUGGESTED_UNREAD_NAME" = "읽지 않음";
+
+/* Chat folder context menu action to unmute every chat in the folder. */
+"CHAT_FOLDERS_UNMUTE_ALL" = "Unmute All";
 
 /* Name shown for a chat folder whose name is empty. */
-"CHAT_FOLDERS_UNNAMED_FOLDER" = "Unnamed Folder";
+"CHAT_FOLDERS_UNNAMED_FOLDER" = "이름 없는 폴더";
+
+/* Unread count shown on a chat folder tab when it has more than 99 unread messages or chats. */
+"CHAT_FOLDERS_UNREAD_BADGE_OVERFLOW" = "99+";
 
 /* Message shown in an action sheet when the user tries to cancel a backup. */
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "취소해도 백업은 삭제되지 않으며, 백업 설정에서 언제든지 다시 시작할 수 있습니다.";
@@ -3194,10 +3329,10 @@
 "DELETED_BY_ADMIN" = "관리자 %1$@ 님이 이 메시지를 삭제했습니다.";
 
 /* Title for a button in a toast shown after the user deletes messages for themselves only. */
-"DELETED_FOR_ME_TOAST_DELETE_FOR_EVERYONE_BUTTON_TITLE" = "Delete for Everyone";
+"DELETED_FOR_ME_TOAST_DELETE_FOR_EVERYONE_BUTTON_TITLE" = "모두에게서 삭제";
 
 /* Text for a toast shown after the user deletes messages for themselves only. */
-"DELETED_FOR_ME_TOAST_TEXT" = "Deleted for me.";
+"DELETED_FOR_ME_TOAST_TEXT" = "나에게만 삭제됨";
 
 /* Text indicating the message was remotely deleted by its author. Embeds {{ author name }} */
 "DELETED_THIS_MESSAGE" = "%1$@ 님이 이 메시지를 삭제했습니다.";
@@ -4675,6 +4810,9 @@
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "그룹에서 내보내기 처리되었습니다.";
 
+/* Message indicating that the local user was removed from the group by another user, who also deleted the group's messages from the local user's device. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_REMOVED_WITH_DATA_DELETION_BY_REMOTE_USER_FORMAT" = "%1$@ removed you and deleted the group messages on your device.";
+
 /* Message indicating that the local user's request to join the group was approved. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED" = "그룹에 대한 참가 요청이 승인되었습니다.";
 
@@ -4903,6 +5041,12 @@
 /* Error indicating a send failure due to the group being terminated. */
 "GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "그룹이 종료되어 메시지를 보낼 수 없습니다.";
 
+/* Message indicating that the group was terminated by the local user, who also deleted the group's messages. */
+"GROUP_TERMINATED_WITH_DATA_DELETION_BY_LOCAL_USER" = "You ended the group and deleted the group messages";
+
+/* Message indicating that the group was terminated by a remote user, who also deleted the group's messages from the local user's device. Embeds {{ user who terminated the group }}. */
+"GROUP_TERMINATED_WITH_DATA_DELETION_BY_OTHER_USER" = "%1$@ ended the group and deleted the group messages on your device";
+
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "그룹이 업데이트되었습니다.";
 
@@ -5120,7 +5264,7 @@
 "HOME_VIEW_TITLE_BACKUP_SUBSCRIPTION_NOT_FOUND_LOCALLY" = "백업 구독을 찾을 수 없음";
 
 /* Title for the 'donate' action in the context menu of the settings button on home view tabs. */
-"HOME_VIEW_TITLE_DONATE" = "Donate";
+"HOME_VIEW_TITLE_DONATE" = "후원하기";
 
 /* Title for the conversation list's failed to backup context menu action. */
 "HOME_VIEW_TITLE_FAILED_TO_BACKUP" = "백업 실패";
@@ -6812,10 +6956,10 @@
 "ONBOARDING_SPLASH_TITLE" = "내 개인정보는 내 손에서만.\n안전하게 메시지를 보내세요.";
 
 /* Description for the screen asking the user to enter the 6-digit code from their authenticator app during registration. */
-"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_BODY" = "To continue, enter the 6-digit code from your authenticator app.";
+"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_BODY" = "계속 진행하려면 인증 앱에 표시된 6자리 코드를 입력하세요.";
 
 /* Accessibility label for the field where the user enters the code from their authenticator app */
-"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_FIELD_LABEL" = "Authenticator app code";
+"ONBOARDING_TWO_FACTOR_AUTH_AUTHENTICATOR_CODE_FIELD_LABEL" = "인증 앱 코드";
 
 /* Subtitle for action to verify with an authenticator as a 2fa method. */
 "ONBOARDING_TWO_FACTOR_AUTH_METHOD_AUTHENTICATOR_APP_BODY" = "인증 앱에 생성된 일회용 코드 입력하기";
@@ -7020,6 +7164,27 @@
 
 /* Title for sheet shown when tapping oversized text that has expired and is unavailable for download */
 "OVERSIZE_TEXT_UNAVAILABLE_SHEET_TITLE" = "전체 메시지를 사용할 수 없음";
+
+/* Description introducing passkeys. Followed by a 'Learn more' link. */
+"PASSKEY_EDUCATION_BODY" = "With passkeys you can easily add a secure second form of authentication to your account. Passkeys can use your device’s biometrics or a compatible FIDO2 security key.";
+
+/* Bullet point explaining that passkeys can be added or removed. */
+"PASSKEY_EDUCATION_BULLET_MANAGE" = "Add or remove passkeys at anytime.";
+
+/* Bullet point explaining that a passkey can be given a name. */
+"PASSKEY_EDUCATION_BULLET_NAME" = "Give your passkey a friendly name to identify it";
+
+/* Bullet point explaining where a passkey is stored. */
+"PASSKEY_EDUCATION_BULLET_STORAGE" = "Use your device’s biometrics or a FIDO2 security key to store your passkey";
+
+/* Link at the end of the view introducing passkeys. */
+"PASSKEY_EDUCATION_LEARN_MORE" = "Learn more";
+
+/* Button on a view introducing passkeys that starts setting up a passkey. */
+"PASSKEY_EDUCATION_SET_UP_BUTTON" = "Set Up Passkey";
+
+/* Title for a view introducing passkeys. */
+"PASSKEY_EDUCATION_TITLE" = "Passkeys";
 
 /* The name of the Signal app, used as the title for an entry in a user's password manager for their Signal Recovery Key. Should be localized with the same value as the app's name in the iOS App Store. */
 "PASSWORD_MANAGER_SIGNAL_APP_NAME" = "Signal - 안전한 메신저";
@@ -8449,6 +8614,9 @@
 /* Button to initiate a purchase on the 'Signal Login' screen. The replacement is a localized cost (e.g., $2.99). */
 "REGISTRATION_SIGNAL_LOGIN_PAY" = "%1$@ 결제하기";
 
+/* Title for the password entry saved to the password manager */
+"REGISTRATION_SIGNAL_LOGIN_SAVED_LOGIN_TITLE" = "Signal";
+
 /* Text for a bullet point describing that an existing Signal Login can be used to log in and restore an account. */
 "REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_RESTORE" = "로그인 및 계정 복구";
 
@@ -9290,7 +9458,7 @@
 "SETTINGS_CHATS" = "대화";
 
 /* Footer for the chat folders row in chats settings. */
-"SETTINGS_CHATS_CHAT_FOLDERS_FOOTER" = "Create folders for different sets of chats and quickly switch between them.";
+"SETTINGS_CHATS_CHAT_FOLDERS_FOOTER" = "대화를 유형별로 묶어 폴더를 만들고 폴더 간에 빠르게 전환할 수 있습니다.";
 
 /* Title for a button in Chats settings that starts exporting the user's chat history. */
 "SETTINGS_CHATS_EXPORT_BUTTON" = "대화 내보내기";
@@ -10267,8 +10435,68 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "추천 공유, 알림 등의 기능을 사용하기 위해 iOS에서 Signal 연락처 및 대화에 액세스하도록 허용합니다.";
 
+/* Label for the row in the 'Signal Login' section of the account settings. */
+"SETTINGS_SIGNAL_LOGIN_ACCOUNT_AND_RECOVERY" = "Account & Recovery";
+
+/* Footer for the 'Signal Login' section of the account settings. */
+"SETTINGS_SIGNAL_LOGIN_FOOTER" = "Your Signal Login is used to recover and restore your account. Keep your login info stored safely in a password manager you trust.";
+
+/* Title for the 'Signal Login' section of the account settings. */
+"SETTINGS_SIGNAL_LOGIN_TITLE" = "Signal Login";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "등록 잠금";
+
+/* Shows when a two-factor authentication method was added. Embeds {{date}}. */
+"SETTINGS_TWO_FACTOR_METHODS_ADDED_FORMAT" = "Added %1$@";
+
+/* Menu option to set up an authenticator app for two-factor authentication. */
+"SETTINGS_TWO_FACTOR_METHODS_AUTHENTICATOR_APP" = "Authenticator App";
+
+/* Subtitle for the menu option to set up an authenticator app for two-factor authentication. */
+"SETTINGS_TWO_FACTOR_METHODS_AUTHENTICATOR_APP_SUBTITLE" = "One-time verification codes";
+
+/* Footer for the 'Two-Factor Authentication' section of the account settings. */
+"SETTINGS_TWO_FACTOR_METHODS_FOOTER" = "Use a second form of authentication to protect your account when using your Signal Login on a new device.";
+
+/* Describes a two-factor authentication method that is an authenticator app. */
+"SETTINGS_TWO_FACTOR_METHODS_KIND_AUTHENTICATOR_APP" = "Authenticator app";
+
+/* Describes a webauthn two-factor authentication method. */
+"SETTINGS_TWO_FACTOR_METHODS_KIND_WEBAUTHN" = "Passkey";
+
+/* Accessibility label for the button for renaming a two-factor authentication method. */
+"SETTINGS_TWO_FACTOR_METHODS_MORE_OPTIONS" = "More options";
+
+/* Placeholder for the field where the user names a two-factor authentication method. */
+"SETTINGS_TWO_FACTOR_METHODS_NAME_PLACEHOLDER" = "Name";
+
+/* Menu option to remove a two-factor authentication method. */
+"SETTINGS_TWO_FACTOR_METHODS_REMOVE" = "Remove";
+
+/* Message for the sheet confirming removal of a two-factor authentication method. */
+"SETTINGS_TWO_FACTOR_METHODS_REMOVE_CONFIRMATION_MESSAGE" = "You won't be able to use it to verify your account on a new device.";
+
+/* Title for the sheet confirming removal of a two-factor authentication method. Embeds {{the method's name}}. */
+"SETTINGS_TWO_FACTOR_METHODS_REMOVE_CONFIRMATION_TITLE_FORMAT" = "Remove %1$@?";
+
+/* Menu option to rename a two-factor authentication method. */
+"SETTINGS_TWO_FACTOR_METHODS_RENAME" = "Rename";
+
+/* Title for the alert to rename a two-factor authentication method. */
+"SETTINGS_TWO_FACTOR_METHODS_RENAME_TITLE" = "Rename";
+
+/* Row Label for the 'Two-Factor Authentication' section that adds a new two-factor authentication method. */
+"SETTINGS_TWO_FACTOR_METHODS_SET_UP" = "Set Up";
+
+/* Title for the 'Two-Factor Authentication' section of the account settings. */
+"SETTINGS_TWO_FACTOR_METHODS_TITLE" = "Two-Factor Authentication";
+
+/* Menu option to set up webauthn for two-factor authentication. */
+"SETTINGS_TWO_FACTOR_METHODS_WEBAUTHN" = "Passkeys";
+
+/* Subtitle for the menu option to set up webauthn for two-factor authentication. */
+"SETTINGS_TWO_FACTOR_METHODS_WEBAUTHN_SUBTITLE" = "Biometrics or FIDO2 security key";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Signal에 전화번호를 다시 등록할 때 Signal PIN을 입력하도록 설정합니다.";
@@ -10433,19 +10661,13 @@
 "STICKER_BUTTON_REMOVE_FAVORITES" = "즐겨찾기에서 삭제하기";
 
 /* Title for a button to remove a sticker from recents */
-"STICKER_BUTTON_REMOVE_FROM_RECENTS" = "Remove from Recents";
+"STICKER_BUTTON_REMOVE_FROM_RECENTS" = "최근 목록에서 삭제하기";
 
 /* Title for a button to view a sticker pack */
 "STICKER_BUTTON_VIEW_PACK" = "팩 보기";
 
 /* The name for the sticker category 'Featured' */
 "STICKER_CATEGORY_FEATURED_NAME" = "추천";
-
-/* Subtitle of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE" = "스티커를 보내면 여기에 표시됩니다";
-
-/* Title of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_TITLE" = "최근 스티커 없음";
 
 /* The name for the sticker category 'Recents' */
 "STICKER_CATEGORY_RECENTS_NAME" = "최근";
@@ -10454,19 +10676,22 @@
 "STICKER_CONFIRM_REMOVE_BUTTON" = "삭제하기";
 
 /* Label for the button to clear all sticker recents */
-"STICKER_KEYBOARD_BUTTON_CLEAR_RECENTS" = "Clear Recents";
+"STICKER_KEYBOARD_BUTTON_CLEAR_RECENTS" = "최근 항목 지우기";
 
 /* Accessibility label for the button in the sticker keyboard that opens the screen for managing sticker packs. */
-"STICKER_KEYBOARD_MANAGE_BUTTON_ACCESSIBILITY_LABEL" = "Manage stickers";
+"STICKER_KEYBOARD_MANAGE_BUTTON_ACCESSIBILITY_LABEL" = "스티커 관리하기";
 
 /* Toast shown when user tries to tap Favorites in sticker keyboard but has none */
 "STICKER_KEYBOARD_NO_FAVORITES_TOAST" = "스티커를 길게 눌러 즐겨찾기에 추가하세요";
 
 /* Text displayed in the sticker keyboard when no sticker packs are installed. */
-"STICKER_KEYBOARD_NO_PACKS" = "No sticker packs.\nAdd stickers to send to your friends.";
+"STICKER_KEYBOARD_NO_PACKS" = "보관 중인 스티커 팩이 없습니다.\n스티커를 추가해 친구들에게 보내보세요.";
 
 /* Button in the sticker keyboard, shown when no sticker packs are installed, that opens the sticker pack manager. */
-"STICKER_KEYBOARD_NO_PACKS_ADD_BUTTON" = "Add Stickers";
+"STICKER_KEYBOARD_NO_PACKS_ADD_BUTTON" = "스티커 추가";
+
+/* Toast shown when user tries to tap Recents in sticker keyboard but has none */
+"STICKER_KEYBOARD_NO_RECENTS_TOAST" = "No recent stickers";
 
 /* Section header for favorites in the sticker keyboard */
 "STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "즐겨찾기";
@@ -10478,10 +10703,10 @@
 "STICKER_MESSAGE_PREVIEW" = "스티커 메시지";
 
 /* Button to confirm a user wants to clear recent stickers */
-"STICKER_PACK_CLEAR_RECENTS_BUTTON" = "Clear";
+"STICKER_PACK_CLEAR_RECENTS_BUTTON" = "지우기";
 
 /* Message for a sheet asking the user to confirm they want to clear recently used stickers */
-"STICKER_PACK_CONFIRM_CLEAR_RECENTS_MESSAGE" = "Clear recently used stickers?";
+"STICKER_PACK_CONFIRM_CLEAR_RECENTS_MESSAGE" = "최근 사용한 스티커를 지울까요?";
 
 /* Button to confirm a user wants to remove a sticker pack */
 "STICKER_PACK_CONFIRM_REMOVE_BUTTON" = "삭제하기";
@@ -10511,13 +10736,13 @@
 "STICKER_PACK_SHARE_SHEET_SEND_IN_SIGNAL" = "Signal로 링크 보내기";
 
 /* Message for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
-"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "You can't send it or add it to Favorites again unless you have the pack installed, a link, or a sticker message";
+"STICKER_REMOVE_FROM_FAVORITES_CONFIRM_MESSAGE" = "스티커 팩을 설치하지 않았거나, 링크 또는 스티커 메시지가 없으면 다시 전송하거나 즐겨찾기에 추가할 수 없습니다.";
 
 /* Title for an action sheet asking the user to confirm if they want to remove a sticker from favorites */
 "STICKER_REMOVE_FROM_FAVORITES_CONFIRM_TITLE" = "즐겨찾기에서 삭제할까요?";
 
 /* Title for a button to remove a sticker pack */
-"STICKER_REMOVE_PACK_BUTTON" = "Remove";
+"STICKER_REMOVE_PACK_BUTTON" = "삭제하기";
 
 /* Text shown in a toast confirming a sticker was removed from favorites */
 "STICKER_REMOVED_FROM_FAVORITES_TOAST" = "즐겨찾기에서 스티커를 삭제했습니다.";
@@ -10532,13 +10757,13 @@
 "STICKERS_INSTALL_BUTTON" = "스티커 추가";
 
 /* Button used to deselect all selected sticker packs in selection mode */
-"STICKERS_MANAGE_DESELECT_ALL" = "Deselect All";
+"STICKERS_MANAGE_DESELECT_ALL" = "모든 항목 선택 해제";
 
 /* Enables selection mode for sticker pack */
-"STICKERS_MANAGE_EDIT" = "Edit";
+"STICKERS_MANAGE_EDIT" = "수정";
 
 /* Label for a button to uninstall all selected sticker packs */
-"STICKERS_MANAGE_REMOVE" = "Remove";
+"STICKERS_MANAGE_REMOVE" = "삭제하기";
 
 /* Placeholder text for the search bar in the sticker pack management. */
 "STICKERS_MANAGE_SEARCH_BAR_PLACEHOLDER" = "스티커 검색";
@@ -10547,10 +10772,10 @@
 "STICKERS_MANAGE_SEARCH_NO_RESULTS" = "'%1$@' 검색 결과 없음";
 
 /* Button used to select all sticker packs in selection mode */
-"STICKERS_MANAGE_SELECT_ALL" = "Select All";
+"STICKERS_MANAGE_SELECT_ALL" = "모두 선택";
 
 /* Title for the selection mode of sticker packs. */
-"STICKERS_MANAGE_SELECT_ITEMS" = "Select Items";
+"STICKERS_MANAGE_SELECT_ITEMS" = "항목 선택하기";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal 아티스트 시리즈";
@@ -10571,7 +10796,7 @@
 "STICKERS_MANAGE_VIEW_CONTEXT_MENU_REMOVE" = "삭제하기";
 
 /* The title for a context menu item that selects a sticker pack for selection mode. */
-"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SELECT" = "Select";
+"STICKERS_MANAGE_VIEW_CONTEXT_MENU_SELECT" = "선택";
 
 /* The title for a context menu item that sends the sticker pack link to someone else. */
 "STICKERS_MANAGE_VIEW_CONTEXT_MENU_SEND" = "전송";

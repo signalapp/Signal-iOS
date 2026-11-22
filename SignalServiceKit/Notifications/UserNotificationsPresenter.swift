@@ -358,16 +358,16 @@ public class UserNotificationPresenter {
 
     // MARK: - Cancellation
 
-    func cancelNotifications(threadId: String) async {
-        await cancel(cancellation: .threadId(threadId))
+    func cancelNotifications(threadId: String, exceptMessageId: String?) async {
+        await cancel(cancellation: .threadId(threadId, exceptMessageId: exceptMessageId))
     }
 
     func cancelNotifications(messageIds: [String]) async {
         await cancel(cancellation: .messageIds(Set(messageIds)))
     }
 
-    func cancelNotifications(reactionId: String) async {
-        await cancel(cancellation: .reactionId(reactionId))
+    func cancelNotifications(reactionId: ReactionRecord.RowId, reactionUniqueId: String?) async {
+        await cancel(cancellation: .reactionId(reactionId, uniqueId: reactionUniqueId))
     }
 
     func cancelNotificationsForMissedCalls(withThreadUniqueId threadId: String) async {
@@ -441,9 +441,9 @@ public class UserNotificationPresenter {
     }
 
     private enum CancellationType: Equatable, Hashable {
-        case threadId(String)
+        case threadId(String, exceptMessageId: String?)
         case messageIds(Set<String>)
-        case reactionId(String)
+        case reactionId(ReactionRecord.RowId, uniqueId: String?)
         case missedCalls(inThreadWithUniqueId: String)
         case storyMessage(String)
     }
@@ -483,16 +483,23 @@ public class UserNotificationPresenter {
         let requestMatchesPredicate: (UNNotificationRequest) -> Bool = { request in
             let userInfo = AppNotificationUserInfo(request.content.userInfo)
             switch cancellationType {
-            case .threadId(let threadId):
-                if let requestThreadId = userInfo.threadId, requestThreadId == threadId {
+            case .threadId(let threadId, let exceptMessageId):
+                if
+                    let requestThreadId = userInfo.threadId,
+                    requestThreadId == threadId,
+                    exceptMessageId == nil || userInfo.messageId != exceptMessageId
+                {
                     return true
                 }
             case .messageIds(let messageIds):
                 if let requestMessageId = userInfo.messageId, messageIds.contains(requestMessageId) {
                     return true
                 }
-            case .reactionId(let reactionId):
+            case .reactionId(let reactionId, let reactionUniqueId):
                 if let requestReactionId = userInfo.reactionId, requestReactionId == reactionId {
+                    return true
+                }
+                if let requestReactionUniqueId = userInfo.reactionUniqueId, requestReactionUniqueId == reactionUniqueId {
                     return true
                 }
             case .missedCalls(let threadUniqueId):

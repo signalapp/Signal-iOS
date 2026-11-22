@@ -10,7 +10,9 @@ public import LibSignalClient
 struct SessionRecord: Codable, FetchableRecord, PersistableRecord {
     static let databaseTableName: String = "Session"
 
-    let id: Int64
+    typealias RowId = RowIdType<SessionRecord>
+
+    let id: RowId
     var recipientId: SignalRecipient.RowId
     let localIdentity: OWSIdentity
     let deviceId: DeviceId

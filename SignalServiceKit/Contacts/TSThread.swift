@@ -491,6 +491,16 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         }
     }
 
+    func clearDraft(transaction tx: DBWriteTransaction) {
+        anyUpdate(transaction: tx) { thread in
+            thread.messageDraft = nil
+            thread.messageDraftBodyRanges = nil
+            thread.editTargetTimestamp = nil
+            thread.lastDraftInteractionRowId = 0
+            thread.lastDraftUpdateTimestamp = 0
+        }
+    }
+
     func updateWithShouldNotifyForRepliesWhenMuted(
         _ shouldNotifyForRepliesWhenMuted: Bool?,
         transaction tx: DBWriteTransaction,

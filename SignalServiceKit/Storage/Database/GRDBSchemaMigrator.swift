@@ -377,6 +377,10 @@ public class GRDBSchemaMigrator {
         case addFavoriteStickerTable
         case addChatFolderTables
         case addSortOrderToStickerPack
+        case addVideoIsFastStartMp4ToAttachment
+        case migrateSomeKeyValueStores2
+        case addRecipientCapabilityTable
+        case addReaction
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -511,7 +515,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 168
+    public static let grdbSchemaVersionLatest: UInt = 170
 
     private class DatabaseMigratorWrapper {
         // Run with immediate (or disabled) foreign key checks so that pre-existing
@@ -5850,6 +5854,145 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.addVideoIsFastStartMp4ToAttachment) { tx in
+            try tx.database.alter(table: "Attachment") {
+                $0.add(column: "videoIsFastStartMp4", .boolean).notNull().defaults(to: false)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.migrateSomeKeyValueStores2) { tx in
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "TSStorageManagerCallKitIdToPhoneNumberCollection")
+                try migrator.fetchKeys(tx: tx).forEach { try migrator.migrateString($0, tx: tx) }
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "TSStorageManagerCallKitIdToUUIDCollection")
+                try migrator.fetchKeys(tx: tx).forEach { try migrator.migrateString($0, tx: tx) }
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "LinkedDevicePniKeyManagerImpl")
+                try migrator.migrateBool("hasSuspectedIssue", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "AvatarBuilder.contactCacheKeys")
+                try migrator.fetchKeys(tx: tx).forEach { try migrator.migrateString($0, tx: tx) }
+            }
+            for collection in ["SSKKyberPreKeyStoreACIMetadataStore", "SSKKyberPreKeyStorePNIMetadataStore"] {
+                let migrator = KeyValueStoreMigrator(collection: collection)
+                try migrator.migrateInt64("lastKeyId", tx: tx)
+                try migrator.migrateDate("lastKeyRotationDate", tx: tx)
+            }
+            for collection in ["TSStorageInternalSettingsCollection", "TSStorageManagerPNIPreKeyMetadataCollection"] {
+                let migrator = KeyValueStoreMigrator(collection: collection)
+                try migrator.migrateInt64("TSStorageInternalSettingsNextPreKeyId", tx: tx)
+            }
+            for collection in ["TSStorageManagerSignedPreKeyMetadataCollection", "TSStorageManagerPNISignedPreKeyMetadataCollection"] {
+                let migrator = KeyValueStoreMigrator(collection: collection)
+                try migrator.migrateInt64("TSStorageInternalSettingsNextPreKeyId", tx: tx)
+                try migrator.migrateDate("lastKeyRotationDate", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "SenderKeyStore_SendingDistributionId")
+                try migrator.fetchKeys(tx: tx).forEach { try migrator.migrateString($0, tx: tx) }
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "BackupArchiveErrorStore")
+                try migrator.migrateBool("hasPendingErrors", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "BackupFullTextSearchIndexerImpl")
+                try migrator.migrateInt64("minInteractionRowIdKey", tx: tx)
+                try migrator.migrateInt64("maxInteractionRowIdKey", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "MessageBackupManager")
+                try migrator.migrateBool("keyValueStoreNeedForwardSecrecyTokenFetchKey", tx: tx)
+                try migrator.migrateInt64("keyValueStoreRestoreStateKey", tx: tx)
+                try migrator.migrateUInt64("keyValueStoreEstimatedSizeKey", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "BackupAttachmentDownloadStoreImpl")
+                try migrator.migrateBool("didDismissDownloadCompleteBannerKey", tx: tx)
+                try migrator.migrateUInt64("downloadCompleteBannerByteCountSnapshotKey", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "BackupUploadEraStore")
+                try migrator.migrateString("currentUploadEra", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "ListBackupMediaManager")
+                try migrator.migrateBool("hasCompletedEnumeratingAttachmentsKey", tx: tx)
+                try migrator.migrateBool("hasCompletedListingMediaKey", tx: tx)
+                try migrator.migrateBool("hasEverRunListMedia", tx: tx)
+                try migrator.migrateBool("manuallySetNeedsListMediaKey", tx: tx)
+                try migrator.migrateInt64("lastEnumeratedAttachmentIdKey", tx: tx)
+                try migrator.migrateString("inProgressUploadEraKey", tx: tx)
+                try migrator.migrateString("lastListMediaUploadEra", tx: tx)
+                try migrator.migrateString("paginationCursorKey", tx: tx)
+                try migrator.migrateUInt64("inProgressListMediaTimestamp", tx: tx)
+                try migrator.migrateUInt64("lastListMediaTimestamp", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "BackupSettingsStore")
+                try migrator.migrateBool("hasConsumedMediaTierCapacity", tx: tx)
+                try migrator.migrateBool("haveEverBeenEnabledKey2", tx: tx)
+                try migrator.migrateBool("haveSetBackupID", tx: tx)
+                try migrator.migrateBool("isBackupAttachmentDownloadQueueSuspended", tx: tx)
+                try migrator.migrateBool("isBackupAttachmentUploadQueueSuspended", tx: tx)
+                try migrator.migrateBool("shouldAllowBackupDownloadsOnCellular", tx: tx)
+                try migrator.migrateBool("shouldAllowBackupUploadsOnCellular", tx: tx)
+                try migrator.migrateBool("shouldGenerateThumbnailsOnNextOffloading", tx: tx)
+                try migrator.migrateBool("shouldOverrideShowBackupsOnboarding", tx: tx)
+                try migrator.migrateDate("firstBackupDate", tx: tx)
+                try migrator.migrateDate("lastBackupDate", tx: tx)
+                try migrator.migrateDate("lastBackupKeyReminderDate", tx: tx)
+                try migrator.migrateInt64("planKey2", tx: tx)
+                try migrator.migrateUInt64("lastBackupFileSizeBytes", tx: tx)
+                try migrator.migrateUInt64("lastBackupSizeBytes", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "BackupSettingsErrorStateStore")
+                try migrator.migrateBool("avatar_muted", tx: tx)
+                try migrator.migrateBool("menu_muted", tx: tx)
+                try migrator.migrateInt64("backgroundBackupErrorCount", tx: tx)
+                try migrator.migrateInt64("interactiveBackupErrorCount", tx: tx)
+            }
+            do {
+                let migrator = KeyValueStoreMigrator(collection: "BackupCDNCredentialStore")
+                try migrator.migrateDate("BackupCDNMetadataSavedDate:media", tx: tx)
+                try migrator.migrateDate("BackupCDNMetadataSavedDate:messages", tx: tx)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addRecipientCapabilityTable) { tx in
+            try tx.database.create(table: "RecipientCapability") { table in
+                table.column("recipientRowId", .integer).notNull()
+                    .references("model_SignalRecipient", column: "id", onDelete: .cascade, onUpdate: .cascade)
+                table.column("capability", .text).notNull()
+                table.column("isEnabled", .boolean).notNull()
+                table.primaryKey(["recipientRowId", "capability"])
+            }
+
+            // Lets a migration that retires a capability run
+            // `DELETE FROM RecipientCapability WHERE capability = ?`.
+            try tx.database.create(
+                index: "index_RecipientCapability_on_capability",
+                on: "RecipientCapability",
+                columns: ["capability"],
+            )
+            return .success(())
+        }
+
+        migrator.registerMigration(.addReaction) { tx in
+            try addReaction(tx: tx)
+            try addReactionUniqueId(tx: tx)
+            try migrateReactions(tx: tx)
+            try dropOWSReaction(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -7117,7 +7260,7 @@ public class GRDBSchemaMigrator {
         case V2
     }
 
-    private static func fetchOrCreateRecipient(_ version: RecipientVersion, aciString: String, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
+    private static func fetchOrCreateRecipient(_ version: RecipientVersion, aciString: String, tx: DBWriteTransaction) throws -> Int64 {
         let db = tx.database
         let existingRecipientId = try Int64.fetchOne(db, sql: "SELECT id FROM model_SignalRecipient WHERE recipientUUID IS ?", arguments: [aciString])
         if let existingRecipientId {
@@ -7126,7 +7269,7 @@ public class GRDBSchemaMigrator {
         return try createRecipient(version, aciString: aciString, phoneNumber: nil, pniString: nil, tx: tx)
     }
 
-    private static func fetchOrCreateRecipient(_ version: RecipientVersion, phoneNumber: String, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
+    private static func fetchOrCreateRecipient(_ version: RecipientVersion, phoneNumber: String, tx: DBWriteTransaction) throws -> Int64 {
         let db = tx.database
         let existingRecipientId = try Int64.fetchOne(db, sql: "SELECT id FROM model_SignalRecipient WHERE recipientPhoneNumber IS ?", arguments: [phoneNumber])
         if let existingRecipientId {
@@ -7135,7 +7278,7 @@ public class GRDBSchemaMigrator {
         return try createRecipient(version, aciString: nil, phoneNumber: phoneNumber, pniString: nil, tx: tx)
     }
 
-    private static func fetchOrCreateRecipient(_ version: RecipientVersion, pniString: String, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
+    private static func fetchOrCreateRecipient(_ version: RecipientVersion, pniString: String, tx: DBWriteTransaction) throws -> Int64 {
         let db = tx.database
         let existingRecipientId = try Int64.fetchOne(db, sql: "SELECT id FROM model_SignalRecipient WHERE pni IS ?", arguments: [pniString])
         if let existingRecipientId {
@@ -7144,11 +7287,11 @@ public class GRDBSchemaMigrator {
         return try createRecipient(version, aciString: nil, phoneNumber: nil, pniString: pniString, tx: tx)
     }
 
-    private static func fetchOrCreateRecipient(_ version: RecipientVersion, address: FrozenSignalServiceAddress, tx: DBWriteTransaction) throws -> SignalRecipient.RowId? {
+    private static func fetchOrCreateRecipient(_ version: RecipientVersion, address: FrozenSignalServiceAddress, tx: DBWriteTransaction) throws -> Int64? {
         return try fetchOrCreateRecipient(.V2, serviceId: address.serviceId, phoneNumber: address.phoneNumber, tx: tx)
     }
 
-    private static func fetchOrCreateRecipient(_ version: RecipientVersion, serviceId: ServiceId?, phoneNumber: String?, tx: DBWriteTransaction) throws -> SignalRecipient.RowId? {
+    private static func fetchOrCreateRecipient(_ version: RecipientVersion, serviceId: ServiceId?, phoneNumber: String?, tx: DBWriteTransaction) throws -> Int64? {
         if let aci = serviceId as? Aci {
             let aciString = aci.serviceIdUppercaseString
             return try fetchOrCreateRecipient(version, aciString: aciString, tx: tx)
@@ -7163,7 +7306,7 @@ public class GRDBSchemaMigrator {
         return nil
     }
 
-    private static func createRecipient(_ version: RecipientVersion, aciString: String?, phoneNumber: String?, pniString: String?, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
+    private static func createRecipient(_ version: RecipientVersion, aciString: String?, phoneNumber: String?, pniString: String?, tx: DBWriteTransaction) throws -> Int64 {
         let emptyDevices: Data
         switch version {
         case .V1:
@@ -7186,11 +7329,11 @@ public class GRDBSchemaMigrator {
         return tx.database.lastInsertedRowID
     }
 
-    private static func fetchRecipientAciString(recipientId: SignalRecipient.RowId, tx: DBWriteTransaction) throws -> String? {
+    private static func fetchRecipientAciString(recipientId: Int64, tx: DBWriteTransaction) throws -> String? {
         return try String.fetchOne(tx.database, sql: "SELECT recipientUUID FROM model_SignalRecipient WHERE id = ?", arguments: [recipientId])
     }
 
-    private static func fetchRecipientUniqueId(recipientId: SignalRecipient.RowId, tx: DBWriteTransaction) throws -> String? {
+    private static func fetchRecipientUniqueId(recipientId: Int64, tx: DBWriteTransaction) throws -> String? {
         return try String.fetchOne(tx.database, sql: "SELECT uniqueId FROM model_SignalRecipient WHERE id = ?", arguments: [recipientId])
     }
 
@@ -7242,16 +7385,16 @@ public class GRDBSchemaMigrator {
         }
     }
 
-    private static func fetchOrCreateGroup(groupId: GroupIdForMigrationV1, tx: DBWriteTransaction) throws -> GroupRecord.RowId {
+    private static func fetchOrCreateGroup(groupId: GroupIdForMigrationV1, tx: DBWriteTransaction) throws -> Int64 {
         let db = tx.database
-        let rowId = try GroupRecord.RowId.fetchOne(db, sql: "SELECT rowId FROM GroupRecord WHERE groupId = ?", arguments: [groupId.rawValue])
+        let rowId = try Int64.fetchOne(db, sql: "SELECT rowId FROM GroupRecord WHERE groupId = ?", arguments: [groupId.rawValue])
         if let rowId {
             return rowId
         }
         return try createGroup(groupId: groupId, tx: tx)
     }
 
-    private static func createGroup(groupId: GroupIdForMigrationV1, tx: DBWriteTransaction) throws -> GroupRecord.RowId {
+    private static func createGroup(groupId: GroupIdForMigrationV1, tx: DBWriteTransaction) throws -> Int64 {
         try tx.database.execute(
             sql: "INSERT INTO GroupRecord (groupId) VALUES (?)",
             arguments: [groupId.rawValue],
@@ -8120,7 +8263,7 @@ public class GRDBSchemaMigrator {
         let serviceIdCollection = "kOWSProfileManager_UserUUIDWhitelistCollection"
         let phoneNumberCollection = "kOWSProfileManager_UserWhitelistCollection"
 
-        var recipientIds = Set<SignalRecipient.RowId>()
+        var recipientIds = Set<Int64>()
 
         let serviceIdStrings = try String.fetchAll(
             tx.database,
@@ -8854,6 +8997,146 @@ public class GRDBSchemaMigrator {
         }
 
         StorageServiceOperation.recordPendingUpdates(updatedGroupV2MasterKeys: masterKeys, tx: tx)
+    }
+
+    static func addReaction(tx: DBWriteTransaction) throws {
+        let tableName = "Reaction"
+        try tx.database.create(table: tableName) {
+            $0.column("id", .integer).notNull().primaryKey(autoincrement: true)
+            $0.column("messageId", .integer).notNull()
+                .references("model_TSInteraction", column: "id", onDelete: .cascade, onUpdate: .cascade)
+            $0.column("reactorId", .integer).notNull()
+                .references("model_SignalRecipient", column: "id", onDelete: .restrict, onUpdate: .cascade)
+            $0.column("threadId", .integer).notNull()
+                .references("model_TSThread", column: "id", onDelete: .cascade, onUpdate: .cascade)
+            $0.column("emoji", .text).notNull()
+            $0.column("sentTimestamp", .integer).notNull()
+            $0.column("isRead", .boolean)
+        }
+        // For fetching unread reactions (and for the TSThread FOREIGN KEY).
+        try tx.database.create(
+            index: "Reaction_Unread",
+            on: tableName,
+            columns: ["threadId", "isRead", "messageId"],
+        )
+        // For the UNIQUE constraint (and for the TSInteraction FOREIGN KEY).
+        try tx.database.create(
+            index: "Reaction_Unique",
+            on: tableName,
+            columns: ["messageId", "reactorId"],
+            unique: true,
+        )
+        // For de-duping during decryption (and for the SignalRecipient FOREIGN KEY).
+        try tx.database.create(
+            index: "Reaction_Timestamp",
+            on: tableName,
+            columns: ["reactorId", "sentTimestamp"],
+        )
+    }
+
+    static func addReactionUniqueId(tx: DBWriteTransaction) throws {
+        let tableName = "ReactionUniqueId"
+        try tx.database.create(table: tableName) {
+            $0.column("id", .integer).notNull().primaryKey()
+                .references("Reaction", column: "id", onDelete: .cascade, onUpdate: .cascade)
+            $0.column("uniqueId", .text).notNull()
+        }
+    }
+
+    static func migrateReactions(tx: DBWriteTransaction) throws {
+        var messageUniqueIdToInteractionDetails = [String: (interactionId: Int64, isOutgoingMessage: Bool, threadId: Int64)?]()
+        let fetchInteraction = try tx.database.makeStatement(
+            sql: "SELECT id, recordType, uniqueThreadId FROM model_TSInteraction WHERE uniqueId = ?",
+        )
+        let fetchThreadId = try tx.database.makeStatement(
+            sql: "SELECT id FROM model_TSThread WHERE uniqueId = ?",
+        )
+        let insertReaction = try tx.database.makeStatement(
+            sql: "INSERT OR REPLACE INTO Reaction (id, messageId, reactorId, threadId, emoji, sentTimestamp, isRead) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        )
+        let insertReactionUniqueId = try tx.database.makeStatement(
+            sql: "INSERT INTO ReactionUniqueId (id, uniqueId) VALUES (?, ?)",
+        )
+        let cursor = try Row.fetchCursor(
+            tx.database,
+            sql: "SELECT id, uniqueId, emoji, reactorE164, reactorUUID, sentAtTimestamp, uniqueMessageId, read FROM model_OWSReaction ORDER BY id",
+        )
+        while let reaction = try cursor.next() {
+            let id = reaction[0] as Int64
+            let uniqueId = reaction[1] as String
+            let emoji = reaction[2] as String
+            let reactorE164 = reaction[3] as String?
+            let reactorUUID = reaction[4] as String?
+            let sentAtTimestamp = reaction[5] as Int64
+            let uniqueMessageId = reaction[6] as String
+            let read = reaction[7] as Bool
+
+            let reactorId = try fetchOrCreateRecipient(
+                .V2,
+                serviceId: Aci.parseFrom(aciString: reactorUUID),
+                phoneNumber: E164(reactorE164)?.stringValue,
+                tx: tx,
+            )
+            guard let reactorId else {
+                Logger.warn("skipping reaction with malformed reactor")
+                continue
+            }
+
+            let interactionId: Int64
+            let isOutgoingMessage: Bool
+            let threadId: Int64
+
+            if let interactionDetails = messageUniqueIdToInteractionDetails[uniqueMessageId] {
+                guard let interactionDetails else {
+                    // We've already looked this up and confirmed it doesn't exist.
+                    continue
+                }
+                interactionId = interactionDetails.interactionId
+                isOutgoingMessage = interactionDetails.isOutgoingMessage
+                threadId = interactionDetails.threadId
+            } else {
+                // If the cache gets large, reset it to limit memory consumption.
+                if messageUniqueIdToInteractionDetails.count >= 10_000 {
+                    messageUniqueIdToInteractionDetails = [:]
+                }
+                guard let interactionRow = try Row.fetchOne(fetchInteraction, arguments: [uniqueMessageId]) else {
+                    messageUniqueIdToInteractionDetails[uniqueMessageId] = .some(.none)
+                    continue
+                }
+                interactionId = interactionRow[0]
+                let recordType = interactionRow[1] as Int64
+                isOutgoingMessage = recordType == 21 || recordType == 68 || recordType == 79
+                let threadUniqueId = interactionRow[2] as String
+                guard let _threadId = try Int64.fetchOne(fetchThreadId, arguments: [threadUniqueId]) else {
+                    messageUniqueIdToInteractionDetails[uniqueMessageId] = .some(.none)
+                    continue
+                }
+                threadId = _threadId
+                messageUniqueIdToInteractionDetails[uniqueMessageId] = .some((
+                    interactionId: interactionId,
+                    isOutgoingMessage: isOutgoingMessage,
+                    threadId: threadId,
+                ))
+            }
+
+            try insertReaction.execute(arguments: [
+                id,
+                interactionId,
+                reactorId,
+                threadId,
+                emoji,
+                sentAtTimestamp,
+                isOutgoingMessage ? read : nil,
+            ])
+            if isOutgoingMessage, !read {
+                try insertReactionUniqueId.execute(arguments: [id, uniqueId])
+            }
+        }
+    }
+
+    static func dropOWSReaction(tx: DBWriteTransaction) throws {
+        let tableName = "model_OWSReaction"
+        try tx.database.drop(table: tableName)
     }
 
     static func dedupeSignalRecipients(tx: DBWriteTransaction) throws {

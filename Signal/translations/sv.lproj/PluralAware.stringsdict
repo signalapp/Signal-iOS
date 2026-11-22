@@ -344,9 +344,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat</string>
+			<string>%1$d chatt</string>
 			<key>other</key>
-			<string>%1$d Chats</string>
+			<string>%1$d chattar</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
@@ -360,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Type</string>
+			<string>%1$d chattyp</string>
 			<key>other</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d chattyper</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Excluded</string>
+			<string>%1$d chatt exkluderad</string>
 			<key>other</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d chattar exkluderade</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
@@ -1655,9 +1655,9 @@ Försök igen om %1$d timmar.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This will remove the sticker pack. You can&apos;t add it again without a link or sticker message.</string>
+			<string>Detta tar bort stickerpaketet. Du kan inte lägga till det igen utan en länk eller ett stickermeddelande.</string>
 			<key>other</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Detta tar bort stickerpaketen. Du kan inte lägga till dem igen utan en länk eller ett stickermeddelande.</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
@@ -1671,9 +1671,9 @@ Försök igen om %1$d timmar.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Remove sticker pack?</string>
+			<string>Ta bort %1$d klistermärkespaket?</string>
 			<key>other</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Ta bort %1$d klistermärkespaket?</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
@@ -1687,9 +1687,9 @@ Försök igen om %1$d timmar.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sticker pack removed</string>
+			<string>Stickerpaket borttaget</string>
 			<key>other</key>
-			<string>Sticker packs removed</string>
+			<string>Stickerpaket borttagna</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -1719,9 +1719,9 @@ Försök igen om %1$d timmar.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Selected</string>
+			<string>%1$d vald</string>
 			<key>other</key>
-			<string>%1$d Selected</string>
+			<string>%1$d valda</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

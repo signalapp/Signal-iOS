@@ -10,12 +10,12 @@ private let lastPreKeyRotationDate = "lastKeyRotationDate"
 
 public class SignedPreKeyStoreImpl {
     private let identity: OWSIdentity
-    private let metadataStore: KeyValueStore
+    private let metadataStore: NewKeyValueStore
     private let preKeyStore: PreKeyStore
 
     init(for identity: OWSIdentity, preKeyStore: PreKeyStore) {
         self.identity = identity
-        self.metadataStore = KeyValueStore(
+        self.metadataStore = NewKeyValueStore(
             collection: {
                 switch identity {
                 case .aci: "TSStorageManagerSignedPreKeyMetadataCollection"
@@ -38,15 +38,15 @@ public class SignedPreKeyStoreImpl {
     }
 
     func setLastSuccessfulRotationDate(_ date: Date, tx: DBWriteTransaction) {
-        metadataStore.setDate(date, key: lastPreKeyRotationDate, transaction: tx)
+        metadataStore.writeValue(date, forKey: lastPreKeyRotationDate, tx: tx)
     }
 
     func getLastSuccessfulRotationDate(tx: DBReadTransaction) -> Date? {
-        metadataStore.getDate(lastPreKeyRotationDate, transaction: tx)
+        return metadataStore.fetchValue(Date.self, forKey: lastPreKeyRotationDate, tx: tx)
     }
 
     func removeMetadata(tx: DBWriteTransaction) {
-        metadataStore.removeAll(transaction: tx)
+        metadataStore.removeAll(tx: tx)
     }
 
     func allocatePreKeyId(tx: DBWriteTransaction) -> UInt32 {

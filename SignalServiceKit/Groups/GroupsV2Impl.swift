@@ -498,6 +498,7 @@ public class GroupsV2Impl: GroupsV2 {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSecretParams: GroupSecretParams,
+        receivedDataDeletionRequest: ReceivedGroupDataDeletionRequest?,
     ) async throws {
         let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
         try await _updateGroupWithChangeActions(
@@ -506,6 +507,7 @@ public class GroupsV2Impl: GroupsV2 {
             groupSendEndorsementsResponse: nil,
             justUploadedAvatars: nil,
             groupV2Params: groupV2Params,
+            receivedDataDeletionRequest: receivedDataDeletionRequest,
         )
     }
 
@@ -522,6 +524,7 @@ public class GroupsV2Impl: GroupsV2 {
             groupSendEndorsementsResponse: groupSendEndorsementsResponse,
             justUploadedAvatars: justUploadedAvatars,
             groupV2Params: groupV2Params,
+            receivedDataDeletionRequest: nil,
         )
     }
 
@@ -531,6 +534,7 @@ public class GroupsV2Impl: GroupsV2 {
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         justUploadedAvatars: GroupAvatarStateMap?,
         groupV2Params: GroupV2Params,
+        receivedDataDeletionRequest: ReceivedGroupDataDeletionRequest?,
     ) async throws {
         let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
         let downloadedAvatars = try await fetchAllAvatarData(
@@ -545,6 +549,7 @@ public class GroupsV2Impl: GroupsV2 {
                 changeActionsProto: changeActionsProto,
                 groupSendEndorsementsResponse: groupSendEndorsementsResponse,
                 downloadedAvatars: downloadedAvatars,
+                receivedDataDeletionRequest: receivedDataDeletionRequest,
                 transaction: tx,
             )
         }
@@ -1904,6 +1909,7 @@ public class GroupsV2Impl: GroupsV2 {
                     groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
                     localIdentifiers: localIdentifiers,
                     spamReportingMetadata: .createdByLocalAction,
+                    dataDeletionRequest: nil,
                     transaction: transaction,
                 )
             } else {
@@ -2068,6 +2074,7 @@ public class GroupsV2Impl: GroupsV2 {
                 groupUpdateSource: .localUser(originalSource: .aci(localIdentifiers.aci)),
                 localIdentifiers: localIdentifiers,
                 spamReportingMetadata: .createdByLocalAction,
+                dataDeletionRequest: nil,
                 transaction: transaction,
             )
         }
@@ -2185,6 +2192,7 @@ public class GroupsV2Impl: GroupsV2 {
                     groupUpdateSource: .unknown,
                     localIdentifiers: localIdentifiers,
                     spamReportingMetadata: .createdByLocalAction,
+                    dataDeletionRequest: nil,
                     transaction: transaction,
                 )
             }

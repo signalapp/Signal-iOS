@@ -143,7 +143,6 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             isDeregisteredOrDelinked,
             tx: tx,
         )
-        let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
         guard didChange else {
             return
         }
@@ -155,42 +154,6 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             } else if notify {
                 notificationPresenter.notifyUserOfDeregistration(tx: tx)
             }
-
-            // Rotate the upload era, thereby ensuring that when we reregister
-            // we will run a list-media.
-            backupAttachmentUploadEraStore.rotateUploadEra(tx: tx)
-
-            // Wipe our cached Backup credentials, which may be invalid if we
-            // eventually re-register.
-            authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
-            backupCDNCredentialStore.wipe(tx: tx)
-
-            // Wipe KT state for the local user. If we re-register, we'll want
-            // to start self-monitoring from a clean slate.
-            keyTransparencyStore.wipeSelfCheckState(
-                localAci: localIdentifiers?.aci,
-                tx: tx,
-            )
-
-            // A registration event that caused us to become deregistered will
-            // have wiped our server-side Backup entitlement, so we should make
-            // sure that if we ever become registered again we attempt to get
-            // said entitlement again immediately.
-            backupSubscriptionManager.setRedemptionAttemptIsNecessary(tx: tx)
-            backupTestFlightEntitlementManager.setRenewEntitlementIsNecessary(tx: tx)
-
-            // On linked devices, reset all DM timer versions. If the user
-            // relinks a new primary and resets all its DM timer versions,
-            // our local higher version number would prevent us getting
-            // back in sync. So we pre-emptively reset too. If we relink
-            // to a primary that preserves versions we'll catch back
-            // up via contact sync.
-            switch tsAccountManager.registrationState(tx: tx) {
-            case .delinked:
-                dmConfigurationStore.resetAllDMTimerVersions(tx: tx)
-            default:
-                break
-            }
         }
         tx.addSyncCompletion {
             self.postRegistrationStateDidChangeNotification()
@@ -198,6 +161,41 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     }
 
     public func resetForRegistration(isPrimaryDevice: Bool, tx: DBWriteTransaction) {
+        let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
+
+        // Rotate the upload era, thereby ensuring that when we reregister
+        // we will run a list-media.
+        backupAttachmentUploadEraStore.rotateUploadEra(tx: tx)
+
+        // Wipe our cached Backup credentials, which may be invalid if we
+        // eventually re-register.
+        authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
+        backupCDNCredentialStore.wipe(tx: tx)
+
+        // Wipe KT state for the local user. If we re-register, we'll want
+        // to start self-monitoring from a clean slate.
+        keyTransparencyStore.wipeSelfCheckState(
+            localAci: localIdentifiers?.aci,
+            tx: tx,
+        )
+
+        // A registration event that caused us to become deregistered will
+        // have wiped our server-side Backup entitlement, so we should make
+        // sure that if we ever become registered again we attempt to get
+        // said entitlement again immediately.
+        backupSubscriptionManager.setRedemptionAttemptIsNecessary(tx: tx)
+        backupTestFlightEntitlementManager.setRenewEntitlementIsNecessary(tx: tx)
+
+        // On linked devices, reset all DM timer versions. If the user
+        // relinks a new primary and resets all its DM timer versions,
+        // our local higher version number would prevent us getting
+        // back in sync. So we pre-emptively reset too. If we relink
+        // to a primary that preserves versions we'll catch back
+        // up via contact sync.
+        if !isPrimaryDevice {
+            dmConfigurationStore.resetAllDMTimerVersions(tx: tx)
+        }
+
         tsAccountManager.resetForRegistration(tx: tx)
 
         signalProtocolStoreManager.sessionStore.deleteAllSessions(tx: tx)

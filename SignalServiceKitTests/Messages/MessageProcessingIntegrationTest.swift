@@ -46,12 +46,6 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         linkedClient = localClient.linkedDevice(deviceID: 2)
     }
 
-    override func tearDown() {
-        try! SSKEnvironment.shared.databaseStorageRef.grdbStorage.testing_tearDownDatabaseChangeObserver()
-
-        super.tearDown()
-    }
-
     // MARK: - Tests
 
     func test_contactMessage_UuidOnlyEnvelope() {

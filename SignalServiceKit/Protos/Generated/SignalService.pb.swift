@@ -4361,6 +4361,24 @@ nonisolated struct SignalServiceProtos_AttachmentPointer: @unchecked Sendable {
   /// Clears the value of `digest`. Subsequent reads from it will return its default value.
   mutating func clearDigest() {_uniqueStorage()._digest = nil}
 
+  var incrementalMac: Data {
+    get {_storage._incrementalMac ?? Data()}
+    set {_uniqueStorage()._incrementalMac = newValue}
+  }
+  /// Returns true if `incrementalMac` has been explicitly set.
+  var hasIncrementalMac: Bool {_storage._incrementalMac != nil}
+  /// Clears the value of `incrementalMac`. Subsequent reads from it will return its default value.
+  mutating func clearIncrementalMac() {_uniqueStorage()._incrementalMac = nil}
+
+  var chunkSize: UInt32 {
+    get {_storage._chunkSize ?? 0}
+    set {_uniqueStorage()._chunkSize = newValue}
+  }
+  /// Returns true if `chunkSize` has been explicitly set.
+  var hasChunkSize: Bool {_storage._chunkSize != nil}
+  /// Clears the value of `chunkSize`. Subsequent reads from it will return its default value.
+  mutating func clearChunkSize() {_uniqueStorage()._chunkSize = nil}
+
   var fileName: String {
     get {_storage._fileName ?? String()}
     set {_uniqueStorage()._fileName = newValue}
@@ -4504,13 +4522,48 @@ nonisolated struct SignalServiceProtos_GroupContextV2: Sendable {
   /// Clears the value of `groupChange`. Subsequent reads from it will return its default value.
   mutating func clearGroupChange() {self._groupChange = nil}
 
+  var deleteData: SignalServiceProtos_GroupContextV2.DeleteData {
+    get {_deleteData ?? SignalServiceProtos_GroupContextV2.DeleteData()}
+    set {_deleteData = newValue}
+  }
+  /// Returns true if `deleteData` has been explicitly set.
+  var hasDeleteData: Bool {self._deleteData != nil}
+  /// Clears the value of `deleteData`. Subsequent reads from it will return its default value.
+  mutating func clearDeleteData() {self._deleteData = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  nonisolated struct DeleteData: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// ACIs that are removed via groupChange and should delete data
+    var memberAcis: [Data] = []
+
+    /// If change includes a terminate action, should delete data
+    var terminate: Bool {
+      get {_terminate ?? false}
+      set {_terminate = newValue}
+    }
+    /// Returns true if `terminate` has been explicitly set.
+    var hasTerminate: Bool {self._terminate != nil}
+    /// Clears the value of `terminate`. Subsequent reads from it will return its default value.
+    mutating func clearTerminate() {self._terminate = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _terminate: Bool? = nil
+  }
 
   init() {}
 
   fileprivate var _masterKey: Data? = nil
   fileprivate var _revision: UInt32? = nil
   fileprivate var _groupChange: Data? = nil
+  fileprivate var _deleteData: SignalServiceProtos_GroupContextV2.DeleteData? = nil
 }
 
 nonisolated struct SignalServiceProtos_ContactDetails: Sendable {
@@ -9399,7 +9452,7 @@ nonisolated extension SignalServiceProtos_SyncMessage.UsernameChange: SwiftProto
 
 nonisolated extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AttachmentPointer"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}cdnId\0\u{1}contentType\0\u{1}key\0\u{1}size\0\u{1}thumbnail\0\u{1}digest\0\u{1}fileName\0\u{1}flags\0\u{1}width\0\u{1}height\0\u{1}caption\0\u{1}blurHash\0\u{1}uploadTimestamp\0\u{1}cdnNumber\0\u{1}cdnKey\0\u{2}\u{5}clientUuid\0\u{1}audioWaveform\0\u{1}audioDurationSeconds\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}cdnId\0\u{1}contentType\0\u{1}key\0\u{1}size\0\u{1}thumbnail\0\u{1}digest\0\u{1}fileName\0\u{1}flags\0\u{1}width\0\u{1}height\0\u{1}caption\0\u{1}blurHash\0\u{1}uploadTimestamp\0\u{1}cdnNumber\0\u{1}cdnKey\0\u{2}\u{2}chunkSize\0\u{2}\u{2}incrementalMac\0\u{1}clientUuid\0\u{1}audioWaveform\0\u{1}audioDurationSeconds\0\u{c}\u{10}\u{1}\u{c}\u{12}\u{1}")
 
   fileprivate class _StorageClass {
     var _cdnID: UInt64? = nil
@@ -9410,6 +9463,8 @@ nonisolated extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Messa
     var _size: UInt32? = nil
     var _thumbnail: Data? = nil
     var _digest: Data? = nil
+    var _incrementalMac: Data? = nil
+    var _chunkSize: UInt32? = nil
     var _fileName: String? = nil
     var _flags: UInt32? = nil
     var _width: UInt32? = nil
@@ -9438,6 +9493,8 @@ nonisolated extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Messa
       _size = source._size
       _thumbnail = source._thumbnail
       _digest = source._digest
+      _incrementalMac = source._incrementalMac
+      _chunkSize = source._chunkSize
       _fileName = source._fileName
       _flags = source._flags
       _width = source._width
@@ -9481,6 +9538,8 @@ nonisolated extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Messa
         case 13: try { try decoder.decodeSingularUInt64Field(value: &_storage._uploadTimestamp) }()
         case 14: try { try decoder.decodeSingularUInt32Field(value: &_storage._cdnNumber) }()
         case 15: try { try decoder.decodeSingularStringField(value: &_storage._cdnKey) }()
+        case 17: try { try decoder.decodeSingularUInt32Field(value: &_storage._chunkSize) }()
+        case 19: try { try decoder.decodeSingularBytesField(value: &_storage._incrementalMac) }()
         case 20: try { try decoder.decodeSingularBytesField(value: &_storage._clientUuid) }()
         case 21: try { try decoder.decodeSingularBytesField(value: &_storage._audioWaveform) }()
         case 22: try { try decoder.decodeSingularFloatField(value: &_storage._audioDurationSeconds) }()
@@ -9541,6 +9600,12 @@ nonisolated extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Messa
       try { if let v = _storage._cdnKey {
         try visitor.visitSingularStringField(value: v, fieldNumber: 15)
       } }()
+      try { if let v = _storage._chunkSize {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 17)
+      } }()
+      try { if let v = _storage._incrementalMac {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 19)
+      } }()
       try { if let v = _storage._clientUuid {
         try visitor.visitSingularBytesField(value: v, fieldNumber: 20)
       } }()
@@ -9567,6 +9632,8 @@ nonisolated extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Messa
         if _storage._size != rhs_storage._size {return false}
         if _storage._thumbnail != rhs_storage._thumbnail {return false}
         if _storage._digest != rhs_storage._digest {return false}
+        if _storage._incrementalMac != rhs_storage._incrementalMac {return false}
+        if _storage._chunkSize != rhs_storage._chunkSize {return false}
         if _storage._fileName != rhs_storage._fileName {return false}
         if _storage._flags != rhs_storage._flags {return false}
         if _storage._width != rhs_storage._width {return false}
@@ -9592,7 +9659,7 @@ nonisolated extension SignalServiceProtos_AttachmentPointer.Flags: SwiftProtobuf
 
 nonisolated extension SignalServiceProtos_GroupContextV2: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupContextV2"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}masterKey\0\u{1}revision\0\u{1}groupChange\0")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}masterKey\0\u{1}revision\0\u{1}groupChange\0\u{1}deleteData\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9603,6 +9670,7 @@ nonisolated extension SignalServiceProtos_GroupContextV2: SwiftProtobuf.Message,
       case 1: try { try decoder.decodeSingularBytesField(value: &self._masterKey) }()
       case 2: try { try decoder.decodeSingularUInt32Field(value: &self._revision) }()
       case 3: try { try decoder.decodeSingularBytesField(value: &self._groupChange) }()
+      case 4: try { try decoder.decodeSingularMessageField(value: &self._deleteData) }()
       default: break
       }
     }
@@ -9622,6 +9690,9 @@ nonisolated extension SignalServiceProtos_GroupContextV2: SwiftProtobuf.Message,
     try { if let v = self._groupChange {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
     } }()
+    try { if let v = self._deleteData {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -9629,6 +9700,46 @@ nonisolated extension SignalServiceProtos_GroupContextV2: SwiftProtobuf.Message,
     if lhs._masterKey != rhs._masterKey {return false}
     if lhs._revision != rhs._revision {return false}
     if lhs._groupChange != rhs._groupChange {return false}
+    if lhs._deleteData != rhs._deleteData {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension SignalServiceProtos_GroupContextV2.DeleteData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_GroupContextV2.protoMessageName + ".DeleteData"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}memberAcis\0\u{1}terminate\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedBytesField(value: &self.memberAcis) }()
+      case 2: try { try decoder.decodeSingularBoolField(value: &self._terminate) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.memberAcis.isEmpty {
+      try visitor.visitRepeatedBytesField(value: self.memberAcis, fieldNumber: 1)
+    }
+    try { if let v = self._terminate {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_GroupContextV2.DeleteData, rhs: SignalServiceProtos_GroupContextV2.DeleteData) -> Bool {
+    if lhs.memberAcis != rhs.memberAcis {return false}
+    if lhs._terminate != rhs._terminate {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

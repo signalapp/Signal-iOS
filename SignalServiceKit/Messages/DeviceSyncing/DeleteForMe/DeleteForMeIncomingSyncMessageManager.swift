@@ -88,6 +88,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
     private let attachmentManager: any AttachmentManager
     private let attachmentStore: AttachmentStore
     private let bulkDeleteInteractionJobQueue: BulkDeleteInteractionJobQueue
+    private let db: any DB
     private let interactionDeleteManager: any InteractionDeleteManager
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let threadDeletionManager: any ThreadDeletionManager
@@ -100,6 +101,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         attachmentManager: any AttachmentManager,
         attachmentStore: AttachmentStore,
         bulkDeleteInteractionJobQueue: BulkDeleteInteractionJobQueue,
+        db: any DB,
         interactionDeleteManager: any InteractionDeleteManager,
         recipientDatabaseTable: RecipientDatabaseTable,
         threadDeletionManager: any ThreadDeletionManager,
@@ -109,6 +111,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.bulkDeleteInteractionJobQueue = bulkDeleteInteractionJobQueue
+        self.db = db
         self.interactionDeleteManager = interactionDeleteManager
         self.recipientDatabaseTable = recipientDatabaseTable
         self.threadDeletionManager = threadDeletionManager
@@ -220,6 +223,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
             reference: targetAttachment.reference,
             tx: tx,
         )
+        db.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
     }
 
     func handleConversationDelete(

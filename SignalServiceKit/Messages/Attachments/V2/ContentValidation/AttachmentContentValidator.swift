@@ -39,6 +39,7 @@ public struct PendingAttachment {
     let mediaPixelSize: CGSize?
     let videoDuration: TimeInterval?
     let videoStillFrameRelativeFilePath: String?
+    private(set) var videoIsFastStartMp4 = false
     let audioDuration: TimeInterval?
     let audioWaveform: AudioWaveform?
 
@@ -57,6 +58,12 @@ public struct PendingAttachment {
         default:
             return
         }
+    }
+
+    /// Mark this as an MP4 known to have its `moov` box before its `mdat`
+    /// box, because we produced it ourselves.
+    public mutating func markVideoAsFastStartMp4() {
+        videoIsFastStartMp4 = true
     }
 }
 

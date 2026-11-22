@@ -517,8 +517,12 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
             canToggleViewOnce: options.contains(.canToggleViewOnce),
             canChangeMediaQuality: options.contains(.canChangeQualityLevel),
             canSaveMedia: currentPageViewController.canSaveMedia,
+            isMuteButtonVisible: videoEditorModel != nil,
             canToggleMute: videoEditorModel?.hasAudio == true,
-            isMuted: videoEditorModel?.isMuted == true,
+            isMuted: {
+                guard let videoEditorModel else { return false }
+                return videoEditorModel.isMuted || !videoEditorModel.hasAudio
+            }(),
             proceedButtonIcon: isScreenNotFinal ? .next : .send,
         )
         bottomToolView.update(
@@ -1053,6 +1057,12 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleKeyboardNotification(_:)),
+            name: UIResponder.keyboardDidChangeFrameNotification,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleKeyboardNotification(_:)),
             name: UIResponder.keyboardWillHideNotification,
             object: nil,
         )
@@ -1095,7 +1105,7 @@ public final class AttachmentApprovalViewController: OWSViewController, UIPageVi
             // Floating
             keyboardHeight = 0
         } else {
-            keyboardHeight = keyboardFrame.height
+            keyboardHeight = viewFrame.maxY - keyboardFrame.minY
         }
 
         if

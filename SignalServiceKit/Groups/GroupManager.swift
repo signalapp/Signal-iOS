@@ -721,6 +721,7 @@ public class GroupManager: NSObject {
                     localDeviceId: localDeviceId,
                     spamReportingMetadata: .createdByLocalAction,
                     updatedLastVerifiedGroupNameHash: nil,
+                    dataDeletionRequest: nil,
                     transaction: tx,
                 )
             } catch {
@@ -927,6 +928,7 @@ public class GroupManager: NSObject {
                 localDeviceId: localDeviceId,
                 spamReportingMetadata: spamReportingMetadata,
                 updatedLastVerifiedGroupNameHash: updatedLastVerifiedGroupNameHash,
+                dataDeletionRequest: nil,
                 transaction: transaction,
             )
             return groupThread
@@ -991,6 +993,7 @@ public class GroupManager: NSObject {
         localDeviceId: DeviceId,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         updatedLastVerifiedGroupNameHash: Data?,
+        dataDeletionRequest: GroupDataDeletionRequest?,
         transaction: DBWriteTransaction,
     ) {
         guard
@@ -1158,6 +1161,7 @@ public class GroupManager: NSObject {
                 groupUpdateSource: groupUpdateSource,
                 localIdentifiers: localIdentifiers,
                 spamReportingMetadata: spamReportingMetadata,
+                dataDeletionRequest: dataDeletionRequest,
                 transaction: transaction,
             )
         }

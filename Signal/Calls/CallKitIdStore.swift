@@ -10,16 +10,16 @@ import SignalServiceKit
 import SignalUI
 
 class CallKitIdStore {
-    private static let phoneNumberStore = KeyValueStore(collection: "TSStorageManagerCallKitIdToPhoneNumberCollection")
-    private static let serviceIdStore = KeyValueStore(collection: "TSStorageManagerCallKitIdToUUIDCollection")
+    private static let phoneNumberStore = NewKeyValueStore(collection: "TSStorageManagerCallKitIdToPhoneNumberCollection")
+    private static let serviceIdStore = NewKeyValueStore(collection: "TSStorageManagerCallKitIdToUUIDCollection")
     private static let groupIdStore = NewKeyValueStore(collection: "TSStorageManagerCallKitIdToGroupId")
     private static let callLinkStore = NewKeyValueStore(collection: "CallKitIdToCallLink")
 
     static func setGroupId(_ groupId: GroupIdentifier, forCallKitId callKitId: String) {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             // Make sure it doesn't exist, but only in DEBUG builds.
-            assert(!phoneNumberStore.hasValue(callKitId, transaction: tx))
-            assert(!serviceIdStore.hasValue(callKitId, transaction: tx))
+            assert(phoneNumberStore.fetchValue(String.self, forKey: callKitId, tx: tx) == nil)
+            assert(serviceIdStore.fetchValue(String.self, forKey: callKitId, tx: tx) == nil)
             assert(groupIdStore.fetchValue(Data.self, forKey: callKitId, tx: tx) == nil)
             assert(callLinkStore.fetchValue(Data.self, forKey: callKitId, tx: tx) == nil)
 
@@ -30,17 +30,17 @@ class CallKitIdStore {
     static func setContactThread(_ thread: TSContactThread, forCallKitId callKitId: String) {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             // Make sure it doesn't exist, but only in DEBUG builds.
-            assert(!phoneNumberStore.hasValue(callKitId, transaction: tx))
-            assert(!serviceIdStore.hasValue(callKitId, transaction: tx))
+            assert(phoneNumberStore.fetchValue(String.self, forKey: callKitId, tx: tx) == nil)
+            assert(serviceIdStore.fetchValue(String.self, forKey: callKitId, tx: tx) == nil)
             assert(groupIdStore.fetchValue(Data.self, forKey: callKitId, tx: tx) == nil)
             assert(callLinkStore.fetchValue(Data.self, forKey: callKitId, tx: tx) == nil)
 
             let address = thread.contactAddress
             if let serviceIdString = address.serviceIdUppercaseString {
-                serviceIdStore.setString(serviceIdString, key: callKitId, transaction: tx)
+                serviceIdStore.writeValue(serviceIdString, forKey: callKitId, tx: tx)
             } else if let phoneNumber = address.phoneNumber {
                 owsFailDebug("making a call to an address with no UUID")
-                phoneNumberStore.setString(phoneNumber, key: callKitId, transaction: tx)
+                phoneNumberStore.writeValue(phoneNumber, forKey: callKitId, tx: tx)
             } else {
                 owsFailDebug("making a call to an address with no phone number or uuid")
             }
@@ -50,8 +50,8 @@ class CallKitIdStore {
     static func setCallLink(_ callLink: CallLink, forCallKitId callKitId: String) {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             // Make sure it doesn't exist, but only in DEBUG builds.
-            assert(!phoneNumberStore.hasValue(callKitId, transaction: tx))
-            assert(!serviceIdStore.hasValue(callKitId, transaction: tx))
+            assert(phoneNumberStore.fetchValue(String.self, forKey: callKitId, tx: tx) == nil)
+            assert(serviceIdStore.fetchValue(String.self, forKey: callKitId, tx: tx) == nil)
             assert(groupIdStore.fetchValue(Data.self, forKey: callKitId, tx: tx) == nil)
             // Call Links may be stored multiple times...
 
@@ -62,7 +62,7 @@ class CallKitIdStore {
     static func callTarget(forCallKitId callKitId: String) -> CallTarget? {
         return SSKEnvironment.shared.databaseStorageRef.read { tx -> CallTarget? in
             // Most likely: modern 1:1 calls
-            if let serviceIdString = serviceIdStore.getString(callKitId, transaction: tx) {
+            if let serviceIdString = serviceIdStore.fetchValue(String.self, forKey: callKitId, tx: tx) {
                 let address = SignalServiceAddress(serviceIdString: serviceIdString)
                 return TSContactThread.getWithContactAddress(address, transaction: tx).map { .individual($0) }
             }
@@ -76,7 +76,7 @@ class CallKitIdStore {
             }
 
             // Check the phone number store, for very old 1:1 calls.
-            if let phoneNumber = phoneNumberStore.getString(callKitId, transaction: tx) {
+            if let phoneNumber = phoneNumberStore.fetchValue(String.self, forKey: callKitId, tx: tx) {
                 let address = SignalServiceAddress.legacyAddress(serviceIdString: nil, phoneNumber: phoneNumber)
                 return TSContactThread.getWithContactAddress(address, transaction: tx).map { .individual($0) }
             }

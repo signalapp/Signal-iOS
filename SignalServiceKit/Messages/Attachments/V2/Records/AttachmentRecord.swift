@@ -47,10 +47,11 @@ extension Attachment {
         let mediaHeightPixels: UInt32?
         let mediaWidthPixels: UInt32?
         let videoDurationSeconds: Double?
+        let videoStillFrameRelativeFilePath: String?
+        let videoIsFastStartMp4: Bool
         let audioDurationSeconds: Double?
         let audioWaveformRelativeFilePath: String?
         let audioWaveformSamples: Data?
-        let videoStillFrameRelativeFilePath: String?
         let originalAttachmentIdForQuotedReply: Int64?
         let mediaTierIncrementalMac: Data?
         let mediaTierIncrementalMacChunkSize: UInt32?
@@ -115,6 +116,7 @@ extension Attachment {
             case mediaWidthPixels = "cachedMediaWidthPixels"
             case videoDurationSeconds = "cachedVideoDurationSeconds"
             case videoStillFrameRelativeFilePath
+            case videoIsFastStartMp4
             case audioDurationSeconds = "cachedAudioDurationSeconds"
             case audioWaveformRelativeFilePath
             case audioWaveformSamples
@@ -235,10 +237,11 @@ extension Attachment {
             self.mediaHeightPixels = streamInfo?.mediaSizePixels.flatMap { UInt32(exactly: $0.height.rounded()) }
             self.mediaWidthPixels = streamInfo?.mediaSizePixels.flatMap { UInt32(exactly: $0.width.rounded()) }
             self.videoDurationSeconds = streamInfo?.videoDuration
+            self.videoStillFrameRelativeFilePath = streamInfo?.videoStillFrameRelativeFilePath
+            self.videoIsFastStartMp4 = streamInfo?.videoIsFastStartMp4 ?? false
             self.audioDurationSeconds = audioDetails?.duration
             self.audioWaveformRelativeFilePath = audioDetails?.waveformRelativeFilePath
             self.audioWaveformSamples = audioDetails?.waveform?.waveformData
-            self.videoStillFrameRelativeFilePath = streamInfo?.videoStillFrameRelativeFilePath
         }
 
         // MARK: -

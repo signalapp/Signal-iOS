@@ -14,7 +14,7 @@ public protocol NicknameManager {
         tx: DBWriteTransaction,
     )
     func deleteNickname(
-        recipientRowID: Int64,
+        recipientRowID: SignalRecipient.RowId,
         updateStorageServiceFor recipientUniqueId: RecipientUniqueId?,
         tx: DBWriteTransaction,
     )
@@ -86,7 +86,7 @@ public struct NicknameManagerImpl: NicknameManager {
     }
 
     public func deleteNickname(
-        recipientRowID: Int64,
+        recipientRowID: SignalRecipient.RowId,
         updateStorageServiceFor recipientUniqueId: RecipientUniqueId?,
         tx: DBWriteTransaction,
     ) {

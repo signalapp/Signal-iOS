@@ -26,6 +26,7 @@ extension Attachment.StreamInfo {
             mediaSizePixels: nil,
             videoDuration: nil,
             videoStillFrameRelativeFilePath: nil,
+            videoIsFastStartMp4: false,
             ciphertextDigest: ciphertextDigest,
             localRelativeFilePath: localRelativeFilePath,
         )

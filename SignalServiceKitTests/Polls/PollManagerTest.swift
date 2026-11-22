@@ -187,7 +187,7 @@ struct PollManagerTest {
         )
 
         try db.write { tx in
-            var vote1 = PollVoteRecord(optionId: 1, voteAuthorId: 1, voteCount: 1, voteState: .vote)
+            var vote1 = PollVoteRecord(optionId: 1, voteAuthorId: .constantForTesting(1), voteCount: 1, voteState: .vote)
             try vote1.insert(tx.database)
         }
 
@@ -239,7 +239,7 @@ struct PollManagerTest {
         )
 
         try db.write { tx in
-            var vote1 = PollVoteRecord(optionId: 1, voteAuthorId: 1, voteCount: 1, voteState: .vote)
+            var vote1 = PollVoteRecord(optionId: 1, voteAuthorId: .constantForTesting(1), voteCount: 1, voteState: .vote)
             try vote1.insert(tx.database)
         }
 

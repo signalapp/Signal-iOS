@@ -293,6 +293,16 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
                 return updaterAci.wrappedValue
             case .groupTerminatedByUnknownUser:
                 return nil
+            case .localUserRemovedWithDataDeletion(let removerAci):
+                return removerAci.wrappedValue
+            case .otherUserRemovedWithDataDeletionByLocalUser:
+                return nil
+            case .otherUserRemovedWithDataDeletion(let removerAci, _):
+                return removerAci.wrappedValue
+            case .groupTerminatedWithDataDeletionByLocalUser:
+                return nil
+            case .groupTerminatedWithDataDeletionByOtherUser(let updaterAci):
+                return updaterAci.wrappedValue
             }
         }()
 

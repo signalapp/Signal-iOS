@@ -118,7 +118,7 @@ public class RegistrationNavigationController: OWSNavigationController {
             for viewController in self.viewControllers.reversed() {
                 // If we already have this controller available, update it and pop to it.
                 if type(of: viewController) == controller.viewType {
-                    if let newController = controller.updateViewController(viewController) {
+                    if let newController = controller.updateViewController(viewController, inPresenter: self) {
                         logger.info("Pushing new version of existing controller for \(step)")
                         controllerToPush = newController
                     } else {
@@ -131,7 +131,7 @@ public class RegistrationNavigationController: OWSNavigationController {
             }
 
             // If we got here, there were no matches and we should push.
-            let vc = controllerToPush ?? controller.makeViewController(self)
+            let vc = controllerToPush ?? controller.makeViewController(inPresenter: self)
 
             if
                 controller.canCancel,
@@ -140,7 +140,7 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // Cancellable controllers need to have a splash view behind
                 logger.info("Pushing splash view and controller for \(step)")
                 let splashController = self.registrationSplashController()
-                let newViewControllers = [splashController.makeViewController(self), vc]
+                let newViewControllers = [splashController.makeViewController(inPresenter: self), vc]
                 self.setViewControllers(self.viewControllers + newViewControllers, animated: true)
                 return
             }
@@ -156,13 +156,13 @@ public class RegistrationNavigationController: OWSNavigationController {
         let canCancel: Bool
         let make: (RegistrationNavigationController) -> UIViewController
         // Return a new controller to push, or nil if it should reuse the same controller.
-        let update: ((T) -> T?)?
+        let update: ((RegistrationNavigationController, T) -> T?)?
 
         init(
             type: T.Type,
             canCancel: Bool = false,
             make: @escaping (RegistrationNavigationController) -> UIViewController,
-            update: ((T) -> T?)?,
+            update: ((RegistrationNavigationController, T) -> T?)?,
         ) {
             self.type = type
             self.canCancel = canCancel
@@ -172,16 +172,16 @@ public class RegistrationNavigationController: OWSNavigationController {
 
         var viewType: UIViewController.Type { T.self }
 
-        func makeViewController(_ presenter: RegistrationNavigationController) -> UIViewController {
+        func makeViewController(inPresenter presenter: RegistrationNavigationController) -> UIViewController {
             return make(presenter)
         }
 
-        func updateViewController<U>(_ vc: U) -> U? where U: UIViewController {
-            guard let vc = vc as? T else {
+        func updateViewController<U>(_ viewController: U, inPresenter presenter: RegistrationNavigationController) -> U? where U: UIViewController {
+            guard let viewController = viewController as? T else {
                 owsFailDebug("Invalid view controller type")
                 return nil
             }
-            if let newController = update?(vc) as? U {
+            if let newController = update?(presenter, viewController) as? U {
                 return newController
             }
             return nil
@@ -252,7 +252,7 @@ public class RegistrationNavigationController: OWSNavigationController {
                     make: { presenter in
                         return RegistrationPhoneNumberViewController(state: registrationMode, presenter: presenter)
                     },
-                    update: { controller in
+                    update: { _, controller in
                         controller.updateState(registrationMode)
                         return nil
                     },
@@ -268,7 +268,7 @@ public class RegistrationNavigationController: OWSNavigationController {
                                 presenter: presenter,
                             )
                         },
-                        update: { controller in
+                        update: { _, controller in
                             controller.updateState(initialEntryState)
                             return nil
                         },
@@ -282,7 +282,7 @@ public class RegistrationNavigationController: OWSNavigationController {
                                 presenter: presenter,
                             )
                         },
-                        update: { controller in
+                        update: { _, controller in
                             controller.updateState(confirmationState)
                             return nil
                         },
@@ -295,7 +295,7 @@ public class RegistrationNavigationController: OWSNavigationController {
                 make: { presenter in
                     return RegistrationVerificationViewController(state: state, presenter: presenter)
                 },
-                update: { controller in
+                update: { _, controller in
                     controller.updateState(state)
                     return nil
                 },
@@ -312,13 +312,55 @@ public class RegistrationNavigationController: OWSNavigationController {
                 },
                 update: nil,
             )
+        case .promptForMfa(let state):
+            return Controller(
+                type: RegistrationTwoFactorAuthMethodViewController.self,
+                make: { presenter in
+                    return RegistrationTwoFactorAuthMethodViewController(
+                        state: state,
+                        goToNextStep: { [unowned presenter] in presenter.pushNextStepController() },
+                    )
+                },
+                update: { _, controller in
+                    controller.updateState(state)
+                    return nil
+                },
+            )
+        case .promptForTotp(let state):
+            return Controller(
+                type: RegistrationTwoFactorAuthenticatorCodeViewController.self,
+                make: { presenter in
+                    return RegistrationTwoFactorAuthenticatorCodeViewController(
+                        state: state,
+                        goToNextStep: { [unowned presenter] in presenter.pushNextStepController() },
+                    )
+                },
+                update: { _, controller in
+                    controller.resetCodeAndUpdateState(state)
+                    return nil
+                },
+            )
+        case .promptForWebAuthn(let state):
+            return Controller(
+                type: RegistrationTwoFactorPasskeyViewController.self,
+                make: { presenter in
+                    return RegistrationTwoFactorPasskeyViewController(
+                        state: state,
+                        goToNextStep: { [unowned presenter] in presenter.pushNextStepController() },
+                    )
+                },
+                update: { _, controller in
+                    controller.updateState(state)
+                    return nil
+                },
+            )
         case .pinEntry(let state):
             return Controller(
                 type: RegistrationPinViewController.self,
                 make: { presenter in
                     return RegistrationPinViewController(state: state, presenter: presenter)
                 },
-                update: { [weak self] controller in
+                update: { presenter, controller in
                     switch (controller.state.operation, state.operation) {
                     case
                         (.creatingNewPin, .creatingNewPin),
@@ -327,8 +369,7 @@ public class RegistrationNavigationController: OWSNavigationController {
                         controller.updateState(state)
                         return nil
                     default:
-                        guard let self else { return nil }
-                        return RegistrationPinViewController(state: state, presenter: self)
+                        return RegistrationPinViewController(state: state, presenter: presenter)
                     }
                 },
             )
@@ -341,8 +382,8 @@ public class RegistrationNavigationController: OWSNavigationController {
                         presenter: presenter,
                     )
                 },
-                update: {
-                    $0.updateState(state)
+                update: { _, controller in
+                    controller.updateState(state)
                     return nil
                 },
             )
@@ -352,12 +393,9 @@ public class RegistrationNavigationController: OWSNavigationController {
                 make: { presenter in
                     return RegistrationCaptchaViewController(presenter: presenter)
                 },
-                update: { [weak self] _ in
-                    guard let self else {
-                        return nil
-                    }
+                update: { presenter, _ in
                     // Show a fresh captcha controller if we get repeated captcha requests.
-                    return RegistrationCaptchaViewController(presenter: self)
+                    return RegistrationCaptchaViewController(presenter: presenter)
                 },
             )
         case .setupProfile(let state):
@@ -871,7 +909,7 @@ private protocol AnyController {
 
     var viewType: UIViewController.Type { get }
 
-    func makeViewController(_: RegistrationNavigationController) -> UIViewController
+    func makeViewController(inPresenter presenter: RegistrationNavigationController) -> UIViewController
 
-    func updateViewController<T: UIViewController>(_: T) -> T?
+    func updateViewController<T: UIViewController>(_ viewController: T, inPresenter presenter: RegistrationNavigationController) -> T?
 }

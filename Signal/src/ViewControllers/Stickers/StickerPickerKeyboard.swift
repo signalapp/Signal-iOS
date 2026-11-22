@@ -8,26 +8,18 @@ import SignalUI
 
 // MARK: - StickerKeyboard
 
-protocol StickerKeyboardDelegate: AnyObject {
+protocol StickerKeyboardDelegate: StickerPickerContextMenuDelegate {
 
     func stickerKeyboardDidRequestPresentManageStickersView(_ stickerKeyboard: StickerKeyboard)
 
     func stickerKeyboard(_: StickerKeyboard, didSelect stickerMetadata: any StickerMetadata)
-
-    func viewStickerPack(_ stickerPackInfo: StickerPackInfo)
-
-    func scrollToFavoritedSticker(_ stickerInfo: StickerInfo)
-
-    func sendSticker(_ stickerMetadata: any StickerMetadata)
-
-    func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo)
 }
 
 class StickerKeyboard: CustomKeyboard, StickerPickerViewDelegate {
 
     weak var delegate: StickerKeyboardDelegate?
 
-    private lazy var stickerPickerView = StickerPickerView(delegate: self, allowContextMenus: true)
+    private lazy var stickerPickerView = StickerPickerView(delegate: self, contextMenuActions: .all)
 
     init(delegate: StickerKeyboardDelegate?) {
         self.delegate = delegate
@@ -87,12 +79,14 @@ class StickerKeyboard: CustomKeyboard, StickerPickerViewDelegate {
         stickerPickerView.select(page: page, bouncingSticker: bouncingSticker)
     }
 
+    // MARK: - StickerPickerContextMenuDelegate
+
     func viewStickerPack(_ stickerPackInfo: StickerPackInfo) {
         delegate?.viewStickerPack(stickerPackInfo)
     }
 
-    func scrollToFavoritedSticker(_ stickerInfo: StickerInfo) {
-        delegate?.scrollToFavoritedSticker(stickerInfo)
+    func stickerFavoriteDidChange(_ stickerInfo: StickerInfo, change: StickerFavoriteChange) {
+        delegate?.stickerFavoriteDidChange(stickerInfo, change: change)
     }
 
     func sendSticker(_ stickerMetadata: any StickerMetadata) {

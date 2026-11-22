@@ -27,23 +27,12 @@ class BackupArchiveReactionArchiver {
         var reactionProtos = [BackupProto_Reaction]()
 
         for (sortOrder, reaction) in reactions.enumerated() {
-            guard
-                let authorAddress = BackupArchive.ContactAddress(
-                    aci: reaction.reactorAci,
-                    e164: E164(reaction.reactorPhoneNumber),
-                )?.asArchivingAddress()
-            else {
-                // Skip this reaction.
-                errors.append(.archiveFrameError(.invalidReactionAddress))
+            guard let authorId = context.recipientId(forRecipientDbRowId: reaction.reactorId) else {
+                errors.append(.archiveFrameError(.referencedRecipientIdMissing2(reaction.reactorId)))
                 continue
             }
 
-            guard let authorId = context[authorAddress] else {
-                errors.append(.archiveFrameError(.referencedRecipientIdMissing(authorAddress)))
-                continue
-            }
-
-            let sentAtTimestamp = reaction.sentAtTimestamp
+            let sentAtTimestamp = reaction.sentTimestamp
             guard BackupArchive.Timestamps.isValid(sentAtTimestamp) else {
                 errors.append(.archiveFrameError(.invalidReactionTimestamp))
                 continue
@@ -70,49 +59,39 @@ class BackupArchiveReactionArchiver {
     func restoreReactions(
         _ reactions: [BackupProto_Reaction],
         message: TSMessage,
+        threadId: TSThread.RowId,
         context: BackupArchive.RecipientRestoringContext,
     ) -> BackupArchive.RestoreInteractionResult<Void> {
         var reactionErrors = [BackupArchive.RestoreFrameError]()
         for reaction in reactions.sorted(by: { $0.sortOrder < $1.sortOrder }) {
-            let reactorAddress = context[reaction.authorRecipientId]
+            let reactorId: SignalRecipient.RowId?
 
-            switch reactorAddress {
+            switch context[reaction.authorRecipientId] {
             case .localAddress:
-                reactionStore.createReaction(
-                    uniqueMessageId: message.uniqueId,
-                    emoji: reaction.emoji,
-                    reactorAci: context.localIdentifiers.aci,
-                    sentAtTimestamp: reaction.sentTimestamp,
-                    context: context,
-                )
-            case .contact(let address):
-                if let aci = address.aci {
-                    reactionStore.createReaction(
-                        uniqueMessageId: message.uniqueId,
-                        emoji: reaction.emoji,
-                        reactorAci: aci,
-                        sentAtTimestamp: reaction.sentTimestamp,
-                        context: context,
-                    )
-                } else if let e164 = address.e164 {
-                    reactionStore.createLegacyReaction(
-                        uniqueMessageId: message.uniqueId,
-                        emoji: reaction.emoji,
-                        reactorE164: e164,
-                        sentAtTimestamp: reaction.sentTimestamp,
-                        context: context,
-                    )
-                } else {
-                    reactionErrors.append(.restoreFrameError(.invalidProtoData(.reactionNotFromAciOrE164)))
-                }
+                reactorId = context.localSignalRecipientRowId
+            case .contact:
+                reactorId = context.recipientDbRowId(forBackupRecipientId: reaction.authorRecipientId)
             case .group, .distributionList, .releaseNotesChannel, .callLink:
                 // Referencing a group or distributionList as the author is invalid.
                 reactionErrors.append(.restoreFrameError(.invalidProtoData(.reactionNotFromAciOrE164)))
+                continue
             case nil:
+                reactorId = nil
+            }
+            guard let reactorId else {
                 reactionErrors.append(.restoreFrameError(
                     .invalidProtoData(.recipientIdNotFound(reaction.authorRecipientId)),
                 ))
+                continue
             }
+            reactionStore.createReaction(
+                message: message,
+                reactorId: reactorId,
+                threadId: threadId,
+                emoji: reaction.emoji,
+                sentAtTimestamp: reaction.sentTimestamp,
+                context: context,
+            )
         }
 
         if reactionErrors.isEmpty {

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import AuthenticationServices
 import LibSignalClient
 import SignalServiceKit
 import SignalUI
@@ -12,6 +13,7 @@ import SignalUI
 public struct RegistrationSignalLoginDetailsState {
     let aci: Aci
     let aep: SignalServiceKit.AccountEntropyPool
+    let hideBackButton: Bool
     let confirmLogin: @MainActor () -> Void
 }
 
@@ -42,7 +44,7 @@ class RegistrationSignalLoginDetailsViewController: OWSViewController {
         self.goToNextStep = goToNextStep
 
         super.init()
-        navigationItem.hidesBackButton = true
+        navigationItem.hidesBackButton = state.hideBackButton
     }
 
     @available(*, unavailable)
@@ -150,15 +152,18 @@ class RegistrationSignalLoginDetailsViewController: OWSViewController {
 
         // Buttons
 
-        let saveToPasswordManagerButton = UIButton(
-            configuration: .largePrimary(title: OWSLocalizedString(
-                "REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_TO_PASSWORD_MANAGER_BUTTON",
-                comment: "Button on the 'Signal Login details' screen to save the Signal Login to a password manager.",
-            )),
-            primaryAction: UIAction { [weak self] _ in
-                self?.didTapSaveToPasswordManager()
-            },
-        )
+        var saveToPasswordManagerButton: UIButton?
+        if #available(iOS 26.2, *) {
+            saveToPasswordManagerButton = UIButton(
+                configuration: .largePrimary(title: OWSLocalizedString(
+                    "REGISTRATION_SIGNAL_LOGIN_DETAILS_SAVE_TO_PASSWORD_MANAGER_BUTTON",
+                    comment: "Button on the 'Signal Login details' screen to save the Signal Login to a password manager.",
+                )),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.didTapSaveToPasswordManager()
+                },
+            )
+        }
 
         let saveManuallyButton = UIButton(
             configuration: .largeSecondary(title: OWSLocalizedString(
@@ -171,12 +176,14 @@ class RegistrationSignalLoginDetailsViewController: OWSViewController {
         )
 
         stackView.addArrangedSubview(
-            [saveToPasswordManagerButton, saveManuallyButton].enclosedInVerticalStackView(isFullWidthButtons: true),
+            [saveToPasswordManagerButton, saveManuallyButton].compacted().enclosedInVerticalStackView(isFullWidthButtons: true),
         )
 
-        NSLayoutConstraint.activate([
-            saveManuallyButton.heightAnchor.constraint(equalTo: saveToPasswordManagerButton.heightAnchor),
-        ])
+        if let saveToPasswordManagerButton {
+            NSLayoutConstraint.activate([
+                saveManuallyButton.heightAnchor.constraint(equalTo: saveToPasswordManagerButton.heightAnchor),
+            ])
+        }
     }
 
     // MARK: Card
@@ -324,8 +331,31 @@ class RegistrationSignalLoginDetailsViewController: OWSViewController {
         self.present(UINavigationController(rootViewController: viewController), animated: true)
     }
 
+    @available(iOS 26.2, *)
     private func didTapSaveToPasswordManager() {
-        // TODO[#less]: Save the Signal Login to a password manager.
+        guard let window = self.view.window else { return }
+        let credentialDataManager = ASCredentialDataManager()
+        let password = ASPasswordCredential(
+            user: state.aci.serviceIdUppercaseString,
+            password: state.aep.forDisplay.displayString,
+        )
+        let scope = ASAutoFillURLScope(host: "login.signal.org")
+        Task {
+            do {
+                try await credentialDataManager.save(
+                    password: password,
+                    for: scope,
+                    title: OWSLocalizedString(
+                        "REGISTRATION_SIGNAL_LOGIN_SAVED_LOGIN_TITLE",
+                        comment: "Title for the password entry saved to the password manager",
+                    ),
+                    anchor: window,
+                )
+            } catch {
+                // TODO[#less]: Show error to user
+                Logger.error("Could not save credential \(error)")
+            }
+        }
     }
 
     private func didTapSaveManually() {
@@ -345,6 +375,7 @@ class RegistrationSignalLoginDetailsViewController: OWSViewController {
     let state = RegistrationSignalLoginDetailsState(
         aci: Aci.randomForTesting(),
         aep: AccountEntropyPool(),
+        hideBackButton: true,
         confirmLogin: {},
     )
     return UINavigationController(

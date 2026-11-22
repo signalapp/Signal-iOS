@@ -30,7 +30,9 @@ public class ProfileFetcherJob {
     private let localProfileChecker: LocalProfileChecker
     private let paymentsHelper: any PaymentsHelper
     private let profileManager: any ProfileManager
+    private let recipientCapabilityStore: RecipientCapabilityStore
     private let recipientDatabaseTable: RecipientDatabaseTable
+    private let recipientFetcher: RecipientFetcher
     private let syncManager: any SyncManager
     private let threadStore: any ThreadStore
     private let tsAccountManager: any TSAccountManager
@@ -52,7 +54,9 @@ public class ProfileFetcherJob {
         localProfileChecker: LocalProfileChecker,
         paymentsHelper: any PaymentsHelper,
         profileManager: any ProfileManager,
+        recipientCapabilityStore: RecipientCapabilityStore,
         recipientDatabaseTable: RecipientDatabaseTable,
+        recipientFetcher: RecipientFetcher,
         syncManager: any SyncManager,
         threadStore: any ThreadStore,
         tsAccountManager: any TSAccountManager,
@@ -73,7 +77,9 @@ public class ProfileFetcherJob {
         self.localProfileChecker = localProfileChecker
         self.paymentsHelper = paymentsHelper
         self.profileManager = profileManager
+        self.recipientCapabilityStore = recipientCapabilityStore
         self.recipientDatabaseTable = recipientDatabaseTable
+        self.recipientFetcher = recipientFetcher
         self.syncManager = syncManager
         self.threadStore = threadStore
         self.tsAccountManager = tsAccountManager
@@ -518,21 +524,20 @@ public class ProfileFetcherJob {
 
     private func updateCapabilitiesIfNeeded(
         serviceId: ServiceId,
-        fetchedCapabilities: SignalServiceProfile.Capabilities,
+        fetchedCapabilities: [RecipientCapability: Bool],
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction,
     ) {
         let registrationState = tsAccountManager.registrationState(tx: tx)
-
         var shouldSendProfileSync = false
 
         if localIdentifiers.aci == serviceId {
             // Space to detect changes to our own capabilities, and run code
             // such as migrations in response.
             //
-            // See comment on `dummyCapability`: it's always false, but lets us
+            // See comment on `RecipientCapability.dummy`: it's always false, but lets us
             // keep this code around without the compiler complaining.
-            if fetchedCapabilities.dummyCapability {
+            if fetchedCapabilities[.dummy] == true {
                 shouldSendProfileSync = true
             }
 
@@ -540,12 +545,25 @@ public class ProfileFetcherJob {
             // before entering this block, lest we end up sending profile syncs
             // between our devices in a loop as they re-fetch the local profile.
             if
-                fetchedCapabilities.usernameChangeSyncMessage,
+                fetchedCapabilities[.usernameChangeSyncMessage] == true,
                 !keyTransparencyStore.isUsernameChangeSyncMessageCapable(tx: tx)
             {
                 keyTransparencyStore.setIsUsernameChangeSyncMessageCapable(tx: tx)
                 shouldSendProfileSync = true
             }
+        }
+
+        let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
+
+        // Once we know a recipient's ACI, only an ACI profile fetch may update
+        // its capabilities. A PNI fetch will fill in capabilities for PNI-only
+        // recipients. This prevents a PNI fetch from overriding an ACI's capabilities.
+        if serviceId is Aci || recipient.aci == nil {
+            recipientCapabilityStore.setCapabilities(
+                fetchedCapabilities,
+                recipientRowId: recipient.id,
+                tx: tx,
+            )
         }
 
         if

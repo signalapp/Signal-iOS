@@ -551,12 +551,12 @@ open class OWSTableViewController2: OWSViewController, OWSNavigationChildControl
     public static let cellRounding: CGFloat = if #available(iOS 26, *) { 22 } else { 10 }
 
     public static var defaultHOuterMargin: CGFloat {
-        UIDevice.current.isPlusSizePhone ? 20 : 16
+        CurrentAppContext().isCurrentlyOnPlusSizeScreen ? 20 : 16
     }
 
     // The distance from the cell border to the cell content.
     public static var cellHInnerMargin: CGFloat {
-        UIDevice.current.isPlusSizePhone ? 20 : 16
+        CurrentAppContext().isCurrentlyOnPlusSizeScreen ? 20 : 16
     }
 
     // The distance from the cell border to the cell content.
@@ -1181,6 +1181,76 @@ extension TextViewWithPlaceholderDelegate where Self: OWSTableViewController2 {
 
     public func textViewDidUpdateText(_ textView: TextViewWithPlaceholder) {
         _textViewDidUpdateText(textView)
+    }
+}
+
+private extension AppContext {
+
+    var isCurrentlyOnPlusSizeScreen: Bool {
+        guard let mainWindow, let screen = mainWindow.windowScene?.screen else { return false }
+
+        guard mainWindow.traitCollection.userInterfaceIdiom == .phone else { return false }
+
+        switch screen.nativeBounds.height {
+        case 960:
+            //  iPad in iPhone compatibility mode (using old iPhone 4 screen size)
+            return false
+        case 1136:
+            // iPhone SE (1st Gen), iPod Touch 7th GenCan you
+            return false
+        case 1334:
+            // iPhone 6/6S/7/8
+            return false
+        case 1792:
+            // iPhone XR
+            return true
+        case 1920, 2208:
+            // iPhone 6+/6S+/7+/8+//
+            return true
+        case 2034:
+            // iPhone Duo outer
+            return false
+        case 2340:
+            // iPhone 12 Mini
+            return false
+        case 2436:
+            // iPhone X, iPhone XS
+            return false
+        case 2532:
+            // iPhone 12 Pro
+            return false
+        case 2556:
+            // iPhone 14 Pro
+            // iPhone 16
+            return false
+        case 2622:
+            // iPhone 16 Pro
+            // iPhone 17/Pro
+            return false
+        case 2688:
+            // iPhone X Max
+            return true
+        case 2736:
+            // iPhone Air
+            return true
+        case 2778:
+            // iPhone 12 Pro Max
+            return true
+        case 2796:
+            // iPhone 14 Pro Max
+            // iPhone 16 Plus
+            return true
+        case 2853:
+            // iPhone Duo inner
+            return false
+        case 2868:
+            // iPhone 16/17 Pro Max
+            return true
+        default:
+            // Verify all our IOS_DEVICE_CONSTANT tags make sense when adding a new device size.
+            owsFailDebug("unknown device format")
+            return false
+        }
     }
 }
 

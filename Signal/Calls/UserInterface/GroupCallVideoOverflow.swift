@@ -5,6 +5,7 @@
 
 import SignalRingRTC
 import SignalServiceKit
+import SignalUI
 import UIKit
 
 protocol GroupCallVideoOverflowDelegate: AnyObject {
@@ -91,11 +92,11 @@ class GroupCallVideoOverflow: UICollectionView, UICollectionViewDataSource, UICo
     }
 
     @objc
-    private func updateOrientationOverride() {
+    func updateOrientationOverride() {
         // If we're on iPhone and screen sharing, we want to allow
         // the user to change the orientation. We fake this by
         // manually transforming the cells.
-        guard !UIDevice.current.isIPad, isAnyRemoteDeviceScreenSharing else {
+        guard !ignoresSupportedInterfaceOrientations, isAnyRemoteDeviceScreenSharing else {
             orientationOverride = nil
             return
         }

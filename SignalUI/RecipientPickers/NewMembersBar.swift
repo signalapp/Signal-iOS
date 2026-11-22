@@ -6,9 +6,39 @@
 public import SignalServiceKit
 
 public struct NewMember {
-    public let recipient: PickedRecipient
-    public let address: SignalServiceAddress
-    public let shortName: String
+    fileprivate let recipient: PickedRecipient?
+    fileprivate let avatarDataSource: ConversationAvatarDataSource
+    fileprivate let shortName: String
+    fileprivate let localUserDisplayMode: LocalUserDisplayMode
+    fileprivate let symbol: SignalSymbol?
+    fileprivate let customRemoveAction: (() -> Void)?
+
+    public init(
+        recipient: PickedRecipient,
+        avatarDataSource: ConversationAvatarDataSource,
+        shortName: String,
+        localUserDisplayMode: LocalUserDisplayMode = .asUser,
+    ) {
+        self.recipient = recipient
+        self.avatarDataSource = avatarDataSource
+        self.shortName = shortName
+        self.localUserDisplayMode = localUserDisplayMode
+        self.symbol = nil
+        self.customRemoveAction = nil
+    }
+
+    public init(
+        symbol: SignalSymbol,
+        shortName: String,
+        customRemoveAction: @escaping () -> Void,
+    ) {
+        self.recipient = nil
+        self.avatarDataSource = .asset(avatar: nil, badge: nil)
+        self.shortName = shortName
+        self.localUserDisplayMode = .asUser
+        self.symbol = symbol
+        self.customRemoveAction = customRemoveAction
+    }
 }
 
 // MARK: -
@@ -21,7 +51,7 @@ public protocol NewMembersBarDelegate: NewMemberCellDelegate {
 
 public class NewMembersBar: UIView {
 
-    weak var delegate: NewMembersBarDelegate?
+    public weak var delegate: NewMembersBarDelegate?
 
     private var members = [NewMember]()
 
@@ -72,7 +102,7 @@ public class NewMembersBar: UIView {
         collectionView.reloadData()
     }
 
-    func updateHeightConstraint() {
+    public func updateHeightConstraint() {
         guard let heightConstraint else {
             owsFailDebug("Missing heightConstraint.")
             return
@@ -99,6 +129,10 @@ public class NewMembersBar: UIView {
             owsFailDebug("Missing member.")
             return
         }
+        scrollToMember(at: index)
+    }
+
+    public func scrollToMember(at index: Int) {
         collectionView.scrollToItem(
             at: IndexPath(item: index, section: 0),
             at: .centeredHorizontally,
@@ -162,6 +196,18 @@ private class NewMemberCell: UICollectionViewCell {
     static let reuseIdentifier = "NewMemberCell"
 
     private let avatarView = ConversationAvatarView(sizeClass: avatarSizeClass, localUserDisplayMode: .asUser)
+    private let symbolLabel = UILabel()
+    private lazy var symbolCircle: UIView = {
+        let circle = UIView()
+        circle.backgroundColor = .Signal.quaternaryFill
+        circle.layer.cornerRadius = CGFloat(Self.avatarSizeClass.diameter) / 2
+        circle.autoSetDimensions(to: .square(CGFloat(Self.avatarSizeClass.diameter)))
+        symbolLabel.textColor = .Signal.label
+        circle.addSubview(symbolLabel)
+        symbolLabel.autoCenterInSuperview()
+        return circle
+    }()
+
     private let textLabel = UILabel(frame: .zero)
 
     fileprivate weak var delegate: NewMemberCellDelegate?
@@ -205,6 +251,11 @@ private class NewMemberCell: UICollectionViewCell {
         avatarView.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
         avatarView.autoVCenterInSuperview()
 
+        contentView.addSubview(symbolCircle)
+        symbolCircle.autoAlignAxis(.vertical, toSameAxisOf: avatarView)
+        symbolCircle.autoAlignAxis(.horizontal, toSameAxisOf: avatarView)
+        symbolCircle.isHidden = true
+
         let stackView = UIStackView(arrangedSubviews: [
             textLabel,
             removeButton,
@@ -233,9 +284,16 @@ private class NewMemberCell: UICollectionViewCell {
 
     func configure(member: NewMember) {
         self.member = member
-        avatarView.updateWithSneakyTransactionIfNecessary { config in
-            config.dataSource = .address(member.address)
+        if let symbol = member.symbol {
+            symbolLabel.attributedText = symbol.attributedString(staticFontSize: 16)
+        } else {
+            avatarView.updateWithSneakyTransactionIfNecessary { config in
+                config.dataSource = member.avatarDataSource
+                config.localUserDisplayMode = member.localUserDisplayMode
+            }
         }
+        avatarView.isHidden = member.symbol != nil
+        symbolCircle.isHidden = member.symbol == nil
         textLabel.text = member.shortName
     }
 
@@ -244,11 +302,16 @@ private class NewMemberCell: UICollectionViewCell {
 
         member = nil
         avatarView.reset()
+        symbolLabel.attributedText = nil
         textLabel.text = nil
         delegate = nil
     }
 
     private func removeButtonWasPressed() {
+        if let customRemoveAction = member?.customRemoveAction {
+            customRemoveAction()
+            return
+        }
         guard let recipient = member?.recipient else {
             owsFailDebug("Missing recipient.")
             return

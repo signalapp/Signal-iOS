@@ -3198,6 +3198,7 @@ public class RegistrationCoordinatorTest {
                 accountIdentifier: .phoneNumber(Stubs.e164),
                 recoveryPassword: recoveryPassword,
                 pniPreKeyBundle: Stubs.preKeyBundle(identity: .pni),
+                mfa: nil,
             ),
             authPassword: "", // Doesn't matter for request generation.
             accountAttributes: Stubs.accountAttributes(registrationRecoveryPassword: recoveryPassword),

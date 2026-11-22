@@ -91,7 +91,6 @@ class LocalFileBackupExportJob {
     ) async throws {
         let (localIdentifiers, backupKey) = try db.read { tx in
             guard
-                tsAccountManager.registrationState(tx: tx).isRegistered,
                 let aep = accountKeyStore.getAccountEntropyPool(tx: tx),
                 let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
             else {

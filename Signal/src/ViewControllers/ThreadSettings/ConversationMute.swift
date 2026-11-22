@@ -27,6 +27,30 @@ struct ConversationMuteManager {
         setMutedUntilTimestamp(0, for: threadViewModels)
     }
 
+    func presentMuteActionSheet(for threadViewModels: [ThreadViewModel], from presenter: UIViewController) {
+        let alert = ActionSheetController(title: OWSLocalizedString(
+            "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE",
+            comment: "Title for the mute action sheet",
+        ))
+        for option in ConversationMuteChoice.Option.all {
+            alert.addAction(ActionSheetAction(title: option.title, style: .default) { [weak presenter] _ in
+                switch option {
+                case .preset(let preset):
+                    mute(threadViewModels, choice: .preset(preset))
+                case .forever:
+                    mute(threadViewModels, choice: .forever)
+                case .custom:
+                    let sheet = MuteUntilSheet { endDate in
+                        mute(threadViewModels, choice: .custom(endDate: endDate))
+                    }
+                    presenter?.present(sheet, animated: true)
+                }
+            })
+        }
+        alert.addAction(OWSActionSheets.cancelAction)
+        presenter.presentActionSheet(alert)
+    }
+
     private func endTimestamp(for choice: ConversationMuteChoice) -> UInt64 {
         switch choice {
         case .preset(let preset):

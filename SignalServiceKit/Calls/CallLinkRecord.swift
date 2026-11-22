@@ -10,7 +10,9 @@ public import SignalRingRTC
 public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
     public static let databaseTableName: String = "CallLink"
 
-    public let id: Int64
+    public typealias RowId = RowIdType<CallLinkRecord>
+
+    public let id: RowId
     public let roomId: Data
     public let rootKey: CallLinkRootKey
     public var adminPasskey: Data?
@@ -24,7 +26,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
     public private(set) var expiration: Int64?
 
     init(
-        id: Int64,
+        id: RowId,
         roomId: Data,
         rootKey: CallLinkRootKey,
         adminPasskey: Data?,
@@ -84,7 +86,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
 
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = try container.decode(Int64.self, forKey: .id)
+        self.id = try container.decode(RowId.self, forKey: .id)
         self.roomId = try container.decode(Data.self, forKey: .roomId)
         self.rootKey = try CallLinkRootKey(container.decode(Data.self, forKey: .rootKey))
         self.adminPasskey = try container.decodeIfPresent(Data.self, forKey: .adminPasskey)

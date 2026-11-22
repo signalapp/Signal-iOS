@@ -55,7 +55,8 @@ public struct AppNotificationUserInfo {
     public var defaultAction: AppNotificationDefaultAction?
     public var isMissedCall: Bool?
     public var messageId: String?
-    public var reactionId: String?
+    public var reactionId: ReactionRecord.RowId?
+    public var reactionUniqueId: String?
     public var roomId: Data?
     public var storyMessageId: String?
     public var storyTimestamp: UInt64?
@@ -79,7 +80,8 @@ public struct AppNotificationUserInfo {
         }
         self.isMissedCall = userInfo[UserInfoKey.isMissedCall] as? Bool
         self.messageId = userInfo[UserInfoKey.messageId] as? String
-        self.reactionId = userInfo[UserInfoKey.reactionId] as? String
+        self.reactionId = (userInfo[UserInfoKey.reactionId] as? Int64).map { ReactionRecord.RowId(rawValue: $0) }
+        self.reactionUniqueId = userInfo[UserInfoKey.reactionUniqueId] as? String
         self.roomId = (userInfo[UserInfoKey.roomId] as? String).flatMap {
             let result = Data(base64Encoded: $0)
             owsAssertDebug(result != nil, "Couldn't parse roomId.")
@@ -97,7 +99,8 @@ public struct AppNotificationUserInfo {
         static let defaultAction = "Signal.AppNotificationsUserInfoKey.defaultAction"
         static let isMissedCall = "Signal.AppNotificationsUserInfoKey.isMissedCall"
         static let messageId = "Signal.AppNotificationsUserInfoKey.messageId"
-        static let reactionId = "Signal.AppNotificationsUserInfoKey.reactionId"
+        static let reactionId = "Signal.AppNotificationsUserInfoKey.reactionRowId"
+        static let reactionUniqueId = "Signal.AppNotificationsUserInfoKey.reactionId"
         static let roomId = "Signal.AppNotificationsUserInfoKey.roomId"
         static let storyMessageId = "Signal.AppNotificationsUserInfoKey.storyMessageId"
         static let storyTimestamp = "Signal.AppNotificationsUserInfoKey.storyTimestamp"
@@ -123,7 +126,10 @@ public struct AppNotificationUserInfo {
             result[UserInfoKey.messageId] = messageId
         }
         if let reactionId {
-            result[UserInfoKey.reactionId] = reactionId
+            result[UserInfoKey.reactionId] = reactionId.rawValue
+        }
+        if let reactionUniqueId {
+            result[UserInfoKey.reactionUniqueId] = reactionUniqueId
         }
         if let roomId {
             result[UserInfoKey.roomId] = roomId.base64EncodedString()
@@ -286,6 +292,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
     private var databaseStorage: SDSDatabaseStorage { SSKEnvironment.shared.databaseStorageRef }
     private var identityManager: any OWSIdentityManager { DependenciesBridge.shared.identityManager }
     private var notificationPreferencesManager: NotificationPreferencesManager { DependenciesBridge.shared.notificationPreferencesManager }
+    private var recipientStore: RecipientDatabaseTable { DependenciesBridge.shared.recipientDatabaseTable }
     private var tsAccountManager: any TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
     public init() {}
@@ -1059,7 +1066,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
     }
 
     public func notifyUser(
-        forReaction reaction: OWSReaction,
+        forReaction reaction: ReactionRecord,
         onOutgoingMessage message: TSOutgoingMessage,
         thread: TSThread,
         transaction: DBWriteTransaction,
@@ -1080,9 +1087,11 @@ public class NotificationPresenterImpl: NotificationPresenter {
             return
         }
 
+        let reactor = recipientStore.fetchRecipient(rowId: reaction.reactorId, tx: transaction).owsFailUnwrap("must exist")
+
         let notificationTitle = self.notificationTitle(
             for: notifiableThread,
-            senderAddress: reaction.reactor,
+            senderAddress: reactor.address,
             isGroupStoryReply: false,
             previewType: previewType,
             tx: transaction,
@@ -1167,9 +1176,9 @@ public class NotificationPresenterImpl: NotificationPresenter {
         var userInfo = AppNotificationUserInfo()
         userInfo.threadId = thread.uniqueId
         userInfo.messageId = message.uniqueId
-        userInfo.reactionId = reaction.uniqueId
+        userInfo.reactionId = reaction.id
 
-        let intent = thread.generateSendMessageIntent(context: .senderAddress(reaction.reactor), transaction: transaction)
+        let intent = thread.generateSendMessageIntent(context: .senderAddress(reactor.address), transaction: transaction)
 
         let threadUniqueId = thread.uniqueId
         enqueueNotificationAction(afterCommitting: transaction) {
@@ -1779,9 +1788,9 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     // MARK: - Cancellation
 
-    public func cancelNotifications(threadId: String) {
+    public func cancelNotifications(threadId: String, exceptMessageId: String?) {
         enqueueNotificationAction {
-            await self.presenter.cancelNotifications(threadId: threadId)
+            await self.presenter.cancelNotifications(threadId: threadId, exceptMessageId: exceptMessageId)
         }
     }
 
@@ -1791,9 +1800,12 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
     }
 
-    public func cancelNotifications(reactionId: String) {
+    public func cancelNotifications(reactionId: ReactionRecord.RowId, tx: DBReadTransaction) {
+        let uniqueIdRecord = failIfThrows {
+            return try ReactionUniqueIdRecord.fetchOne(tx.database, key: reactionId)
+        }
         enqueueNotificationAction {
-            await self.presenter.cancelNotifications(reactionId: reactionId)
+            await self.presenter.cancelNotifications(reactionId: reactionId, reactionUniqueId: uniqueIdRecord?.uniqueId)
         }
     }
 

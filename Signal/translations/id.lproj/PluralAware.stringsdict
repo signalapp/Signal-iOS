@@ -302,7 +302,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d Chats</string>
+			<string>%1$d Chat</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
@@ -316,7 +316,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d Jenis Chat</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
@@ -330,7 +330,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d Chat Dikecualikan</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
@@ -1447,7 +1447,7 @@ Coba lagi dalam %1$d jam.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Ini akan menghapus paket stiker. Anda tidak bisa menambahkannya lagi tanpa tautan atau pesan stiker.</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
@@ -1461,7 +1461,7 @@ Coba lagi dalam %1$d jam.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Hapus %1$d paket stiker?</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
@@ -1475,7 +1475,7 @@ Coba lagi dalam %1$d jam.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Sticker packs removed</string>
+			<string>Paket stiker dihapus</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -1503,7 +1503,7 @@ Coba lagi dalam %1$d jam.</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d Selected</string>
+			<string>%1$d Dipilih</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

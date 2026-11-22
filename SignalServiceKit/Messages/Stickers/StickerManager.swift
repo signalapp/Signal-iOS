@@ -995,14 +995,18 @@ public class StickerManager {
             maxCount: Self.kRecentStickersMaxCount,
             tx: transaction,
         )
-        NotificationCenter.default.postOnMainThread(name: Self.recentStickersDidChange, object: nil)
+        transaction.addSyncCompletion {
+            NotificationCenter.default.postOnMainThread(name: Self.recentStickersDidChange, object: nil)
+        }
     }
 
     public func removeAllRecentStickers(
         transaction: DBWriteTransaction,
     ) {
         store.removeValue(forKey: Self.kRecentStickersKey, transaction: transaction)
-        NotificationCenter.default.postOnMainThread(name: Self.recentStickersDidChange, object: nil)
+        transaction.addSyncCompletion {
+            NotificationCenter.default.postOnMainThread(name: Self.recentStickersDidChange, object: nil)
+        }
     }
 
     public func removeFromRecentStickers(
@@ -1010,7 +1014,9 @@ public class StickerManager {
         transaction: DBWriteTransaction,
     ) {
         store.removeFromOrderedUniqueArray(key: Self.kRecentStickersKey, value: stickerInfo.asKey(), tx: transaction)
-        NotificationCenter.default.postOnMainThread(name: Self.recentStickersDidChange, object: nil)
+        transaction.addSyncCompletion {
+            NotificationCenter.default.postOnMainThread(name: Self.recentStickersDidChange, object: nil)
+        }
     }
 
     // Returned in descending order of recency.
@@ -1651,7 +1657,7 @@ public class StickerManager {
 
     private struct StickerPackDownloadTaskRecord: TaskRecord {
         struct ID: Hashable {
-            let rowId: QueuedBackupStickerPackDownload.IDType
+            let rowId: QueuedBackupStickerPackDownload.RowId
             let packId: Data
             let packKey: Data
         }

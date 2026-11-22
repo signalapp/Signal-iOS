@@ -72,6 +72,10 @@ public class StoryManager {
                 throw OWSGenericError("not in group [timestamp \(timestamp), author \(author)]")
             }
 
+            guard groupThread.groupMembership.isLocalUserFullMember else {
+                throw OWSGenericError("local user not in group [timestamp \(timestamp), author \(author)]")
+            }
+
             if groupThread.isTerminatedGroup {
                 throw OWSGenericError("terminated group [timestamp \(timestamp), author \(author)]")
             }

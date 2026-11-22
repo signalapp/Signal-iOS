@@ -130,14 +130,10 @@ public extension TSMessage {
 
     // MARK: - Reactions
 
-    var reactionFinder: ReactionFinder {
-        return ReactionFinder(uniqueMessageId: uniqueId)
-    }
-
     @objc
-    func removeAllReactions(transaction: DBWriteTransaction) {
-        guard !CurrentAppContext().isRunningTests else { return }
-        reactionFinder.deleteAllReactions(transaction: transaction)
+    internal func removeAllReactions(transaction: DBWriteTransaction) {
+        let reactionFinder = ReactionFinder(messageId: self.sqliteRowId.owsFailUnwrap("must exist"))
+        reactionFinder.deleteAllReactions(tx: transaction)
     }
 
     @objc
@@ -145,28 +141,18 @@ public extension TSMessage {
         MentionFinder.deleteAllMentions(for: self, transaction: tx)
     }
 
-    @objc
-    func allReactionIds(transaction: DBReadTransaction) -> [String]? {
-        return reactionFinder.allUniqueIds(transaction: transaction)
-    }
-
-    @objc
-    func markUnreadReactionsAsRead(transaction: DBWriteTransaction) {
-        let unreadReactions = reactionFinder.unreadReactions(transaction: transaction)
-        unreadReactions.forEach { $0.markAsRead(transaction: transaction) }
-    }
-
-    func reaction(for reactor: Aci, tx: DBReadTransaction) -> OWSReaction? {
-        return reactionFinder.reaction(for: reactor, tx: tx)
-    }
-
     @discardableResult
-    func recordReaction(
-        for reactor: Aci,
+    internal func recordReaction(
+        forReactorId reactorId: SignalRecipient.RowId,
+        inThread thread: TSThread,
         emoji: String,
         sentAtTimestamp: UInt64,
+        markAsRead: Bool,
         tx: DBWriteTransaction,
-    ) -> (oldValue: OWSReaction?, newValue: OWSReaction)? {
+    ) -> (oldValue: ReactionRecord?, newValue: ReactionRecord)? {
+        // TODO: Remove this when TSInteraction.threadId exists.
+        owsPrecondition(thread.uniqueId == self.uniqueThreadId)
+
         guard !wasRemotelyDeleted else {
             owsFailDebug("attempted to record a reaction for a message that was deleted")
             return nil
@@ -175,22 +161,17 @@ public extension TSMessage {
         assert(emoji.isSingleEmoji)
 
         // Remove any previous reaction, there can only be one
-        let oldReaction = removeReaction(for: reactor, tx: tx)
+        let oldReaction = removeReaction(forReactorId: reactorId, tx: tx)
 
-        let newReaction = OWSReaction(
-            uniqueMessageId: uniqueId,
+        let newReaction = ReactionRecord.insertRecord(
+            messageId: self.sqliteRowId.owsFailUnwrap("must exist"),
+            reactorId: reactorId,
+            threadId: thread.id.owsFailUnwrap("must exist"),
             emoji: emoji,
-            reactorAci: reactor,
-            reactorPhoneNumber: nil,
-            sentAtTimestamp: sentAtTimestamp,
+            timestamp: sentAtTimestamp,
+            isRead: ReactionRecord.isReadableMessage(self) ? markAsRead : nil,
+            tx: tx,
         )
-
-        newReaction.anyInsert(transaction: tx)
-
-        // Reactions to messages we send need to be manually marked
-        // as read as they trigger notifications we need to clear
-        // out. Everything else can be automatically read.
-        if !(self is TSOutgoingMessage) { newReaction.markAsRead(transaction: tx) }
 
         SSKEnvironment.shared.databaseStorageRef.touch(interaction: self, shouldReindex: false, tx: tx)
 
@@ -198,15 +179,15 @@ public extension TSMessage {
     }
 
     @discardableResult
-    func removeReaction(for reactor: Aci, tx: DBWriteTransaction) -> OWSReaction? {
-        guard let reaction = reaction(for: reactor, tx: tx) else {
+    internal func removeReaction(forReactorId reactorId: SignalRecipient.RowId, tx: DBWriteTransaction) -> ReactionRecord? {
+        let reactionFinder = ReactionFinder(messageId: self.sqliteRowId.owsFailUnwrap("must exist"))
+        guard let reaction = reactionFinder.reaction(for: reactorId, tx: tx) else {
             return nil
         }
-
-        reaction.anyRemove(transaction: tx)
+        // Cancel before deleting the reaction.
+        SSKEnvironment.shared.notificationPresenterRef.cancelNotifications(reactionId: reaction.id, tx: tx)
         SSKEnvironment.shared.databaseStorageRef.touch(interaction: self, shouldReindex: false, tx: tx)
-
-        SSKEnvironment.shared.notificationPresenterRef.cancelNotifications(reactionId: reaction.uniqueId)
+        reaction.delete(tx: tx)
 
         return reaction
     }

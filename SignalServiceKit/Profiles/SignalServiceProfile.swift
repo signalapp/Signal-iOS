@@ -15,19 +15,6 @@ public class SignalServiceProfile {
         let description: String
     }
 
-    public struct Capabilities {
-        fileprivate static let dummyCapabilityKey = "dummy"
-        fileprivate static let usernameChangeSyncMessageKey = "usernameChangeSyncMessage"
-
-        /// A dummy capability that keeps this struct non-empty. If it were
-        /// empty, the compiler would complain about much of the code in here
-        /// being unused...which is true! But, we want to keep it around for the
-        /// future, when we may add new capabilities.
-        public let dummyCapability: Bool
-
-        public let usernameChangeSyncMessage: Bool
-    }
-
     public let serviceId: ServiceId
     public let identityKey: IdentityKey
     public let profileNameEncrypted: Data?
@@ -45,8 +32,7 @@ public class SignalServiceProfile {
     /// object itself.
     public let profileBadges: [ProfileBadge]
     public let phoneNumberSharingEncrypted: Data?
-
-    public let capabilities: Capabilities
+    public let capabilities: [RecipientCapability: Bool]
 
     private init(
         serviceId: ServiceId,
@@ -61,7 +47,7 @@ public class SignalServiceProfile {
         credential: Data?,
         badges: [(userInfo: OWSUserProfileBadgeInfo, badge: ProfileBadge)],
         phoneNumberSharingEncrypted: Data?,
-        capabilities: Capabilities,
+        capabilities: [RecipientCapability: Bool],
     ) {
         self.serviceId = serviceId
         self.identityKey = identityKey
@@ -92,7 +78,7 @@ public class SignalServiceProfile {
             let credential = try params.optionalBase64EncodedData(key: "credential")
             let badges: [(OWSUserProfileBadgeInfo, ProfileBadge)] = try parseBadges(params: params)
             let phoneNumberSharingEncrypted = try params.optionalBase64EncodedData(key: "phoneNumberSharing")
-            let capabilities: Capabilities = try parseCapabilities(params: params)
+            let capabilities = try parseCapabilities(params: params)
 
             return SignalServiceProfile(
                 serviceId: serviceId,
@@ -136,47 +122,17 @@ public class SignalServiceProfile {
         }
     }
 
-    private static func parseCapabilities(params: ParamParser) throws -> Capabilities {
+    private static func parseCapabilities(params: ParamParser) throws -> [RecipientCapability: Bool] {
         guard let capabilitiesDict: [String: Any] = try params.required(key: "capabilities") else {
             throw ValidationError(description: "Missing or invalid capabilities JSON!")
         }
 
+        var result = [RecipientCapability: Bool]()
         let capabilitiesParser = ParamParser(capabilitiesDict)
-
-        return Capabilities(
-            dummyCapability: parseCapabilityFlag(
-                capabilitiesParser: capabilitiesParser,
-                capabilityKey: Capabilities.dummyCapabilityKey,
-            ),
-            usernameChangeSyncMessage: parseCapabilityFlag(
-                capabilitiesParser: capabilitiesParser,
-                capabilityKey: Capabilities.usernameChangeSyncMessageKey,
-            ),
-        )
-    }
-
-    /// Parse a boolean capability with the given key from the given parser.
-    /// - Important
-    /// If the capability is missing (or weirdly fails to parse), we assume it
-    /// was removed from the service and is therefore default-true.
-    private static func parseCapabilityFlag(
-        capabilitiesParser: ParamParser,
-        capabilityKey: String,
-    ) -> Bool {
-        if capabilityKey == Capabilities.dummyCapabilityKey {
-            return false
+        for capability in RecipientCapability.allCases where capability != .dummy {
+            let isEnabled: Bool? = try? capabilitiesParser.optional(key: capability.rawValue)
+            result[capability] = isEnabled
         }
-
-        do {
-            guard let capabilityFlag: Bool = try capabilitiesParser.optional(key: capabilityKey) else {
-                owsFailDebug("Missing capability \(capabilityKey)! Assuming retired from service, and therefore hardcoded-on.")
-                return true
-            }
-
-            return capabilityFlag
-        } catch {
-            owsFailDebug("Failed to parse capability \(capabilityKey)! Hardcoding to true.")
-            return true
-        }
+        return result
     }
 }

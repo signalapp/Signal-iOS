@@ -168,6 +168,7 @@ class RecipientMergerImpl: RecipientMerger {
             storyRecipientStore,
             pinnedThreadManager,
             chatFolderManager,
+            ReactionMergeApplier(),
         ]
     }
 
@@ -1089,6 +1090,26 @@ struct RecipientStatusMergeApplier: RecipientMergeApplier {
         case (.whitelisted, .unspecified):
             targetRecipient.status = .whitelisted
             targetRecipient.blockedAt = .unspecified
+        }
+    }
+}
+
+struct ReactionMergeApplier: RecipientMergeApplier {
+    func mergeRecipient(
+        _ recipient: SignalRecipient,
+        into targetRecipient: inout SignalRecipient,
+        shouldUpdateStorageService: Bool,
+        tx: DBWriteTransaction,
+    ) {
+        for var sourceReaction in ReactionFinder.fetchReactions(forReactorId: recipient.id, tx: tx) {
+            let targetReaction = ReactionFinder(messageId: sourceReaction.messageId).reaction(for: targetRecipient.id, tx: tx)
+            if let targetReaction, targetReaction.id > sourceReaction.id {
+                sourceReaction.delete(tx: tx)
+            } else {
+                targetReaction?.delete(tx: tx)
+                // Update the source reaction to use the target's ID.
+                sourceReaction.setReactorId(targetRecipient.id, tx: tx)
+            }
         }
     }
 }

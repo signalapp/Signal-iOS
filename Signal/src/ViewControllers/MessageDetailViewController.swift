@@ -333,7 +333,9 @@ class MessageDetailViewController: OWSTableViewController2 {
 
             if
                 let formattedByteCount = byteCountFormatter.string(
-                    for: attachment.attachment.asStream()?.unencryptedByteCount ?? attachment.attachment.anyPointerFullsizeUnencryptedByteCount,
+                    for: attachment.attachment.asStream()?.unencryptedByteCount
+                        ?? attachment.attachment.mediaTierInfo?.unencryptedByteCount
+                        ?? attachment.attachment.latestTransitTierInfo?.unencryptedByteCount,
                 )
             {
                 messageStack.addArrangedSubview(Self.buildValueLabel(

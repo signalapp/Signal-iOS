@@ -911,7 +911,7 @@ class ManageStickersViewController: OWSTableViewController2, SendMessageDelegate
         _ tableView: UITableView,
         canMoveRowAt indexPath: IndexPath,
     ) -> Bool {
-        return currentUIMode == .normal && currentFilterMode == .installed && searchText.isEmpty
+        return BuildFlags.stickerReorder && currentUIMode == .normal && currentFilterMode == .installed && searchText.isEmpty
     }
 
     func tableView(

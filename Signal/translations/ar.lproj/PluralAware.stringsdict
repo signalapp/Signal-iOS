@@ -512,17 +512,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d Chats</string>
+			<string>%1$d دردشات</string>
 			<key>one</key>
-			<string>%1$d Chat</string>
+			<string>%1$d دردشة</string>
 			<key>two</key>
-			<string>%1$d Chats</string>
+			<string>%1$d دردشتين</string>
 			<key>few</key>
-			<string>%1$d Chats</string>
+			<string>%1$d دردشات</string>
 			<key>many</key>
-			<string>%1$d Chats</string>
+			<string>%1$d دردشةً</string>
 			<key>other</key>
-			<string>%1$d Chats</string>
+			<string>%1$d دردشةٍ</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
@@ -536,17 +536,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d نوع دردشة</string>
 			<key>one</key>
-			<string>%1$d Chat Type</string>
+			<string>%1$d نوع دردشة</string>
 			<key>two</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d نوعي دردشة</string>
 			<key>few</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d أنواع دردشة</string>
 			<key>many</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d نوع دردشة</string>
 			<key>other</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d نوع دردشة</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
@@ -560,17 +560,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d دردشة مستبعدة</string>
 			<key>one</key>
-			<string>%1$d Chat Excluded</string>
+			<string>%1$d دردشة مستبعدة</string>
 			<key>two</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d دردشتين مستبعدتين</string>
 			<key>few</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d دردشات مستبعدة</string>
 			<key>many</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d دردشةً مستبعدة</string>
 			<key>other</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d دردشةٍ مستبعدة</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
@@ -2487,17 +2487,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>سيؤدي هذا إلى إزالة حزم المُلصَقات. لن تتمكن من إضافتها مُجدَّدًا دون رابط أو رسالة تحتوي على مُلصَق.</string>
 			<key>one</key>
-			<string>This will remove the sticker pack. You can&apos;t add it again without a link or sticker message.</string>
+			<string>سيؤدي هذا إلى إزالة حزمة المُلصَقات. لن تتمكن من إضافتها مُجدَّدًا دون رابط أو رسالة تحتوي على مُلصَق.</string>
 			<key>two</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>سيؤدي هذا إلى إزالة حزمتيْ المُلصَقات. لن تتمكن من إضافتها مُجدَّدًا دون رابط أو رسالة تحتوي على مُلصَق.</string>
 			<key>few</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>سيؤدي هذا إلى إزالة حزم المُلصَقات. لن تتمكن من إضافتها مُجدَّدًا دون رابط أو رسالة تحتوي على مُلصَق.</string>
 			<key>many</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>سيؤدي هذا إلى إزالة حزم المُلصَقات. لن تتمكن من إضافتها مُجدَّدًا دون رابط أو رسالة تحتوي على مُلصَق.</string>
 			<key>other</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>سيؤدي هذا إلى إزالة حزم المُلصَقات. لن تتمكن من إضافتها مُجدَّدًا دون رابط أو رسالة تحتوي على مُلصَق.</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
@@ -2511,17 +2511,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>هل ترغبُ بإزالة %1$d حزمة مُلصَقات؟</string>
 			<key>one</key>
-			<string>Remove sticker pack?</string>
+			<string>هل ترغبُ بإزالة %1$d حزمة مُلصَقات؟</string>
 			<key>two</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>هل ترغبُ بإزالة %1$d حزمتي مُلصَقات؟</string>
 			<key>few</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>هل ترغبُ بإزالة %1$d حزم مُلصَقات؟</string>
 			<key>many</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>هل ترغبُ بإزالة %1$d حزمة مُلصَقات؟</string>
 			<key>other</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>هل ترغبُ بإزالة %1$d حزمة مُلصَقات؟</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
@@ -2535,17 +2535,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>Sticker packs removed</string>
+			<string>تمَّت إزالة حزم المُلصَقات</string>
 			<key>one</key>
-			<string>Sticker pack removed</string>
+			<string>تمَّت إزالة حزمة المُلصَقات</string>
 			<key>two</key>
-			<string>Sticker packs removed</string>
+			<string>تمَّت إزالة حزمتي المُلصَقات</string>
 			<key>few</key>
-			<string>Sticker packs removed</string>
+			<string>تمَّت إزالة حزم المُلصَقات</string>
 			<key>many</key>
-			<string>Sticker packs removed</string>
+			<string>تمَّت إزالة حزم المُلصَقات</string>
 			<key>other</key>
-			<string>Sticker packs removed</string>
+			<string>تمَّت إزالة حزم المُلصَقات</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -2583,17 +2583,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>%1$d Selected</string>
+			<string>تمَّ تحديد %1$d</string>
 			<key>one</key>
-			<string>%1$d Selected</string>
+			<string>تمَّ تحديد %1$d</string>
 			<key>two</key>
-			<string>%1$d Selected</string>
+			<string>تمَّ تحديد %1$d</string>
 			<key>few</key>
-			<string>%1$d Selected</string>
+			<string>تمَّ تحديد %1$d</string>
 			<key>many</key>
-			<string>%1$d Selected</string>
+			<string>تمَّ تحديد %1$d</string>
 			<key>other</key>
-			<string>%1$d Selected</string>
+			<string>تمَّ تحديد %1$d</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

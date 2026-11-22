@@ -647,8 +647,15 @@ extension TSOutgoingMessage {
             )
         } ?? []
 
+        var incrementalMacLimiter = IncrementalMacLimiter(
+            remoteConfig: .current,
+        )
         return referencedAttachments.compactMap { referencedAttachment in
-            guard let attachmentProto = referencedAttachment.asProtoForSending() else {
+            guard
+                let attachmentProto = incrementalMacLimiter.buildProto(
+                    referencedAttachment: referencedAttachment,
+                )
+            else {
                 owsFailDebug("Failed to generate proto for body attachment!")
                 return nil
             }

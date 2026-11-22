@@ -293,7 +293,6 @@ public enum DatabaseRecovery {
 
         static let tablesToCopyWithBestEffort: [String] = [
             // We should try to copy thread data.
-            OWSReaction.databaseTableName,
             OWSRecipientIdentity.databaseTableName,
             OWSUserProfile.databaseTableName,
             SignalAccount.databaseTableName,
@@ -304,6 +303,8 @@ public enum DatabaseRecovery {
             TSMention.databaseTableName,
             TSPaymentModel.databaseTableName,
             TSThread.databaseTableName,
+            ReactionRecord.databaseTableName,
+            ReactionUniqueIdRecord.databaseTableName,
             GroupRecord.databaseTableName,
             // We'd like to get receipts back, but it's okay if we don't get them all.
             DonationReceipt.databaseTableName,
@@ -540,6 +541,7 @@ public enum DatabaseRecovery {
             PendingViewedReceiptRecord.databaseTableName,
             // Can be recovered in other ways, after recovery is done.
             ProfileBadge.databaseTableName,
+            RecipientCapabilityRecord.databaseTableName,
             StickerPackRecord.databaseTableName,
             HiddenRecipient.databaseTableName,
             // Not essential.

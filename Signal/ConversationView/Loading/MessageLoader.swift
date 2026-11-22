@@ -360,6 +360,20 @@ class MessageLoader {
             batch.insertOlder(uniqueIds: older.interactions.map(\.uniqueId), didReachOldest: older.reachedEnd)
             let newer = _fetchDisplayUnits(.newer(than: rowId), count: count - older.unitCount)
             batch.insertNewer(uniqueIds: newer.interactions.map(\.uniqueId), didReachNewest: newer.reachedEnd)
+
+            // If we didn't consume our budget fetching newer units (e.g., we're
+            // near the newest message), use that remaining budget for more
+            // older units.
+            let remainingCount = count - older.unitCount - newer.unitCount
+            if
+                remainingCount > 0,
+                !older.reachedEnd,
+                let oldestRowId = older.interactions.first?.sqliteRowId
+            {
+                let moreOlder = _fetchDisplayUnits(.older(than: oldestRowId), count: remainingCount)
+                batch.insertOlder(uniqueIds: moreOlder.interactions.map(\.uniqueId), didReachOldest: moreOlder.reachedEnd)
+            }
+
             return batch
         }
 
@@ -719,6 +733,7 @@ class MessageLoader {
         var currentRun = [TSInteraction]()
         var currentRunType: CollapseSetInteraction.MessagesType?
         var pastUnreadIndicator = false
+        // Always show a date header on the first interaction.
         var shouldShowDateOnNextViewItem = true
         var previousDaysBeforeToday: Int?
 
@@ -763,13 +778,11 @@ class MessageLoader {
                 toSecondDate: todayDate,
             )
 
-            if let previousDaysBeforeToday {
-                if daysBeforeToday != previousDaysBeforeToday {
-                    shouldShowDateOnNextViewItem = true
-                }
-            } else {
-                // Only show for the first item if the date is not today
-                shouldShowDateOnNextViewItem = daysBeforeToday != 0
+            if
+                let previousDaysBeforeToday,
+                daysBeforeToday != previousDaysBeforeToday
+            {
+                shouldShowDateOnNextViewItem = true
             }
 
             if
@@ -861,7 +874,9 @@ class MessageLoader {
                         case
                             .groupTerminatedByLocalUser,
                             .groupTerminatedByOtherUser,
-                            .groupTerminatedByUnknownUser:
+                            .groupTerminatedByUnknownUser,
+                            .groupTerminatedWithDataDeletionByLocalUser,
+                            .groupTerminatedWithDataDeletionByOtherUser:
                             return nil
                         case
                             .disappearingMessagesEnabledByLocalUser,

@@ -264,7 +264,7 @@ class NotificationService: UNNotificationServiceExtension {
         // If we're completing normally, try to update the badge on the app icon.
         let badgeCount: BadgeCount = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return DependenciesBridge.shared.badgeCountFetcher
-                .fetchBadgeCount(tx: tx)
+                .fetchBadgeCount(includingChatFolders: false, tx: tx)
         }
         let content = UNMutableNotificationContent()
         content.badge = NSNumber(value: badgeCount.unreadTotalCount)

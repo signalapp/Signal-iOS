@@ -104,7 +104,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
     private let backupSettingsStore: BackupSettingsStore
     private let dateProvider: DateProvider
     private let db: any DB
-    private let kvStore: KeyValueStore
+    private let kvStore: NewKeyValueStore
     private let localFileBackupAttachmentMetadataStore: LocalFileBackupAttachmentMetadataStore
     private let logger: PrefixedLogger
     private let notificationPresenter: NotificationPresenter
@@ -152,7 +152,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         self.backupSettingsStore = backupSettingsStore
         self.dateProvider = dateProvider
         self.db = db
-        self.kvStore = KeyValueStore(collection: "ListBackupMediaManager")
+        self.kvStore = NewKeyValueStore(collection: "ListBackupMediaManager")
         self.localFileBackupAttachmentMetadataStore = localFileBackupAttachmentMetadataStore
         self.logger = PrefixedLogger(prefix: "[Backups]")
         self.notificationPresenter = notificationPresenter
@@ -177,7 +177,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
     }
 
     func wipe(tx: DBWriteTransaction) {
-        kvStore.removeAll(transaction: tx)
+        kvStore.removeAll(tx: tx)
         backupListMediaStore.removeAll(tx: tx)
         failIfThrows {
             try ListedBackupMediaObject.deleteAll(tx.database)
@@ -230,13 +230,12 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
                 self.tsAccountManager.localIdentifiers(tx: tx)?.aci,
                 accountKeyStore.getMediaRootBackupKey(tx: tx),
                 backupAttachmentUploadEraStore.currentUploadEra(tx: tx),
-                kvStore.getString(Constants.inProgressUploadEraKey, transaction: tx),
-                kvStore.getUInt64(Constants.inProgressListMediaStartTimestampKey, transaction: tx),
-                kvStore.getString(Constants.lastListMediaUploadEraKey, transaction: tx),
+                kvStore.fetchValue(String.self, forKey: Constants.inProgressUploadEraKey, tx: tx),
+                kvStore.fetchValue(UInt64.self, forKey: Constants.inProgressListMediaStartTimestampKey, tx: tx),
+                kvStore.fetchValue(String.self, forKey: Constants.lastListMediaUploadEraKey, tx: tx),
                 needsToQueryListMedia(tx: tx),
-                kvStore.getBool(Constants.hasEverRunListMediaKey, defaultValue: false, transaction: tx),
-                kvStore.getData(Constants.inProgressIntegrityCheckResultKey, transaction: tx)
-                    .flatMap { try? JSONDecoder().decode(ListMediaIntegrityCheckResult.self, from: $0) },
+                kvStore.fetchValue(Bool.self, forKey: Constants.hasEverRunListMediaKey, tx: tx) ?? false,
+                try? kvStore.fetchJSONAsValue(ListMediaIntegrityCheckResult.self, forKey: Constants.inProgressIntegrityCheckResultKey, tx: tx),
             )
         }
 
@@ -326,11 +325,11 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
     ) async throws -> ListMediaIntegrityCheckResult? {
 
         let hasCompletedListingMedia: Bool = db.read { tx in
-            return kvStore.getBool(
-                Constants.hasCompletedListingMediaKey,
-                defaultValue: false,
-                transaction: tx,
-            )
+            return kvStore.fetchValue(
+                Bool.self,
+                forKey: Constants.hasCompletedListingMediaKey,
+                tx: tx,
+            ) ?? false
         }
 
         if !hasCompletedListingMedia {
@@ -338,11 +337,11 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         }
 
         let hasCompletedEnumeratingAttchments: Bool = db.read { tx in
-            return kvStore.getBool(
-                Constants.hasCompletedEnumeratingAttachmentsKey,
-                defaultValue: false,
-                transaction: tx,
-            )
+            return kvStore.fetchValue(
+                Bool.self,
+                forKey: Constants.hasCompletedEnumeratingAttachmentsKey,
+                tx: tx,
+            ) ?? false
         }
 
         let integrityChecker: ListMediaIntegrityChecker
@@ -381,9 +380,10 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
                 db: db,
                 delayTwixtTx: 0.2,
                 buildTxContext: { tx -> TxContext in
-                    let lastEnumeratedAttachmentId: Attachment.IDType? = kvStore.getInt64(
-                        Constants.lastEnumeratedAttachmentIdKey,
-                        transaction: tx,
+                    let lastEnumeratedAttachmentId = kvStore.fetchValue(
+                        Attachment.IDType.self,
+                        forKey: Constants.lastEnumeratedAttachmentIdKey,
+                        tx: tx,
                     )
 
                     return TxContext(
@@ -468,20 +468,17 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
 
                     if txContext.didFinish {
                         // We're done
-                        kvStore.removeValue(forKey: Constants.lastEnumeratedAttachmentIdKey, transaction: tx)
-                        kvStore.setBool(true, key: Constants.hasCompletedEnumeratingAttachmentsKey, transaction: tx)
+                        kvStore.removeValue(forKey: Constants.lastEnumeratedAttachmentIdKey, tx: tx)
+                        kvStore.writeValue(true, forKey: Constants.hasCompletedEnumeratingAttachmentsKey, tx: tx)
                     } else if let lastEnumeratedAttachmentId = txContext.lastEnumeratedAttachmentId {
-                        kvStore.setInt64(lastEnumeratedAttachmentId, key: Constants.lastEnumeratedAttachmentIdKey, transaction: tx)
+                        kvStore.writeValue(lastEnumeratedAttachmentId, forKey: Constants.lastEnumeratedAttachmentIdKey, tx: tx)
                     }
 
-                    if
-                        let integrityCheckResult = integrityChecker.result,
-                        let serializedResult = try? JSONEncoder().encode(integrityCheckResult)
-                    {
-                        kvStore.setData(
-                            serializedResult,
-                            key: Constants.inProgressIntegrityCheckResultKey,
-                            transaction: tx,
+                    if let integrityCheckResult = integrityChecker.result {
+                        kvStore.writeValueAsJSON(
+                            integrityCheckResult,
+                            forKey: Constants.inProgressIntegrityCheckResultKey,
+                            tx: tx,
                         )
                     }
                 },
@@ -527,11 +524,8 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
                 return .more
             },
             concludeTx: { tx, _ in
-                if
-                    let integrityCheckResult = integrityChecker.result,
-                    let serializedResult = try? JSONEncoder().encode(integrityCheckResult)
-                {
-                    kvStore.setData(serializedResult, key: Constants.inProgressIntegrityCheckResultKey, transaction: tx)
+                if let integrityCheckResult = integrityChecker.result {
+                    kvStore.writeValueAsJSON(integrityCheckResult, forKey: Constants.inProgressIntegrityCheckResultKey, tx: tx)
                 }
             },
         )
@@ -606,7 +600,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         )
 
         var nextCursor: String? = db.read { tx in
-            return kvStore.getString(Constants.paginationCursorKey, transaction: tx)
+            return kvStore.fetchValue(String.self, forKey: Constants.paginationCursorKey, tx: tx)
         }
 
         while true {
@@ -654,18 +648,18 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
                 }
             }
             if let cursor = page.cursor {
-                kvStore.setString(
+                kvStore.writeValue(
                     cursor,
-                    key: Constants.paginationCursorKey,
-                    transaction: tx,
+                    forKey: Constants.paginationCursorKey,
+                    tx: tx,
                 )
             } else {
                 // We've reached the last page, mark complete.
-                kvStore.removeValue(forKey: Constants.paginationCursorKey, transaction: tx)
-                kvStore.setBool(
+                kvStore.removeValue(forKey: Constants.paginationCursorKey, tx: tx)
+                kvStore.writeValue(
                     true,
-                    key: Constants.hasCompletedListingMediaKey,
-                    transaction: tx,
+                    forKey: Constants.hasCompletedListingMediaKey,
+                    tx: tx,
                 )
             }
         }
@@ -1199,11 +1193,11 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
             break
         }
 
-        if kvStore.getString(Constants.inProgressUploadEraKey, transaction: tx) != nil {
+        if kvStore.fetchValue(String.self, forKey: Constants.inProgressUploadEraKey, tx: tx) != nil {
             return true
         }
 
-        guard let lastQueriedUploadEra = kvStore.getString(Constants.lastListMediaUploadEraKey, transaction: tx) else {
+        guard let lastQueriedUploadEra = kvStore.fetchValue(String.self, forKey: Constants.lastListMediaUploadEraKey, tx: tx) else {
             // We've never run list-media on this device! Do so now. (This
             // ensures we run a list-media after restoring onto a new device.)
             return true
@@ -1222,7 +1216,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         let nextPeriodicListMediaDate: Date = {
             guard
                 let lastListMediaDate = kvStore
-                    .getUInt64(Constants.lastListMediaStartTimestampKey, transaction: tx)
+                    .fetchValue(UInt64.self, forKey: Constants.lastListMediaStartTimestampKey, tx: tx)
                     .map({ Date(millisecondsSince1970: $0) })
             else {
                 return .distantPast
@@ -1249,8 +1243,8 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
     ) -> UInt64 {
         let startTimestamp = dateProvider().ows_millisecondsSince1970
 
-        if kvStore.getString(Constants.inProgressUploadEraKey, transaction: tx) != nil {
-            guard let startTimestamp = kvStore.getUInt64(Constants.inProgressListMediaStartTimestampKey, transaction: tx) else {
+        if kvStore.fetchValue(String.self, forKey: Constants.inProgressUploadEraKey, tx: tx) != nil {
+            guard let startTimestamp = kvStore.fetchValue(UInt64.self, forKey: Constants.inProgressListMediaStartTimestampKey, tx: tx) else {
                 owsFailDebug("Missing start timestamp!")
                 return startTimestamp
             }
@@ -1261,11 +1255,11 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
             try ListedBackupMediaObject.deleteAll(tx.database)
         }
 
-        self.kvStore.setString(currentUploadEra, key: Constants.inProgressUploadEraKey, transaction: tx)
-        self.kvStore.setUInt64(
+        self.kvStore.writeValue(currentUploadEra, forKey: Constants.inProgressUploadEraKey, tx: tx)
+        self.kvStore.writeValue(
             startTimestamp,
-            key: Constants.inProgressListMediaStartTimestampKey,
-            transaction: tx,
+            forKey: Constants.inProgressListMediaStartTimestampKey,
+            tx: tx,
         )
         return startTimestamp
     }
@@ -1275,16 +1269,16 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         integrityCheckResult: ListMediaIntegrityCheckResult?,
         tx: DBWriteTransaction,
     ) {
-        self.kvStore.setBool(true, key: Constants.hasEverRunListMediaKey, transaction: tx)
-        if let uploadEra = kvStore.getString(Constants.inProgressUploadEraKey, transaction: tx) {
-            self.kvStore.setString(uploadEra, key: Constants.lastListMediaUploadEraKey, transaction: tx)
-            self.kvStore.removeValue(forKey: Constants.inProgressUploadEraKey, transaction: tx)
+        kvStore.writeValue(true, forKey: Constants.hasEverRunListMediaKey, tx: tx)
+        if let uploadEra = kvStore.fetchValue(String.self, forKey: Constants.inProgressUploadEraKey, tx: tx) {
+            kvStore.writeValue(uploadEra, forKey: Constants.lastListMediaUploadEraKey, tx: tx)
+            kvStore.removeValue(forKey: Constants.inProgressUploadEraKey, tx: tx)
         } else {
             owsFailDebug("Missing in progress upload era?")
         }
-        self.kvStore.setUInt64(startTimestamp, key: Constants.lastListMediaStartTimestampKey, transaction: tx)
+        kvStore.writeValue(startTimestamp, forKey: Constants.lastListMediaStartTimestampKey, tx: tx)
         backupListMediaStore.setManualNeedsListMedia(false, tx: tx)
-        kvStore.removeValue(forKey: Constants.inProgressListMediaStartTimestampKey, transaction: tx)
+        kvStore.removeValue(forKey: Constants.inProgressListMediaStartTimestampKey, tx: tx)
 
         if let integrityCheckResult {
             if integrityCheckResult.hasFailures {
@@ -1292,12 +1286,12 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
             }
             backupListMediaStore.setMostRecentIntegrityCheckResult(integrityCheckResult, tx: tx)
         }
-        kvStore.removeValue(forKey: Constants.inProgressIntegrityCheckResultKey, transaction: tx)
+        kvStore.removeValue(forKey: Constants.inProgressIntegrityCheckResultKey, tx: tx)
 
-        self.kvStore.setBool(false, key: Constants.hasCompletedListingMediaKey, transaction: tx)
-        kvStore.removeValue(forKey: Constants.paginationCursorKey, transaction: tx)
-        self.kvStore.setBool(false, key: Constants.hasCompletedEnumeratingAttachmentsKey, transaction: tx)
-        self.kvStore.removeValue(forKey: Constants.lastEnumeratedAttachmentIdKey, transaction: tx)
+        kvStore.writeValue(false, forKey: Constants.hasCompletedListingMediaKey, tx: tx)
+        kvStore.removeValue(forKey: Constants.paginationCursorKey, tx: tx)
+        kvStore.writeValue(false, forKey: Constants.hasCompletedEnumeratingAttachmentsKey, tx: tx)
+        kvStore.removeValue(forKey: Constants.lastEnumeratedAttachmentIdKey, tx: tx)
     }
 
     @objc

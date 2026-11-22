@@ -83,6 +83,7 @@ final class DisplayableGroupUpdateItemCopyTest: XCTestCase {
         .localUserLeft,
         .localUserRemoved(removerName: .otherUser1, removerAddress: .otherUser1),
         .localUserRemovedByUnknownUser,
+        .localUserRemovedWithDataDeletion(removerName: .otherUser1, removerAddress: .otherUser1),
 
         .otherUserLeft(userName: .otherUser2, userAddress: .otherUser2),
         .otherUserRemovedByLocalUser(userName: .otherUser2, userAddress: .otherUser2),
@@ -190,6 +191,9 @@ final class DisplayableGroupUpdateItemCopyTest: XCTestCase {
 
         .sequenceOfInviteLinkRequestAndCancels(userName: .otherUser2, userAddress: .otherUser2, count: 1, isTail: true),
         .sequenceOfInviteLinkRequestAndCancels(userName: .otherUser2, userAddress: .otherUser2, count: 4, isTail: true),
+
+        .groupTerminatedWithDataDeletionByLocalUser,
+        .groupTerminatedWithDataDeletionByOtherUser(updaterName: .otherUser1, updaterAddress: .otherUser1),
     ]
 
     /// The strings for group update copy were migrated from one file to

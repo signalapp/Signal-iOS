@@ -132,54 +132,50 @@ public class MockSSKEnvironment {
         return result
     }
 
-    @MainActor
-    private static func flushAndWait() {
-        AssertIsOnMainThread()
+    /// Flushes pending work in the active environment, then tears it down.
+    public static func deactivateAsync(oldContext: any AppContext) async {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let messageProcessor = SSKEnvironment.shared.messageProcessorRef
 
-        waitForMainQueue()
+        await drainMainQueue()
 
         // Wait for all pending readers/writers to finish.
-        SSKEnvironment.shared.databaseStorageRef.grdbStorage.pool.barrierWriteWithoutTransaction { _ in }
+        try! await databaseStorage.grdbStorage.pool.barrierWriteWithoutTransaction { _ in }
 
         // Wait for the MessageProcessor to finish.
-        SSKEnvironment.shared.messageProcessorRef.serialQueueForTests.sync {}
-
-        // Wait for the main queue *again* in case more work was scheduled.
-        waitForMainQueue()
-    }
-
-    public static func deactivateAsync(oldContext: any AppContext) async {
         await withCheckedContinuation { continuation in
-            DispatchQueue.main.async {
-                SSKEnvironment.shared.databaseStorageRef.grdbStorage.pool.barrierWriteWithoutTransaction { _ in }
-                SSKEnvironment.shared.messageProcessorRef.serialQueueForTests.async {
-                    DispatchQueue.main.async {
-                        continuation.resume()
-                    }
-                }
-            }
+            messageProcessor.serialQueueForTests.async { continuation.resume() }
         }
-        _deactivate(oldContext: oldContext)
-    }
 
-    @MainActor
-    public static func deactivate(oldContext: any AppContext) {
-        flushAndWait()
-        _deactivate(oldContext: oldContext)
-    }
+        // Ensure late writes from one test don't trigger change-observer work
+        // on the main queue that spills into the next test.
+        try! databaseStorage.grdbStorage.testing_tearDownDatabaseChangeObserver()
 
-    private static func _deactivate(oldContext: any AppContext) {
+        // Drain *again* in case more work was scheduled.
+        await drainMainQueue()
+
         SetCurrentAppContext(oldContext, isRunningTests: true)
         SSKEnvironment.setShared(nil, isRunningTests: true)
         DependenciesBridge.setShared(nil, isRunningTests: true)
     }
 
-    private static func waitForMainQueue() {
-        // Spin the main run loop to flush any remaining async work.
-        var done = false
-        DispatchQueue.main.async { done = true }
-        while !done {
+    /// Synchronous wrapper around ``deactivateAsync(oldContext:)`` for
+    /// non-async callers, like `XCTestCase.tearDown()`.
+    @MainActor
+    public static func deactivate(oldContext: any AppContext) {
+        let isDone = AtomicBool(false, lock: .init())
+        Task {
+            await deactivateAsync(oldContext: oldContext)
+            isDone.set(true)
+        }
+        while !isDone.get() {
             CFRunLoopRunInMode(.defaultMode, 0.0, true)
+        }
+    }
+
+    private static func drainMainQueue() async {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async { continuation.resume() }
         }
     }
 }

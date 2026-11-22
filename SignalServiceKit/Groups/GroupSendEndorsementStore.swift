@@ -12,7 +12,7 @@ public struct GroupSendEndorsementStore {
         groupRowId: GroupRecord.RowId,
         expiration: Date,
         combinedEndorsement: GroupSendEndorsement,
-        individualEndorsements: [(recipientId: Int64, individualEndorsement: GroupSendEndorsement)],
+        individualEndorsements: [(recipientId: SignalRecipient.RowId, individualEndorsement: GroupSendEndorsement)],
         tx: DBWriteTransaction,
     ) {
         deleteEndorsements(groupRowId: groupRowId, tx: tx)

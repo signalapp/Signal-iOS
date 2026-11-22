@@ -11,7 +11,6 @@ import SignalUI
 private struct OWSOrphanData {
     let interactionIds: Set<String>
     let filePaths: Set<String>
-    let reactionIds: Set<String>
     let mentionIds: Set<String>
     let fileAndDirectoryPaths: Set<String>
     let hasOrphanedPacksOrStickers: Bool
@@ -116,7 +115,6 @@ enum OWSOrphanDataCleaner {
         try Task.checkCancellation()
 
         var orphanInteractionIds: Set<String> = []
-        var orphanReactionIds: Set<String> = []
         var orphanMentionIds: Set<String> = []
         var activeStickerFilePaths: Set<String> = []
         var hasOrphanedPacksOrStickers = false
@@ -144,17 +142,6 @@ enum OWSOrphanDataCleaner {
                 owsFailDebug("Couldn't enumerate TSInteractions: \(error.grdbErrorForLogging)")
                 throw error.grdbErrorForLogging
             }
-
-            OWSReaction.anyEnumerate(transaction: transaction, batchingPreference: .batched()) { reaction, stop in
-                if Task.isCancelled {
-                    stop = true
-                    return
-                }
-                if !allInteractionIds.contains(reaction.uniqueMessageId) {
-                    orphanReactionIds.insert(reaction.uniqueId)
-                }
-            }
-            try Task.checkCancellation()
 
             TSMention.anyEnumerate(transaction: transaction, batchingPreference: .batched()) { mention, stop in
                 if Task.isCancelled {
@@ -185,7 +172,6 @@ enum OWSOrphanDataCleaner {
         return OWSOrphanData(
             interactionIds: orphanInteractionIds,
             filePaths: orphanFilePaths,
-            reactionIds: orphanReactionIds,
             mentionIds: orphanMentionIds,
             fileAndDirectoryPaths: orphanFileAndDirectoryPaths,
             hasOrphanedPacksOrStickers: hasOrphanedPacksOrStickers,
@@ -292,23 +278,6 @@ enum OWSOrphanDataCleaner {
             }
         }
         Logger.info("Deleted orphan interactions: \(interactionsRemoved)")
-
-        var reactionsRemoved = 0
-        for reactionId in orphanedData.reactionIds {
-            try Task.checkCancellation()
-            await databaseStorage.awaitableWrite { tx in
-                let performedCleanup = ReactionManager.tryToCleanupOrphanedReaction(
-                    uniqueId: reactionId,
-                    thresholdDate: thresholdDate,
-                    shouldPerformRemove: shouldRemoveOrphanedData,
-                    transaction: tx,
-                )
-                if performedCleanup {
-                    reactionsRemoved += 1
-                }
-            }
-        }
-        Logger.info("Deleted orphan reactions: \(reactionsRemoved)")
 
         var mentionsRemoved = 0
         for mentionId in orphanedData.mentionIds {

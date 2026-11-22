@@ -1372,7 +1372,7 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
         if vc is UINavigationController {
             super.setViewController(vc, for: column)
         } else {
-            super.setViewController(UINavigationController(rootViewController: vc), for: column)
+            super.setViewController(OWSNavigationController(rootViewController: vc), for: column)
         }
     }
 
@@ -1386,7 +1386,7 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
         if vc is UINavigationController {
             super.showDetailViewController(vc, sender: sender)
         } else {
-            super.showDetailViewController(UINavigationController(rootViewController: vc), sender: sender)
+            super.showDetailViewController(OWSNavigationController(rootViewController: vc), sender: sender)
         }
     }
 
@@ -1430,7 +1430,10 @@ class HomeTabSplitViewController: UISplitViewController, UISplitViewControllerDe
         if let transitionCoordinator = svc.transitionCoordinator {
             transitionCoordinator.animate(
                 alongsideTransition: { _ in
-                    if column == .primary {
+                    guard column == .primary else { return }
+                    if svc.isCollapsed {
+                        UIView.performWithoutAnimation { self.updateTabBar() }
+                    } else {
                         self.updateTabBar()
                     }
                 },

@@ -80,6 +80,15 @@ extension RegistrationCoordinatorImpl {
                     from: error.httpResponseData ?? Data(),
                 )
                 throw Registration.ReglockError(failureResponse: parsedResponse)
+            } catch where error.httpStatusCode == 441 {
+                /// Second factor authentication failed. Either the account has one or more
+                /// factors configured, and the request's factor was incorrect or absent, or
+                /// the account has no factors, but the request included a factor.
+                let parsedResponse = try JSONDecoder().decode(
+                    RegistrationServiceResponses.RegistrationMfaFailureResponse.self,
+                    from: error.httpResponseData ?? Data(),
+                )
+                throw Registration.MfaError(failureResponse: parsedResponse)
             }
             guard response.responseStatusCode == 200 else {
                 throw response.asError()

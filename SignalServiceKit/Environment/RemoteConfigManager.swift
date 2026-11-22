@@ -399,6 +399,18 @@ public class RemoteConfig {
 
     // MARK: -
 
+    /// The maximum number of attachments in an outgoing envelope that may
+    /// include an incremental MAC.
+    public var maxIncrementalMacsPerEnvelope: Int {
+        let value = getUInt32Value(
+            forFlag: .maxIncrementalMacsPerEnvelope,
+            defaultValue: 10,
+        )
+        return Int(value)
+    }
+
+    // MARK: -
+
     public var wifiAwareDeviceTransferEnabled: Bool {
         return !isEnabled(.wifiAwareDeviceTransferKillSwitch, defaultValue: false) && BuildFlags.wifiAwareDeviceTransfer
     }
@@ -431,6 +443,11 @@ public class RemoteConfig {
 
     public var ringrtcNwPathMonitorTrial: Bool {
         return !isEnabled(.ringrtcNwPathMonitorTrialKillSwitch, defaultValue: false)
+    }
+
+    /// Value for the WebRTC field trial "WebRTC-Audio-NetEqSmartFlushing".
+    public var ringrtcSmartFlushing: String? {
+        return value(.ringrtcSmartFlushing)
     }
 
     public var ringrtcVp9Enabled: Bool {
@@ -791,6 +808,7 @@ private enum ValueFlag: String, FlagType {
     case creditAndDebitCardDisabledRegions = "global.donations.ccDisabledRegions"
     case idealEnabledRegions = "global.donations.idealEnabledRegions"
     case maxGroupCallRingSize = "global.calling.maxGroupCallRingSize"
+    case maxIncrementalMacsPerEnvelope = "global.maxIncrementalMacsPerEnvelope"
     case maxGroupSizeHardLimit = "global.groupsv2.groupSizeHardLimit"
     case maxGroupSizeRecommended = "global.groupsv2.maxGroupSize"
     case maxNicknameLength = "global.nicknames.max"
@@ -811,6 +829,7 @@ private enum ValueFlag: String, FlagType {
     case reactiveProfileKeyAttemptInterval = "ios.reactiveProfileKeyAttemptInterval"
     case replaceableInteractionExpiration = "ios.replaceableInteractionExpiration"
     case ringrtcDredDuration = "ios.ringrtcDredDuration"
+    case ringrtcSmartFlushing = "ios.ringrtcSmartFlushing"
     case ringrtcSvcMaxBitrateBps = "ios.ringrtcSvcMaxBitrateBps"
     case ringrtcSvcMode = "ios.ringrtcSvcMode"
     case ringrtcSvcModeForScreenshare = "ios.ringrtcSvcModeForScreenshare"
@@ -844,6 +863,7 @@ private enum ValueFlag: String, FlagType {
         case .maxGroupCallRingSize: true
         case .maxGroupSizeHardLimit: true
         case .maxGroupSizeRecommended: true
+        case .maxIncrementalMacsPerEnvelope: true
         case .maxNicknameLength: false
         case .maxPollOptionReceiveCount: true
         case .maxPollOptionSendCount: true
@@ -862,6 +882,7 @@ private enum ValueFlag: String, FlagType {
         case .reactiveProfileKeyAttemptInterval: true
         case .replaceableInteractionExpiration: false
         case .ringrtcDredDuration: true
+        case .ringrtcSmartFlushing: false
         case .ringrtcSvcMaxBitrateBps: true
         case .ringrtcSvcMode: true
         case .ringrtcSvcModeForScreenshare: true

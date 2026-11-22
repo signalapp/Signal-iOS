@@ -120,6 +120,7 @@ public class DependenciesBridge {
     public let editMessageStore: EditMessageStore
     public let favoriteStickerExpirationJob: FavoriteStickerExpirationJob
     public let groupCallRecordManager: GroupCallRecordManager
+    public let groupDataDeletionManager: any GroupDataDeletionManager
     public let groupMemberStore: GroupMemberStore
     public let groupMemberUpdater: GroupMemberUpdater
     public let groupSendEndorsementStore: GroupSendEndorsementStore
@@ -167,7 +168,7 @@ public class DependenciesBridge {
     public let privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager
     public let profileBadgeManager: ProfileBadgeManager
     public let quotedReplyManager: QuotedReplyManager
-    public let reactionStore: any ReactionStore
+    public let recipientCapabilityStore: RecipientCapabilityStore
     public let recipientDatabaseTable: RecipientDatabaseTable
     public let recipientFetcher: RecipientFetcher
     public let recipientHidingManager: RecipientHidingManager
@@ -278,6 +279,7 @@ public class DependenciesBridge {
         editMessageStore: EditMessageStore,
         favoriteStickerExpirationJob: FavoriteStickerExpirationJob,
         groupCallRecordManager: GroupCallRecordManager,
+        groupDataDeletionManager: any GroupDataDeletionManager,
         groupMemberStore: GroupMemberStore,
         groupMemberUpdater: GroupMemberUpdater,
         groupSendEndorsementStore: GroupSendEndorsementStore,
@@ -325,7 +327,7 @@ public class DependenciesBridge {
         privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager,
         profileBadgeManager: ProfileBadgeManager,
         quotedReplyManager: QuotedReplyManager,
-        reactionStore: any ReactionStore,
+        recipientCapabilityStore: RecipientCapabilityStore,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         recipientHidingManager: RecipientHidingManager,
@@ -435,6 +437,7 @@ public class DependenciesBridge {
         self.editMessageStore = editMessageStore
         self.favoriteStickerExpirationJob = favoriteStickerExpirationJob
         self.groupCallRecordManager = groupCallRecordManager
+        self.groupDataDeletionManager = groupDataDeletionManager
         self.groupMemberStore = groupMemberStore
         self.groupMemberUpdater = groupMemberUpdater
         self.groupSendEndorsementStore = groupSendEndorsementStore
@@ -482,7 +485,7 @@ public class DependenciesBridge {
         self.privateStoryThreadDeletionManager = privateStoryThreadDeletionManager
         self.profileBadgeManager = profileBadgeManager
         self.quotedReplyManager = quotedReplyManager
-        self.reactionStore = reactionStore
+        self.recipientCapabilityStore = recipientCapabilityStore
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
         self.recipientHidingManager = recipientHidingManager

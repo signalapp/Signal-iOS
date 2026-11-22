@@ -83,7 +83,7 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
     private let threadStore: ThreadStore
     private let tsAccountManager: any TSAccountManager
 
-    private let logger = PrefixedLogger(prefix: "[DeleteForMe]")
+    private let logger = PrefixedLogger(prefix: "[BulkDeleteInteractions]")
 
     init(
         addressableMessageFinder: DeleteForMeAddressableMessageFinder,
@@ -119,7 +119,7 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
         case .success:
             break
         case .failure(let failure):
-            logger.error("Failed to perform delete-for-me bulk action! \(failure)")
+            logger.error("Failed to bulk-delete interactions! \(failure)")
         }
     }
 

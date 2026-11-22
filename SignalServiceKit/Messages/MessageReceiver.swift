@@ -446,6 +446,7 @@ public final class MessageReceiver {
                         expiresInSeconds: dataMessage.expireTimer,
                         expireTimerVersion: dataMessage.expireTimerVersion,
                         sentTranscript: transcript,
+                        registeredState: registeredState,
                         transaction: tx,
                     )
                     switch result {
@@ -1199,6 +1200,7 @@ public final class MessageReceiver {
                 expiresInSeconds: dataMessage.expireTimer,
                 expireTimerVersion: dataMessage.expireTimerVersion,
                 sentTranscript: nil,
+                registeredState: registeredState,
                 transaction: tx,
             )
             switch result {

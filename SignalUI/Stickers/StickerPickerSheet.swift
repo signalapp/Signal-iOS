@@ -7,6 +7,7 @@ public import SignalServiceKit
 
 public protocol StickerPickerSheetDelegate: AnyObject {
     func makeManageStickersViewController(for: StickerPickerSheet) -> UIViewController
+    func makeStickerPackViewController(for: StickerPickerSheet, stickerPack: StickerPackInfo) -> UIViewController
 }
 
 public class StickerPickerSheet: InteractiveSheetViewController {
@@ -14,6 +15,11 @@ public class StickerPickerSheet: InteractiveSheetViewController {
     override public var interactiveScrollViews: [UIScrollView] { stickerPickerView.stickerPackCollectionViewPages }
 
     override public var sheetBackgroundColor: UIColor { .clear }
+
+    private var sendStickerFlow: SendStickerFlow?
+
+    private let stickerManager: StickerManager
+    private let db: DB
 
     /// Used for presenting the sticker manager from the toolbar.
     ///
@@ -36,11 +42,25 @@ public class StickerPickerSheet: InteractiveSheetViewController {
     private lazy var stickerPickerView = StickerPickerView(
         delegate: self,
         storyStickerConfiguration: .showWithDelegate(pickerDelegate!),
-        allowContextMenus: false,
+        contextMenuActions: .allStickerActions,
     )
 
-    public init(pickerDelegate: StickerPickerDelegate & StoryStickerPickerDelegate) {
+    convenience init(pickerDelegate: StickerPickerDelegate & StoryStickerPickerDelegate) {
+        self.init(
+            pickerDelegate: pickerDelegate,
+            stickerManager: DependenciesBridge.shared.stickerManager,
+            db: DependenciesBridge.shared.db,
+        )
+    }
+
+    public init(
+        pickerDelegate: StickerPickerDelegate & StoryStickerPickerDelegate,
+        stickerManager: StickerManager,
+        db: DB,
+    ) {
         self.pickerDelegate = pickerDelegate
+        self.stickerManager = stickerManager
+        self.db = db
 
         let useBlurEffect = !UIAccessibility.isReduceTransparencyEnabled
         super.init(visualEffect: useBlurEffect ? UIBlurEffect(style: .dark) : nil)
@@ -100,19 +120,41 @@ extension StickerPickerSheet: StickerPickerViewDelegate {
         pickerDelegate?.didSelectSticker(stickerMetadata)
     }
 
+    // MARK: - StickerPickerContextMenuDelegate
+
     public func viewStickerPack(_ stickerPackInfo: StickerPackInfo) {
-        // StickerPickerSheet doesn't use sticker context menus.
+        guard let sheetDelegate else { return }
+        let packView = sheetDelegate.makeStickerPackViewController(for: self, stickerPack: stickerPackInfo)
+        presentFormSheet(packView, animated: true)
+
     }
 
-    public func scrollToFavoritedSticker(_ stickerInfo: StickerInfo) {
-        // StickerPickerSheet doesn't use sticker context menus.
+    public func stickerFavoriteDidChange(_ stickerInfo: StickerInfo, change: StickerFavoriteChange) {
+        switch change {
+        case .added:
+            presentToast(
+                text: StickerToastStrings.addedToFavorites,
+                image: UIImage(named: "favorite"),
+            )
+        case .removed:
+            presentToast(
+                text: StickerToastStrings.removedFromFavorites,
+                image: UIImage(named: "favorite-slash"),
+            )
+        case .limitReached:
+            presentToast(
+                text: StickerToastStrings.favoriteLimitReached,
+            )
+        }
     }
 
     public func sendSticker(_ stickerMetadata: any StickerMetadata) {
-        // StickerPickerSheet doesn't use sticker context menus.
+        self.sendStickerFlow = SendStickerFlow(stickerMetadata: stickerMetadata, stickerManager: stickerManager, db: db)
+        self.sendStickerFlow?.present(from: self)
     }
 
     public func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo) {
-        // StickerPickerSheet doesn't use sticker context menus.
+        // StickerPickerSheet doesn't support section header context menus.
+        owsFailDebug("StickerPickerSheet doesn't support section header context menus")
     }
 }

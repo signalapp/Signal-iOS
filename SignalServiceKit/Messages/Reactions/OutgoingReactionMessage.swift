@@ -12,8 +12,8 @@ final class OutgoingReactionMessage: TransientOutgoingMessage {
     let messageUniqueId: String
     let emoji: String
     let isRemoving: Bool
-    let createdReaction: OWSReaction?
-    let previousReaction: OWSReaction?
+    fileprivate let createdReaction: OWSReaction?
+    fileprivate let previousReaction: OWSReaction?
 
     init(
         timestamp: UInt64,
@@ -21,8 +21,8 @@ final class OutgoingReactionMessage: TransientOutgoingMessage {
         isRemoving: Bool,
         inThread thread: TSThread,
         onMessage message: TSMessage,
-        newReaction: OWSReaction?,
-        oldReaction: OWSReaction?,
+        newReaction: ReactionRecord?,
+        oldReaction: ReactionRecord?,
         expiresInSeconds: UInt32,
         expireTimerVersion: UInt32,
         tx: DBReadTransaction,
@@ -33,8 +33,8 @@ final class OutgoingReactionMessage: TransientOutgoingMessage {
         self.messageUniqueId = message.uniqueId
         self.emoji = emoji
         self.isRemoving = isRemoving
-        self.createdReaction = newReaction
-        self.previousReaction = oldReaction
+        self.createdReaction = newReaction.map { OWSReaction($0) }
+        self.previousReaction = oldReaction.map { OWSReaction($0) }
 
         let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread)
         messageBuilder.timestamp = timestamp
@@ -162,6 +162,9 @@ final class OutgoingReactionMessage: TransientOutgoingMessage {
     }
 
     private func revertLocalStateIfFailedForEveryone(tx: DBWriteTransaction) {
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
         // Do nothing if we successfully delivered to anyone. Only cleanup
         // local state if we fail to deliver to anyone.
         guard sentRecipientAddresses().isEmpty else {
@@ -169,33 +172,90 @@ final class OutgoingReactionMessage: TransientOutgoingMessage {
             return
         }
 
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci else {
+        guard let localAci = tsAccountManager.localIdentifiers(tx: tx)?.aci else {
             owsFailDebug("Missing localAci.")
             return
         }
+        let localRecipient = recipientFetcher.fetchOrCreate(serviceId: localAci, tx: tx)
         guard let message = TSMessage.fetchMessageViaCache(uniqueId: messageUniqueId, transaction: tx) else {
             owsFailDebug("Missing message.")
             return
         }
+        let messageId = message.sqliteRowId.owsFailUnwrap("must exist")
 
         Logger.error("Failed to send reaction to all recipients.")
 
-        let currentReaction = message.reaction(for: localAci, tx: tx)
+        let currentReaction = ReactionFinder(messageId: messageId).reaction(for: localRecipient.id, tx: tx)
 
-        guard currentReaction?.uniqueId == self.createdReaction?.uniqueId else {
+        guard currentReaction?.id == self.createdReaction?.id else {
             Logger.info("Keeping latest reaction because it's different than the failed message.")
             return
         }
 
         if let previousReaction {
+            guard let thread = message.thread(tx: tx) else {
+                owsFailDebug("can't revert reaction in deleted thread")
+                return
+            }
             message.recordReaction(
-                for: localAci,
+                forReactorId: localRecipient.id,
+                inThread: thread,
                 emoji: previousReaction.emoji,
                 sentAtTimestamp: previousReaction.sentAtTimestamp,
+                markAsRead: true,
                 tx: tx,
             )
         } else {
-            message.removeReaction(for: localAci, tx: tx)
+            message.removeReaction(forReactorId: localRecipient.id, tx: tx)
         }
+    }
+}
+
+@objc(OWSReaction) // Named explicitly to preserve NSKeyedUnarchiving compatibility
+private final class OWSReaction: NSObject, NSSecureCoding {
+    private enum CodingKeys: String {
+        case id
+        case emoji
+        case sentAtTimestamp
+    }
+
+    let id: ReactionRecord.RowId
+    let emoji: String
+    let sentAtTimestamp: UInt64
+
+    init(_ reactionRecord: ReactionRecord) {
+        self.id = reactionRecord.id
+        self.emoji = reactionRecord.emoji
+        self.sentAtTimestamp = reactionRecord.sentTimestamp
+    }
+
+    // MARK: - NSSecureCoding
+
+    static var supportsSecureCoding: Bool { true }
+
+    func encode(with coder: NSCoder) {
+        coder.encode(NSNumber(value: id.rawValue), forKey: CodingKeys.id.rawValue)
+        coder.encode(emoji, forKey: CodingKeys.emoji.rawValue)
+        coder.encode(NSNumber(value: sentAtTimestamp), forKey: CodingKeys.sentAtTimestamp.rawValue)
+    }
+
+    required init?(coder: NSCoder) {
+        guard let id = coder.decodeObject(of: NSNumber.self, forKey: CodingKeys.id.rawValue)?.int64Value else {
+            owsFailDebug("Missing id")
+            return nil
+        }
+        self.id = ReactionRecord.RowId(rawValue: id)
+
+        guard let emoji = coder.decodeObject(of: NSString.self, forKey: CodingKeys.emoji.rawValue) as String? else {
+            owsFailDebug("Missing emoji")
+            return nil
+        }
+        self.emoji = emoji
+
+        guard let sentAtTimestamp = coder.decodeObject(of: NSNumber.self, forKey: CodingKeys.sentAtTimestamp.rawValue)?.uint64Value else {
+            owsFailDebug("Missing sentAtTimestamp")
+            return nil
+        }
+        self.sentAtTimestamp = sentAtTimestamp
     }
 }

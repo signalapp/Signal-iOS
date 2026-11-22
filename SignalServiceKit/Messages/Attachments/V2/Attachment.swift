@@ -94,14 +94,11 @@ public class Attachment {
         public let mac: Data
         public let chunkSize: UInt32
 
-        // NOTE: Incremental mac is unsupported on iOS, the columns are
-        // vestigial. When we add video streaming support, we can make
-        // this init public and start setting it, but we must also
-        // validate the incremental mac on every download (streamed or not)
-        // and reject the download if it is invalid, thus ensuring the
-        // invariant that the incremental mac is valid if set
-        // for all downloaded attachments, same as the digest.
-        private init(mac: Data, chunkSize: UInt32) {
+        // TODO: validate incremental MACs from external sources
+        // Today, we only set and store incremental MACs we computed ourselves.
+        // Before we can accept them from external sources, we need to
+        // validate them.
+        init(mac: Data, chunkSize: UInt32) {
             self.mac = mac
             self.chunkSize = chunkSize
         }
@@ -128,6 +125,10 @@ public class Attachment {
         /// A file path to a cached image file encrypted with this attachment's
         /// `encryptionKey`, if it is video.
         public var videoStillFrameRelativeFilePath: String?
+        /// Whether this is an MP4 known to have its `moov` box before its
+        /// `mdat` box, because we produced it ourselves.
+        /// - SeeAlso: `AVAssetWriter.shouldOptimizeForNetworkUse`
+        public let videoIsFastStartMp4: Bool
 
         /// File digest info.
         ///
@@ -151,6 +152,7 @@ public class Attachment {
                 mediaSizePixels: pendingAttachment.mediaPixelSize,
                 videoDuration: pendingAttachment.videoDuration,
                 videoStillFrameRelativeFilePath: pendingAttachment.videoStillFrameRelativeFilePath,
+                videoIsFastStartMp4: pendingAttachment.videoIsFastStartMp4,
                 ciphertextDigest: pendingAttachment.ciphertextDigest,
                 localRelativeFilePath: pendingAttachment.localRelativeFilePath,
             )
@@ -164,6 +166,7 @@ public class Attachment {
             mediaSizePixels: CGSize?,
             videoDuration: TimeInterval?,
             videoStillFrameRelativeFilePath: String?,
+            videoIsFastStartMp4: Bool,
             ciphertextDigest: Data,
             localRelativeFilePath: String,
         ) {
@@ -174,6 +177,7 @@ public class Attachment {
             self.mediaSizePixels = mediaSizePixels
             self.videoDuration = videoDuration
             self.videoStillFrameRelativeFilePath = videoStillFrameRelativeFilePath
+            self.videoIsFastStartMp4 = videoIsFastStartMp4
             self.ciphertextDigest = ciphertextDigest
             self.localRelativeFilePath = localRelativeFilePath
         }
@@ -385,6 +389,7 @@ public class Attachment {
                 }(),
                 videoDuration: record.videoDurationSeconds,
                 videoStillFrameRelativeFilePath: record.videoStillFrameRelativeFilePath,
+                videoIsFastStartMp4: record.videoIsFastStartMp4,
                 ciphertextDigest: ciphertextDigest,
                 localRelativeFilePath: localRelativeFilePath,
             )
@@ -484,15 +489,6 @@ public class Attachment {
         return mediaName.hexadecimalString
     }
 
-    /// Unencrypted byte count on CDN of the fullsize attachment _before_ encryption and padding,
-    /// as obtained either from the sender or ourselves.
-    /// Media and transit tier byte counts should be interchangeable.
-    /// Still, we shouldn't rely on this for anything critical; assume the value can be spoofed.
-    /// Safe to use for size estimation, UI progress display, etc.
-    public var anyPointerFullsizeUnencryptedByteCount: UInt32? {
-        return mediaTierInfo?.unencryptedByteCount ?? latestTransitTierInfo?.unencryptedByteCount
-    }
-
     public enum TransitUploadStrategy {
         case reuseExistingUpload(Upload.ReusedUploadMetadata)
         case reuseStreamEncryption(Upload.LocalUploadMetadata)
@@ -505,14 +501,6 @@ public class Attachment {
         guard let stream = self.asStream() else {
             return .missingLocalFile
         }
-
-        let metadata = Upload.LocalUploadMetadata(
-            fileUrl: stream.fileURL,
-            key: encryptionKey,
-            digest: stream.ciphertextDigest,
-            encryptedDataLength: stream.encryptedByteCount,
-            plaintextDataLength: stream.unencryptedByteCount,
-        )
 
         if
             // We have a prior upload
@@ -528,14 +516,15 @@ public class Attachment {
         {
             // We have unexpired transit tier info. Reuse that upload.
             return .reuseExistingUpload(
-                .init(
+                Upload.ReusedUploadMetadata(
                     cdnKey: latestTransitTierInfo.cdnKey,
                     cdnNumber: latestTransitTierInfo.cdnNumber,
                     key: latestTransitTierInfo.encryptionKey,
                     digest: digest,
                     plaintextDataLength: latestTransitTierInfo.unencryptedByteCount,
                     // Encrypted length is the same regardless of the key used.
-                    encryptedDataLength: metadata.encryptedDataLength,
+                    encryptedDataLength: stream.encryptedByteCount,
+                    incrementalMacInfo: latestTransitTierInfo.incrementalMacInfo,
                 ),
             )
         } else if
@@ -547,7 +536,13 @@ public class Attachment {
             // Reuse our local encryption for sending.
             // Without this, we'd have to reupload all our outgoing attacments
             // in order to copy them to the media tier.
-            return .reuseStreamEncryption(metadata)
+            return .reuseStreamEncryption(Upload.LocalUploadMetadata(
+                fileUrl: stream.fileURL,
+                key: encryptionKey,
+                digest: stream.ciphertextDigest,
+                encryptedDataLength: stream.encryptedByteCount,
+                plaintextDataLength: stream.unencryptedByteCount,
+            ))
         } else {
             // Upload from scratch
             return .freshUpload(stream)

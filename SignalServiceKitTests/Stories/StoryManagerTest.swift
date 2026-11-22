@@ -100,7 +100,7 @@ class StoryManagerTest: SSKBaseTest {
             SSKEnvironment.shared.blockingManagerRef.addBlockedRecipient(
                 &recipient,
                 blockedAt: .now(),
-                blockMode: .localUser,
+                blockMode: .storageService,
                 tx: $0,
             )
 
@@ -196,6 +196,41 @@ class StoryManagerTest: SSKBaseTest {
             profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: $0)
 
             try Self.makeGroupThread(secretParams: secretParams, transaction: $0)
+
+            XCTAssertNil(try? StoryManager.processIncomingStoryMessage(
+                storyMessage,
+                timestamp: timestamp,
+                author: author,
+                localIdentifiers: .forUnitTests,
+                transaction: $0,
+            ))
+
+            // Message should not have been created.
+            let message = StoryFinder.story(
+                timestamp: timestamp,
+                author: author,
+                transaction: $0,
+            )
+            XCTAssertNil(message)
+        }
+    }
+
+    func testProcessIncomingStoryMessage_dropsStoryWhenLocalUserNotAGroupMember() throws {
+        let timestamp = Date().ows_millisecondsSince1970
+
+        let author = Aci.randomForTesting()
+        let storyMessage = try Self.makeGroupStory()
+
+        let secretParams = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupSecretParams
+
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+
+        try write {
+            var recipient = recipientFetcher.fetchOrCreate(serviceId: author, tx: $0)
+            profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: $0)
+
+            try Self.makeGroupThread(secretParams: secretParams, members: [author], includesLocalUser: false, transaction: $0)
 
             XCTAssertNil(try? StoryManager.processIncomingStoryMessage(
                 storyMessage,
@@ -433,9 +468,13 @@ class StoryManagerTest: SSKBaseTest {
         announcementOnly: Bool = false,
         members: [Aci] = [],
         admins: [Aci] = [],
+        includesLocalUser: Bool = true,
         transaction: DBWriteTransaction,
     ) throws {
         var membershipBuilder = GroupMembership.Builder()
+        if includesLocalUser {
+            membershipBuilder.addFullMember(LocalIdentifiers.forUnitTests.aci, role: .normal)
+        }
 
         for member in members {
             membershipBuilder.addFullMember(member, role: .normal)

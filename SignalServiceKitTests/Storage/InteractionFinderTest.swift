@@ -44,62 +44,6 @@ class InteractionFinderTest: SSKBaseTest {
             XCTAssertEqual(drain(.range(rowIds[1]...rowIds[3]), tx: transaction), [uniqueIds[1], uniqueIds[2], uniqueIds[3]])
         }
     }
-
-    func testUnreadInArchiveIsIgnored() {
-        let unarchivedCount = UInt(10)
-        let archivedCount = UInt(3)
-
-        write { transaction in
-            _ = makeThread(withUnreadMessages: unarchivedCount, transaction: transaction)
-
-            let archivedWithMessages = makeThread(withUnreadMessages: archivedCount, transaction: transaction)
-            archivedWithMessages
-                .updateWith(isArchived: true, updateStorageService: false, transaction: transaction)
-        }
-
-        // Unread count should be just the unarchived threads
-
-        read { transaction in
-            let unreadCount = InteractionFinder.unreadCountInAllThreads(transaction: transaction)
-            XCTAssertEqual(unarchivedCount, unreadCount)
-        }
-    }
-
-    func testUnreadThreadCount() {
-        write { transaction in
-            _ = makeThread(withUnreadMessages: 5, transaction: transaction)
-            _ = makeThread(withUnreadMessages: 1, transaction: transaction)
-
-            let markedUnread = makeThread(withUnreadMessages: 0, transaction: transaction)
-            // Insert a read message so it's visible in the first place
-            let outgoingFactory = OutgoingMessageFactory()
-            outgoingFactory.threadCreator = { _ in return markedUnread }
-            _ = outgoingFactory.create(transaction: transaction)
-            markedUnread.updateWith(isMarkedUnread: true, updateStorageService: false, transaction: transaction)
-
-            let archived = makeThread(withUnreadMessages: 4, transaction: transaction)
-            archived.updateWith(isArchived: true, updateStorageService: false, transaction: transaction)
-        }
-
-        read { transaction in
-            XCTAssertEqual(3, InteractionFinder.unreadThreadCountInAllThreads(transaction: transaction))
-            XCTAssertEqual(7, InteractionFinder.unreadCountInAllThreads(transaction: transaction))
-        }
-    }
-
-    // MARK: -
-
-    private func makeThread(withUnreadMessages unreadCount: UInt, transaction: DBWriteTransaction) -> TSContactThread {
-        let thread = ContactThreadFactory().create(transaction: transaction)
-
-        if unreadCount > 0 {
-            let messageFactory = IncomingMessageFactory()
-            messageFactory.threadCreator = { _ in return thread }
-            _ = messageFactory.create(count: unreadCount, transaction: transaction)
-        }
-
-        return thread
-    }
 }
 
 // MARK: -

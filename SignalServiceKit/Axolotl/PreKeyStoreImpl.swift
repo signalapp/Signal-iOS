@@ -8,12 +8,12 @@ import LibSignalClient
 
 public class PreKeyStoreImpl {
     private let identity: OWSIdentity
-    private let metadataStore: KeyValueStore
+    private let metadataStore: NewKeyValueStore
     private let preKeyStore: PreKeyStore
 
     init(for identity: OWSIdentity, preKeyStore: PreKeyStore) {
         self.identity = identity
-        self.metadataStore = KeyValueStore(
+        self.metadataStore = NewKeyValueStore(
             collection: {
                 switch identity {
                 case .aci: "TSStorageInternalSettingsCollection"
@@ -69,6 +69,6 @@ public class PreKeyStoreImpl {
     }
 
     func removeMetadata(tx: DBWriteTransaction) {
-        metadataStore.removeAll(transaction: tx)
+        metadataStore.removeAll(tx: tx)
     }
 }

@@ -169,7 +169,7 @@ class BackupArchiveAvatarFetcher {
         }
 
         func runTask(
-            recordId: Record.IDType,
+            recordId: Record.RowId,
             loader: TaskQueueLoader<TaskRunner>,
         ) async -> TaskRecordResult {
             guard
@@ -310,10 +310,10 @@ class BackupArchiveAvatarFetcher {
             }
         }
 
-        func didSucceed(recordId: Record.IDType, tx: DBWriteTransaction) {}
+        func didSucceed(recordId: Record.RowId, tx: DBWriteTransaction) {}
 
         func didFail(
-            recordId: Record.IDType,
+            recordId: Record.RowId,
             error: any Error,
             isRetryable: Bool,
             tx: DBWriteTransaction,
@@ -332,7 +332,7 @@ class BackupArchiveAvatarFetcher {
             }
         }
 
-        func didObsolete(recordId: Record.IDType, tx: DBWriteTransaction) {}
+        func didObsolete(recordId: Record.RowId, tx: DBWriteTransaction) {}
     }
 
     // MARK: - TaskStore
@@ -351,13 +351,13 @@ class BackupArchiveAvatarFetcher {
             }
         }
 
-        func fetchRecord(recordId: Record.IDType, tx: DBReadTransaction) -> Record? {
+        func fetchRecord(recordId: Record.RowId, tx: DBReadTransaction) -> Record? {
             return failIfThrows {
                 try Record.fetchOne(tx.database, key: recordId)
             }
         }
 
-        func removeRecord(recordId: Record.IDType, tx: DBWriteTransaction) {
+        func removeRecord(recordId: Record.RowId, tx: DBWriteTransaction) {
             failIfThrows {
                 _ = try Record.deleteOne(tx.database, key: recordId)
             }
@@ -367,11 +367,12 @@ class BackupArchiveAvatarFetcher {
     // MARK: - Record
 
     private struct Record: Codable, FetchableRecord, MutablePersistableRecord, TaskRecord {
-        typealias IDType = Int64
+        typealias RowId = RowIdType<Record>
+        typealias IDType = RowId
 
-        var id: IDType { _id! }
+        var id: RowId { _id! }
 
-        private(set) var _id: IDType?
+        private(set) var _id: RowId?
 
         // Either both of these are set (for restoring group avatars)
         let groupThreadRowId: Int64?
@@ -478,7 +479,7 @@ class BackupArchiveAvatarFetcher {
         // MARK: MutablePersistableRecord
 
         mutating func didInsert(with rowID: Int64, for column: String?) {
-            self._id = rowID
+            self._id = RowId(rawValue: rowID)
         }
 
         // MARK: Codable
@@ -494,7 +495,7 @@ class BackupArchiveAvatarFetcher {
 
         init(from decoder: any Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self._id = try container.decode(Int64.self, forKey: .id)
+            self._id = try container.decode(RowId.self, forKey: .id)
             self.groupThreadRowId = try container.decodeIfPresent(Int64.self, forKey: .groupThreadRowId)
             self.groupAvatarUrl = try container.decodeIfPresent(String.self, forKey: .groupAvatarUrl)
             self.serviceId = try container

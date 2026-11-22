@@ -77,7 +77,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
     public enum ConversationID: Equatable, Hashable {
         /// The SQLite row ID of the thread this call belongs to.
         case thread(threadRowId: Int64)
-        case callLink(callLinkRowId: Int64)
+        case callLink(callLinkRowId: CallLinkRecord.RowId)
     }
 
     public enum InteractionReference: Equatable {
@@ -209,7 +209,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
 
     public init(
         callId: UInt64,
-        callLinkRowId: Int64,
+        callLinkRowId: CallLinkRecord.RowId,
         callStatus: CallStatus.CallLinkCallStatus,
         callBeganTimestamp: UInt64,
     ) {
@@ -242,7 +242,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
                 interactionRowId: try container.decode(Int64.self, forKey: .interactionRowId),
             )
         } else {
-            self.conversationId = .callLink(callLinkRowId: try container.decode(Int64.self, forKey: .callLinkRowId))
+            self.conversationId = .callLink(callLinkRowId: try container.decode(CallLinkRecord.RowId.self, forKey: .callLinkRowId))
             self.interactionReference = .none
         }
         self.callType = try container.decode(CallType.self, forKey: .callType)

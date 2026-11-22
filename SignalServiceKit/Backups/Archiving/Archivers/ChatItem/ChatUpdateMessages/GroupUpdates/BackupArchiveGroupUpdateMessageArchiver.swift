@@ -57,6 +57,7 @@ final class BackupArchiveGroupUpdateMessageArchiver {
                 newDisappearingMessageToken: new.dmToken,
                 localIdentifiers: context.recipientContext.localIdentifiers,
                 groupUpdateSource: source,
+                dataDeletionRequest: nil,
                 tx: context.tx,
             )
         case .precomputed(let persistableGroupUpdateItemsWrapper):

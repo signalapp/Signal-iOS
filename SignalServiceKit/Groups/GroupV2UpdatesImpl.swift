@@ -214,6 +214,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         downloadedAvatars: GroupAvatarStateMap,
+        receivedDataDeletionRequest: ReceivedGroupDataDeletionRequest?,
         transaction: DBWriteTransaction,
     ) throws -> TSGroupThread {
         guard var groupRecord = GroupStore().fetchGroup(forGroupId: groupId, tx: transaction) else {
@@ -239,6 +240,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
             changeActionsProto: changeActionsProto,
             downloadedAvatars: downloadedAvatars,
             options: [],
+            receivedDataDeletionRequest: receivedDataDeletionRequest,
         )
         // The prior method throws if the revisions don't match.
         owsAssertDebug(changedGroupModel.newGroupModel.revision == changedGroupModel.oldGroupModel.revision + 1)
@@ -258,6 +260,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
             localDeviceId: localDeviceId,
             spamReportingMetadata: spamReportingMetadata,
             updatedLastVerifiedGroupNameHash: updatedLastVerifiedGroupNameHash,
+            dataDeletionRequest: changedGroupModel.dataDeletionRequest,
             transaction: transaction,
         )
         // The prior method always updates the revision because we've confirmed it's newer.
@@ -820,6 +823,7 @@ public extension GroupV2UpdatesImpl {
                 changeActionsProto: changeActionsProto,
                 downloadedAvatars: groupChange.downloadedAvatars,
                 options: options,
+                receivedDataDeletionRequest: nil,
             )
             newGroupModel = changedGroupModel.newGroupModel
             newDisappearingMessageToken = changedGroupModel.newDisappearingMessageToken
@@ -860,6 +864,7 @@ public extension GroupV2UpdatesImpl {
             localDeviceId: localDeviceId,
             spamReportingMetadata: spamReportingMetadata,
             updatedLastVerifiedGroupNameHash: nil, // Nothing to update.
+            dataDeletionRequest: nil,
             transaction: transaction,
         )
 

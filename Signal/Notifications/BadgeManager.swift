@@ -29,7 +29,7 @@ public class BadgeManager {
         self.init(
             fetchBadgeCountBlock: {
                 return databaseStorage.read { tx -> BadgeCount in
-                    return badgeCountFetcher.fetchBadgeCount(tx: tx)
+                    return badgeCountFetcher.fetchBadgeCount(includingChatFolders: true, tx: tx)
                 }
             },
         )
@@ -101,7 +101,8 @@ extension BadgeManager: DatabaseChangeDelegate {
         let badgeMightBeDifferent = (
             databaseChanges.didUpdateInteractions
                 || databaseChanges.didUpdateThreads
-                || databaseChanges.didUpdate(tableName: CallRecord.databaseTableName),
+                || databaseChanges.didUpdate(tableName: CallRecord.databaseTableName)
+                || ChatFolderStore.databaseTableNames.contains(where: { databaseChanges.didUpdate(tableName: $0) }),
         )
         guard badgeMightBeDifferent else {
             return

@@ -89,6 +89,9 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
         chatFolderPickerView.didSelectFolder = { [weak self] chatFolderId in
             self?.selectChatFolder(chatFolderId: chatFolderId)
         }
+        chatFolderPickerView.menuElementsForFolder = { [weak self] chatFolderId in
+            self?.chatFolderMenuElements(chatFolderId: chatFolderId) ?? []
+        }
         view.addSubview(chatFolderPickerView)
         chatFolderPickerView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -103,8 +106,6 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
             scrollEdgeInteraction.scrollView = tableView
             scrollEdgeInteraction.edge = .top
             chatFolderPickerView.addInteraction(scrollEdgeInteraction)
-        } else {
-            chatFolderPickerView.backgroundColor = .Signal.background
         }
 
         // Search
@@ -953,6 +954,124 @@ class ChatListViewController: OWSViewController, HomeTabViewController {
     }
 
     // MARK: Chat folders
+
+    private func chatFolderMenuElements(chatFolderId: UUID) -> [UIMenuElement] {
+        let db = DependenciesBridge.shared.db
+        let chatFolderManager = DependenciesBridge.shared.chatFolderManager
+        let threadStore = DependenciesBridge.shared.threadStore
+        let threadFinder = ThreadFinder()
+
+        let contents = db.read { tx -> (ChatFolder, [TSThread], Bool)? in
+            guard let folder = chatFolderManager.fetch(chatFolderId: chatFolderId, tx: tx), !folder.isDeleted else {
+                return nil
+            }
+            let threadIds = threadFinder.visibleInboxThreadUniqueIds(
+                chatFolder: folder,
+                transaction: tx,
+            )
+            let threads = threadIds.compactMap { threadStore.fetchThread(uniqueId: $0, tx: tx) }
+            let hasUnreadChats = !threadFinder.visibleInboxThreadUniqueIds(
+                filteredBy: .unread,
+                chatFolder: folder,
+                transaction: tx,
+            ).isEmpty
+            return (folder, threads, hasUnreadChats)
+        }
+        guard let (folder, threads, hasUnreadChats) = contents else {
+            return []
+        }
+
+        let threadIds = threads.map(\.uniqueId)
+
+        var actions = [UIMenuElement]()
+        if hasUnreadChats {
+            actions.append(UIAction(
+                title: OWSLocalizedString(
+                    "CHAT_FOLDERS_MARK_ALL_READ",
+                    comment: "Chat folder context menu action to mark every chat in the folder as read.",
+                ),
+                image: UIImage(resource: .chatCheck),
+            ) { [weak self] _ in
+                self?.markChatFolderAsRead(threadIds: threadIds)
+            })
+        }
+
+        let areAllMuted = !threads.isEmpty && threads.allSatisfy(\.isMuted)
+        actions.append(UIAction(
+            title: areAllMuted ? OWSLocalizedString(
+                "CHAT_FOLDERS_UNMUTE_ALL",
+                comment: "Chat folder context menu action to unmute every chat in the folder.",
+            ) : OWSLocalizedString(
+                "CHAT_FOLDERS_MUTE_ALL",
+                comment: "Chat folder context menu action to mute every chat in the folder.",
+            ),
+            image: areAllMuted ? UIImage(resource: .bell) : UIImage(resource: .bellSlash),
+            attributes: threads.isEmpty ? .disabled : [],
+        ) { [weak self] _ in
+            self?.setChatFolderMuted(!areAllMuted, threadIds: threadIds)
+        })
+
+        actions.append(UIAction(
+            title: folder.folderType == .all ? OWSLocalizedString(
+                "CHAT_FOLDERS_FOLDER_SETTINGS",
+                comment: "All Chats context menu action to open chat folder settings.",
+            ) : ChatFolderStrings.editFolder,
+            image: folder.folderType == .all ? UIImage(resource: .folder) : UIImage(resource: .edit),
+        ) { [weak self] _ in
+            self?.presentChatFolderSettings(chatFolderId: chatFolderId)
+        })
+        return actions
+    }
+
+    private func markChatFolderAsRead(threadIds: [String]) {
+        let db = DependenciesBridge.shared.db
+        let threadStore = DependenciesBridge.shared.threadStore
+        db.write { tx in
+            for threadId in threadIds {
+                threadStore.fetchThread(uniqueId: threadId, tx: tx)?
+                    .markAllAsRead(updateStorageService: true, transaction: tx)
+            }
+        }
+    }
+
+    private func setChatFolderMuted(_ isMuted: Bool, threadIds: [String]) {
+        let db = DependenciesBridge.shared.db
+        let threadStore = DependenciesBridge.shared.threadStore
+        let muteManager = ConversationMuteManager()
+
+        let threadViewModels = db.read { tx in
+            threadIds.compactMap { threadId in
+                threadStore.fetchThread(uniqueId: threadId, tx: tx).map {
+                    ThreadViewModel(thread: $0, forChatList: false, transaction: tx)
+                }
+            }
+        }
+        if isMuted {
+            muteManager.presentMuteActionSheet(for: threadViewModels, from: self)
+        } else {
+            muteManager.unmute(threadViewModels)
+        }
+    }
+
+    private func presentChatFolderSettings(chatFolderId: UUID) {
+        let db = DependenciesBridge.shared.db
+        let chatFolderManager = DependenciesBridge.shared.chatFolderManager
+
+        let folder = db.read { tx in
+            chatFolderManager.fetch(chatFolderId: chatFolderId, tx: tx)
+        }
+        guard let folder, !folder.isDeleted else { return }
+
+        let viewController: UIViewController
+        switch folder.folderType {
+        case .all:
+            viewController = ChatFoldersSettingsViewController()
+            viewController.navigationItem.rightBarButtonItem = .doneButton(dismissingFrom: viewController)
+        case .custom:
+            viewController = ChatFolderEditorViewController(folder: folder)
+        }
+        presentFormSheet(OWSNavigationController(rootViewController: viewController), animated: true)
+    }
 
     func selectChatFolder(chatFolderId: UUID) {
         let folder = renderState.viewInfo.chatFolders.first { $0.chatFolderId == chatFolderId }

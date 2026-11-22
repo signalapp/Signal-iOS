@@ -134,4 +134,39 @@ public enum RegistrationServiceResponses {
             self.svr2AuthCredential = .init(credential: svr2Credential)
         }
     }
+
+    public struct RegistrationMfaFailureResponse: Decodable {
+        public let webAuthnParameters: AuthenticationCeremonyParameters?
+        public let hasTotpKey: Bool
+
+        public struct AuthenticationCeremonyParameters: Decodable {
+            public let challenge: Data
+            public let timeoutSeconds: Int64
+            public let allowedCredentialIds: [Data]
+
+            private enum CodingKeys: String, CodingKey {
+                case challenge
+                case timeoutSeconds
+                case allowedCredentialIds
+            }
+
+            public init(from decoder: any Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                self.timeoutSeconds = try container.decode(Int64.self, forKey: .timeoutSeconds)
+
+                func data(_ string: String) throws -> Data {
+                    guard let data = Data(base64EncodedWithoutPadding: string) else {
+                        throw OWSAssertionError("RegistrationMfaFailure Decoding error")
+                    }
+                    return data
+                }
+
+                let challengeString = try container.decode(String.self, forKey: .challenge)
+                self.challenge = try data(challengeString)
+
+                let credentialStringArray = try container.decode([String].self, forKey: .allowedCredentialIds)
+                self.allowedCredentialIds = try credentialStringArray.map(data(_:))
+            }
+        }
+    }
 }

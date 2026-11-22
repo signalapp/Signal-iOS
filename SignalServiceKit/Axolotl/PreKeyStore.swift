@@ -35,14 +35,14 @@ struct PreKeyStore {
     }
 
     func allocatePreKeyIds(
-        in metadataStore: KeyValueStore,
+        in metadataStore: NewKeyValueStore,
         lastPreKeyIdKey: String,
         count: Int,
         tx: DBWriteTransaction,
     ) -> ClosedRange<UInt32> {
-        let lastPreKeyId = metadataStore.getInt(lastPreKeyIdKey, transaction: tx).flatMap(UInt32.init(exactly:))
+        let lastPreKeyId = metadataStore.fetchValue(Int64.self, forKey: lastPreKeyIdKey, tx: tx).flatMap(UInt32.init(exactly:))
         let preKeyIds = PreKeyId.nextPreKeyIds(lastPreKeyId: lastPreKeyId, count: count)
-        metadataStore.setInt(Int(preKeyIds.upperBound), key: lastPreKeyIdKey, transaction: tx)
+        metadataStore.writeValue(Int64(safeCast: preKeyIds.upperBound), forKey: lastPreKeyIdKey, tx: tx)
         return preKeyIds
     }
 
@@ -71,7 +71,7 @@ struct PreKeyStore {
         let delay = PreKeyManagerImpl.Constants.maxUnacknowledgedSessionAge + gracePeriod
         let replacedAt = Column(PreKeyRecord.CodingKeys.replacedAt.rawValue)
         failIfThrows {
-            var rowIds = [Int64]()
+            var rowIds = [PreKeyRecord.RowId]()
             let query = PreKeyRecord.filter(replacedAt < Int64(now - delay) || replacedAt > Int64(now + delay))
             let cursor = try query.fetchCursor(tx.database)
             while let preKey = try cursor.next() {

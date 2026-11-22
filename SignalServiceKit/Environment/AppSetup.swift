@@ -755,7 +755,7 @@ extension AppSetup.GlobalsContinuation {
             validator: attachmentContentValidator,
         )
 
-        let quotedReplyManager = QuotedReplyManagerImpl(
+        let quotedReplyManager = QuotedReplyManager(
             attachmentStore: attachmentStore,
             attachmentValidator: attachmentContentValidator,
             db: db,
@@ -823,12 +823,6 @@ extension AppSetup.GlobalsContinuation {
         let groupUpdateItemBuilder = GroupUpdateItemBuilderImpl(
             contactsManager: contactManager,
             recipientDatabaseTable: recipientDatabaseTable,
-        )
-
-        let groupUpdateInfoMessageInserter = GroupUpdateInfoMessageInserterImpl(
-            dateProvider: dateProvider,
-            groupUpdateItemBuilder: groupUpdateItemBuilder,
-            notificationPresenter: notificationPresenter,
         )
 
         let groupMemberStore = GroupMemberStoreImpl()
@@ -911,11 +905,6 @@ extension AppSetup.GlobalsContinuation {
             deletedCallRecordExpirationJob: deletedCallRecordExpirationJob,
             deletedCallRecordStore: deletedCallRecordStore,
             threadStore: threadStore,
-        )
-
-        let badgeCountFetcher = BadgeCountFetcher(
-            notificationPreferencesManager: notificationPreferencesManager,
-            callRecordMissedCallManager: callRecordMissedCallManager,
         )
 
         let deleteForMeOutgoingSyncMessageManager = DeleteForMeOutgoingSyncMessageManagerImpl(
@@ -1030,6 +1019,7 @@ extension AppSetup.GlobalsContinuation {
             deleteForMeOutgoingSyncMessageManager: deleteForMeOutgoingSyncMessageManager,
             intentsManager: ThreadDeletionManagerImpl.Wrappers.IntentsManager(),
             interactionDeleteManager: interactionDeleteManager,
+            notificationPresenter: notificationPresenter,
             pinnedThreadManager: pinnedThreadManager,
             recipientDatabaseTable: recipientDatabaseTable,
             storyManager: ThreadDeletionManagerImpl.Wrappers.StoryManager(),
@@ -1047,11 +1037,23 @@ extension AppSetup.GlobalsContinuation {
             threadStore: threadStore,
             tsAccountManager: tsAccountManager,
         )
+        let groupDataDeletionManager = GroupDataDeletionManagerImpl(
+            bulkDeleteInteractionJobQueue: bulkDeleteInteractionJobQueue,
+            threadDeletionManager: threadDeletionManager,
+        )
+        let groupUpdateInfoMessageInserter = GroupUpdateInfoMessageInserterImpl(
+            dateProvider: dateProvider,
+            groupDataDeletionManager: groupDataDeletionManager,
+            groupUpdateItemBuilder: groupUpdateItemBuilder,
+            isGroupDataDeletionEnabled: BuildFlags.groupDataDeletionReceive,
+            notificationPresenter: notificationPresenter,
+        )
         let deleteForMeIncomingSyncMessageManager = DeleteForMeIncomingSyncMessageManagerImpl(
             addressableMessageFinder: deleteForMeAddressableMessageFinder,
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
             bulkDeleteInteractionJobQueue: bulkDeleteInteractionJobQueue,
+            db: db,
             interactionDeleteManager: interactionDeleteManager,
             recipientDatabaseTable: recipientDatabaseTable,
             threadDeletionManager: threadDeletionManager,
@@ -1066,6 +1068,11 @@ extension AppSetup.GlobalsContinuation {
             recipientFetcher: recipientFetcher,
             storageServiceManager: storageServiceManager,
             threadStore: threadStore,
+        )
+        let badgeCountFetcher = BadgeCountFetcher(
+            chatFolderManager: chatFolderManager,
+            notificationPreferencesManager: notificationPreferencesManager,
+            callRecordMissedCallManager: callRecordMissedCallManager,
         )
 
         let pinnedMessageExpirationJob = PinnedMessageExpirationJob(
@@ -1474,8 +1481,6 @@ extension AppSetup.GlobalsContinuation {
 
         let profileBadgeManager = ProfileBadgeManager()
 
-        let reactionStore: any ReactionStore = ReactionStoreImpl()
-
         let storageServiceRecordIkmMigrator = StorageServiceRecordIkmMigratorImpl(
             db: db,
             storageServiceManager: storageServiceManager,
@@ -1491,6 +1496,8 @@ extension AppSetup.GlobalsContinuation {
             udManager: udManager,
         )
 
+        let recipientCapabilityStore = RecipientCapabilityStore()
+
         let profileFetcher = ProfileFetcherImpl(
             accountChecker: accountChecker,
             db: db,
@@ -1502,7 +1509,9 @@ extension AppSetup.GlobalsContinuation {
             paymentsHelper: paymentsHelper,
             profileManager: profileManager,
             reachabilityManager: reachabilityManager,
+            recipientCapabilityStore: recipientCapabilityStore,
             recipientDatabaseTable: recipientDatabaseTable,
+            recipientFetcher: recipientFetcher,
             syncManager: syncManager,
             threadStore: threadStore,
             tsAccountManager: tsAccountManager,
@@ -1664,6 +1673,10 @@ extension AppSetup.GlobalsContinuation {
                 pinnedThreadManager: pinnedThreadManager,
                 threadStore: backupThreadStore,
             ),
+            chatFolderArchiver: BackupArchiveChatFolderArchiver(
+                chatFolderStore: chatFolderStore,
+                groupStore: GroupStore(),
+            ),
             chatItemArchiver: BackupArchiveChatItemArchiver(
                 archivedPaymentStore: archivedPaymentStore,
                 attachmentsArchiver: backupAttachmentsArchiver,
@@ -1677,7 +1690,6 @@ extension AppSetup.GlobalsContinuation {
                 interactionStore: backupInteractionStore,
                 oversizeTextArchiver: backupsOversizeTextArchiver,
                 pollArchiver: pollArchiver,
-                reactionStore: reactionStore,
                 threadStore: backupThreadStore,
                 reactionArchiver: backupReactionArchiver,
                 pinnedMessageManager: pinnedMessageManager,
@@ -1949,6 +1961,7 @@ extension AppSetup.GlobalsContinuation {
             editMessageStore: editMessageStore,
             favoriteStickerExpirationJob: favoriteStickerExpirationJob,
             groupCallRecordManager: groupCallRecordManager,
+            groupDataDeletionManager: groupDataDeletionManager,
             groupMemberStore: groupMemberStore,
             groupMemberUpdater: groupMemberUpdater,
             groupSendEndorsementStore: groupSendEndorsementStore,
@@ -1996,7 +2009,7 @@ extension AppSetup.GlobalsContinuation {
             privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,
             profileBadgeManager: profileBadgeManager,
             quotedReplyManager: quotedReplyManager,
-            reactionStore: reactionStore,
+            recipientCapabilityStore: recipientCapabilityStore,
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             recipientHidingManager: recipientHidingManager,

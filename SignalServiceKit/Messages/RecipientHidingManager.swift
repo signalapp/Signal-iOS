@@ -104,7 +104,7 @@ public struct HiddenRecipient: Codable, FetchableRecord, PersistableRecord {
     }
 
     /// The hidden recipient's ``SignalRecipient.id``.
-    let signalRecipientRowId: Int64
+    let signalRecipientRowId: SignalRecipient.RowId
 
     /// Whether this hidden recipient's chat is known to be in a message-request
     /// state.

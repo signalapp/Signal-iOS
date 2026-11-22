@@ -45,6 +45,7 @@ public protocol GroupUpdateItemBuilder {
         newDisappearingMessageToken: DisappearingMessageToken?,
         localIdentifiers: LocalIdentifiers,
         groupUpdateSource: GroupUpdateSource,
+        dataDeletionRequest: GroupDataDeletionRequest?,
         tx: DBReadTransaction,
     ) -> [TSInfoMessage.PersistableGroupUpdateItem]
 }
@@ -98,6 +99,7 @@ extension GroupUpdateItemBuilder {
             newDisappearingMessageToken: newDisappearingMessageToken,
             localIdentifiers: localIdentifiers,
             groupUpdateSource: groupUpdateSource,
+            dataDeletionRequest: nil,
             tx: tx,
         )
         return displayableUpdateItemsForPrecomputed(
@@ -177,6 +179,7 @@ public struct GroupUpdateItemBuilderImpl: GroupUpdateItemBuilder {
         newDisappearingMessageToken: DisappearingMessageToken?,
         localIdentifiers: LocalIdentifiers,
         groupUpdateSource: GroupUpdateSource,
+        dataDeletionRequest: GroupDataDeletionRequest?,
         tx: DBReadTransaction,
     ) -> [TSInfoMessage.PersistableGroupUpdateItem] {
         // Sanitize first so we map e164s to known acis.
@@ -188,6 +191,7 @@ public struct GroupUpdateItemBuilderImpl: GroupUpdateItemBuilder {
             oldDisappearingMessageToken: oldDisappearingMessageToken,
             newDisappearingMessageToken: newDisappearingMessageToken,
             groupUpdateSource: groupUpdateSource,
+            dataDeletionRequest: dataDeletionRequest,
             localIdentifiers: localIdentifiers,
         ).itemList
 
@@ -907,6 +911,26 @@ private struct PrecomputedGroupUpdateItemBuilder {
 
         case .groupTerminatedByUnknownUser:
             return .groupTerminatedByUnknownUser
+
+        case .localUserRemovedWithDataDeletion(let removerAci):
+            let (removerName, removerAddress) = expandAci(removerAci)
+            return .localUserRemovedWithDataDeletion(removerName: removerName, removerAddress: removerAddress)
+
+        case .otherUserRemovedWithDataDeletionByLocalUser(let userAci):
+            let (userName, userAddress) = expandAci(userAci)
+            return .otherUserRemovedByLocalUser(userName: userName, userAddress: userAddress)
+
+        case .otherUserRemovedWithDataDeletion(let removerAci, let userAci):
+            let (removerName, removerAddress) = expandAci(removerAci)
+            let (userName, userAddress) = expandAci(userAci)
+            return .otherUserRemoved(removerName: removerName, removerAddress: removerAddress, userName: userName, userAddress: userAddress)
+
+        case .groupTerminatedWithDataDeletionByLocalUser:
+            return .groupTerminatedWithDataDeletionByLocalUser
+
+        case .groupTerminatedWithDataDeletionByOtherUser(let updaterAci):
+            let (updaterName, updaterAddress) = expandAci(updaterAci)
+            return .groupTerminatedWithDataDeletionByOtherUser(updaterName: updaterName, updaterAddress: updaterAddress)
         }
     }
 
@@ -1137,6 +1161,7 @@ private struct DiffingGroupUpdateItemBuilder {
     /// time the group model was created/persisted.
     private let localIdentifiers: LocalIdentifiers
     private let groupUpdateSource: GroupUpdateSource
+    private let dataDeletionRequest: GroupDataDeletionRequest?
     private let isReplacingJoinRequestPlaceholder: Bool
 
     /// The update items, in order.
@@ -1152,10 +1177,12 @@ private struct DiffingGroupUpdateItemBuilder {
         oldDisappearingMessageToken: DisappearingMessageToken?,
         newDisappearingMessageToken: DisappearingMessageToken?,
         groupUpdateSource: GroupUpdateSource,
+        dataDeletionRequest: GroupDataDeletionRequest?,
         localIdentifiers: LocalIdentifiers,
     ) {
         self.localIdentifiers = localIdentifiers
         self.groupUpdateSource = groupUpdateSource
+        self.dataDeletionRequest = dataDeletionRequest
 
         if let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
             self.isReplacingJoinRequestPlaceholder = oldGroupModelV2.isJoinRequestPlaceholder
@@ -1797,26 +1824,51 @@ private struct DiffingGroupUpdateItemBuilder {
     mutating func addUserLeftOrWasKickedOutOfGroup(
         userAci: Aci,
     ) {
+        let isDataDeletionRequested: Bool
+        switch dataDeletionRequest {
+        case .membersRemoved(let memberAcis):
+            isDataDeletionRequested = memberAcis.contains(userAci)
+        case .groupTerminated, nil:
+            isDataDeletionRequested = false
+        }
+
         if localIdentifiers.aci == userAci {
             switch groupUpdateSource {
             case .localUser:
                 addItem(.localUserLeft)
             case let .aci(updaterAci):
-                addItem(.localUserRemoved(
-                    removerAci: updaterAci.codableUuid,
-                ))
+                if isDataDeletionRequested {
+                    addItem(.localUserRemovedWithDataDeletion(
+                        removerAci: updaterAci.codableUuid,
+                    ))
+                } else {
+                    addItem(.localUserRemoved(
+                        removerAci: updaterAci.codableUuid,
+                    ))
+                }
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.localUserRemovedByUnknownUser)
             }
         } else {
             switch groupUpdateSource {
             case .localUser:
-                addItem(.otherUserRemovedByLocalUser(
-                    userAci: userAci.codableUuid,
-                ))
+                if isDataDeletionRequested {
+                    addItem(.otherUserRemovedWithDataDeletionByLocalUser(
+                        userAci: userAci.codableUuid,
+                    ))
+                } else {
+                    addItem(.otherUserRemovedByLocalUser(
+                        userAci: userAci.codableUuid,
+                    ))
+                }
             case let .aci(updaterAci):
                 if updaterAci == userAci {
                     addItem(.otherUserLeft(userAci: userAci.codableUuid))
+                } else if isDataDeletionRequested {
+                    addItem(.otherUserRemovedWithDataDeletion(
+                        removerAci: updaterAci.codableUuid,
+                        userAci: userAci.codableUuid,
+                    ))
                 } else {
                     addItem(.otherUserRemoved(
                         removerAci: updaterAci.codableUuid,
@@ -2470,14 +2522,32 @@ private struct DiffingGroupUpdateItemBuilder {
             return
         }
 
+        let isDataDeletionRequested: Bool
+        switch dataDeletionRequest {
+        case .groupTerminated:
+            isDataDeletionRequested = true
+        case .membersRemoved, nil:
+            isDataDeletionRequested = false
+        }
+
         if newIsTerminated {
             switch groupUpdateSource {
             case .localUser:
-                addItem(.groupTerminatedByLocalUser)
+                if isDataDeletionRequested {
+                    addItem(.groupTerminatedWithDataDeletionByLocalUser)
+                } else {
+                    addItem(.groupTerminatedByLocalUser)
+                }
             case let .aci(aci):
-                addItem(.groupTerminatedByOtherUser(
-                    updaterAci: aci.codableUuid,
-                ))
+                if isDataDeletionRequested {
+                    addItem(.groupTerminatedWithDataDeletionByOtherUser(
+                        updaterAci: aci.codableUuid,
+                    ))
+                } else {
+                    addItem(.groupTerminatedByOtherUser(
+                        updaterAci: aci.codableUuid,
+                    ))
+                }
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.groupTerminatedByUnknownUser)
             }

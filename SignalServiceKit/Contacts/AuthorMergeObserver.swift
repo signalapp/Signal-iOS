@@ -77,11 +77,6 @@ public struct AuthorDatabaseTable {
     public static var all: [AuthorDatabaseTable] {
         return [
             AuthorDatabaseTable(
-                name: OWSReaction.databaseTableName,
-                aciColumn: OWSReaction.columnName(.reactorUUID),
-                phoneNumberColumn: OWSReaction.columnName(.reactorE164),
-            ),
-            AuthorDatabaseTable(
                 name: InteractionRecord.databaseTableName,
                 aciColumn: InteractionRecord.columnName(.authorUUID),
                 phoneNumberColumn: InteractionRecord.columnName(.authorPhoneNumber),

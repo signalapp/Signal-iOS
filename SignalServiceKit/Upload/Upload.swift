@@ -173,6 +173,9 @@ public enum Upload {
         /// The length of the encrypted data, consiting of "iv  + encrypted data + hmac"
         public let encryptedDataLength: UInt32
 
+        /// Incremental mac of the original upload, if one was computed.
+        public let incrementalMacInfo: Attachment.IncrementalMacInfo?
+
         public var isReusedTransitTierUpload: Bool { true }
     }
 
@@ -192,6 +195,7 @@ public enum Upload {
         let cdnKey: String
         let cdnNumber: UInt32
         let localUploadMetadata: AttachmentUploadMetadata
+        let incrementalMacInfo: Attachment.IncrementalMacInfo?
 
         // Timestamp the upload attempt began
         let beginTimestamp: UInt64

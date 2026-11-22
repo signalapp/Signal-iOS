@@ -215,6 +215,7 @@ public enum RegistrationRequestFactory {
             accountIdentifier: RegistrationIdentifier,
             recoveryPassword: RegistrationRecoveryPassword,
             pniPreKeyBundle: RegistrationPreKeyUploadBundle,
+            mfa: Registration.Mfa?,
         )
         case receiptCredential(
             receiptCredentialPresentation: ReceiptCredentialPresentation,
@@ -297,7 +298,7 @@ public enum RegistrationRequestFactory {
         switch requestContext {
         case .sessionId(phoneNumber: _, sessionId: _, let _pniPreKeyBundle):
             pniPreKeyBundle = _pniPreKeyBundle
-        case .recoveryPassword(accountIdentifier: _, recoveryPassword: _, let _pniPreKeyBundle):
+        case .recoveryPassword(accountIdentifier: _, recoveryPassword: _, let _pniPreKeyBundle, mfa: _):
             pniPreKeyBundle = _pniPreKeyBundle
         case .receiptCredential:
             pniPreKeyBundle = nil
@@ -320,7 +321,7 @@ public enum RegistrationRequestFactory {
         case .sessionId(let phoneNumber, let sessionId, pniPreKeyBundle: _):
             username = phoneNumber.stringValue
             request.sessionId = sessionId
-        case .recoveryPassword(let identifier, let recoveryPassword, pniPreKeyBundle: _):
+        case .recoveryPassword(let identifier, let recoveryPassword, pniPreKeyBundle: _, let mfa):
             switch identifier {
             case .aci(let aci):
                 username = aci.serviceIdString
@@ -328,6 +329,14 @@ public enum RegistrationRequestFactory {
                 username = phoneNumber.stringValue
             }
             request.recoveryPassword = OWSRequestFactory.RegistrationRecoveryPassword(recoveryPassword)
+            switch mfa {
+            case .none:
+                break
+            case .some(.totp(let code)):
+                request.totp = code
+            case .some(.webAuthn(let response)):
+                request.webAuthnResponse = response
+            }
         case .receiptCredential(let receiptCredentialPresentation):
             username = "no_number"
             request.receiptCredentialPresentation = ByteArrayCodable(receiptCredentialPresentation)
@@ -344,6 +353,8 @@ public enum RegistrationRequestFactory {
         var sessionId: String?
         var recoveryPassword: OWSRequestFactory.RegistrationRecoveryPassword?
         var receiptCredentialPresentation: ByteArrayCodable<ReceiptCredentialPresentation>?
+        var totp: Int32?
+        var webAuthnResponse: String?
         var accountAttributes: AccountAttributes
         var skipDeviceTransfer: Bool
         var aciIdentityKey: OWSRequestFactory.IdentityKey

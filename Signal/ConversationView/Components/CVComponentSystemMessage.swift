@@ -993,6 +993,7 @@ extension CVComponentSystemMessage {
         case
             .localUserRemoved,
             .localUserRemovedByUnknownUser,
+            .localUserRemovedWithDataDeletion,
             .otherUserRemovedByLocalUser,
             .otherUserRemoved,
             .otherUserRemovedByUnknownUser:
@@ -1143,7 +1144,9 @@ extension CVComponentSystemMessage {
         case
             .groupTerminatedByLocalUser,
             .groupTerminatedByUnknownUser,
-            .groupTerminatedByOtherUser:
+            .groupTerminatedByOtherUser,
+            .groupTerminatedWithDataDeletionByLocalUser,
+            .groupTerminatedWithDataDeletionByOtherUser:
             return .groupXInline
         }
     }

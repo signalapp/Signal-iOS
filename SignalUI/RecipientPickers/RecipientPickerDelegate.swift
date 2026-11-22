@@ -110,10 +110,24 @@ public class PickedRecipient: Hashable {
     }
 
     public static func ==(lhs: PickedRecipient, rhs: PickedRecipient) -> Bool {
-        return lhs.identifier == rhs.identifier
+        switch (lhs.identifier, rhs.identifier) {
+        case (.address(let lhs), .address(let rhs)):
+            return lhs == rhs
+        case (.group(let lhs), .group(let rhs)):
+            return lhs.uniqueId == rhs.uniqueId
+        case (.address, .group), (.group, .address):
+            return false
+        }
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(identifier)
+        switch identifier {
+        case .address(let address):
+            hasher.combine(0)
+            hasher.combine(address)
+        case .group(let groupThread):
+            hasher.combine(1)
+            hasher.combine(groupThread.uniqueId)
+        }
     }
 }

@@ -18782,6 +18782,27 @@ public class SSKProtoAttachmentPointer: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
+    public var incrementalMac: Data? {
+        guard hasIncrementalMac else {
+            return nil
+        }
+        return proto.incrementalMac
+    }
+    @objc
+    public var hasIncrementalMac: Bool {
+        return proto.hasIncrementalMac
+    }
+
+    @objc
+    public var chunkSize: UInt32 {
+        return proto.chunkSize
+    }
+    @objc
+    public var hasChunkSize: Bool {
+        return proto.hasChunkSize
+    }
+
+    @objc
     public var fileName: String? {
         guard hasFileName else {
             return nil
@@ -18980,6 +19001,12 @@ extension SSKProtoAttachmentPointer {
         if let _value = digest {
             builder.setDigest(_value)
         }
+        if let _value = incrementalMac {
+            builder.setIncrementalMac(_value)
+        }
+        if hasChunkSize {
+            builder.setChunkSize(chunkSize)
+        }
         if let _value = fileName {
             builder.setFileName(_value)
         }
@@ -19103,6 +19130,22 @@ public class SSKProtoAttachmentPointerBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
+    public func setIncrementalMac(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.incrementalMac = valueParam
+    }
+
+    public func setIncrementalMac(_ valueParam: Data) {
+        proto.incrementalMac = valueParam
+    }
+
+    @objc
+    public func setChunkSize(_ valueParam: UInt32) {
+        proto.chunkSize = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
     public func setFileName(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
         proto.fileName = valueParam
@@ -19208,12 +19251,176 @@ extension SSKProtoAttachmentPointerBuilder {
 
 #endif
 
+// MARK: - SSKProtoGroupContextV2DeleteData
+
+@objc
+public class SSKProtoGroupContextV2DeleteData: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_GroupContextV2.DeleteData
+
+    @objc
+    public var memberAcis: [Data] {
+        return proto.memberAcis
+    }
+
+    @objc
+    public var terminate: Bool {
+        return proto.terminate
+    }
+    @objc
+    public var hasTerminate: Bool {
+        return proto.hasTerminate
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_GroupContextV2.DeleteData) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public required convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_GroupContextV2.DeleteData(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_GroupContextV2.DeleteData) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoGroupContextV2DeleteData {
+    @objc
+    public static func builder() -> SSKProtoGroupContextV2DeleteDataBuilder {
+        return SSKProtoGroupContextV2DeleteDataBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoGroupContextV2DeleteDataBuilder {
+        let builder = SSKProtoGroupContextV2DeleteDataBuilder()
+        builder.setMemberAcis(memberAcis)
+        if hasTerminate {
+            builder.setTerminate(terminate)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoGroupContextV2DeleteDataBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_GroupContextV2.DeleteData()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    public func addMemberAcis(_ valueParam: Data) {
+        proto.memberAcis.append(valueParam)
+    }
+
+    @objc
+    public func setMemberAcis(_ wrappedItems: [Data]) {
+        proto.memberAcis = wrappedItems
+    }
+
+    @objc
+    public func setTerminate(_ valueParam: Bool) {
+        proto.terminate = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoGroupContextV2DeleteData {
+        return SSKProtoGroupContextV2DeleteData(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoGroupContextV2DeleteData(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoGroupContextV2DeleteData {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoGroupContextV2DeleteDataBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoGroupContextV2DeleteData? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoGroupContextV2
 
 @objc
 public class SSKProtoGroupContextV2: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: SignalServiceProtos_GroupContextV2
+
+    @objc
+    public let deleteData: SSKProtoGroupContextV2DeleteData?
 
     @objc
     public var masterKey: Data? {
@@ -19256,8 +19463,10 @@ public class SSKProtoGroupContextV2: NSObject, Codable, NSSecureCoding {
         return proto.unknownFields
     }
 
-    private init(proto: SignalServiceProtos_GroupContextV2) {
+    private init(proto: SignalServiceProtos_GroupContextV2,
+                 deleteData: SSKProtoGroupContextV2DeleteData?) {
         self.proto = proto
+        self.deleteData = deleteData
     }
 
     @objc
@@ -19272,7 +19481,13 @@ public class SSKProtoGroupContextV2: NSObject, Codable, NSSecureCoding {
     }
 
     fileprivate convenience init(_ proto: SignalServiceProtos_GroupContextV2) {
-        self.init(proto: proto)
+        var deleteData: SSKProtoGroupContextV2DeleteData?
+        if proto.hasDeleteData {
+            deleteData = SSKProtoGroupContextV2DeleteData(proto.deleteData)
+        }
+
+        self.init(proto: proto,
+                  deleteData: deleteData)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -19330,6 +19545,9 @@ extension SSKProtoGroupContextV2 {
         if let _value = groupChange {
             builder.setGroupChange(_value)
         }
+        if let _value = deleteData {
+            builder.setDeleteData(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -19370,6 +19588,17 @@ public class SSKProtoGroupContextV2Builder: NSObject {
 
     public func setGroupChange(_ valueParam: Data) {
         proto.groupChange = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setDeleteData(_ valueParam: SSKProtoGroupContextV2DeleteData?) {
+        guard let valueParam = valueParam else { return }
+        proto.deleteData = valueParam.proto
+    }
+
+    public func setDeleteData(_ valueParam: SSKProtoGroupContextV2DeleteData) {
+        proto.deleteData = valueParam.proto
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

@@ -386,11 +386,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat</string>
+			<string>%1$d conversație</string>
 			<key>few</key>
-			<string>%1$d Chats</string>
+			<string>%1$d conversații</string>
 			<key>other</key>
-			<string>%1$d Chats</string>
+			<string>%1$d de conversații</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
@@ -404,11 +404,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Type</string>
+			<string>%1$d tip de conversație</string>
 			<key>few</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d tipuri de conversații</string>
 			<key>other</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d de tipuri de conversații</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
@@ -422,11 +422,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Excluded</string>
+			<string>%1$d conversație exclusă</string>
 			<key>few</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d conversații excluse</string>
 			<key>other</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d de conversații excluse</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
@@ -1863,11 +1863,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This will remove the sticker pack. You can&apos;t add it again without a link or sticker message.</string>
+			<string>Acțiunea va elimina pachetul de abțibilduri. Nu poți să îl adaugi din nou fără un link sau un mesaj cu abțibild.</string>
 			<key>few</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Acțiunea va elimina pachetele de abțibilduri. Nu poți să le adaugi din nou fără un link sau un mesaj cu abțibilduri.</string>
 			<key>other</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>Acțiunea va elimina pachetele de abțibilduri. Nu poți să le adaugi din nou fără un link sau un mesaj cu abțibilduri.</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
@@ -1881,11 +1881,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Remove sticker pack?</string>
+			<string>Elimini %1$d pachet de abțibilduri?</string>
 			<key>few</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Elimini %1$d pachete de abțibilduri?</string>
 			<key>other</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>Elimini %1$d de pachete de abțibilduri?</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
@@ -1899,11 +1899,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sticker pack removed</string>
+			<string>Pachetul de abțibilduri a fost eliminat.</string>
 			<key>few</key>
-			<string>Sticker packs removed</string>
+			<string>Pachetele de abțibilduri au fost eliminate.</string>
 			<key>other</key>
-			<string>Sticker packs removed</string>
+			<string>Pachetele de abțibilduri au fost eliminate.</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -1935,11 +1935,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Selected</string>
+			<string>%1$d selectată</string>
 			<key>few</key>
-			<string>%1$d Selected</string>
+			<string>%1$d selectate</string>
 			<key>other</key>
-			<string>%1$d Selected</string>
+			<string>%1$d selectate</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

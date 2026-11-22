@@ -13,6 +13,9 @@
 /* AX hint letting a user know this button sends a sticker */
 "ACCESSIBILITY_HINT_STICKER" = "Sends this sticker";
 
+/* Accessibility label for a custom featured sticker of an analog clock. */
+"ACCESSIBILITY_LABEL_ANALOG_CLOCK_STICKER" = "Analog Clock Sticker";
+
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "Attachment";
 
@@ -24,6 +27,9 @@
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
 "ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Contact for %@";
+
+/* Accessibility label for a custom featured sticker of a digital clock. */
+"ACCESSIBILITY_LABEL_DIGITAL_CLOCK_STICKER" = "Digital Clock Sticker";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "Media";
@@ -558,6 +564,57 @@
 
 /* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
 "AUDIO_UNAVAILABLE_SHEET_TITLE" = "Voice Message Not Available";
+
+/* Accessibility label for screen where user confirms their TOTP code from their authenticator app. */
+"AUTHENTICATOR_APP_CODE_FIELD_LABEL" = "Authenticator app code";
+
+/* Instructions for screen where user confirms their TOTP code from their authenticator app. */
+"AUTHENTICATOR_APP_CODE_FOOTER" = "Enter the 6-digit code from your authenticator app.";
+
+/* Message for the error sheet shown when the TOTP code is wrong. */
+"AUTHENTICATOR_APP_CODE_INCORRECT_MESSAGE" = "Check that you entered the current code for your Signal account and try again.";
+
+/* Title of the error sheet shown when the TOTP code is wrong. */
+"AUTHENTICATOR_APP_CODE_INCORRECT_TITLE" = "Incorrect Code";
+
+/* Title for screen where user confirms their TOTP code from their authenticator app. */
+"AUTHENTICATOR_APP_CODE_TITLE" = "Enter Your Code";
+
+/* Explains why the user should name an authenticator app for two-factor authentication. */
+"AUTHENTICATOR_APP_NAME_FOOTER" = "Choose a unique name for this authenticator app to help you identify it later.";
+
+/* Title for the screen where the user names an authenticator app for two-factor authentication. */
+"AUTHENTICATOR_APP_NAME_TITLE" = "Choose a Name";
+
+/* Description for step 2 of authenticator app setup */
+"AUTHENTICATOR_APP_SETUP_COPY_KEY_DESCRIPTION" = "Or you can copy this key to manually set it up.";
+
+/* Body for the screen that explains how to setup an authenticator app. */
+"AUTHENTICATOR_APP_SETUP_DESCRIPTION" = "Follow these steps to set up your authenticator app.";
+
+/* Button in step 2 of setup that opens authenticator app */
+"AUTHENTICATOR_APP_SETUP_OPEN_BUTTON" = "Open";
+
+/* Shown when the user taps to open the authenticator, but no installed app can handle it. */
+"AUTHENTICATOR_APP_SETUP_OPEN_FAILED" = "No authenticator app was found. Install one, or copy the setup key into your authenticator app instead.";
+
+/* Instructions for step 1 of authenticator setup. Embeds {{AUTHENTICATOR_APP_SETUP_STEP_1_LINK}}, which links to a list of authenticator apps. */
+"AUTHENTICATOR_APP_SETUP_STEP_1_BODY_FORMAT" = "Install a trusted %@ on your device.";
+
+/* Linked text in step 1 of authenticator setup, embedded in AUTHENTICATOR_APP_SETUP_STEP_1_BODY_FORMAT. */
+"AUTHENTICATOR_APP_SETUP_STEP_1_LINK" = "authenticator app";
+
+/* Instructions for step 2 of authenticator app setup. */
+"AUTHENTICATOR_APP_SETUP_STEP_2_BODY" = "Open your authenticator app by tapping the button below to add your Signal account.";
+
+/* Instructions for step 3 of authenticator app setup. */
+"AUTHENTICATOR_APP_SETUP_STEP_3_BODY" = "Copy the 6 digit code generated in the authenticator app and return here to continue.";
+
+/* Title for each step of authenticator app setup. Embeds {{step number}}. */
+"AUTHENTICATOR_APP_SETUP_STEP_TITLE_FORMAT" = "Step %@";
+
+/* Title for the screen that explains how to setup an authenticator app. */
+"AUTHENTICATOR_APP_SETUP_TITLE" = "Authenticator App";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
@@ -2071,8 +2128,32 @@
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
 
+/* Button to choose chats to include in a chat folder. */
+"CHAT_FOLDERS_ADD_CHATS" = "Add Chats";
+
+/* Chat context menu action that opens the folder selection submenu. */
+"CHAT_FOLDERS_ADD_TO_FOLDER" = "Add to Folder";
+
+/* Toast shown after adding a chat to a folder. Embeds {{ folder name }}. */
+"CHAT_FOLDERS_ADDED_TO_FOLDER_TOAST_FORMAT" = "Added to “%@”";
+
 /* Name of the default chat folder, which shows every chat. */
 "CHAT_FOLDERS_ALL_CHATS" = "All Chats";
+
+/* A type of chat a chat folder can include: every group chat. */
+"CHAT_FOLDERS_CHAT_TYPE_GROUPS" = "Groups";
+
+/* A type of chat a chat folder can include: every 1:1 chat. */
+"CHAT_FOLDERS_CHAT_TYPE_INDIVIDUAL" = "1:1 Chats";
+
+/* Header for the chat types that can be included in a chat folder. */
+"CHAT_FOLDERS_CHAT_TYPES_HEADER" = "Chat Types";
+
+/* Header of the chat context submenu for choosing a folder. */
+"CHAT_FOLDERS_CHOOSE_FOLDER" = "Choose Folder";
+
+/* Title for the screen that creates a new chat folder. */
+"CHAT_FOLDERS_CREATE_FOLDER_TITLE" = "Create a Folder";
 
 /* Action that deletes a chat folder. */
 "CHAT_FOLDERS_DELETE_FOLDER" = "Delete Folder";
@@ -2080,10 +2161,58 @@
 /* Title of the confirmation shown before deleting a chat folder. */
 "CHAT_FOLDERS_DELETE_FOLDER_CONFIRMATION_TITLE" = "Delete this chat folder?";
 
+/* Action that edits a chat folder. */
+"CHAT_FOLDERS_EDIT_FOLDER" = "Edit Folder";
+
+/* Title for the screen that edits an existing chat folder. */
+"CHAT_FOLDERS_EDIT_FOLDER_TITLE" = "Edit Folder";
+
+/* Button to choose chats to exclude from a chat folder. */
+"CHAT_FOLDERS_EXCLUDE_CHATS" = "Exclude Chats";
+
+/* Footer for the list of chats excluded from a chat folder. */
+"CHAT_FOLDERS_EXCLUDED_CHATS_FOOTER" = "Add chats to exclude from this folder.";
+
+/* Header for the list of chats excluded from a chat folder, and the title of the screen that chooses them. */
+"CHAT_FOLDERS_EXCLUDED_CHATS_HEADER" = "Exceptions";
+
+/* Header for the name field when creating or editing a chat folder. */
+"CHAT_FOLDERS_FOLDER_NAME_HEADER" = "Folder Name";
+
+/* Placeholder for the name field when creating or editing a chat folder. */
+"CHAT_FOLDERS_FOLDER_NAME_PLACEHOLDER" = "Folder Name";
+
+/* All Chats context menu action to open chat folder settings. */
+"CHAT_FOLDERS_FOLDER_SETTINGS" = "Folder Settings";
+
+/* Chat folder setting that shows muted chats in the folder. */
+"CHAT_FOLDERS_INCLUDE_MUTED" = "Include Muted Chats";
+
+/* Footer for the list of chats included in a chat folder. */
+"CHAT_FOLDERS_INCLUDED_CHATS_FOOTER" = "Add chats or types of chats to include in this folder.";
+
+/* Header for the list of chats included in a chat folder, and the title of the screen that chooses them. */
+"CHAT_FOLDERS_INCLUDED_CHATS_HEADER" = "Included Chats";
+
+/* Chat folder context menu action to mark every chat in the folder as read. */
+"CHAT_FOLDERS_MARK_ALL_READ" = "Mark All Read";
+
+/* Header for additional chat folder settings. */
+"CHAT_FOLDERS_MORE_OPTIONS_HEADER" = "More Options";
+
+/* Chat folder context menu action to mute every chat in the folder. */
+"CHAT_FOLDERS_MUTE_ALL" = "Mute All";
+
+/* Chat folder setting that hides chats without unread messages. */
+"CHAT_FOLDERS_ONLY_UNREAD" = "Only Show Unread Chats";
+
+/* Footer for the chat folder setting that hides chats without unread messages. */
+"CHAT_FOLDERS_ONLY_UNREAD_FOOTER" = "Only chats with unread messages will be shown in this folder.";
+
 /* Button in chat folder settings to add a suggested chat folder. */
 "CHAT_FOLDERS_SETTINGS_ADD_SUGGESTED_FOLDER" = "Add";
 
-/* Button in chat folder settings to create a new chat folder. */
+/* Action in chat folder settings and the chat context menu to create a new chat folder. */
 "CHAT_FOLDERS_SETTINGS_CREATE_FOLDER" = "Create a Folder";
 
 /* Description at the top of the chat folders settings screen. */
@@ -2119,8 +2248,14 @@
 /* Name of the suggested chat folder that shows unread chats. */
 "CHAT_FOLDERS_SUGGESTED_UNREAD_NAME" = "Unread";
 
+/* Chat folder context menu action to unmute every chat in the folder. */
+"CHAT_FOLDERS_UNMUTE_ALL" = "Unmute All";
+
 /* Name shown for a chat folder whose name is empty. */
 "CHAT_FOLDERS_UNNAMED_FOLDER" = "Unnamed Folder";
+
+/* Unread count shown on a chat folder tab when it has more than 99 unread messages or chats. */
+"CHAT_FOLDERS_UNREAD_BADGE_OVERFLOW" = "99+";
 
 /* Message shown in an action sheet when the user tries to cancel a backup. */
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "Canceling your backup will not delete your backup. You can resume your backup at any time from Backup Settings.";
@@ -4675,6 +4810,9 @@
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "You were removed from the group.";
 
+/* Message indicating that the local user was removed from the group by another user, who also deleted the group's messages from the local user's device. Embeds {{remote user name}}. */
+"GROUP_LOCAL_USER_REMOVED_WITH_DATA_DELETION_BY_REMOTE_USER_FORMAT" = "%@ removed you and deleted the group messages on your device.";
+
 /* Message indicating that the local user's request to join the group was approved. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED" = "Your request to join the group was approved.";
 
@@ -4902,6 +5040,12 @@
 
 /* Error indicating a send failure due to the group being terminated. */
 "GROUP_TERMINATED_MESSAGE_SEND_ERROR" = "You can't send messages because the group has ended.";
+
+/* Message indicating that the group was terminated by the local user, who also deleted the group's messages. */
+"GROUP_TERMINATED_WITH_DATA_DELETION_BY_LOCAL_USER" = "You ended the group and deleted the group messages";
+
+/* Message indicating that the group was terminated by a remote user, who also deleted the group's messages from the local user's device. Embeds {{ user who terminated the group }}. */
+"GROUP_TERMINATED_WITH_DATA_DELETION_BY_OTHER_USER" = "%@ ended the group and deleted the group messages on your device";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Group updated.";
@@ -7021,6 +7165,27 @@
 /* Title for sheet shown when tapping oversized text that has expired and is unavailable for download */
 "OVERSIZE_TEXT_UNAVAILABLE_SHEET_TITLE" = "Complete Message Not Available";
 
+/* Description introducing passkeys. Followed by a 'Learn more' link. */
+"PASSKEY_EDUCATION_BODY" = "With passkeys you can easily add a secure second form of authentication to your account. Passkeys can use your device’s biometrics or a compatible FIDO2 security key.";
+
+/* Bullet point explaining that passkeys can be added or removed. */
+"PASSKEY_EDUCATION_BULLET_MANAGE" = "Add or remove passkeys at anytime.";
+
+/* Bullet point explaining that a passkey can be given a name. */
+"PASSKEY_EDUCATION_BULLET_NAME" = "Give your passkey a friendly name to identify it";
+
+/* Bullet point explaining where a passkey is stored. */
+"PASSKEY_EDUCATION_BULLET_STORAGE" = "Use your device’s biometrics or a FIDO2 security key to store your passkey";
+
+/* Link at the end of the view introducing passkeys. */
+"PASSKEY_EDUCATION_LEARN_MORE" = "Learn more";
+
+/* Button on a view introducing passkeys that starts setting up a passkey. */
+"PASSKEY_EDUCATION_SET_UP_BUTTON" = "Set Up Passkey";
+
+/* Title for a view introducing passkeys. */
+"PASSKEY_EDUCATION_TITLE" = "Passkeys";
+
 /* The name of the Signal app, used as the title for an entry in a user's password manager for their Signal Recovery Key. Should be localized with the same value as the app's name in the iOS App Store. */
 "PASSWORD_MANAGER_SIGNAL_APP_NAME" = "Signal Private Messenger";
 
@@ -8448,6 +8613,9 @@
 
 /* Button to initiate a purchase on the 'Signal Login' screen. The replacement is a localized cost (e.g., $2.99). */
 "REGISTRATION_SIGNAL_LOGIN_PAY" = "Pay %1$@";
+
+/* Title for the password entry saved to the password manager */
+"REGISTRATION_SIGNAL_LOGIN_SAVED_LOGIN_TITLE" = "Signal";
 
 /* Text for a bullet point describing that an existing Signal Login can be used to log in and restore an account. */
 "REGISTRATION_SIGNAL_LOGIN_SELECTION_EXISTING_BULLET_RESTORE" = "Login and restore your account";
@@ -10267,8 +10435,68 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
 
+/* Label for the row in the 'Signal Login' section of the account settings. */
+"SETTINGS_SIGNAL_LOGIN_ACCOUNT_AND_RECOVERY" = "Account & Recovery";
+
+/* Footer for the 'Signal Login' section of the account settings. */
+"SETTINGS_SIGNAL_LOGIN_FOOTER" = "Your Signal Login is used to recover and restore your account. Keep your login info stored safely in a password manager you trust.";
+
+/* Title for the 'Signal Login' section of the account settings. */
+"SETTINGS_SIGNAL_LOGIN_TITLE" = "Signal Login";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registration Lock";
+
+/* Shows when a two-factor authentication method was added. Embeds {{date}}. */
+"SETTINGS_TWO_FACTOR_METHODS_ADDED_FORMAT" = "Added %@";
+
+/* Menu option to set up an authenticator app for two-factor authentication. */
+"SETTINGS_TWO_FACTOR_METHODS_AUTHENTICATOR_APP" = "Authenticator App";
+
+/* Subtitle for the menu option to set up an authenticator app for two-factor authentication. */
+"SETTINGS_TWO_FACTOR_METHODS_AUTHENTICATOR_APP_SUBTITLE" = "One-time verification codes";
+
+/* Footer for the 'Two-Factor Authentication' section of the account settings. */
+"SETTINGS_TWO_FACTOR_METHODS_FOOTER" = "Use a second form of authentication to protect your account when using your Signal Login on a new device.";
+
+/* Describes a two-factor authentication method that is an authenticator app. */
+"SETTINGS_TWO_FACTOR_METHODS_KIND_AUTHENTICATOR_APP" = "Authenticator app";
+
+/* Describes a webauthn two-factor authentication method. */
+"SETTINGS_TWO_FACTOR_METHODS_KIND_WEBAUTHN" = "Passkey";
+
+/* Accessibility label for the button for renaming a two-factor authentication method. */
+"SETTINGS_TWO_FACTOR_METHODS_MORE_OPTIONS" = "More options";
+
+/* Placeholder for the field where the user names a two-factor authentication method. */
+"SETTINGS_TWO_FACTOR_METHODS_NAME_PLACEHOLDER" = "Name";
+
+/* Menu option to remove a two-factor authentication method. */
+"SETTINGS_TWO_FACTOR_METHODS_REMOVE" = "Remove";
+
+/* Message for the sheet confirming removal of a two-factor authentication method. */
+"SETTINGS_TWO_FACTOR_METHODS_REMOVE_CONFIRMATION_MESSAGE" = "You won't be able to use it to verify your account on a new device.";
+
+/* Title for the sheet confirming removal of a two-factor authentication method. Embeds {{the method's name}}. */
+"SETTINGS_TWO_FACTOR_METHODS_REMOVE_CONFIRMATION_TITLE_FORMAT" = "Remove %@?";
+
+/* Menu option to rename a two-factor authentication method. */
+"SETTINGS_TWO_FACTOR_METHODS_RENAME" = "Rename";
+
+/* Title for the alert to rename a two-factor authentication method. */
+"SETTINGS_TWO_FACTOR_METHODS_RENAME_TITLE" = "Rename";
+
+/* Row Label for the 'Two-Factor Authentication' section that adds a new two-factor authentication method. */
+"SETTINGS_TWO_FACTOR_METHODS_SET_UP" = "Set Up";
+
+/* Title for the 'Two-Factor Authentication' section of the account settings. */
+"SETTINGS_TWO_FACTOR_METHODS_TITLE" = "Two-Factor Authentication";
+
+/* Menu option to set up webauthn for two-factor authentication. */
+"SETTINGS_TWO_FACTOR_METHODS_WEBAUTHN" = "Passkeys";
+
+/* Subtitle for the menu option to set up webauthn for two-factor authentication. */
+"SETTINGS_TWO_FACTOR_METHODS_WEBAUTHN_SUBTITLE" = "Biometrics or FIDO2 security key";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Require your Signal PIN to register your phone number again with Signal.";
@@ -10441,12 +10669,6 @@
 /* The name for the sticker category 'Featured' */
 "STICKER_CATEGORY_FEATURED_NAME" = "Featured";
 
-/* Subtitle of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE" = "Send a sticker and it will appear here";
-
-/* Title of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_TITLE" = "No Recent Stickers";
-
 /* The name for the sticker category 'Recents' */
 "STICKER_CATEGORY_RECENTS_NAME" = "Recents";
 
@@ -10467,6 +10689,9 @@
 
 /* Button in the sticker keyboard, shown when no sticker packs are installed, that opens the sticker pack manager. */
 "STICKER_KEYBOARD_NO_PACKS_ADD_BUTTON" = "Add Stickers";
+
+/* Toast shown when user tries to tap Recents in sticker keyboard but has none */
+"STICKER_KEYBOARD_NO_RECENTS_TOAST" = "No recent stickers";
 
 /* Section header for favorites in the sticker keyboard */
 "STICKER_KEYBOARD_SECTION_HEADER_LABEL_FAVORITES" = "Favorites";

@@ -912,7 +912,11 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         owsAssertDebug(!UIDevice.current.isIPad, "iPad has full UIKit rotation support")
 
         let rotationAngle: CGFloat
-        if let call = callServiceState.currentCall, !shouldReorientUI(for: call) {
+        if CurrentAppContext().mainWindow?.ignoresSupportedInterfaceOrientations == true {
+            // The call UI already rotates with the window (e.g. on the inner
+            // display of iPhone Duo), so the icons mustn't rotate again.
+            rotationAngle = 0
+        } else if let call = callServiceState.currentCall, !shouldReorientUI(for: call) {
             // We still send the notification in case we *previously* rotated the UI and now we need to revert back.
             // Example:
             // 1. In a 1:1 call, either the user or their contact (but not both) has video on

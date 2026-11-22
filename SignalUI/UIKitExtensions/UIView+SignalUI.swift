@@ -175,6 +175,30 @@ public extension UIView {
     }
 }
 
+// MARK: - Orientation
+
+public extension UIView {
+
+    /// Whether this view's window can be in any orientation, even while a
+    /// portrait-only view controller is showing.
+    ///
+    /// True on iPad, and on displays that don't honor supported interface
+    /// orientations, such as the inner display of iPhone Duo, which is the only
+    /// iPhone display with regular width and height. Code that locks UI to
+    /// portrait and counter-rotates it for the device orientation must check
+    /// this and lay out from the window instead.
+    var ignoresSupportedInterfaceOrientations: Bool {
+        if UIDevice.current.isIPad {
+            return true
+        }
+        let window = (self as? UIWindow) ?? self.window ?? CurrentAppContext().mainWindow
+        guard let screenTraits = window?.windowScene?.screen.traitCollection else {
+            return false
+        }
+        return screenTraits.horizontalSizeClass == .regular && screenTraits.verticalSizeClass == .regular
+    }
+}
+
 // MARK: - Manual Layout
 
 public extension UIView {

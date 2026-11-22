@@ -44,7 +44,6 @@ public protocol IdentityKeyMismatchManager {
 
 class IdentityKeyMismatchManagerImpl: IdentityKeyMismatchManager {
     private enum Constants {
-        static let collection = "LinkedDevicePniKeyManagerImpl"
         static let hasRecordedSuspectedIssueKey = "hasSuspectedIssue"
     }
 
@@ -52,7 +51,7 @@ class IdentityKeyMismatchManagerImpl: IdentityKeyMismatchManager {
 
     private let db: any DB
     private let identityKeyChecker: IdentityKeyChecker
-    private let kvStore: KeyValueStore
+    private let kvStore: NewKeyValueStore
     private let messageProcessor: Shims.MessageProcessor
     private let registrationStateChangeManager: RegistrationStateChangeManager
     private let tsAccountManager: TSAccountManager
@@ -68,7 +67,7 @@ class IdentityKeyMismatchManagerImpl: IdentityKeyMismatchManager {
     ) {
         self.db = db
         self.identityKeyChecker = identityKeyChecker
-        self.kvStore = KeyValueStore(collection: Constants.collection)
+        self.kvStore = NewKeyValueStore(collection: "LinkedDevicePniKeyManagerImpl")
         self.messageProcessor = messageProcessor
         self.registrationStateChangeManager = registrationStateChangeManager
         self.tsAccountManager = tsAccountManager
@@ -80,10 +79,10 @@ class IdentityKeyMismatchManagerImpl: IdentityKeyMismatchManager {
             return
         }
 
-        kvStore.setBool(
+        kvStore.writeValue(
             true,
-            key: Constants.hasRecordedSuspectedIssueKey,
-            transaction: tx,
+            forKey: Constants.hasRecordedSuspectedIssueKey,
+            tx: tx,
         )
     }
 
@@ -99,11 +98,11 @@ class IdentityKeyMismatchManagerImpl: IdentityKeyMismatchManager {
         try await self.messageProcessor.waitForFetchingAndProcessing()
 
         let hasSuspectedIssue = self.db.read { tx in
-            return self.kvStore.getBool(
-                Constants.hasRecordedSuspectedIssueKey,
-                defaultValue: false,
-                transaction: tx,
-            )
+            return self.kvStore.fetchValue(
+                Bool.self,
+                forKey: Constants.hasRecordedSuspectedIssueKey,
+                tx: tx,
+            ) ?? false
         }
         guard hasSuspectedIssue else {
             return
@@ -165,7 +164,7 @@ class IdentityKeyMismatchManagerImpl: IdentityKeyMismatchManager {
     private func clearPniMessageDecryptionError(tx: DBWriteTransaction) {
         kvStore.removeValue(
             forKey: Constants.hasRecordedSuspectedIssueKey,
-            transaction: tx,
+            tx: tx,
         )
     }
 }

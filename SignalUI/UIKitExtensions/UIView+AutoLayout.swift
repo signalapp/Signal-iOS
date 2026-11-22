@@ -304,6 +304,44 @@ public extension UIView {
             constraint.isActive = false
         }
     }
+
+    enum HorizontalAlignment {
+        case leading
+        case trailing
+        case center
+    }
+
+    /// Wraps the view so it keeps its width, aligns along the requested alignment,
+    /// and can still fill the full vertical width (e.g. - when inside a UIStackView)
+    func wrappedInContainerView(alignment: HorizontalAlignment) -> UIView {
+        let container = UIView.transparentContainer()
+        container.addSubview(self)
+        translatesAutoresizingMaskIntoConstraints = false
+
+        var constraints = [
+            topAnchor.constraint(equalTo: container.topAnchor),
+            bottomAnchor.constraint(equalTo: container.bottomAnchor),
+        ]
+        switch alignment {
+        case .leading:
+            constraints.append(contentsOf: [
+                leadingAnchor.constraint(equalTo: container.leadingAnchor),
+                trailingAnchor.constraint(lessThanOrEqualTo: container.trailingAnchor),
+            ])
+        case .center:
+            constraints.append(contentsOf: [
+                centerXAnchor.constraint(equalTo: container.centerXAnchor),
+            ])
+        case .trailing:
+            constraints.append(contentsOf: [
+                leadingAnchor.constraint(greaterThanOrEqualTo: container.leadingAnchor),
+                trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            ])
+        }
+
+        NSLayoutConstraint.activate(constraints)
+        return container
+    }
 }
 
 extension NSLayoutConstraint.Relation {

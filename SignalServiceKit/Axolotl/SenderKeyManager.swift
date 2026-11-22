@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 
 class SenderKeyManager {
-    fileprivate let sendingDistributionIdStore = KeyValueStore(collection: "SenderKeyStore_SendingDistributionId")
+    fileprivate let sendingDistributionIdStore = NewKeyValueStore(collection: "SenderKeyStore_SendingDistributionId")
 
     fileprivate let oldSenderKeyStore: OldSenderKeyStore
     fileprivate let recipientFetcher: RecipientFetcher
@@ -31,7 +31,7 @@ class SenderKeyManager {
 
     func resetAll(tx: DBWriteTransaction) {
         oldSenderKeyStore.resetAll(tx: tx)
-        sendingDistributionIdStore.removeAll(transaction: tx)
+        sendingDistributionIdStore.removeAll(tx: tx)
         failIfThrows {
             // Delete these first
             try SenderKeySentToDeviceRecord
@@ -197,7 +197,7 @@ class SenderKeySendingManager: LibSignalClient.SenderKeyStore, ThreadRemoverObse
     }
 
     func fetchDistributionId(forThreadUniqueId threadUniqueId: String, tx: DBReadTransaction) -> UUID? {
-        return senderKeyManager.sendingDistributionIdStore.getString(threadUniqueId, transaction: tx).flatMap(UUID.init(uuidString:))
+        return senderKeyManager.sendingDistributionIdStore.fetchValue(String.self, forKey: threadUniqueId, tx: tx).flatMap(UUID.init(uuidString:))
     }
 
     func fetchOrCreateDistributionId(forThreadUniqueId threadUniqueId: String, tx: DBWriteTransaction) -> UUID {
@@ -205,12 +205,12 @@ class SenderKeySendingManager: LibSignalClient.SenderKeyStore, ThreadRemoverObse
             return distributionId
         }
         let distributionId = UUID()
-        senderKeyManager.sendingDistributionIdStore.setString(distributionId.uuidString, key: threadUniqueId, transaction: tx)
+        senderKeyManager.sendingDistributionIdStore.writeValue(distributionId.uuidString, forKey: threadUniqueId, tx: tx)
         return distributionId
     }
 
     private func removeDistributionId(forThreadUniqueId threadUniqueId: String, tx: DBWriteTransaction) {
-        senderKeyManager.sendingDistributionIdStore.removeValue(forKey: threadUniqueId, transaction: tx)
+        senderKeyManager.sendingDistributionIdStore.removeValue(forKey: threadUniqueId, tx: tx)
     }
 
     func deleteSenderKey(

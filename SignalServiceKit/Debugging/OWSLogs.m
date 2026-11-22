@@ -4,6 +4,7 @@
 //
 
 #import "OWSLogs.h"
+#import "OWSAsserts.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

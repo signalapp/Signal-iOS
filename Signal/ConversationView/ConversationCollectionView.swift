@@ -168,20 +168,9 @@ class ConversationCollectionView: UICollectionView {
         if animated {
             updateBlock()
         } else {
-            // HACK: We use `UIView.animateWithDuration:0` rather than `UIView.performWithAnimation` to work around a
-            // UIKit Crash like:
-            //
-            //     *** Assertion failure in -[ConversationViewLayout prepareForCollectionViewUpdates:],
-            //     /BuildRoot/Library/Caches/com.apple.xbs/Sources/UIKit_Sim/UIKit-3600.7.47/UICollectionViewLayout.m:760
-            //     *** Terminating app due to uncaught exception 'NSInternalInconsistencyException', reason: 'While
-            //     preparing update a visible view at <NSIndexPath: 0xc000000011c00016> {length = 2, path = 0 - 142}
-            //     wasn't found in the current data model and was not in an update animation. This is an internal
-            //     error.'
-            //
-            // I'm unclear if this is a bug in UIKit, or if we're doing something crazy in
-            // ConversationViewLayout#prepareLayout. To reproduce, rapidily insert and delete items into the
-            // conversation. See `DebugUIMessages#thrashCellsInThread:`
-            UIView.animate(withDuration: 0, animations: updateBlock)
+            // Don't wrap in a zero-duration animation: that makes UIKit
+            // recreate visible cells rather than reuse them.
+            UIView.performWithoutAnimation(updateBlock)
         }
     }
 }

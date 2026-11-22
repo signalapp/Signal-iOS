@@ -65,10 +65,7 @@ final class ChatFoldersSettingsViewController:
         super.viewDidLoad()
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
-        title = OWSLocalizedString(
-            "CHAT_FOLDERS_SETTINGS_TITLE",
-            comment: "Title for the chat folders settings screen.",
-        )
+        title = ChatFolderStrings.settingsTitle
 
         view.backgroundColor = .Signal.groupedBackground
         view.addSubview(tableView)
@@ -85,8 +82,6 @@ final class ChatFoldersSettingsViewController:
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
         tableView.delegate = self
         tableView.preservesSuperviewLayoutMargins = true
-        tableView.isEditing = true
-        tableView.allowsSelectionDuringEditing = true
         tableView.rowHeight = UITableView.automaticDimension
         tableView.backgroundColor = .Signal.groupedBackground
         tableView.register(ChatFolderTableViewCell.self)
@@ -104,17 +99,19 @@ final class ChatFoldersSettingsViewController:
             case .createFolder:
                 cell.configure(
                     symbol: .plus,
-                    title: OWSLocalizedString(
-                        "CHAT_FOLDERS_SETTINGS_CREATE_FOLDER",
-                        comment: "Button in chat folder settings to create a new chat folder.",
-                    ),
+                    title: ChatFolderStrings.createFolder,
                 )
             case .folder(let chatFolderId):
                 guard let folderRow = folderRowsById[chatFolderId] else {
                     owsFailDebug("Missing folder for row!")
                     return UITableViewCell()
                 }
-                cell.configure(symbol: folderRow.symbol, title: folderRow.name, subtitle: folderRow.subtitle)
+                cell.configure(
+                    symbol: folderRow.symbol,
+                    title: folderRow.name,
+                    subtitle: folderRow.subtitle,
+                    isReorderable: true,
+                )
             case .suggestedFolder(let suggestedFolder):
                 cell.configure(
                     symbol: suggestedFolder.symbol,
@@ -282,6 +279,26 @@ final class ChatFoldersSettingsViewController:
         }
     }
 
+    // MARK: - Editing
+
+    private func showEditor(chatFolderId: UUID?) {
+        let folder: ChatFolder?
+        if let chatFolderId {
+            guard
+                let existingFolder = db.read(block: { tx in
+                    chatFolderManager.fetch(chatFolderId: chatFolderId, tx: tx)
+                })
+            else {
+                return
+            }
+            folder = existingFolder
+        } else {
+            folder = nil
+        }
+        let editor = ChatFolderEditorViewController(folder: folder)
+        presentFormSheet(OWSNavigationController(rootViewController: editor), animated: true)
+    }
+
     // MARK: - Adding
 
     private func addSuggestedFolder(_ suggestedFolder: SuggestedChatFolder) {
@@ -354,15 +371,65 @@ final class ChatFoldersSettingsViewController:
         }
     }
 
+    private func isSelectable(_ indexPath: IndexPath) -> Bool {
+        switch dataSource.itemIdentifier(for: indexPath) {
+        case .folder(let chatFolderId):
+            return folderRowsById[chatFolderId]?.isAllChats == false
+        case .createFolder:
+            return true
+        case .suggestedFolder, nil:
+            return false
+        }
+    }
+
     func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        return false
+        return isSelectable(indexPath)
+    }
+
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        return isSelectable(indexPath) ? indexPath : nil
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        switch dataSource.itemIdentifier(for: indexPath) {
+        case .folder(let chatFolderId):
+            showEditor(chatFolderId: chatFolderId)
+        case .createFolder:
+            showEditor(chatFolderId: nil)
+        case .suggestedFolder, nil:
+            break
+        }
     }
 
     func tableView(
         _ tableView: UITableView,
         editingStyleForRowAt indexPath: IndexPath,
     ) -> UITableViewCell.EditingStyle {
+        if
+            case .folder(let chatFolderId) = dataSource.itemIdentifier(for: indexPath),
+            folderRowsById[chatFolderId]?.isAllChats == false
+        {
+            return .delete
+        }
         return .none
+    }
+
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard
+            case .folder(let chatFolderId) = dataSource.itemIdentifier(for: indexPath),
+            folderRowsById[chatFolderId]?.isAllChats == false
+        else {
+            return nil
+        }
+        let deleteAction = UIContextualAction(
+            style: .destructive,
+            title: CommonStrings.deleteButton,
+        ) { [weak self] _, _, completion in
+            completion(false)
+            self?.confirmDeleteFolder(chatFolderId: chatFolderId)
+        }
+        return UISwipeActionsConfiguration(actions: [deleteAction])
     }
 
     func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
@@ -399,12 +466,14 @@ final class ChatFoldersSettingsViewController:
 
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
             UIMenu(children: [
-                // [Chat Folders] TODO: Edit Folder action
                 UIAction(
-                    title: OWSLocalizedString(
-                        "CHAT_FOLDERS_DELETE_FOLDER",
-                        comment: "Action that deletes a chat folder.",
-                    ),
+                    title: ChatFolderStrings.editFolder,
+                    image: Theme.iconImage(.contextMenuEdit),
+                ) { _ in
+                    self?.showEditor(chatFolderId: chatFolderId)
+                },
+                UIAction(
+                    title: ChatFolderStrings.deleteFolder,
                     image: Theme.iconImage(.contextMenuDelete),
                     attributes: .destructive,
                 ) { _ in

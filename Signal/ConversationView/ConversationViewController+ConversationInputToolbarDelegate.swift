@@ -861,7 +861,7 @@ extension ConversationViewController {
                 attachment = try PreviewableAttachment.normalizedVideoAttachment(
                     dataSource: dataSource,
                     dataUTI: contentTypeIdentifier,
-                    mustTranscode: true,
+                    source: .external,
                 )
             } else {
                 attachment = try PreviewableAttachment.buildAttachment(
@@ -993,6 +993,12 @@ extension ConversationViewController {
     func makeManageStickersViewController(for stickerPickerSheet: StickerPickerSheet) -> UIViewController {
         let manageStickersView = ManageStickersViewController()
         let navigationController = OWSNavigationController(rootViewController: manageStickersView)
+        return navigationController
+    }
+
+    func makeStickerPackViewController(for: StickerPickerSheet, stickerPack: StickerPackInfo) -> UIViewController {
+        let stickerPackViewController = StickerPackViewController(stickerPackInfo: stickerPack)
+        let navigationController = OWSNavigationController(rootViewController: stickerPackViewController)
         return navigationController
     }
 

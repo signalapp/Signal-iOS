@@ -27,9 +27,9 @@ jobs:
     strategy:
       matrix:
         # Add additional Xcode versions here if necessary.
-        xcode: ["Xcode_27.1"]
+        xcode: ["Xcode_27.2"]
         include:
-          - xcode: Xcode_27.1
+          - xcode: Xcode_27.2
             os: xcode-27-xlarge
 
     # Path format pulled from https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md#xcode

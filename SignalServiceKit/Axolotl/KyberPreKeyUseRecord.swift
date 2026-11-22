@@ -9,7 +9,7 @@ import GRDB
 struct KyberPreKeyUseRecord: Codable, FetchableRecord, PersistableRecord {
     static let databaseTableName: String = "KyberPreKeyUse"
 
-    var kyberRowId: Int64
+    var kyberRowId: PreKeyRecord.RowId
     var signedPreKeyIdentity: OWSIdentity
     var signedPreKeyId: UInt32
     var baseKey: Data

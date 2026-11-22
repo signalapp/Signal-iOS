@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
-import SignalUI
+public import SignalServiceKit
 
-final class SendStickerFlow: ConversationPickerDelegate {
+public final class SendStickerFlow: ConversationPickerDelegate {
     private let db: DB
 
     private let stickerMetadata: any StickerMetadata
@@ -14,13 +13,13 @@ final class SendStickerFlow: ConversationPickerDelegate {
     private let selection = ConversationPickerSelection()
     private weak var navigationController: UINavigationController?
 
-    init(stickerMetadata: any StickerMetadata, stickerManager: StickerManager, db: DB) {
+    public init(stickerMetadata: any StickerMetadata, stickerManager: StickerManager, db: DB) {
         self.stickerMetadata = stickerMetadata
         self.stickerManager = stickerManager
         self.db = db
     }
 
-    func present(from viewController: UIViewController) {
+    public func present(from viewController: UIViewController) {
         let picker = ConversationPickerViewController(selection: selection)
         picker.pickerDelegate = self
         let nav = OWSNavigationController(rootViewController: picker)
@@ -28,7 +27,7 @@ final class SendStickerFlow: ConversationPickerDelegate {
         viewController.present(nav, animated: true)
     }
 
-    func sendSticker(conversations: [ConversationItem]) {
+    public func sendSticker(conversations: [ConversationItem]) {
         let threads: [TSThread] = db.write { tx in
             conversations.compactMap { conversation -> TSThread? in
                 guard let thread = conversation.getOrCreateThread(transaction: tx) else {
@@ -50,26 +49,26 @@ final class SendStickerFlow: ConversationPickerDelegate {
 
     // MARK: ConversationPickerDelegate
 
-    func conversationPickerSelectionDidChange(_ conversationPickerViewController: ConversationPickerViewController) {}
+    public func conversationPickerSelectionDidChange(_ conversationPickerViewController: ConversationPickerViewController) {}
 
-    func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
+    public func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
         conversationPickerViewController.dismiss(animated: true)
         sendSticker(conversations: selection.conversations)
     }
 
-    func conversationPickerCanCancel(_ conversationPickerViewController: ConversationPickerViewController) -> Bool {
+    public func conversationPickerCanCancel(_ conversationPickerViewController: ConversationPickerViewController) -> Bool {
         return true
     }
 
-    func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController) {
+    public func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController) {
         self.navigationController?.dismiss(animated: true)
     }
 
-    func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode {
+    public func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode {
         return .send
     }
 
-    func conversationPickerDidBeginEditingText() {}
+    public func conversationPickerDidBeginEditingText() {}
 
-    func conversationPickerSearchBarActiveDidChange(_ conversationPickerViewController: ConversationPickerViewController) {}
+    public func conversationPickerSearchBarActiveDidChange(_ conversationPickerViewController: ConversationPickerViewController) {}
 }

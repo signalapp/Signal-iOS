@@ -14,7 +14,7 @@ public protocol NotificationPresenter {
 
     func notifyUser(forReleaseNotesMessage: TSReleaseNotesMessage, thread: TSThread, transaction: DBWriteTransaction)
 
-    func notifyUser(forReaction: OWSReaction, onOutgoingMessage: TSOutgoingMessage, thread: TSThread, transaction: DBWriteTransaction)
+    func notifyUser(forReaction: ReactionRecord, onOutgoingMessage: TSOutgoingMessage, thread: TSThread, transaction: DBWriteTransaction)
 
     func notifyUser(forErrorMessage: TSErrorMessage, thread: TSThread, transaction: DBWriteTransaction)
 
@@ -97,15 +97,21 @@ public protocol NotificationPresenter {
     func clearNotificationsForAppActivate()
     func clearDeliveredNewLinkedDevicesNotifications()
 
-    func cancelNotifications(threadId: String)
+    func cancelNotifications(threadId: String, exceptMessageId: String?)
 
     func cancelNotifications(messageIds: [String])
 
-    func cancelNotifications(reactionId: String)
+    func cancelNotifications(reactionId: ReactionRecord.RowId, tx: DBReadTransaction)
 
     func cancelNotificationsForMissedCalls(threadUniqueId: String)
 
     func cancelNotifications(for storyMessage: StoryMessage)
+}
+
+extension NotificationPresenter {
+    public func cancelNotifications(threadId: String) {
+        cancelNotifications(threadId: threadId, exceptMessageId: nil)
+    }
 }
 
 @objc

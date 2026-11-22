@@ -215,7 +215,7 @@ public class AttachmentBackfillManager {
     /// Process the given `AttachmentBackfillInboundRequestRecord`, by uploading
     /// its body attachments and enqueuing a response sync message.
     func processInboundRequest(
-        requestRecordId: AttachmentBackfillInboundRequestRecord.IDType,
+        requestRecordId: AttachmentBackfillInboundRequestRecord.RowId,
         localIdentifiers: LocalIdentifiers,
     ) -> Task<Void, Error> {
         return taskQueue.enqueue { [self] in
@@ -343,7 +343,7 @@ public class AttachmentBackfillManager {
 
     private func attemptBackfill(
         interactionId: Int64,
-    ) async -> [Result<SSKProtoAttachmentPointer, Error>] {
+    ) async -> [Result<ReferencedAttachment, Error>] {
         let backfillableReferencedAttachments: [ReferencedAttachment] = db.read { tx in
             let stickerReferencedAttachments = attachmentStore.fetchReferencedAttachments(
                 for: .messageSticker(messageRowId: interactionId),
@@ -366,8 +366,8 @@ public class AttachmentBackfillManager {
         }
 
         return await withTaskGroup(
-            of: (Int, Result<SSKProtoAttachmentPointer, Error>).self,
-            returning: [Result<SSKProtoAttachmentPointer, Error>].self,
+            of: (Int, Result<ReferencedAttachment, Error>).self,
+            returning: [Result<ReferencedAttachment, Error>].self,
         ) { taskGroup in
             for (index, referencedAttachment) in backfillableReferencedAttachments.enumerated() {
                 taskGroup.addTask { [self] in
@@ -376,7 +376,7 @@ public class AttachmentBackfillManager {
                 }
             }
 
-            var indexedResults = [(Int, Result<SSKProtoAttachmentPointer, Error>)]()
+            var indexedResults = [(Int, Result<ReferencedAttachment, Error>)]()
             for await indexedResult in taskGroup {
                 indexedResults.append(indexedResult)
             }
@@ -391,7 +391,7 @@ public class AttachmentBackfillManager {
 
     private func uploadAttachmentForBackfill(
         referencedAttachment: ReferencedAttachment,
-    ) async -> Result<SSKProtoAttachmentPointer, Error> {
+    ) async -> Result<ReferencedAttachment, Error> {
         let logger = logger.suffixed(with: "[\(referencedAttachment.attachment.id)]")
 
         if
@@ -425,19 +425,18 @@ public class AttachmentBackfillManager {
                         id: referencedAttachment.attachment.id,
                         tx: tx,
                     )
-                }),
-                let attachmentProto = ReferencedAttachment(
-                    reference: referencedAttachment.reference,
-                    attachment: refetchedAttachment,
-                ).asProtoForSending()
+                })
             else {
                 return .failure(OWSAssertionError(
-                    "Failed to get proto for sending after successful upload!",
+                    "Failed to refetch attachment after successful upload!",
                     logger: logger,
                 ))
             }
 
-            return .success(attachmentProto)
+            return .success(ReferencedAttachment(
+                reference: referencedAttachment.reference,
+                attachment: refetchedAttachment,
+            ))
         } catch {
             if error.isRetryable {
                 logger.warn("Ran out of retries uploading for backfill.")
@@ -468,7 +467,7 @@ public class AttachmentBackfillManager {
 
     private func sendBackfillAttemptResponse(
         backfillTarget: AttachmentBackfillTarget,
-        backfillAttemptResults: [Result<SSKProtoAttachmentPointer, Error>],
+        backfillAttemptResults: [Result<ReferencedAttachment, Error>],
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction,
     ) {
@@ -476,11 +475,26 @@ public class AttachmentBackfillManager {
             backfillTarget: backfillTarget,
             localIdentifiers: localIdentifiers,
             customizeResponseBlock: { responseBuilder in
+                var incrementalMacLimiter = IncrementalMacLimiter(
+                    remoteConfig: .current,
+                )
                 let attachmentDatas = backfillAttemptResults.map { attemptResult -> SSKProtoSyncMessageAttachmentBackfillResponseAttachmentData in
                     let attachmentDataBuilder = SSKProtoSyncMessageAttachmentBackfillResponseAttachmentData.builder()
                     switch attemptResult {
-                    case .success(let attachmentProto):
-                        attachmentDataBuilder.setAttachment(attachmentProto)
+                    case .success(let referencedAttachment):
+                        if
+                            let attachmentProto = incrementalMacLimiter.buildProto(
+                                referencedAttachment: referencedAttachment,
+                            )
+                        {
+                            attachmentDataBuilder.setAttachment(attachmentProto)
+                        } else {
+                            owsFailDebug(
+                                "Failed to get proto for sending after successful upload!",
+                                logger: logger,
+                            )
+                            attachmentDataBuilder.setStatus(.terminalError)
+                        }
                     case .failure(is BackedUpAttachmentMissingLocalFileError):
                         attachmentDataBuilder.setStatus(.pending)
                     case .failure(let error) where error.isRetryable:
@@ -692,7 +706,7 @@ extension MessageSenderJobQueue: AttachmentBackfillManager.AttachmentBackfillSyn
 // MARK: -
 
 private extension PrefixedLogger {
-    func suffixed(inboundRequestRecordId: AttachmentBackfillInboundRequestRecord.IDType) -> PrefixedLogger {
+    func suffixed(inboundRequestRecordId: AttachmentBackfillInboundRequestRecord.RowId) -> PrefixedLogger {
         return suffixed(with: "[ID:\(inboundRequestRecordId)]")
     }
 }

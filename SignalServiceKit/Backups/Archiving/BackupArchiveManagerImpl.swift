@@ -12,7 +12,6 @@ public enum BackupImportError: Error {
 
 public class BackupArchiveManagerImpl: BackupArchiveManager {
     public enum Constants {
-        fileprivate static let keyValueStoreCollectionName = "MessageBackupManager"
         fileprivate static let keyValueStoreRestoreStateKey = "keyValueStoreRestoreStateKey"
         fileprivate static let keyValueStoreEstimatedSizeKey = "keyValueStoreEstimatedSizeKey"
         fileprivate static let keyValueStoreNeedForwardSecrecyTokenFetchKey = "keyValueStoreNeedForwardSecrecyTokenFetchKey"
@@ -41,6 +40,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let backupStickerPackDownloadStore: BackupStickerPackDownloadStore
     private let callLinkRecipientArchiver: BackupArchiveCallLinkRecipientArchiver
     private let chatArchiver: BackupArchiveChatArchiver
+    private let chatFolderArchiver: BackupArchiveChatFolderArchiver
     private let chatItemArchiver: BackupArchiveChatItemArchiver
     private let contactRecipientArchiver: BackupArchiveContactRecipientArchiver
     private let databaseChangeObserver: DatabaseChangeObserver
@@ -54,7 +54,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     private let fullTextSearchIndexer: BackupArchiveFullTextSearchIndexer
     private let groupRecipientArchiver: BackupArchiveGroupRecipientArchiver
     private let jsonLinesStreamProvider: BackupArchiveJsonLinesStreamProvider
-    private let kvStore: KeyValueStore
+    private let kvStore: NewKeyValueStore
     private let libsignalNet: LibSignalClient.Net
     private let localStorage: AccountKeyStore
     private let localRecipientArchiver: BackupArchiveLocalRecipientArchiver
@@ -85,6 +85,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         backupStickerPackDownloadStore: BackupStickerPackDownloadStore,
         callLinkRecipientArchiver: BackupArchiveCallLinkRecipientArchiver,
         chatArchiver: BackupArchiveChatArchiver,
+        chatFolderArchiver: BackupArchiveChatFolderArchiver,
         chatItemArchiver: BackupArchiveChatItemArchiver,
         contactRecipientArchiver: BackupArchiveContactRecipientArchiver,
         databaseChangeObserver: DatabaseChangeObserver,
@@ -125,6 +126,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.backupStickerPackDownloadStore = backupStickerPackDownloadStore
         self.callLinkRecipientArchiver = callLinkRecipientArchiver
         self.chatArchiver = chatArchiver
+        self.chatFolderArchiver = chatFolderArchiver
         self.chatItemArchiver = chatItemArchiver
         self.contactRecipientArchiver = contactRecipientArchiver
         self.databaseChangeObserver = databaseChangeObserver
@@ -138,7 +140,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         self.fullTextSearchIndexer = fullTextSearchIndexer
         self.groupRecipientArchiver = groupRecipientArchiver
         self.jsonLinesStreamProvider = jsonLinesStreamProvider
-        self.kvStore = KeyValueStore(collection: Constants.keyValueStoreCollectionName)
+        self.kvStore = NewKeyValueStore(collection: "MessageBackupManager")
         self.libsignalNet = libsignalNet
         self.localStorage = localStorage
         self.localRecipientArchiver = localRecipientArchiver
@@ -295,11 +297,11 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                     throw error
                 }
 
-                await db.awaitableWrite {
-                    kvStore.setBool(
+                await db.awaitableWrite { tx in
+                    kvStore.writeValue(
                         false,
-                        key: Constants.keyValueStoreNeedForwardSecrecyTokenFetchKey,
-                        transaction: $0,
+                        forKey: Constants.keyValueStoreNeedForwardSecrecyTokenFetchKey,
+                        tx: tx,
                     )
                 }
             }
@@ -320,10 +322,11 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             nonceStore: backupNonceMetadataStore,
         )
 
-        let estimatedUncompressedSize = db.read {
-            kvStore.getUInt64(
-                Constants.keyValueStoreEstimatedSizeKey,
-                transaction: $0,
+        let estimatedUncompressedSize = db.read { tx in
+            return kvStore.fetchValue(
+                UInt64.self,
+                forKey: Constants.keyValueStoreEstimatedSizeKey,
+                tx: tx,
             )
         }
 
@@ -357,10 +360,10 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         )
 
         await db.awaitableWrite { tx in
-            kvStore.setUInt64(
+            kvStore.writeValue(
                 UInt64(safeCast: metadata.uncompressedDataLength),
-                key: Constants.keyValueStoreEstimatedSizeKey,
-                transaction: tx,
+                forKey: Constants.keyValueStoreEstimatedSizeKey,
+                tx: tx,
             )
         }
 
@@ -801,6 +804,20 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                 throw BackupError()
             }
 
+            let chatFolderArchiveResult = try chatFolderArchiver.archiveChatFolders(
+                stream: stream,
+                context: recipientArchivingContext,
+            )
+            switch chatFolderArchiveResult {
+            case .success:
+                break
+            case .partialSuccess(let partialFailures):
+                errors.append(contentsOf: partialFailures)
+            case .completeFailure(let error):
+                errors.append(error)
+                throw BackupError()
+            }
+
             try stream.closeFileStream()
 
             logger.info("Finished exporting backup")
@@ -833,11 +850,11 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     // MARK: - Import
 
     public func backupRestoreState(tx: DBReadTransaction) -> BackupRestoreState {
-        let raw = kvStore.getInt(
-            Constants.keyValueStoreRestoreStateKey,
-            defaultValue: 0,
-            transaction: tx,
-        )
+        let raw = kvStore.fetchValue(
+            Int64.self,
+            forKey: Constants.keyValueStoreRestoreStateKey,
+            tx: tx,
+        ) ?? 0
         guard let value = BackupRestoreState(rawValue: raw) else {
             owsFailDebug("Unrecognized state!")
             return .none
@@ -921,10 +938,10 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         )
 
         await db.awaitableWrite { tx in
-            kvStore.setInt(
+            kvStore.writeValue(
                 BackupRestoreState.finalized.rawValue,
-                key: Constants.keyValueStoreRestoreStateKey,
-                transaction: tx,
+                forKey: Constants.keyValueStoreRestoreStateKey,
+                tx: tx,
             )
         }
     }
@@ -1091,6 +1108,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             struct Contexts {
                 let accountData: BackupArchive.AccountDataRestoringContext
                 let chat: BackupArchive.ChatRestoringContext
+                let chatFolder: BackupArchiveChatFolderArchiver.RestoringContext
                 var chatItem: BackupArchive.ChatItemRestoringContext
                 let customChatColor: BackupArchive.CustomChatColorRestoringContext
                 let recipient: BackupArchive.RecipientRestoringContext
@@ -1132,6 +1150,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                         isPrimaryDevice: isPrimaryDevice,
                         tx: tx,
                     )
+                    chatFolder = BackupArchiveChatFolderArchiver.RestoringContext(recipientContext: recipient)
                     chat = BackupArchive.ChatRestoringContext(
                         customChatColorContext: customChatColor,
                         recipientContext: recipient,
@@ -1359,10 +1378,15 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
                             // Notification profiles are unsupported on iOS and
                             // we do not even round trip them per spec.
                             break
-                        case .chatFolder:
-                            // Chat folders are unsupported on iOS and
-                            // we do not even round trip them per spec.
-                            break
+                        case .chatFolder(let proto):
+                            switch chatFolderArchiver.restore(proto, context: contexts.chatFolder) {
+                            case .success:
+                                break
+                            case .unrecognizedEnum(let error):
+                                frameErrors.append(error)
+                            case .partialRestore(let errors), .failure(let errors):
+                                frameErrors.append(contentsOf: errors)
+                            }
                         case .favoriteStickerList(let backupProtoFavoriteStickerList):
                             let favoriteStickerResult = favoriteStickerArchiver.restore(
                                 backupProtoFavoriteStickerList,
@@ -1415,10 +1439,10 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
             try fullTextSearchIndexer.scheduleMessagesJob(tx: tx)
 
             // Record that we've restored a Backup!
-            kvStore.setInt(
+            kvStore.writeValue(
                 BackupRestoreState.unfinalized.rawValue,
-                key: Constants.keyValueStoreRestoreStateKey,
-                transaction: tx,
+                forKey: Constants.keyValueStoreRestoreStateKey,
+                tx: tx,
             )
 
             // Populate "last Backup" details, since otherwise they'll be blank
@@ -1593,19 +1617,19 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
     // MARK: -
 
     public func scheduleRestoreFromSVRBBeforeNextExport(tx: DBWriteTransaction) {
-        kvStore.setBool(
+        kvStore.writeValue(
             true,
-            key: Constants.keyValueStoreNeedForwardSecrecyTokenFetchKey,
-            transaction: tx,
+            forKey: Constants.keyValueStoreNeedForwardSecrecyTokenFetchKey,
+            tx: tx,
         )
     }
 
     private func needsRestoreFromSVRBBeforeRemoteExport(tx: DBReadTransaction) -> Bool {
-        kvStore.getBool(
-            Constants.keyValueStoreNeedForwardSecrecyTokenFetchKey,
-            defaultValue: false,
-            transaction: tx,
-        )
+        return kvStore.fetchValue(
+            Bool.self,
+            forKey: Constants.keyValueStoreNeedForwardSecrecyTokenFetchKey,
+            tx: tx,
+        ) ?? false
     }
 
     private func fetchRemoteSVRBForwardSecrecyToken(

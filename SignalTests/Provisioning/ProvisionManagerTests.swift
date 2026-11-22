@@ -104,7 +104,7 @@ public class ProvisioningManagerTests {
         // message, encrypt id, and send the envelope back to the new device
         _ = try await provisioningManager.provision(with: provisioningUrl, shouldLinkNSync: false)
         let (messageBody, _) = self.mockDeviceProvisioningService.provisionedDevices.removeFirst()
-        let provisionEnvelope = try ProvisioningProtos_ProvisionEnvelope(serializedBytes: messageBody)
+        let provisionEnvelope = try Signalservice_ProvisionEnvelope(serializedBytes: messageBody)
 
         // New device: take the received provisioning envelope and decrypts the
         // envelope.body using the envelope.publicKey and the new device keypair
@@ -113,7 +113,7 @@ public class ProvisioningManagerTests {
             data: provisionEnvelope.body,
             theirPublicKey: PublicKey(provisionEnvelope.publicKey),
         )
-        let provisionMessage = try LinkingProvisioningMessage(ProvisioningProtos_ProvisionMessage(serializedBytes: provisionMessageData))
+        let provisionMessage = try LinkingProvisioningMessage(Signalservice_ProvisionMessage(serializedBytes: provisionMessageData))
 
         // Validate that all the data in the decrypted envelope on the new device side matches the
         // values populated by the old device

@@ -193,7 +193,7 @@ private struct AvatarDefaultColorRecord: Codable, PersistableRecord, FetchableRe
 
     /// A ``SignalRecipient/id``, whose contact's default avatar color this
     /// record describes.
-    let recipientRowId: Int64?
+    let recipientRowId: SignalRecipient.RowId?
     /// A group ID, whose group's default avatar color this record describes.
     let groupId: Data?
     /// An index into the list of default avatar colors.
@@ -201,7 +201,7 @@ private struct AvatarDefaultColorRecord: Codable, PersistableRecord, FetchableRe
 
     var defaultColor: AvatarTheme { .forIndex(defaultColorIndex) }
 
-    init(recipientRowId: Int64, defaultColor: AvatarTheme) {
+    init(recipientRowId: SignalRecipient.RowId, defaultColor: AvatarTheme) {
         self.init(
             recipientRowId: recipientRowId,
             groupId: nil,
@@ -218,7 +218,7 @@ private struct AvatarDefaultColorRecord: Codable, PersistableRecord, FetchableRe
     }
 
     private init(
-        recipientRowId: Int64?,
+        recipientRowId: SignalRecipient.RowId?,
         groupId: Data?,
         defaultColor: AvatarTheme,
     ) {

@@ -428,13 +428,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat</string>
+			<string>צ׳אט %1$d</string>
 			<key>two</key>
-			<string>%1$d Chats</string>
+			<string>%1$d צ׳אטים</string>
 			<key>many</key>
-			<string>%1$d Chats</string>
+			<string>%1$d צ׳אטים</string>
 			<key>other</key>
-			<string>%1$d Chats</string>
+			<string>%1$d צ׳אטים</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_CHAT_TYPE_COUNT_%d</key>
@@ -448,13 +448,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Type</string>
+			<string>סוג צ׳אט %1$d</string>
 			<key>two</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d סוגי צ׳אטים</string>
 			<key>many</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d סוגי צ׳אטים</string>
 			<key>other</key>
-			<string>%1$d Chat Types</string>
+			<string>%1$d סוגי צ׳אטים</string>
 		</dict>
 	</dict>
 	<key>CHAT_FOLDERS_EXCLUDED_CHAT_COUNT_%d</key>
@@ -468,13 +468,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Chat Excluded</string>
+			<string>צ׳אט %1$d לא כלול</string>
 			<key>two</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d צ׳אטים לא כלולים</string>
 			<key>many</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d צ׳אטים לא כלולים</string>
 			<key>other</key>
-			<string>%1$d Chats Excluded</string>
+			<string>%1$d צ׳אטים לא כלולים</string>
 		</dict>
 	</dict>
 	<key>CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d</key>
@@ -2071,13 +2071,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This will remove the sticker pack. You can&apos;t add it again without a link or sticker message.</string>
+			<string>זה יסיר את חבילת הסטיקרים. לא תהיה לך אפשרות להוסיף אותה שוב בלי לינק או הודעת סטיקר.</string>
 			<key>two</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>זה יסיר את חבילות הסטיקרים. לא תהיה לך אפשרות להוסיף אותן שוב בלי לינק או הודעת סטיקר.</string>
 			<key>many</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>זה יסיר את חבילות הסטיקרים. לא תהיה לך אפשרות להוסיף אותן שוב בלי לינק או הודעת סטיקר.</string>
 			<key>other</key>
-			<string>This will remove the sticker packs. You can&apos;t add them again without a link or sticker message.</string>
+			<string>זה יסיר את חבילות הסטיקרים. לא תהיה לך אפשרות להוסיף אותן שוב בלי לינק או הודעת סטיקר.</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TITLE_%d</key>
@@ -2091,13 +2091,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Remove sticker pack?</string>
+			<string>להסיר חבילת סטיקרים %1$d?</string>
 			<key>two</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>להסיר %1$d חבילות סטיקרים?</string>
 			<key>many</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>להסיר %1$d חבילות סטיקרים?</string>
 			<key>other</key>
-			<string>Remove %1$d sticker packs?</string>
+			<string>להסיר %1$d חבילות סטיקרים?</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_REMOVE_TOAST_%d</key>
@@ -2111,13 +2111,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sticker pack removed</string>
+			<string>חבילת סטיקרים הוסרה</string>
 			<key>two</key>
-			<string>Sticker packs removed</string>
+			<string>חבילות סטיקרים הוסרו</string>
 			<key>many</key>
-			<string>Sticker packs removed</string>
+			<string>חבילות סטיקרים הוסרו</string>
 			<key>other</key>
-			<string>Sticker packs removed</string>
+			<string>חבילות סטיקרים הוסרו</string>
 		</dict>
 	</dict>
 	<key>STICKER_PACK_STICKER_COUNT_%d</key>
@@ -2151,13 +2151,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Selected</string>
+			<string>%1$d נבחרה</string>
 			<key>two</key>
-			<string>%1$d Selected</string>
+			<string>%1$d נבחרו</string>
 			<key>many</key>
-			<string>%1$d Selected</string>
+			<string>%1$d נבחרו</string>
 			<key>other</key>
-			<string>%1$d Selected</string>
+			<string>%1$d נבחרו</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

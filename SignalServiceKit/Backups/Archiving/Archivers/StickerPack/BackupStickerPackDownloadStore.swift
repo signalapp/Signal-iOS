@@ -64,7 +64,7 @@ struct BackupStickerPackDownloadStore {
 
     /// Remove the record from the download queue.
     func removeRecordFromQueue(
-        recordId: QueuedBackupStickerPackDownload.IDType,
+        recordId: QueuedBackupStickerPackDownload.RowId,
         tx: DBWriteTransaction,
     ) {
         failIfThrows {

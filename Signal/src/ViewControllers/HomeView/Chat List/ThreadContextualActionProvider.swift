@@ -73,16 +73,17 @@ extension ThreadContextualActionProvider where Self: UIViewController {
 
     // MARK: -
 
-    func contextMenuActions(threadViewModel: ThreadViewModel) -> [UIAction] {
+    func contextMenuActions(threadViewModel: ThreadViewModel) -> [UIMenuElement] {
         AssertIsOnMainThread()
 
-        var actions: [ThreadContextualAction] = [
+        let actions: [ThreadContextualAction] = [
             readStateContextualAction(threadViewModel: threadViewModel),
             muteStateContextualAction(threadViewModel: threadViewModel),
             pinnedStateContextualAction(threadViewModel: threadViewModel),
             archiveStateContextualAction(threadViewModel: threadViewModel),
         ]
 
+        var destructiveActions: [ThreadContextualAction] = []
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         if
             let groupThread = threadViewModel.threadRecord as? TSGroupThread,
@@ -90,7 +91,7 @@ extension ThreadContextualActionProvider where Self: UIViewController {
             let localAci = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci,
             groupModel.groupMembership.isLocalUserFullOrInvitedMember
         {
-            actions.append(leaveGroupContextualAction(
+            destructiveActions.append(leaveGroupContextualAction(
                 threadViewModel: threadViewModel,
                 groupModel: groupModel,
                 groupThread: groupThread,
@@ -98,11 +99,95 @@ extension ThreadContextualActionProvider where Self: UIViewController {
             ))
         }
 
-        actions.append(deleteContextualAction(threadViewModel: threadViewModel))
+        destructiveActions.append(deleteContextualAction(threadViewModel: threadViewModel))
 
-        return actions.map { action in
+        let allActions = actions + destructiveActions
+
+        var menuElements: [UIMenuElement] = allActions.map { action in
             makeUIAction(threadContextualAction: action)
         }
+        if let folderMenu = chatFolderMenu(thread: threadViewModel.threadRecord) {
+            // Add it right before the destructive actions
+            menuElements.insert(folderMenu, at: actions.count)
+        }
+        return menuElements
+    }
+
+    private func chatFolderMenu(thread: TSThread) -> UIMenu? {
+        guard
+            BuildFlags.chatFolders,
+            thread is TSContactThread || thread is TSGroupThread,
+            let threadRowId = thread.sqliteRowId
+        else {
+            return nil
+        }
+
+        let db = DependenciesBridge.shared.db
+        let chatFolderManager = DependenciesBridge.shared.chatFolderManager
+        let folders = db.read { tx in
+            chatFolderManager.fetchFoldersForDisplay(tx: tx).filter { $0.folderType == .custom }
+        }
+        var actions: [UIMenuElement] = folders.map { folder in
+            UIAction(title: folder.displayName, image: .folder) { [weak self] _ in
+                let folderName: String? = db.write { tx in
+                    guard
+                        let folder = chatFolderManager.fetch(chatFolderId: folder.chatFolderId, tx: tx),
+                        !folder.isDeleted
+                    else {
+                        return nil
+                    }
+                    var draft = folder.draft
+                    draft.excludedThreadRowIds.remove(threadRowId)
+                    draft.includedThreadRowIds.insert(threadRowId)
+                    chatFolderManager.update(chatFolderId: folder.chatFolderId, draft: draft, tx: tx)
+                    return folder.displayName
+                }
+                if let folderName {
+                    self?.presentAddedToFolderToast(folderName: folderName)
+                }
+            }
+        }
+        actions.append(UIAction(
+            title: ChatFolderStrings.createFolder,
+            image: .plus,
+        ) { [weak self] _ in
+            guard let self else { return }
+            let editor = ChatFolderEditorViewController(
+                newDraft: ChatFolderDraft(includedThreadRowIds: [threadRowId]),
+            ) { [weak self] folderName in
+                self?.presentAddedToFolderToast(folderName: folderName)
+            }
+            presentFormSheet(OWSNavigationController(rootViewController: editor), animated: true)
+        })
+
+        return UIMenu(
+            title: OWSLocalizedString(
+                "CHAT_FOLDERS_ADD_TO_FOLDER",
+                comment: "Chat context menu action that opens the folder selection submenu.",
+            ),
+            image: .folder,
+            children: [UIMenu(
+                title: OWSLocalizedString(
+                    "CHAT_FOLDERS_CHOOSE_FOLDER",
+                    comment: "Header of the chat context submenu for choosing a folder.",
+                ),
+                options: .displayInline,
+                children: actions,
+            )],
+        )
+    }
+
+    private func presentAddedToFolderToast(folderName: String) {
+        presentToast(
+            text: String.nonPluralLocalizedStringWithFormat(
+                OWSLocalizedString(
+                    "CHAT_FOLDERS_ADDED_TO_FOLDER_TOAST_FORMAT",
+                    comment: "Toast shown after adding a chat to a folder. Embeds {{ folder name }}.",
+                ),
+                folderName,
+            ),
+            image: .folder,
+        )
     }
 
     private func makeUIAction(
@@ -376,29 +461,7 @@ extension ThreadContextualActionProvider where Self: UIViewController {
     private func muteThreadWithSelection(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
 
-        let alert = ActionSheetController(title: OWSLocalizedString(
-            "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE",
-            comment: "Title for the mute action sheet",
-        ))
-        let muteManager = ConversationMuteManager()
-        for option in ConversationMuteChoice.Option.all {
-            alert.addAction(ActionSheetAction(title: option.title, style: .default) { [weak self] _ in
-                switch option {
-                case .preset(let preset):
-                    muteManager.mute(threadViewModel, choice: .preset(preset))
-                case .forever:
-                    muteManager.mute(threadViewModel, choice: .forever)
-                case .custom:
-                    let sheet = MuteUntilSheet { endDate in
-                        muteManager.mute(threadViewModel, choice: .custom(endDate: endDate))
-                    }
-                    self?.present(sheet, animated: true)
-                }
-            })
-        }
-        alert.addAction(OWSActionSheets.cancelAction)
-
-        presentActionSheet(alert)
+        ConversationMuteManager().presentMuteActionSheet(for: [threadViewModel], from: self)
     }
 
     private func unmuteThread(threadViewModel: ThreadViewModel) {

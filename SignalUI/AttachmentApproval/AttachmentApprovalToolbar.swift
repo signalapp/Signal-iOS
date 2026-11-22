@@ -17,6 +17,7 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
         var canToggleViewOnce = true
         var canChangeMediaQuality = true
         var canSaveMedia = false
+        var isMuteButtonVisible = false
         var canToggleMute = false
         var isMuted = false
         var proceedButtonIcon: ProceedButtonIcon = .send
@@ -330,12 +331,13 @@ class AttachmentApprovalToolbar: UIView, MediaCaptionToolbarDelegate {
             using: animator,
         )
         mediaToolbar.setIsMuted(configuration.isMuted, using: animator)
+        mediaToolbar.muteButton.isEnabled = configuration.canToggleMute
         let availableButtons: MediaToolbar.AvailableButtons = {
             guard let currentAttachmentItem else {
                 return []
             }
             var buttons: MediaToolbar.AvailableButtons = []
-            if configuration.canToggleMute {
+            if configuration.isMuteButtonVisible {
                 buttons.insert(.mute)
             }
             if configuration.canSaveMedia {

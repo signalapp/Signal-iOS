@@ -6,6 +6,7 @@
 import CommonCrypto
 import CryptoKit
 import Foundation
+import LibSignalClient
 import System
 
 public enum Cryptography {
@@ -22,6 +23,41 @@ public enum Cryptography {
             }
         } while bytesRead > 0
         return Data(sha256.finalize())
+    }
+
+    /// Computes the incremental mac of an encrypted attachment file, which
+    /// allows validating the file in chunks (e.g., for streaming).
+    static func computeIncrementalMacOfEncryptedFile(
+        at url: URL,
+        encryptedLength: UInt32,
+        attachmentKey: AttachmentKey,
+    ) throws -> Attachment.IncrementalMacInfo {
+        let macContext = try IncrementalMacContext(
+            key: attachmentKey.authenticationKey,
+            chunkSize: .chunkOf(encryptedLength),
+        )
+
+        let file = try LocalFileHandle(url: url)
+        var buffer = Data(count: Constants.diskPageSize)
+        var totalBytesRead: UInt64 = 0
+        var bytesRead: Int
+        repeat {
+            bytesRead = try file.read(into: &buffer)
+            if bytesRead > 0 {
+                try macContext.update(buffer.prefix(bytesRead))
+                totalBytesRead += UInt64(bytesRead)
+            }
+        } while
+            bytesRead > 0
+
+        guard totalBytesRead == encryptedLength else {
+            throw OWSAssertionError("Encrypted file length mismatch!")
+        }
+
+        return Attachment.IncrementalMacInfo(
+            mac: try macContext.finalize(),
+            chunkSize: macContext.chunkSizeInBytes,
+        )
     }
 
     static func decrypt(encryptedData: Data, key: Data, iv: Data) throws -> Data {

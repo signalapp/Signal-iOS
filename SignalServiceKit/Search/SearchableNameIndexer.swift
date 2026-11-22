@@ -133,13 +133,13 @@ class SearchableNameIndexerImpl: SearchableNameIndexer {
                     identifier = .signalAccount(signalAccountId)
                 } else if let userProfileId = (row[2] as Int64?) {
                     identifier = .userProfile(userProfileId)
-                } else if let signalRecipientId = (row[3] as Int64?) {
+                } else if let signalRecipientId = (row[3] as SignalRecipient.RowId?) {
                     identifier = .signalRecipient(signalRecipientId)
                 } else if let usernameLookupRecordId = (row[4] as Data?).flatMap({ try? Aci.parseFrom(serviceIdBinary: $0) }) {
                     identifier = .usernameLookupRecord(usernameLookupRecordId)
-                } else if let nicknameRecordRecipientId = (row[5] as Int64?) {
+                } else if let nicknameRecordRecipientId = (row[5] as SignalRecipient.RowId?) {
                     identifier = .nicknameRecord(recipientRowId: nicknameRecordRecipientId)
-                } else if let aciContactShareNameRecipientId = (row[6] as Int64?) {
+                } else if let aciContactShareNameRecipientId = (row[6] as SignalRecipient.RowId?) {
                     identifier = .aciContactShareName(recipientRowId: aciContactShareNameRecipientId)
                 } else {
                     owsFailDebug("Couldn't find identifier for SearchableName")
@@ -262,10 +262,10 @@ public enum IndexableNameIdentifier {
     case tsThread(Int64)
     case signalAccount(Int64)
     case userProfile(Int64)
-    case signalRecipient(Int64)
+    case signalRecipient(SignalRecipient.RowId)
     case usernameLookupRecord(Aci)
-    case nicknameRecord(recipientRowId: Int64)
-    case aciContactShareName(recipientRowId: Int64)
+    case nicknameRecord(recipientRowId: SignalRecipient.RowId)
+    case aciContactShareName(recipientRowId: SignalRecipient.RowId)
 
     fileprivate func columnNameAndValue() -> (IdentifierColumnName, DatabaseValue) {
         switch self {

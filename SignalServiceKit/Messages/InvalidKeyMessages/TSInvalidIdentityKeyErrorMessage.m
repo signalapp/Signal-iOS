@@ -3,7 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+@import Foundation;
+
 #import "TSInvalidIdentityKeyErrorMessage.h"
+#import "OWSAsserts.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

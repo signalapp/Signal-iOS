@@ -78,11 +78,12 @@ class EmojiPickerCollectionView: UICollectionView {
         layout.minimumInteritemSpacing = EmojiPickerCollectionView.minimumSpacing
         layout.sectionInset = UIEdgeInsets(top: 0, leading: EmojiPickerCollectionView.margins, bottom: 0, trailing: EmojiPickerCollectionView.margins)
 
-        let messageReacts: [OWSReaction]
+        let messageReacts: [ReactionRecord]
         (messageReacts, recentEmoji, allSendableEmojiByCategory) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            let messageReacts: [OWSReaction]
+            let messageReacts: [ReactionRecord]
             if let message {
-                messageReacts = ReactionFinder(uniqueMessageId: message.uniqueId).allReactions(transaction: transaction)
+                let messageId = message.sqliteRowId.owsFailUnwrap("must exist")
+                messageReacts = ReactionFinder(messageId: messageId).allReactions(tx: transaction)
             } else {
                 messageReacts = []
             }

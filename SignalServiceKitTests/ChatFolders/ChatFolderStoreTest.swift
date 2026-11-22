@@ -559,7 +559,7 @@ final class ChatFolderStoreTest {
     func testMembershipForAnUnknownRecipientOrGroupIsRejected() {
         let folder = insertFolder(name: "Work", position: 1)
         inMemoryDB.write { tx in
-            for chat: ChatFolderChatRecord.Chat in [.contact(recipientRowId: 999_999), .group(groupRowId: 999_999)] {
+            for chat: ChatFolderChatRecord.Chat in [.contact(recipientRowId: .constantForTesting(999_999)), .group(groupRowId: .constantForTesting(999_999))] {
                 let record = ChatFolderChatRecord(
                     chatFolderRowId: folder.id,
                     chat: chat,
@@ -579,7 +579,7 @@ final class ChatFolderStoreTest {
         guard case .group(let groupRowId) = insertGroup() else {
             fatalError("not a group")
         }
-        let invalidColumns: [(Int64?, Int64?)] = [
+        let invalidColumns: [(SignalRecipient.RowId?, GroupRecord.RowId?)] = [
             (nil, nil),
             (aliceRowId, groupRowId),
         ]

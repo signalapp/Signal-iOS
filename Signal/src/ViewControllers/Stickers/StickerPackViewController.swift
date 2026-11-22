@@ -222,7 +222,16 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
 
     private let navBarDefaultPackImage = UIImageView(image: .official)
 
-    private let stickerCollectionView = StickerPackCollectionView(placeholderColor: .ows_blackAlpha60, shouldShowSectionHeaders: false, allowContextMenus: false)
+    private lazy var stickerCollectionView: StickerPackCollectionView = {
+        let isInstalled = db.read { tx in
+            stickerManager.isStickerPackInstalled(stickerPackInfo: stickerPackInfo, transaction: tx)
+        }
+        return StickerPackCollectionView(
+            placeholderColor: .ows_blackAlpha60,
+            shouldShowSectionHeaders: false,
+            contextMenuActions: isInstalled ? [.sendSticker, .favorite, .unfavorite] : [.sendSticker, .unfavorite],
+        )
+    }()
 
     private func updateCollectionViewContentInset() {
         stickerCollectionView.layoutIfNeeded()
@@ -559,28 +568,39 @@ class StickerPackViewController: OWSViewController, StickerPackDataSourceDelegat
         present(stickerDetailsSheet, animated: true)
     }
 
-    func stickerPreviewHostView() -> UIView? {
-        return view
-    }
-
-    func stickerPreviewHasOverlay() -> Bool {
-        return true
-    }
+    // MARK: - StickerPickerContextMenuDelegate
 
     func viewStickerPack(_ stickerPackInfo: SignalServiceKit.StickerPackInfo) {
-        // StickerPackViewController doesn't use sticker context menus.
+        // We are already in the sticker pack, so this should never be called.
+        owsFailDebug("Should never be called!")
     }
 
-    func scrollToFavoritedSticker(_ stickerInfo: StickerInfo) {
-        // StickerPackViewController doesn't use sticker context menus.
+    func stickerFavoriteDidChange(_ stickerInfo: StickerInfo, change: StickerFavoriteChange) {
+        switch change {
+        case .added:
+            presentToast(
+                text: StickerToastStrings.addedToFavorites,
+                image: .favorite,
+            )
+        case .removed:
+            presentToast(
+                text: StickerToastStrings.removedFromFavorites,
+                image: .favoriteSlash,
+            )
+        case .limitReached:
+            presentToast(
+                text: StickerToastStrings.favoriteLimitReached,
+            )
+        }
     }
 
     func sendSticker(_ stickerMetadata: any StickerMetadata) {
-        // StickerPackViewController doesn't use sticker context menus.
+        self.sendStickerFlow = SendStickerFlow(stickerMetadata: stickerMetadata, stickerManager: stickerManager, db: db)
+        self.sendStickerFlow?.present(from: self)
     }
 
     func queueStickerPackForSending(_ stickerPackInfo: StickerPackInfo) {
-        // StickerPackViewController doesn't use sticker context menus.
+        // Section header context menus are not implemented.
     }
 
     // MARK: - SendMessageDelegate
