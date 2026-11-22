@@ -7,6 +7,7 @@ import Foundation
 
 enum OWSFrontingHost {
     case fastly
+    case fastlyChina
     case googleEgypt
     case googleUae
     case googleOman
@@ -25,7 +26,7 @@ enum OWSFrontingHost {
         switch self {
         case .googleEgypt, .googleUae, .googleOman, .googlePakistan, .googleQatar, .googleUzbekistan, .googleVenezuela, .default:
             return PinningPolicy.google.securityPolicy
-        case .fastly:
+        case .fastly, .fastlyChina:
             return PinningPolicy.fastly.securityPolicy
         }
     }
@@ -34,7 +35,7 @@ enum OWSFrontingHost {
         switch self {
         case .googleEgypt, .googleUae, .googleOman, .googlePakistan, .googleQatar, .googleUzbekistan, .googleVenezuela, .`default`:
             return TSConstants.censorshipGReflectorHost
-        case .fastly:
+        case .fastly, .fastlyChina:
             return TSConstants.censorshipFReflectorHost
         }
     }
@@ -43,7 +44,7 @@ enum OWSFrontingHost {
         switch self {
         case .googleEgypt, .googleUae, .googleOman, .googlePakistan, .googleQatar, .googleUzbekistan, .googleVenezuela, .`default`:
             return true
-        case .fastly:
+        case .fastly, .fastlyChina:
             return false
         }
     }
@@ -57,6 +58,8 @@ enum OWSFrontingHost {
         switch self {
         case .fastly:
             Self.fastlySniHeaders
+        case .fastlyChina:
+            Self.fastlyChinaSniHeaders
         case .googleEgypt:
             Self.googleEgyptSniHeaders
         case .googleUae:
@@ -77,6 +80,7 @@ enum OWSFrontingHost {
     }
 
     private static let fastlySniHeaders = ["github.githubassets.com", "pinterest.com", "www.redditstatic.com"]
+    private static let fastlyChinaSniHeaders = ["github.githubassets.com"]
     private static let googleCommonSniHeaders = [
         "www.google.com",
         "android.clients.google.com",
