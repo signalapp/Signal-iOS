@@ -550,7 +550,7 @@ class PlayerProgressView: UIView {
     init() {
         super.init(frame: .zero)
 
-        semanticContentAttribute = .playback
+        semanticContentAttribute = CurrentAppContext().isRTL ? .forceRightToLeft : .forceLeftToRight
 
         let selfOrVisualEffectContentView: UIView
         if #available(iOS 26, *) {
