@@ -395,10 +395,13 @@ enum VideoTranscoding {
 
     private static func describe(track: AVAssetTrack) async throws -> String {
         let mediaType = track.mediaType
-        let formats = try await track.load(.formatDescriptions)
+        let formats: [CMFormatDescription]
+        let isEnabled: Bool
+        (formats, isEnabled) = try await track.load(.formatDescriptions, .isEnabled)
         var parts = [
             "id: \(track.trackID)",
             "type: \(mediaType.rawValue)",
+            "enabled: \(isEnabled)",
         ]
 
         switch mediaType {
@@ -440,9 +443,11 @@ enum VideoTranscoding {
             let isDecodable: Bool
             let dataRate: Float
             (isDecodable, dataRate) = try await track.load(.isDecodable, .estimatedDataRate)
+            let fallbacks = try await track.loadAssociatedTracks(ofType: .audioFallback)
             parts += [
                 "decodable: \(isDecodable)",
                 "dataRate: \(dataRate)",
+                "fallback: \(fallbacks.map { $0.trackID })",
             ]
         default:
             break
@@ -517,6 +522,7 @@ enum VideoTranscoding {
             guard let track = try await Self.bestTrack(tracks) else {
                 return nil
             }
+            VideoTranscoding.logger.info("using \(trackType) track \(track.trackID)")
 
             let readerSettings: [String: Any]?
             switch trackType {
