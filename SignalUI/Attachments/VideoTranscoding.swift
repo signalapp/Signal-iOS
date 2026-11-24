@@ -65,6 +65,8 @@ enum VideoTranscoding {
 
     // MARK: -
 
+    private static let logger = PrefixedLogger(prefix: "[VideoTransc]")
+
     /// Transcodes the given `asset` to `outputUrl` with the given settings.
     ///
     /// - Parameter settings
@@ -76,6 +78,8 @@ enum VideoTranscoding {
         outputUrl: URL,
         progress: Progress?,
     ) async throws {
+        await logSource(asset: asset)
+
         let duration = try await asset.load(.duration)
         guard let settings = settingChoices.first(where: { $0.maxAllowedDuration >= duration.seconds }) else {
             throw VideoTooLongForSettingsError(
@@ -115,6 +119,8 @@ enum VideoTranscoding {
             from: try await asset.load(.metadata),
             filteredBy: .forSharing(),
         )
+        let metadataKeys = writer.metadata.map { $0.identifier?.rawValue ?? "?" }
+        logger.info("copying metadata: \(metadataKeys)")
 
         guard
             let videoTrack = try await TrackPipe(
@@ -247,10 +253,12 @@ enum VideoTranscoding {
         }
 
         if !reader.startReading() {
+            logger.warn("startReading failed; \(describeState(reader: reader, writer: writer))")
             continuation.resume(throwing: reader.error ?? IndeterminateReaderError(status: reader.status))
             return
         }
         if !writer.startWriting() {
+            logger.warn("startWriting failed; \(describeState(reader: reader, writer: writer))")
             continuation.resume(throwing: writer.error ?? IndeterminateWriterError(status: writer.status))
             return
         }
@@ -259,6 +267,10 @@ enum VideoTranscoding {
         // Capture a closure for checking the final state of the reader and writer.
         // The `error` and `status` properties are specifically marked as thread-safe.
         let checkFinalErrors = { () throws in
+            if reader.error != nil || writer.error != nil {
+                logger.warn("ended with errors; \(describeState(reader: reader, writer: writer))")
+            }
+
             // Prefer errors in the reader over errors in the writer...
             if let error = reader.error {
                 throw error
@@ -318,28 +330,158 @@ enum VideoTranscoding {
 
         var videoDone = false
         var audioDone = audioTrack == nil
-        videoTrack.copySamples(serialQueue: serialQueue, progress: readProgress) { success in
-            if success {
+        videoTrack.copySamples(serialQueue: serialQueue, progress: readProgress) { result in
+            switch result {
+            case .finished:
                 videoDone = true
                 if audioDone {
                     finishWriting()
                 }
-            } else {
+            case .halted(let reason):
+                let state = describeState(reader: reader, writer: writer)
+                logger.warn("video halted: \(reason); \(state)")
                 cancelWriterAndReader.perform()
             }
         }
         if let audioTrack {
-            audioTrack.copySamples(serialQueue: serialQueue, progress: nil) { success in
-                if success {
+            audioTrack.copySamples(serialQueue: serialQueue, progress: nil) { result in
+                switch result {
+                case .finished:
                     audioDone = true
                     if videoDone {
                         finishWriting()
                     }
-                } else {
+                case .halted(let reason):
+                    let state = describeState(reader: reader, writer: writer)
+                    logger.warn("audio halted: \(reason); \(state)")
                     cancelWriterAndReader.perform()
                 }
             }
         }
+    }
+
+    // MARK: - Logging
+
+    private static func describeState(reader: AVAssetReader, writer: AVAssetWriter) -> String {
+        let readerError = reader.error.map { "\($0)" } ?? "nil"
+        let writerError = writer.error.map { "\($0)" } ?? "nil"
+        return "reader: (status: \(reader.status.rawValue), error: \(readerError)), "
+            + "writer: (status: \(writer.status.rawValue), error: \(writerError))"
+    }
+
+    private static func logSource(asset: AVAsset) async {
+        do {
+            let description = try await describe(asset: asset)
+            logger.info("source: \(description)")
+        } catch {
+            logger.warn("couldn't describe source: \(error)")
+        }
+    }
+
+    private static func describe(asset: AVAsset) async throws -> String {
+        let duration: CMTime
+        let tracks: [AVAssetTrack]
+        (duration, tracks) = try await asset.load(.duration, .tracks)
+        var parts = [
+            "type: \(type(of: asset))",
+            "duration: \(duration.seconds)s",
+        ]
+        for track in tracks {
+            let trackDescription = try await describe(track: track)
+            parts.append("[\(trackDescription)]")
+        }
+        return parts.joined(separator: ", ")
+    }
+
+    private static func describe(track: AVAssetTrack) async throws -> String {
+        let mediaType = track.mediaType
+        let formats = try await track.load(.formatDescriptions)
+        var parts = [
+            "id: \(track.trackID)",
+            "type: \(mediaType.rawValue)",
+        ]
+
+        switch mediaType {
+        case .video:
+            let isDecodable: Bool
+            let timeScale: CMTimeScale
+            let size: CGSize
+            let frameRate: Float
+            let transform: CGAffineTransform
+            let dataRate: Float
+            let characteristics: [AVMediaCharacteristic]
+            (
+                isDecodable,
+                timeScale,
+                size,
+                frameRate,
+                transform,
+                dataRate,
+                characteristics,
+            ) = try await track.load(
+                .isDecodable,
+                .naturalTimeScale,
+                .naturalSize,
+                .nominalFrameRate,
+                .preferredTransform,
+                .estimatedDataRate,
+                .mediaCharacteristics,
+            )
+            parts += [
+                "decodable: \(isDecodable)",
+                "timeScale: \(timeScale)",
+                "size: \(size)",
+                "fps: \(frameRate)",
+                "transform: \(transform)",
+                "dataRate: \(dataRate)",
+                "characteristics: \(characteristics.map { $0.rawValue })",
+            ]
+        case .audio:
+            let isDecodable: Bool
+            let dataRate: Float
+            (isDecodable, dataRate) = try await track.load(.isDecodable, .estimatedDataRate)
+            parts += [
+                "decodable: \(isDecodable)",
+                "dataRate: \(dataRate)",
+            ]
+        default:
+            break
+        }
+
+        parts += formats.map { describe(format: $0) }
+        return parts.joined(separator: ", ")
+    }
+
+    private static func describe(format: CMFormatDescription) -> String {
+        var parts = ["codec: \(fourCC(CMFormatDescriptionGetMediaSubType(format)))"]
+        if let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(format)?.pointee {
+            parts += [
+                "sampleRate: \(asbd.mSampleRate)",
+                "channels: \(asbd.mChannelsPerFrame)",
+            ]
+        }
+        if let layout = CMAudioFormatDescriptionGetChannelLayout(format, sizeOut: nil)?.pointee {
+            parts.append("layoutTag: 0x\(String(layout.mChannelLayoutTag, radix: 16))")
+        }
+
+        let extensionValueKeys: [CFString] = [
+            kCMFormatDescriptionExtension_BitsPerComponent,
+            kCMFormatDescriptionExtension_ColorPrimaries,
+            kCMFormatDescriptionExtension_TransferFunction,
+            kCMFormatDescriptionExtension_YCbCrMatrix,
+        ]
+        for key in extensionValueKeys {
+            if let value = CMFormatDescriptionGetExtension(format, extensionKey: key) {
+                parts.append("\(key): \(value)")
+            }
+        }
+
+        return "[\(parts.joined(separator: ", "))]"
+    }
+
+    private static func fourCC(_ code: FourCharCode) -> String {
+        let bytes = [24, 16, 8, 0].map { UInt8(truncatingIfNeeded: code >> $0) }
+        return String(bytes: bytes, encoding: .ascii) ?? "\(code)"
     }
 
     // MARK: -
@@ -424,12 +566,19 @@ enum VideoTranscoding {
                     max(2, Int((dimension / 2).rounded()) * 2)
                 }
 
+                let outputWidth = roundedToEven(outputSize.width)
+                let outputHeight = roundedToEven(outputSize.height)
+                VideoTranscoding.logger.info(
+                    "video output: \(outputWidth)x\(outputHeight), "
+                        + "\(settings.videoMegabitsPerSecond) Mbps, timeScale: \(timeScale)",
+                )
+
                 trackWriterInput = AVAssetWriterInput(
                     mediaType: .video,
                     outputSettings: [
                         AVVideoCodecKey: AVVideoCodecType.h264,
-                        AVVideoWidthKey: roundedToEven(outputSize.width),
-                        AVVideoHeightKey: roundedToEven(outputSize.height),
+                        AVVideoWidthKey: outputWidth,
+                        AVVideoHeightKey: outputHeight,
                         AVVideoCompressionPropertiesKey: [
                             AVVideoAverageBitRateKey: settings.videoMegabitsPerSecond * 1_000_000.0,
                             // These settings are subject to tweaking
@@ -491,11 +640,16 @@ enum VideoTranscoding {
             return winner
         }
 
+        enum CopyResult {
+            case finished
+            case halted(reason: String)
+        }
+
         @available(iOS, deprecated: 26, message: "should be replaced with an async implementation once available")
         func copySamples(
             serialQueue: DispatchQueue,
             progress: Progress?,
-            completion: @escaping (_ success: Bool) -> Void,
+            completion: @escaping (CopyResult) -> Void,
         ) {
             // This captures the reader and writer, but only to read the `status` properties of each,
             // which are documented as thread-safe.
@@ -505,7 +659,9 @@ enum VideoTranscoding {
                 case .reading, .completed: break
                 case .cancelled, .failed, .unknown: return false
                 @unknown default:
-                    Logger.warn("unrecognized AVAssetReaderStatus \(readerStatus); halting transcoding")
+                    VideoTranscoding.logger.warn(
+                        "unrecognized AVAssetReaderStatus \(readerStatus); halting transcoding",
+                    )
                     return false
                 }
 
@@ -514,7 +670,9 @@ enum VideoTranscoding {
                 case .writing: break
                 case .completed, .cancelled, .failed, .unknown: return false
                 @unknown default:
-                    Logger.warn("unrecognized AVAssetWriterStatus \(writerStatus); halting transcoding")
+                    VideoTranscoding.logger.warn(
+                        "unrecognized AVAssetWriterStatus \(writerStatus); halting transcoding",
+                    )
                     return false
                 }
 
@@ -523,9 +681,9 @@ enum VideoTranscoding {
 
             assertOnQueue(serialQueue)
             var completion: Optional = completion
-            func complete(_ success: Bool) {
+            func complete(_ result: CopyResult) {
                 assertOnQueue(serialQueue)
-                completion?(success)
+                completion?(result)
                 // Protect against multiple calls.
                 completion = nil
             }
@@ -534,29 +692,36 @@ enum VideoTranscoding {
             nonisolated(unsafe) let input = self.trackWriterInput
             nonisolated(unsafe) let output = self.trackReaderOutput
             var lastProgressUpdate: TimeInterval = 0
+            var appended = 0
+
+            func halt(_ reason: String) {
+                complete(.halted(reason: "\(reason) after \(appended) samples"))
+            }
 
             input.requestMediaDataWhenReady(on: serialQueue) {
                 while input.isReadyForMoreMediaData {
                     if !canProceed() {
-                        complete(false)
+                        halt("can't proceed")
                         return
                     }
 
                     guard let buf = output.copyNextSampleBuffer() else {
-                        let success = canProceed()
-                        if success {
+                        if canProceed() {
                             input.markAsFinished()
+                            complete(.finished)
+                        } else {
+                            halt("no more samples")
                         }
-                        complete(success)
                         return
                     }
 
                     if !input.append(buf) {
                         // This isn't a transient failure, so we have to conclude here.
                         // We'll check the issue later.
-                        complete(false)
+                        halt("append failed at \(buf.presentationTimeStamp.seconds)s")
                         return
                     }
+                    appended += 1
 
                     if let progress {
                         let time = buf.presentationTimeStamp.seconds
