@@ -2187,6 +2187,23 @@ class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     // MARK: -
 
+    fileprivate final class AccessibilityActivatableStackView: ManualStackView {
+        var accessibilityActivateHandler: (() -> Bool)?
+
+        override func accessibilityActivate() -> Bool {
+            if let accessibilityActivateHandler, accessibilityActivateHandler() {
+                return true
+            }
+            return super.accessibilityActivate()
+        }
+
+        override func reset() {
+            super.reset()
+
+            accessibilityActivateHandler = nil
+        }
+    }
+
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
     class CVComponentViewMessage: CVComponentView {
@@ -2207,7 +2224,17 @@ class CVComponentMessage: CVComponentBase, CVRootComponent {
         // Additionally, it contains:
         //
         // * Reactions view, which uses a custom layout block.
-        fileprivate let hInnerStack = ManualStackView(name: "message.hInnerStack")
+        fileprivate let hInnerStack = AccessibilityActivatableStackView(name: "message.hInnerStack")
+
+        /// Called when an assistive technology activates this message, e.g. when
+        /// double-tapping with VoiceOver. Return false to fall back to the default
+        /// behavior, which is to simulate a tap on the center of the message.
+        ///
+        /// This is cleared whenever the component view is reset or configured.
+        var accessibilityActivateHandler: (() -> Bool)? {
+            get { hInnerStack.accessibilityActivateHandler }
+            set { hInnerStack.accessibilityActivateHandler = newValue }
+        }
 
         fileprivate let avatarView = ConversationAvatarView(
             sizeClass: ConversationStyle.groupMessageAvatarSizeClass,

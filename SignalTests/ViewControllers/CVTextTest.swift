@@ -397,6 +397,103 @@ class CVTextTest: XCTestCase {
         }
         XCTAssertEqual(["tel:+16505555555"], values)
     }
+
+    private func accessibilityLinks(
+        fullText: CVTextValue,
+        truncatedText: CVTextValue? = nil,
+        hasPendingMessageRequest: Bool = false,
+        shouldAllowLinkification: Bool = true,
+        revealedSpoilerIds: Set<StyleId> = [],
+    ) -> [String] {
+        let displayableText = DisplayableText.testOnlyInit(fullContent: fullText, truncatedContent: truncatedText)
+        let interactionUniqueId = UUID().uuidString
+        let interactionIdentifier = InteractionSnapshotIdentifier(timestamp: 0, authorAci: nil)
+        let items = CVComponentBodyText.detectItems(
+            text: displayableText,
+            hasPendingMessageRequest: hasPendingMessageRequest,
+            shouldAllowLinkification: shouldAllowLinkification,
+            textWasTruncated: displayableText.isTextTruncated,
+            revealedSpoilerIds: revealedSpoilerIds,
+            interactionUniqueId: interactionUniqueId,
+            interactionIdentifier: interactionIdentifier,
+        )
+        return CVComponentBodyText.accessibilityLinkItems(
+            text: displayableText,
+            items: items,
+            hasPendingMessageRequest: hasPendingMessageRequest,
+            shouldAllowLinkification: shouldAllowLinkification,
+            textWasTruncated: displayableText.isTextTruncated,
+            revealedSpoilerIds: revealedSpoilerIds,
+            interactionUniqueId: interactionUniqueId,
+            interactionIdentifier: interactionIdentifier,
+        ).map { $0.url.absoluteString }
+    }
+
+    func testAccessibilityLinkItems() {
+        XCTAssertEqual([], accessibilityLinks(fullText: .text("no links")))
+        XCTAssertEqual(
+            ["https://signal.org"],
+            accessibilityLinks(fullText: .text("Check out https://signal.org it's great")),
+        )
+        XCTAssertEqual(
+            ["https://signal.org/a", "https://signal.org/b"],
+            accessibilityLinks(fullText: .text("https://signal.org/a and https://signal.org/b")),
+        )
+        XCTAssertEqual(
+            ["https://signal.org"],
+            accessibilityLinks(fullText: .text("https://signal.org and again https://signal.org")),
+        )
+        // Only links.
+        XCTAssertEqual(
+            ["https://signal.org"],
+            accessibilityLinks(fullText: .text("moxie@example.com +16505555555 https://signal.org")),
+        )
+        XCTAssertEqual(
+            [],
+            accessibilityLinks(fullText: .text("https://signal.org"), hasPendingMessageRequest: true),
+        )
+        XCTAssertEqual(
+            [],
+            accessibilityLinks(fullText: .text("https://signal.org"), shouldAllowLinkification: false),
+        )
+    }
+
+    func testAccessibilityLinkItemsWithTruncation() {
+        XCTAssertEqual(
+            ["https://signal.org/foo", "https://signal.org/bar/baz", "https://signal.org/qux"],
+            accessibilityLinks(
+                fullText: .text("https://signal.org/foo https://signal.org/bar/baz https://signal.org/qux"),
+                truncatedText: .text("https://signal.org/foo https://signal.org/ba…"),
+            ),
+        )
+        // Too large to expand inline.
+        XCTAssertEqual(
+            ["https://signal.org/foo"],
+            accessibilityLinks(
+                fullText: .text("https://signal.org/foo " + String(repeating: "a ", count: 8 * 1024) + "https://signal.org/bar"),
+                truncatedText: .text("https://signal.org/foo a a…"),
+            ),
+        )
+    }
+
+    func testAccessibilityLinkItemsWithSpoiler() {
+        let text = "https://signal.org/foo https://signal.org/bar"
+        let spoilerRange = (text as NSString).range(of: "https://signal.org/bar")
+        let style = NSRangedValue(MessageBodyRanges.SingleStyle.spoiler, range: spoilerRange)
+        let body = MessageBody(text: text, ranges: MessageBodyRanges(mentions: [], styles: [style]))
+            .hydrating(mentionHydrator: { _ in .preserveMention })
+        let spoilerIds = Set(body.tappableItems(revealedSpoilerIds: [], dataDetector: nil).compactMap { item -> StyleId? in
+            guard case .unrevealedSpoiler(let spoiler) = item else { return nil }
+            return spoiler.id
+        })
+        XCTAssertEqual(1, spoilerIds.count)
+
+        XCTAssertEqual(["https://signal.org/foo"], accessibilityLinks(fullText: .messageBody(body)))
+        XCTAssertEqual(
+            ["https://signal.org/foo", "https://signal.org/bar"],
+            accessibilityLinks(fullText: .messageBody(body), revealedSpoilerIds: spoilerIds),
+        )
+    }
 }
 
 extension CVLabelConfig {

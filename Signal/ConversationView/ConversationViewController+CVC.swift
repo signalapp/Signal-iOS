@@ -124,7 +124,15 @@ extension ConversationViewController {
             )
         }
 
-        var actions: [CVAccessibilityCustomAction] = []
+        let accessibilityLinks = self.accessibilityLinks(itemViewModel: itemViewModel)
+
+        // Put links first, since opening them is the most likely action.
+        var actions: [UIAccessibilityCustomAction] = accessibilityLinks.map { link in
+            UIAccessibilityCustomAction(name: link.name) { _ in
+                link.open()
+                return true
+            }
+        }
         for messageAction in messageActions {
             let action = CVAccessibilityCustomAction(
                 name: messageAction.accessibilityLabel ?? messageAction.accessibilityIdentifier,
@@ -135,6 +143,94 @@ extension ConversationViewController {
             actions.append(action)
         }
         cell.accessibilityCustomActions = actions
+
+        if let componentViewMessage = cell.componentView as? CVComponentMessage.CVComponentViewMessage {
+            componentViewMessage.accessibilityActivateHandler = accessibilityActivateHandler(
+                itemViewModel: itemViewModel,
+                accessibilityLinks: accessibilityLinks,
+            )
+        }
+    }
+
+    private struct AccessibilityLink {
+        let name: String
+        let open: () -> Void
+    }
+
+    private func accessibilityLinks(itemViewModel: CVItemViewModelImpl) -> [AccessibilityLink] {
+        let openLinkTitle = OWSLocalizedString("MESSAGE_ACTION_LINK_OPEN_LINK", comment: "Label for button to open a link.")
+
+        let linkItems = itemViewModel.renderItem.itemViewState.bodyTextState?.accessibilityLinkItems ?? []
+        if linkItems.isEmpty {
+            // The link preview can be opened even if the link in the text can't,
+            // e.g. because it isn't linkified.
+            guard let url = itemViewModel.linkPreview?.urlString.flatMap({ URL(string: $0) }) else {
+                return []
+            }
+            return [AccessibilityLink(name: openLinkTitle, open: { [weak self] in
+                self?.didTapLinkPreview(url: url)
+            })]
+        }
+
+        return linkItems.map { linkItem in
+            let name: String
+            // If only part of the link is tappable (e.g. it overlaps an unrevealed
+            // spoiler), the snippet contains text that shouldn't be shown.
+            let isEntireLinkTappable = linkItem.range.length >= linkItem.snippet.utf16.count
+            if linkItems.count > 1, isEntireLinkTappable {
+                let format = OWSLocalizedString(
+                    "MESSAGE_ACTION_LINK_OPEN_LINK_ACCESSIBILITY_FORMAT",
+                    comment: "Accessibility label for an action that opens one of several links in a message. Embeds {{ the link, e.g. 'https://signal.org' }}.",
+                )
+                name = String.nonPluralLocalizedStringWithFormat(format, linkItem.snippet)
+            } else {
+                name = openLinkTitle
+            }
+            return AccessibilityLink(name: name, open: { [weak self] in
+                self?.didTapBodyTextItem(.dataItem(dataItem: linkItem))
+            })
+        }
+    }
+
+    /// By default, activating a message simulates a tap on its center, so whether
+    /// that opens a link depends on the message's layout. If the message has exactly
+    /// one link, open it no matter where it is. Other tappable items in the text, like
+    /// mentions or phone numbers, aren't considered.
+    private func accessibilityActivateHandler(
+        itemViewModel: CVItemViewModelImpl,
+        accessibilityLinks: [AccessibilityLink],
+    ) -> (() -> Bool)? {
+        guard
+            accessibilityLinks.count == 1,
+            let link = accessibilityLinks.first,
+            itemViewModel.componentState.isTextAndLinkPreviewOnlyMessage
+        else {
+            return nil
+        }
+
+        if let outgoingMessage = itemViewModel.interaction as? TSOutgoingMessage {
+            switch outgoingMessage.messageState {
+            case .failed, .pending:
+                // Don't interfere with "tap to retry".
+                // Keep in sync with CVComponentMessage.handleTap.
+                return nil
+            default:
+                break
+            }
+        }
+
+        return { [weak self] in
+            guard let self, !self.isShowingSelectionUI else {
+                return false
+            }
+            if let interaction = self.collectionViewActiveContextMenuInteraction, interaction.contextMenuVisible {
+                return false
+            }
+            // Stop any recording voice memos, as we do for taps.
+            self.finishRecordingVoiceMessage(sendImmediately: false)
+            link.open()
+            return true
+        }
     }
 
     @objc
