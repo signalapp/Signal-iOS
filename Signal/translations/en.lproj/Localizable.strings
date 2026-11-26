@@ -6091,6 +6091,9 @@
 /* Label for button to open a link. */
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
 
+/* Accessibility label for an action that opens one of several links in a message. Embeds {{ the link, e.g. 'https://signal.org' }}. */
+"MESSAGE_ACTION_LINK_OPEN_LINK_ACCESSIBILITY_FORMAT" = "Open Link: %@";
+
 /* Label for button to open a signal proxy. */
 "MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
 

@@ -985,6 +985,26 @@ struct CVComponentState: Equatable {
         isTextOnlyMessage && (bodyText?.isJumbomojiMessage == true)
     }
 
+    /// Whether this message's only content is (non-truncated) text and, optionally,
+    /// a link preview. The link preview may have bottom buttons, e.g. "Join Call".
+    var isTextAndLinkPreviewOnlyMessage: Bool {
+        guard case .bodyText(_, hasTapForMore: false) = bodyText else {
+            return false
+        }
+        var validKeys: Set<CVComponentKey> = [
+            .senderName,
+            .senderAvatar,
+            .bodyText,
+            .footer,
+            .reactions,
+            .sendFailureBadge,
+        ]
+        if linkPreview != nil {
+            validKeys.formUnion([.linkPreview, .bottomButtons, .skippedDownloads])
+        }
+        return activeComponentStateKeys.isSubset(of: validKeys)
+    }
+
     var isBodyMediaOnlyMessage: Bool {
         let validKeys: [CVComponentKey] = [
             .senderName,

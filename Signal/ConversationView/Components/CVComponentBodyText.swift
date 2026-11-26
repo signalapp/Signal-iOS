@@ -18,6 +18,7 @@ class CVComponentBodyText: CVComponentBase, CVComponent, CVAccessibilityComponen
         let shouldUseAttributedText: Bool
         let hasPendingMessageRequest: Bool
         fileprivate let items: [CVTextLabel.Item]
+        let accessibilityLinkItems: [TextCheckingDataItem]
 
         var canUseDedicatedCell: Bool {
             if searchText != nil {
@@ -206,6 +207,55 @@ class CVComponentBodyText: CVComponentBase, CVComponent, CVAccessibilityComponen
         }
     }
 
+    /// The links that should be exposed as accessibility actions, without duplicates.
+    ///
+    /// Assistive technologies treat a message as a single element, so they can't
+    /// target an individual link within the text.
+    ///
+    /// - Parameter items
+    /// The items detected in the text that's currently displayed.
+    static func accessibilityLinkItems(
+        text: DisplayableText,
+        items: [CVTextLabel.Item],
+        hasPendingMessageRequest: Bool,
+        shouldAllowLinkification: Bool,
+        textWasTruncated: Bool,
+        revealedSpoilerIds: Set<StyleId>,
+        interactionUniqueId: String,
+        interactionIdentifier: InteractionSnapshotIdentifier,
+    ) -> [TextCheckingDataItem] {
+        var items = items
+        // The accessibility label contains the full text even if we only display
+        // part of it, so include links that aren't displayed. Skip this if the text
+        // is too large to expand inline; it has its own (accessible) text view.
+        //
+        // This detects items a second time, but only for truncated text, and it's
+        // bounded by the inline size limit (a few ms for the largest text).
+        if textWasTruncated, text.canRenderTruncatedTextInline {
+            items = detectItems(
+                text: text,
+                hasPendingMessageRequest: hasPendingMessageRequest,
+                shouldAllowLinkification: shouldAllowLinkification,
+                textWasTruncated: false,
+                revealedSpoilerIds: revealedSpoilerIds,
+                interactionUniqueId: interactionUniqueId,
+                interactionIdentifier: interactionIdentifier,
+            )
+        }
+
+        var urls = Set<URL>()
+        return items.compactMap { item -> TextCheckingDataItem? in
+            guard
+                case .dataItem(let dataItem) = item,
+                dataItem.dataType == .link,
+                urls.insert(dataItem.url).inserted
+            else {
+                return nil
+            }
+            return dataItem
+        }
+    }
+
     static func buildState(
         interaction: TSInteraction,
         bodyText: CVComponentState.BodyText,
@@ -218,6 +268,7 @@ class CVComponentBodyText: CVComponentBase, CVComponent, CVAccessibilityComponen
         let revealedSpoilerIds = viewStateSnapshot.spoilerReveal[.fromInteraction(interaction)] ?? Set()
 
         let items: [CVTextLabel.Item]
+        let accessibilityLinkItems: [TextCheckingDataItem]
         var shouldUseAttributedText = false
         if let displayableText = bodyText.displayableText {
 
@@ -226,6 +277,16 @@ class CVComponentBodyText: CVComponentBase, CVComponent, CVAccessibilityComponen
 
             items = detectItems(
                 text: displayableText,
+                hasPendingMessageRequest: hasPendingMessageRequest,
+                shouldAllowLinkification: shouldAllowLinkification,
+                textWasTruncated: textWasTruncated,
+                revealedSpoilerIds: revealedSpoilerIds,
+                interactionUniqueId: interaction.uniqueId,
+                interactionIdentifier: .fromInteraction(interaction),
+            )
+            accessibilityLinkItems = Self.accessibilityLinkItems(
+                text: displayableText,
+                items: items,
                 hasPendingMessageRequest: hasPendingMessageRequest,
                 shouldAllowLinkification: shouldAllowLinkification,
                 textWasTruncated: textWasTruncated,
@@ -254,6 +315,7 @@ class CVComponentBodyText: CVComponentBase, CVComponent, CVAccessibilityComponen
             }
         } else {
             items = []
+            accessibilityLinkItems = []
         }
 
         return State(
@@ -264,6 +326,7 @@ class CVComponentBodyText: CVComponentBase, CVComponent, CVAccessibilityComponen
             shouldUseAttributedText: shouldUseAttributedText,
             hasPendingMessageRequest: hasPendingMessageRequest,
             items: items,
+            accessibilityLinkItems: accessibilityLinkItems,
         )
     }
 
